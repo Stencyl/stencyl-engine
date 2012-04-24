@@ -2,8 +2,15 @@ package;
 
 import nme.events.KeyboardEvent;
 import nme.events.MouseEvent;
+
+#if !js
+import nme.events.TouchEvent;
+import nme.ui.Multitouch;
+#end
+
 import nme.ui.Keyboard;
 import nme.Lib;
+
 
 class Input
 {
@@ -17,6 +24,11 @@ class Input
 	public static var mousePressed:Bool;
 	public static var mouseReleased:Bool;
 	public static var mouseWheel:Bool;
+	
+	#if !js
+	public static var multiTouchEnabled:Bool;
+	public static var multiTouchPoints:Hash<TouchEvent>;
+	#end
 
 	/**
 	 * X position of the mouse on the screen.
@@ -132,11 +144,24 @@ class Input
 	{
 		if (!_enabled && Universal.stage != null)
 		{
-			Universal.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false,  2);
+			Universal.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
 			Universal.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp, false,  2);
-			Universal.stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false,  2);
+			Universal.stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 2);
 			Universal.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false,  2);
-			Universal.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false,  2);
+			Universal.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 2);
+			
+			#if !js
+			multiTouchEnabled = Multitouch.supportsTouchEvents;
+			
+			if(multiTouchEnabled)
+	        {
+	        	multiTouchPoints = new Hash<TouchEvent>();
+	        	Multitouch.inputMode = nme.ui.MultitouchInputMode.TOUCH_POINT;
+	        	Universal.stage.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
+	        	Universal.stage.addEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
+         		Universal.stage.addEventListener(TouchEvent.TOUCH_END, onTouchEnd);
+	        }
+	        #end
 		}
 	}
 
@@ -207,6 +232,23 @@ class Input
 		mouseWheel = true;
 		_mouseWheelDelta = e.delta;
 	}
+	
+	#if !js
+	private static function onTouchBegin(e:TouchEvent)
+	{
+		multiTouchPoints.set(Std.string(e.touchPointID), e);
+	}
+	
+	private static function onTouchMove(e:TouchEvent)
+	{
+		multiTouchPoints.set(Std.string(e.touchPointID), e);
+	}
+	
+	private static function onTouchEnd(e:TouchEvent)
+	{
+		multiTouchPoints.remove(Std.string(e.touchPointID));
+	}
+	#end
 
 	private static inline var kKeyStringMax = 100;
 
