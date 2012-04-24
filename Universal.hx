@@ -115,21 +115,31 @@ class Universal extends Sprite
 		}*/
 		
 		//---
-			
+					
 		//TEST
 		for(i in 0...10)
 		{
+			var sprite = new Bitmap(Assets.getBitmapData("assets/graphics/tile.png"));
+			sprite.smoothing = true;
+			sprite.x = -sprite.width/2;
+			sprite.y = -sprite.height/2;
+		
 			var actor = new Actor(i * 32 + 16, 96 + 16);
 			master.addChild(actor);
-			actor.addAnimation("d", "assets/graphics/tile.png");
+			actor.addAnimation("d", sprite);
 			actor.switchAnimation("d");
 		}
 		
 		for(i in 0...10)
 		{
+			var sprite = new Bitmap(Assets.getBitmapData("assets/graphics/tile.png"));
+			sprite.smoothing = true;
+			sprite.x = -sprite.width/2;
+			sprite.y = -sprite.height/2;
+		
 			var actor = new Actor(96 + 16, i * 32 + 16);
 			master.addChild(actor);
-			actor.addAnimation("d", "assets/graphics/tile.png");
+			actor.addAnimation("d", sprite);
 			actor.switchAnimation("d");
 		}
 	
@@ -197,8 +207,6 @@ class Universal extends Sprite
 		}
 		#end
 		
-		pronger.updateAnimation(elapsedTime);
-		
 		//---
 		
 		cameraX = pronger.x - screenWidth/2;
@@ -260,6 +268,8 @@ class Universal extends Sprite
 			pronger.ySpeed = 0;
 		}
 		
+		pronger.rotation += 1;
+		//pronger.scaleX *= 1.01;
 		
 		/*if(Input.mouseDown)
 		{
@@ -267,7 +277,7 @@ class Universal extends Sprite
 			pronger.y = Input.mouseY;
 		}*/
 		
-		//pronger.rotation += 1;
+		
 		
 		/*if(Input.multiTouchEnabled)
 		{

@@ -19,9 +19,12 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 	
 	private var data:Array<Float>;
 	
-	public function new(tilesheet:Tilesheet, durations:Array<Int>) 
+	public function new(tilesheet:Tilesheet, durations:Array<Int>, width:Int, height:Int) 
 	{
 		super();
+		
+		this.x = -width/2;
+		this.y = -height/2;
 		
 		this.timer = 0;
 		this.frameIndex = 0;

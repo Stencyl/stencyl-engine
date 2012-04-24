@@ -21,6 +21,8 @@ class Actor extends Sprite
 	public var currAnimation:DisplayObject;
 	public var currAnimationName:String;
 	public var animationMap:Hash<DisplayObject>;
+	
+	private var hasSprite:Bool;
 
 	public function new(x:Int = 0, y:Int = 0) 
 	{
@@ -33,41 +35,32 @@ class Actor extends Sprite
 		ySpeed = 0;
 		rSpeed = 0;
 		
+		hasSprite = false;
+		
 		animationMap = new Hash<DisplayObject>();
 	}	
 	
 	public function tileTest()
    	{
-   		#if !js
    		var bmp = Assets.getBitmapData("assets/graphics/animation.png");
+   		var bmp2 = Assets.getBitmapData("assets/graphics/anim1.png");
+   		
+   		#if !js
 		var tilesheet = new Tilesheet(bmp);
 		tilesheet.addTileRect(new nme.geom.Rectangle(0, 0, 48, 32));
 		tilesheet.addTileRect(new nme.geom.Rectangle(48, 0, 48, 32)); 	
-		currAnimation = new SheetAnimation(tilesheet, [1000, 1000]);
+		currAnimation = new SheetAnimation(tilesheet, [1000, 1000], 48, 32);
 		#end
-		
-		/*var img1 = Assets.getBitmapData("assets/graphics/anim1.png");
-		var img2 = Assets.getBitmapData("assets/graphics/anim2.png");
-		anim = new BitmapAnimation([img1, img2],[1000, 1000]);*/
+				
+		currAnimation = new BitmapAnimation([bmp2],[1000]);
 		
 		addChild(currAnimation);
+		
+		hasSprite = true;
    	}
    	
-   	public function updateAnimation(elapsedTime:Float)
-   	{
-   		if(currAnimation != null)
-   		{
-   			cast(currAnimation, AbstractAnimation).update(elapsedTime);
-   		}
-   	}
-	
-	public function addAnimation(name:String, loc:String, numFrames:Int = 1)
+	public function addAnimation(name:String, sprite:DisplayObject)
 	{
-		var sprite = new Bitmap(Assets.getBitmapData(loc));
-		sprite.smoothing = true;
-		sprite.x = -sprite.width/2;
-		sprite.y = -sprite.height/2;
-		
 		animationMap.set(name, sprite);
 	}
 	
@@ -96,6 +89,11 @@ class Actor extends Sprite
 	
 	public function update(elapsedTime:Float)
 	{
+		if(hasSprite)
+   		{
+   			cast(currAnimation, AbstractAnimation).update(elapsedTime);
+   		}
+   		
 		this.x += elapsedTime * xSpeed;
 		this.y += elapsedTime * ySpeed;
 		this.rotation += elapsedTime * rSpeed;

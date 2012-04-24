@@ -16,6 +16,9 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 	{
 		super(images[0]);
 		
+		this.x = -images[0].width/2;
+		this.y = -images[0].height/2;
+		
 		this.timer = 0;
 		this.frameIndex = 0;
 		this.looping = true;
