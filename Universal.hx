@@ -173,7 +173,7 @@ class Universal extends Sprite
 		Input.define("up", [Key.W, Key.UP]);
 		Input.define("down", [Key.S, Key.DOWN]);
 		
-		//randomMotion();
+		randomMotion();
 		
 		//var thing = Type.createInstance(Type.resolveClass("behavior.Motion"), []);
 		//thing.update();		
