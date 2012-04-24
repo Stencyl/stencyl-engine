@@ -2,30 +2,42 @@ package graphics;
 
 import nme.display.Bitmap;
 import nme.display.BitmapData;
+import nme.geom.Rectangle;
+import nme.geom.Point;
 
 class BitmapAnimation extends Bitmap, implements AbstractAnimation
 {
 	private var frameIndex:Int;
 	private var looping:Bool;
 	private var timer:Float;
-	private var images:Array<BitmapData>;
+	private var sheet:BitmapData;
 	private var durations:Array<Int>;
 	private var numFrames:Int;
 	
-	public function new(images:Array<BitmapData>, durations:Array<Int>) 
+	private var frameWidth:Int;
+	private var region:Rectangle;
+	private var pt:Point;
+	
+	public function new(sheet:BitmapData, numFrames:Int, durations:Array<Int>) 
 	{
-		super(images[0]);
+		super(new BitmapData(Std.int(sheet.width/numFrames), sheet.height));
 		
-		this.x = -images[0].width/2;
-		this.y = -images[0].height/2;
+		this.frameWidth = Std.int(sheet.width/numFrames);
+		
+		this.x = -sheet.width/(2 * numFrames);
+		this.y = -sheet.height/2;
 		
 		this.timer = 0;
 		this.frameIndex = 0;
 		this.looping = true;
-		this.images = images;
+		this.sheet = sheet;
 		this.durations = durations;
+		this.numFrames = numFrames;
 		
-		numFrames = images.length;
+		region = new Rectangle(0, 0, frameWidth, sheet.height);
+		pt = new Point(0, 0);
+		
+		updateBitmap();
 	}		
 
 	public function update(elapsedTime:Float)
@@ -43,7 +55,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 				frameIndex = 0;
 			}
 			
-			this.bitmapData = images[frameIndex];
+			updateBitmap();
 		}
 	}
 	
@@ -56,6 +68,12 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 	{
 		timer = 0;
 		frameIndex = 0;
-		this.bitmapData = images[frameIndex];
+		updateBitmap();
+	}
+	
+	private function updateBitmap()
+	{
+		region.x = frameWidth * frameIndex;
+		this.bitmapData.copyPixels(sheet, region, pt);
 	}
 }

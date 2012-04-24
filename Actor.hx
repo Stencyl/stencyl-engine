@@ -43,8 +43,7 @@ class Actor extends Sprite
 	public function tileTest()
    	{
    		var bmp = Assets.getBitmapData("assets/graphics/animation.png");
-   		var bmp2 = Assets.getBitmapData("assets/graphics/anim1.png");
-   		
+
    		#if !js
 		var tilesheet = new Tilesheet(bmp);
 		tilesheet.addTileRect(new nme.geom.Rectangle(0, 0, 48, 32));
@@ -52,7 +51,7 @@ class Actor extends Sprite
 		currAnimation = new SheetAnimation(tilesheet, [1000, 1000], 48, 32);
 		#end
 				
-		currAnimation = new BitmapAnimation([bmp2],[1000]);
+		currAnimation = new BitmapAnimation(bmp, 2, [1000, 1000]);
 		
 		addChild(currAnimation);
 		

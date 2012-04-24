@@ -268,7 +268,7 @@ class Universal extends Sprite
 			pronger.ySpeed = 0;
 		}
 		
-		pronger.rotation += 1;
+		//pronger.rotation += 1;
 		//pronger.scaleX *= 1.01;
 		
 		/*if(Input.mouseDown)
