@@ -1,13 +1,17 @@
 package behavior;
 
+import nme.display.Graphics;
+
 //Actual scripts extend from this
 class Script 
 {
 	public var wrapper:Behavior;
-	public var engine:GameState;
+	public var engine:Engine;
 		
-	public function new() 
+	public function new(engine:Engine) 
 	{
+		this.engine = engine;
+	
 		init();
 		mountEvents();		
 	}		

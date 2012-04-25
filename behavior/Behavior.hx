@@ -1,9 +1,11 @@
 package behavior;
 
+import nme.display.Graphics;
+
 class Behavior 
 {	
 	public var parent:Dynamic;
-	public var engine:GameState;
+	public var engine:Engine;
 	
 	public var enabled:Bool;
 	public var drawable:Bool;
@@ -12,7 +14,7 @@ class Behavior
 	public var name:String;
 	
 	public var classname:String;
-	public var cls:Type;
+	public var cls:Class<Dynamic>;
 	public var script:Script;
 	
 	public var attributes:Array<Attribute>;
@@ -20,7 +22,7 @@ class Behavior
 	public function new
 	(
 		parent:Dynamic,
-		game:GameState,
+		engine:Engine,
 		ID:Int,
 		name:String,
 		classname:String, 
@@ -33,16 +35,17 @@ class Behavior
 		this.engine = engine;
 		this.classname = classname;
 	
-		if(game != null)
+		if(engine != null)
 		{
 			try
 			{
 				cls = Type.resolveClass(classname);
 			}
 			
-			catch(e:Error)
+			catch(e:String)
 			{
 				trace("Could not load: " + classname);
+				trace(e);
 			}
 		}
 		
@@ -75,10 +78,10 @@ class Behavior
 				script.init();
 			}
 			
-			catch(e:Error)
+			catch(e:String)
 			{
 				trace("Error in when created for behavior: " + name);
-				trace(e.getStackTrace());
+				trace(e);
 			}
 		}
 	}
@@ -158,7 +161,7 @@ class Behavior
 	{
 		if(script != null)
 		{
-			script.update();
+			script.update(elapsedTime);
 		}
 	}
 	
@@ -170,11 +173,11 @@ class Behavior
 		}
 	}
 	
-	public function drawLayer(g:Graphics, x:Int, y:Int, layerID:Int)
+	/*public function drawLayer(g:Graphics, x:Int, y:Int, layerID:Int)
 	{
 		if(script != null && Std.is(script, SceneScript))
 		{
 			script.drawLayer(g, x, y, layerID);	
 		}
-	}
+	}*/
 }
