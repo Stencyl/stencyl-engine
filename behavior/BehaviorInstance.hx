@@ -1,12 +1,15 @@
 package behavior;
 
-//Events List + Attributes with set values
-class BehaviorInstance {
+class BehaviorInstance 
+{
+	public var behaviorID:Int;
+	public var values:Array<Dynamic>;
+	public var enabled:Bool;
 	
-	public function new () {
-		
-		
-		
-	}		
-
+	public function new(behaviorID:Int, values:Array<Dynamic>)
+	{
+		this.behaviorID = behaviorID;
+		this.values = values;
+		this.enabled = true;
+	}
 }
