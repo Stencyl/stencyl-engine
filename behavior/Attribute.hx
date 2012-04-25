@@ -26,18 +26,16 @@ class Attribute
 	
 	public function getRealValue():Dynamic
 	{
-		return null;
-		
-		/*if(realValue == null)
+		if(realValue == null)
 		{
 			if(type == "int")
 			{
-				realValue = parseInt(value);
+				realValue = Std.parseInt(value);
 			}
 			
 			else if(type == "float" || type == "number")
 			{
-				realValue = Number(value);
+				realValue = Std.parseFloat(value);
 			}
 			
 			else if(type == "boolean")
@@ -54,12 +52,12 @@ class Attribute
 				
 				else
 				{
-					var s:Array = value.split(",");
+					var s:Array<String> = value.split(",");
 					
-					var r:Number = parseInt(s[0]);
-					var g:Number = parseInt(s[1]);
-					var b:Number = parseInt(s[2]);
-					var a:Number = parseInt(s[3]);
+					var r:Int = Std.parseInt(s[0]);
+					var g:Int = Std.parseInt(s[1]);
+					var b:Int = Std.parseInt(s[2]);
+					var a:Int = Std.parseInt(s[3]);
 					
 					realValue = (a << 24) | (r << 16) | (g << 8) | b;
 				}
@@ -76,7 +74,8 @@ class Attribute
 					
 					else
 					{
-						realValue = Assets.get().resources[parseInt(value)];
+						//TODO
+						//realValue = Assets.get().resources[Std.parseInt(value)];
 					}
 				}
 			}
@@ -84,7 +83,7 @@ class Attribute
 			else if(type == "actorgroup")
 			{
 				//Script will pull the right group. Keep as int.
-				realValue = parseInt(value);
+				realValue = Std.parseInt(value);
 			}
 			
 			else if(type == "control")
@@ -109,7 +108,8 @@ class Attribute
 			
 			else if(type == "scene")
 			{
-				realValue = Game.get().scenes[parseInt(value)];
+				//TODO
+				//realValue = Game.get().scenes[Std.parseInt(value)];
 			}
 			
 			else if(type == "text") 
@@ -136,22 +136,21 @@ class Attribute
 				
 				else
 				{
-					realValue = parseInt(value);
+					realValue = Std.parseInt(value);
 				}
 			}
 			
 			else if(value != null && type == "joint")
 			{
-				realValue = parseInt(value);
+				realValue = Std.parseInt(value);
 			}
 			
 			else if(value != null && type == "region")
 			{
-				realValue = parseInt(value);
+				realValue = Std.parseInt(value);
 			}
 		}
 		
 		return realValue;
-		*/
 	}
 }
