@@ -14,7 +14,6 @@ class GameModel
 	
 	public var groups:Array;
 	public var collisionGroups:Array;
-	public var controller:Array;
 	public var gameAttributes:Hash<Dynamic>;
 	
 	public var scenes:Array
@@ -62,7 +61,7 @@ class GameModel
 		
 		//---
 		
-		controller = readInput(xml.node.input.elements);
+		readInput(xml.node.input.elements);
 		gameAttributes = readGameAttributes(xml.node.attributes.elements);
 		//TODO: scenes = readScenes(Assets.get().sceneListXML);	
 	}
@@ -106,14 +105,13 @@ class GameModel
 	
 	public function readInput(list:Array<Fast>):Array
 	{
-		var map:Array<String> = new Array<String>();
-		
 		for(e in list)
 		{
-			map["_" + e.att.name] = e.att.keyname; 
+			//map["_" + e.att.name] = e.att.keyname; 
+			
+			//TODO:
+			//Input.define("left", [Key.A, Key.LEFT]);
 		}
-		
-		return map;
 	}
 	
 	public static function readGameAttributes(list:Array<Fast>):Hash
