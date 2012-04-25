@@ -3,15 +3,34 @@ package behavior;
 //Actual scripts extend from this
 class Script 
 {
+	public var wrapper:Behavior;
+	public var engine:GameState;
+		
 	public function new() 
 	{
-		initAttributes();
+		init();
 		mountEvents();		
 	}		
+	
+	//*-----------------------------------------------
+	//* Basics
+	//*-----------------------------------------------
 
-	public function initAttributes()
+	public function init()
 	{
 	}
+	
+	public function update(elapsedTime:Float)
+	{
+	}
+	
+	public function draw(g:Graphics, x:Int, y:Int)
+	{
+	}
+	
+	//*-----------------------------------------------
+	//* Event Registration
+	//*-----------------------------------------------
 
 	public function mountEvents()
 	{
