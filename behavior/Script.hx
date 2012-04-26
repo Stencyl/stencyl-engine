@@ -47,4 +47,36 @@ class Script
 		
 		updateEvent(10);
 	}
+	
+	//*-----------------------------------------------
+	//* Timed Tasks
+	//*-----------------------------------------------
+	
+	/**
+	 * Runs the given function after a delay.
+	 *
+	 * @param	delay		Delay in execution (in milliseconds)
+	 * @param	toExecute	The function to execute after the delay
+	 */
+	public function runLater(delay:Int, toExecute:TimedTask->Void, actor:Actor = null):TimedTask
+	{
+		var t:TimedTask = new TimedTask(toExecute, delay, false, actor);
+		engine.addTask(t);
+
+		return t;
+	}
+	
+	/**
+	 * Runs the given function periodically (every n seconds).
+	 *
+	 * @param	interval	How frequently to execute (in milliseconds)
+	 * @param	toExecute	The function to execute after the delay
+	 */
+	public function runPeriodically(interval:Int, toExecute:TimedTask->Void, actor:Actor = null):TimedTask
+	{
+		var t:TimedTask = new TimedTask(toExecute, interval, true, actor);
+		engine.addTask(t);
+		
+		return t;
+	}
 }

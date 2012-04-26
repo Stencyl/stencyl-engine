@@ -5,6 +5,7 @@ import nme.display.BitmapData;
 import nme.geom.Rectangle;
 import nme.geom.Point;
 
+//TODO: It would be better to pass in the frames, broken up and swap between the frames.
 class BitmapAnimation extends Bitmap, implements AbstractAnimation
 {
 	private var frameIndex:Int;

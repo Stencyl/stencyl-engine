@@ -31,6 +31,8 @@ class Universal extends Sprite
 	public static var MS_PER_SEC:Int = 1000;
 	public static var elapsedTime:Float = 0;
 	
+	var engine:Engine;
+	
 	var lastTime:Float;
 	var acc:Float;
 	
@@ -57,6 +59,8 @@ class Universal extends Sprite
 	public function new() 
 	{
 		super();
+		
+		engine = new Engine();
 		
 		cameraX = 0;
 		cameraY = 0;
@@ -183,8 +187,8 @@ class Universal extends Sprite
 		
 		//randomMotion();
 		
-		//var thing = Type.createInstance(Type.resolveClass("behavior.Motion"), []);
-		//thing.update();		
+		var thing = Type.createInstance(Type.resolveClass("behavior.Motion"), [engine]);
+		thing.update(0);		
 		
 		//FPS Counter
 		fpsLabel = new TextField();
@@ -296,6 +300,8 @@ class Universal extends Sprite
 		}*/
 		
 		pronger.update(elapsedTime);
+		
+		engine.update(elapsedTime);
 	}
 	
 	private function onAdded(event:Event):Void 
