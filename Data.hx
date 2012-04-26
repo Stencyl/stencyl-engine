@@ -67,7 +67,7 @@ public class Data
 	//* Loading
 	//*-----------------------------------------------
 	
-	public function Assets()
+	public function Data()
 	{
 		loadReaders();
 	}

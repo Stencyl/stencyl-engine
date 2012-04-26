@@ -113,7 +113,9 @@ class GameModel
 			//map["_" + e.att.name] = e.att.keyname; 
 			
 			//TODO:
-			//Input.define("left", [Key.A, Key.LEFT]);
+			var mapping = e.att.keyname.split(",");
+			//TODO: Don't read this in - just have it generate code instead!
+			//Input.define("left", [Key.A]);
 		}
 	}
 	
