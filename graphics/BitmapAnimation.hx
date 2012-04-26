@@ -74,6 +74,8 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 	private function updateBitmap()
 	{
 		region.x = frameWidth * frameIndex;
+		
+		this.bitmapData.fillRect(this.bitmapData.rect, 0x00000000);
 		this.bitmapData.copyPixels(sheet, region, pt);
 	}
 }
