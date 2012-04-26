@@ -16,6 +16,8 @@ import nme.ui.Keyboard;
 import behavior.Motion;
 import behavior.Script;
 
+import graphics.BitmapFont;
+
 #if cpp
 import nme.ui.Accelerometer;
 #end
@@ -151,6 +153,12 @@ class Universal extends Sprite
 		
 		pronger.tileTest();
 		
+		var font:BitmapFont = new BitmapFont("assets/graphics/font.png", 32, 32, BitmapFont.TEXT_SET11 + "#", 9, 1, 1);
+		font.text = "NME is great";
+		font.x = 100;
+		font.y = 100;
+		master.addChild(font);
+		
 		//---
 		
 		//new io.BackgroundReader();
@@ -173,7 +181,7 @@ class Universal extends Sprite
 		Input.define("up", [Key.W, Key.UP]);
 		Input.define("down", [Key.S, Key.DOWN]);
 		
-		randomMotion();
+		//randomMotion();
 		
 		//var thing = Type.createInstance(Type.resolveClass("behavior.Motion"), []);
 		//thing.update();		

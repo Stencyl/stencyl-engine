@@ -29,7 +29,9 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		this.timer = 0;
 		this.frameIndex = 0;
 		this.looping = true;
+		#if !js
 		this.tilesheet = tilesheet;
+		#end
 		this.durations = durations;
 		
 		numFrames = durations.length;
