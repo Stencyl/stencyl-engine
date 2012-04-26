@@ -24,28 +24,30 @@ class Scene
 	public var terrain:Array;
 	public var actors:Array;
 	public var behaviorValues:Array;
+	
+	//Box2D
 	//public var wireframes:Array;
 	//public var joints:Array;
-	public var regions:Array;
+	//public var regions:Array;
 	//public var terrainRegions:Array;
 	
 	public var animatedTiles:Array;
 	
-	public function new(ID:Number, name:String, xml:XML)
+	public function new(ID:Int, name:String, xml:Fast)
 	{
 		this.ID = ID;
 		this.name = name;
 		
-		var numLayers:Number = xml.@depth;
+		var numLayers:Int = Std.parseInt(xml.att.depth);
 		
-		sceneWidth = xml.@width;
-		sceneHeight = xml.@height;
+		sceneWidth = Std.parseInt(xml.att.width);
+		sceneHeight = Std.parseInt(xml.att.height);
 		
-		tileWidth = xml.@tilew;
-		tileHeight = xml.@tileh;
+		tileWidth = Std.parseInt(xml.att.tilew);
+		tileHeight = Std.parseInt(xml.att.tileh);
 		
-		gravityX = xml.@gravx;
-		gravityY = xml.@gravy;
+		gravityX = Std.parseFloat(xml.att.gravx);
+		gravityY = Std.parseFloat(xml.att.gravy);
 								
 		animatedTiles = new Array();
 		
@@ -54,7 +56,7 @@ class Scene
 					
 		colorBackground = new ColorBackground(0xFFFFFFFF);
 		
-		for each(var e:XML in xml.children())
+		for(e in xml.elements)
 		{
 			if(e.name() == "color-bg" || e.name() == "grad-bg")
 			{
@@ -66,18 +68,18 @@ class Scene
 		actors = readActors(xml.actors);
 		behaviorValues = ActorTypeReader.readBehaviors(xml.snippets);
 		
-		if (xml.@eventsnippetid.length() > 0)
+		if (xml.att.eventsnippetid.length() > 0)
 		{
-			eventID = xml.@eventsnippetid;
+			eventID = Std.parseInt(xml.att.eventsnippetid);
 			
-			if (eventID > -1)
+			if(eventID > -1)
 			{
 				behaviorValues[eventID] = new BehaviorInstance(eventID, new Array());
 			}
 		}
 		
 		//joints = readJoints(xml.joints);
-		regions = readRegions(xml.regions);
+		//regions = readRegions(xml.regions);
 		//terrainRegions = readTerrainRegions(xml.terrainRegions);
 		
 		//wireframes = readWireframes(xml.terrain);
@@ -86,11 +88,11 @@ class Scene
 		terrain = readLayers(xml.layers, rawLayers);
 	}
 	
-	public function readRegions(list:XMLList):Array
+	/*public function readRegions(list:Iterator<Fast>):Array
 	{
 		var map:Array = new Array();
 		
-		for each(var e:XML in list.children())
+		for(e in list)
 		{
 			var r:RegionDef = readRegion(e);
 			
@@ -102,7 +104,7 @@ class Scene
 	
 	public function readRegion(e:XML):RegionDef
 	{
-		var type:String = e.@type;
+		var type:String = e.att.type;
 		var elementID:Number = e.@id;
 		var name:String = e.@name;
 		var pts:String = e.@pts;
@@ -193,7 +195,7 @@ class Scene
 		}
 		
 		return region;
-	}
+	}*/
 	
 	/*public function readTerrainRegions(list:XMLList):Array
 	{
@@ -533,37 +535,37 @@ class Scene
 		return map;
 	}*/
 	
-	public function readActors(list:XMLList):Array
+	public function readActors(list:Iterator<Fast>):Array<ActorInstance>
 	{
-		var map:Array = new Array();
+		var map:Array<ActorInstance> = new Array<ActorInstance>();
 		
-		for each(var e:XML in list.children())
+		for(e in list)
 		{
 			var ai:ActorInstance = readActorInstance(e);
 			
 			if(ai != null)
 			{
-				map[e.@aid] = ai;
+				map[Std.parseInt(e.@aid)] = ai;
 			}
 		}
 		
 		return map;
 	}
 	
-	public function readActorInstance(xml:XML):ActorInstance
+	public function readActorInstance(xml:Fast):ActorInstance
 	{
-		var elementID:Number = xml.@aid;
-		var x:Number = xml.@x;
-		var y:Number = xml.@y;
-		var scaleX:Number = xml.@sx;
-		var scaleY:Number = xml.@sy;
-		var layerID:Number = xml.@z;
-		var angle:Number = xml.@a;
-		var groupID:Number =  xml.@group;
-		var actorID:Number = xml.@id;
-		var isCustomized:Boolean = Util.toBoolean(xml.@c);
+		var elementID:Int = Std.parseInt(xml.att.aid);
+		var x:Int = Std.parseInt(xml.att.x);
+		var y:Int = Std.parseInt(xml.att.y);
+		var scaleX:Float = Std.parseFloat(xml.att.sx);
+		var scaleY:Float = Std.parseFloat(xml.att.sy);
+		var layerID:Int = Std.parseInt(xml.att.z);
+		var angle:Int = Std.parseInt(xml.att.a);
+		var groupID:Int =  Std.parseInt(xml.att.group);
+		var actorID:Int = Std.parseInt(xml.att.id);
+		var isCustomized:Bool = Utils.toBoolean(xml.@c);
 		
-		var behaviors:Array = ActorTypeReader.readBehaviors(xml.snippets);
+		var behaviors:Array = ActorTypeReader.readBehaviors(xml.nodes.snippets);
 		
 		if (scaleX == 0 || scaleY == 0)
 		{
