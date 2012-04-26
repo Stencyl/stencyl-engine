@@ -18,6 +18,8 @@ import behavior.Script;
 
 import graphics.BitmapFont;
 
+import models.GameModel;
+
 #if cpp
 import nme.ui.Accelerometer;
 #end
@@ -59,6 +61,8 @@ class Universal extends Sprite
 	public function new() 
 	{
 		super();
+		
+		GameModel.get();
 		
 		engine = new Engine();
 		

@@ -14,7 +14,6 @@ import flash.media.SoundMixer;
 import nme.media.SoundTransform;
 import nme.system.System;
 import nme.utils.ByteArray;
-import actor.Graphic;
 import haxe.Timer;
 
 /**

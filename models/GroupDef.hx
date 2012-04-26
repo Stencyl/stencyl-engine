@@ -1,6 +1,6 @@
 package models;
 
-public class GroupDef
+class GroupDef
 {
 	public var ID:Int;
 	public var name:String;

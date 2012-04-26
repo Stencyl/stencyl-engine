@@ -1,22 +1,23 @@
 package models;
 
+import haxe.xml.Fast;
+
 class GameModel
 {
 	public static var instance:GameModel;
 	
-	public var width:Number;
-	public var height:Number;
-	public var actualWidth:Number;
-	public var actualHeight:Number;
-	public var scale:Number;
+	public var width:Int;
+	public var height:Int;
+	public var actualWidth:Int;
+	public var actualHeight:Int;
+	public var scale:Int;
 	
-	public var defaultSceneID:Number;
+	public var defaultSceneID:Int;
 	
-	public var groups:Array;
-	public var collisionGroups:Array;
+	public var groups:Array<GroupDef>;
+	public var collisionGroups:Array<CollisionGroupDef>;
 	public var gameAttributes:Hash<Dynamic>;
-	
-	public var scenes:Array
+	public var scenes:Array<Scene>;
 	
 	public static var REGION_ID:Int = -2;
 	public static var PLAYER_ID:Int = 0;
@@ -42,7 +43,7 @@ class GameModel
 		actualWidth = Std.parseInt(xml.att.awidth);
 		actualHeight = Std.parseInt(xml.att.aheight);
 		scale = Std.parseInt(xml.att.scale);
-		defaultSceneID = Std.parseInt(xml.att.default);
+		defaultSceneID = Std.parseInt(xml.att.defaultSceneID);
 		
 		//---
 		
@@ -70,40 +71,42 @@ class GameModel
 	{
 		var map:Array<Scene> = new Array<Scene>();
 		
-		for(e in list)
+		for(e in list.elements)
 		{
-			trace("Loading Scene " + e.att.id);
-			map[e.att.id] = new Scene(e.att.id, e.att.name, Assets.get().scenesXML[e.att.id]);
+			var sceneID = Std.parseInt(e.att.id);
+		
+			trace("Loading Scene " + sceneID);
+			//TODO: map[sceneID] = new Scene(sceneID, e.att.name, Assets.get().scenesXML[sceneID]);
 		}
 		
 		return map;
 	}
 	
-	public function readGroups(list:Array<Fast>):Array<GroupDef>
+	public function readGroups(list:Iterator<Fast>):Array<GroupDef>
 	{
 		var map:Array<GroupDef> = new Array<GroupDef>();
 		
 		for(e in list)
 		{
-			map[e.att.id] = new GroupDef(e.att.id, e.att.name);
+			map[Std.parseInt(e.att.id)] = new GroupDef(Std.parseInt(e.att.id), e.att.name);
 		}
 		
 		return map;
 	}
 	
-	public function readCollisionGroups(list:Array<Fast>):Array<CollisionGroupDef>
+	public function readCollisionGroups(list:Iterator<Fast>):Array<CollisionGroupDef>
 	{
 		var map:Array<CollisionGroupDef> = new Array();
 		
 		for(e in list)
 		{
-			map.push(new CollisionGroupDef(e.att.g1, e.att.g2));
+			map.push(new CollisionGroupDef(Std.parseInt(e.att.g1), Std.parseInt(e.att.g2)));
 		}
 		
 		return map;
 	}
 	
-	public function readInput(list:Array<Fast>):Array
+	public function readInput(list:Iterator<Fast>):Void
 	{
 		for(e in list)
 		{
@@ -114,7 +117,7 @@ class GameModel
 		}
 	}
 	
-	public static function readGameAttributes(list:Array<Fast>):Hash
+	public static function readGameAttributes(list:Iterator<Fast>):Hash<Dynamic>
 	{
 		var map:Hash<Dynamic> = new Hash<Dynamic>();
 		
@@ -124,33 +127,33 @@ class GameModel
 			
 			if(type == "number")
 			{
-				var num:Number = e.att.value;
-				map[e.att.name] = num;
+				var num:Float = Std.parseFloat(e.att.value);
+				map.set(e.att.name, num);
 			}
 			
 			else if(type == "text")
 			{
 				var str:String = e.att.value;
-				map[e.att.name] = str;
+				map.set(e.att.name, str);
 			}
 			
 			else if(type == "bool")
 			{
-				var bool:Boolean = Utils.toBoolean(e.att.value);
-				map[e.att.name] = bool;
+				var bool:Bool = Utils.toBoolean(e.att.value);
+				map.set(e.att.name, bool);
 			}
 			
 			else if(type == "list")
 			{
-				var value:Array = new Array();
+				var value:Array<Dynamic> = new Array<Dynamic>();
 				
-				for(item in e.nodes)
+				for(item in e.elements)
 				{
 					var order:Int = Std.parseInt(item.att.order);
 					value[order] = item.att.value;
 				}
 				
-				map[e.att.name] = value;
+				map.set(e.att.name, value);
 			}
 		}
 		

@@ -1,6 +1,6 @@
 package models;
 
-public class CollisionGroupDef
+class CollisionGroupDef
 {
 	public var group1:Int;
 	public var group2:Int;
