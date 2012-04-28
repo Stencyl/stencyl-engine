@@ -45,21 +45,21 @@ class BehaviorManager
 		behaviors.push(b);
 	}
 	
-	/*public function hasBehavior(b:String):Bool
+	public function hasBehavior(b:String):Bool
 	{
 		if(cache == null)
 		{
 			return false;
 		}
 		
-		return cache[b] != null;
+		return cache.get(b) != null;
 	}
 	
 	public function enableBehavior(b:String)
 	{
 		if(hasBehavior(b))
 		{
-			(cache[b] as Behavior).enabled = true;
+			cache.get(b).enabled = true;
 		}
 	}
 	
@@ -67,7 +67,7 @@ class BehaviorManager
 	{
 		if(hasBehavior(b))
 		{
-			(cache[b] as Behavior).enabled = false;
+			cache.get(b).enabled = false;
 		}
 	}
 	
@@ -75,11 +75,11 @@ class BehaviorManager
 	{
 		if(hasBehavior(b))
 		{
-			return (cache[b] as Behavior).enabled;
+			return cache.get(b).enabled;
 		}
 		
 		return false;
-	}*/
+	}
 	
 	//*-----------------------------------------------
 	//* Events
@@ -210,56 +210,55 @@ class BehaviorManager
 	//* Messaging
 	//*-----------------------------------------------
 	
-	/*public function getAttribute(behaviorName:String, attributeName:String):Object
+	public function getAttribute(behaviorName:String, attributeName:String):Dynamic
 	{
-		var b:Behavior = cache[behaviorName];
+		var b:Behavior = cache.get(behaviorName);
 		
 		if(b != null && b.script != null)
 		{
-			// convert the attribute name to its internal name
-			attributeName = b.script.toInternalName(attributeName);
-			
-			if(b.script.hasOwnProperty(attributeName))
+			//TODO: convert the attribute name to its internal name
+			//attributeName = b.script.toInternalName(attributeName);
+
+			if(Reflect.hasField(b.script, attributeName))
 			{
-				return b.script[attributeName];
+				return Reflect.field(b.script, attributeName);
 			}
 			
 			else
 			{
-				FlxG.log("Warning: Attribute " + attributeName + " does not exist for " + behaviorName);		
+				trace("Warning: Attribute " + attributeName + " does not exist for " + behaviorName);		
 			}
 		}
 		
-		FlxG.log("Warning: Behavior does not exist - " + behaviorName);
+		trace("Warning: Behavior does not exist - " + behaviorName);
 		
 		return null;
 	}
 	
-	public function setAttribute(behaviorName:String, attributeName:String, value:Object):void
+	public function setAttribute(behaviorName:String, attributeName:String, value:Dynamic)
 	{
-		var b:Behavior = cache[behaviorName];
+		var b:Behavior = cache.get(behaviorName);
 		
 		if(b != null && b.script != null)
 		{
-			if(b.script.hasOwnProperty(attributeName))
+			if(Reflect.hasField(b.script, attributeName))
 			{
-				b.script[attributeName] = value;
+				Reflect.setField(b.script, attributeName, value);
 			}
 			
 			else
 			{
-				FlxG.log("Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
+				trace("Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
 			}
 		}
 		
 		else
 		{
-			FlxG.log("Warning: Behavior does not exist - " + behaviorName);
-			
+			trace("Warning: Behavior does not exist - " + behaviorName);	
 		}
 	}
 	
-	public function call(msg:String, args:Array):Object
+	/*public function call(msg:String, args:Array):Object
 	{
 		if(cache == null)
 		{
