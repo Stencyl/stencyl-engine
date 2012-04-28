@@ -11,6 +11,8 @@ import graphics.AbstractAnimation;
 import graphics.BitmapAnimation;
 import graphics.SheetAnimation;
 
+import behavior.BehaviorManager;
+
 class Actor extends Sprite 
 {	
 	public var xSpeed:Float;
@@ -23,6 +25,8 @@ class Actor extends Sprite
 	public var animationMap:Hash<DisplayObject>;
 	
 	private var hasSprite:Bool;
+	
+	public var behaviors:BehaviorManager;
 
 	public function new(x:Int = 0, y:Int = 0) 
 	{
@@ -38,6 +42,7 @@ class Actor extends Sprite
 		hasSprite = false;
 		
 		animationMap = new Hash<DisplayObject>();
+		behaviors = new BehaviorManager();
 	}	
 	
 	public function tileTest()
@@ -97,9 +102,4 @@ class Actor extends Sprite
 		this.y += elapsedTime * ySpeed;
 		this.rotation += elapsedTime * rSpeed;
 	}	
-	
-	//Behavior = Attributes + Event Collection
-	public function attachBehavior()
-	{
-	}
 }

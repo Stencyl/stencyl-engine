@@ -195,8 +195,8 @@ class Universal extends Sprite
 		
 		//randomMotion();
 		
-		var thing = Type.createInstance(Type.resolveClass("behavior.Motion"), [engine]);
-		thing.update(0);		
+		var thing = Type.createInstance(Type.resolveClass("behavior.Motion"), [pronger, engine]);
+		//thing.update(0);		
 		
 		//FPS Counter
 		fpsLabel = new TextField();
@@ -258,7 +258,7 @@ class Universal extends Sprite
 		
 		//---
 		
-		if(Input.check("left"))
+		/*if(Input.check("left"))
 		{
 			pronger.xSpeed = -0.2;
 		}
@@ -286,7 +286,7 @@ class Universal extends Sprite
 		else
 		{
 			pronger.ySpeed = 0;
-		}
+		}*/
 		
 		//pronger.rotation += 1;
 		//pronger.scaleX *= 1.01;

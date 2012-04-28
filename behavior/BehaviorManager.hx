@@ -1,13 +1,12 @@
 package behavior;
 
-public class BehaviorManager
+class BehaviorManager
 {
-	public var behaviors:Array;
-	public var preDrawBehaviors:Array;
-	public var postDrawBehaviors:Array;
-	public var collisionHandlers:Array;
+	public var behaviors:Array<Behavior>;
+	public var drawBehaviors:Array<Behavior>;
+	public var collisionHandlers:Array<Behavior>;
 	
-	public var cache:Object;
+	public var cache:Hash<Behavior>;
 	
 	//*-----------------------------------------------
 	//* Init
@@ -15,19 +14,17 @@ public class BehaviorManager
 	
 	public function new()
 	{
-		behaviors = new Array();
-		preDrawBehaviors = new Array();
-		postDrawBehaviors = new Array();
-		collisionHandlers = new Array();
+		behaviors = new Array<Behavior>();
+		drawBehaviors = new Array<Behavior>();
+		collisionHandlers = new Array<Behavior>();
 		
-		cache = new Object();
+		cache = new Hash<Behavior>();
 	}
 	
-	public function destroy():void
+	public function destroy()
 	{
 		behaviors = null;
-		preDrawBehaviors = null;
-		postDrawBehaviors = null;
+		drawBehaviors = null;
 		collisionHandlers = null;
 		
 		cache = null;
@@ -37,26 +34,18 @@ public class BehaviorManager
 	//* Ops
 	//*-----------------------------------------------
 	
-	public function add(b:Behavior):void
+	public function add(b:Behavior)
 	{
 		if(b.drawable)
 		{
-			if(b.drawOrder >= 0)
-			{
-				postDrawBehaviors.push(b);
-			}
-			
-			else
-			{
-				preDrawBehaviors.push(b);
-			}
+			drawBehaviors.push(b);
 		}
 		
-		cache[b.name] = b;
+		cache.set(b.name, b);
 		behaviors.push(b);
 	}
 	
-	public function hasBehavior(b:String):Boolean
+	/*public function hasBehavior(b:String):Bool
 	{
 		if(cache == null)
 		{
@@ -66,7 +55,7 @@ public class BehaviorManager
 		return cache[b] != null;
 	}
 	
-	public function enableBehavior(b:String):void
+	public function enableBehavior(b:String)
 	{
 		if(hasBehavior(b))
 		{
@@ -74,7 +63,7 @@ public class BehaviorManager
 		}
 	}
 	
-	public function disableBehavior(b:String):void
+	public function disableBehavior(b:String)
 	{
 		if(hasBehavior(b))
 		{
@@ -82,7 +71,7 @@ public class BehaviorManager
 		}
 	}
 	
-	public function isBehaviorEnabled(b:String):Boolean
+	public function isBehaviorEnabled(b:String):Bool
 	{
 		if(hasBehavior(b))
 		{
@@ -90,25 +79,24 @@ public class BehaviorManager
 		}
 		
 		return false;
-	}
+	}*/
 	
 	//*-----------------------------------------------
 	//* Events
 	//*-----------------------------------------------
 	
-	public function initScripts():void
+	public function initScripts()
 	{
-		for(var i:Number = 0; i < behaviors.length; i++)
+		for(i in 0...behaviors.length)
 		{
 			var b:Behavior = behaviors[i];
-			
 			b.initScript(!b.enabled);
 		}	
 	}
 	
-	public function update():void
+	public function update(elapsedTime:Float)
 	{
-		for(var i:Number = 0; i < behaviors.length; i++)
+		for(i in 0...behaviors.length)
 		{
 			var b:Behavior = behaviors[i];
 			
@@ -116,24 +104,24 @@ public class BehaviorManager
 			{
 				try
 				{
-					b.update();	
+					b.update(elapsedTime);	
 				}
 				
-				catch(e:Error)
+				catch(e:String)
 				{
-					FlxG.log("Error in always for behavior: " + b.name);
-					FlxG.log(e.getStackTrace());
+					trace("Error in always for behavior: " + b.name);
+					trace(e);
 				}
 			}
 		}	
 	}
 	
-	public function draw(g:Graphics, x:Number, y:Number, screen:Boolean=false):void
+	/*public function draw(g:Graphics, x:Number, y:Number, screen:Boolean=false):void
 	{
 		var b:Behavior = null;
 		var i:Number;
 		
-		for(i = 0; i < behaviors.length; i++)
+		for(i in 0...behaviors.length)
 		{
 			b = behaviors[i];
 			
@@ -151,7 +139,7 @@ public class BehaviorManager
 					b.draw(g, x, y);
 				}
 				
-				catch(e:Error)
+				catch(e:String)
 				{
 					FlxG.log("Error in draw for behavior: " + b.name);
 					FlxG.log(e.getStackTrace());
@@ -160,7 +148,7 @@ public class BehaviorManager
 				g.setBlendMode(blend);
 			}
 		}
-	}
+	}*/
 	
 	/**
      * Draws on a specific layer. 
@@ -172,12 +160,12 @@ public class BehaviorManager
      * @param   y       The screen y-position.
      * @param   layerID The ID of the layer to draw on.
      */
-    public function drawLayer(g:Graphics, x:Number, y:Number, layerID:int):void
+    /*public function drawLayer(g:Graphics, x:Number, y:Number, layerID:int)
     {
         var b:Behavior = null;
         var i:Number;
         
-        for(i = 0; i < behaviors.length; i++)
+        for(i in 0...behaviors.length)
         {
             b = behaviors[i];
             
@@ -203,7 +191,7 @@ public class BehaviorManager
         }
     }
 	
-	public function registerCollisionHandler(b:Behavior):void
+	public function registerCollisionHandler(b:Behavior)
 	{
 		for(var key:String in collisionHandlers)
 		{
@@ -216,13 +204,13 @@ public class BehaviorManager
 		}
 
 		collisionHandlers.push(b);
-	}
+	}*/
 	
 	//*-----------------------------------------------
 	//* Messaging
 	//*-----------------------------------------------
 	
-	public function getAttribute(behaviorName:String, attributeName:String):Object
+	/*public function getAttribute(behaviorName:String, attributeName:String):Object
 	{
 		var b:Behavior = cache[behaviorName];
 		
@@ -346,5 +334,5 @@ public class BehaviorManager
 		}
 
 		return toReturn;
-	}
+	}*/
 }

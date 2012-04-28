@@ -1,13 +1,14 @@
 package behavior;
 
 import Input;
+import models.Actor;
 
 class Motion extends ActorScript
 {	
 	private var event:Void->Void;
 	public var n:Int;
 
-	public function new(engine:Engine) 
+	public function new(actor:Actor, engine:Engine) 
 	{	
 		super(engine);
 		
@@ -18,6 +19,36 @@ class Motion extends ActorScript
 			n = 3;
 			trace("heehaw");
 			trace("" + n);
+			
+			if(Input.check("left"))
+			{
+				actor.xSpeed = -0.2;
+			}
+			
+			else if(Input.check("right"))
+			{
+				actor.xSpeed = 0.2;
+			}
+			
+			else
+			{
+				actor.xSpeed = 0;
+			}
+			
+			if(Input.check("up"))
+			{
+				actor.ySpeed = -0.2;
+			}
+			
+			else if(Input.check("down"))
+			{
+				actor.ySpeed = 0.2;
+			}
+			
+			else
+			{
+				actor.ySpeed = 0;
+			}
 		};
 	}		
 	
