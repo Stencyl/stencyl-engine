@@ -1,4 +1,4 @@
-package ;
+package models;
 
 import nme.display.Sprite;
 import nme.display.Bitmap;

@@ -1,5 +1,7 @@
 package behavior;
 
+import models.Actor;
+
 class TimedTask
 {
 	public var toExecute:TimedTask->Void;

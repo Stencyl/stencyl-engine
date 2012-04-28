@@ -2,6 +2,8 @@ package behavior;
 
 import nme.display.Graphics;
 
+import models.Actor;
+
 //Actual scripts extend from this
 class Script 
 {

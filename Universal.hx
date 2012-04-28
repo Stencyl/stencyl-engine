@@ -19,6 +19,7 @@ import behavior.Script;
 import graphics.transitions.Transition;
 import graphics.BitmapFont;
 
+import models.Actor;
 //import models.GameModel;
 
 #if cpp
