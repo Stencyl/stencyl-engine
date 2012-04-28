@@ -16,9 +16,10 @@ import nme.ui.Keyboard;
 import behavior.Motion;
 import behavior.Script;
 
+import graphics.transitions.Transition;
 import graphics.BitmapFont;
 
-import models.GameModel;
+//import models.GameModel;
 
 #if cpp
 import nme.ui.Accelerometer;
@@ -62,7 +63,7 @@ class Universal extends Sprite
 	{
 		super();
 		
-		GameModel.get();
+		//GameModel.get();
 		
 		engine = new Engine();
 		
@@ -160,6 +161,8 @@ class Universal extends Sprite
 		//pronger.switchAnimation("anim1");
 		
 		pronger.tileTest();
+		
+		new Universal();
 		
 		var font:BitmapFont = new BitmapFont("assets/graphics/font.png", 32, 32, BitmapFont.TEXT_SET11 + "#", 9, 1, 1);
 		font.text = "NME is great";
