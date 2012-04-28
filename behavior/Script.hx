@@ -9,14 +9,40 @@ class Script
 {
 	public var wrapper:Behavior;
 	public var engine:Engine;
+	
+	public var nameMap:Hash<Dynamic>;
 		
 	public function new(engine:Engine) 
 	{
 		this.engine = engine;
+		
+		nameMap = new Hash<Dynamic>();
 	
 		init();
 		mountEvents();		
 	}		
+
+	//INTERNAL	
+	public function toInternalName(displayName:String)
+	{
+		if(nameMap == null)
+		{
+			return displayName;
+		}
+		
+		var newName:String = nameMap.get(displayName);
+		
+		if(newName == null)
+		{
+			// the name is already internal, so just return it.
+			return displayName;
+		}
+		
+		else
+		{
+			return newName;
+		}
+	}
 	
 	//*-----------------------------------------------
 	//* Basics

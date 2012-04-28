@@ -216,8 +216,7 @@ class BehaviorManager
 		
 		if(b != null && b.script != null)
 		{
-			//TODO: convert the attribute name to its internal name
-			//attributeName = b.script.toInternalName(attributeName);
+			attributeName = b.script.toInternalName(attributeName);
 
 			if(Reflect.hasField(b.script, attributeName))
 			{
@@ -280,7 +279,7 @@ class BehaviorManager
 			
 			if(f != null)
 			{
-				toReturn = Reflect.callMethod(item.script, f, []);
+				toReturn = Reflect.callMethod(item.script, f, args);
 			}
 			
 			else
@@ -314,7 +313,7 @@ class BehaviorManager
 			
 			if(f != null)
 			{
-				toReturn = Reflect.callMethod(item.script, f, []);
+				toReturn = Reflect.callMethod(item.script, f, args);
 			}
 			
 			else
