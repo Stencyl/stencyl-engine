@@ -258,80 +258,72 @@ class BehaviorManager
 		}
 	}
 	
-	/*public function call(msg:String, args:Array):Object
+	public function call(msg:String, args:Array<Dynamic>):Dynamic
 	{
 		if(cache == null)
 		{
 			return null;
 		}
 		
-		var toReturn:Object = null;
+		var toReturn:Dynamic = null;
 		
-		for(var i:Number = 0; i < behaviors.length; i++)
+		for(i in 0...behaviors.length)
 		{
 			var item:Behavior = behaviors[i];
-			if (!item.enabled) continue;
-			var f:Function = item.script[msg] as Function;
+			
+			if(!item.enabled) 
+			{
+				continue;
+			}
+				
+			var f = Reflect.field(item.script, msg);
 			
 			if(f != null)
 			{
-				if(args.length == 0)
-				{
-					toReturn = f.call(item.script);
-				}
-					
-				else
-				{
-					toReturn = f.apply(item.script, args);
-					//toReturn = f.call(item.script, args);
-				}
+				toReturn = Reflect.callMethod(item.script, f, []);
 			}
 			
 			else
 			{
-				item.script.forwardMessage(msg);
+				//???
+				//item.script.forwardMessage(msg);
 			}
 		}
 		
 		return toReturn;
 	}
 	
-	public function call2(behaviorName:String, msg:String, args:Array):Object
+	public function call2(behaviorName:String, msg:String, args:Array<Dynamic>):Dynamic
 	{
 		if(cache == null)
 		{
 			return null;
 		}
 		
-		var toReturn:Object = null;
-		var item:Behavior = cache[behaviorName];
+		var toReturn:Dynamic = null;
+		var item:Behavior = cache.get(behaviorName);
 		
-		if (item != null)
+		if(item != null)
 		{
-			if (!item.enabled) return toReturn;
-			var f:Function = item.script[msg] as Function;
+			if (!item.enabled)
+			{
+				return toReturn;
+			}
+			
+			var f = Reflect.field(item.script, msg);
 			
 			if(f != null)
 			{
-				if(args.length == 0)
-				{
-					toReturn = f.call(item.script);
-				}
-					
-				else
-				{
-					//FlxG.log(args);
-					//toReturn = f.call(item.script, args);
-					toReturn = f.apply(item.script, args);
-				}
+				toReturn = Reflect.callMethod(item.script, f, []);
 			}
 			
 			else
 			{
-				item.script.forwardMessage(msg);
+				//TODO:
+				//item.script.forwardMessage(msg);
 			}
 		}
 
 		return toReturn;
-	}*/
+	}
 }
