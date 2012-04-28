@@ -45,6 +45,31 @@ class Actor extends Sprite
 		behaviors = new BehaviorManager();
 	}	
 	
+	public function initScripts()
+	{		
+		//handlesCollisions = true;
+		
+		behaviors.initScripts();
+		
+		/*for (var r:int = 0; r < whenCreatedListeners.length; r++)
+		{
+			try
+			{
+				var f:Function = whenCreatedListeners[r] as Function;
+				f(whenCreatedListeners);
+				
+				if (whenCreatedListeners.indexOf(f) == -1)
+				{
+					r--;
+				}
+			}
+			catch (e:Error)
+			{
+				FlxG.log(e.getStackTrace());
+			}
+		}*/
+	}
+	
 	public function tileTest()
    	{
    		var bmp = Assets.getBitmapData("assets/graphics/animation.png");
@@ -101,5 +126,7 @@ class Actor extends Sprite
 		this.x += elapsedTime * xSpeed;
 		this.y += elapsedTime * ySpeed;
 		this.rotation += elapsedTime * rSpeed;
+		
+		behaviors.update(elapsedTime);
 	}	
 }

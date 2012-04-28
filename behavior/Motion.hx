@@ -16,9 +16,9 @@ class Motion extends ActorScript
 		
 		event = function() 
 		{ 
-			n = 3;
-			trace("heehaw");
-			trace("" + n);
+			//n = 3;
+			//trace("heehaw");
+			//trace("" + n);
 			
 			if(Input.check("left"))
 			{

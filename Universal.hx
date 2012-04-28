@@ -13,6 +13,7 @@ import nme.Assets;
 import nme.Lib;
 import nme.ui.Keyboard;
 
+import behavior.Behavior;
 import behavior.Motion;
 import behavior.Script;
 
@@ -195,7 +196,10 @@ class Universal extends Sprite
 		
 		//randomMotion();
 		
-		var thing = Type.createInstance(Type.resolveClass("behavior.Motion"), [pronger, engine]);
+		//var thing = Type.createInstance(Type.resolveClass("behavior.Motion"), [pronger, engine]);
+		var behavior = new Behavior(pronger, engine, 0, "Pronger", "behavior.Motion", true, false, null);
+		pronger.behaviors.add(behavior);
+		pronger.initScripts();
 		//thing.update(0);		
 		
 		//FPS Counter
