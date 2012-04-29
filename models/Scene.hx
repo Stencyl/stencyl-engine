@@ -6,7 +6,9 @@ import io.ActorTypeReader;
 import models.background.ColorBackground;
 import models.scene.ActorInstance;
 import behavior.BehaviorInstance;
+
 import haxe.xml.Fast;
+import utils.Utils;
 
 class Scene
 {

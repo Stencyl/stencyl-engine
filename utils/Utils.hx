@@ -1,4 +1,4 @@
-package;
+package utils;
 
 import nme.display.BitmapData;
 import nme.display.Bitmap;

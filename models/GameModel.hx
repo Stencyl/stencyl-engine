@@ -1,6 +1,7 @@
 package models;
 
 import haxe.xml.Fast;
+import utils.Utils;
 
 class GameModel
 {

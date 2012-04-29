@@ -1,6 +1,8 @@
 package io;
 
 import haxe.xml.Fast;
+import utils.Utils;
+
 import models.Resource;
 import models.actor.Sprite;
 import models.actor.Animation;
