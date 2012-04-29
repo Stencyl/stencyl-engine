@@ -1,6 +1,8 @@
-package behavior;
+package scripts;
 
-import Input;
+import behavior.ActorScript;
+import behavior.TimedTask;
+
 import models.Actor;
 
 class Motion extends ActorScript
@@ -48,6 +50,12 @@ class Motion extends ActorScript
 			else
 			{
 				actor.ySpeed = 0;
+			}
+			
+			if(Input.mouseDown)
+			{
+				actor.x = Input.mouseX;
+				actor.y = Input.mouseY;
 			}
 		};
 	}		

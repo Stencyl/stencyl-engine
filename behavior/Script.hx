@@ -22,7 +22,10 @@ class Script
 		mountEvents();		
 	}		
 
-	//INTERNAL	
+	//*-----------------------------------------------
+	//* Internals
+	//*-----------------------------------------------
+	
 	public function toInternalName(displayName:String)
 	{
 		if(nameMap == null)
@@ -42,6 +45,10 @@ class Script
 		{
 			return newName;
 		}
+	}
+	
+	public function forwardMessage(msg:String)
+	{
 	}
 	
 	//*-----------------------------------------------

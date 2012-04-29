@@ -14,7 +14,6 @@ import nme.Lib;
 import nme.ui.Keyboard;
 
 import behavior.Behavior;
-import behavior.Motion;
 import behavior.Script;
 
 import graphics.transitions.Transition;
@@ -22,6 +21,8 @@ import graphics.BitmapFont;
 
 import models.Actor;
 //import models.GameModel;
+
+import scripts.Motion;
 
 #if cpp
 import nme.ui.Accelerometer;
@@ -199,8 +200,7 @@ class Universal extends Sprite
 		//var thing = Type.createInstance(Type.resolveClass("behavior.Motion"), [pronger, engine]);
 		var behavior = new Behavior(pronger, engine, 0, "Pronger", "behavior.Motion", true, false, null);
 		pronger.behaviors.add(behavior);
-		pronger.initScripts();
-		//thing.update(0);		
+		pronger.initScripts();	
 		
 		//FPS Counter
 		fpsLabel = new TextField();
@@ -260,48 +260,7 @@ class Universal extends Sprite
 		master.x = -cameraX;
 		master.y = -cameraY;
 		
-		//---
-		
-		/*if(Input.check("left"))
-		{
-			pronger.xSpeed = -0.2;
-		}
-		
-		else if(Input.check("right"))
-		{
-			pronger.xSpeed = 0.2;
-		}
-		
-		else
-		{
-			pronger.xSpeed = 0;
-		}
-		
-		if(Input.check("up"))
-		{
-			pronger.ySpeed = -0.2;
-		}
-		
-		else if(Input.check("down"))
-		{
-			pronger.ySpeed = 0.2;
-		}
-		
-		else
-		{
-			pronger.ySpeed = 0;
-		}*/
-		
-		//pronger.rotation += 1;
-		//pronger.scaleX *= 1.01;
-		
-		/*if(Input.mouseDown)
-		{
-			pronger.x = Input.mouseX;
-			pronger.y = Input.mouseY;
-		}*/
-		
-		
+		//---		
 		
 		/*if(Input.multiTouchEnabled)
 		{
