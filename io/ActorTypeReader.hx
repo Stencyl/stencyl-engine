@@ -63,11 +63,11 @@ class ActorTypeReader implements AbstractReader
 		var groupID:Int = Std.parseInt(xml.att.gid);
 		var isLightweight:Bool = Utils.toBoolean(xml.att.lw);
 		var autoScale:Bool = Utils.toBoolean(xml.att.ascale);
-		var pausable:Bool = Utisl.toBoolean(xml.att.pausable);
+		var pausable:Bool = Utils.toBoolean(xml.att.pausable);
 		
 		//These are more like behavior instances
 		//They reference the Behavior + Map of instance values
-		var behaviorValues:Array<BehaviorInstance> = readBehaviors(xml.nodes.snippets);
+		var behaviorValues:Array<BehaviorInstance> = readBehaviors(xml.node.snippets);
 		
 		if(xml.att.eventsnippetid != "")
 		{
@@ -89,7 +89,7 @@ class ActorTypeReader implements AbstractReader
 			
 		for(e in xml.elements)
 		{
-			var enabled:Boolean = Utils.toBoolean(e.att.enabled);
+			var enabled:Bool = Utils.toBoolean(e.att.enabled);
 			
 			if(!enabled)
 			{
@@ -111,9 +111,9 @@ class ActorTypeReader implements AbstractReader
 		{
 			map[Std.parseInt(e.att.id)] = e.att.val;
 			
-			if(e.elements.length > 0)
+			if(e.elements.hasNext())
 			{
-				var list:Array<Dynamic> = readList(e.elements);
+				var list:Array<Dynamic> = readList(e);
 				map[Std.parseInt(e.att.id)] = list;
 			}
 		}
@@ -125,9 +125,9 @@ class ActorTypeReader implements AbstractReader
 	{
 		var map:Array<Dynamic> = new Array<Dynamic>();
 			
-		for(e in list)
+		for(e in list.elements)
 		{
-			var index:Int = e.att.order;
+			var index:Int = Std.parseInt(e.att.order);
 			var type:String = e.name;
 						
 			if(type == "number")

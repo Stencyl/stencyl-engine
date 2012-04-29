@@ -12,7 +12,7 @@ class ActorType extends Resource
 	public var autoScale:Bool;
 	public var pausable:Bool;
 	
-	public function ActorType
+	public function new
 	(
 		ID:Int, 
 		name:String, 
@@ -30,7 +30,7 @@ class ActorType extends Resource
 		this.groupID = groupID;
 		this.spriteID = spriteID;
 		this.behaviorValues = behaviorValues;
-		this.bodyDef = bodyDef;
+		//this.bodyDef = bodyDef;
 		this.isLightweight = isLightweight;
 		this.autoScale = autoScale;
 		this.pausable = pausable;

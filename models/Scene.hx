@@ -73,10 +73,10 @@ class Scene
 			}
 		}
 		
-		actors = readActors(xml.actors);
-		behaviorValues = ActorTypeReader.readBehaviors(xml.snippets);
+		actors = readActors(xml.node.actors.elements);
+		behaviorValues = ActorTypeReader.readBehaviors(xml.node.snippets);
 		
-		if(xml.att.eventsnippetid.length() > 0)
+		if(xml.att.eventsnippetid != "")
 		{
 			eventID = Std.parseInt(xml.att.eventsnippetid);
 			
@@ -573,7 +573,7 @@ class Scene
 		var actorID:Int = Std.parseInt(xml.att.id);
 		var isCustomized:Bool = Utils.toBoolean(xml.att.c);
 		
-		var behaviors:Array<BehaviorInstance> = ActorTypeReader.readBehaviors(xml.nodes.snippets);
+		var behaviors:Array<BehaviorInstance> = ActorTypeReader.readBehaviors(xml.node.snippets);
 		
 		if (scaleX == 0 || scaleY == 0)
 		{
