@@ -2,6 +2,7 @@ package io;
 
 import haxe.xml.Fast;
 import models.Resource;
+import behavior.BehaviorInstance;
 
 class ActorTypeReader implements AbstractReader
 {
@@ -112,7 +113,7 @@ class ActorTypeReader implements AbstractReader
 			
 			if(e.elements.length > 0)
 			{
-				var list:<Dynamic> = readList(e.elements);
+				var list:Array<Dynamic> = readList(e.elements);
 				map[Std.parseInt(e.att.id)] = list;
 			}
 		}
@@ -124,7 +125,7 @@ class ActorTypeReader implements AbstractReader
 	{
 		var map:Array<Dynamic> = new Array<Dynamic>();
 			
-		for each(var e:XML in list)
+		for(e in list)
 		{
 			var index:Int = e.att.order;
 			var type:String = e.name;

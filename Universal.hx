@@ -20,7 +20,7 @@ import graphics.transitions.Transition;
 import graphics.BitmapFont;
 
 import models.Actor;
-//import models.GameModel;
+import models.GameModel;
 
 import scripts.Motion;
 

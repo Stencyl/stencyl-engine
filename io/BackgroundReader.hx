@@ -2,8 +2,8 @@ package io;
 
 import haxe.xml.Fast;
 import models.Resource;
-import models.ColorBackground;
-import models.GradientBackground;
+import models.background.ColorBackground;
+import models.background.GradientBackground;
 
 class BackgroundReader implements AbstractReader
 {

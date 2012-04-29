@@ -1,5 +1,13 @@
 package models;
 
+import io.BackgroundReader;
+import io.ActorTypeReader;
+
+import models.background.ColorBackground;
+import models.scene.ActorInstance;
+import behavior.BehaviorInstance;
+import haxe.xml.Fast;
+
 class Scene
 {
 	public var ID:Int;
@@ -18,12 +26,12 @@ class Scene
 	
 	public var colorBackground:Background;
 	
-	public var bgs:Array;
-	public var fgs:Array;
+	public var bgs:Array<Int>;
+	public var fgs:Array<Int>;
 	
-	public var terrain:Array;
-	public var actors:Array;
-	public var behaviorValues:Array;
+	//public var terrain:Array;
+	public var actors:Array<ActorInstance>;
+	public var behaviorValues:Array<BehaviorInstance>;
 	
 	//Box2D
 	//public var wireframes:Array;
@@ -31,7 +39,7 @@ class Scene
 	//public var regions:Array;
 	//public var terrainRegions:Array;
 	
-	public var animatedTiles:Array;
+	//public var animatedTiles:Array;
 	
 	public function new(ID:Int, name:String, xml:Fast)
 	{
@@ -49,18 +57,18 @@ class Scene
 		gravityX = Std.parseFloat(xml.att.gravx);
 		gravityY = Std.parseFloat(xml.att.gravy);
 								
-		animatedTiles = new Array();
+		//animatedTiles = new Array();
 		
-		bgs = readBackgrounds(xml.backgrounds);
-		fgs = readBackgrounds(xml.foregrounds);
+		bgs = readBackgrounds(xml.node.backgrounds.elements);
+		fgs = readBackgrounds(xml.node.foregrounds.elements);
 					
 		colorBackground = new ColorBackground(0xFFFFFFFF);
 		
 		for(e in xml.elements)
 		{
-			if(e.name() == "color-bg" || e.name() == "grad-bg")
+			if(e.name == "color-bg" || e.name == "grad-bg")
 			{
-				colorBackground = new BackgroundReader().read(0, e.name(), "", e) as Background;
+				colorBackground = cast(new BackgroundReader().read(0, e.name, "", e), Background);
 				break;
 			}
 		}
@@ -68,7 +76,7 @@ class Scene
 		actors = readActors(xml.actors);
 		behaviorValues = ActorTypeReader.readBehaviors(xml.snippets);
 		
-		if (xml.att.eventsnippetid.length() > 0)
+		if(xml.att.eventsnippetid.length() > 0)
 		{
 			eventID = Std.parseInt(xml.att.eventsnippetid);
 			
@@ -84,8 +92,8 @@ class Scene
 		
 		//wireframes = readWireframes(xml.terrain);
 		
-		var rawLayers:Array = readRawLayers(Assets.get().scenesTerrain[ID], numLayers);
-		terrain = readLayers(xml.layers, rawLayers);
+		//var rawLayers:Array = readRawLayers(Assets.get().scenesTerrain[ID], numLayers);
+		//terrain = readLayers(xml.layers, rawLayers);
 	}
 	
 	/*public function readRegions(list:Iterator<Fast>):Array
@@ -394,7 +402,7 @@ class Scene
 		return null;
 	}*/
 
-	public function readLayers(list:XMLList, rawLayers:Array):Array
+	/*public function readLayers(list:XMLList, rawLayers:Array = null):Array
 	{
 		var map:Array = new Array();
 		
@@ -408,9 +416,9 @@ class Scene
 		}
 		
 		return map;
-	}
+	}*/
 	
-	public function readRawLayers(bytes:ByteArray, numLayers:Number):Array
+	/*public function readRawLayers(bytes:ByteArray, numLayers:Number):Array
 	{
 		var map:Array = new Array();
 		var layerHeaders:Array = new Array();
@@ -490,15 +498,15 @@ class Scene
 		}
 		
 		return layer;
-	}
+	}*/
 	
-	public function readBackgrounds(list:XMLList):Array
+	public function readBackgrounds(list:Iterator<Fast>):Array<Int>
 	{
-		var map:Array = new Array();
+		var map:Array<Int> = new Array<Int>();
 		
-		for each(var e:XML in list.children())
+		for(e in list)
 		{
-			map.push(e.@id);
+			map.push(Std.parseInt(e.att.id));
 		}
 		
 		return map;
@@ -545,7 +553,7 @@ class Scene
 			
 			if(ai != null)
 			{
-				map[Std.parseInt(e.@aid)] = ai;
+				map[Std.parseInt(e.att.aid)] = ai;
 			}
 		}
 		
@@ -563,9 +571,9 @@ class Scene
 		var angle:Int = Std.parseInt(xml.att.a);
 		var groupID:Int =  Std.parseInt(xml.att.group);
 		var actorID:Int = Std.parseInt(xml.att.id);
-		var isCustomized:Bool = Utils.toBoolean(xml.@c);
+		var isCustomized:Bool = Utils.toBoolean(xml.att.c);
 		
-		var behaviors:Array = ActorTypeReader.readBehaviors(xml.nodes.snippets);
+		var behaviors:Array<BehaviorInstance> = ActorTypeReader.readBehaviors(xml.nodes.snippets);
 		
 		if (scaleX == 0 || scaleY == 0)
 		{
@@ -601,7 +609,7 @@ class Scene
 		return ai;
 	}
 	
-	public function getID():int
+	public function getID():Int
 	{
 		return ID;
 	}
