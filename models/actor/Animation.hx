@@ -22,7 +22,7 @@ class Animation
 	public var originX:Float;
 	public var originY:Float;
 	
-	public function Animation
+	public function new
 	(
 		animID:Int,
 		animName:String,
