@@ -30,8 +30,8 @@ class Data
 		{
 			instance = new Data();
 			
-			var loader = Type.createInstance(Type.resolveClass("scripts.MyAssets"), [remote]);
-			loader.init(instance, numLeft, state);
+			//var loader = Type.createInstance(Type.resolveClass("scripts.MyAssets"), [remote]);
+			//loader.init(instance, numLeft, state);
 			
 			/*var cls:Class = getDefinitionByName("scripts.MyAssets") as Class;
 			instance.loader = new cls(remote);

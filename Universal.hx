@@ -199,7 +199,7 @@ class Universal extends Sprite
 		//randomMotion();
 		
 		//var thing = Type.createInstance(Type.resolveClass("behavior.Motion"), [pronger, engine]);
-		var behavior = new Behavior(pronger, engine, 0, "Pronger", "behavior.Motion", true, false, null);
+		var behavior = new Behavior(pronger, engine, 0, "Pronger", "scripts.Motion", true, false, null);
 		pronger.behaviors.add(behavior);
 		pronger.initScripts();	
 		
