@@ -66,7 +66,8 @@ class Universal extends Sprite
 	{
 		super();
 		
-		//GameModel.get();
+		GameModel.get();
+		Data.get();
 		
 		engine = new Engine();
 		

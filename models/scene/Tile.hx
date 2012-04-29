@@ -1,10 +1,10 @@
-package models;
+package models.scene;
 
 import nme.display.Bitmap;
 import nme.display.BitmapData;
 import nme.geom.Rectangle;
 
-public class Tile
+class Tile
 {
 	public var tileID:Int;
 	public var collisionID:Int;
@@ -18,7 +18,7 @@ public class Tile
 	public var currFrame:Int;
 	public var currTime:Int;
 	
-	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, imgData:*, parent:Tileset)
+	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, imgData:Dynamic, parent:Tileset)
 	{
 		this.tileID = tileID;
 		this.collisionID = collisionID;
@@ -42,7 +42,7 @@ public class Tile
 	
 	public function update(elapsedTime:Float)
 	{
-		currTime += elapsedTime * 1000;				
+		currTime += Math.floor(elapsedTime * 1000);
 					
 		if (currTime > Std.int(durations[currFrame]))
 		{

@@ -9,7 +9,7 @@ class Sprite extends Resource
 	public var defaultAnimation:Int;
 	public var animations:Array<Animation>;
 	
-	public function Sprite(ID:Int, name:String, width:Int, height:Int, defaultAnimation:Int)
+	public function new(ID:Int, name:String, width:Int, height:Int, defaultAnimation:Int)
 	{
 		super(ID, name);
 		

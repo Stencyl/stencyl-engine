@@ -1,18 +1,18 @@
-package models;
+package models.scene;
 
 import nme.display.Bitmap;
 import nme.display.BitmapData;
 import nme.geom.Rectangle;
 
-public class Tileset extends Resource
+class Tileset extends Resource
 {
 	public var framesAcross:Int;
 	public var framesDown:Int;
-	public var tiles:Array;
+	public var tiles:Array<Tile>;
 	
 	public var pixels:BitmapData;
 	
-	public function new(ID:Int, name:String, framesAcross:Int, framesDown:Int, tiles:Array, imgData:*)
+	public function new(ID:Int, name:String, framesAcross:Int, framesDown:Int, tiles:Array<Tile>, imgData:Dynamic)
 	{
 		super(ID, name);
 		

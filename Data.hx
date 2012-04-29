@@ -1,6 +1,20 @@
 package ;
 
-public class Data
+import io.AbstractReader;
+import io.ActorTypeReader;
+import io.BackgroundReader;
+import io.BehaviorReader;
+import io.FontReader;
+import io.SoundReader;
+import io.SpriteReader;
+import io.TilesetReader;
+import haxe.xml.Fast;
+
+import behavior.Behavior;
+import models.Scene;
+import models.Resource;
+
+class Data
 {
 	//*-----------------------------------------------
 	//* Singleton
@@ -16,10 +30,13 @@ public class Data
 		{
 			instance = new Data();
 			
-			var cls:Class = getDefinitionByName("scripts.MyAssets") as Class;
+			var loader = Type.createInstance(Type.resolveClass("scripts.MyAssets"), [remote]);
+			loader.init(instance, numLeft, state);
+			
+			/*var cls:Class = getDefinitionByName("scripts.MyAssets") as Class;
 			instance.loader = new cls(remote);
 			theLoader = instance.loader;
-			instance.loader.init(instance, numLeft, state);
+			instance.loader.init(instance, numLeft, state);*/
 		}
 		
 		return instance;
@@ -67,19 +84,19 @@ public class Data
 	//* Loading
 	//*-----------------------------------------------
 	
-	public function Data()
+	public function new()
 	{
 		loadReaders();
 	}
 	
-	public function loadAll():void
+	public function loadAll()
 	{
 		loadBehaviors();
 		loadResources();
 		loader.loadScenes();
 	}
 	
-	private function loadReaders():void
+	private function loadReaders()
 	{
 		readers = new Array<AbstractReader>();
 		readers.push(new BackgroundReader());
@@ -90,29 +107,29 @@ public class Data
 		readers.push(new FontReader());
 	}
 	
-	private function loadBehaviors():void
+	private function loadBehaviors()
 	{
 		behaviors = new Hash<Behavior>();
 		
-		for(e in behaviorListXML.nodes)
+		for(e in behaviorListXML.elements)
 		{
 			trace("Reading Behavior: " + e.att.name);
 			behaviors.set(e.att.id, BehaviorReader.readBehavior(e));
 		}
 	}
 	
-	private function loadResources():void
+	private function loadResources()
 	{
 		resourceAssets = new Hash<Dynamic>();	
 		loader.loadResources();		
 		readResourceXML(resourceListXML);
 	}
 	
-	private function readResourceXML(list:Fast):void
+	private function readResourceXML(list:Fast)
 	{
-		resources = new Array();
+		resources = new Hash<Resource>();
 		
-		for(e in list.nodes)
+		for(e in list.elements)
 		{
 			trace("Reading: " + e.att.name);
 			resources.set(e.att.id, readResource(Std.parseInt(e.att.id), e.name, e.att.name, e));
@@ -132,9 +149,9 @@ public class Data
 		return null;
 	}
 	
-	public function getResourcesOfType(type:Class<Dynamic>):Array
+	public function getResourcesOfType(type:Dynamic):Array<Dynamic>
 	{
-		var a:Array<Class<Dynamic>> = new Array<Class<Dynamic>>();
+		var a:Array<Dynamic> = new Array<Dynamic>();
 		
 		for(r in resources)
 		{

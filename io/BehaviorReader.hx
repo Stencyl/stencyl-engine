@@ -2,6 +2,8 @@ package io;
 
 import haxe.xml.Fast;
 import models.Resource;
+import behavior.Behavior;
+import behavior.Attribute;
 
 class BehaviorReader
 {
@@ -13,7 +15,7 @@ class BehaviorReader
 	{
 		var elementID:Int = Std.parseInt(xml.att.id);
 		var name:String = xml.att.name;
-		var classname:String = xml.att.class;
+		var classname:String = xml.att.classname ;
 		var attributes:Array<Attribute> = new Array<Attribute>();
 	
 		for(e in xml.elements)
@@ -51,19 +53,18 @@ class BehaviorReader
 			classname, 
 			true,
 			true,
-			true,
 			attributes
 		);
 
 		return b;
 	}
 	
-	public static function readAttribute(xml:XML):Attribute
+	public static function readAttribute(xml:Fast):Attribute
 	{
-		var ID:Number = Std.parseInt(xml.att.id);
+		var ID:Int = Std.parseInt(xml.att.id);
 		var fieldName:String = xml.att.name;
 		var fullName:String = xml.att.fullname;
-		var defaultValue:String = xml.att.default;
+		var defaultValue:String = xml.att.defaultValue;
 		var type:String = xml.name;
 		
 		return new Attribute(ID, fieldName, fullName, defaultValue, type, null);

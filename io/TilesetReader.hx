@@ -2,7 +2,8 @@ package io;
 
 import haxe.xml.Fast;
 import models.Resource;
-import models.Sound;
+import models.scene.Tileset;
+import models.scene.Tile;
 
 class TilesetReader implements AbstractReader
 {
@@ -19,13 +20,13 @@ class TilesetReader implements AbstractReader
 	{
 		trace("Reading Tileset (" + ID + ") - " + name);
 
-		var framesAcross:Number = Std.parseInt(xml.att.across);
-		var framesDown:Number = Std.parseInt(xml.att.down);
+		var framesAcross:Int = Std.parseInt(xml.att.across);
+		var framesDown:Int = Std.parseInt(xml.att.down);
 		var tiles:Array<Tile> = new Array<Tile>();
 
-		var tset:Tileset = new Tileset(ID, name, framesAcross, framesDown, tiles, Assets.get().resourceAssets[ID + ".png"]);
+		var tset:Tileset = new Tileset(ID, name, framesAcross, framesDown, tiles, Data.get().resourceAssets.get(ID + ".png"));
 		
-		for each(e in xml.elements)
+		for(e in xml.elements)
 		{
 			tiles[Std.parseInt(e.att.id)] = readTile(e, tset);
 		}
@@ -33,7 +34,7 @@ class TilesetReader implements AbstractReader
 		return tset;
 	}
 	
-	public function readTile(xml:XML, parent:Tileset):Tile
+	public function readTile(xml:Fast, parent:Tileset):Tile
 	{
 		var tileID:Int = Std.parseInt(xml.att.id);
 		var looping:Bool = Utils.toBoolean(xml.att.loop);
@@ -55,7 +56,7 @@ class TilesetReader implements AbstractReader
 			//Round to the nearest 10ms - there's no more granularity than this and makes it much easier for me.
 			durations[counter] = Std.parseInt(f);
 			
-			durations[counter] /= 10;
+			durations[counter] =  Math.floor(durations[counter] / 10);
 			durations[counter] *= 10;
 			
 			counter++;
@@ -63,7 +64,7 @@ class TilesetReader implements AbstractReader
 		
 		if(durations.length > 1)
 		{
-			imgData = Assets.get().resourceAssets[parent.ID + "-" + tileID + ".png"];				
+			imgData = Data.get().resourceAssets.get(parent.ID + "-" + tileID + ".png");				
 		}
 		
 		return new Tile(tileID, collisionID, frameID, durations, imgData, parent);
