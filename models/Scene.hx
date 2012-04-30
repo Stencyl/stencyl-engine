@@ -564,6 +564,8 @@ class Scene
 	
 	public function readActorInstance(xml:Fast):ActorInstance
 	{
+		trace(xml.innerHTML);
+		
 		var elementID:Int = Std.parseInt(xml.att.aid);
 		var x:Int = Std.parseInt(xml.att.x);
 		var y:Int = Std.parseInt(xml.att.y);
@@ -575,7 +577,12 @@ class Scene
 		var actorID:Int = Std.parseInt(xml.att.id);
 		var isCustomized:Bool = Utils.toBoolean(xml.att.c);
 		
-		var behaviors:Array<BehaviorInstance> = ActorTypeReader.readBehaviors(xml.node.snippets);
+		var behaviors:Array<BehaviorInstance> = null;
+		
+		if(isCustomized)
+		{
+			behaviors = ActorTypeReader.readBehaviors(xml.node.snippets);
+		}
 		
 		if (scaleX == 0 || scaleY == 0)
 		{

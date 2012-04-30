@@ -64,7 +64,7 @@ class GameModel
 		
 		readInput(xml.node.input.elements);
 		gameAttributes = readGameAttributes(xml.node.attributes.elements);
-		readScenes(Data.get().sceneListXML);	
+		scenes = readScenes(Data.get().sceneListXML);	
 	}
 	
 	public function readScenes(list:Fast):Hash<Scene>
@@ -75,7 +75,7 @@ class GameModel
 		{
 			var sceneID = Std.parseInt(e.att.id);
 		
-			trace("Loading Scene " + sceneID);
+			trace("Reading Scene " + sceneID);
 			map.set(e.att.id, new Scene(sceneID, e.att.name, Data.get().scenesXML.get(e.att.id)));
 		}
 		
