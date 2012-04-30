@@ -84,7 +84,7 @@ class Scene
 			
 			if(eventID > -1)
 			{
-				behaviorValues[eventID] = new BehaviorInstance(eventID, new Array());
+				behaviorValues[eventID] = new BehaviorInstance(eventID, new Hash<Dynamic>());
 			}
 		}
 		

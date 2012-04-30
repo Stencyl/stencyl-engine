@@ -77,7 +77,7 @@ class ActorTypeReader implements AbstractReader
 			
 			if(eventID > -1)
 			{
-				behaviorValues[eventID] = new BehaviorInstance(eventID, new Array());
+				behaviorValues[eventID] = new BehaviorInstance(eventID, new Hash<Dynamic>());
 			}
 		}
 			
@@ -107,25 +107,25 @@ class ActorTypeReader implements AbstractReader
 	public static function readBehavior(xml:Fast):BehaviorInstance
 	{
 		var ID:Int = Std.parseInt(xml.att.id);
-		var map:Array<Dynamic> = new Array<Dynamic>();
+		var map:Hash<Dynamic> = new Hash<Dynamic>();
 		
 		for(e in xml.elements)
 		{
-			map[Std.parseInt(e.att.id)] = e.att.val;
+			map.set(e.att.id, e.att.val);
 			
 			if(e.elements.hasNext())
 			{
-				var list:Array<Dynamic> = readList(e);
-				map[Std.parseInt(e.att.id)] = list;
+				var list:Hash<Dynamic> = readList(e);
+				map.set(e.att.id, list);
 			}
 		}
 		
 		return new BehaviorInstance(ID, map);
 	}
 	
-	public static function readList(list:Fast):Array<Dynamic>
+	public static function readList(list:Fast):Hash<Dynamic>
 	{
-		var map:Array<Dynamic> = new Array<Dynamic>();
+		var map:Hash<Dynamic> = new Hash<Dynamic>();
 			
 		for(e in list.elements)
 		{
@@ -135,19 +135,19 @@ class ActorTypeReader implements AbstractReader
 			if(type == "number")
 			{
 				var num:Float = Std.parseFloat(e.att.value);
-				map[index] = num;
+				map.set(e.att.order, num);
 			}
 				
 			else if(type == "text")
 			{
 				var str:String = e.att.value;
-				map[index] = str;
+				map.set(e.att.order, str);
 			}
 				
 			else if(type == "bool")
 			{
 				var bool:Bool = Utils.toBoolean(e.att.value);
-				map[index] = bool;
+				map.set(e.att.order, bool);
 			}
 				
 			else if(type == "list")
@@ -160,7 +160,7 @@ class ActorTypeReader implements AbstractReader
 					value[index2] = item.att.value;
 				}
 				
-				map[index] = value;
+				map.set(e.att.order, value);
 			}
 		}
 		

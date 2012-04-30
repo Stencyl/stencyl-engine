@@ -30,8 +30,7 @@ class GameModel
 	{
 		if(instance == null)
 		{
-			//TODO
-			//instance = new GameModel(Assets.get().gameXML);
+			instance = new GameModel(Data.get().gameXML);
 		}
 		
 		return instance;

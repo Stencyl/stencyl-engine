@@ -4,6 +4,7 @@ import behavior.ActorScript;
 import behavior.TimedTask;
 
 import models.Actor;
+import models.GameModel;
 
 class Motion extends ActorScript
 {	
@@ -21,6 +22,8 @@ class Motion extends ActorScript
 			//n = 3;
 			//trace("heehaw");
 			//trace("" + n);
+			
+			//trace(GameModel.get().groups);
 			
 			if(Input.check("left"))
 			{

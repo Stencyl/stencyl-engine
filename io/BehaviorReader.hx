@@ -15,8 +15,8 @@ class BehaviorReader
 	{
 		var elementID:Int = Std.parseInt(xml.att.id);
 		var name:String = xml.att.name;
-		var classname:String = xml.att.classname ;
-		var attributes:Array<Attribute> = new Array<Attribute>();
+		var classname:String = xml.att.classname;
+		var attributes:Hash<Attribute> = new Hash<Attribute>();
 	
 		for(e in xml.elements)
 		{
@@ -40,7 +40,7 @@ class BehaviorReader
 			//Attributes
 			else
 			{
-				attributes[Std.parseInt(e.att.id)] = readAttribute(e);	
+				attributes.set(e.att.id, readAttribute(e));	
 			}
 		}
 		

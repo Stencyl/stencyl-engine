@@ -8,6 +8,8 @@ import io.FontReader;
 import io.SoundReader;
 import io.SpriteReader;
 import io.TilesetReader;
+
+import nme.Assets;
 import haxe.xml.Fast;
 
 import behavior.Behavior;
@@ -37,6 +39,8 @@ class Data
 			instance.loader = new cls(remote);
 			theLoader = instance.loader;
 			instance.loader.init(instance, numLeft, state);*/
+			
+			instance.loadAll();
 		}
 		
 		return instance;
@@ -68,7 +72,7 @@ class Data
 	public var scenesXML:Hash<Fast>;
 	
 	//Map of each [sceneID].scn by ID
-	public var scenesTerrain:Hash<Scene>;
+	public var scenesTerrain:Hash<Dynamic>;
 
 	//Map of each resource in memory by ID
 	public var resources:Hash<Resource>;
@@ -86,6 +90,12 @@ class Data
 	
 	public function new()
 	{
+		//This happens in the MyScripts.hx class later on
+		gameXML = new Fast(Xml.parse(Assets.getText("assets/data/game.xml")).firstElement());
+		resourceListXML = new Fast(Xml.parse(Assets.getText("assets/data/resources.xml")).firstElement());
+		sceneListXML = new Fast(Xml.parse(Assets.getText("assets/data/scenes.xml")).firstElement());
+		behaviorListXML = new Fast(Xml.parse(Assets.getText("assets/data/behaviors.xml")).firstElement());
+	
 		loadReaders();
 	}
 	
@@ -93,7 +103,14 @@ class Data
 	{
 		loadBehaviors();
 		loadResources();
-		loader.loadScenes();
+		
+		//loader.loadScenes();
+		
+		scenesXML = new Hash<Fast>();
+		scenesTerrain = new Hash<Dynamic>();
+		
+		scenesXML.set("0", new Fast(Xml.parse(Assets.getText("assets/data/0.xml")).firstElement()));
+		//scenesTerrain[0] = scene0b;
 	}
 	
 	private function loadReaders()
@@ -121,7 +138,9 @@ class Data
 	private function loadResources()
 	{
 		resourceAssets = new Hash<Dynamic>();	
-		loader.loadResources();		
+		
+		//loader.loadResources();		
+		
 		readResourceXML(resourceListXML);
 	}
 	

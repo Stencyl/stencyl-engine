@@ -20,7 +20,9 @@ import graphics.transitions.Transition;
 import graphics.BitmapFont;
 
 import models.Actor;
+import models.scene.ActorInstance;
 import models.GameModel;
+import models.Scene;
 
 import scripts.Motion;
 
@@ -62,12 +64,26 @@ class Universal extends Sprite
 	public static var sceneWidth:Int;
 	public static var sceneHeight:Int;
 
+	
+	public var scene:Scene;
+	public var actors:Array<Actor>;
+			
+	//*-----------------------------------------------
+	//* Transitioning
+	//*-----------------------------------------------
+		
+	private var leave:Transition;
+	private var enter:Transition;
+	private var sceneToEnter:Int;
+
+
+
 	public function new() 
 	{
 		super();
 		
-		GameModel.get();
 		Data.get();
+		GameModel.get();
 		
 		engine = new Engine();
 		
@@ -76,6 +92,8 @@ class Universal extends Sprite
 
 		acc = 0;
 		framerateCounter = 0;
+		
+		sceneToEnter =  0;
 		
 		//---
 		
@@ -139,7 +157,7 @@ class Universal extends Sprite
 			sprite.x = -sprite.width/2;
 			sprite.y = -sprite.height/2;
 		
-			var actor = new Actor(i * 32 + 16, 96 + 16);
+			var actor = new Actor(engine, null, i * 32 + 16, 96 + 16);
 			master.addChild(actor);
 			actor.addAnimation("d", sprite);
 			actor.switchAnimation("d");
@@ -152,13 +170,13 @@ class Universal extends Sprite
 			sprite.x = -sprite.width/2;
 			sprite.y = -sprite.height/2;
 		
-			var actor = new Actor(96 + 16, i * 32 + 16);
+			var actor = new Actor(engine, null, 96 + 16, i * 32 + 16);
 			master.addChild(actor);
 			actor.addAnimation("d", sprite);
 			actor.switchAnimation("d");
 		}
 	
-		pronger = new Actor(16, 32);
+		pronger = new Actor(engine, null, 16, 32);
 		master.addChild(pronger);
 		//pronger.addAnimation("anim1", "assets/graphics/anim1.png");
 		//pronger.addAnimation("anim2", "assets/graphics/anim2.png");
@@ -208,8 +226,192 @@ class Universal extends Sprite
 		fpsLabel.x = 10;
 		fpsLabel.y = 10;
 		//addChild(fpsLabel);
+		
+		//enter = new FadeInTransition(500);
+		//enter.start();
+		//sceneToEnter = initSceneID;
+			
+		loadScene(sceneToEnter);
 	}
 	
+	public function loadScene(sceneID:Int)
+	{
+		trace("Loading Scene: " + sceneID);
+		
+		scene = GameModel.get().scenes[sceneID];
+		
+		if(sceneID == -1 || scene == null)
+		{
+			scene = GameModel.get().scenes[GameModel.get().defaultSceneID];
+		}
+		
+		loadActors();
+		
+		/*setOffscreenTolerance(0, 0, 0, 0);
+		
+		tasks = new Array();
+		
+		accumulator = 0;
+		
+		scene = Game.get().scenes[sceneID];
+		
+		if(sceneID == -1 || scene == null)
+		{
+			scene = Game.get().scenes[Game.get().defaultSceneID];
+		}
+		
+		FlxG.log(scene.name);
+		
+		behaviors = new BehaviorManager();
+		
+		groups = new Array();
+		
+		for each(var grp:GroupDef in Game.get().groups)
+		{
+			var g:FlxGroup = new FlxGroup();
+			groups[grp.ID] = g;
+			g.name = grp.name;
+		}
+		
+		actorsOfType = new Array();
+		recycledActorsOfType = new Array();
+		
+		regions = new Array();
+		terrainRegions = new Array();
+		joints = new Array();
+		layers = new Array();
+		tileLayers = new Array();
+		dynamicTiles = new Dictionary();
+		animatedTiles = new Array();
+		hudActors = new HashSet();
+		allActors = new Array();
+		actorsToRender = new Array();
+		nextID = 0;
+		
+		whenKeyPressedListeners = new Dictionary();
+		whenTypeGroupCreatedListeners = new Dictionary();
+		whenTypeGroupDiesListeners = new Dictionary();
+		typeGroupPositionListeners = new Dictionary();
+		collisionListeners = new Dictionary();
+		soundListeners = new Dictionary();
+		
+		whenUpdatedListeners = new Array();
+		whenDrawingListeners = new Array();
+		whenMousePressedListeners = new Array();
+		whenMouseReleasedListeners = new Array();
+		whenMouseMovedListeners = new Array();
+		whenMouseDraggedListeners = new Array();
+		whenPausedListeners = new Array();
+		
+		whenFocusChangedListeners = new Array();
+											
+		initPhysics();
+		loadBackgrounds();
+		
+		loadTerrain();
+			
+		rootPanel = new Panel(0, 0, FlxG.width, FlxG.height);
+		rootPanel.game = this;
+		rootPanelLayer = getTopLayer();
+		
+		loadRegions();
+		loadTerrainRegions();
+		loadActors();			
+		loadCamera();
+		loadJoints();
+		
+		loadDeferredActors();
+		actorsOnScreen = cacheActors();		
+					
+		trace("Init Scene Behaviors");
+		
+		initBehaviors(behaviors, scene.behaviorValues, this, this, true);			
+		initActorScripts();*/
+	}
+	
+	public function loadActors()
+	{
+		actors = new Array<Actor>();
+		
+		for(instance in scene.actors)
+		{
+			actors.push(createActor(instance, true));
+		}
+	}
+	
+	public function createActor(ai:ActorInstance, offset:Bool = false):Actor
+	{
+		var s:models.actor.Sprite = cast(Data.get().resources.get("" + ai.actorType.spriteID), models.actor.Sprite);
+		var a:Actor = new Actor(engine, ai);
+		
+		//TODO: Mount grpahic and add
+		/*var a:Actor = new Actor
+		(
+			this, 
+			ai.elementID,
+			ai.groupID,
+			ai.x / physicsScale, 
+			ai.y / physicsScale, 
+			ai.layerID,
+			s.width, 
+			s.height, 
+			s,
+			ai.behaviorValues,
+			ai.actorType,
+			ai.actorType.bodyDef,
+			false,
+			false,
+			false,
+			false,
+			null,
+			false,
+			ai.actorType.ID,
+			ai.actorType.isLightweight,
+			ai.actorType.autoScale
+		);*/
+
+		/*if(ai.angle != 0)
+		{
+			a.setAngle(ai.angle + 180, false);
+		}	
+		
+		if(ai.scaleX != 1 || ai.scaleY != 1)
+		{
+			a.growTo(ai.scaleX, ai.scaleY, 0);
+		}*/
+		
+		/*moveActorToLayer(a, ai.layerID);
+		
+		//---
+		
+		var group:FlxGroup = groups[ai.groupID] as FlxGroup;
+		
+		if(group != null)
+		{
+			group.add(a);
+		}*/
+		
+		//---
+
+		//Use the next available ID
+		/*if(ai.elementID == Int.MAX_VALUE)
+		{
+			nextID++;
+			a.ID = nextID;
+			allActors[a.ID] = a;
+		}
+		
+		else
+		{
+			allActors[a.ID] = a;
+			nextID = Math.max(a.ID, nextID);
+		}*/
+
+		//a.internalUpdate(false);
+		
+		return a;
+	}
+		
 	private function randomMotion():Void 
 	{
 		var randomX = Math.random () * (stage.stageWidth - pronger.width);

@@ -17,7 +17,7 @@ class Behavior
 	public var cls:Class<Dynamic>;
 	public var script:Script;
 	
-	public var attributes:Array<Attribute>;
+	public var attributes:Hash<Attribute>;
 
 	public function new
 	(
@@ -28,7 +28,7 @@ class Behavior
 		classname:String, 
 		enabled:Bool, 
 		drawable:Bool,
-		attributes:Array<Attribute>
+		attributes:Hash<Attribute>
 	)
 	{
 		this.parent = parent;

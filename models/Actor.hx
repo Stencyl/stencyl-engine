@@ -13,6 +13,9 @@ import graphics.SheetAnimation;
 
 import behavior.BehaviorManager;
 
+import models.actor.ActorType;
+import models.scene.ActorInstance;
+
 class Actor extends Sprite 
 {	
 	public var xSpeed:Float;
@@ -28,12 +31,25 @@ class Actor extends Sprite
 	
 	public var behaviors:BehaviorManager;
 
-	public function new(x:Int = 0, y:Int = 0) 
+	public function new(engine:Engine, inst:ActorInstance, x:Int = 0, y:Int = 0, behaviorValues:Hash<Dynamic> = null) 
 	{
-		super();	
+		super();
 		
-		this.x = x;
-		this.y = y;
+		var actorType:ActorType = null;	
+		
+		if(inst == null)
+		{
+			this.x = x;
+			this.y = y;
+		}
+		
+		else
+		{
+			this.x = inst.x;
+			this.y = inst.y;
+			
+			actorType = inst.actorType;
+		}
 		
 		xSpeed = 0;
 		ySpeed = 0;
@@ -43,6 +59,15 @@ class Actor extends Sprite
 		
 		animationMap = new Hash<DisplayObject>();
 		behaviors = new BehaviorManager();
+		
+		//---
+		
+		if(behaviorValues == null && actorType != null)
+		{
+			behaviorValues = actorType.behaviorValues;
+		}
+
+		Engine.initBehaviors(behaviors, behaviorValues, this, engine, false);
 	}	
 	
 	public function initScripts()
