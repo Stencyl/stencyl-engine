@@ -32,8 +32,8 @@ class Scene
 	public var fgs:Array<Int>;
 	
 	//public var terrain:Array;
-	public var actors:Array<ActorInstance>;
-	public var behaviorValues:Array<BehaviorInstance>;
+	public var actors:Hash<ActorInstance>;
+	public var behaviorValues:Hash<BehaviorInstance>;
 	
 	//Box2D
 	//public var wireframes:Array;
@@ -84,7 +84,7 @@ class Scene
 			
 			if(eventID > -1)
 			{
-				behaviorValues[eventID] = new BehaviorInstance(eventID, new Hash<Dynamic>());
+				behaviorValues.set(xml.att.eventsnippetid, new BehaviorInstance(eventID, new Hash<Dynamic>()));
 			}
 		}
 		
@@ -545,9 +545,9 @@ class Scene
 		return map;
 	}*/
 	
-	public function readActors(list:Iterator<Fast>):Array<ActorInstance>
+	public function readActors(list:Iterator<Fast>):Hash<ActorInstance>
 	{
-		var map:Array<ActorInstance> = new Array<ActorInstance>();
+		var map:Hash<ActorInstance> = new Hash<ActorInstance>();
 		
 		for(e in list)
 		{
@@ -555,7 +555,7 @@ class Scene
 			
 			if(ai != null)
 			{
-				map[Std.parseInt(e.att.aid)] = ai;
+				map.set(e.att.aid, ai);
 			}
 		}
 		
@@ -577,7 +577,7 @@ class Scene
 		var actorID:Int = Std.parseInt(xml.att.id);
 		var isCustomized:Bool = Utils.toBoolean(xml.att.c);
 		
-		var behaviors:Array<BehaviorInstance> = null;
+		var behaviors:Hash<BehaviorInstance> = null;
 		
 		if(isCustomized)
 		{

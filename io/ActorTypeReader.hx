@@ -4,6 +4,7 @@ import haxe.xml.Fast;
 import utils.Utils;
 
 import models.Resource;
+import models.actor.ActorType;
 import behavior.BehaviorInstance;
 
 class ActorTypeReader implements AbstractReader
@@ -69,7 +70,7 @@ class ActorTypeReader implements AbstractReader
 		
 		//These are more like behavior instances
 		//They reference the Behavior + Map of instance values
-		var behaviorValues:Array<BehaviorInstance> = readBehaviors(xml.node.snippets);
+		var behaviorValues:Hash<BehaviorInstance> = readBehaviors(xml.node.snippets);
 		
 		if(xml.att.eventsnippetid != "")
 		{
@@ -77,17 +78,16 @@ class ActorTypeReader implements AbstractReader
 			
 			if(eventID > -1)
 			{
-				behaviorValues[eventID] = new BehaviorInstance(eventID, new Hash<Dynamic>());
+				behaviorValues.set(xml.att.eventsnippetid, new BehaviorInstance(eventID, new Hash<Dynamic>()));
 			}
 		}
 			
-		return null;
-		//return new ActorType(...);
+		return new ActorType(ID, name, groupID, spriteID, behaviorValues, isLightweight, autoScale, pausable);
 	}
 	
-	public static function readBehaviors(xml:Fast):Array<BehaviorInstance>
+	public static function readBehaviors(xml:Fast):Hash<BehaviorInstance>
 	{
-		var toReturn:Array<BehaviorInstance> = new Array<BehaviorInstance>();
+		var toReturn:Hash<BehaviorInstance> = new Hash<BehaviorInstance>();
 			
 		for(e in xml.elements)
 		{
@@ -98,7 +98,7 @@ class ActorTypeReader implements AbstractReader
 				continue;
 			}
 			
-			toReturn[Std.parseInt(e.att.id)] = readBehavior(e);
+			toReturn.set(e.att.id, readBehavior(e));
 		}
 		
 		return toReturn;

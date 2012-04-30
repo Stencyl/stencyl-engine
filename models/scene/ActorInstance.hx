@@ -2,6 +2,7 @@ package models.scene;
 
 import behavior.BehaviorInstance;
 import models.actor.ActorType;
+import models.Resource;
 
 class ActorInstance 
 {	
@@ -15,7 +16,7 @@ class ActorInstance
 	public var groupID:Int;
 	public var actorID:Int;
 	public var isCustomized:Bool;
-	public var behaviorValues:Array<BehaviorInstance>;		
+	public var behaviorValues:Hash<BehaviorInstance>;		
 	
 	public var actorType:ActorType;
 	
@@ -30,7 +31,7 @@ class ActorInstance
 		angle:Int,
 		groupID:Int,
 		actorID:Int,
-		behaviors:Array<BehaviorInstance>,
+		behaviors:Hash<BehaviorInstance>,
 		isCustomized:Bool
 	)
 	{
@@ -47,8 +48,7 @@ class ActorInstance
 		this.behaviorValues = behaviors;
 		this.isCustomized = isCustomized;
 		
-		//TODO
-		//actorType = Assets.get().resources[actorID];
+		this.actorType = cast(Data.get().resources.get("" + actorID), ActorType);
 		
 		//behaviorValues can be null, signifying to use the default ActorType config.
 	}	

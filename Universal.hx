@@ -341,6 +341,8 @@ class Universal extends Sprite
 	
 	public function createActor(ai:ActorInstance, offset:Bool = false):Actor
 	{
+		//trace(ai.actorType);
+	
 		var s:models.actor.Sprite = cast(Data.get().resources.get("" + ai.actorType.spriteID), models.actor.Sprite);
 		var a:Actor = new Actor(engine, ai);
 		
