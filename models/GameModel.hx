@@ -18,7 +18,7 @@ class GameModel
 	public var groups:Array<GroupDef>;
 	public var collisionGroups:Array<CollisionGroupDef>;
 	public var gameAttributes:Hash<Dynamic>;
-	public var scenes:Array<Scene>;
+	public var scenes:Hash<Scene>;
 	
 	public static var REGION_ID:Int = -2;
 	public static var PLAYER_ID:Int = 0;
@@ -64,19 +64,19 @@ class GameModel
 		
 		readInput(xml.node.input.elements);
 		gameAttributes = readGameAttributes(xml.node.attributes.elements);
-		//TODO: scenes = readScenes(Assets.get().sceneListXML);	
+		readScenes(Data.get().sceneListXML);	
 	}
 	
-	public function readScenes(list:Fast):Array<Scene>
+	public function readScenes(list:Fast):Hash<Scene>
 	{
-		var map:Array<Scene> = new Array<Scene>();
+		var map:Hash<Scene> = new Hash<Scene>();
 		
 		for(e in list.elements)
 		{
 			var sceneID = Std.parseInt(e.att.id);
 		
 			trace("Loading Scene " + sceneID);
-			//TODO: map[sceneID] = new Scene(sceneID, e.att.name, Assets.get().scenesXML[sceneID]);
+			map.set(e.att.id, new Scene(sceneID, e.att.name, Data.get().scenesXML.get(e.att.id)));
 		}
 		
 		return map;

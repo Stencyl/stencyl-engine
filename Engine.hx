@@ -54,6 +54,11 @@ class Engine
 		initialize:Bool
 	)
 	{
+		if(behaviorValues == null)
+		{
+			return;
+		}
+	
 		for(behaviorInstance in behaviorValues)
 		{
 			var bi:BehaviorInstance = behaviorInstance;

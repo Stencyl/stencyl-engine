@@ -238,11 +238,11 @@ class Universal extends Sprite
 	{
 		trace("Loading Scene: " + sceneID);
 		
-		scene = GameModel.get().scenes[sceneID];
+		scene = GameModel.get().scenes.get("" + sceneID);
 		
 		if(sceneID == -1 || scene == null)
 		{
-			scene = GameModel.get().scenes[GameModel.get().defaultSceneID];
+			scene = GameModel.get().scenes.get("" + GameModel.get().defaultSceneID);
 		}
 		
 		loadActors();
