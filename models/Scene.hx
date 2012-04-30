@@ -564,8 +564,6 @@ class Scene
 	
 	public function readActorInstance(xml:Fast):ActorInstance
 	{
-		trace(xml.innerHTML);
-		
 		var elementID:Int = Std.parseInt(xml.att.aid);
 		var x:Int = Std.parseInt(xml.att.x);
 		var y:Int = Std.parseInt(xml.att.y);

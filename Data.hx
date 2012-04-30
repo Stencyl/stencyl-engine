@@ -130,7 +130,7 @@ class Data
 		
 		for(e in behaviorListXML.elements)
 		{
-			trace("Reading Behavior: " + e.att.name);
+			//trace("Reading Behavior: " + e.att.name);
 			behaviors.set(e.att.id, BehaviorReader.readBehavior(e));
 		}
 	}
@@ -138,6 +138,7 @@ class Data
 	private function loadResources()
 	{
 		resourceAssets = new Hash<Dynamic>();	
+		resourceAssets.set("1-0.png", Assets.getBitmapData("assets/graphics/1-0.png"));
 		
 		//loader.loadResources();		
 		
@@ -150,7 +151,7 @@ class Data
 		
 		for(e in list.elements)
 		{
-			trace("Reading: " + e.att.name);
+			//trace("Reading: " + e.att.name);
 			resources.set(e.att.id, readResource(Std.parseInt(e.att.id), e.name, e.att.name, e));
 		}
 	}

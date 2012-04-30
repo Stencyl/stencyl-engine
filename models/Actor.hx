@@ -2,6 +2,7 @@ package models;
 
 import nme.display.Sprite;
 import nme.display.Bitmap;
+import nme.display.BitmapData;
 import nme.display.Tilesheet;
 import nme.display.DisplayObject;
 import nme.Assets;
@@ -60,6 +61,40 @@ class Actor extends Sprite
 		animationMap = new Hash<DisplayObject>();
 		behaviors = new BehaviorManager();
 		
+		if(actorType != null)
+		{
+			var s:models.actor.Sprite = cast(Data.get().resources.get("" + actorType.spriteID), models.actor.Sprite);
+			
+			if(s != null)
+			{
+				var defaultAnim:String = "";
+				
+				for(a in s.animations)
+				{
+					addAnim
+					(
+						a.animName, 
+						a.imgData, 
+						a.framesAcross, 
+						Math.floor(a.imgWidth / a.framesAcross), 
+						Math.floor(a.imgHeight / a.framesDown), 
+						a.originX,
+						a.originY,
+						a.durations, 
+						a.looping,
+						a.shapes
+					);
+					
+					if(a.animID == s.defaultAnimation)
+					{
+						defaultAnim = a.animName;
+					}
+				}
+				
+				switchAnimation(defaultAnim);
+			}
+		}
+		
 		//---
 		
 		if(behaviorValues == null && actorType != null)
@@ -69,6 +104,37 @@ class Actor extends Sprite
 
 		Engine.initBehaviors(behaviors, behaviorValues, this, engine, false);
 	}	
+	
+	public function addAnim
+	(
+		name:String, 
+		imgData:BitmapData, 
+		frameCount:Int=1, 
+		frameWidth:Int=0, 
+		frameHeight:Int = 0, 
+		originX:Float = 0,
+		originY:Float = 0,
+		durations:Array<Int>=null, 
+		looping:Bool=true, 
+		shapes:Array<Dynamic>=null
+	)
+	{
+		/*if(shapes != null)
+		{
+			var arr:Array = new Array();
+			
+			for each(var s:b2FixtureDef in shapes)
+			{
+				arr.push(s);
+			}
+			
+			shapeMap[name] = arr;
+		}*/
+	
+		var sprite = new BitmapAnimation(imgData, frameCount, [1000, 1000]);
+		animationMap.set(name, sprite);
+		hasSprite = true;		
+	}
 	
 	public function initScripts()
 	{		

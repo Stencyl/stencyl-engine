@@ -236,7 +236,7 @@ class Universal extends Sprite
 	
 	public function loadScene(sceneID:Int)
 	{
-		trace("Loading Scene: " + sceneID);
+		//trace("Loading Scene: " + sceneID);
 		
 		scene = GameModel.get().scenes.get("" + sceneID);
 		
@@ -342,8 +342,6 @@ class Universal extends Sprite
 	public function createActor(ai:ActorInstance, offset:Bool = false):Actor
 	{
 		//trace(ai.actorType);
-	
-		var s:models.actor.Sprite = cast(Data.get().resources.get("" + ai.actorType.spriteID), models.actor.Sprite);
 		var a:Actor = new Actor(engine, ai);
 		
 		//TODO: Mount grpahic and add
@@ -410,6 +408,8 @@ class Universal extends Sprite
 		}*/
 
 		//a.internalUpdate(false);
+		
+		master.addChild(a);
 		
 		return a;
 	}
