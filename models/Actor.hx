@@ -19,6 +19,9 @@ import models.scene.ActorInstance;
 
 class Actor extends Sprite 
 {	
+	public var realX:Float;
+	public var realY:Float;
+
 	public var xSpeed:Float;
 	public var ySpeed:Float;
 	public var rSpeed:Float;
@@ -51,6 +54,9 @@ class Actor extends Sprite
 			
 			actorType = inst.actorType;
 		}
+		
+		realX = this.x;
+		realY = this.y;
 		
 		xSpeed = 0;
 		ySpeed = 0;
@@ -202,8 +208,11 @@ class Actor extends Sprite
 			
 			currAnimationName = name;
 			currAnimation = newAnimation;
-				
+			
 			addChild(newAnimation);
+			
+			this.x = realX + Math.floor(newAnimation.width/2);
+			this.y = realY + Math.floor(newAnimation.height/2);
 		}
 	}
 	

@@ -65,6 +65,8 @@ class Motion extends ActorScript
 	
 	override public function init()
 	{
+		trace("initing");
+	
 		var f = function(task:TimedTask):Void 
 		{ 
 			trace("hawhee");

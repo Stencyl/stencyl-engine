@@ -217,9 +217,9 @@ class Universal extends Sprite
 		//randomMotion();
 		
 		//var thing = Type.createInstance(Type.resolveClass("behavior.Motion"), [pronger, engine]);
-		var behavior = new Behavior(pronger, engine, 0, "Pronger", "scripts.Motion", true, false, null);
-		pronger.behaviors.add(behavior);
-		pronger.initScripts();	
+		//var behavior = new Behavior(pronger, engine, 0, "Pronger", "scripts.Motion", true, false, null);
+		//pronger.behaviors.add(behavior);
+		//pronger.initScripts();	
 		
 		//FPS Counter
 		fpsLabel = new TextField();
@@ -246,6 +246,7 @@ class Universal extends Sprite
 		}
 		
 		loadActors();
+		initActorScripts();
 		
 		/*setOffscreenTolerance(0, 0, 0, 0);
 		
@@ -339,6 +340,16 @@ class Universal extends Sprite
 		}
 	}
 	
+	public function initActorScripts()
+	{
+		for(a in actors)
+		{
+			a.initScripts();
+		}
+		
+		//actors = null;
+	}
+		
 	public function createActor(ai:ActorInstance, offset:Bool = false):Actor
 	{
 		//trace(ai.actorType);
@@ -475,8 +486,11 @@ class Universal extends Sprite
 			}
 		}*/
 		
-		pronger.update(elapsedTime);
-		
+		for(a in actors)
+		{
+			a.update(elapsedTime);
+		}
+
 		engine.update(elapsedTime);
 	}
 	

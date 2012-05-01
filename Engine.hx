@@ -58,7 +58,7 @@ class Engine
 		{
 			return;
 		}
-	
+		
 		for(behaviorInstance in behaviorValues)
 		{
 			var bi:BehaviorInstance = behaviorInstance;

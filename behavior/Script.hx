@@ -18,7 +18,6 @@ class Script
 		
 		nameMap = new Hash<Dynamic>();
 	
-		init();
 		mountEvents();		
 	}		
 
