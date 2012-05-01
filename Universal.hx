@@ -51,8 +51,7 @@ class Universal extends Sprite
 	var layers:Array<Sprite>;
 
 	var master:Sprite;
-	var pronger:Actor;
-	
+
 	public static var stage;
 	
 	public static var cameraX:Float;
@@ -176,20 +175,17 @@ class Universal extends Sprite
 			actor.switchAnimation("d");
 		}
 	
-		pronger = new Actor(engine, null, 16, 32);
-		master.addChild(pronger);
+		//pronger = new Actor(engine, null, 16, 32);
+		//master.addChild(pronger);
 		//pronger.addAnimation("anim1", "assets/graphics/anim1.png");
 		//pronger.addAnimation("anim2", "assets/graphics/anim2.png");
 		//pronger.switchAnimation("anim1");
-		
-		pronger.tileTest();
-		
-		new Universal();
+		//pronger.tileTest();
 		
 		var font:BitmapFont = new BitmapFont("assets/graphics/font.png", 32, 32, BitmapFont.TEXT_SET11 + "#", 9, 1, 1);
-		font.text = "NME is great";
-		font.x = 100;
-		font.y = 100;
+		font.text = "Stencyl 2.5";
+		font.x = 10;
+		font.y = 10;
 		master.addChild(font);
 		
 		//---
@@ -217,9 +213,9 @@ class Universal extends Sprite
 		//randomMotion();
 		
 		//var thing = Type.createInstance(Type.resolveClass("behavior.Motion"), [pronger, engine]);
-		//var behavior = new Behavior(pronger, engine, 0, "Pronger", "scripts.Motion", true, false, null);
-		//pronger.behaviors.add(behavior);
-		//pronger.initScripts();	
+		/*var behavior = new Behavior(pronger, engine, 0, "Pronger", "scripts.Motion", true, false, null);
+		pronger.behaviors.add(behavior);
+		pronger.initScripts();*/
 		
 		//FPS Counter
 		fpsLabel = new TextField();
@@ -425,7 +421,7 @@ class Universal extends Sprite
 		return a;
 	}
 		
-	private function randomMotion():Void 
+	/*private function randomMotion():Void 
 	{
 		var randomX = Math.random () * (stage.stageWidth - pronger.width);
 		var randomY = Math.random () * (stage.stageHeight - pronger.height);
@@ -433,24 +429,24 @@ class Universal extends Sprite
 		Actuate.tween (pronger, 2, { x: randomX, y: randomY } )
 			.ease (Elastic.easeOut)
 			.onComplete (randomMotion); 
-	}
+	}*/
 
 	private function update(elapsedTime:Float)
 	{
 		#if cpp
-		if(nme.sensors.Accelerometer.isSupported)
+		/*if(nme.sensors.Accelerometer.isSupported)
 		{
 			var data = Accelerometer.get();
 			
-			pronger.x += data.x;
-			pronger.y -= data.y;
-		}
+			//pronger.x += data.x;
+			//pronger.y -= data.y;
+		}*/
 		#end
 		
 		//---
 		
-		cameraX = pronger.x - screenWidth/2;
-		cameraY = pronger.y - screenHeight/2;
+		//cameraX = pronger.x - screenWidth/2;
+		//cameraY = pronger.y - screenHeight/2;
 		
 		//Camera Control
 		if(cameraX < 0)
@@ -488,6 +484,9 @@ class Universal extends Sprite
 		
 		for(a in actors)
 		{
+			cameraX = a.x - screenWidth/2;
+			cameraY = a.y - screenHeight/2;
+			
 			a.update(elapsedTime);
 		}
 

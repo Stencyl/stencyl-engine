@@ -20,7 +20,7 @@ class SpriteReader implements AbstractReader
 	
 	public function read(ID:Int, type:String, name:String, xml:Fast):Resource
 	{
-		trace("Reading Sprite (" + ID + ") - " + name);
+		//trace("Reading Sprite (" + ID + ") - " + name);
 		
 		var width:Int = Std.parseInt(xml.att.width);
 		var height:Int = Std.parseInt(xml.att.height);

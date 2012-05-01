@@ -11,20 +11,14 @@ class Motion extends ActorScript
 	private var event:Void->Void;
 	public var n:Int;
 
-	public function new(actor:Actor, engine:Engine) 
+	public function new(dummy:Int, actor:Actor, engine:Engine) 
 	{	
-		super(engine);
+		super(actor, engine);
 		
 		n = 2;
 		
 		event = function() 
 		{ 
-			//n = 3;
-			//trace("heehaw");
-			//trace("" + n);
-			
-			//trace(GameModel.get().groups);
-			
 			if(Input.check("left"))
 			{
 				actor.xSpeed = -0.2;
@@ -65,14 +59,14 @@ class Motion extends ActorScript
 	
 	override public function init()
 	{
-		trace("initing");
+		/*trace("initing");
 	
 		var f = function(task:TimedTask):Void 
 		{ 
 			trace("hawhee");
 		};
 	
-		runLater(1000, f);
+		runLater(1000, f);*/
 	}
 
 	override public function update(elapsedTime:Float)

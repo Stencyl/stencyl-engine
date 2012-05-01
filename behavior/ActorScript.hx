@@ -6,8 +6,10 @@ class ActorScript extends Script
 {	
 	public var actor:Actor;
 
-	public function new(engine:Engine) 
+	public function new(actor:Actor, engine:Engine) 
 	{	
 		super(engine);
+		
+		this.actor = actor;
 	}		
 }

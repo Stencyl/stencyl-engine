@@ -19,7 +19,7 @@ class SoundReader implements AbstractReader
 	
 	public function read(ID:Int, type:String, name:String, xml:Fast):Resource
 	{
-		trace("Reading Sound (" + ID + ") - " + name);
+		//trace("Reading Sound (" + ID + ") - " + name);
 
 		var streaming:Bool = Utils.toBoolean(xml.att.streaming);
 		var looping:Bool = Utils.toBoolean(xml.att.looping);

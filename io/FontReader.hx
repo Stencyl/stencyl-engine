@@ -16,7 +16,7 @@ class FontReader implements AbstractReader
 	
 	public function read(ID:Int, type:String, name:String, xml:Fast):Resource
 	{
-		trace("Reading Font (" + ID + ") - " + name);
+		//trace("Reading Font (" + ID + ") - " + name);
 		
 		var height:Int = Std.parseInt(xml.att.height);
 		var rowHeight:Int = Std.parseInt(xml.att.rowHeight);

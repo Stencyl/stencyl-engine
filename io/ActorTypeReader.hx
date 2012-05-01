@@ -20,7 +20,7 @@ class ActorTypeReader implements AbstractReader
 	
 	public function read(ID:Int, type:String, name:String, xml:Fast):Resource
 	{
-		trace("Reading ActorType (" + ID + ") - " + name);
+		//trace("Reading ActorType (" + ID + ") - " + name);
 		
 		//Box2D stuff we don't care about
 		

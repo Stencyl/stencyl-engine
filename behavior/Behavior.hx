@@ -67,7 +67,7 @@ class Behavior
 			return;
 		}
 		
-		script = Type.createInstance(cls, [parent, engine]);
+		script = Type.createInstance(cls, [0, parent, engine]);
 		script.wrapper = this;
 		initAttributes();
 		

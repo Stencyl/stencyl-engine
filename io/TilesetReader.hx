@@ -20,7 +20,7 @@ class TilesetReader implements AbstractReader
 	
 	public function read(ID:Int, type:String, name:String, xml:Fast):Resource
 	{
-		trace("Reading Tileset (" + ID + ") - " + name);
+		//trace("Reading Tileset (" + ID + ") - " + name);
 
 		var framesAcross:Int = Std.parseInt(xml.att.across);
 		var framesDown:Int = Std.parseInt(xml.att.down);

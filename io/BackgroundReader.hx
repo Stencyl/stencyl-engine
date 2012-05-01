@@ -20,7 +20,7 @@ class BackgroundReader implements AbstractReader
 	
 	public function read(ID:Int, type:String, name:String, xml:Fast):Resource
 	{
-		trace("Reading Background (" + ID + ") - " + name);
+		//trace("Reading Background (" + ID + ") - " + name);
 
 		var red:Int;
 		var green:Int;
