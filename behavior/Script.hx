@@ -1,5 +1,10 @@
 package behavior;
 
+#if !js
+import nme.net.SharedObject;
+import nme.net.SharedObjectFlushStatus;
+#end
+
 import nme.display.Graphics;
 
 import models.Actor;
@@ -308,6 +313,73 @@ class Script
 	//*-----------------------------------------------
 	//* Saving
 	//*-----------------------------------------------
+	
+	/**
+	 * Saves a game to the "StencylSaves/[GameName]/[FileName]" location with an in-game displayTitle
+	 *
+	 * Callback = function(success:Boolean):void
+	 */
+	public function saveGame(fileName:String, fn:Bool->Void=null)
+	{
+		#if !js
+		var so = SharedObject.getLocal(fileName);
+		so.data.message = "<somexml></somexml>";
+		#end
+		
+		//Prepare to save.. with some checks
+		#if ( cpp || neko )
+		        // Android didn't wanted SharedObjectFlushStatus not to be a String
+		        var flushStatus:SharedObjectFlushStatus = null;
+		#else
+		        // Flash wanted it very much to be a String
+		        var flushStatus:String = null;
+		#end
+		
+		#if !js
+		try 
+		{
+		    flushStatus = so.flush();
+		} 
+		
+		catch(e:Dynamic) 
+		{
+			trace("Error: Failed to save");
+		}
+		
+		if(flushStatus != null) 
+		{
+		    switch(flushStatus) 
+		    {
+		        case SharedObjectFlushStatus.PENDING:
+		            //trace('requesting permission to save');
+		        case SharedObjectFlushStatus.FLUSHED:
+		            //trace('value saved');
+		    }
+		}
+		#end
+	}
+	
+	/**
+  	 * Load a saved game
+	 *
+	 * Callback = function(success:Boolean):void
+	 */
+	public function loadGame(fileName:String, fn:Bool->Void=null)
+	{
+		#if !js
+		var data = SharedObject.getLocal(fileName);
+		trace('Loaded Save: ' + data.data.message);
+		#end
+	}
+	
+	/*
+	 * Callback: function(success:Boolean, saveFile:String, isLast:Boolean):void
+	 */
+	public function retrieveSaves(fn:Bool->String->Bool->Void=null)
+	{
+		#if !js
+		#end
+	}
 	
 	//*-----------------------------------------------
 	//* Web Services

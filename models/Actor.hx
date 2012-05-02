@@ -35,10 +35,13 @@ class Actor extends Sprite
 	private var hasSprite:Bool;
 	
 	public var behaviors:BehaviorManager;
+	public var registry:Hash<Dynamic>;
 
 	public function new(engine:Engine, inst:ActorInstance, x:Int = 0, y:Int = 0, behaviorValues:Hash<Dynamic> = null) 
 	{
 		super();
+		
+		registry = new Hash<Dynamic>();
 		
 		var actorType:ActorType = null;	
 		
@@ -312,5 +315,40 @@ class Actor extends Sprite
 	public function say(behaviorName:String, msg:String, args:Array<Dynamic>):Dynamic
 	{
 		return behaviors.call2(behaviorName, msg, args);
+	}
+	
+	//*-----------------------------------------------
+	//* Actor-Level Attributes
+	//*-----------------------------------------------
+	
+	public function setActorValue(name:String, value:Dynamic)
+	{
+		if(registry != null)
+		{
+			registry.set(name, value);
+		}
+	}
+	
+	public function getActorValue(name:String):Dynamic
+	{
+		if(registry == null)
+		{
+			return null;
+		}
+		
+		else
+		{
+			return registry.get(name);
+		}
+	}
+	
+	public function hasActorValue(name:String):Dynamic
+	{
+		if(registry == null)
+		{
+			return null;
+		}
+		
+		return registry.get(name) != null;
 	}
 }

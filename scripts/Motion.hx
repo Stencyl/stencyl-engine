@@ -67,6 +67,9 @@ class Motion extends ActorScript
 		runLater(1000, f);
 		
 		setGameAttribute("yoshi", "dino");
+		
+		//saveGame("donkey2");
+		//loadGame("donkey2");
 	}
 
 	override public function update(elapsedTime:Float)
