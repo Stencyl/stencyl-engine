@@ -1,5 +1,7 @@
 package behavior;
 
+import models.GameModel;
+
 class Attribute 
 {	
 	public var ID:Int;
@@ -74,8 +76,7 @@ class Attribute
 					
 					else
 					{
-						//TODO
-						//realValue = Assets.get().resources[Std.parseInt(value)];
+						realValue = Data.get().resources.get(value);
 					}
 				}
 			}
@@ -108,8 +109,7 @@ class Attribute
 			
 			else if(type == "scene")
 			{
-				//TODO
-				//realValue = Game.get().scenes[Std.parseInt(value)];
+				realValue = GameModel.get().scenes.get(value);
 			}
 			
 			else if(type == "text") 
