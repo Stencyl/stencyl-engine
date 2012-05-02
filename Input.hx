@@ -36,7 +36,7 @@ class Input
 	public static var mouseX(getMouseX, null):Int;
 	private static function getMouseX():Int
 	{
-		return Std.int(Universal.stage.mouseX);
+		return Std.int(Engine.stage.mouseX);
 	}
 
 	/**
@@ -45,7 +45,7 @@ class Input
 	public static var mouseY(getMouseY, null):Int;
 	private static function getMouseY():Int
 	{
-		return Std.int(Universal.stage.mouseY);
+		return Std.int(Engine.stage.mouseY);
 	}
 
 	/**
@@ -142,13 +142,13 @@ class Input
 
 	public static function enable()
 	{
-		if (!_enabled && Universal.stage != null)
+		if (!_enabled && Engine.stage != null)
 		{
-			Universal.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
-			Universal.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp, false,  2);
-			Universal.stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 2);
-			Universal.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false,  2);
-			Universal.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 2);
+			Engine.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
+			Engine.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp, false,  2);
+			Engine.stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 2);
+			Engine.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false,  2);
+			Engine.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 2);
 			
 			#if !js
 			multiTouchEnabled = Multitouch.supportsTouchEvents;
@@ -157,9 +157,9 @@ class Input
 	        {
 	        	multiTouchPoints = new Hash<TouchEvent>();
 	        	Multitouch.inputMode = nme.ui.MultitouchInputMode.TOUCH_POINT;
-	        	Universal.stage.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
-	        	Universal.stage.addEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
-         		Universal.stage.addEventListener(TouchEvent.TOUCH_END, onTouchEnd);
+	        	Engine.stage.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
+	        	Engine.stage.addEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
+         		Engine.stage.addEventListener(TouchEvent.TOUCH_END, onTouchEnd);
 	        }
 	        #end
 		}
