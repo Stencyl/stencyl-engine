@@ -71,6 +71,7 @@ class Engine
 	public var scene:Scene;
 	public var actors:Array<Actor>;
 			
+			
 	//*-----------------------------------------------
 	//* Transitioning
 	//*-----------------------------------------------
@@ -78,11 +79,25 @@ class Engine
 	private var leave:Transition;
 	private var enter:Transition;
 	private var sceneToEnter:Int;
+	
+	
+	//*-----------------------------------------------
+	//* Game Attributes
+	//*-----------------------------------------------
+	
+	private var gameAttributes:Hash<Dynamic>;
+	
+	public var behaviors:BehaviorManager;
+	
 
 	public function new(root:Sprite) 
 	{		
 		Data.get();
 		GameModel.get();
+		
+		//---
+		
+		gameAttributes = new Hash<Dynamic>();
 		
 		cameraX = 0;
 		cameraY = 0;
@@ -605,5 +620,45 @@ class Engine
 		{
 			manager.initScripts();
 		}
+	}
+	
+	//---
+	
+	//*-----------------------------------------------
+	//* Game Attributes
+	//*-----------------------------------------------
+	
+	public function setGameAttribute(name:String, value:Dynamic)
+	{
+		gameAttributes.set(name, value);
+	}
+	
+	public function getGameAttribute(name:String):Dynamic
+	{
+		return gameAttributes.get(name);
+	}
+	
+	//*-----------------------------------------------
+	//* Messaging
+	//*-----------------------------------------------
+	
+	public function getValue(behaviorName:String, attributeName:String):Dynamic
+	{
+		return behaviors.getAttribute(behaviorName, attributeName);
+	}
+	
+	public function setValue(behaviorName:String, attributeName:String, value:Dynamic)
+	{
+		behaviors.setAttribute(behaviorName, attributeName, value);
+	}
+	
+	public function say(behaviorName:String, msg:String, args:Array<Dynamic>):Dynamic
+	{
+		return behaviors.call2(behaviorName, msg, args);
+	}
+	
+	public function shout(msg:String, args:Array<Dynamic>):Dynamic
+	{
+		return behaviors.call(msg, args);
 	}
 }

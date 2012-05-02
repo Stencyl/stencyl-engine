@@ -94,14 +94,121 @@ class Script
 	//* Terrain
 	//*-----------------------------------------------
 	
+	
+	//*-----------------------------------------------
+	//* Behavior Status
+	//*-----------------------------------------------
+	
+	/**
+	 * Check if the current scene contains the given Behavior (by name)
+	 *
+	 * @param	behaviorName	The display name of the <code>Behavior</code>
+	 * 
+	 * @return	True if the scene contains the Behavior
+	 */
+	public function sceneHasBehavior(behaviorName:String):Bool
+	{
+		return engine.behaviors.hasBehavior(behaviorName);
+	}
+	
+	/**
+	 * Enable the given Behavior (by name) for the current scene
+	 *
+	 * @param	behaviorName	The display name of the <code>Behavior</code>
+	 */
+	public function enableBehaviorForScene(behaviorName:String)
+	{
+		engine.behaviors.enableBehavior(behaviorName);
+	}
+	
+	/**
+	 * Disable the given Behavior (by name) for the current scene
+	 *
+	 * @param	behaviorName	The display name of the <code>Behavior</code>
+	 */
+	public function disableBehaviorForScene(behaviorName:String)
+	{
+		engine.behaviors.disableBehavior(behaviorName);
+	}
+	
+	/**
+	 * Check if the current scene contains the given Behavior (by name) and if said behavior is enabled.
+	 *
+	 * @param	behaviorName	The display name of the <code>Behavior</code>
+	 * 
+	 * @return	True if the scene contains the Behavior AND said behavior is enabled
+	 */
+	public function isBehaviorEnabledForScene(behaviorName:String):Bool
+	{
+		return engine.behaviors.isBehaviorEnabled(behaviorName);
+	}
+	
+	/**
+	 * Disable the current Behavior. The rest of this script will continue running, and cessation
+	 * happens for any future run.
+	 */
+	public function disableThisBehavior()
+	{
+		engine.behaviors.disableBehavior(wrapper.name);
+	}
+	
+			
 	//*-----------------------------------------------
 	//* Messaging
 	//*-----------------------------------------------
+	
+	/**
+	 * Get the attribute value for a behavior attached to the scene.
+	 */
+	public function getValueForScene(behaviorName:String, attributeName:String):Dynamic
+	{
+		return engine.getValue(behaviorName, attributeName);
+	}
+	
+	/**
+	 * Set the value for an attribute of a behavior in the scene.
+	 */
+	public function setValueForScene(behaviorName:String, attributeName:String, value:Dynamic)
+	{
+		engine.setValue(behaviorName, attributeName, value);
+	}
+	
+	/**
+	 * Send a messege to this scene with optional arguments.
+	 */
+	public function shoutToScene(msg:String, args:Array<Dynamic>):Dynamic
+	{
+		return engine.shout(msg, args);
+	}
+	
+	/**
+	 * Send a messege to a behavior in this scene with optional arguments.
+	 */		
+	public function sayToScene(behaviorName:String, msg:String, args:Array<Dynamic>):Dynamic
+	{
+		return engine.say(behaviorName, msg, args);
+	}
 	
 	//*-----------------------------------------------
 	//* Game Attributes
 	//*-----------------------------------------------
 	
+	/**
+	 * Set a game attribute (pass a Number/Text/Boolean/List)
+	 */		
+	public function setGameAttribute(name:String, value:Dynamic)
+	{
+		engine.setGameAttribute(name, value);
+	}
+	
+	/**
+	 * Get a game attribute (Returns a Number/Text/Boolean/List)
+	 */	
+	public function getGameAttribute(name:String):Dynamic
+	{
+		return engine.getGameAttribute(name);
+	}
+		
 	//*-----------------------------------------------
 	//* Timing
 	//*-----------------------------------------------

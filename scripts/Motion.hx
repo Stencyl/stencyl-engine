@@ -59,14 +59,14 @@ class Motion extends ActorScript
 	
 	override public function init()
 	{
-		/*trace("initing");
-	
 		var f = function(task:TimedTask):Void 
 		{ 
-			trace("hawhee");
+			trace(getGameAttribute("yoshi"));
 		};
 	
-		runLater(1000, f);*/
+		runLater(1000, f);
+		
+		setGameAttribute("yoshi", "dino");
 	}
 
 	override public function update(elapsedTime:Float)

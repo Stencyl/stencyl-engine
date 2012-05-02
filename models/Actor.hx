@@ -12,6 +12,7 @@ import graphics.AbstractAnimation;
 import graphics.BitmapAnimation;
 import graphics.SheetAnimation;
 
+import behavior.Behavior;
 import behavior.BehaviorManager;
 
 import models.actor.ActorType;
@@ -229,4 +230,87 @@ class Actor extends Sprite
 		
 		behaviors.update(elapsedTime);
 	}	
+	
+	//*-----------------------------------------------
+	//* Behaviors
+	//*-----------------------------------------------
+	
+	public function addBehavior(b:Behavior)
+	{
+		if(behaviors != null)
+		{
+			behaviors.add(b);
+		}
+	}
+	
+	public function hasBehavior(name:String):Bool
+	{
+		if(behaviors != null)
+		{
+			return behaviors.hasBehavior(name);
+		}
+		
+		return false;
+	}
+	
+	public function enableBehavior(name:String)
+	{
+		if(behaviors != null)
+		{
+			behaviors.enableBehavior(name);
+		}
+	}
+	
+	public function disableBehavior(name:String)
+	{
+		if(behaviors != null)
+		{
+			behaviors.disableBehavior(name);
+		}
+	}
+	
+	public function isBehaviorEnabled(name:String):Bool
+	{
+		if(behaviors != null)
+		{
+			return behaviors.isBehaviorEnabled(name);
+		}
+		
+		return false;
+	}
+	
+	public function enableAllBehaviors()
+	{
+		if(behaviors != null)
+		{
+			for(b in behaviors.behaviors)
+			{
+				b.enabled = true;
+			}
+		}
+	}
+		
+	//*-----------------------------------------------
+	//* Messaging
+	//*-----------------------------------------------
+	
+	public function getValue(behaviorName:String, attributeName:String):Dynamic
+	{
+		return behaviors.getAttribute(behaviorName, attributeName);
+	}
+	
+	public function setValue(behaviorName:String, attributeName:String, value:Dynamic)
+	{
+		behaviors.setAttribute(behaviorName, attributeName, value);
+	}
+	
+	public function shout(msg:String, args:Array<Dynamic>):Dynamic
+	{
+		return behaviors.call(msg, args);
+	}
+	
+	public function say(behaviorName:String, msg:String, args:Array<Dynamic>):Dynamic
+	{
+		return behaviors.call2(behaviorName, msg, args);
+	}
 }
