@@ -24,7 +24,7 @@ import models.scene.ActorInstance;
 import models.GameModel;
 import models.Scene;
 
-import scripts.Motion;
+import scripts.MyScripts;
 
 #if cpp
 import nme.ui.Accelerometer;
@@ -201,7 +201,7 @@ class Universal extends Sprite
      		//trace(child.name + " - " + child.att.type);
 		}*/
 		
-		//var sound = Assets.getSound("assets/music/sample.mp3");
+		//var sound = Assets.getSound("assets/music/sample.ogg");
 		//var soundChannel = sound.play();
 		
 		Input.enable();

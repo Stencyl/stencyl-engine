@@ -26,20 +26,12 @@ class Data
 	private var loader:AssetLoader;
 	public static var theLoader:AssetLoader;
 	
-	public static function get(remote:Bool = false, numLeft:Int = 0, state:Engine=null):Data
+	public static function get():Data
 	{
 		if(instance == null)
 		{
-			instance = new Data();
-			
-			//var loader = Type.createInstance(Type.resolveClass("scripts.MyAssets"), [remote]);
-			//loader.init(instance, numLeft, state);
-			
-			/*var cls:Class = getDefinitionByName("scripts.MyAssets") as Class;
-			instance.loader = new cls(remote);
-			theLoader = instance.loader;
-			instance.loader.init(instance, numLeft, state);*/
-			
+			instance = new Data();			
+			instance.loader = theLoader = Type.createInstance(Type.resolveClass("scripts.MyAssets"), []);
 			instance.loadAll();
 		}
 		
@@ -104,13 +96,10 @@ class Data
 		loadBehaviors();
 		loadResources();
 		
-		//loader.loadScenes();
-		
 		scenesXML = new Hash<Fast>();
 		scenesTerrain = new Hash<Dynamic>();
 		
-		scenesXML.set("0", new Fast(Xml.parse(Assets.getText("assets/data/0.xml")).firstElement()));
-		//scenesTerrain[0] = scene0b;
+		loader.loadScenes(scenesXML, scenesTerrain);
 	}
 	
 	private function loadReaders()
@@ -138,10 +127,7 @@ class Data
 	private function loadResources()
 	{
 		resourceAssets = new Hash<Dynamic>();	
-		resourceAssets.set("1-0.png", Assets.getBitmapData("assets/graphics/1-0.png"));
-		
-		//loader.loadResources();		
-		
+		loader.loadResources(resourceAssets);		
 		readResourceXML(resourceListXML);
 	}
 	

@@ -1,9 +1,9 @@
 package ;
 
+import haxe.xml.Fast;
+
 interface AssetLoader
 {
-	function init(assets:Data, numLeft:Int = 0, state:Engine=null):Void;
-	function initAssets(assets:Data):Void;
-	function loadResources():Void;
-	function loadScenes():Void;
+	function loadResources(resourceMap:Hash<Dynamic>):Void;
+	function loadScenes(scenesXML:Hash<Fast>, scenesTerrain:Hash<Dynamic>):Void;
 }
