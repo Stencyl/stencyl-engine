@@ -2,7 +2,7 @@ package behavior;
 
 class SceneScript extends Script
 {	
-	public function new(engine:Engine) 
+	public function new(dummy:Int, engine:Engine) 
 	{	
 		super(engine);
 	}		

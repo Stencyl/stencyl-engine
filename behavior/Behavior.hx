@@ -63,7 +63,7 @@ class Behavior
 		if(cls == null)
 		{
 			trace("Could not initialize Script for Behavior: " + name);
-			script = new SceneScript(engine);
+			script = new SceneScript(0, engine);
 			return;
 		}
 		
