@@ -16,7 +16,7 @@ class MyAssets implements AssetLoader
 	
 	public function loadScenes(scenesXML:Hash<Fast>, scenesTerrain:Hash<Dynamic>):Void
 	{
-		scenesXML.set("0", new Fast(Xml.parse(Assets.getText("assets/data/0.xml")).firstElement()));
+		scenesXML.set("0", new Fast(Xml.parse(Assets.getText("assets/data/scene-0.xml")).firstElement()));
 		//scenesTerrain[0] = scene0b;
 	}
 }
