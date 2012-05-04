@@ -2,6 +2,7 @@ package scripts;
 
 import haxe.xml.Fast;
 import nme.Assets;
+import com.stencyl.AssetLoader;
 
 class MyAssets implements AssetLoader
 {

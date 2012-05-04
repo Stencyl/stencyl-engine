@@ -1,10 +1,13 @@
 package scripts;
 
-import behavior.ActorScript;
-import behavior.TimedTask;
+import com.stencyl.behavior.ActorScript;
+import com.stencyl.behavior.TimedTask;
 
-import models.Actor;
-import models.GameModel;
+import com.stencyl.models.Actor;
+import com.stencyl.models.GameModel;
+
+import com.stencyl.Engine;
+import com.stencyl.Input;
 
 class Motion extends ActorScript
 {	
