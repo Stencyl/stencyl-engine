@@ -536,7 +536,7 @@ class Utils
 		return Std.int((_seed / 2147483647.0) * amount);
 	}
 
-	public static inline function indexOf<T>(a:Array<T>, v:T):Int
+	public static function indexOf<T>(a:Array<T>, v:T):Int
 	{
 		var i = 0;
 		for( v2 in a ) {

@@ -17,13 +17,15 @@ class Script
 	
 	public var nameMap:Hash<Dynamic>;
 		
+	//*-----------------------------------------------
+	//* Init
+	//*-----------------------------------------------
+	
 	public function new(engine:Engine) 
 	{
 		this.engine = engine;
 		
-		nameMap = new Hash<Dynamic>();
-	
-		mountEvents();		
+		nameMap = new Hash<Dynamic>();	
 	}		
 
 	//*-----------------------------------------------
@@ -74,6 +76,8 @@ class Script
 	//*-----------------------------------------------
 	//* Event Registration
 	//*-----------------------------------------------
+	
+	//Intended for auto code generation. Programmers should use init/update/draw instead.
 	
 	public function addWhenCreatedListener(a:Actor, func:Dynamic)
 	{			
