@@ -127,7 +127,7 @@ class Data
 	private function loadResources()
 	{
 		resourceAssets = new Hash<Dynamic>();	
-		loader.loadResources(resourceAssets);		
+		loader.loadResources(resourceAssets);	
 		readResourceXML(resourceListXML);
 	}
 	
