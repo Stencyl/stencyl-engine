@@ -2,7 +2,7 @@ package com.stencyl.behavior;
 
 class SceneScript extends Script
 {	
-	public function new(dummy:Int, engine:Engine) 
+	public function new(engine:Engine) 
 	{	
 		super(engine);
 	}		
