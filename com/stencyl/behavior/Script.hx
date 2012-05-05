@@ -74,22 +74,6 @@ class Script
 	//*-----------------------------------------------
 	//* Event Registration
 	//*-----------------------------------------------
-
-	public function mountEvents()
-	{
-		//Editor generates the junk here - can these refer to attributes though?!
-		
-		var updateEvent = function(elapsedTime:Float) 
-		{ 
-			
-		};
-		
-		updateEvent(10);
-	}
-	
-	//*-----------------------------------------------
-	//* Event Registration
-	//*-----------------------------------------------
 	
 	public function addWhenCreatedListener(a:Actor, func:Dynamic)
 	{			
