@@ -61,19 +61,19 @@ class Data
 	//*-----------------------------------------------
 	
 	//Map of each [sceneID].xml by ID
-	public var scenesXML:Hash<Fast>;
+	public var scenesXML:IntHash<Fast>;
 	
 	//Map of each [sceneID].scn by ID
-	public var scenesTerrain:Hash<Dynamic>;
+	public var scenesTerrain:IntHash<Dynamic>;
 
 	//Map of each resource in memory by ID
-	public var resources:Hash<Resource>;
+	public var resources:IntHash<Resource>;
 	
 	//Map of each static asset by filename
 	public var resourceAssets:Hash<Dynamic>;
 	
 	//Map of each behavior by ID
-	public var behaviors:Hash<Behavior>;
+	public var behaviors:IntHash<Behavior>;
 	
 
 	//*-----------------------------------------------
@@ -96,8 +96,8 @@ class Data
 		loadBehaviors();
 		loadResources();
 		
-		scenesXML = new Hash<Fast>();
-		scenesTerrain = new Hash<Dynamic>();
+		scenesXML = new IntHash<Fast>();
+		scenesTerrain = new IntHash<Dynamic>();
 		
 		loader.loadScenes(scenesXML, scenesTerrain);
 	}
@@ -115,12 +115,12 @@ class Data
 	
 	private function loadBehaviors()
 	{
-		behaviors = new Hash<Behavior>();
+		behaviors = new IntHash<Behavior>();
 		
 		for(e in behaviorListXML.elements)
 		{
 			//trace("Reading Behavior: " + e.att.name);
-			behaviors.set(e.att.id, BehaviorReader.readBehavior(e));
+			behaviors.set(Std.parseInt(e.att.id), BehaviorReader.readBehavior(e));
 		}
 	}
 	
@@ -133,12 +133,12 @@ class Data
 	
 	private function readResourceXML(list:Fast)
 	{
-		resources = new Hash<Resource>();
+		resources = new IntHash<Resource>();
 		
 		for(e in list.elements)
 		{
 			//trace("Reading: " + e.att.name);
-			resources.set(e.att.id, readResource(Std.parseInt(e.att.id), e.name, e.att.name, e));
+			resources.set(Std.parseInt(e.att.id), readResource(Std.parseInt(e.att.id), e.name, e.att.name, e));
 		}
 	}
 	

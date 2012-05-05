@@ -76,7 +76,7 @@ class GameModel
 			var sceneID = Std.parseInt(e.att.id);
 		
 			//trace("Reading Scene " + sceneID);
-			map.set(e.att.id, new Scene(sceneID, e.att.name, Data.get().scenesXML.get(e.att.id)));
+			map.set(e.att.id, new Scene(sceneID, e.att.name, Data.get().scenesXML.get(Std.parseInt(e.att.id))));
 		}
 		
 		return map;

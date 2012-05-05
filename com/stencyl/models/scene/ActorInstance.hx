@@ -48,7 +48,7 @@ class ActorInstance
 		this.behaviorValues = behaviors;
 		this.isCustomized = isCustomized;
 		
-		this.actorType = cast(Data.get().resources.get("" + actorID), ActorType);
+		this.actorType = cast(Data.get().resources.get(actorID), ActorType);
 		
 		//behaviorValues can be null, signifying to use the default ActorType config.
 	}	

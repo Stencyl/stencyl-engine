@@ -88,7 +88,7 @@ class Actor extends Sprite
 		
 		if(actorType != null)
 		{
-			var s:com.stencyl.models.actor.Sprite = cast(Data.get().resources.get("" + actorType.spriteID), com.stencyl.models.actor.Sprite);
+			var s:com.stencyl.models.actor.Sprite = cast(Data.get().resources.get(actorType.spriteID), com.stencyl.models.actor.Sprite);
 			
 			if(s != null)
 			{

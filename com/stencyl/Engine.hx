@@ -593,7 +593,7 @@ class Engine
 				continue;
 			}
 			
-			var template:Behavior = Data.get().behaviors.get("" + bi.behaviorID);
+			var template:Behavior = Data.get().behaviors.get(bi.behaviorID);
 			var attributes:Hash<Attribute> = new Hash<Attribute>();
 			
 			for(key in bi.values.keys())
