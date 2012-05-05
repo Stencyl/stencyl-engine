@@ -83,8 +83,23 @@ class Actor extends Sprite
 		
 		hasSprite = false;
 		
+		//---
+		
 		animationMap = new Hash<DisplayObject>();
 		behaviors = new BehaviorManager();
+		
+		allListeners = new HashMap<Dynamic, Dynamic>();
+		allListenerReferences = new Array<Dynamic>();
+		
+		whenCreatedListeners = new Array<Dynamic>();
+		whenUpdatedListeners = new Array<Dynamic>();
+		whenDrawingListeners = new Array<Dynamic>();
+		whenKilledListeners = new Array<Dynamic>();
+		mouseOverListeners = new Array<Dynamic>();
+		positionListeners = new Array<Dynamic>();
+		collisionListeners = new Array<Dynamic>();
+		
+		//---
 		
 		if(actorType != null)
 		{
@@ -129,6 +144,11 @@ class Actor extends Sprite
 
 		Engine.initBehaviors(behaviors, behaviorValues, this, engine, false);
 	}	
+	
+	public function destroy()
+	{
+		//TODO:
+	}
 	
 	public function addAnim
 	(
@@ -246,7 +266,30 @@ class Actor extends Sprite
 		this.y += elapsedTime * ySpeed;
 		this.rotation += elapsedTime * rSpeed;
 		
-		behaviors.update(elapsedTime);
+		var r = 0;
+		
+		while(r < whenUpdatedListeners.length)
+		{
+			try
+			{
+				var f:Float->Array<Dynamic>->Void = whenUpdatedListeners[r];			
+				f(elapsedTime, whenUpdatedListeners);
+				
+				if(Utils.indexOf(whenUpdatedListeners, f) == -1)
+				{
+					r--;
+				}
+			}
+			
+			catch(e:String)
+			{
+				trace(e);
+			}
+			
+			r++;
+		}			
+			
+		//behaviors.update(elapsedTime);
 	}	
 	
 	//*-----------------------------------------------

@@ -21,7 +21,7 @@ class Motion extends ActorScript
 		
 		n = 2;
 		
-		event = function() 
+		var evt = function(elapsedTime:Float, junk:Array<Dynamic>) 
 		{ 
 			actor.ySpeed = 0.02;
 		
@@ -61,6 +61,8 @@ class Motion extends ActorScript
 				actor.y = Input.mouseY;
 			}
 		};
+		
+		addWhenUpdatedListener(actor, evt);
 	}		
 	
 	override public function init()
@@ -85,6 +87,5 @@ class Motion extends ActorScript
 
 	override public function update(elapsedTime:Float)
 	{
-		event();
 	}
 }
