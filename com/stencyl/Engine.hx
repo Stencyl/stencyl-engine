@@ -130,8 +130,8 @@ class Engine
 		
 		//mobile input
 				
-		var bg:Bitmap = new Bitmap(Assets.getBitmapData("assets/graphics/bg.png"));
-		root.addChild(bg);
+		//var bg:Bitmap = new Bitmap(Assets.getBitmapData("assets/graphics/bg.png"));
+		//root.addChild(bg);
 		
 		master = new Sprite();
 		root.addChild(master);
@@ -153,7 +153,7 @@ class Engine
 		//---
 					
 		//TEST
-		for(i in 0...10)
+		/*for(i in 0...10)
 		{
 			var sprite = new Bitmap(Assets.getBitmapData("assets/graphics/tile.png"));
 			sprite.smoothing = true;
@@ -201,7 +201,7 @@ class Engine
 		Input.define("left", [Key.A, Key.LEFT]);
 		Input.define("right", [Key.D, Key.RIGHT]);
 		Input.define("up", [Key.W, Key.UP]);
-		Input.define("down", [Key.S, Key.DOWN]);
+		Input.define("down", [Key.S, Key.DOWN]);*/
 		
 		//randomMotion();
 		
