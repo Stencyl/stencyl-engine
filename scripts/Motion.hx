@@ -8,6 +8,7 @@ import com.stencyl.models.GameModel;
 
 import com.stencyl.Engine;
 import com.stencyl.Input;
+import com.stencyl.Key;
 
 class Motion extends ActorScript
 {	
@@ -22,6 +23,8 @@ class Motion extends ActorScript
 		
 		event = function() 
 		{ 
+			actor.ySpeed = 0.02;
+		
 			if(Input.check("left"))
 			{
 				actor.xSpeed = -0.2;
@@ -62,6 +65,11 @@ class Motion extends ActorScript
 	
 	override public function init()
 	{
+		Input.define("left", [Key.A, Key.LEFT]);
+		Input.define("right", [Key.D, Key.RIGHT]);
+		Input.define("up", [Key.W, Key.UP]);
+		Input.define("down", [Key.S, Key.DOWN]);
+		
 		var f = function(task:TimedTask):Void 
 		{ 
 			trace(getGameAttribute("yoshi"));

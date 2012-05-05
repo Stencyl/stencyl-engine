@@ -112,11 +112,36 @@ class Utils
 	 * Empties an array of its' contents
 	 * @param array filled array
 	 */
-	public static inline function clear(array:Array<Dynamic>)
+	/*public static inline function clear(array:Array<Dynamic>)
 	{
 		var i:Int;
 		for (i in 0...array.length)
 			array.pop();
+	}*/
+	
+	public static inline function clear(arr:Array<Dynamic>){
+        #if (cpp||php)
+           arr.splice(0,arr.length);           
+        #else
+           untyped arr.length = 0;
+        #end
+    }
+    
+    public static inline function removeValueFromArray(arr:Array<Dynamic>, value:Dynamic)
+	{
+		var len:Int = arr.length;
+		
+		var i:Int = len;
+		
+		while(i > -1)
+		{
+			if(arr[i] == value)
+			{
+				arr.slice(i, 1);
+			}
+		
+			i--;
+		}				
 	}
 
 	/**

@@ -91,6 +91,46 @@ class Script
 	//* Event Registration
 	//*-----------------------------------------------
 	
+	public function addWhenCreatedListener(a:Actor, func:Dynamic)
+	{			
+	}
+	
+	public function addWhenKilledListener(a:Actor, func:Dynamic)
+	{		
+	}
+					
+	public function addWhenUpdatedListener(a:Actor, func:Float->Dynamic->Void)
+	{
+		var isActorScript = Std.is(this, ActorScript);
+	
+		if(a == null)
+		{
+			if(isActorScript)
+			{
+				a = cast(this, ActorScript).actor;
+			}
+		}
+								
+		var listeners:Array<Dynamic>;
+		
+		if(a != null)
+		{
+			listeners = a.whenUpdatedListeners;				
+		}	
+				
+		else
+		{
+			listeners = engine.whenUpdatedListeners;
+		}
+		
+		listeners.push(func);
+						
+		if(isActorScript)
+		{
+			cast(this, ActorScript).actor.registerListener(listeners, func);
+		}
+	}
+	
 	//*-----------------------------------------------
 	//* Regions
 	//*-----------------------------------------------

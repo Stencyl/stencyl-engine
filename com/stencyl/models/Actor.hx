@@ -18,6 +18,9 @@ import com.stencyl.behavior.BehaviorManager;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.scene.ActorInstance;
 
+import com.stencyl.utils.Utils;
+import com.stencyl.utils.HashMap;
+
 class Actor extends Sprite 
 {	
 	public var realX:Float;
@@ -36,6 +39,18 @@ class Actor extends Sprite
 	
 	public var behaviors:BehaviorManager;
 	public var registry:Hash<Dynamic>;
+	
+	//Events	
+	public var allListeners:HashMap<Dynamic,Dynamic>;
+	public var allListenerReferences:Array<Dynamic>;
+	
+	public var whenCreatedListeners:Array<Dynamic>;
+	public var whenUpdatedListeners:Array<Dynamic>;
+	public var whenDrawingListeners:Array<Dynamic>;
+	public var whenKilledListeners:Array<Dynamic>;		
+	public var mouseOverListeners:Array<Dynamic>;
+	public var positionListeners:Array<Dynamic>;
+	public var collisionListeners:Array<Dynamic>;
 
 	public function new(engine:Engine, inst:ActorInstance, x:Int = 0, y:Int = 0, behaviorValues:Hash<Dynamic> = null) 
 	{
@@ -351,4 +366,50 @@ class Actor extends Sprite
 		
 		return registry.get(name) != null;
 	}
+	
+	//*-----------------------------------------------
+	//* Events
+	//*-----------------------------------------------
+	
+	public function registerListener(type:Array<Dynamic>, listener:Dynamic)
+	{
+		var listenerList:Array<Dynamic> = allListeners.get(type);
+		
+		if(listenerList == null)
+		{
+			listenerList = new Array<Dynamic>();
+			allListeners.set(type, listenerList);
+		}
+		
+		listenerList.push(listener);
+	}
+	
+	public function removeAllListeners()
+	{			
+		for(k in allListeners.keys())
+		{
+			var listener = cast(k, Array<Dynamic>);
+			
+			if(listener != null)
+			{
+				var list:Array<Dynamic> = cast(allListeners.get(listener), Array<Dynamic>);
+				
+				if(list != null)
+				{
+					for(r in 0...list.length)
+					{
+						Utils.removeValueFromArray(listener, list[r]);
+					}
+				}
+			}
+		}
+		
+		//Not Needed?
+		for(dict in allListenerReferences)
+		{
+			dict.delete(this);
+		}
+		
+		Utils.clear(allListenerReferences);
+	}		
 }

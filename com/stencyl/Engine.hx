@@ -30,6 +30,8 @@ import com.stencyl.models.Scene;
 
 import scripts.MyScripts;
 
+import com.stencyl.utils.HashMap;
+
 #if cpp
 import nme.ui.Accelerometer;
 #end
@@ -89,9 +91,36 @@ class Engine
 	
 	public var behaviors:BehaviorManager;
 	
+	
+	//*-----------------------------------------------
+	//* Events
+	//*-----------------------------------------------
+	
+	private var mx:Float;
+	private var my:Float;
+	
+	private var collisionPairs:HashMap<Dynamic, Dynamic>;
+	
+	public var whenKeyPressedListeners:HashMap<Dynamic, Dynamic>;
+	public var whenTypeGroupCreatedListeners:HashMap<Dynamic, Dynamic>;
+	public var whenTypeGroupDiesListeners:HashMap<Dynamic, Dynamic>;
+	public var typeGroupPositionListeners:HashMap<Dynamic, Dynamic>;
+	public var collisionListeners:HashMap<Dynamic, Dynamic>;
+	public var soundListeners:HashMap<Dynamic, Dynamic>;		
+			
+	public var whenUpdatedListeners:Array<Dynamic>;
+	public var whenDrawingListeners:Array<Dynamic>;
+	public var whenMousePressedListeners:Array<Dynamic>;
+	public var whenMouseReleasedListeners:Array<Dynamic>;
+	public var whenMouseMovedListeners:Array<Dynamic>;
+	public var whenMouseDraggedListeners:Array<Dynamic>;		
+	public var whenPausedListeners:Array<Dynamic>;		
+	
 
 	public function new(root:Sprite) 
 	{		
+		Input.enable();
+		
 		Data.get();
 		GameModel.get();
 		
@@ -196,13 +225,8 @@ class Engine
 		
 		//var sound = Assets.getSound("assets/music/sample.ogg");
 		//var soundChannel = sound.play();
-		
-		Input.enable();
-		Input.define("left", [Key.A, Key.LEFT]);
-		Input.define("right", [Key.D, Key.RIGHT]);
-		Input.define("up", [Key.W, Key.UP]);
-		Input.define("down", [Key.S, Key.DOWN]);*/
-		
+		*/
+
 		//randomMotion();
 		
 		//var thing = Type.createInstance(Type.this("behavior.Motion"), [pronger, this]);
