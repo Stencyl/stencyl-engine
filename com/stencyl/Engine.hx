@@ -11,6 +11,7 @@ import com.stencyl.behavior.Script;
 import nme.display.Bitmap;
 import nme.display.Sprite;
 import nme.display.Stage;
+import nme.display.Shape;
 import nme.text.TextField;
 import nme.display.DisplayObjectContainer;
 import nme.events.Event;
@@ -260,6 +261,8 @@ class Engine
 			scene = GameModel.get().scenes.get("" + GameModel.get().defaultSceneID);
 		}
 		
+		loadBackgrounds();
+		
 		loadActors();
 		initActorScripts();
 		
@@ -343,6 +346,13 @@ class Engine
 		
 		initBehaviors(behaviors, scene.behaviorValues, this, this, true);			
 		initActorScripts();*/
+	}
+	
+	public function loadBackgrounds()
+	{
+		var bg = new Shape();
+		scene.colorBackground.draw(bg.graphics, 0, 0, screenWidth, screenHeight);
+		master.addChild(bg);
 	}
 	
 	public function loadActors()

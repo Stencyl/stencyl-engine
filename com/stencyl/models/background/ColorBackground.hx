@@ -4,7 +4,7 @@ import nme.display.Graphics;
 
 class ColorBackground extends Resource, implements Background 
 {	
-	private var bgColor:Int;
+	public var bgColor:Int;
 
 	public function new(bgColor:Int) 
 	{	
