@@ -147,6 +147,38 @@ class Script
 		}
 	}
 	
+	public function addWhenDrawingListener(a:Actor, func:Graphics->Int->Int->Dynamic->Void)
+	{
+		var isActorScript = Std.is(this, ActorScript);
+	
+		if(a == null)
+		{
+			if(isActorScript)
+			{
+				a = cast(this, ActorScript).actor;
+			}
+		}
+								
+		var listeners:Array<Dynamic>;
+		
+		if(a != null)
+		{
+			listeners = a.whenDrawingListeners;				
+		}	
+				
+		else
+		{
+			listeners = engine.whenDrawingListeners;
+		}
+		
+		listeners.push(func);
+						
+		if(isActorScript)
+		{
+			cast(this, ActorScript).actor.registerListener(listeners, func);
+		}
+	}
+	
 	//*-----------------------------------------------
 	//* Regions
 	//*-----------------------------------------------
