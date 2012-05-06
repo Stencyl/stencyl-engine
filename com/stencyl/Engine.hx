@@ -254,11 +254,11 @@ class Engine
 	{
 		//trace("Loading Scene: " + sceneID);
 		
-		scene = GameModel.get().scenes.get("" + sceneID);
+		scene = GameModel.get().scenes.get(sceneID);
 		
 		if(sceneID == -1 || scene == null)
 		{
-			scene = GameModel.get().scenes.get("" + GameModel.get().defaultSceneID);
+			scene = GameModel.get().scenes.get(GameModel.get().defaultSceneID);
 		}
 		
 		loadBackgrounds();
