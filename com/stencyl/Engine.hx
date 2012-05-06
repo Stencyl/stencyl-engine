@@ -31,6 +31,7 @@ import com.stencyl.models.Scene;
 
 import scripts.MyScripts;
 
+import com.stencyl.utils.Utils;
 import com.stencyl.utils.HashMap;
 
 #if cpp
@@ -158,11 +159,6 @@ class Engine
 	
 		lastTime = Lib.getTimer() / MS_PER_SEC;
 		
-		//mobile input
-				
-		//var bg:Bitmap = new Bitmap(Assets.getBitmapData("assets/graphics/bg.png"));
-		//root.addChild(bg);
-		
 		master = new Sprite();
 		root.addChild(master);
 		
@@ -261,9 +257,29 @@ class Engine
 			scene = GameModel.get().scenes.get(GameModel.get().defaultSceneID);
 		}
 		
-		loadBackgrounds();
+		behaviors = new BehaviorManager();
 		
+		//Events
+		whenKeyPressedListeners = new HashMap<Dynamic, Dynamic>();
+		whenTypeGroupCreatedListeners = new HashMap<Dynamic, Dynamic>();
+		whenTypeGroupDiesListeners = new HashMap<Dynamic, Dynamic>();
+		typeGroupPositionListeners = new HashMap<Dynamic, Dynamic>();
+		collisionListeners = new HashMap<Dynamic, Dynamic>();
+		soundListeners = new HashMap<Dynamic, Dynamic>();
+		
+		whenUpdatedListeners = new Array<Dynamic>();
+		whenDrawingListeners = new Array<Dynamic>();
+		whenMousePressedListeners = new Array<Dynamic>();
+		whenMouseReleasedListeners = new Array<Dynamic>();
+		whenMouseMovedListeners = new Array<Dynamic>();
+		whenMouseDraggedListeners = new Array<Dynamic>();
+		whenPausedListeners = new Array<Dynamic>();
+		
+		//Stuff
+		loadBackgrounds();	
 		loadActors();
+		
+		initBehaviors(behaviors, scene.behaviorValues, this, this, true);			
 		initActorScripts();
 		
 		/*setOffscreenTolerance(0, 0, 0, 0);
@@ -513,14 +529,15 @@ class Engine
 		
 		for(a in actors)
 		{
-			cameraX = a.x - screenWidth/2;
-			cameraY = a.y - screenHeight/2;
+			//cameraX = a.x - screenWidth/2;
+			//cameraY = a.y - screenHeight/2;
 			
 			a.update(elapsedTime);
 		}
 
 		//---
 		
+		//Update Timed Tasks
 		var i = 0;
 		
 		while(i < tasks.length)
@@ -537,6 +554,30 @@ class Engine
 			
 			i++;
 		}
+		
+		//Update Behaviors
+		var r = 0;
+		
+		while(r < whenUpdatedListeners.length)
+		{
+			try
+			{
+				var f:Float->Array<Dynamic>->Void = whenUpdatedListeners[r];			
+				f(elapsedTime, whenUpdatedListeners);
+				
+				if(Utils.indexOf(whenUpdatedListeners, f) == -1)
+				{
+					r--;
+				}
+			}
+			
+			catch(e:String)
+			{
+				trace(e);
+			}
+			
+			r++;
+		}			
 	}
 	
 	//Game Loop
@@ -644,7 +685,8 @@ class Engine
 				template.classname, 
 				true, 
 				false,  
-				attributes
+				attributes,
+				template.type
 			);
 			
 			manager.add(b);

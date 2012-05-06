@@ -17,6 +17,7 @@ class BehaviorReader
 		var name:String = xml.att.name;
 		var classname:String = xml.att.classname;
 		var attributes:Hash<Attribute> = new Hash<Attribute>();
+		var type:String = xml.att.type;
 	
 		for(e in xml.elements)
 		{
@@ -53,7 +54,8 @@ class BehaviorReader
 			classname, 
 			true,
 			true,
-			attributes
+			attributes,
+			type
 		);
 
 		return b;

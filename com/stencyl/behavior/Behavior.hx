@@ -12,6 +12,7 @@ class Behavior
 	
 	public var ID:Int;
 	public var name:String;
+	public var type:String;
 	
 	public var classname:String;
 	public var cls:Class<Dynamic>;
@@ -28,7 +29,8 @@ class Behavior
 		classname:String, 
 		enabled:Bool, 
 		drawable:Bool,
-		attributes:Hash<Attribute>
+		attributes:Hash<Attribute>,
+		type:String
 	)
 	{
 		this.parent = parent;
@@ -54,6 +56,7 @@ class Behavior
 
 		this.ID = ID;
 		this.name = name;
+		this.type = type;
 		
 		this.attributes = attributes;
 	}	
@@ -67,7 +70,16 @@ class Behavior
 			return;
 		}
 		
-		script = Type.createInstance(cls, [0, parent, engine]);
+		if(type == "actor")
+		{
+			script = Type.createInstance(cls, [0, parent, engine]);
+		}
+		
+		else
+		{
+			script = Type.createInstance(cls, [0, engine]);
+		}
+		
 		script.wrapper = this;
 		initAttributes();
 		
