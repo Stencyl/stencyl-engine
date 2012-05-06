@@ -187,23 +187,28 @@ class Actor extends Sprite
 		
 		behaviors.initScripts();
 		
-		/*for (var r:int = 0; r < whenCreatedListeners.length; r++)
+		var r = 0;
+		
+		while(r < whenCreatedListeners.length)
 		{
 			try
 			{
-				var f:Function = whenCreatedListeners[r] as Function;
+				var f:Array<Dynamic>->Void = whenCreatedListeners[r];			
 				f(whenCreatedListeners);
 				
-				if (whenCreatedListeners.indexOf(f) == -1)
+				if(Utils.indexOf(whenCreatedListeners, f) == -1)
 				{
 					r--;
 				}
 			}
-			catch (e:Error)
+			
+			catch(e:String)
 			{
-				FlxG.log(e.getStackTrace());
+				trace(e);
 			}
-		}*/
+			
+			r++;
+		}			
 	}
 	
 	public function tileTest()

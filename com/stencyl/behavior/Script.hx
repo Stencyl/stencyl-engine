@@ -79,12 +79,40 @@ class Script
 	
 	//Intended for auto code generation. Programmers should use init/update/draw instead.
 	
-	public function addWhenCreatedListener(a:Actor, func:Dynamic)
+	public function addWhenCreatedListener(a:Actor, func:Dynamic->Void)
 	{			
+		var isActorScript = Std.is(this, ActorScript);
+		
+		if(a == null)
+		{
+			trace("Error in " + wrapper.classname + ": Cannot add listener function to null actor.");
+			return;
+		}
+		
+		a.whenCreatedListeners.push(func);
+		
+		if(isActorScript)
+		{
+			cast(this, ActorScript).actor.registerListener(a.whenCreatedListeners, func);
+		}
 	}
 	
-	public function addWhenKilledListener(a:Actor, func:Dynamic)
-	{		
+	public function addWhenKilledListener(a:Actor, func:Dynamic->Void)
+	{	
+		var isActorScript = Std.is(this, ActorScript);
+		
+		if(a == null)
+		{
+			trace("Error in " + wrapper.classname + ": Cannot add listener function to null actor.");
+			return;
+		}
+		
+		a.whenKilledListeners.push(func);
+		
+		if(isActorScript)
+		{
+			cast(this, ActorScript).actor.registerListener(a.whenKilledListeners, func);
+		}	
 	}
 					
 	public function addWhenUpdatedListener(a:Actor, func:Float->Dynamic->Void)
