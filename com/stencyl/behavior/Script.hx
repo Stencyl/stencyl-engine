@@ -8,14 +8,52 @@ import nme.net.SharedObjectFlushStatus;
 import nme.display.Graphics;
 
 import com.stencyl.models.Actor;
+import com.stencyl.utils.HashMap;
 
 //Actual scripts extend from this
 class Script 
 {
+	//*-----------------------------------------------
+	//* Data
+	//*-----------------------------------------------
+	
 	public var wrapper:Behavior;
 	public var engine:Engine;
 	
+	public var propertyChangeListeners:HashMap<Dynamic, Dynamic>;
+	public var equalityPairs:HashMap<Dynamic, Dynamic>;
+		
+		
+	//*-----------------------------------------------
+	//* Constants
+	//*-----------------------------------------------
+	
+	public static var FRONT:Int = 0;
+	public static var MIDDLE:Int = 1;
+	public static var BACK:Int = 2;
+	
+	
+	//*-----------------------------------------------
+	//* Data
+	//*-----------------------------------------------
+	
+	public static var lastCreatedActor:Actor = null;
+	/*public static var lastCreatedJoint:b2Joint = null;
+	public static var lastCreatedRegion:Region = null;
+	public static var lastCreatedTerrainRegion:TerrainRegion = null;*/
+	
+	public static var mpx:Float = 0;
+	public static var mpy:Float = 0;
+	public static var mrx:Float = 0;
+	public static var mry:Float = 0;
+		
+		
+	//*-----------------------------------------------
+	//* Display Names
+	//*-----------------------------------------------
+	
 	public var nameMap:Hash<Dynamic>;
+		
 		
 	//*-----------------------------------------------
 	//* Init
@@ -26,6 +64,8 @@ class Script
 		this.engine = engine;
 		
 		nameMap = new Hash<Dynamic>();	
+		propertyChangeListeners = new HashMap<Dynamic, Dynamic>();
+		equalityPairs = new HashMap<Dynamic, Dynamic>();
 	}		
 
 	//*-----------------------------------------------
@@ -55,6 +95,11 @@ class Script
 	
 	public function forwardMessage(msg:String)
 	{
+	}
+	
+	public function clearListeners()
+	{
+		propertyChangeListeners = new HashMap<Dynamic, Dynamic>();
 	}
 	
 	//*-----------------------------------------------
@@ -183,10 +228,13 @@ class Script
 	//* Regions
 	//*-----------------------------------------------
 	
+	//wait for Box2D
+	
 	//*-----------------------------------------------
 	//* Terrain
 	//*-----------------------------------------------
 	
+	//wait for Box2D
 	
 	//*-----------------------------------------------
 	//* Behavior Status
@@ -368,9 +416,13 @@ class Script
 	//* Joints
 	//*-----------------------------------------------
 	
+	//wait for Box2D
+	
 	//*-----------------------------------------------
 	//* Physics
 	//*-----------------------------------------------
+	
+	//wait for Box2D
 	
 	//*-----------------------------------------------
 	//* Sounds
