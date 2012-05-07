@@ -10,6 +10,8 @@ import nme.events.Event;
 import nme.display.StageAlign;
 import nme.display.StageScaleMode;
 
+import com.nmefermmmtools.debug.Console;
+
 class Universal extends Sprite 
 {
 	var engine:Engine;
@@ -17,6 +19,9 @@ class Universal extends Sprite
 	public function new() 
 	{
 		super();
+		
+		Console.create(true, 192, false);
+		
 		addEventListener(Event.ADDED_TO_STAGE, onAdded);
 	}
 	

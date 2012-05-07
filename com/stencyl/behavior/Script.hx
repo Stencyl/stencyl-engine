@@ -376,6 +376,22 @@ class Script
 	//* Sounds
 	//*-----------------------------------------------
 	
+	public function mute()
+	{
+		//FlxG.mute = true;
+	}
+	
+	public function unmute()
+	{
+		//FlxG.mute = false;
+	}
+	
+	/*public function getSound(soundID:uint):SoundClip
+	{
+		return Data.get().resources.get(soundID);
+	}*/
+	
+	
 	//*-----------------------------------------------
 	//* Background Manipulation (?)
 	//*-----------------------------------------------
