@@ -969,184 +969,200 @@ class Actor extends Sprite
 	//* Physics: Velocity
 	//*-----------------------------------------------
 	
-	/*public function getXVelocity():Float
+	public function getXVelocity():Float
 	{
-		if (isLightweight)
+		if(isLightweight)
 		{
-			return xVel;
+			return xSpeed;
 		}
 		
-		return body.GetLinearVelocity().x;
+		return 0;
+		//return body.GetLinearVelocity().x;
 	}
 	
 	public function getYVelocity():Float
 	{
-		if (isLightweight)
+		if(isLightweight)
 		{
-			return yVel;
+			return ySpeed;
 		}
 		
-		return body.GetLinearVelocity().y;
+		return 0;
+		//return body.GetLinearVelocity().y;
 	}
 	
-	public function setXVelocity(dx:Number)
+	public function setXVelocity(dx:Float)
 	{
-		if (isLightweight)
+		if(isLightweight)
 		{
-			xVel = dx * GameState.PSCALE;
+			xSpeed = dx;
 			return;
 		}
 		
-		var v:V2 = body.GetLinearVelocity();
-		v.x = dx * GameState.PSCALE;
+		/*var v:V2 = body.GetLinearVelocity();
+		v.x = dx * Engine.PSCALE;
 		body.SetLinearVelocity(v);
-		body.SetAwake(true);
+		body.SetAwake(true);*/
 	}
 	
-	public function setYVelocity(dy:Number)
+	public function setYVelocity(dy:Float)
 	{
-		if (isLightweight)
+		if(isLightweight)
 		{
-			yVel = dy * GameState.PSCALE;
+			ySpeed = dy;
 			return;
 		}
 		
-		var v:V2 = body.GetLinearVelocity();
+		/*var v:V2 = body.GetLinearVelocity();
 		v.y = dy * GameState.PSCALE;
 		body.SetLinearVelocity(v);
-		body.SetAwake(true);
+		body.SetAwake(true);*/
 	}
 	
-	public function setVelocity(angle:Number, speed:Number)
+	public function setVelocity(angle:Float, speed:Float)
 	{
-		setXVelocity(speed * GameState.PSCALE * Math.cos(Util.toRadians(angle)));
-		setYVelocity(speed * GameState.PSCALE * Math.sin(Util.toRadians(angle)));
+		setXVelocity(speed * Math.cos(Utils.RAD * angle));
+		setYVelocity(speed * Math.sin(Utils.RAD * angle));
 	}
 	
-	public function accelerateX(dx:Number)
+	public function accelerateX(dx:Float)
 	{
-		setXVelocity(getXVelocity() + dx * GameState.PSCALE);
+		setXVelocity(getXVelocity() + dx);
 	}
 	
-	public function accelerateY(dy:Number)
+	public function accelerateY(dy:Float)
 	{
-		setYVelocity(getYVelocity() + dy * GameState.PSCALE);
+		setYVelocity(getYVelocity() + dy);
 	}
 	
-	public function accelerate(angle:Number, speed:Number)
+	public function accelerate(angle:Float, speed:Float)
 	{
-		setXVelocity(getXVelocity() + speed * GameState.PSCALE * Math.cos(Util.toRadians(angle)));
-		setYVelocity(getYVelocity() + speed * GameState.PSCALE * Math.sin(Util.toRadians(angle)));
-	}*/
+		setXVelocity(getXVelocity() + speed * Math.cos(Utils.RAD * angle));
+		setYVelocity(getYVelocity() + speed * Math.sin(Utils.RAD * angle));
+	}
 	
 	//*-----------------------------------------------
 	//* Physics: Angles and Angular Velocity
 	//*-----------------------------------------------
 	
-	/*public function getAngle():Float
+	public function getAngle():Float
 	{
-		if (isLightweight)
+		if(isLightweight)
 		{
-			return Util.toRadians(angle);
+			return Utils.RAD * rotation;
 		}
 		
-		return body.GetAngle();
+		return 0;
+		//return body.GetAngle();
 	}
 	
 	public function getAngleInDegrees():Float
 	{
-		if (isLightweight)
+		if(isLightweight)
 		{
-			return angle;
+			return rotation;
 		}
 		
-		return Util.toDegrees(body.GetAngle());
+		return 0;
+		//return Util.toDegrees(body.GetAngle());
 	}
 	
-	public function setAngle(angle:Number, inRadians:Boolean = true)
+	public function setAngle(angle:Float, inRadians:Bool = true)
 	{
 		if(inRadians)
 		{
-			if (isLightweight)
+			if(isLightweight)
 			{
-				this.angle = Util.toDegrees(angle);
-				return;
+				this.rotation = Utils.DEG * angle;
 			}
 			
-			body.SetAngle(angle);				
+			else
+			{
+				//body.SetAngle(angle);				
+			}
 		}
 		
 		else
 		{
-			if (isLightweight)
+			if(isLightweight)
 			{
-				this.angle = angle;
-				return;
+				this.rotation = angle;
 			}
 			
-			body.SetAngle(Util.toRadians(angle));
-			
+			else
+			{
+				//body.SetAngle(Util.toRadians(angle));		
+			}
 		}
 	}
 	
-	public function rotate(angle:Number, inRadians:Boolean = true)
+	public function rotate(angle:Float, inRadians:Bool = true)
 	{
 		if(inRadians)
 		{
-			if (isLightweight)
+			if(isLightweight)
 			{
-				this.angle += Util.toDegrees(angle);
-				return;
+				this.rotation += Utils.DEG * angle;
 			}
 			
-			body.SetAngle(body.GetAngle() + angle);
+			else
+			{
+				//body.SetAngle(body.GetAngle() + angle);
+			}
 		}
 			
 		else
 		{
-			if (isLightweight)
+			if(isLightweight)
 			{
-				this.angle += angle;
-				return;
+				this.rotation += angle;
 			}
 			
-			body.SetAngle(body.GetAngle() + Util.toRadians(angle));	
+			else
+			{
+				//body.SetAngle(body.GetAngle() + Util.toRadians(angle));
+			}	
 		}
 	}
 	
 	public function getAngularVelocity():Float
 	{
-		if (isLightweight)
+		if(isLightweight)
 		{
-			return Util.toRadians(angleVel);
+			return Utils.RAD * rotation;
 		}
 		
-		return body.GetAngularVelocity();
+		return 0;
+		//return body.GetAngularVelocity();
 	}
 	
-	public function setAngularVelocity(omega:Number)
+	public function setAngularVelocity(omega:Float)
 	{
-		if (isLightweight)
+		if(isLightweight)
 		{
-			angleVel = Util.toDegrees(omega) * GameState.PSCALE;
-			return;
+			rSpeed = Utils.DEG * omega;
 		}
 		
-		body.SetAngularVelocity(omega * GameState.PSCALE);	
-		body.SetAwake(true);
+		else
+		{
+			//body.SetAngularVelocity(omega);	
+			//body.SetAwake(true);
+		}
 	}
 	
-	public function changeAngularVelocity(omega:Number)
+	public function changeAngularVelocity(omega:Float)
 	{
-		if (isLightweight)
+		if(isLightweight)
 		{
-			angleVel += Util.toDegrees(omega) * GameState.PSCALE;
-			return;
+			rSpeed += Utils.DEG * omega;
 		}
 		
-		body.SetAngularVelocity(body.GetAngularVelocity() + omega * GameState.PSCALE);
-		body.SetAwake(true);
-	}*/
+		else
+		{
+			//body.SetAngularVelocity(body.GetAngularVelocity() + omega);
+			//body.SetAwake(true);
+		}
+	}
 	
 	//*-----------------------------------------------
 	//* Physics: Forces
