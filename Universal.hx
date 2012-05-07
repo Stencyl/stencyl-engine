@@ -10,7 +10,9 @@ import nme.events.Event;
 import nme.display.StageAlign;
 import nme.display.StageScaleMode;
 
+#if flash
 import com.nmefermmmtools.debug.Console;
+#end
 
 class Universal extends Sprite 
 {
@@ -20,7 +22,9 @@ class Universal extends Sprite
 	{
 		super();
 		
+		#if flash
 		Console.create(true, 192, false);
+		#end
 		
 		addEventListener(Event.ADDED_TO_STAGE, onAdded);
 	}
