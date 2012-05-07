@@ -19,11 +19,23 @@ import com.stencyl.graphics.SheetAnimation;
 import com.stencyl.behavior.Behavior;
 import com.stencyl.behavior.BehaviorManager;
 
+import com.stencyl.models.actor.AngleHolder;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.scene.ActorInstance;
 
 import com.stencyl.utils.Utils;
 import com.stencyl.utils.HashMap;
+
+import com.eclecticdesignstudio.motion.Actuate;
+import com.eclecticdesignstudio.motion.easing.Back;
+import com.eclecticdesignstudio.motion.easing.Cubic;
+import com.eclecticdesignstudio.motion.easing.Elastic;
+import com.eclecticdesignstudio.motion.easing.Expo;
+import com.eclecticdesignstudio.motion.easing.Linear;
+import com.eclecticdesignstudio.motion.easing.Quad;
+import com.eclecticdesignstudio.motion.easing.Quart;
+import com.eclecticdesignstudio.motion.easing.Quint;
+import com.eclecticdesignstudio.motion.easing.Sine;
 
 class Actor extends Sprite 
 {	
@@ -77,8 +89,8 @@ class Actor extends Sprite
 	public var ySpeed:Float;
 	public var rSpeed:Float;
 	
-	//public var tweenLoc:Point;
-	//public var tweenAngle:AngleHolder;
+	public var tweenLoc:Point;
+	public var tweenAngle:AngleHolder;
 	
 	
 	//*-----------------------------------------------
@@ -1306,6 +1318,198 @@ class Actor extends Sprite
 		
 		return false;
 		//return body.IsIgnoringGravity();
+	}
+	
+	//*-----------------------------------------------
+	//* Mouse Convenience
+	//*-----------------------------------------------
+	
+	/*public function isMouseOver():Bool
+	{
+		var mx:int = FlxG.mouse.x;
+		var my:int = FlxG.mouse.y;
+		
+		var xPos:int = this.x;
+		var yPos:int = this.y;
+		
+		if (isLightweight)
+		{
+			xPos = getX();
+			yPos = getY();
+		}
+		
+		if(isHUD)
+		{
+			mx = FlxG.mouse.screenX;
+			my = FlxG.mouse.screenY;
+			
+			xPos = getScreenX();
+			yPos = getScreenY();
+		}
+		
+		return (mx >= xPos && 
+		   		my >= yPos && 
+		   		mx < xPos + frameWidth && 
+		   		my < yPos + frameHeight);
+	}
+	
+	public function isMouseHover():Bool
+	{
+		return isMouseOver() && !FlxG.mouse.pressed();
+	}
+	
+	public function isMouseDown():Bool
+	{
+		return isMouseOver() && FlxG.mouse.pressed();
+	}
+	
+	public function isMousePressed():Bool
+	{
+		return isMouseOver() && FlxG.mouse.justPressed();
+	}
+	
+	public function isMouseReleased():Bool
+	{
+		return isMouseOver() && FlxG.mouse.justReleased();
+	}
+	
+	public function checkMouseState()
+	{
+		var mouseOver:Boolean = isMouseOver();
+				
+		if (mouseState <= 0 && mouseOver)
+		{
+			//Just Entered
+			mouseState = 1;
+		}
+				
+		else if (mouseState >= 1 && mouseOver)
+		{
+			//Over
+			mouseState = 2;
+					
+			if (FlxG.mouse.justPressed())
+			{
+				//Clicked On
+				mouseState = 3;
+			}
+					
+			else if (FlxG.mouse.pressed())
+			{
+				//Dragged
+				mouseState = 4;
+			}
+					
+			if (FlxG.mouse.justReleased())
+			{
+				//Released
+				mouseState = 5;
+			}
+		}
+				
+		else if (mouseState > 0 && !mouseOver)
+		{
+			//Just Exited
+			mouseState = -1;
+		}
+			
+		else if (mouseState == -1 && !mouseOver)
+		{
+			mouseState = 0;
+		}			
+		
+		for (var i:int = 0; i < mouseOverListeners.length; i++)
+		{
+			try
+			{
+				var f:Function = mouseOverListeners[i] as Function;
+				f(mouseOverListeners, mouseState);
+				
+				if (mouseOverListeners.indexOf(f) == -1)
+				{
+					i--;
+				}
+			}
+			catch (e:Error)
+			{
+				FlxG.log(e.getStackTrace());
+			}
+		}
+	}*/
+	
+	//*-----------------------------------------------
+	//* Tween Convenience
+	//*-----------------------------------------------
+	
+	public function cancelTweens()
+	{
+		for(s in animationMap)
+		{
+			Actuate.stop(s);
+		}
+	}
+	
+	public function fadeTo(value:Float, duration:Float = 1, easing:Dynamic = null, delay:Int = 0)
+	{	
+		if(easing == null)
+		{
+			easing = Linear.easeNone;
+		}
+	
+		for(s in animationMap)
+		{
+			Actuate.tween(s, duration, {alpha:value}).ease(easing).delay(delay);
+		}
+	}
+	
+	public function growTo(scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:Dynamic = null, delay:Int = 0)
+	{
+		if(easing == null)
+		{
+			easing = Linear.easeNone;
+		}
+	
+		for(s in animationMap)
+		{
+			Actuate.tween(this, duration, {x:scaleX, y:scaleY}).ease(easing).delay(delay);
+		}
+	}
+	
+	//In degrees
+	public function spinTo(angle:Float, duration:Float = 1, easing:Dynamic = null, delay:Int = 0)
+	{
+		tweenAngle.angle = this.rotation;
+
+		if(easing == null)
+		{
+			easing = Linear.easeNone;
+		}
+	
+		Actuate.tween(tweenAngle, duration, {rotation:angle}).ease(easing).delay(delay);
+	}
+	
+	public function moveTo(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null, delay:Int = 0)
+	{
+		tweenLoc.x = getX();
+		tweenLoc.y = getY();
+		
+		if(easing == null)
+		{
+			easing = Linear.easeNone;
+		}
+		
+		Actuate.tween(tweenLoc, duration, {x:x, y:y}).ease(easing).delay(delay);
+	}
+	
+	//In degrees
+	public function spinBy(angle:Float, duration:Float = 1, easing:Dynamic = null, delay:Int = 0)
+	{
+		spinTo(this.rotation + angle, duration, easing, delay);
+	}
+	
+	public function moveBy(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null, delay:Int = 0)
+	{
+		moveTo(getX() + x, getY() + y, duration, easing, delay);
 	}
 	
 	//*-----------------------------------------------
