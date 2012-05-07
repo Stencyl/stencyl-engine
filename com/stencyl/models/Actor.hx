@@ -5,8 +5,11 @@ import nme.display.Bitmap;
 import nme.display.BitmapData;
 import nme.display.Tilesheet;
 import nme.display.DisplayObject;
+import nme.display.DisplayObjectContainer;
 import nme.Assets;
 import nme.display.Graphics;
+
+import com.stencyl.Engine;
 
 import com.stencyl.graphics.AbstractAnimation;
 import com.stencyl.graphics.BitmapAnimation;
@@ -23,6 +26,49 @@ import com.stencyl.utils.HashMap;
 
 class Actor extends Sprite 
 {	
+	//*-----------------------------------------------
+	//* Globals
+	//*-----------------------------------------------
+	
+	private var engine:Engine;
+	
+
+	//*-----------------------------------------------
+	//* Properties
+	//*-----------------------------------------------
+	
+	public var ID:Int;
+	//public var name:String; //Already a prop
+	public var groupID:Int;
+	public var layerID:Int;
+	public var typeID:Int;
+	
+	
+	//*-----------------------------------------------
+	//* States
+	//*-----------------------------------------------
+
+	public var recycled:Bool;
+	public var paused:Bool;
+	
+	public var isRegion:Bool;
+	public var isTerrainRegion:Bool;
+
+	public var destroyed:Bool;	
+	public var drawActor:Bool;	
+	public var isHUD:Bool;
+	public var alwaysSimulate:Bool;
+	
+	public var isCamera:Bool;
+	public var killLeaveScreen:Bool;	
+	public var isLightweight:Bool;
+	public var autoScale:Bool;
+	
+
+	//*-----------------------------------------------
+	//* Position / Motion
+	//*-----------------------------------------------
+	
 	public var realX:Float;
 	public var realY:Float;
 
@@ -30,17 +76,48 @@ class Actor extends Sprite
 	public var ySpeed:Float;
 	public var rSpeed:Float;
 	
-	//Sprite-Based Animation
+	//public var tweenLoc:Point;
+	//public var tweenAngle:AngleHolder;
+	
+	
+	//*-----------------------------------------------
+	//* Sprite-Based Animation
+	//*-----------------------------------------------
+	
 	public var currAnimation:DisplayObject;
 	public var currAnimationName:String;
 	public var animationMap:Hash<DisplayObject>;
 	
-	private var hasSprite:Bool;
+	public var hasSprite:Bool; //???
+	
+	public var shapeMap:Hash<Dynamic>;
+	public var originMap:Hash<Dynamic>;
+	public var defaultAnim:String;
+	
+	/* 
+	public var currOrigin:V2;
+	public var currOffset:V2;
+	*/
+	
+	
+	//*-----------------------------------------------
+	//* Behaviors
+	//*-----------------------------------------------
 	
 	public var behaviors:BehaviorManager;
+	
+	
+	//*-----------------------------------------------
+	//* Actor Values
+	//*-----------------------------------------------
+	
 	public var registry:Hash<Dynamic>;
 	
-	//Events	
+	
+	//*-----------------------------------------------
+	//* Events
+	//*-----------------------------------------------	
+	
 	public var allListeners:HashMap<Dynamic,Dynamic>;
 	public var allListenerReferences:Array<Dynamic>;
 	
@@ -51,6 +128,39 @@ class Actor extends Sprite
 	public var mouseOverListeners:Array<Dynamic>;
 	public var positionListeners:Array<Dynamic>;
 	public var collisionListeners:Array<Dynamic>;
+	
+	public var mouseState:Int;
+	public var lastScreenState:Bool;
+	public var lastSceneState:Bool;
+	
+	
+	//*-----------------------------------------------
+	//* Physics (Box2D)
+	//*-----------------------------------------------
+	
+	//TODO
+	/*
+	public var body:b2Body;
+	public var bodyDef:b2BodyDef;
+	private var md:b2MassData;
+	public var bodyScale:Point;
+	public var contacts:Dictionary;
+	public var regionContacts:Dictionary;
+	public var collisions:Dictionary;
+	*/
+
+
+	//*-----------------------------------------------
+	//* Collisions
+	//*-----------------------------------------------
+	
+	public var handlesCollisions:Bool; //???
+	public var lastCollided:Actor;
+	
+	
+	//*-----------------------------------------------
+	//* Init
+	//*-----------------------------------------------
 
 	public function new(engine:Engine, inst:ActorInstance, x:Int = 0, y:Int = 0, behaviorValues:Hash<Dynamic> = null) 
 	{
@@ -229,6 +339,11 @@ class Actor extends Sprite
 		hasSprite = true;
    	}
    	
+   	
+   	//*-----------------------------------------------
+	//* Animation
+	//*-----------------------------------------------
+   	
 	public function addAnimation(name:String, sprite:DisplayObject)
 	{
 		animationMap.set(name, sprite);
@@ -260,6 +375,10 @@ class Actor extends Sprite
 		}
 	}
 	
+	//*-----------------------------------------------
+	//* Events
+	//*-----------------------------------------------
+		
 	public function update(elapsedTime:Float)
 	{
 		if(hasSprite)
@@ -296,6 +415,155 @@ class Actor extends Sprite
 			
 		//behaviors.update(elapsedTime);
 	}	
+	
+	//*-----------------------------------------------
+	//* Properties
+	//*-----------------------------------------------
+	
+	public function getID():Int
+	{
+		return ID;
+	}
+	
+	public function getName():String
+	{
+		return name;
+	}
+	
+	public function getGroupID():Int
+	{
+		if(isLightweight)
+		{
+			return groupID;
+		}
+		
+		else
+		{
+			return 0;
+			//return body.groupID;
+		}
+	}
+	
+	public function getLayerID():Int
+	{
+		return layerID;
+	}
+	
+	public function getLayerOrder():Int
+	{
+		return 0;
+		//TODO
+		//return engine.getOrderForLayerID(layerID) + 1;
+	}
+	
+	public function getType():ActorType
+	{
+		if(typeID == -1)
+		{
+			return null;
+		}
+		
+		return cast(Data.get().resources.get(typeID), ActorType);
+	}
+		
+	//*-----------------------------------------------
+	//* State
+	//*-----------------------------------------------
+		
+	public function isPausable():Bool
+	{
+		return getType().pausable;
+	}
+	
+	public function isPaused():Bool
+	{
+		return paused;
+	}
+	
+	public function pause()
+	{
+		if(isPausable())
+		{
+			this.paused = true;
+			
+			/*if(!isLightweight)
+			{
+				this.body.SetPaused(true);
+			}*/
+		}
+	}
+	
+	public function unpause()
+	{
+		if(isPausable())
+		{
+			this.paused = false;
+			
+			/*if(!isLightweight)
+			{
+				this.body.SetPaused(false);
+			}*/
+		}
+	}
+	
+	//*-----------------------------------------------
+	//* Type
+	//*-----------------------------------------------
+	
+	public function getGroup():Sprite
+	{
+		try
+		{
+			//TODO
+			//return engine.groups[getGroupID()];
+		}
+		
+		//Dead
+		catch(e:String)
+		{
+		}
+		
+		return null;
+	}
+	
+	public function getIsRegion():Bool
+	{
+		return isRegion;
+	}
+	
+	public function getIsTerrainRegion():Bool
+	{
+		return isTerrainRegion;
+	}
+	
+	//*-----------------------------------------------
+	//* Layering
+	//*-----------------------------------------------
+	
+	public function moveToLayerOrder(layerOrder:Int)
+	{
+		//engine.moveToLayerOrder(this,layerOrder);
+	}
+	
+	public function bringToFront()
+	{
+		//engine.bringToFront(this);
+	}
+	
+	public function bringForward()
+	{
+		//engine.bringForward(this);
+	}
+	
+	public function sendToBack()
+	{
+		//engine.sendToBack(this);
+	}
+	
+	public function sendBackward()
+	{
+		//engine.sendBackward(this);
+	}
 	
 	//*-----------------------------------------------
 	//* Behaviors
@@ -416,7 +684,7 @@ class Actor extends Sprite
 	}
 	
 	//*-----------------------------------------------
-	//* Events
+	//* Events PLumbing
 	//*-----------------------------------------------
 	
 	public function registerListener(type:Array<Dynamic>, listener:Dynamic)
