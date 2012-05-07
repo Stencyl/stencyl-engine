@@ -231,11 +231,12 @@ class Engine
 		pronger.behaviors.add(behavior);
 		pronger.initScripts();*/
 		
-		//FPS Counter
-		fpsLabel = new TextField();
-		fpsLabel.x = 10;
-		fpsLabel.y = 10;
-		//addChild(fpsLabel);
+		//TODO: Key to toggle this, does not work on HTML5
+		#if !js
+		var stats = new com.nmefermmmtools.debug.Stats();
+		stage.addChild(stats);
+		//stats.visible = false;
+		#end
 		
 		//enter = new FadeInTransition(500);
 		//enter.start();
@@ -599,14 +600,14 @@ class Engine
 		
 		lastTime = currTime;
 			
-		framerate = Std.int(1 / elapsedTime);
+		/*framerate = Std.int(1 / elapsedTime);
 		framerateCounter += elapsedTime;
 		
 		if(framerateCounter > 1)
 		{
 			framerateCounter -= 1;
 			fpsLabel.text = Std.string(framerate);
-		}
+		}*/
 	}
 	
 	//---
