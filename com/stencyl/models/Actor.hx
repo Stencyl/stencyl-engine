@@ -1513,6 +1513,95 @@ class Actor extends Sprite
 	}
 	
 	//*-----------------------------------------------
+	//* Drawing
+	//*-----------------------------------------------
+	
+	public function enableActorDrawing()
+	{
+		drawActor = true;
+		
+		if(currAnimation != null)
+		{
+			currAnimation.visible = true;
+		}
+	}
+	
+	public function disableActorDrawing()
+	{
+		drawActor = false;
+		
+		if(currAnimation != null)
+		{
+			currAnimation.visible = false;
+		}
+	}
+	
+	public function drawsImage():Bool
+	{
+		return drawActor;
+	}
+	
+	//*-----------------------------------------------
+	//* Filters
+	//*-----------------------------------------------
+	
+	public function setFilter(filter:Dynamic)
+	{
+		/*if(currAnimation != null)
+		{
+			currAnimation.setFilter(filter);
+		}*/
+	}
+	
+	//Pulpcore-like filter addon
+	/*public var filter:*;
+	
+
+	public function setFilter(filter:*):void
+	{			
+		//sent in null (remove all), or no filters currently applied (apply all)
+		if(filter == null || this.filter == null)
+		{
+			this.filter = filter;
+			calcFrame();
+			return;
+		}
+		
+		this.filter = [this.filter].concat(filter);
+		
+		calcFrame();
+	}
+
+	public function applyFilter(filter:*):void
+	{
+		if(filter != null)
+		{
+			_flashRect.x = _flashRect.y = 0;
+			
+			_flashRect.width = _framePixels.width;
+			_flashRect.height = _framePixels.height;
+
+			_flashPointZero.x = 0;
+			_flashPointZero.y = 0;
+						
+			//var rect:Rectangle = _framePixels.generateFilterRect(_flashRect, filter);
+			
+			if(filter is Array)
+			{
+				for each(var o:Object in filter)
+				{
+					applyFilter(o);
+				}
+			}
+			else if(filter is BitmapFilter)
+			{
+				_framePixels.applyFilter(_framePixels, _flashRect, _flashPointZero, filter as BitmapFilter);
+			}
+		}
+	}
+	*/
+	
+	//*-----------------------------------------------
 	//* Behaviors
 	//*-----------------------------------------------
 	
@@ -1631,7 +1720,7 @@ class Actor extends Sprite
 	}
 	
 	//*-----------------------------------------------
-	//* Events PLumbing
+	//* Events Plumbing
 	//*-----------------------------------------------
 	
 	public function registerListener(type:Array<Dynamic>, listener:Dynamic)
@@ -1674,5 +1763,211 @@ class Actor extends Sprite
 		}
 		
 		Utils.clear(allListenerReferences);
-	}		
+	}	
+	
+	//*-----------------------------------------------
+	//* Misc
+	//*-----------------------------------------------	
+	
+	/*public function anchorToScreen():void
+	{
+		if (!isLightweight)
+		{
+			body.SetAlwaysActive(true);
+		}
+		
+		isHUD = true;			
+		game.addHUDActor(this);
+		
+		for each(var anim:FlxSprite in anims)
+		{
+			anim.scrollFactor.x = 0;
+			anim.scrollFactor.y = 0;
+		}
+	}
+	
+	public function unanchorFromScreen():void
+	{
+		if (!isLightweight)
+		{
+			body.SetAlwaysActive(alwaysSimulate || false);
+		}
+		
+		isHUD = false;			
+		game.removeHUDActor(this);
+		
+		for each(var anim:FlxSprite in anims)
+		{
+			anim.scrollFactor.x = 1;
+			anim.scrollFactor.y = 1;
+		}
+	}
+	
+	public function isAnchoredToScreen():Boolean
+	{
+		return isHUD;
+	}
+	
+	public function makeAlwaysSimulate():void
+	{
+		if (!isLightweight)
+		{
+			body.SetAlwaysActive(true);
+		}
+		
+		alwaysSimulate = true;			
+		game.addAlwaysOnActor(this);
+	}
+	
+	public function makeSometimesSimulate():void
+	{
+		if (!isLightweight)
+		{
+			body.SetAlwaysActive(false);
+		}
+		
+		alwaysSimulate = false;			
+		game.removeHUDActor(this);
+	}
+	
+	public function alwaysSimulates():Boolean
+	{
+		return alwaysSimulate;
+	}
+	
+	public function die():void
+	{
+		kill();
+		
+		for (var r:int = 0; r < whenKilledListeners.length; r++)
+		{
+			var f:Function = whenKilledListeners[r] as Function;	
+			
+			try
+			{
+				f(whenKilledListeners);
+				
+				if (whenKilledListeners.indexOf(f) == -1)
+				{
+					r--;
+				}
+			}
+			catch(e:Error)
+			{
+				FlxG.log("Error in die listener function");
+				FlxG.log(e.getStackTrace());
+			}
+		}
+		
+		//Move to GameState level?
+		if (game.whenTypeGroupDiesListeners[getType()] != null)
+		{
+			var listeners:Array = game.whenTypeGroupDiesListeners[getType()] as Array;
+			
+			for (var r:int = 0; r < listeners.length; r++)
+			{
+				try
+				{
+					var f:Function = listeners[r] as Function;
+					f(listeners, this);
+					
+					if (listeners.indexOf(f) == -1)
+					{
+						r--;
+					}
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+		}
+		
+		if (game.whenTypeGroupDiesListeners[getGroup()] != null)
+		{
+			var listeners:Array = game.whenTypeGroupDiesListeners[getGroup()] as Array;
+			
+			for (var r:int = 0; r < listeners.length; r++)
+			{
+				try
+				{
+					var f:Function = listeners[r] as Function;
+					f(listeners, this);
+					
+					if (listeners.indexOf(f) == -1)
+					{
+						r--;
+					}
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+		}
+		
+		removeAllListeners();
+	}
+		
+	public function isDying():Boolean
+	{
+		return dead || !exists;
+	}
+	
+	public function isAlive():Boolean
+	{
+		return !dead;
+	}
+	
+	public function isOnScreen():Boolean
+	{
+		return (isLightweight || body.IsActive()) && 
+			   getX() >= -FlxG.scroll.x - game.left && 
+			   getY() >= -FlxG.scroll.y - game.top &&
+			   getX() < -FlxG.scroll.x + FlxG.width + game.right &&
+			   getY() < -FlxG.scroll.y + FlxG.height + game.bottom;
+	}
+	
+	public function isInScene():Boolean
+	{
+		return (isLightweight || body.IsActive()) && 
+			   getX() >= 0 && 
+			   getY() >= 0 &&
+			   getX() < game.scene.sceneWidth &&
+			   getY() < game.scene.sceneHeight;
+	}
+	
+	public function getLastCollidedActor():Actor
+	{
+		return lastCollided;
+	}*/
+	
+	//*-----------------------------------------------
+	//* Camera
+	//*-----------------------------------------------
+	
+	/*public function setLocation(x:int, y:int):void
+	{
+		this.x = x;
+		this.y = y;
+		
+		setX(x);
+		setY(y);
+	}*/
+	
+	//Kills this actor after it leaves the screen
+	public function killSelfAfterLeavingScreen()
+	{
+		killLeaveScreen = true;
+	}
+	
+	override public function toString():String
+	{
+		if(name == null)
+		{
+			return "Unknown Actor " + ID;
+		}
+		
+		return name;
+	}
 }
