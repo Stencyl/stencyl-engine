@@ -8,6 +8,7 @@ import nme.display.DisplayObject;
 import nme.display.DisplayObjectContainer;
 import nme.Assets;
 import nme.display.Graphics;
+import nme.geom.Point;
 
 import com.stencyl.Engine;
 
@@ -94,10 +95,8 @@ class Actor extends Sprite
 	public var originMap:Hash<Dynamic>;
 	public var defaultAnim:String;
 	
-	/* 
-	public var currOrigin:V2;
-	public var currOffset:V2;
-	*/
+	public var currOrigin:Point;
+	public var currOffset:Point;
 	
 	
 	//*-----------------------------------------------
@@ -147,6 +146,9 @@ class Actor extends Sprite
 	public var contacts:Dictionary;
 	public var regionContacts:Dictionary;
 	public var collisions:Dictionary;
+	
+	private var dummy:V2 = new V2();
+	private var zero:V2 = new V2(0, 0);
 	*/
 
 
@@ -416,6 +418,135 @@ class Actor extends Sprite
 		//behaviors.update(elapsedTime);
 	}	
 	
+	public function updateAnimProperties(doAll:Bool)
+	{
+		if(currAnimation != null)
+		{
+			if(isLightweight)
+			{
+				currAnimation.x = getX();
+				currAnimation.y = getY();
+			}
+			
+			else
+			{
+				currAnimation.x = x;
+				currAnimation.y = y;
+			}
+			
+			currAnimation.rotation = rotation;
+			
+			if(doAll)
+			{
+				//TODO: 
+				//currAnimation.updateAnimation();
+			}
+		}
+	}
+	
+	function updateTweenProperties()
+	{
+		//Since we can't tween directly on the Box2D values and can't make direct function calls,
+		//we have to reverse the normal flow of information from body -> Flixel to tween -> body
+		/*var a:Boolean = Tweener.isTweening(tweenLoc);
+		var b:Boolean = Tweener.isTweening(tweenAngle);
+				
+		if (autoScale && !isLightweight && body != null && bodyDef.type != b2Body.b2_staticBody && (bodyScale.x != currSprite.scale.x || bodyScale.y != currSprite.scale.y))
+		{
+			if (currSprite.scale.x > 0 && currSprite.scale.y > 0)
+			{
+				scaleBody(currSprite.scale.x, currSprite.scale.y);
+			}
+		}
+		
+		if(a && b)
+		{
+			x = tweenLoc.x;
+			currSprite.x = tweenLoc.x;
+			
+			y = tweenLoc.y;
+			currSprite.y = tweenLoc.y;
+			
+			angle = tweenAngle.angle;
+			currSprite.angle = tweenAngle.angle;
+			
+			if (!isLightweight)
+			{
+				body.SetTransform(new V2(GameState.toPhysicalUnits(x), GameState.toPhysicalUnits(y)), Util.toRadians(angle));
+			}
+		}
+		
+		else
+		{
+			if(a)
+			{
+				x = tweenLoc.x;
+				currSprite.x = tweenLoc.x;
+				setX(tweenLoc.x);
+				
+				y = tweenLoc.y;
+				currSprite.y = tweenLoc.y;
+				setY(tweenLoc.y);
+			}
+			
+			if(b)
+			{
+				angle = tweenAngle.angle;
+				currSprite.angle = tweenAngle.angle;
+				setAngle(tweenAngle.angle, false);
+			}
+		}*/		
+	}
+		
+	public function scaleBody(width:Float, height:Float)
+	{
+		/*var fixtureList:Array = new Array;
+
+		for(var fixture:b2Fixture = getBody().GetFixtureList(); fixture; fixture = fixture.GetNext())
+		{
+			fixtureList.push(fixture);
+		}
+			
+		for each(var f:b2Fixture in fixtureList)
+		{ 
+			var poly:b2Shape = f.GetShape();
+			var center:V2 = getBody().GetLocalCenter();
+			if(poly instanceof b2CircleShape)
+			{
+				var factor:Number = (1 / bodyScale.x) * width;					
+				
+				var p:V2 = (poly as b2CircleShape).m_p.v2;
+				var positionVector:V2 = V2.subtract(p, center);
+				positionVector.x = positionVector.x * factor;
+				positionVector.y = positionVector.y * factor;	
+				
+				(poly as b2CircleShape).m_p.v2 = V2.add(center, positionVector);
+				poly.m_radius = poly.m_radius * factor;								
+			}
+
+			if(poly instanceof b2PolygonShape)
+			{
+  				var verts:Vector.<V2> = (poly as b2PolygonShape).m_vertices;
+				var newVerts:Vector.<V2> = new Vector.<V2>();
+
+				for each(var v:V2 in verts)
+				{
+					var positionVector:V2 = V2.subtract(v,center);
+					positionVector.x = positionVector.x * (1 / bodyScale.x) * width;
+					positionVector.y = positionVector.y * (1 / bodyScale.y) * height;	
+					var newV2:V2 = V2.add(center, positionVector);
+
+					newVerts.push(newV2);
+				}
+
+				(poly as b2PolygonShape).Set(newVerts);   					
+			}
+		}	
+		
+		bodyScale.x = width;
+		bodyScale.y = height;*/
+	}
+	
 	//*-----------------------------------------------
 	//* Properties
 	//*-----------------------------------------------
@@ -563,6 +694,602 @@ class Actor extends Sprite
 	public function sendBackward()
 	{
 		//engine.sendBackward(this);
+	}
+	
+	//*-----------------------------------------------
+	//* Physics: Position
+	//*-----------------------------------------------
+	
+	public function getX():Float
+	{
+		/*if(isRegion || isTerrainRegion)
+		{
+			return Math.round(GameState.toPixelUnits(body.GetPosition().x) - width/2);
+		}
+		
+		else if (!isLightweight)
+		{
+			return Math.round(body.GetPosition().x * GameState.physicsScale - Math.floor(width / 2) - currOffset.x);
+		}
+		
+		else 
+		{
+			return x - width/2 - currOffset.x;
+		}*/
+		
+		return x;
+	}
+	
+	public function getY():Float
+	{
+		/*if(isRegion || isTerrainRegion)
+		{
+			return Math.round(GameState.toPixelUnits(body.GetPosition().y) - height/2);
+		}
+			
+		else if (!isLightweight)
+		{
+			return Math.round(body.GetPosition().y * GameState.physicsScale - Math.floor(height / 2) - currOffset.y);
+		}
+		
+		else
+		{
+			return y - height/2 - currOffset.y;
+		}*/
+		
+		return y;
+	}
+	
+	public function getXCenter():Float
+	{
+		/*if(!isLightweight)
+		{
+			return Math.round(GameState.toPixelUnits(body.GetWorldCenter().x) - currOffset.x);
+		}
+		
+		else
+		{
+			return x  - currOffset.x;
+		}*/
+		
+		return x + width/2;
+	}
+	
+	public function getYCenter():Float
+	{
+		/*if(!isLightweight)
+		{
+			return Math.round(GameState.toPixelUnits(body.GetWorldCenter().y) - currOffset.y);
+		}
+		
+		else
+		{
+			return y - currOffset.y;
+		}*/
+		
+		return y + height/2;
+	}
+	
+	public function getScreenX():Float
+	{
+		if(isHUD)
+		{
+			return getX();
+		}
+		
+		else
+		{
+			return getX() + Engine.cameraX;
+		}
+	}
+	
+	public function getScreenY():Float
+	{
+		if(isHUD)
+		{
+			return getY();
+		}
+			
+		else
+		{
+			return getY() + Engine.cameraY;
+		}
+	}
+	
+	public function setX(x:Float, resetSpeed:Bool = false)
+	{
+		if(isLightweight)
+		{
+			this.x = x + width / 2 + currOffset.x;
+			updateAnimProperties(false);
+		}
+		
+		else
+		{
+			/*if(isRegion || isTerrainRegion)
+			{
+				dummy.x = GameState.toPhysicalUnits(x);
+			}
+				
+			else
+			{
+				dummy.x = GameState.toPhysicalUnits(x + Math.floor(width/2) + currOffset.x);
+			}			
+			
+			dummy.y = body.GetPosition().y;
+			
+			body.SetPosition(dummy);
+			
+			if(resetSpeed)
+			{
+				body.SetLinearVelocity(zero);
+			}
+			
+			this.x = Math.round(dummy.x * GameState.physicsScale - Math.floor(width / 2) - currOffset.x);
+			updateAnimProperties(false);*/
+		}
+	}
+	
+	public function setY(y:Float, resetSpeed:Bool = false)
+	{
+		if(isLightweight)
+		{
+			this.y = y + height / 2 + currOffset.y;
+			updateAnimProperties(false);
+		}
+		
+		else
+		{	
+			/*if(isRegion || isTerrainRegion)
+			{
+				dummy.y = GameState.toPhysicalUnits(y);
+			}
+				
+			else
+			{
+				dummy.y = GameState.toPhysicalUnits(y + Math.floor(height/2) + currOffset.y);
+			}
+			
+			dummy.x = body.GetPosition().x;
+			
+			body.SetPosition(dummy);		
+			
+			if(resetSpeed)
+			{
+				body.SetLinearVelocity(zero);
+			}
+			
+			this.y = Math.round(dummy.y * GameState.physicsScale - Math.floor(height / 2) - currOffset.y);;
+			updateAnimProperties(false);*/	
+		}
+	}
+	
+	public function follow(a:Actor)
+	{
+		if(isLightweight)
+		{
+			x = a.getXCenter();
+			y = a.getYCenter();
+			
+			return;
+		}
+		
+		//body.SetPosition(a.body.GetWorldCenter());
+		
+		//DEAD
+		//x = a.x;
+		//y = a.y;
+	}
+	
+	public function followWithOffset(a:Actor, ox:Int, oy:Int)
+	{
+		if(isLightweight)
+		{
+			x = a.getXCenter() + ox;
+			y = a.getYCenter() + oy;
+			
+			return;
+		}
+		
+		/*var pt:V2 = a.body.GetWorldCenter();
+		
+		pt.x += GameState.toPhysicalUnits(ox);
+		pt.y += GameState.toPhysicalUnits(oy);
+		
+		body.SetPosition(pt);*/
+		
+		//DEAD
+		//x = a.x + ox;
+		//y = a.y + oy;
+	}
+	
+	public function setOriginPoint(x:Int, y:Int)
+	{
+		/*var resetPosition:V2;
+		
+		if (!isLightweight)
+		{
+			resetPosition = body.GetPosition();
+		}
+		
+		else
+		{
+			resetPosition = new V2(GameState.toPhysicalUnits(this.x), GameState.toPhysicalUnits(this.y));
+		}
+		
+		var offsetDiff:V2 = new V2(currOffset.x, currOffset.y);
+		var radians:Number = getAngle();			
+		
+		var newOffX:int = x - (currSprite.width / 2);
+		var newOffY:int = y - (currSprite.height / 2);
+		
+		if (currOrigin != null && (int(currOffset.x) != newOffX || int(currOffset.y) != newOffY) && angle != 0)
+		{
+			var oldAng:Number = radians + Math.atan2( -currOffset.y, -currOffset.x);
+			var newAng:Number = radians + Math.atan2( -newOffY, -newOffX);
+			var oldDist:Number = Math.sqrt(Math.pow(currOffset.x, 2) + Math.pow(currOffset.y, 2));
+			var newDist:Number = Math.sqrt(Math.pow(newOffX, 2) + Math.pow(newOffY, 2));
+							
+			var oldFixCenterX:int = Math.round(currOrigin.x + Math.cos(oldAng) * oldDist);
+			var oldFixCenterY:int = Math.round(currOrigin.y + Math.sin(oldAng) * oldDist);
+			var newFixCenterX:int = Math.round(x + Math.cos(newAng) * newDist);
+			var newFixCenterY:int = Math.round(y + Math.sin(newAng) * newDist);
+						
+			resetPosition.x += GameState.toPhysicalUnits(oldFixCenterX - newFixCenterX);
+			resetPosition.y += GameState.toPhysicalUnits(oldFixCenterY - newFixCenterY);
+		}
+		
+		currOrigin.x = x;
+		currOrigin.y = y;
+		currOffset.x = newOffX;
+		currOffset.y = newOffY;		
+					
+		offsetDiff.x = currOffset.x - offsetDiff.x;
+		offsetDiff.y = currOffset.y - offsetDiff.y;
+		
+		currSprite.origin.x = x;
+		currSprite.origin.y = y;			
+			
+		resetPosition.x += GameState.toPhysicalUnits(offsetDiff.x);
+		resetPosition.y += GameState.toPhysicalUnits(offsetDiff.y);
+		
+		if (!isLightweight)
+		{
+			body.SetPosition(resetPosition);
+		}
+		
+		else
+		{
+			x = GameState.toPixelUnits(resetPosition.x);
+			y = GameState.toPixelUnits(resetPosition.y);
+		}*/
+	}
+	
+	//*-----------------------------------------------
+	//* Physics: Velocity
+	//*-----------------------------------------------
+	
+	/*public function getXVelocity():Float
+	{
+		if (isLightweight)
+		{
+			return xVel;
+		}
+		
+		return body.GetLinearVelocity().x;
+	}
+	
+	public function getYVelocity():Float
+	{
+		if (isLightweight)
+		{
+			return yVel;
+		}
+		
+		return body.GetLinearVelocity().y;
+	}
+	
+	public function setXVelocity(dx:Number)
+	{
+		if (isLightweight)
+		{
+			xVel = dx * GameState.PSCALE;
+			return;
+		}
+		
+		var v:V2 = body.GetLinearVelocity();
+		v.x = dx * GameState.PSCALE;
+		body.SetLinearVelocity(v);
+		body.SetAwake(true);
+	}
+	
+	public function setYVelocity(dy:Number)
+	{
+		if (isLightweight)
+		{
+			yVel = dy * GameState.PSCALE;
+			return;
+		}
+		
+		var v:V2 = body.GetLinearVelocity();
+		v.y = dy * GameState.PSCALE;
+		body.SetLinearVelocity(v);
+		body.SetAwake(true);
+	}
+	
+	public function setVelocity(angle:Number, speed:Number)
+	{
+		setXVelocity(speed * GameState.PSCALE * Math.cos(Util.toRadians(angle)));
+		setYVelocity(speed * GameState.PSCALE * Math.sin(Util.toRadians(angle)));
+	}
+	
+	public function accelerateX(dx:Number)
+	{
+		setXVelocity(getXVelocity() + dx * GameState.PSCALE);
+	}
+	
+	public function accelerateY(dy:Number)
+	{
+		setYVelocity(getYVelocity() + dy * GameState.PSCALE);
+	}
+	
+	public function accelerate(angle:Number, speed:Number)
+	{
+		setXVelocity(getXVelocity() + speed * GameState.PSCALE * Math.cos(Util.toRadians(angle)));
+		setYVelocity(getYVelocity() + speed * GameState.PSCALE * Math.sin(Util.toRadians(angle)));
+	}*/
+	
+	//*-----------------------------------------------
+	//* Physics: Angles and Angular Velocity
+	//*-----------------------------------------------
+	
+	/*public function getAngle():Float
+	{
+		if (isLightweight)
+		{
+			return Util.toRadians(angle);
+		}
+		
+		return body.GetAngle();
+	}
+	
+	public function getAngleInDegrees():Float
+	{
+		if (isLightweight)
+		{
+			return angle;
+		}
+		
+		return Util.toDegrees(body.GetAngle());
+	}
+	
+	public function setAngle(angle:Number, inRadians:Boolean = true)
+	{
+		if(inRadians)
+		{
+			if (isLightweight)
+			{
+				this.angle = Util.toDegrees(angle);
+				return;
+			}
+			
+			body.SetAngle(angle);				
+		}
+		
+		else
+		{
+			if (isLightweight)
+			{
+				this.angle = angle;
+				return;
+			}
+			
+			body.SetAngle(Util.toRadians(angle));
+			
+		}
+	}
+	
+	public function rotate(angle:Number, inRadians:Boolean = true)
+	{
+		if(inRadians)
+		{
+			if (isLightweight)
+			{
+				this.angle += Util.toDegrees(angle);
+				return;
+			}
+			
+			body.SetAngle(body.GetAngle() + angle);
+		}
+			
+		else
+		{
+			if (isLightweight)
+			{
+				this.angle += angle;
+				return;
+			}
+			
+			body.SetAngle(body.GetAngle() + Util.toRadians(angle));	
+		}
+	}
+	
+	public function getAngularVelocity():Float
+	{
+		if (isLightweight)
+		{
+			return Util.toRadians(angleVel);
+		}
+		
+		return body.GetAngularVelocity();
+	}
+	
+	public function setAngularVelocity(omega:Number)
+	{
+		if (isLightweight)
+		{
+			angleVel = Util.toDegrees(omega) * GameState.PSCALE;
+			return;
+		}
+		
+		body.SetAngularVelocity(omega * GameState.PSCALE);	
+		body.SetAwake(true);
+	}
+	
+	public function changeAngularVelocity(omega:Number)
+	{
+		if (isLightweight)
+		{
+			angleVel += Util.toDegrees(omega) * GameState.PSCALE;
+			return;
+		}
+		
+		body.SetAngularVelocity(body.GetAngularVelocity() + omega * GameState.PSCALE);
+		body.SetAwake(true);
+	}*/
+	
+	//*-----------------------------------------------
+	//* Physics: Forces
+	//*-----------------------------------------------
+	
+	/*public function push(dirX:Number, dirY:Number, magnitude:Number)
+	{
+		if(isLightweight || (dirX == 0 && dirY == 0))
+		{
+			return;
+		}
+		
+		dummy.x = dirX;
+		dummy.y = dirY;
+		dummy.normalize();
+		
+		if(magnitude > 0)
+		{
+			dummy.multiplyN(magnitude * GameState.PSCALE);
+		}
+		
+		body.ApplyForce(dummy, body.GetWorldCenter());
+	}
+	
+	//in degrees
+	public function pushInDirection(angle:Number, speed:Number)
+	{
+		push
+		(
+			Math.cos(Util.toRadians(angle)),
+			Math.sin(Util.toRadians(angle)),
+			speed
+		);
+	}
+	
+	public function applyImpulse(dirX:Number, dirY:Number, magnitude:Number)
+	{
+		if(isLightweight || (dirX == 0 && dirY == 0))
+		{
+			return;
+		}
+		
+		dummy.x = dirX;
+		dummy.y = dirY;
+		dummy.normalize();
+		
+		if(magnitude > 0)
+		{
+			dummy.multiplyN(magnitude * GameState.PSCALE);
+		}
+		
+		body.ApplyImpulse(dummy, body.GetWorldCenter());
+	}
+	
+	//in degrees
+	public function applyImpulseInDirection(angle:Number, speed:Number)
+	{
+		applyImpulse
+		(
+			Math.cos(Util.toRadians(angle)),
+			Math.sin(Util.toRadians(angle)),
+			speed
+		);
+	}
+	
+	public function applyTorque(torque:Number)
+	{
+		if (!isLightweight)
+		{
+			body.ApplyTorque(torque * GameState.PSCALE);
+			body.SetAwake(true);
+		}
+	}*/
+	
+	//*-----------------------------------------------
+	//* Size
+	//*-----------------------------------------------
+	
+	public function getWidth():Float
+	{
+		return width;
+	}
+	
+	public function getHeight():Float
+	{
+		return height;
+	}
+	
+	public function getPhysicsWidth():Float
+	{
+		return width / 10;
+		//return Engine.toPhysicalUnits(getWidth());
+	}
+	
+	public function getPhysicsHeight():Float
+	{
+		return height / 10;
+		//return Engine.toPhysicalUnits(getHeight());
+	}
+	
+	//*-----------------------------------------------
+	//* Physics Flags
+	//*-----------------------------------------------
+	
+	public function getBody():Dynamic
+	{
+		return null;
+		//return body;
+	}
+	
+	public function enableRotation()
+	{
+		if(!isLightweight)
+		{
+			//body.SetFixedRotation(false);
+		}
+	}
+	
+	public function disableRotation()
+	{
+		if(!isLightweight)
+		{
+			//body.SetFixedRotation(true);
+		}
+	}
+	
+	public function setIgnoreGravity(state:Bool)
+	{
+		if(!isLightweight)
+		{
+			//body.SetIgnoreGravity(state);
+		}
+	}
+	
+	public function ignoresGravity():Bool
+	{
+		if(isLightweight)
+		{
+			return true;
+		}
+		
+		return false;
+		//return body.IsIgnoringGravity();
 	}
 	
 	//*-----------------------------------------------
