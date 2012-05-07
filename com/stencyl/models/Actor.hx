@@ -10,6 +10,7 @@ import nme.Assets;
 import nme.display.Graphics;
 import nme.geom.Point;
 
+import com.stencyl.Input;
 import com.stencyl.Engine;
 
 import com.stencyl.graphics.AbstractAnimation;
@@ -1727,15 +1728,16 @@ class Actor extends Sprite
 	//* Mouse Convenience
 	//*-----------------------------------------------
 	
-	/*public function isMouseOver():Bool
+	public function isMouseOver():Bool
 	{
-		var mx:int = FlxG.mouse.x;
-		var my:int = FlxG.mouse.y;
+		//This may need to be in global x/y???
+		var mx:Int = Input.mouseX;
+		var my:Int = Input.mouseY;
 		
-		var xPos:int = this.x;
-		var yPos:int = this.y;
+		var xPos:Float = this.x;
+		var yPos:Float = this.y;
 		
-		if (isLightweight)
+		if(isLightweight)
 		{
 			xPos = getX();
 			yPos = getY();
@@ -1743,8 +1745,9 @@ class Actor extends Sprite
 		
 		if(isHUD)
 		{
-			mx = FlxG.mouse.screenX;
-			my = FlxG.mouse.screenY;
+			//This said screen x/y???
+			mx = Input.mouseX;
+			my = Input.mouseY;
 			
 			xPos = getScreenX();
 			yPos = getScreenY();
@@ -1752,76 +1755,76 @@ class Actor extends Sprite
 		
 		return (mx >= xPos && 
 		   		my >= yPos && 
-		   		mx < xPos + frameWidth && 
-		   		my < yPos + frameHeight);
+		   		mx < xPos + width && 
+		   		my < yPos + height);
 	}
 	
 	public function isMouseHover():Bool
 	{
-		return isMouseOver() && !FlxG.mouse.pressed();
+		return isMouseOver() && Input.mouseUp;
 	}
 	
 	public function isMouseDown():Bool
 	{
-		return isMouseOver() && FlxG.mouse.pressed();
+		return isMouseOver() && Input.mouseDown;
 	}
 	
 	public function isMousePressed():Bool
 	{
-		return isMouseOver() && FlxG.mouse.justPressed();
+		return isMouseOver() && Input.mousePressed;
 	}
 	
 	public function isMouseReleased():Bool
 	{
-		return isMouseOver() && FlxG.mouse.justReleased();
+		return isMouseOver() && Input.mouseReleased;
 	}
 	
 	public function checkMouseState()
 	{
-		var mouseOver:Boolean = isMouseOver();
+		var mouseOver:Bool = isMouseOver();
 				
-		if (mouseState <= 0 && mouseOver)
+		if(mouseState <= 0 && mouseOver)
 		{
 			//Just Entered
 			mouseState = 1;
 		}
 				
-		else if (mouseState >= 1 && mouseOver)
+		else if(mouseState >= 1 && mouseOver)
 		{
 			//Over
 			mouseState = 2;
 					
-			if (FlxG.mouse.justPressed())
+			if(Input.mousePressed)
 			{
 				//Clicked On
 				mouseState = 3;
 			}
 					
-			else if (FlxG.mouse.pressed())
+			else if(Input.mouseDown)
 			{
 				//Dragged
 				mouseState = 4;
 			}
 					
-			if (FlxG.mouse.justReleased())
+			if(Input.mouseReleased)
 			{
 				//Released
 				mouseState = 5;
 			}
 		}
 				
-		else if (mouseState > 0 && !mouseOver)
+		else if(mouseState > 0 && !mouseOver)
 		{
 			//Just Exited
 			mouseState = -1;
 		}
 			
-		else if (mouseState == -1 && !mouseOver)
+		else if(mouseState == -1 && !mouseOver)
 		{
 			mouseState = 0;
 		}			
 		
-		for (var i:int = 0; i < mouseOverListeners.length; i++)
+		/*for(var i:int = 0; i < mouseOverListeners.length; i++)
 		{
 			try
 			{
@@ -1837,8 +1840,8 @@ class Actor extends Sprite
 			{
 				FlxG.log(e.getStackTrace());
 			}
-		}
-	}*/
+		}*/
+	}
 	
 	//*-----------------------------------------------
 	//* Tween Convenience
@@ -2240,6 +2243,8 @@ class Actor extends Sprite
 	
 	public function die()
 	{
+		dying = true;
+	
 		/*kill();
 		
 		for (var r:int = 0; r < whenKilledListeners.length; r++)
