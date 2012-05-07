@@ -95,6 +95,8 @@ class Actor extends Sprite
 	
 	public var tweenLoc:Point;
 	public var tweenAngle:AngleHolder;
+	public var activeAngleTweens:Int;
+	public var activePositionTweens:Int;
 	
 	
 	//*-----------------------------------------------
@@ -211,21 +213,15 @@ class Actor extends Sprite
 		
 		hasSprite = false;
 		
+		activeAngleTweens = 0;
+		activePositionTweens = 0;
+		
 		//---
 		
 		animationMap = new Hash<DisplayObject>();
 		behaviors = new BehaviorManager();
 		
-		allListeners = new HashMap<Dynamic, Dynamic>();
-		allListenerReferences = new Array<Dynamic>();
-		
-		whenCreatedListeners = new Array<Dynamic>();
-		whenUpdatedListeners = new Array<Dynamic>();
-		whenDrawingListeners = new Array<Dynamic>();
-		whenKilledListeners = new Array<Dynamic>();
-		mouseOverListeners = new Array<Dynamic>();
-		positionListeners = new Array<Dynamic>();
-		collisionListeners = new Array<Dynamic>();
+		resetListeners();
 		
 		//---
 		
@@ -276,6 +272,76 @@ class Actor extends Sprite
 	public function destroy()
 	{
 		//TODO:
+		/*if(destroyed)
+		{
+			return;
+		}
+		
+		destroyed = true;
+		
+		for each(var anim:FlxSprite in anims)
+		{
+			anim.destroy();
+			anim.kill();
+			anim.dead = true;
+			anim.exists = false;
+			anim.visible = false;
+		}
+
+		if(body != null && !isLightweight)
+		{
+			var contact:b2ContactEdge = body.GetContactList();
+			
+			while(contact != null)
+			{	
+				game.world.m_contactListener.EndContact(contact.contact);
+				contact = contact.next;
+			}
+			
+			game.world.DestroyBody(body);
+		}			
+		
+		lastCollided = null;
+		
+		game = null;
+		shapeMap = null;
+		originMap = null;
+		defaultAnim = null;
+		anims = null;
+		currSprite = null;
+		currOffset = null;
+		currOrigin = null;
+		body = null;
+		sprite = null;
+		contacts = null;
+		regionContacts = null;
+		
+		whenCreatedListeners = null;
+		whenUpdatedListeners = null;
+		whenDrawingListeners = null;
+		whenKilledListeners = null;
+		mouseOverListeners = null;
+		positionListeners = null;
+		
+		registry = null;
+		
+		collisions = null;
+		
+		manager.destroy();*/
+	}
+	
+	public function resetListeners()
+	{
+		allListeners = new HashMap<Dynamic, Dynamic>();
+		allListenerReferences = new Array<Dynamic>();
+		
+		whenCreatedListeners = new Array<Dynamic>();
+		whenUpdatedListeners = new Array<Dynamic>();
+		whenDrawingListeners = new Array<Dynamic>();
+		whenKilledListeners = new Array<Dynamic>();
+		mouseOverListeners = new Array<Dynamic>();
+		positionListeners = new Array<Dynamic>();
+		collisionListeners = new Array<Dynamic>();
 	}
 	
 	public function addAnim
@@ -311,7 +377,7 @@ class Actor extends Sprite
 	
 	public function initScripts()
 	{		
-		//handlesCollisions = true;
+		handlesCollisions = true;
 		
 		behaviors.initScripts();
 		
@@ -338,6 +404,64 @@ class Actor extends Sprite
 			r++;
 		}			
 	}
+	
+	/*static public function createBox(width:Number, height:Number):b2PolygonShape
+	{
+		var boxShape:b2PolygonShape = new b2PolygonShape();
+		boxShape.SetAsBox(GameState.toPhysicalUnits(width/2), GameState.toPhysicalUnits(height/2));
+		return boxShape;
+	}
+	
+	private function initFromBody(game:GameState, bodyDef:b2BodyDef):void
+	{	
+		bodyDef.allowSleep = false;
+		bodyDef.userData = this;
+		this.bodyDef = bodyDef;
+		body = game.world.CreateBody(bodyDef);
+	}
+
+	private function initBody(game:GameState, groupID:int, isSensor:Boolean, isStationary:Boolean, isKinematic:Boolean, canRotate:Boolean, shape:b2Shape):void
+	{			
+		var bodyDef:b2BodyDef = new b2BodyDef();
+		
+		bodyDef.groupID = groupID;
+		bodyDef.position.x = GameState.toPhysicalUnits(x);
+		bodyDef.position.y = GameState.toPhysicalUnits(y);
+			
+		bodyDef.angle = 0;
+		bodyDef.fixedRotation = !canRotate;
+		bodyDef.allowSleep = false;
+
+		if(isStationary)
+		{
+			bodyDef.type = b2Body.b2_staticBody;
+		}
+		
+		else if(isKinematic)
+		{
+			bodyDef.type = b2Body.b2_kinematicBody;
+		}
+		
+		else
+		{
+			bodyDef.type = b2Body.b2_dynamicBody;
+		}
+
+		var fixtureDef:b2FixtureDef = new b2FixtureDef();
+		fixtureDef.shape = shape;
+		fixtureDef.friction = 1.0;
+		fixtureDef.density = 0.1;
+		fixtureDef.restitution = 0;
+		fixtureDef.isSensor = isSensor;
+		fixtureDef.groupID = -1000;
+		fixtureDef.userData = this;
+					
+		bodyDef.userData = this;
+		body = game.world.CreateBody(bodyDef);			
+		body.CreateFixture(fixtureDef);
+
+		this.bodyDef = bodyDef;
+	}*/
 	
 	public function tileTest()
    	{
@@ -503,34 +627,40 @@ class Actor extends Sprite
 	
 	function updateTweenProperties()
 	{
-		//Since we can't tween directly on the Box2D values and can't make direct function calls,
-		//we have to reverse the normal flow of information from body -> Flixel to tween -> body
-		/*var a:Boolean = Tweener.isTweening(tweenLoc);
-		var b:Boolean = Tweener.isTweening(tweenAngle);
-				
-		if (autoScale && !isLightweight && body != null && bodyDef.type != b2Body.b2_staticBody && (bodyScale.x != currSprite.scale.x || bodyScale.y != currSprite.scale.y))
+		//In lightweight mode, none of this junk has to happen - it just works like it should!
+		if(isLightweight)
 		{
-			if (currSprite.scale.x > 0 && currSprite.scale.y > 0)
+			return;
+		}
+	
+		//Since we can't tween directly on the Box2D values and can't make direct function calls,
+		//we have to reverse the normal flow of information from body -> NME to tween -> body
+		var a:Bool = activePositionTweens > 0;
+		var b:Bool = activeAngleTweens > 0;
+				
+		/*if(autoScale && !isLightweight && body != null && bodyDef.type != b2Body.b2_staticBody && (bodyScale.x != currSprite.scale.x || bodyScale.y != currSprite.scale.y))
+		{
+			if(currSprite.scale.x > 0 && currSprite.scale.y > 0)
 			{
 				scaleBody(currSprite.scale.x, currSprite.scale.y);
 			}
-		}
+		}*/
 		
 		if(a && b)
 		{
 			x = tweenLoc.x;
-			currSprite.x = tweenLoc.x;
+			currAnimation.x = tweenLoc.x;
 			
 			y = tweenLoc.y;
-			currSprite.y = tweenLoc.y;
+			currAnimation.y = tweenLoc.y;
 			
-			angle = tweenAngle.angle;
-			currSprite.angle = tweenAngle.angle;
+			rotation = tweenAngle.angle;
+			currAnimation.rotation = tweenAngle.angle;
 			
-			if (!isLightweight)
+			/*if(!isLightweight)
 			{
 				body.SetTransform(new V2(GameState.toPhysicalUnits(x), GameState.toPhysicalUnits(y)), Util.toRadians(angle));
-			}
+			}*/
 		}
 		
 		else
@@ -538,21 +668,21 @@ class Actor extends Sprite
 			if(a)
 			{
 				x = tweenLoc.x;
-				currSprite.x = tweenLoc.x;
+				currAnimation.x = tweenLoc.x;
 				setX(tweenLoc.x);
 				
 				y = tweenLoc.y;
-				currSprite.y = tweenLoc.y;
+				currAnimation.y = tweenLoc.y;
 				setY(tweenLoc.y);
 			}
 			
 			if(b)
 			{
-				angle = tweenAngle.angle;
-				currSprite.angle = tweenAngle.angle;
+				rotation = tweenAngle.angle;
+				currAnimation.rotation = tweenAngle.angle;
 				setAngle(tweenAngle.angle, false);
 			}
-		}*/		
+		}
 	}
 		
 	public function scaleBody(width:Float, height:Float)
@@ -1890,8 +2020,10 @@ class Actor extends Sprite
 		{
 			easing = Linear.easeNone;
 		}
+		
+		activeAngleTweens++;
 	
-		Actuate.tween(tweenAngle, duration, {rotation:angle}).ease(easing).delay(delay);
+		Actuate.tween(tweenAngle, duration, {rotation:angle}).ease(easing).delay(delay).onComplete(onTweenAngleComplete);
 	}
 	
 	public function moveTo(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null, delay:Int = 0)
@@ -1904,7 +2036,9 @@ class Actor extends Sprite
 			easing = Linear.easeNone;
 		}
 		
-		Actuate.tween(tweenLoc, duration, {x:x, y:y}).ease(easing).delay(delay);
+		activePositionTweens++;
+		
+		Actuate.tween(tweenLoc, duration, {x:x, y:y}).ease(easing).delay(delay).onComplete(onTweenPositionComplete);
 	}
 	
 	//In degrees
@@ -1917,6 +2051,17 @@ class Actor extends Sprite
 	{
 		moveTo(getX() + x, getY() + y, duration, easing, delay);
 	}
+	
+	public function onTweenAngleComplete()
+	{
+		activeAngleTweens--;
+	}
+	
+	public function onTweenPositionComplete()
+	{
+		activePositionTweens--;
+	}
+	
 	
 	//*-----------------------------------------------
 	//* Drawing
