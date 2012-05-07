@@ -363,6 +363,47 @@ class Actor extends Sprite
 		animationMap.set(name, sprite);
 	}
 	
+	/*public function getAnimation():String
+	{
+		return currAnim;
+	}
+	
+	public function setAnimation(name:String):void
+	{
+		switchAnimation(name);
+	}
+	
+	public function switchToDefaultAnimation():void
+	{
+		if(sprite != null && sprite.animations.length > 0)
+		{
+			defaultAnim = (sprite.animations[sprite.defaultAnimation] as Animation).animName;
+			switchAnimation(defaultAnim);
+			setCurrentFrame(0);
+		}
+	}
+	
+	public function isAnimationPlaying():Boolean
+	{
+		return !currSprite.finished || (currSprite._animations[0] as FlxAnim).looped;
+	}
+	
+	public function getCurrentFrame():int
+	{
+		return currSprite.frame;
+	}
+	
+	public function setCurrentFrame(frame:int):void
+	{
+		currSprite.finished = false;
+		currSprite.playFromFrame(frame);
+	}
+	
+	public function getNumFrames():int
+	{
+		return currSprite.realFrameCount;
+	}*/
+	
 	public function switchAnimation(name:String)
 	{
 		if(name != currAnimationName)
@@ -558,6 +599,365 @@ class Actor extends Sprite
 		bodyScale.x = width;
 		bodyScale.y = height;*/
 	}
+	
+	private function checkScreenState()
+	{
+		/*var onScreen:Boolean = isOnScreen();
+		var inScene:Boolean = onScreen || isInScene();
+		
+		var enteredScreen:Boolean = !lastScreenState && onScreen;
+		var enteredScene:Boolean = !lastSceneState && inScene;
+		var exitedScreen:Boolean = lastScreenState && !onScreen;
+		var exitedScene:Boolean = lastSceneState && !inScene;
+		
+		for (var r:int = 0; r < positionListeners.length; r++)
+		{
+			try
+			{
+				var f:Function = positionListeners[r] as Function;				
+				f(positionListeners, enteredScreen, exitedScreen, enteredScene, exitedScene);
+				
+				if (positionListeners.indexOf(f) == -1)
+				{
+					r--;
+				}
+			}
+			catch (e:Error)
+			{
+				FlxG.log(e.getStackTrace());
+			}
+		}
+		
+		var typeListeners:Array = game.typeGroupPositionListeners[getGroup()] as Array;
+		var groupListeners:Array = game.typeGroupPositionListeners[getType()] as Array;
+		
+		//Move to scene level?
+		if (typeListeners != null)
+		{
+			for (var r:int = 0; r < typeListeners.length; r++)
+			{
+				try
+				{
+					var f:Function = typeListeners[r] as Function;				
+					f(typeListeners, this, enteredScreen, exitedScreen, enteredScene, exitedScene);
+					
+					if (typeListeners.indexOf(f) == -1)
+					{
+						r--;
+					}
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+		}
+		
+		if (groupListeners != null)
+		{
+			for (var r:int = 0; r < groupListeners.length; r++)
+			{
+				try
+				{
+					var f:Function = groupListeners[r] as Function;				
+					f(groupListeners, this, enteredScreen, exitedScreen, enteredScene, exitedScene);
+					
+					if (groupListeners.indexOf(f) == -1)
+					{
+						r--;
+					}						
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+		}
+		
+		lastScreenState = onScreen;
+		lastSceneState = inScene;*/
+	}
+		
+	//*-----------------------------------------------
+	//* Collision
+	//*-----------------------------------------------
+	
+	/*
+	
+	
+	private function handleCollisions():void
+	{			
+		for each(var p:b2Contact in contacts)
+		{
+			var a1:Actor = p.GetFixtureA().GetUserData() as Actor;
+			var a2:Actor = p.GetFixtureB().GetUserData() as Actor;
+											
+			var otherActor:Actor;
+			var otherShape:b2Fixture;
+			var thisShape:b2Fixture;
+			
+			var key:String = String(p._ptr);
+				
+			if(a1 == this)
+			{
+				otherActor = a2;
+				otherShape = p.GetFixtureB();
+				thisShape = p.GetFixtureA();
+			}
+			
+			else
+			{
+				otherActor = a1;
+				otherShape = p.GetFixtureA();
+				thisShape = p.GetFixtureB();
+			}
+							
+			if(collisions[key] != null)
+			{
+				continue;
+			}
+			
+			var d:Collision = new Collision();
+			d.otherActor = otherActor;
+			d.otherShape = otherShape;
+			d.thisActor = this;
+			d.thisShape = thisShape;
+			d.actorA = a1;
+			d.actorB = a2;
+			
+			var manifold:b2WorldManifold = new b2WorldManifold();
+			p.GetWorldManifold(manifold);
+			
+			var cp:CollisionPoint = new CollisionPoint();
+			cp.point = manifold.GetPoint();
+			cp.normal = manifold.normal;
+			
+			collisions[key] = d;
+			
+			if(cp.point != null)
+			{
+				d.points.push(cp);
+				
+				d.thisFromBottom = collidedFromBottom(p, cp.normal);					
+				d.thisFromTop = collidedFromTop(p, cp.normal);						
+				d.thisFromLeft = collidedFromLeft(p, cp.normal);					
+				d.thisFromRight = collidedFromRight(p, cp.normal);		
+				
+				d.otherFromBottom = otherActor.collidedFromBottom(p, cp.normal);					
+				d.otherFromTop = otherActor.collidedFromTop(p, cp.normal);						
+				d.otherFromLeft = otherActor.collidedFromLeft(p, cp.normal);					
+				d.otherFromRight = otherActor.collidedFromRight(p, cp.normal);
+			}
+			
+			//Can use logical OR assignment shortcut if we switch back to multipoint collisions
+			d.thisCollidedWithActor = collidedWithActor(otherActor);						
+			d.thisCollidedWithTerrain = collidedWithTerrain(otherActor);				
+			d.thisCollidedWithTile = collidedWithTile(otherActor);
+			d.thisCollidedWithSensor = otherShape.IsSensor();		
+			
+			d.otherCollidedWithActor = collidedWithActor(this);						
+			d.otherCollidedWithTerrain = collidedWithTerrain(this);				
+			d.otherCollidedWithTile = collidedWithTile(this);
+			d.otherCollidedWithSensor = thisShape.IsSensor();		
+		}
+		
+		for each(var collision:Collision in collisions)
+		{
+			if (!collision.thisActor.handlesCollisions || !collision.otherActor.handlesCollisions)
+			{
+				continue;
+			}
+			
+			lastCollided = collision.otherActor;
+			handleCollision(collision);
+		}
+		
+		contacts = new Dictionary();
+	}
+	
+	public function collidedFromBottom(c:b2Contact, normal:V2):Boolean
+	{
+		var thisActor:Actor = this;
+		var body:b2Body = thisActor.getBody();
+		
+		var body1:b2Body = c.GetFixtureA().GetBody();
+		var body2:b2Body = c.GetFixtureB().GetBody();
+
+		if(body1 == body)
+		{
+			return normal.y > 0;
+		}
+		
+		if(body2 == body)
+		{
+			return normal.y < 0;
+		}
+
+		return false;
+	}
+	
+	public function collidedFromTop(c:b2Contact, normal:V2):Boolean
+	{
+		var thisActor:Actor = this;
+		var body:b2Body = thisActor.getBody();
+		
+		var body1:b2Body = c.GetFixtureA().GetBody();
+		var body2:b2Body = c.GetFixtureB().GetBody();
+		
+		if(body1 == body)
+		{
+			return normal.y < 0;
+		}
+		
+		if(body2 == body)
+		{
+			return normal.y > 0;
+		}
+		
+		return false;
+	}
+	
+	public function collidedFromLeft(c:b2Contact, normal:V2):Boolean
+	{
+		var thisActor:Actor = this;
+		var body:b2Body = thisActor.getBody();
+		
+		var body1:b2Body = c.GetFixtureA().GetBody();
+		var body2:b2Body = c.GetFixtureB().GetBody();
+		
+		if(body1 == body)
+		{
+			return normal.x < 0;
+		}
+		
+		if(body2 == body)
+		{
+			return normal.x > 0;
+		}
+		
+		return false;
+	}
+	
+	public function collidedFromRight(c:b2Contact, normal:V2):Boolean
+	{
+		var thisActor:Actor = this;
+		var body:b2Body = thisActor.getBody();
+		
+		var body1:b2Body = c.GetFixtureA().GetBody();
+		var body2:b2Body = c.GetFixtureB().GetBody();
+		
+		if(body1 == body)
+		{
+			return normal.x > 0;
+		}
+		
+		if(body2 == body)
+		{
+			return normal.x < 0;
+		}
+		
+		return false;
+	}
+	
+	private function collidedWithActor(a:Actor):Boolean
+	{
+		if(a != null)
+		{
+			return a.getGroupID() != 1 && a.getGroupID() != -2 && !a.isTerrainRegion; //not tile, region, or terrain
+		}
+		
+		return false;
+	}
+	
+	private function collidedWithTerrain(a:Actor):Boolean
+	{
+		if(a != null)
+		{
+			return a.isTerrainRegion;   //Terrain Region?
+		}
+		
+		return false;
+	}
+	
+	private function collidedWithTile(a:Actor):Boolean
+	{
+		if(a != null)
+		{
+			return a.getGroupID() == 1; //Game.TILE_GROUP_ID;
+		}
+		
+		return false;
+	}
+	
+	public function addContact(point:b2Contact):void
+	{
+		if(contacts != null)
+		{
+			var key:String = String(point._ptr);	
+			contacts[key] = point;
+			delete collisions[key];
+		}			
+	}
+	
+	public function removeContact(point:b2Contact):void
+	{
+		var key:String = String(point._ptr);
+
+		if(collisions != null)
+		{
+			delete collisions[key];
+		}
+		
+		if(contacts != null)
+		{
+			delete contacts[key];
+		}
+	}
+	
+	public function addRegionContact(point:b2Contact):void
+	{
+		if(regionContacts != null)
+		{
+			var key:String = String(point._ptr);	
+			regionContacts[key] = point;
+		}			
+	}
+	
+	public function removeRegionContact(point:b2Contact):void
+	{
+		var key:String = String(point._ptr);
+		
+		if(regionContacts != null)
+		{
+			delete regionContacts[key];
+		}
+	}
+	
+	public function handleCollision(event:Collision):void
+	{
+		//Move to GameState level with type?
+		for (var r:int = 0; r < collisionListeners.length; r++)
+		{
+			try
+			{					
+				var f:Function = collisionListeners[r] as Function;
+				f(collisionListeners, event);
+									
+				if (collisionListeners.indexOf(f) == -1)
+				{
+					r--;
+				}									
+			}
+			catch (e:Error)
+			{
+				FlxG.log(e.getStackTrace());
+			}
+		}
+		
+		game.handleCollision(this, event);			
+	}
+	
+	*/
 	
 	//*-----------------------------------------------
 	//* Properties
