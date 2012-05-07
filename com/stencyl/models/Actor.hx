@@ -108,6 +108,7 @@ class Actor extends Sprite
 	public var animationMap:Hash<DisplayObject>;
 	
 	public var hasSprite:Bool; //???
+	public var sprite:com.stencyl.models.actor.Sprite;
 	
 	public var shapeMap:Hash<Dynamic>;
 	public var originMap:Hash<Dynamic>;
@@ -218,13 +219,90 @@ class Actor extends Sprite
 		
 		//---
 		
-		animationMap = new Hash<DisplayObject>();
-		behaviors = new BehaviorManager();
+		/*
 		
-		resetListeners();
+		tweenLoc = new Point(0, 0);
+		tweenAngle = new AngleHolder();
+		
+		currOrigin = new V2(0, 0);
+		currOffset = new V2(0, 0);			
+		registry = new Object();
+		
+		this.isLightweight = isLightweight;
+		this.autoScale = autoScale;
+		xVel = 0;
+		yVel = 0;
+		angleVel = 0;
+		
+		mouseState = 0;
+		
+		lastScreenState = false;
+		lastSceneState = false;			
+		
+		isCamera = false;
+		isRegion = false;
+		isTerrainRegion = false;
+		solid = false;
+		moves = false;
+		drawActor = true;
+		antialiasing = true;
+		
+		killLeaveScreen = false;
+		alwaysSimulate = false;
+		isHUD = false;
+		
+		handlesCollisions = true;
+		lastCollided = null;
+		
+		*/
 		
 		//---
 		
+		resetListeners();
+		
+		/*
+		
+		recycled = false;
+		paused = false;
+		
+		this.ID = ID;
+		name = "Unknown";
+		
+		//this.groupID = groupID;
+		
+		this.layerID = layerID;
+		this.typeID = typeID;
+		
+		this.game = game;
+		
+		if(actorType != null)
+		{
+			trace("Initializing: " + actorType.name);
+		}
+		
+		destroyed = false;
+		
+		if(!invisible)
+		{
+			createGraphic(width, height, 0x00ffffff);
+		}
+			
+		*/
+		
+		behaviors = new BehaviorManager();
+		
+		//---
+		
+		currAnimationName = "";
+		animationMap = new Hash<DisplayObject>();
+		shapeMap = new Hash<Dynamic>();
+		originMap = new Hash<Dynamic>();
+		
+		//this.sprite = sprite;
+		
+		//---
+		
+		//if(sprite != null)
 		if(actorType != null)
 		{
 			var s:com.stencyl.models.actor.Sprite = cast(Data.get().resources.get(actorType.spriteID), com.stencyl.models.actor.Sprite);
@@ -259,8 +337,83 @@ class Actor extends Sprite
 			}
 		}
 		
+		//--
+		
+		/*
+		
+		addAnim("recyclingDefault", null, 1, 1, 1, 1, 1, [1000], false, []);
+			
+		if(bodyDef != null && !isLightweight)
+		{
+			if(bodyDef.bullet)
+			{
+				game.world.m_continuousPhysics = true;
+			}
+			
+			bodyDef.groupID = groupID;
+
+			initFromBody(game, bodyDef);	
+			
+			//XXX: Box2D seems to require this to be done, otherwise it will refuse to create
+			//any shapes in the future!
+			var box:b2PolygonShape = new b2PolygonShape();
+			box.SetAsBox(1, 1);
+			body.CreateFixtureShape(box, 0.1);
+			
+			md = new b2MassData();
+			md.mass = bodyDef.mass;
+			md.I = bodyDef.aMass;
+			md.center.x = 0;
+			md.center.y = 0;
+			
+			body.SetMassData(md);
+			bodyScale = new Point(1, 1);
+		}
+		
+		else
+		{
+			if(shape == null)
+			{
+				shape = createBox(width, height);
+			}
+			
+			if(this is Region)
+			{
+				isSensor = true;
+				canRotate = false;
+			}
+			
+			if(this is TerrainRegion)
+			{
+				canRotate = false;
+			}
+			
+			if(!isLightweight)
+			{
+				initBody(game, groupID, isSensor, isStationary, isKinematic, canRotate, shape);
+			}
+		}
+
+		switchToDefaultAnimation();
+		
+		//Use set location to align actors
+		if (sprite != null)
+		{ 
+		   setLocation(GameState.toPixelUnits(x), GameState.toPixelUnits(y));
+		}
+		else
+		{
+			if (!isLightweight)
+			{
+				body.SetPosition(new V2(x, y));
+			}
+		}
+		
+		*/
+		
 		//---
 		
+		//No IC - Default to what the ActorType uses
 		if(behaviorValues == null && actorType != null)
 		{
 			behaviorValues = actorType.behaviorValues;
@@ -491,46 +644,49 @@ class Actor extends Sprite
 		animationMap.set(name, sprite);
 	}
 	
-	/*public function getAnimation():String
+	public function getAnimation():String
 	{
-		return currAnim;
+		return currAnimationName;
 	}
 	
-	public function setAnimation(name:String):void
+	public function setAnimation(name:String)
 	{
 		switchAnimation(name);
 	}
 	
-	public function switchToDefaultAnimation():void
+	public function switchToDefaultAnimation()
 	{
-		if(sprite != null && sprite.animations.length > 0)
+		/*if(sprite != null && sprite.animations.length > 0)
 		{
 			defaultAnim = (sprite.animations[sprite.defaultAnimation] as Animation).animName;
 			switchAnimation(defaultAnim);
 			setCurrentFrame(0);
-		}
+		}*/
 	}
 	
-	public function isAnimationPlaying():Boolean
+	public function isAnimationPlaying():Bool
 	{
-		return !currSprite.finished || (currSprite._animations[0] as FlxAnim).looped;
+		return true;
+		//return !currSprite.finished || (currSprite._animations[0] as FlxAnim).looped;
 	}
 	
-	public function getCurrentFrame():int
+	public function getCurrentFrame():Int
 	{
-		return currSprite.frame;
+		return 0;
+		//return currSprite.frame;
 	}
 	
-	public function setCurrentFrame(frame:int):void
+	public function setCurrentFrame(frame:Int)
 	{
-		currSprite.finished = false;
-		currSprite.playFromFrame(frame);
+		//currSprite.finished = false;
+		//currSprite.playFromFrame(frame);
 	}
 	
-	public function getNumFrames():int
+	public function getNumFrames():Int
 	{
-		return currSprite.realFrameCount;
-	}*/
+		return 1;
+		//return currSprite.realFrameCount;
+	}
 	
 	public function switchAnimation(name:String)
 	{
@@ -817,8 +973,6 @@ class Actor extends Sprite
 	//*-----------------------------------------------
 	
 	/*
-	
-	
 	private function handleCollisions():void
 	{			
 		for each(var p:b2Contact in contacts)
