@@ -43,26 +43,35 @@ import com.eclecticdesignstudio.motion.easing.Elastic;
 
 class Engine 
 {
+	//*-----------------------------------------------
+	//* Constants
+	//*-----------------------------------------------
+	
 	public static var STEP_SIZE:Float = 0.01;
 	public static var MS_PER_SEC:Int = 1000;
-	public static var elapsedTime:Float = 0;
-	public static var stage:Stage;
 	
-	var root:Sprite;
+	
 	var tasks:Array<TimedTask>;
+	var layers:Array<Sprite>;
+
 	
-		
+	//*-----------------------------------------------
+	//* Timing
+	//*-----------------------------------------------
+	
+	public static var elapsedTime:Float = 0;
+	
 	var lastTime:Float;
 	var acc:Float;
 	
 	var framerate:Int;
 	var framerateCounter:Float;
-	var fpsLabel:TextField;
 	
-	var layers:Array<Sprite>;
-
-	var master:Sprite;
-
+	
+	//*-----------------------------------------------
+	//* Important Values
+	//*-----------------------------------------------
+	
 	public static var cameraX:Float;
 	public static var cameraY:Float;
 	
@@ -71,7 +80,21 @@ class Engine
 	
 	public static var sceneWidth:Int;
 	public static var sceneHeight:Int;
+	
+	public static var paddingLeft:Int = 0;
+	public static var paddingRight:Int = 0;
+	public static var paddingTop:Int = 0;
+	public static var paddingBottom:Int = 0;
 		
+		
+	//*-----------------------------------------------
+	//* Model
+	//*-----------------------------------------------
+	
+	public static var stage:Stage;
+	public var root:Sprite; //The absolute root
+	public var master:Sprite; // the root of the main node
+	
 	public var scene:Scene;
 	public var actors:Array<Actor>;
 			
@@ -86,11 +109,10 @@ class Engine
 	
 	
 	//*-----------------------------------------------
-	//* Game Attributes
+	//* Behaviors & Game Attributes
 	//*-----------------------------------------------
 	
-	private var gameAttributes:Hash<Dynamic>;
-	
+	public var gameAttributes:Hash<Dynamic>;
 	public var behaviors:BehaviorManager;
 	
 	

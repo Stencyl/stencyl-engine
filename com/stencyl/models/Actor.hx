@@ -77,6 +77,9 @@ class Actor extends Sprite
 	public var isLightweight:Bool;
 	public var autoScale:Bool;
 	
+	public var dead:Bool; //gone from the game - don't touch
+	public var dying:Bool; //in the process of dying but not yet removed
+	
 
 	//*-----------------------------------------------
 	//* Position / Motion
@@ -2169,75 +2172,75 @@ class Actor extends Sprite
 	//* Misc
 	//*-----------------------------------------------	
 	
-	/*public function anchorToScreen():void
+	public function anchorToScreen()
 	{
-		if (!isLightweight)
+		if(!isLightweight)
 		{
-			body.SetAlwaysActive(true);
+			//body.SetAlwaysActive(true);
 		}
 		
 		isHUD = true;			
-		game.addHUDActor(this);
+		//engine.addHUDActor(this);
 		
-		for each(var anim:FlxSprite in anims)
+		for(anim in animationMap)
 		{
-			anim.scrollFactor.x = 0;
-			anim.scrollFactor.y = 0;
+			//anim.scrollFactor.x = 0;
+			//anim.scrollFactor.y = 0;
 		}
 	}
 	
-	public function unanchorFromScreen():void
+	public function unanchorFromScreen()
 	{
-		if (!isLightweight)
+		if(!isLightweight)
 		{
-			body.SetAlwaysActive(alwaysSimulate || false);
+			//body.SetAlwaysActive(alwaysSimulate || false);
 		}
 		
 		isHUD = false;			
-		game.removeHUDActor(this);
+		//engine.removeHUDActor(this);
 		
-		for each(var anim:FlxSprite in anims)
+		for(anim in animationMap)
 		{
-			anim.scrollFactor.x = 1;
-			anim.scrollFactor.y = 1;
+			//anim.scrollFactor.x = 1;
+			//anim.scrollFactor.y = 1;
 		}
 	}
 	
-	public function isAnchoredToScreen():Boolean
+	public function isAnchoredToScreen():Bool
 	{
 		return isHUD;
 	}
 	
-	public function makeAlwaysSimulate():void
+	public function makeAlwaysSimulate()
 	{
-		if (!isLightweight)
+		if(!isLightweight)
 		{
-			body.SetAlwaysActive(true);
+			//body.SetAlwaysActive(true);
 		}
 		
 		alwaysSimulate = true;			
-		game.addAlwaysOnActor(this);
+		//engine.addAlwaysOnActor(this);
 	}
 	
-	public function makeSometimesSimulate():void
+	public function makeSometimesSimulate()
 	{
-		if (!isLightweight)
+		if(!isLightweight)
 		{
-			body.SetAlwaysActive(false);
+			//body.SetAlwaysActive(false);
 		}
 		
 		alwaysSimulate = false;			
-		game.removeHUDActor(this);
+		//engine.removeHUDActor(this);
 	}
 	
-	public function alwaysSimulates():Boolean
+	public function alwaysSimulates():Bool
 	{
 		return alwaysSimulate;
 	}
 	
-	public function die():void
+	public function die()
 	{
-		kill();
+		/*kill();
 		
 		for (var r:int = 0; r < whenKilledListeners.length; r++)
 		{
@@ -2306,55 +2309,51 @@ class Actor extends Sprite
 			}
 		}
 		
-		removeAllListeners();
+		removeAllListeners();*/
 	}
 		
-	public function isDying():Boolean
+	public function isDying():Bool
 	{
-		return dead || !exists;
+		return dying;
 	}
 	
-	public function isAlive():Boolean
+	public function isAlive():Bool
 	{
-		return !dead;
+		return !(dead || dying);
 	}
 	
-	public function isOnScreen():Boolean
+	public function isOnScreen():Bool
 	{
-		return (isLightweight || body.IsActive()) && 
-			   getX() >= -FlxG.scroll.x - game.left && 
-			   getY() >= -FlxG.scroll.y - game.top &&
-			   getX() < -FlxG.scroll.x + FlxG.width + game.right &&
-			   getY() < -FlxG.scroll.y + FlxG.height + game.bottom;
+		var cameraX = Engine.cameraX;
+		var cameraY = Engine.cameraY;
+		
+		var left = Engine.paddingLeft;
+		var top = Engine.paddingTop;
+		var right = Engine.paddingRight;
+		var bottom = Engine.paddingBottom;
+	
+		return (isLightweight /*|| body.IsActive()*/) && 
+			   getX() >= cameraX - left && 
+			   getY() >= cameraY - top &&
+			   getX() < cameraX + Engine.screenWidth + right &&
+			   getY() < cameraY + Engine.screenHeight + bottom;
 	}
 	
-	public function isInScene():Boolean
+	public function isInScene():Bool
 	{
-		return (isLightweight || body.IsActive()) && 
+		return (isLightweight /*|| body.IsActive()*/) && 
 			   getX() >= 0 && 
 			   getY() >= 0 &&
-			   getX() < game.scene.sceneWidth &&
-			   getY() < game.scene.sceneHeight;
+			   getX() < Engine.sceneWidth &&
+			   getY() < Engine.sceneHeight;
 	}
 	
 	public function getLastCollidedActor():Actor
 	{
 		return lastCollided;
-	}*/
+	}
 	
-	//*-----------------------------------------------
-	//* Camera
-	//*-----------------------------------------------
-	
-	/*public function setLocation(x:int, y:int):void
-	{
-		this.x = x;
-		this.y = y;
-		
-		setX(x);
-		setY(y);
-	}*/
-	
+
 	//Kills this actor after it leaves the screen
 	public function killSelfAfterLeavingScreen()
 	{
@@ -2369,5 +2368,18 @@ class Actor extends Sprite
 		}
 		
 		return name;
+	}
+	
+	//*-----------------------------------------------
+	//* Camera-Only
+	//*-----------------------------------------------
+	
+	public function setLocation(x:Int, y:Int)
+	{
+		this.x = x;
+		this.y = y;
+		
+		setX(x);
+		setY(y);
 	}
 }
