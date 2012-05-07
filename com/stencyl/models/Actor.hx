@@ -1168,74 +1168,74 @@ class Actor extends Sprite
 	//* Physics: Forces
 	//*-----------------------------------------------
 	
-	/*public function push(dirX:Number, dirY:Number, magnitude:Number)
+	public function push(dirX:Float, dirY:Float, magnitude:Float)
 	{
 		if(isLightweight || (dirX == 0 && dirY == 0))
 		{
 			return;
 		}
 		
-		dummy.x = dirX;
+		/*dummy.x = dirX;
 		dummy.y = dirY;
 		dummy.normalize();
 		
 		if(magnitude > 0)
 		{
-			dummy.multiplyN(magnitude * GameState.PSCALE);
+			dummy.multiplyN(magnitude);
 		}
 		
-		body.ApplyForce(dummy, body.GetWorldCenter());
+		body.ApplyForce(dummy, body.GetWorldCenter());*/
 	}
 	
 	//in degrees
-	public function pushInDirection(angle:Number, speed:Number)
+	public function pushInDirection(angle:Float, speed:Float)
 	{
 		push
 		(
-			Math.cos(Util.toRadians(angle)),
-			Math.sin(Util.toRadians(angle)),
+			Math.cos(Utils.RAD * angle),
+			Math.sin(Utils.RAD * angle),
 			speed
 		);
 	}
 	
-	public function applyImpulse(dirX:Number, dirY:Number, magnitude:Number)
+	public function applyImpulse(dirX:Float, dirY:Float, magnitude:Float)
 	{
 		if(isLightweight || (dirX == 0 && dirY == 0))
 		{
 			return;
 		}
 		
-		dummy.x = dirX;
+		/*dummy.x = dirX;
 		dummy.y = dirY;
 		dummy.normalize();
 		
 		if(magnitude > 0)
 		{
-			dummy.multiplyN(magnitude * GameState.PSCALE);
+			dummy.multiplyN(magnitude);
 		}
 		
-		body.ApplyImpulse(dummy, body.GetWorldCenter());
+		body.ApplyImpulse(dummy, body.GetWorldCenter());*/
 	}
 	
 	//in degrees
-	public function applyImpulseInDirection(angle:Number, speed:Number)
+	public function applyImpulseInDirection(angle:Float, speed:Float)
 	{
 		applyImpulse
 		(
-			Math.cos(Util.toRadians(angle)),
-			Math.sin(Util.toRadians(angle)),
+			Math.cos(Utils.RAD * angle),
+			Math.sin(Utils.RAD * angle),
 			speed
 		);
 	}
 	
-	public function applyTorque(torque:Number)
+	public function applyTorque(torque:Float)
 	{
-		if (!isLightweight)
+		/*if(!isLightweight)
 		{
-			body.ApplyTorque(torque * GameState.PSCALE);
+			body.ApplyTorque(torque);
 			body.SetAwake(true);
-		}
-	}*/
+		}*/
+	}
 	
 	//*-----------------------------------------------
 	//* Size
