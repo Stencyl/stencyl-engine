@@ -24,6 +24,9 @@ class Universal extends Sprite
 		
 		#if flash
 		Console.create(true, 192, false);
+		
+		//MochiServices.connect("60347b2977273733", root);
+		//MochiAd.showPreGameAd( { id:"60347b2977273733", res:"640x580", clip: root});
 		#end
 		
 		addEventListener(Event.ADDED_TO_STAGE, onAdded);
