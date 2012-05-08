@@ -11,7 +11,7 @@ class Font extends Resource
 		//TODO: Make the font.
 	}		
 	
-	public function getHeight():Number
+	public function getHeight():Int
 	{
 		return 0;
 	}

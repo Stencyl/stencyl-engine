@@ -19,6 +19,7 @@ import com.stencyl.models.Scene;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.scene.Layer;
 import com.stencyl.models.actor.ActorType;
+import com.stencyl.models.Font;
 
 import com.stencyl.models.Sound;
 import com.stencyl.models.SoundChannel;
@@ -867,19 +868,163 @@ class Script
 	//* Eye Candy
 	//*-----------------------------------------------
 	
+	/**
+	* Begin screen shake
+	*/
+	public function startShakingScreen(intensity:Float=0.05, duration:Float=0.5)
+	{
+		//FlxG.quake.start(intensity, duration);
+	}
+	
+	/**
+	* End screen shake
+	*/
+	public function stopShakingScreen()
+	{
+		//FlxG.quake.stop();
+	}
+	
 	//*-----------------------------------------------
-	//* Terrain Changer
+	//* Terrain Changer (Tile API)
 	//*-----------------------------------------------
+	
+	/**
+	* Get the top terrain layer
+	*/
+	public function getTopLayer():Int
+	{
+		return 0;
+		//return engine.getTopLayer();
+	}
+	
+	/**
+	* Get the bottom terrain layer
+	*/
+	public function getBottomLayer():Int
+	{
+		return 0;
+		//return engine.getBottomLayer();
+	}
+	
+	/**
+	* Get the middle terrain layer
+	*/
+	public function getMiddleLayer():Int
+	{
+		return 0;
+		//return engine.getMiddleLayer();
+	}
 	
 	//*-----------------------------------------------
 	//* Fonts
 	//*-----------------------------------------------
 	
-	//Moved to Data class
+	public function getFont(fontID:Int):Font
+	{
+		return cast(Data.get().resources.get(fontID), Font);
+	}
 	
 	//*-----------------------------------------------
 	//* Global
 	//*-----------------------------------------------
+	
+	/**
+	* Pause the game
+	*/
+	public function pauseAll()
+	{
+		Engine.paused = true;
+	}
+	
+	/**
+	* Unpause the game
+	*/
+	public function unpauseAll()
+	{
+		Engine.paused = false;
+	}
+	
+	/**
+	* Get the screen width in pixels
+	*/
+	public function getScreenWidth()
+	{
+		return Engine.screenWidth;
+	}
+	
+	/**
+	* Get the screen height in pixels
+	*/
+	public function getScreenHeight()
+	{
+		return Engine.screenHeight;
+	}
+	
+	/**
+	* Sets the distance an actor can travel offscreen before being deleted.
+	*/
+	public function setOffscreenTolerance(top:Int, left:Int, bottom:Int, right:Int)
+	{
+		Engine.paddingTop = top;
+		Engine.paddingLeft = left;
+		Engine.paddingRight = right;
+		Engine.paddingBottom = bottom;
+	}
+	
+	/**
+	* Returns true if the scene is transitioning
+	*/
+	public function isTransitioning():Bool
+	{
+		return false;
+		//return engine.isTransitioning();
+	}
+	
+	/**
+	* Adjust how fast or slow time should pass in the game; default is 1.0. 
+	*/
+	public function setTimeScale(scale:Float)
+	{
+		Engine.timeScale = scale;
+	}
+	
+	/**
+	 * Generates a random number. Deterministic, meaning safe to use if you want to record replays in random environments
+	 */
+	public function randomFloat():Float
+	{
+		return Math.random();
+	}
+	
+	/**
+	 * Generates a random number. Set the lowest and highest values.
+	 */
+	public function randomInt(low:Int, high:Int):Int
+	{
+		return low + Math.floor(randomFloat() * (high - low + 1));
+	}
+	
+	/**
+	* Change a Number to another specific Number over time  
+	*/
+	public function tweenNumber(attributeName:String, toValue:Float, duration:Float, easing:Dynamic) 
+	{
+		/*var params:Object = { time: duration / 1000, transition: easing };
+		attributeName = toInternalName(attributeName);
+		params[attributeName] = toValue;
+		
+		return Tweener.addTween(this, params);*/
+		
+		//TODO
+	}
+	
+	/**
+	* Stops a tween 
+	*/
+	public static function abortTween(target:Dynamic)
+	{
+		
+	}
 	
 	//*-----------------------------------------------
 	//* Saving
@@ -1029,6 +1174,14 @@ class Script
 	//* Social Media
 	//*-----------------------------------------------
 	
+	/**
+	* Send a Tweet (GameURL is the twitter account that it will be posted to)
+	*/
+	public function simpleTweet(message:String, gameURL:String)
+	{
+		openURLInBrowser("http://twitter.com/home?status=" + StringTools.urlEncode(message + " " + gameURL));
+	}
+	
 	//*-----------------------------------------------
 	//* Newgrounds
 	//*-----------------------------------------------
@@ -1044,6 +1197,8 @@ class Script
 	//*-----------------------------------------------
 	//* Debug
 	//*-----------------------------------------------
+	
+	//box2d
 	
 	//*-----------------------------------------------
 	//* Utilities

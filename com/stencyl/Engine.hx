@@ -61,6 +61,7 @@ class Engine
 	//*-----------------------------------------------
 	
 	public static var elapsedTime:Float = 0;
+	public static var timeScale:Float = 1;
 	
 	var lastTime:Float;
 	var acc:Float;
@@ -86,6 +87,8 @@ class Engine
 	public static var paddingRight:Int = 0;
 	public static var paddingTop:Int = 0;
 	public static var paddingBottom:Int = 0;
+	
+	public static var paused:Bool = false;
 		
 		
 	//*-----------------------------------------------
