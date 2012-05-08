@@ -1,17 +1,17 @@
-package com.stencyl.models.scene
+package com.stencyl.models.scene;
 
+import nme.display.Sprite;
 import nme.geom.ColorTransform;
 
-class Layer extends FlxGroup
+class Layer extends Sprite
 {
 	private var tiles:TileLayer;
 	
-	public var order:Number;
-	public var _alpha:Number;
-
-	var _color:uint;
+	public var ID:Int;
+	public var order:Int;
+	public var color:Int;
 	
-	function Layer(ID:Number, order:Number, tiles:TileLayer)
+	function new(ID:Int, order:Int, tiles:TileLayer)
 	{
 		super();
 		
@@ -19,29 +19,22 @@ class Layer extends FlxGroup
 		this.ID = ID;
 		this.order = order;
 
-		scrollFactor.x = 0;
-		scrollFactor.y = 0;
+		//scrollFactor.x = 0;
+		//scrollFactor.y = 0;
 		
-		_alpha = 255;
-		_color = 0x00ffffff;
+		alpha = 255;
+		color = 0x00ffffff;
 	}
 	
-	public function set alpha(Alpha:Number):void
+	public function render()
 	{
-		_alpha = Alpha;
-	}
-	
-	public function get alpha():Number
-	{
-		return _alpha;
-	}
-	
-	override public function render():void
-	{
-		if (_alpha <= 0.0) return;
+		if(alpha <= 0) 
+		{	
+			return;
+		}
 		
 		//Don't use draw! Set the property instead!
-		tiles.draw(FlxG.scroll.x, FlxG.scroll.y, _alpha);
-		renderMembers();
+		//tiles.draw(FlxG.scroll.x, FlxG.scroll.y, _alpha);
+		//renderMembers();
 	}
 }

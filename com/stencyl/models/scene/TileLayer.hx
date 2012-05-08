@@ -1,19 +1,16 @@
 package com.stencyl.models.scene;
 
-import flash.display.BitmapData;
-import flash.display.PixelSnapping;
-import flash.geom.ColorTransform;
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
+import nme.display.BitmapData;
+import nme.display.PixelSnapping;
+import nme.geom.ColorTransform;
+import nme.geom.Matrix;
+import nme.geom.Point;
+import nme.geom.Rectangle;
+import nme.display.Sprite;
 
-import org.flixel.*;
-
-import stencyl.api.engine.tile.Tile;
-
-class TileLayer extends FlxObject
+class TileLayer extends Sprite
 {
-	public var layerID:Number;
+	/*public var layerID:Number;
 	public var zOrder:Number;
 	public var name:String;
 	
@@ -190,5 +187,5 @@ class TileLayer extends FlxObject
 			px = startX * tw;
 			py += th;
 		}
-	}
-	}
+	}*/
+}

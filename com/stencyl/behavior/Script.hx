@@ -8,7 +8,15 @@ import nme.net.SharedObjectFlushStatus;
 import nme.display.Graphics;
 
 import com.stencyl.models.Actor;
+import com.stencyl.models.Scene;
+import com.stencyl.models.GameModel;
+import com.stencyl.models.scene.Layer;
+
 import com.stencyl.utils.HashMap;
+
+import com.eclecticdesignstudio.motion.Actuate;
+import com.eclecticdesignstudio.motion.easing.Linear;
+
 
 //Actual scripts extend from this
 class Script 
@@ -386,6 +394,94 @@ class Script
 	//* Scene
 	//*-----------------------------------------------
 	
+	/**
+	 * Get the current scene.
+	 *
+	 * @return The current scene
+	 */
+	public function getScene():Scene
+	{
+		return engine.scene;
+	}
+	
+	/**
+	 * Get the ID of the current scene.
+	 *
+	 * @return The ID current scene
+	 */
+	public function getCurrentScene():Int
+	{
+		return getScene().ID;
+	}
+	
+	/**
+	 * Get the ID of a scene by name.
+	 *
+	 * @return The ID current scene or 0 if it doesn't exist.
+	 */
+	public function getIDForScene(sceneName:String):Int
+	{
+		for(s in GameModel.get().scenes)
+		{
+			if(sceneName == s.name)
+			{
+				return s.ID;	
+			}
+		}
+		
+		return 0;
+	}
+	
+	/**
+	 * Get the name of the current scene.
+	 *
+	 * @return The name of the current scene
+	 */
+	public function getCurrentSceneName():String
+	{
+		return getScene().name;
+	}
+	
+	/**
+	 * Get the width (in pixels) of the current scene.
+	 *
+	 * @return width (in pixels) of the current scene
+	 */
+	public function getSceneWidth():Int
+	{
+		return getScene().sceneWidth;
+	}
+	
+	/**
+	 * Get the height (in pixels) of the current scene.
+	 *
+	 * @return height (in pixels) of the current scene
+	 */
+	public function getSceneHeight():Int
+	{
+		return getScene().sceneHeight;
+	}
+	
+	/**
+	 * Get the width (in tiles) of the current scene.
+	 *
+	 * @return width (in tiles) of the current scene
+	 */
+	public function getTileWidth():Int
+	{
+		return getScene().tileWidth;
+	}
+	
+	/**
+	 * Get the height (in tiles) of the current scene.
+	 *
+	 * @return height (in tiles) of the current scene
+	 */
+	public function getTileHeight():Int
+	{
+		return getScene().tileHeight;
+	}
+	
 	//*-----------------------------------------------
 	//* Scene Switching
 	//*-----------------------------------------------
@@ -394,9 +490,88 @@ class Script
 	//* Tile Layers
 	//*-----------------------------------------------
 	
+	/**
+     * Force the given layer to show.
+     *
+     * @param   layerID     ID of the layer
+     */
+    public function getLayer(layerID:Int):Layer
+    {
+    	return null;
+        //return scene.layers[layerID] as Layer;
+    }
+	
+	/**
+	 * Force the given layer to show.
+	 *
+	 * @param	layerID		ID of the layer
+	 */
+	public function showTileLayer(layerID:Int)
+	{
+		//(scene.layers[layerID] as Layer).alpha = 255;
+	}
+	
+	/**
+	 * Force the given layer to become invisible.
+	 *
+	 * @param	layerID		ID of the layer
+	 */
+	public function hideTileLayer(layerID:Int)
+	{
+		//(scene.layers[layerID] as Layer).alpha = 0;
+	}
+	
+	/**
+	 * Force the given layer to fade to the given opacity over time, applying the easing function.
+	 *
+	 * @param	layerID		ID of the layer
+	 * @param	alphaPct	the opacity (0-255) to fade to
+	 * @param	duration	the duration of the fading (in milliseconds)
+	 * @param	easing		easing function to apply. Linear (no smoothing) is the default.
+	 */
+	public function fadeTileLayerTo(layerID:Int, alphaPct:Int, duration:Float, easing:Dynamic = null)
+	{
+		if(easing == null)
+		{
+			easing = Linear.easeNone;
+		}
+	
+		//Actuate.tween(scene.layers[layerID, duration, {alpha:alphaPct}).ease(easing);
+	}
+	
 	//*-----------------------------------------------
 	//* Camera
 	//*-----------------------------------------------
+	
+	/**
+	 * x-position of the camera
+	 *
+	 * @return The x-position of the camera
+	 */
+	public function getScreenX():Float
+	{
+		return Math.abs(Engine.cameraX);
+	}
+	
+	/**
+	 * y-position of the camera
+	 *
+	 * @return The y-position of the camera
+	 */
+	public function getScreenY():Float
+	{
+		return Math.abs(Engine.cameraY);
+	}
+	
+	/**
+	 * Returns the actor that represents the camera
+	 *
+	 * @return The actor representing the camera
+	 */
+	public function getCamera():Actor
+	{
+		return null;
+	}
 	
 	//*-----------------------------------------------
 	//* Input
