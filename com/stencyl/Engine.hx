@@ -25,10 +25,13 @@ import com.stencyl.graphics.transitions.Transition;
 import com.stencyl.graphics.BitmapFont;
 
 import com.stencyl.models.Actor;
+import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.Scene;
 import com.stencyl.models.SoundChannel;
+import com.stencyl.models.Region;
+import com.stencyl.models.Terrain;
 
 import scripts.MyScripts;
 
@@ -42,32 +45,18 @@ import nme.ui.Accelerometer;
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Elastic;
 
+import box2D.dynamics.B2World;
+import box2D.common.math.B2Vec2;
+import box2D.dynamics.joints.B2Joint;
+
+
 class Engine 
 {
 	//*-----------------------------------------------
 	//* Constants
 	//*-----------------------------------------------
-	
-	public static var STEP_SIZE:Float = 0.01;
-	public static var MS_PER_SEC:Int = 1000;
-	
-	
-	var tasks:Array<TimedTask>;
-	var layers:Array<Sprite>;
-
-	
-	//*-----------------------------------------------
-	//* Timing
-	//*-----------------------------------------------
-	
-	public static var elapsedTime:Float = 0;
-	public static var timeScale:Float = 1;
-	
-	var lastTime:Float;
-	var acc:Float;
-	
-	var framerate:Int;
-	var framerateCounter:Float;
+		
+	//None?
 	
 	
 	//*-----------------------------------------------
@@ -83,45 +72,157 @@ class Engine
 	public static var sceneWidth:Int;
 	public static var sceneHeight:Int;
 	
+	public static var paused:Bool = false;
+	public static var started:Bool = false;
+
+
+	//*-----------------------------------------------
+	//* Physics
+	//*-----------------------------------------------
+	
+	public var world:B2World;
+	
+	public static var ITERATIONS:Int = 3;
+	public static var physicsScale:Float = 10.0;
+		
 	public static var paddingLeft:Int = 0;
 	public static var paddingRight:Int = 0;
 	public static var paddingTop:Int = 0;
 	public static var paddingBottom:Int = 0;
 	
-	public static var paused:Bool = false;
+	
+	//*-----------------------------------------------
+	//* Online / API Values
+	//*-----------------------------------------------
+	
+	public static var mochiID:String;
+	public static var ngID:String;
+	public static var ngKey:String;
+	//public static var medalPopup:MedalPopup;
 		
+	
+	//*-----------------------------------------------
+	//* Transitioning
+	//*-----------------------------------------------
+	
+	private var leave:Transition;
+	private var enter:Transition;
+	private var sceneToEnter:Int;	
+	
+	public var enterTimer:Int;
+	public var leaveTimer:Int;
+	
 		
 	//*-----------------------------------------------
 	//* Model
 	//*-----------------------------------------------
 	
+	public var scene:Scene;
+	public var camera:Actor;
+	
+	public var channels:Array<SoundChannel>;
+	public var tasks:Array<TimedTask>;
+	
+	//Scene-Specific
+	public var regions:IntHash<Region>;
+	public var terrainRegions:IntHash<Terrain>;
+	public var joints:IntHash<B2Joint>;
+	
 	public static var stage:Stage;
 	public var root:Sprite; //The absolute root
 	public var master:Sprite; // the root of the main node
 	
-	public var scene:Scene;
+	
+	//*-----------------------------------------------
+	//* Model - Actors & Groups
+	//*-----------------------------------------------
+	
+	public var groups:IntHash<DisplayObjectContainer>;
+	public var allActors:IntHash<Actor>;
+	public var nextID:Int;
+	
+	//Used to be called actorsToRender
+	public var actorsPerLayer:IntHash<DisplayObjectContainer>;
+	
+	public var hudActors:Array<Actor>;
+	
+	//HashMap<Integer, HashSet<Actor>>
+	public var actorsOfType:IntHash<Array<Actor>>;
+	
+	//HashMap<Integer, HashSet<Actor>>
+	public var recycledActorsOfType:IntHash<Array<Actor>>;
+	
+	//List<DeferredActor>
+	public var actorsToCreateInNextScene:Array<Actor>;
+	
+	
+	//*-----------------------------------------------
+	//* Model - Layers / Terrain
+	//*-----------------------------------------------
+	
+	//My feeling is that we don't need anything except a way to map from layerID to Layer, which in turn
+	//can tell us the order and which layers are above, below. And what layer is on top/bottom.
+	//A Layer = Sprite/Container.
+	
+	public var layers:Array;
+	public var tileLayers:Array;
+	public var dynamicTiles:Dictionary;
+	public var animatedTiles:Array;
+	
+	public var topLayer:Int;
+	public var bottomLayer:Int;
+	public var middleLayer:Int;
+	
+	//int[]
+	//index -> order
+	//value -> layerID
+	public var layersToDraw:Array;
+	public var layerOrders:Array;		
+	
+	public var parallax:ParallaxArea;
+	public var playfield:Area;
+	
+	
+	//*-----------------------------------------------
+	//* Model - ?????
+	//*-----------------------------------------------
+	
 	public var actors:Array<Actor>;
-			
-			
-	//Sound Channels
-	public var channels:Array<SoundChannel>;
-	
-			
-	//*-----------------------------------------------
-	//* Transitioning
-	//*-----------------------------------------------
-		
-	private var leave:Transition;
-	private var enter:Transition;
-	private var sceneToEnter:Int;
+	public var g:Graphics;
 	
 	
 	//*-----------------------------------------------
-	//* Behaviors & Game Attributes
+	//* Model - Behaviors & Game Attributes
 	//*-----------------------------------------------
 	
 	public var gameAttributes:Hash<Dynamic>;
 	public var behaviors:BehaviorManager;
+	
+	
+	//*-----------------------------------------------
+	//* Timing
+	//*-----------------------------------------------
+	
+	public static var STEP_SIZE:Float = 0.01;
+	public static var MS_PER_SEC:Int = 1000;
+	
+	public static var elapsedTime:Float = 0;
+	public static var timeScale:Float = 1;
+	
+	var lastTime:Float;
+	var acc:Float;
+	
+	var framerate:Int;
+	var framerateCounter:Float;
+	
+	
+	//*-----------------------------------------------
+	//* Debug
+	//*-----------------------------------------------
+	
+	public static var debug:Bool = false;
+	public static var debugDraw:Bool = false;
+	public static var debugDrawer:B2DebugDraw;
 	
 	
 	//*-----------------------------------------------
@@ -148,6 +249,10 @@ class Engine
 	public var whenMouseDraggedListeners:Array<Dynamic>;		
 	public var whenPausedListeners:Array<Dynamic>;		
 	
+	
+	//*-----------------------------------------------
+	//* Init
+	//*-----------------------------------------------
 
 	public function new(root:Sprite) 
 	{		
@@ -646,15 +751,7 @@ class Engine
 	
 	//---
 	
-	public function addTask(task:TimedTask)
-	{
-		tasks.push(task);
-	}
 	
-	public function removeTask(taskToRemove:TimedTask)
-	{
-		tasks.remove(taskToRemove);
-	}		
 	
 	public static function initBehaviors
 	(
@@ -733,21 +830,161 @@ class Engine
 		}
 	}
 	
-	//---
-	
 	//*-----------------------------------------------
-	//* Game Attributes
+	//* Scene Switching
 	//*-----------------------------------------------
 	
-	public function setGameAttribute(name:String, value:Dynamic)
+	//*-----------------------------------------------
+	//* General Loading
+	//*-----------------------------------------------
+	
+	//*-----------------------------------------------
+	//* Actor Creation
+	//*-----------------------------------------------
+	
+	//*-----------------------------------------------
+	//* Terrain Creation
+	//*-----------------------------------------------
+	
+	//*-----------------------------------------------
+	//* Update Loop
+	//*-----------------------------------------------
+	
+	//*-----------------------------------------------
+	//* Events Finished
+	//*-----------------------------------------------
+	
+	//*-----------------------------------------------
+	//* Timed Tasks
+	//*-----------------------------------------------
+	
+	public function addTask(task:TimedTask)
 	{
-		gameAttributes.set(name, value);
+		tasks.push(task);
 	}
 	
-	public function getGameAttribute(name:String):Dynamic
+	public function removeTask(taskToRemove:TimedTask)
 	{
-		return gameAttributes.get(name);
+		tasks.remove(taskToRemove);
+	}	
+	
+	//*-----------------------------------------------
+	//* Pausing
+	//*-----------------------------------------------
+	
+	public function cameraFollow(actor:Actor, lockX:Bool=true, lockY:Bool=true)
+	{	
+		if(lockX)
+		{
+			camera.x = Math.round(actor.x + actor.width / 2);
+		}
+		
+		if(lockY)
+		{
+			camera.y = Math.round(actor.y + actor.height / 2);
+		}
 	}
+	
+	//*-----------------------------------------------
+	//* Pausing
+	//*-----------------------------------------------
+	
+	public function pause()
+	{
+		if(isTransitioning())
+		{
+			return;
+		}
+		
+		paused = true;
+		
+		for(a in allActors)
+		{
+			if (a != null)
+			{
+				a.pause();
+			}									
+		}
+		
+		/*for(var r:int = 0; r < whenPausedListeners.length; r++ )
+		{
+			try
+			{
+				var f:Function = whenPausedListeners[r] as Function;
+				f(whenPausedListeners, true);
+			
+				if(whenPausedListeners.indexOf(f) == -1)
+				{
+					r--;
+				}
+			}
+			
+			catch(e:Error)
+			{
+				FlxG.log(e.getStackTrace());
+			}
+		}*/
+	}
+	
+	public function unpause()
+	{
+		paused = false;
+		
+		for(a in allActors)
+		{
+			if(a != null)
+			{
+				a.unpause();
+			}								
+		}
+		
+		/*for(var r:int = 0; r < whenPausedListeners.length; r++ )
+		{
+			try
+			{
+				var f:Function = whenPausedListeners[r] as Function;
+				f(whenPausedListeners, false);
+			
+				if(whenPausedListeners.indexOf(f) == -1)
+				{
+					r--;
+				}
+			}
+			
+			catch(e:Error)
+			{
+				FlxG.log(e.getStackTrace());
+			}
+		}*/
+	}
+	
+	public function isPaused():Bool
+	{
+		return paused;
+	}
+
+	//*-----------------------------------------------
+	//* Custom Drawing
+	//*-----------------------------------------------
+	
+	//TODO
+	
+	/**
+     * Renders the game.
+     * Elements are rendered in the following order:
+     * - Background Color
+     * - Backgrounds
+     * + For each layer:
+     * -- The layer itself
+     * -- The actors on that layer
+     * -- Actor custom drawing
+     * -- The User Interface
+     * -- Scene custom drawing (Layer)
+     * - Foregrounds
+     * - Scene custom drawing
+     * - Debug drawing
+	 * - Transition drawing
+         */
 	
 	//*-----------------------------------------------
 	//* Messaging
@@ -772,4 +1009,763 @@ class Engine
 	{
 		return behaviors.call(msg, args);
 	}
+	
+	//*-----------------------------------------------
+	//* Actors
+	//*-----------------------------------------------
+	
+	public function getActor(ID:Int):Actor
+	{
+		return allActors[ID];
+	}
+	
+	public function getActorsOfType(type:ActorType):Array<Actor>
+	{
+		return actorsOfType[type.ID];
+	}
+	
+	public function getRecycledActorsOfType(type:ActorType):Array<Actor>
+	{
+		return recycledActorsOfType[type.ID];
+	}
+	
+	public function addAlwaysOnActor(a:Actor)
+	{
+		addHUDActor(a);
+	}
+	
+	public function addHUDActor(a:Actor)
+	{
+		if(!hudActors.has(a))
+		{
+			hudActors.add(a);
+		}
+	}
+	
+	public function removeHUDActor(a:Actor)
+	{
+		hudActors.remove(a);
+	}
+	
+	//*-----------------------------------------------
+	//* Actors - Layering
+	//*-----------------------------------------------
+	
+	public function moveToLayerOrder(a:Actor, layerOrder:Int)
+	{
+		var lID:Int;
+		lID = layerOrder - 1;
+
+		if(lID < 0 || lID > layersToDraw.length-1) return;
+		if(a.layerID == layersToDraw[lID]) return;
+		
+		lID = layersToDraw[lID];
+
+		removeActorFromLayer(a, a.layerID);
+		a.layerID = lID;
+		moveActorToLayer(a,lID);
+	}
+	
+	public function sendToBack(a:Actor)
+	{
+		removeActorFromLayer(a, a.layerID);
+		a.layerID = getBottomLayer();
+		moveActorToLayer(a, a.layerID);
+	}
+	
+	public function sendBackward(a:Actor)
+	{
+		removeActorFromLayer(a, a.layerID);
+		
+		var order:Int = getOrderForLayerID(a.layerID);
+		
+		if(order < layersToDraw.length - 1)
+		{
+			a.layerID = layersToDraw[order + 1];	
+		}
+		
+		moveActorToLayer(a, a.layerID);
+	}
+	
+	public function bringToFront(a:Actor)
+	{
+		removeActorFromLayer(a, a.layerID);
+		a.layerID = getTopLayer();
+		moveActorToLayer(a, a.layerID);
+	}
+	
+	public function bringForward(a:Actor)
+	{
+		removeActorFromLayer(a, a.layerID);
+		
+		var order:Int = getOrderForLayerID(a.layerID);
+		
+		if(order > 0)
+		{
+			a.layerID = layersToDraw[order - 1];	
+		}
+		
+		moveActorToLayer(a, a.layerID);
+	}
+	
+	public function getOrderForLayerID(layerID:Int):Int
+	{
+		return layerOrders[layerID];
+	}
+	
+	public function getIDFromLayerOrder(layerOrder:Int):Int
+	{
+		return layersToDraw[layerOrder - 1];
+	}
+	
+	//*-----------------------------------------------
+	//* Physics
+	//*-----------------------------------------------
+	
+	public function getPhysicalWidth():Float
+	{
+		return physicalWidth;
+	}
+	
+	public function getPhysicalHeight():Float
+	{
+		return physicalHeight;
+	}
+	
+	static public function toPhysicalUnits(value:Float):Float
+	{
+		value /= physicsScale;
+		
+		return value;
+	}
+	
+	static public function toPixelUnits(value:Float):Float
+	{
+		value *= physicsScale;
+		
+		return value;
+	}
+	
+	static public function vToPhysicalUnits(v:B2Vec2):B2Vec2
+	{
+		v.x = toPhysicalUnits(v.x);
+		v.y = toPhysicalUnits(v.y);
+		
+		return v;
+	}
+	
+	static public function vToPixelUnits(v:B2Vec2):B2Vec2
+	{
+		v.x = toPixelUnits(v.x);
+		v.y = toPixelUnits(v.y);
+		
+		return v;
+	}
+	
+	private function initDebugDraw() 
+	{
+		/*debugDrawer = new b2DebugDraw();
+		debugDrawer.world = world;
+		debugDrawer.scale = physicsScale;
+		
+		addChild(debugDrawer);*/
+	}
+	
+	//*-----------------------------------------------
+	//* Groups
+	//*-----------------------------------------------
+	
+	public function getGroup(ID:Int, a:Actor = null):Dynamic
+	{
+		if(ID == -1000 && a != null)
+		{
+			return groups[a.getGroupID()];
+		}
+		
+		return groups[ID];
+	}
+	
+	//*-----------------------------------------------
+	//* Joints
+	//*-----------------------------------------------
+	
+	/*public function nextJointID():int
+	{
+		var ID:int = -1;
+
+		for each(var j:b2Joint in joints)
+		{
+			if(j == null) continue;
+			ID = Math.max(ID, j.ID);
+		}
+		
+		return ID + 1;
+	}
+	
+	public function addJoint(j:b2Joint):void
+	{
+		var nextID:int = nextJointID();
+		j.ID = nextID;
+		joints[nextID] = j;
+	}
+	
+	public function getJoint(ID:int):b2Joint
+	{
+		return joints[ID];
+	}
+	
+	public function destroyJoint(j:b2Joint):void
+	{
+		//joints.splice(j.ID,1);
+		joints[j.ID] = null;
+		world.DestroyJoint(j as b2Joint);
+	}
+	
+	//---
+	
+	public function createStickJoint
+	(
+		one:b2Body, 
+		two:b2Body, 
+		jointID:int = -1, 
+		collide:Boolean = false, 
+		damping:Number = 0, 
+		frequencyHz:Number = 0
+	):b2DistanceJoint
+	{
+		var v1:V2 = one.GetLocalCenter()
+		var v2:V2 = two.GetLocalCenter();
+		
+		if(one.GetType() == 0)
+		{
+			v1.x = (one.GetUserData() as Actor).getPhysicsWidth() / 2;
+			v1.y = (one.GetUserData() as Actor).getPhysicsHeight() / 2;
+		}
+		
+		if(two.GetType() == 0)
+		{
+			v2.x = (two.GetUserData() as Actor).getPhysicsWidth() / 2;
+			v2.y = (two.GetUserData() as Actor).getPhysicsHeight() / 2;
+		}
+		
+		v1 = one.GetWorldPoint(v1);
+		v2 = two.GetWorldPoint(v2);
+		
+		var jd:b2DistanceJointDef = new b2DistanceJointDef();
+		jd.Initialize(one, two, v1, v2);
+		jd.collideConnected = collide;
+		jd.dampingRatio = damping;
+		jd.frequencyHz = frequencyHz;
+		
+		var toReturn:b2Joint = world.CreateJoint(jd);
+		
+		if(jointID == -1)
+		{
+			addJoint(toReturn);
+		}
+			
+		else
+		{
+			joints[jointID] = toReturn;
+			toReturn.ID = jointID;
+		}
+		
+		return toReturn as b2DistanceJoint;
+	}
+	
+	public function createCustomStickJoint
+	(
+		one:b2Body,
+		x1:Number, 
+		y1:Number, 
+		two:b2Body, 
+		x2:Number, 
+		y2:Number
+	):b2DistanceJoint
+	{
+		var v1:V2 = new V2(x1, y1);
+		var v2:V2 = new V2(x2, y2);
+		
+		v1.x = GameState.toPhysicalUnits(v1.x);
+		v1.y = GameState.toPhysicalUnits(v1.y);
+		v2.x = GameState.toPhysicalUnits(v2.x);
+		v2.y = GameState.toPhysicalUnits(v2.y);
+		
+		v1 = one.GetWorldPoint(v1);
+		v2 = two.GetWorldPoint(v2);
+		
+		var jd:b2DistanceJointDef = new b2DistanceJointDef();
+		jd.Initialize(one, two, v1, v2);
+		
+		var toReturn:b2Joint = world.CreateJoint(jd);
+		addJoint(toReturn);
+		
+		return toReturn as b2DistanceJoint;
+	}
+	
+	//---
+	
+	public function createHingeJoint
+	(
+		one:b2Body, 
+		two:b2Body = null, 
+		pt:V2 = null, 
+		jointID:int = -1,
+		collide:Boolean = false, 
+		limit:Boolean = false, 
+		motor:Boolean = false, 
+		lower:Number = 0, 
+		upper:Number = 0, 
+		torque:Number = 0, 
+		speed:Number = 0
+	):b2RevoluteJoint
+	{
+		if(two == null)
+		{
+			two = world.m_groundBody;
+		}
+		
+		if(pt == null)
+		{
+			pt = one.GetLocalCenter();
+		}
+	
+		var jd:b2RevoluteJointDef = new b2RevoluteJointDef();
+		
+		jd.bodyA = one;
+		jd.bodyB = two;
+		
+		pt.x = GameState.toPhysicalUnits(pt.x);
+		pt.y = GameState.toPhysicalUnits(pt.y);
+		
+		jd.localAnchorA.v2 = pt;
+		jd.localAnchorB.v2 = two.GetLocalPoint(one.GetWorldPoint(pt));
+		jd.collideConnected = collide;
+		jd.enableLimit = limit;
+		jd.enableMotor = motor;
+		jd.lowerAngle = lower;
+		jd.upperAngle = upper;
+		jd.maxMotorTorque = torque;
+		jd.motorSpeed = speed;
+		
+		var toReturn:b2Joint = world.CreateJoint(jd);
+		
+		if(jointID == -1)
+		{
+			addJoint(toReturn);
+		}
+			
+		else
+		{
+			joints[jointID] = toReturn;
+			toReturn.ID = jointID;
+		}
+		
+		return toReturn as b2RevoluteJoint;
+	}
+	
+	//---
+											
+	public function createSlidingJoint
+	(
+		one:b2Body, 
+		two:b2Body = null, 
+		dir:V2 = null, 
+		jointID:int = -1,
+		collide:Boolean = false, 
+		limit:Boolean = false, 
+		motor:Boolean = false, 
+		lower:Number = 0, 
+		upper:Number = 0, 
+		force:Number = 0, 
+		speed:Number = 0
+	):b2LineJoint
+	{
+		if(two == null)
+		{
+			two = world.m_groundBody;
+		}
+		
+		if(dir == null)
+		{
+			dir = new V2(1, 0);
+		}
+	
+		dir.normalize();
+		
+		var pt1:V2 = one.GetWorldCenter();
+		var pt2:V2 = two.GetWorldCenter();
+		
+		//Static body
+		if(one.GetType() == 0)
+		{
+			if((one.GetUserData() as Actor) != null)
+			{
+				pt1.x = (one.GetUserData() as Actor).getPhysicsWidth() / 2;
+				pt1.y = (one.GetUserData() as Actor).getPhysicsHeight() / 2;
+				pt1 = one.GetWorldPoint(pt1);	
+			}
+		}
+		
+		if(two.GetType() == 0)
+		{
+			if((two.GetUserData() as Actor) != null)
+			{
+				pt2.x = (two.GetUserData() as Actor).getPhysicsWidth() / 2;
+				pt2.y = (two.GetUserData() as Actor).getPhysicsHeight() / 2;
+				pt2 = two.GetWorldPoint(pt2);	
+			}
+		}
+		
+		var pjd:b2LineJointDef = new b2LineJointDef();
+		pjd.Initialize(one, two, pt1, dir);
+
+		pjd.collideConnected = collide;
+		pjd.enableLimit = limit;
+		pjd.enableMotor = motor;
+		pjd.lowerTranslation = toPhysicalUnits(lower);
+		pjd.upperTranslation = toPhysicalUnits(upper);
+		pjd.maxMotorForce = force;
+		pjd.motorSpeed = toPhysicalUnits(speed);
+		
+		var toReturn:b2Joint = world.CreateJoint(pjd);
+		
+		if(jointID == -1)
+		{
+			addJoint(toReturn);
+		}
+			
+		else
+		{
+			joints[jointID] = toReturn;
+			toReturn.ID = jointID;
+		}
+		
+		return toReturn as b2LineJoint;
+	}*/
+			
+	//*-----------------------------------------------
+	//* Regions
+	//*-----------------------------------------------
+	
+	/*private function createRegion(x:Number, y:Number, shape:b2Shape, offset:Boolean=false):Region
+	{
+		var shapeList:Array = new Array(shape);
+		var region:Region = new Region(this, x, y, shapeList);
+		
+		if(offset)
+		{
+			region.setX(GameState.toPixelUnits(x) + region.width / 2);
+			region.setY(GameState.toPixelUnits(y) + region.height / 2);
+		}
+		
+		addRegion(region);
+		return region;
+	}
+	
+	public function createBoxRegion(x:Number, y:Number, w:Number, h:Number):Region
+	{
+		x = GameState.toPhysicalUnits(x);
+		y = GameState.toPhysicalUnits(y);
+		w = GameState.toPhysicalUnits(w);
+		h = GameState.toPhysicalUnits(h);
+	
+		var p:b2PolygonShape = new b2PolygonShape();
+		p.SetAsBox(w/2, h/2);
+		
+		return createRegion(x, y, p, true);
+	}
+	
+	public function createCircularRegion(x:Number, y:Number, r:Number):Region
+	{
+		x = GameState.toPhysicalUnits(x);
+		y = GameState.toPhysicalUnits(y);
+		r = GameState.toPhysicalUnits(r);
+		
+		var cShape:b2CircleShape = new b2CircleShape();
+		cShape.m_radius = r;
+		
+		return createRegion(x, y, cShape, true);
+	}
+	
+	public function addRegion(r:Region):void
+	{
+		var nextID:int = nextRegionID();
+		r.ID = nextID;
+		regions[nextID] = r;
+	}
+	
+	public function removeRegion(ID:int):void
+	{
+		var r:Region = getRegion(ID);	
+		//regions.splice(r.ID, 1);
+		regions[r.ID] = null;
+		r.destroy();
+	}
+	
+	public function getRegion(ID:int):Region
+	{
+		return regions[ID];
+	}
+	
+	public function getRegions(ID:int):Array
+	{
+		return regions;
+	}
+	
+	public function nextRegionID():int
+	{
+		var ID:int = -1;
+		
+		for each(var r:Region in regions)
+		{
+			if(r == null) continue;
+			ID = Math.max(ID, r.ID);
+		}
+		
+		return ID + 1;
+	}
+	
+	public function isInRegion(a:Actor, r:Region):Boolean
+	{			
+		if(r != null && regions[r.getID()] != null)
+		{
+			return ((r as Region).containsActor(a))
+		}
+			
+		else
+		{
+			FlxG.log("Region does not exist.");
+			return false;
+		}
+	}*/
+	
+	//*-----------------------------------------------
+	//* Terrain Regions
+	//*-----------------------------------------------
+	
+	/*private function createTerrainRegion(x:Number, y:Number, shape:b2Shape, offset:Boolean=false, groupID:int = 1):TerrainRegion
+	{
+		var shapeList:Array = new Array(shape);
+		var terrainRegion:TerrainRegion = new TerrainRegion(this, x, y, shapeList, groupID);
+		
+		if(offset)
+		{
+			terrainRegion.setX(GameState.toPixelUnits(x) + terrainRegion.width / 2);
+			terrainRegion.setY(GameState.toPixelUnits(y) + terrainRegion.height / 2);
+		}
+		
+		addTerrainRegion(terrainRegion);
+		return terrainRegion;
+	}
+	
+	public function createBoxTerrainRegion(x:Number, y:Number, w:Number, h:Number, groupID:int=1):TerrainRegion
+	{
+		x = GameState.toPhysicalUnits(x);
+		y = GameState.toPhysicalUnits(y);
+		w = GameState.toPhysicalUnits(w);
+		h = GameState.toPhysicalUnits(h);
+	
+		var p:b2PolygonShape = new b2PolygonShape();
+		p.SetAsBox(w/2, h/2);
+		
+		return createTerrainRegion(x, y, p, true, groupID);
+	}
+	
+	public function createCircularTerrainRegion(x:Number, y:Number, r:Number, groupID:int = 1):TerrainRegion
+	{
+		x = GameState.toPhysicalUnits(x);
+		y = GameState.toPhysicalUnits(y);
+		r = GameState.toPhysicalUnits(r);
+		
+		var cShape:b2CircleShape = new b2CircleShape();
+		cShape.m_radius = r;
+		
+		return createTerrainRegion(x, y, cShape, true, groupID);
+	}
+	
+	public function addTerrainRegion(r:TerrainRegion):void
+	{
+		var nextID:int = nextTerrainRegionID();
+		r.ID = nextID;
+		terrainRegions[nextID] = new Array(r);
+	}
+	
+	public function removeTerrainRegion(ID:int):void
+	{
+		var t:TerrainRegion = getTerrainRegion(ID);
+		
+		terrainRegions[ID] = null;
+		
+		t.destroy();
+	}
+	
+	public function getTerrainRegion(ID:int):TerrainRegion
+	{
+		return terrainRegions[ID];
+	}
+	
+	public function getTerrainRegions(ID:int):Array
+	{
+		return terrainRegions;
+	}
+	
+	public function nextTerrainRegionID():int
+	{
+		var ID:int = -1;
+		
+		for each(var r:TerrainRegion in terrainRegions)
+		{
+			if(r == null) continue;
+			ID = Math.max(ID, r.ID);
+		}
+		
+		return ID + 1;
+	}*/
+	
+	//*-----------------------------------------------
+	//* Game Attributes
+	//*-----------------------------------------------
+	
+	public function setGameAttribute(name:String, value:Dynamic)
+	{
+		gameAttributes.set(name, value);
+	}
+	
+	public function getGameAttribute(name:String):Dynamic
+	{
+		return gameAttributes.get(name);
+	}
+	
+	//*-----------------------------------------------
+	//* On/Off Screen
+	//*-----------------------------------------------
+	
+	/*
+	
+	public function setOffscreenTolerance(top:int, left:int, bottom:int, right:int):void
+	{
+		this.top = top;
+		this.left = left;
+		this.bottom = bottom;
+		this.right = right;
+	}
+	
+	private function fetchActorsToRender():int
+	{
+		actorsOnScreen = cacheActors();
+		
+		for each(var curr:Actor in actorsOnScreen)
+		{
+			if(curr != null && curr.body != null && curr.currSprite != null)
+			{
+				curr.currSprite.exists = (curr.body.IsActive() || curr.paused) && !curr.recycled;
+			}
+		}
+		
+		return 0;
+	}
+	
+	public function cacheActors():Array
+	{
+		for each(var a:Actor in hudActors)
+		{
+			if(a == null || a.dead)
+			{
+				hudActors.remove(a);
+			}
+		}
+		
+		return allActors;
+	}
+	
+	private function initLayers():void
+	{
+		var layers:Array = new Array();
+		var orders:Array = new Array();
+		var exists:HashSet = new HashSet();
+		tileLayers = scene.terrain;
+		animatedTiles = scene.animatedTiles;
+		
+		for each (var tile:Tile in animatedTiles)
+		{
+			tile.currFrame = 0;
+			tile.currTime = 0;
+		}
+		
+		for each(var l:TileLayer in scene.terrain)
+		{
+			layers[l.zOrder] = l.layerID;
+			orders[l.layerID] = l.zOrder;
+			exists.add(l.zOrder);
+		}
+		
+		for(var i:int = 0; i < layers.length; i++)
+		{
+			if(!exists.has(i))
+			{
+				layers[i] = -1;
+			}
+		}
+		
+		layersToDraw = layers;
+		layerOrders = orders;
+		
+		var foundTop:Boolean = false;
+		var foundMiddle:Boolean = false;
+		
+		var realNumLayers:int = 0;
+		
+		//Figure out how many there actually are
+		for(i = 0; i < layers.length; i++)
+		{
+			var layerID:int = layersToDraw[i];
+			
+			if(layerID != -1)
+			{
+				realNumLayers++;
+			}
+		}
+		
+		var numLayersProcessed:int = 0;
+		
+		for(i = 0; i < layers.length; i++)
+		{
+			var layerID:int = layersToDraw[i];
+			
+			if(layerID == -1)
+			{
+				continue;
+			}
+			
+			var list:FlxGroup = new FlxGroup();
+			var terrain:FlxGroup = new Layer(layerID, i, scene.terrain[layerID]);
+			
+			if(!foundTop)
+			{
+				foundTop = true;
+				topLayer = i;
+			}
+			
+			if(!foundMiddle && numLayersProcessed == Math.floor(realNumLayers / 2))
+			{
+				foundMiddle = true;
+				middleLayer = i;
+			}
+
+			add(terrain);
+			
+			//FlxG.log("layerID: " + layerID +  " === order: " + i);
+			
+			this.layers[layerID] = terrain;
+			actorsToRender[layerID] = list;
+			
+			//Eventually, this will become the correct value
+			bottomLayer = i;
+			
+			numLayersProcessed++;
+		}
+	}
+	
+	*/
 }

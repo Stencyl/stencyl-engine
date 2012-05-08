@@ -26,7 +26,8 @@ class Layer extends Sprite
 		color = 0x00ffffff;
 	}
 	
-	public function render()
+	//No longer needed! Just set the properties directly.
+	/*public function render()
 	{
 		if(alpha <= 0) 
 		{	
@@ -36,5 +37,5 @@ class Layer extends Sprite
 		//Don't use draw! Set the property instead!
 		//tiles.draw(FlxG.scroll.x, FlxG.scroll.y, _alpha);
 		//renderMembers();
-	}
+	}*/
 }
