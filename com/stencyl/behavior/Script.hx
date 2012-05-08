@@ -30,8 +30,9 @@ import com.stencyl.utils.HashMap;
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Linear;
 
+#if flash
 import com.stencyl.utils.Kongregate;
-
+#end
 
 //Actual scripts extend from this
 class Script 
