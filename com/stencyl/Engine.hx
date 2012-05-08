@@ -28,6 +28,7 @@ import com.stencyl.models.Actor;
 import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.Scene;
+import com.stencyl.models.SoundChannel;
 
 import scripts.MyScripts;
 
@@ -98,6 +99,10 @@ class Engine
 	public var scene:Scene;
 	public var actors:Array<Actor>;
 			
+			
+	//Sound Channels
+	public var channels:Array<SoundChannel>;
+	
 			
 	//*-----------------------------------------------
 	//* Transitioning

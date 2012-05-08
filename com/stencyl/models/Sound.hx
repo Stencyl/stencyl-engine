@@ -13,6 +13,7 @@ class Sound extends Resource
 	
 	public var ext:String;
 	
+	public var src:nme.media.Sound;
 	public var lastInstance:SoundChannel;
 		
 	public function new(ID:Int, name:String, streaming:Bool, looping:Bool, panning:Float, volume:Float, ext:String) 
@@ -31,12 +32,14 @@ class Sound extends Resource
 		if(streaming)
 		{
 			var sound = Assets.getSound("assets/music/" + ID + "." + ext);
+			src = sound;
 			return sound.play();
 		}
 		
 		else
 		{
 			var sound = Assets.getSound("assets/sound/" + ID + "." + ext);
+			src = sound;
 			return sound.play();
 		}	
 	}
@@ -46,12 +49,14 @@ class Sound extends Resource
 		if(streaming)
 		{
 			var sound = Assets.getSound("assets/music/" + ID + "." + ext);
+			src = sound;
 			return sound.play(0, -1);
 		}
 		
 		else
 		{
 			var sound = Assets.getSound("assets/sound/" + ID + "." + ext);
+			src = sound;
 			return sound.play(0, -1);
 		}
 	}

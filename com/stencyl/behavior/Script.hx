@@ -11,6 +11,10 @@ import com.stencyl.models.Actor;
 import com.stencyl.models.Scene;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.scene.Layer;
+import com.stencyl.models.actor.ActorType;
+
+import com.stencyl.models.Sound;
+import com.stencyl.models.SoundChannel;
 
 import com.stencyl.utils.HashMap;
 
@@ -39,6 +43,8 @@ class Script
 	public static var FRONT:Int = 0;
 	public static var MIDDLE:Int = 1;
 	public static var BACK:Int = 2;
+	
+	public static var CHANNELS:Int = 32;
 	
 	
 	//*-----------------------------------------------
@@ -584,8 +590,70 @@ class Script
 	//*-----------------------------------------------
 	
 	//*-----------------------------------------------
-	//* Actor Getters
+	//* Actor-Related Getters
 	//*-----------------------------------------------
+	
+	/**
+	 * Returns an ActorType by name
+	 */
+	public function getActorTypeByName(typeName:String):ActorType
+	{
+		var types = getAllActorTypes();
+		
+		for(type in types)
+		{
+			if(type.name == typeName)
+			{
+				return type;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	* Returns an ActorType by ID
+	*/
+	public function getActorType(actorTypeID:Int):ActorType
+	{
+		return cast(Data.get().resources.get(actorTypeID), ActorType);
+	}
+	
+	/**
+	* Returns an array of all ActorTypes in the game
+	*/
+	public function getAllActorTypes():Array<ActorType>
+	{
+		return null;
+		//return Data.get().getAllActorTypes();
+	}
+	
+	/**
+	* Returns an array of all Actors of the given type in the scene
+	*/
+	public function getActorsOfType(type:ActorType):Array<Actor>
+	{
+		return null;
+		//return engine.getActorsOfType(type);
+	}
+	
+	/**
+	* Returns an actor in the scene by ID
+	*/
+	public function getActor(actorID:Int):Actor
+	{
+		return null;
+		//return engine.getActor(actorID);
+	}
+	
+	/**
+	* Returns an ActorGroup by ID
+	*/
+	public function getActorGroup(groupID:Int):Dynamic
+	{
+		return null;
+		//return engine.getGroup(groupID);
+	}
 	
 	//*-----------------------------------------------
 	//* Joints
@@ -613,10 +681,175 @@ class Script
 		//FlxG.mute = false;
 	}
 	
-	/*public function getSound(soundID:uint):SoundClip
+	/**
+	* Returns a SoundClip resource by ID
+	*/
+	public function getSound(soundID:Int):Sound
 	{
-		return Data.get().resources.get(soundID);
-	}*/
+		return cast(Data.get().resources.get(soundID), Sound);
+	}
+	
+	/**
+	* Play a specific SoundClip resource once (use loopSound() to play a looped version)
+	*/
+	public function playSound(clip:Sound)
+	{
+		if(clip != null)
+		{				
+			for(i in 0...CHANNELS)
+			{
+				var sc = engine.channels[i];
+				
+				if(sc.currentSound == null)
+				{
+					sc.playSound(clip);
+					return;
+				}
+			}
+		}			
+	}
+	
+	/**
+	* Loop a specific SoundClip resource (use playSound() to play only once)
+	*/
+	public function loopSound(clip:Sound)
+	{
+		if(clip != null)
+		{				
+			for(i in 0...CHANNELS)
+			{
+				var sc = engine.channels[i];
+				
+				if(sc.currentSound == null)
+				{
+					sc.loopSound(clip);
+					return;
+				}
+			}
+		}			
+	}
+	
+	/**
+	* Play a specific SoundClip resource once on a specific channel (use loopSoundOnChannel() to play a looped version)
+	*/
+	public function playSoundOnChannel(clip:Sound, channelNum:Int)
+	{
+		var sc:SoundChannel = engine.channels[channelNum];		
+		sc.playSound(clip);			
+	}
+	
+	/**
+	* Play a specific SoundClip resource looped on a specific channel (use playSoundOnChannel() to play once)
+	*/
+	public function loopSoundOnChannel(clip:Sound, channelNum:Int)
+	{		
+		var sc:SoundChannel = engine.channels[channelNum];	
+		sc.loopSound(clip);			
+	}
+	
+	/**
+	* Stop all sound on a specific channel (use pauseSoundOnChannel() to just pause)
+	*/
+	public function stopSoundOnChannel(channelNum:Int)
+	{					
+		var sc:SoundChannel = engine.channels[channelNum];
+		sc.stopSound();
+	}
+	
+	/**
+	* Pause all sound on a specific channel (use stopSoundOnChannel() to stop it)
+	*/
+	public function pauseSoundOnChannel(channelNum:Int)
+	{					
+		var sc:SoundChannel = engine.channels[channelNum];	
+		sc.setPause(true);			
+	}
+	
+	/**
+	* Resume all sound on a specific channel (must have been paused with pauseSoundOnChannel())
+	*/
+	public function resumeSoundOnChannel(channelNum:Int)
+	{					
+		var sc:SoundChannel = engine.channels[channelNum];		
+		sc.setPause(false);			
+	}
+	
+	/**
+	* Set the volume of all sound on a specific channel (use decimal volume such as .5)
+	*/
+	public function setVolumeForChannel(volume:Float, channelNum:Int)
+	{			
+		var sc:SoundChannel = engine.channels[channelNum];		
+		sc.setVolume(volume);
+	}
+	
+	/**
+	* Stop all the sounds currently playing (use mute() to mute the game).
+	*/
+	public function stopAllSounds()
+	{			
+		for(i in 0...CHANNELS)
+		{
+			var sc:SoundChannel = engine.channels[i];		
+			sc.stopSound();
+		}
+	}
+	
+	/**
+	* Set the volume for the game
+	*/
+	public function setVolumeForAllSounds(volume:Float)
+	{
+		SoundChannel.masterVolume = volume;
+		
+		for(i in 0...CHANNELS)
+		{
+			var sc:SoundChannel = engine.channels[i];
+			sc.setVolume(volume);
+		}
+	}
+	
+	/**
+	* Fade a specific channel's audio in over time (milliseconds)
+	*/
+	public function fadeInSoundOnChannel(channelNum:Int, time:Float)
+	{						
+		var sc:SoundChannel = engine.channels[channelNum];
+		sc.fadeInSound(time);			
+	}
+	
+	/**
+	* Fade a specific channel's audio out over time (milliseconds)
+	*/
+	public function fadeOutSoundOnChannel(channelNum:Int, time:Float)
+	{						
+		var sc:SoundChannel = engine.channels[channelNum];
+		sc.fadeOutSound(time);			
+	}
+	
+	/**
+	* Fade all audio in over time (milliseconds)
+	*/
+	public function fadeInForAllSounds(time:Float)
+	{
+		for(i in 0...CHANNELS)
+		{
+			var sc:SoundChannel = engine.channels[i];
+			sc.fadeInSound(time);
+		}
+	}
+	
+	/**
+	* Fade all audio out over time (milliseconds)
+	*/
+	public function fadeOutForAllSounds(time:Float)
+	{
+		for(i in 0...CHANNELS)
+		{
+			var sc:SoundChannel = engine.channels[i];	
+			sc.fadeOutSound(time);
+		}
+	}
 	
 	
 	//*-----------------------------------------------
