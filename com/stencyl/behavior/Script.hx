@@ -5,6 +5,13 @@ import nme.net.SharedObject;
 import nme.net.SharedObjectFlushStatus;
 #end
 
+import nme.events.Event;
+import nme.net.URLLoader;
+import nme.net.URLRequest;
+import nme.net.URLRequestMethod;
+import nme.net.URLVariables;
+import nme.Lib;
+
 import nme.display.Graphics;
 
 import com.stencyl.models.Actor;
@@ -948,6 +955,75 @@ class Script
 	//*-----------------------------------------------
 	//* Web Services
 	//*-----------------------------------------------
+	
+	private function defaultURLHandler(event:Event)
+	{
+		var loader:URLLoader = new URLLoader(event.target);
+		trace("Visited URL: " + loader.data);
+	}
+	
+	public function openURLInBrowser(URL:String)
+	{
+		Lib.getURL(new URLRequest(URL));
+	}
+		
+	/**
+	* Attempts to connect to a URL
+	*/
+	public function visitURL(URL:String, fn:Event->Void = null)
+	{
+		if(fn == null)
+		{
+			fn = defaultURLHandler;
+		}
+		
+		var loader:URLLoader = new URLLoader();
+		loader.addEventListener(Event.COMPLETE, fn);
+		
+		var request:URLRequest = new URLRequest(URL);
+		
+		try 
+		{
+			loader.load(request);
+		} 
+		
+		catch(error:String) 
+		{
+			trace("Cannot open URL.");
+		}
+	}
+	
+	/**
+	* Attempts to POST data to a URL
+	*/
+	public function postToURL(URL:String, data:String = null, fn:Event->Void = null)
+	{
+		if(fn == null)
+		{
+			fn = defaultURLHandler;
+		}
+		
+		var loader:URLLoader = new URLLoader();
+		loader.addEventListener(Event.COMPLETE, fn);
+		
+		var request:URLRequest = new URLRequest(URL);
+		request.method = URLRequestMethod.POST;
+		
+		if(data != null) 
+		{
+			request.data = new URLVariables(data);
+		}
+		
+		try 
+		{
+			loader.load(request);
+		} 
+		
+		catch(error:String) 
+		{
+			trace("Cannot open URL.");
+		}
+	}
 	
 	//*-----------------------------------------------
 	//* Social Media

@@ -42,7 +42,6 @@ class SoundChannel
 		
 		if(clip != null)
 		{
-			//clip.volume = masterVolume;
 			clip.volume = volume * masterVolume;
 			currentClip = clip;
 			currentSound = clip.play(channelNum);	
@@ -66,7 +65,6 @@ class SoundChannel
 		
 		if(clip != null)
 		{
-			//clip.volume = masterVolume;
 			clip.volume = volume * masterVolume;
 			currentClip = clip;
 			currentSound = clip.loop(channelNum);
