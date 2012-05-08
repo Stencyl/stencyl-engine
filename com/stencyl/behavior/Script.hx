@@ -18,6 +18,7 @@ import com.stencyl.models.Actor;
 import com.stencyl.models.Scene;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.scene.Layer;
+import com.stencyl.graphics.transitions.Transition;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.Font;
 
@@ -499,6 +500,29 @@ class Script
 	//*-----------------------------------------------
 	//* Scene Switching
 	//*-----------------------------------------------
+	
+	/**
+	 * Reload the current scene, using an exit transition and then an enter transition.
+	 *
+	 * @param	leave	exit transition
+	 * @param	enter	enter transition
+	 */
+	public function reloadCurrentScene(leave:Transition=null, enter:Transition=null)
+	{
+		engine.switchScene(getCurrentScene(), leave, enter);
+	}
+	
+	/**
+	 * Switch to the given scene, using an exit transition and then an enter transition.
+	 *
+	 * @param	sceneID		IT of the scene to switch to
+	 * @param	leave		exit transition
+	 * @param	enter		enter transition
+	 */
+	public function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)
+	{
+		engine.switchScene(sceneID, leave, enter);
+	}
 	
 	//*-----------------------------------------------
 	//* Tile Layers

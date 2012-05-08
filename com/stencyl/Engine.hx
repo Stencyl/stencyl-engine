@@ -422,6 +422,10 @@ class Engine
 		//actors = null;
 	}
 		
+	public function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)
+	{
+	}
+		
 	public function createActor(ai:ActorInstance, offset:Bool = false):Actor
 	{
 		//trace(ai.actorType);
