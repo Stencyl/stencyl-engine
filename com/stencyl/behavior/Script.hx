@@ -30,6 +30,8 @@ import com.stencyl.utils.HashMap;
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Linear;
 
+import com.stencyl.utils.Kongregate;
+
 
 //Actual scripts extend from this
 class Script 
@@ -1213,6 +1215,23 @@ class Script
 	//*-----------------------------------------------
 	//* Kongregate
 	//*-----------------------------------------------
+	
+	#if flash
+	public function initKongregateAPI()
+	{
+		Kongregate.initAPI();
+	}
+	
+	public function submitScore(score:Float, mode:String) 
+	{
+		Kongregate.submitScore(score, mode);
+	}
+	
+	public function submitStat(name:String, stat:Float) 
+	{
+		Kongregate.submitStat(name, stat);
+	}
+	#end
 	
 	//*-----------------------------------------------
 	//* Mochi
