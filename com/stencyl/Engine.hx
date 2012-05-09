@@ -434,7 +434,7 @@ class Engine
 
 		//Constants
 		Engine.sceneWidth = 640;
-		Engine.sceneHeight = 640;
+		Engine.sceneHeight = 480;
 		Engine.screenWidth = Std.int(stage.stageWidth);
 		Engine.screenHeight = Std.int(stage.stageHeight);
 			
@@ -490,6 +490,9 @@ class Engine
 		{
 			scene = GameModel.get().scenes.get(GameModel.get().defaultSceneID);
 		}
+		
+		Engine.sceneWidth = scene.sceneWidth;
+		Engine.sceneHeight = scene.sceneHeight;
 		
 		behaviors = new BehaviorManager();
 		
