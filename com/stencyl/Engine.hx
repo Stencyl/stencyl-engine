@@ -33,6 +33,10 @@ import com.stencyl.models.SoundChannel;
 import com.stencyl.models.Region;
 import com.stencyl.models.Terrain;
 
+import com.stencyl.models.scene.Tile;
+import com.stencyl.models.scene.Layer;
+import com.stencyl.models.scene.TileLayer;
+
 import scripts.MyScripts;
 
 import com.stencyl.utils.Utils;
@@ -164,10 +168,10 @@ class Engine
 	//can tell us the order and which layers are above, below. And what layer is on top/bottom.
 	//A Layer = Sprite/Container.
 	
-	public var layers:Array;
-	public var tileLayers:Array;
-	public var dynamicTiles:Dictionary;
-	public var animatedTiles:Array;
+	public var layers:IntHash<Layer>;
+	public var tileLayers:IntHash<TileLayer>;
+	public var dynamicTiles:Hash<Actor>;
+	public var animatedTiles:Array<Tile>;
 	
 	public var topLayer:Int;
 	public var bottomLayer:Int;
@@ -176,8 +180,8 @@ class Engine
 	//int[]
 	//index -> order
 	//value -> layerID
-	public var layersToDraw:Array;
-	public var layerOrders:Array;		
+	public var layersToDraw:IntHash<Int>;
+	public var layerOrders:IntHash<Int>;		
 	
 	public var parallax:ParallaxArea;
 	public var playfield:Area;
@@ -209,11 +213,11 @@ class Engine
 	public static var elapsedTime:Float = 0;
 	public static var timeScale:Float = 1;
 	
-	var lastTime:Float;
-	var acc:Float;
+	private var lastTime:Float;
+	private var acc:Float;
 	
-	var framerate:Int;
-	var framerateCounter:Float;
+	private var framerate:Int;
+	private var framerateCounter:Float;
 	
 	
 	//*-----------------------------------------------
