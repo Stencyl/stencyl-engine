@@ -73,6 +73,8 @@ class Engine
 	//* Important Values
 	//*-----------------------------------------------
 	
+	public static var engine:Engine = null;
+	
 	public static var cameraX:Float;
 	public static var cameraY:Float;
 	
@@ -144,6 +146,7 @@ class Engine
 	public static var stage:Stage;
 	public var root:Sprite; //The absolute root
 	public var master:Sprite; // the root of the main node
+	public var transitionLayer:Sprite; //Shows above everything else
 	
 	
 	//*-----------------------------------------------
@@ -268,6 +271,7 @@ class Engine
 
 	public function new(root:Sprite) 
 	{		
+		Engine.engine = this;
 		this.root = root;
 		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
 		begin(0);
@@ -429,14 +433,17 @@ class Engine
 		lastTime = Lib.getTimer() / MS_PER_SEC;
 
 		//Constants
-		sceneWidth = 640;
-		sceneHeight = 640;
-		screenWidth = Std.int(stage.stageWidth);
-		screenHeight = Std.int(stage.stageHeight);
+		Engine.sceneWidth = 640;
+		Engine.sceneHeight = 640;
+		Engine.screenWidth = Std.int(stage.stageWidth);
+		Engine.screenHeight = Std.int(stage.stageHeight);
 			
 		//Display List
 		master = new Sprite();
 		root.addChild(master);
+		
+		transitionLayer = new Sprite();
+		root.addChild(transitionLayer);
 		
 		//Initialize things	
 		actorsToCreateInNextScene = new Array();			
@@ -464,7 +471,7 @@ class Engine
 		}
 		
 		//Now, let's start
-		enter = new FadeInTransition(500);
+		enter = new FadeInTransition(0.5);
 		enter.start();
 		sceneToEnter = initSceneID;
 		
