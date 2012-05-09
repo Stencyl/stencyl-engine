@@ -261,8 +261,10 @@ class Engine
 	public var whenMousePressedListeners:Array<Dynamic>;
 	public var whenMouseReleasedListeners:Array<Dynamic>;
 	public var whenMouseMovedListeners:Array<Dynamic>;
-	public var whenMouseDraggedListeners:Array<Dynamic>;		
-	public var whenPausedListeners:Array<Dynamic>;		
+	public var whenMouseDraggedListeners:Array<Dynamic>;	
+	public var whenPausedListeners:Array<Dynamic>;
+	
+	public var whenFocusChangedListeners:Array<Dynamic>;
 	
 	
 	//*-----------------------------------------------
@@ -557,7 +559,7 @@ class Engine
 		animatedTiles = new Array();
 		hudActors = new HashSet();
 		allActors = new Array();
-		actorsToRender = new Array();
+		actorsPerLayer = new Array();
 		nextID = 0;
 		
 		whenKeyPressedListeners = new Dictionary();
@@ -1075,14 +1077,16 @@ class Engine
 	
 	public function cleanup()
 	{
-		/*debugDrawer.graphics.clear();
-		defaultGroup.destroy();
+		debugDrawer.m_sprite.graphics.clear();
+		
+		Utils.removeAllChildren(master);
+		Utils.removeAllChildren(transitionLayer);
 					
 		behaviors.destroy();
 	
-		for each(var group:FlxGroup in actorsToRender)
+		for(group in actorsPerLayer)
 		{
-			group.destroy();
+			Utils.removeAllChildren(group);
 		}
 		
 		//--
@@ -1090,30 +1094,32 @@ class Engine
 		camera.destroy();
 		camera = null;
 		
-		rootPanel.destroy();
-		rootPanel = null;
-		
 		//--
 		
 		//Kill the remaining ones
-		for(var worldbody:b2Body = world.GetBodyList(); worldbody; worldbody = worldbody.GetNext()) 
+		var worldbody = world.getBodyList();
+		var j = world.getJointList();
+		
+		while(worldbody != null)
 		{
-			world.DestroyBody(worldbody);
+			world.destroyBody(worldbody);
+			worldbody = worldbody.getNext();
 		}
 		
-		for(var j:b2Joint = world.GetJointList(); j; j = j.GetNext()) 
+		while(j != null)
 		{
-			world.DestroyJoint(j);
+			world.destroyJoint(j);
+			j.getNext();
 		}
 		
-		for each(var set:HashSet in actorsOfType)
+		for(set in actorsOfType)
 		{
-			set.clear();
+			Utils.clear(set);
 		}
 		
-		for each(var set:HashSet in recycledActorsOfType)
+		for(set in recycledActorsOfType)
 		{
-			set.clear();
+			Utils.clear(set);
 		}
 		
 		actorsOfType = null;
@@ -1121,8 +1127,7 @@ class Engine
 		
 		hudActors = null;
 		layers = null;
-		actorsOnScreen = null;
-		actorsToRender = null;
+		actorsPerLayer = null;
 		layersToDraw = null;
 		layerOrders = null;
 		dynamicTiles = null;
@@ -1153,9 +1158,10 @@ class Engine
 		
 		whenFocusChangedListeners = null;
 		
-		FlxG.resetInput();
+		//Reset
+		Input.update();
 		
-		world.destroy();*/
+		world = null;
 	}
 	
 	public function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)
@@ -1347,7 +1353,7 @@ class Engine
 	
 	private function removeActorFromLayer(a:Actor, layerID:Int)
 	{
-		/*var layer:FlxGroup = actorsToRender[layerID] as FlxGroup;
+		/*var layer:FlxGroup = actorsPerLayer[layerID] as FlxGroup;
 		
 		if(layer == null)
 		{
@@ -1365,7 +1371,7 @@ class Engine
 	
 	private function moveActorToLayer(a:Actor, layerID:Int)
 	{
-		/*var layer:FlxGroup = actorsToRender[layerID] as FlxGroup;
+		/*var layer:FlxGroup = actorsPerLayer[layerID] as FlxGroup;
 		
 		if(layer == null)
 		{
@@ -2563,7 +2569,7 @@ class Engine
 			//FlxG.log("layerID: " + layerID +  " === order: " + i);
 			
 			this.layers[layerID] = terrain;
-			actorsToRender[layerID] = list;
+			actorsPerLayer[layerID] = list;
 			
 			//Eventually, this will become the correct value
 			bottomLayer = i;

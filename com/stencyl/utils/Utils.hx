@@ -15,6 +15,7 @@ import nme.media.SoundTransform;
 import nme.system.System;
 import nme.utils.ByteArray;
 import haxe.Timer;
+import nme.display.DisplayObjectContainer;
 
 /**
  * Static catch-all class used to access global properties and functions.
@@ -142,6 +143,14 @@ class Utils
 		
 			i--;
 		}				
+	}
+	
+	public static function removeAllChildren(container:DisplayObjectContainer)
+	{
+		while(container.numChildren > 0)
+		{
+			container.removeChildAt(0);	
+		}
 	}
 
 	/**
