@@ -4,7 +4,7 @@ import nme.display.Graphics;
 
 class Transition
 {
-	public var duration:Int;
+	public var duration:Float;
 	public var direction:String;
 	
 	var active:Bool;
@@ -14,7 +14,7 @@ class Transition
 	public static var OUT:String = "out";
 	public static var THROUGH:String = "through";
 	
-	public function new(duration:Int)
+	public function new(duration:Float)
 	{
 		this.duration = duration;
 		active = false;
@@ -55,11 +55,11 @@ class Transition
 	{
 	}
 	
-	public function draw(sengine:Engine, g:Graphics)
+	public function draw(engine:Engine, g:Graphics)
 	{
 	}
 	
-	public function getDuration():Int
+	public function getDuration():Float
 	{
 		return duration;
 	}

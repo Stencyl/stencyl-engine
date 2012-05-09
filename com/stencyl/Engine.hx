@@ -23,6 +23,7 @@ import nme.Lib;
 import nme.ui.Keyboard;
 
 import com.stencyl.graphics.transitions.Transition;
+import com.stencyl.graphics.transitions.FadeInTransition;
 import com.stencyl.graphics.BitmapFont;
 
 import com.stencyl.models.Actor;
@@ -37,6 +38,7 @@ import com.stencyl.models.Terrain;
 import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.Layer;
 import com.stencyl.models.scene.TileLayer;
+
 
 import scripts.MyScripts;
 
@@ -267,7 +269,11 @@ class Engine
 
 	public function new(root:Sprite) 
 	{		
-		Input.enable();
+		this.root = root;
+		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
+		begin(0);
+	
+		/*Input.enable();
 		
 		Data.get();
 		GameModel.get();
@@ -306,7 +312,13 @@ class Engine
 		lastTime = Lib.getTimer() / MS_PER_SEC;
 		
 		master = new Sprite();
-		root.addChild(master);
+		root.addChild(master);*/
+		
+		
+		
+		
+		
+		
 		
 		//---
 		
@@ -377,7 +389,7 @@ class Engine
 		pronger.behaviors.add(behavior);
 		pronger.initScripts();*/
 		
-		//TODO: Key to toggle this, does not work on HTML5
+		/*//TODO: Key to toggle this, does not work on HTML5
 		#if !js
 		var stats = new com.nmefermmmtools.debug.Stats();
 		stage.addChild(stats);
@@ -391,7 +403,75 @@ class Engine
 		loadScene(sceneToEnter);
 		
 		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
+		
+		begin();*/
 	}
+	
+	public function begin(initSceneID:Int)
+	{		
+		Input.enable();
+		Data.get();
+		GameModel.get();
+			
+		//---
+			
+		started = true;
+		
+		//---
+		
+		leave = null;
+		enter = null;
+		
+		cameraX = 0;
+		cameraY = 0;
+
+		acc = 0;
+		framerateCounter = 0;
+		lastTime = Lib.getTimer() / MS_PER_SEC;
+
+		//Constants
+		sceneWidth = 640;
+		sceneHeight = 640;
+		screenWidth = Std.int(stage.stageWidth);
+		screenHeight = Std.int(stage.stageHeight);
+			
+		//Display List
+		master = new Sprite();
+		root.addChild(master);
+		
+		//Initialize things
+		g = new Graphics();		
+		actorsToCreateInNextScene = new Array();			
+		gameAttributes = new Hash<Dynamic>();
+		
+		//Profiler
+		#if !js
+		var stats = new com.nmefermmmtools.debug.Stats();
+		stage.addChild(stats);
+		//stats.visible = false;
+		#end
+		
+		//GA's
+		for(key in GameModel.get().gameAttributes)
+		{
+			setGameAttribute(key, GameModel.get().gameAttributes.get(key));
+		}
+		
+		//Sound
+		channels = new Array<SoundChannel>();
+		
+		for(index in 0...Script.CHANNELS)
+		{
+			channels.push(new SoundChannel(this, index)); 				
+		}
+		
+		//Now, let's start
+		enter = new FadeInTransition(500);
+		enter.start();
+		sceneToEnter = initSceneID;
+		
+		loadScene(initSceneID);
+	}	
 	
 	public function loadScene(sceneID:Int)
 	{
