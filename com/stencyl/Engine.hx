@@ -201,7 +201,6 @@ class Engine
 	//*-----------------------------------------------
 	
 	public var actors:Array<Actor>;
-	public var g:Graphics;
 	
 	
 	//*-----------------------------------------------
@@ -439,8 +438,7 @@ class Engine
 		master = new Sprite();
 		root.addChild(master);
 		
-		//Initialize things
-		g = new Graphics();		
+		//Initialize things	
 		actorsToCreateInNextScene = new Array();			
 		gameAttributes = new Hash<Dynamic>();
 		
@@ -476,6 +474,8 @@ class Engine
 	public function loadScene(sceneID:Int)
 	{
 		//trace("Loading Scene: " + sceneID);
+		
+		tasks = new Array<TimedTask>();
 		
 		scene = GameModel.get().scenes.get(sceneID);
 		
@@ -732,7 +732,8 @@ class Engine
 			a.initScripts();
 		}
 		
-		actors = null;
+		//???
+		//actors = null;
 	}
 	
 	private function loadCamera()
