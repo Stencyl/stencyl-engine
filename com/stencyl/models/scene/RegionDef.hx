@@ -1,10 +1,12 @@
 package com.stencyl.models.scene;
 
+import box2D.collision.shapes.B2Shape;
+
 class RegionDef
 {
 	public var x:Int;
 	public var y:Int;
-	//public var shape:b2Shape;
+	public var shape:B2Shape;
 	public var shapes:Array<Dynamic>;
 	
 	public var ID:Number;
@@ -17,7 +19,7 @@ class RegionDef
 		this.y = y;
 		
 		this.shapes = shapes;
-		//this.shape = this.shapes[0];
+		this.shape = this.shapes[0];
 		this.ID = ID;
 		this.name = name;
 		this.shapeID = shapeID;

@@ -122,7 +122,7 @@ class Actor extends Sprite
 	public var currAnimationName:String;
 	public var animationMap:Hash<DisplayObject>;
 	
-	public var hasSprite:Bool; //???
+	//public var hasSprite:Bool; //???
 	public var sprite:com.stencyl.models.actor.Sprite;
 	
 	public var shapeMap:Hash<Dynamic>;
@@ -206,7 +206,6 @@ class Actor extends Sprite
 		zero = new B2Vec2(0, 0);
 	
 		//---
-	
 		
 		registry = new Hash<Dynamic>();
 		
@@ -232,8 +231,6 @@ class Actor extends Sprite
 		xSpeed = 0;
 		ySpeed = 0;
 		rSpeed = 0;
-		
-		hasSprite = false;
 		
 		activeAngleTweens = 0;
 		activePositionTweens = 0;
@@ -542,8 +539,7 @@ class Actor extends Sprite
 	
 		//TODO: Use sheet-based animation on CPP targets
 		var sprite = new BitmapAnimation(imgData, frameCount, [1000, 1000]);
-		animationMap.set(name, sprite);
-		hasSprite = true;		
+		animationMap.set(name, sprite);	
 	}
 	
 	public function initScripts()
@@ -648,8 +644,6 @@ class Actor extends Sprite
 		currAnimation = new BitmapAnimation(bmp, 2, [1000, 1000]);
 		
 		addChild(currAnimation);
-		
-		hasSprite = true;
    	}
    	
    	
@@ -738,7 +732,7 @@ class Actor extends Sprite
 		
 	public function update(elapsedTime:Float)
 	{
-		if(hasSprite)
+		if(Std.is(currAnimation, AbstractAnimation))
    		{
    			cast(currAnimation, AbstractAnimation).update(elapsedTime);
    		}
