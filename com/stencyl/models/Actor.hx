@@ -537,37 +537,23 @@ class Actor extends Sprite
 			shapeMap.set(name, arr);
 		}
 	
-		//TODO: Use sheet-based animation on CPP targets
-		
 		#if cpp
-		/*var tilesheet = new Tilesheet(imgData);
-		tilesheet.addTileRect(new nme.geom.Rectangle(0, 0, 48, 32));
-		tilesheet.addTileRect(new nme.geom.Rectangle(48, 0, 48, 32)); 	
-		currAnimation = new SheetAnimation(tilesheet, [1000, 1000], 48, 32);
-		animationMap.set(name, tilesheet);*/
+		var tilesheet = new Tilesheet(imgData);
+		
+		for(i in 0...frameCount)
+		{
+			tilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * i, 0, frameWidth, frameHeight)); 	
+		}
+		 	
+		var sprite = new SheetAnimation(tilesheet, durations, frameWidth, frameHeight);
+		animationMap.set(name, sprite);
 		#end
 		
-		#if flash
-		var sprite = new BitmapAnimation(imgData, frameCount, [1000, 1000]);
+		#if flash || js
+		var sprite = new BitmapAnimation(imgData, frameCount, durations);
 		animationMap.set(name, sprite);
 		#end	
 	}
-	
-	/*public function tileTest()
-   	{
-   		var bmp = Assets.getBitmapData("assets/graphics/animation.png");
-
-   		#if !js
-		var tilesheet = new Tilesheet(bmp);
-		tilesheet.addTileRect(new nme.geom.Rectangle(0, 0, 48, 32));
-		tilesheet.addTileRect(new nme.geom.Rectangle(48, 0, 48, 32)); 	
-		currAnimation = new SheetAnimation(tilesheet, [1000, 1000], 48, 32);
-		#end
-				
-		currAnimation = new BitmapAnimation(bmp, 2, [1000, 1000]);
-		
-		addChild(currAnimation);
-   	}*/
 	
 	public function initScripts()
 	{		
