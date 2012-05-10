@@ -1410,74 +1410,66 @@ class Actor extends Sprite
 	
 	public function getX():Float
 	{
-		/*if(isRegion || isTerrainRegion)
+		if(isRegion || isTerrainRegion)
 		{
-			return Math.round(GameState.toPixelUnits(body.GetPosition().x) - width/2);
+			return Math.round(Engine.toPixelUnits(body.getPosition().x) - width/2);
 		}
 		
 		else if (!isLightweight)
 		{
-			return Math.round(body.GetPosition().x * GameState.physicsScale - Math.floor(width / 2) - currOffset.x);
+			return Math.round(body.getPosition().x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
 		}
 		
 		else 
 		{
-			return x - width/2 - currOffset.x;
-		}*/
-		
-		return x;
+			return x - currOffset.x;
+		}
 	}
 	
 	public function getY():Float
 	{
-		/*if(isRegion || isTerrainRegion)
+		if(isRegion || isTerrainRegion)
 		{
-			return Math.round(GameState.toPixelUnits(body.GetPosition().y) - height/2);
+			return Math.round(Engine.toPixelUnits(body.getPosition().y) - height/2);
 		}
 			
 		else if (!isLightweight)
 		{
-			return Math.round(body.GetPosition().y * GameState.physicsScale - Math.floor(height / 2) - currOffset.y);
-		}
-		
-		else
-		{
-			return y - height/2 - currOffset.y;
-		}*/
-		
-		return y;
-	}
-	
-	//TODO: Eliminate?
-	public function getXCenter():Float
-	{
-		/*if(!isLightweight)
-		{
-			return Math.round(GameState.toPixelUnits(body.GetWorldCenter().x) - currOffset.x);
-		}
-		
-		else
-		{
-			return x  - currOffset.x;
-		}*/
-		
-		return x + width/2;
-	}
-	
-	//TODO: Eliminate?
-	public function getYCenter():Float
-	{
-		/*if(!isLightweight)
-		{
-			return Math.round(GameState.toPixelUnits(body.GetWorldCenter().y) - currOffset.y);
+			return Math.round(body.getPosition().y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);
 		}
 		
 		else
 		{
 			return y - currOffset.y;
-		}*/
+		}
+	}
+	
+	//TODO: Eliminate?
+	public function getXCenter():Float
+	{
+		if(!isLightweight)
+		{
+			return Math.round(Engine.toPixelUnits(body.getWorldCenter().x) - currOffset.x);
+		}
 		
-		return y + height/2;
+		else
+		{
+			return x + width/2 - currOffset.x;
+		}
+	}
+	
+	//TODO: Eliminate?
+	public function getYCenter():Float
+	{
+		if(!isLightweight)
+		{
+			return Math.round(Engine.toPixelUnits(body.getWorldCenter().y) - currOffset.y);
+		}
+		
+		else
+		{
+			return y + height/2 - currOffset.y;
+		}
 	}
 	
 	public function getScreenX():Float
@@ -1516,27 +1508,27 @@ class Actor extends Sprite
 		
 		else
 		{
-			/*if(isRegion || isTerrainRegion)
+			if(isRegion || isTerrainRegion)
 			{
-				dummy.x = GameState.toPhysicalUnits(x);
+				dummy.x = Engine.toPhysicalUnits(x);
 			}
 				
 			else
 			{
-				dummy.x = GameState.toPhysicalUnits(x + Math.floor(width/2) + currOffset.x);
+				dummy.x = Engine.toPhysicalUnits(x + Math.floor(width/2) + currOffset.x);
 			}			
 			
-			dummy.y = body.GetPosition().y;
+			dummy.y = body.getPosition().y;
 			
-			body.SetPosition(dummy);
+			body.setPosition(dummy);
 			
 			if(resetSpeed)
 			{
-				body.SetLinearVelocity(zero);
+				body.setLinearVelocity(zero);
 			}
 			
-			this.x = Math.round(dummy.x * GameState.physicsScale - Math.floor(width / 2) - currOffset.x);
-			updateAnimProperties(false);*/
+			this.x = Math.round(dummy.x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
+			updateAnimProperties(false);
 		}
 	}
 	
@@ -1550,27 +1542,27 @@ class Actor extends Sprite
 		
 		else
 		{	
-			/*if(isRegion || isTerrainRegion)
+			if(isRegion || isTerrainRegion)
 			{
-				dummy.y = GameState.toPhysicalUnits(y);
+				dummy.y = Engine.toPhysicalUnits(y);
 			}
 				
 			else
 			{
-				dummy.y = GameState.toPhysicalUnits(y + Math.floor(height/2) + currOffset.y);
+				dummy.y = Engine.toPhysicalUnits(y + Math.floor(height/2) + currOffset.y);
 			}
 			
-			dummy.x = body.GetPosition().x;
+			dummy.x = body.getPosition().x;
 			
-			body.SetPosition(dummy);		
+			body.setPosition(dummy);		
 			
 			if(resetSpeed)
 			{
-				body.SetLinearVelocity(zero);
+				body.setLinearVelocity(zero);
 			}
 			
-			this.y = Math.round(dummy.y * GameState.physicsScale - Math.floor(height / 2) - currOffset.y);;
-			updateAnimProperties(false);*/	
+			this.y = Math.round(dummy.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);
+			updateAnimProperties(false);
 		}
 	}
 	
@@ -1584,11 +1576,7 @@ class Actor extends Sprite
 			return;
 		}
 		
-		//body.SetPosition(a.body.GetWorldCenter());
-		
-		//DEAD
-		//x = a.x;
-		//y = a.y;
+		body.setPosition(a.body.getWorldCenter());
 	}
 	
 	public function followWithOffset(a:Actor, ox:Int, oy:Int)
@@ -1601,16 +1589,12 @@ class Actor extends Sprite
 			return;
 		}
 		
-		/*var pt:V2 = a.body.GetWorldCenter();
+		var pt:B2Vec2 = a.body.getWorldCenter();
 		
-		pt.x += GameState.toPhysicalUnits(ox);
-		pt.y += GameState.toPhysicalUnits(oy);
+		pt.x += Engine.toPhysicalUnits(ox);
+		pt.y += Engine.toPhysicalUnits(oy);
 		
-		body.SetPosition(pt);*/
-		
-		//DEAD
-		//x = a.x + ox;
-		//y = a.y + oy;
+		body.setPosition(pt);
 	}
 	
 	public function setOriginPoint(x:Int, y:Int)
