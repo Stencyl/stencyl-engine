@@ -482,7 +482,7 @@ class Engine
 	
 	public function loadScene(sceneID:Int)
 	{
-		//trace("Loading Scene: " + sceneID);
+		setOffscreenTolerance(0, 0, 0, 0);
 		
 		tasks = new Array<TimedTask>();
 		
@@ -497,6 +497,30 @@ class Engine
 		Engine.sceneHeight = scene.sceneHeight;
 		
 		behaviors = new BehaviorManager();
+		
+		groups = new IntHash<DisplayObjectContainer>();
+		
+		/*for each(var grp:GroupDef in Game.get().groups)
+		{
+			var g:FlxGroup = new FlxGroup();
+			groups[grp.ID] = g;
+			g.name = grp.name;
+		}*/
+		
+		actorsOfType = new IntHash<Array<Actor>>();
+		recycledActorsOfType = new IntHash<Array<Actor>>();
+		
+		regions = new IntHash<Region>();
+		terrainRegions = new IntHash<Terrain>();
+		joints = new IntHash<B2Joint>();
+		layers = new IntHash<Layer>();
+		tileLayers = new IntHash<TileLayer>();
+		dynamicTiles = new Hash<Actor>();
+		animatedTiles = new Array<Tile>();
+		hudActors = new HashMap<Actor,Actor>();
+		allActors = new IntHash<Actor>();
+		actorsPerLayer = new IntHash<DisplayObjectContainer>();
+		nextID = 0;
 		
 		//Events
 		whenKeyPressedListeners = new HashMap<Dynamic, Dynamic>();
@@ -513,81 +537,11 @@ class Engine
 		whenMouseMovedListeners = new Array<Dynamic>();
 		whenMouseDraggedListeners = new Array<Dynamic>();
 		whenPausedListeners = new Array<Dynamic>();
-		
-		//Stuff
-		loadBackgrounds();	
-		loadActors();
-		
-		initBehaviors(behaviors, scene.behaviorValues, this, this, true);			
-		initActorScripts();
-		
-		/*setOffscreenTolerance(0, 0, 0, 0);
-		
-		tasks = new Array();
-		
-		accumulator = 0;
-		
-		scene = Game.get().scenes[sceneID];
-		
-		if(sceneID == -1 || scene == null)
-		{
-			scene = Game.get().scenes[Game.get().defaultSceneID];
-		}
-		
-		FlxG.log(scene.name);
-		
-		behaviors = new BehaviorManager();
-		
-		groups = new Array();
-		
-		for each(var grp:GroupDef in Game.get().groups)
-		{
-			var g:FlxGroup = new FlxGroup();
-			groups[grp.ID] = g;
-			g.name = grp.name;
-		}
-		
-		actorsOfType = new Array();
-		recycledActorsOfType = new Array();
-		
-		regions = new Array();
-		terrainRegions = new Array();
-		joints = new Array();
-		layers = new Array();
-		tileLayers = new Array();
-		dynamicTiles = new Dictionary();
-		animatedTiles = new Array();
-		hudActors = new HashSet();
-		allActors = new Array();
-		actorsPerLayer = new Array();
-		nextID = 0;
-		
-		whenKeyPressedListeners = new Dictionary();
-		whenTypeGroupCreatedListeners = new Dictionary();
-		whenTypeGroupDiesListeners = new Dictionary();
-		typeGroupPositionListeners = new Dictionary();
-		collisionListeners = new Dictionary();
-		soundListeners = new Dictionary();
-		
-		whenUpdatedListeners = new Array();
-		whenDrawingListeners = new Array();
-		whenMousePressedListeners = new Array();
-		whenMouseReleasedListeners = new Array();
-		whenMouseMovedListeners = new Array();
-		whenMouseDraggedListeners = new Array();
-		whenPausedListeners = new Array();
-		
 		whenFocusChangedListeners = new Array();
 											
 		initPhysics();
 		loadBackgrounds();
-		
 		loadTerrain();
-			
-		rootPanel = new Panel(0, 0, FlxG.width, FlxG.height);
-		rootPanel.game = this;
-		rootPanelLayer = getTopLayer();
-		
 		loadRegions();
 		loadTerrainRegions();
 		loadActors();			
@@ -595,12 +549,9 @@ class Engine
 		loadJoints();
 		
 		loadDeferredActors();
-		actorsOnScreen = cacheActors();		
-					
-		trace("Init Scene Behaviors");
-		
+		//actorsOnScreen = cacheActors();		
 		initBehaviors(behaviors, scene.behaviorValues, this, this, true);			
-		initActorScripts();*/
+		initActorScripts();
 	}
 		
 	private function loadBackgrounds()
@@ -709,7 +660,10 @@ class Engine
 		aabb.upperBound.y = Engine.screenHeight / physicsScale;
 		world.SetScreenBounds(aabb);*/
 		
-		initDebugDraw();
+		debugDrawer = new B2DebugDraw();
+		debugDrawer.setSprite(new Sprite());
+		world.setDebugDraw(debugDrawer);
+		master.addChild(debugDrawer.m_sprite);
 	}
 	
 	//*-----------------------------------------------
@@ -1042,6 +996,289 @@ class Engine
 		}			
 	}
 	
+	/*
+	
+	public function innerUpdate():void
+	{
+		//FlxG.log("Inner1: " + FlxG.elapsed);
+		//FlxG.log(Math.random());
+		
+		if(scene == null)
+		{
+			FlxG.log("Scene is null. If you this all over, something went fubar.");
+			return;
+		}
+		
+		//TODO: This is inefficient to recalculate each frame.
+		var aabb:AABB = world.GetScreenBounds();
+		aabb.lowerBound.x = (Math.abs(FlxG.scroll.x) - left) / physicsScale;
+		aabb.lowerBound.y = (Math.abs(FlxG.scroll.y) - top) / physicsScale;
+		aabb.upperBound.x = aabb.lowerBound.x + ((FlxG.width + right + left) / physicsScale);
+		aabb.upperBound.y = aabb.lowerBound.y + ((FlxG.height + bottom + top) / physicsScale);
+		world.SetScreenBounds(aabb);
+		
+				
+		if(FlxG.mouse.justPressed())
+		{
+			Script.mpx = FlxG.mouse.screenX;
+			Script.mpy = FlxG.mouse.screenY;
+			
+			//Fire events
+			for (var i:int = 0; i < whenMousePressedListeners.length; i++)
+			{
+				try
+				{
+					var f:Function = whenMousePressedListeners[i] as Function;
+					f(whenMousePressedListeners);
+					
+					if (whenMousePressedListeners.indexOf(f) == -1)
+					{
+						i--;
+					}
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+		}
+		
+		if(FlxG.mouse.justReleased())
+		{
+			Script.mrx = FlxG.mouse.screenX;
+			Script.mry = FlxG.mouse.screenY;
+			
+			//Fire events
+			for (var i:int = 0; i < whenMouseReleasedListeners.length; i++)
+			{
+				try
+				{
+					var f:Function = whenMouseReleasedListeners[i] as Function;
+					f(whenMouseReleasedListeners);
+					
+					if (whenMouseReleasedListeners.indexOf(f) == -1)
+					{
+						i--;
+					}
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+		}
+		
+		if (mx != FlxG.mouse.screenX || my != FlxG.mouse.screenY)
+		{
+			mx = FlxG.mouse.screenX;
+			my = FlxG.mouse.screenY;
+			
+			for (var i:int = 0; i < whenMouseMovedListeners.length; i++)
+			{
+				try
+				{
+					var f:Function = whenMouseMovedListeners[i] as Function;
+					f(whenMouseMovedListeners);
+					
+					if (whenMouseMovedListeners.indexOf(f) == -1)
+					{
+						i--;
+					}
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+			
+			if (FlxG.mouse.pressed())
+			{
+				for (var i:int = 0; i < whenMouseDraggedListeners.length; i++)
+				{
+					try
+					{
+						var f:Function = whenMouseDraggedListeners[i] as Function;
+						f(whenMouseDraggedListeners);
+						
+						if (whenMouseDraggedListeners.indexOf(f) == -1)
+						{
+							i--;
+						}
+					}
+					catch (e:Error)
+					{
+						FlxG.log(e.getStackTrace());
+					}
+				}
+			}
+		}				
+		
+		for(var i:int = 0; i < tasks.length; i++)
+		{
+			var t:TimedTask  = tasks[i];
+			
+			t.update(STEP_SIZE_MS);
+			
+			if(t.done)
+			{
+				tasks.splice(i, 1);	
+				i--;
+			}
+		}
+		
+		//Poll Keyboard Inputs
+		for (var key:String in whenKeyPressedListeners)
+		{
+			var k:String = Game.get().controller["_" + key];
+			
+			if (k == null)
+			{
+				continue;
+			}
+			
+			var listeners:Array = whenKeyPressedListeners[key] as Array;
+			
+			var pressed:Boolean = FlxG.keys.justPressed(k);
+			var released:Boolean = FlxG.keys.justReleased(k);
+			
+			if (pressed || released)
+			{
+				for (var i:int = 0; i < listeners.length; i++)
+				{
+					try
+					{
+						var f:Function = listeners[i] as Function;					
+						f(listeners, pressed, released);
+						
+						if (listeners.indexOf(f) == -1)
+						{
+							i--;
+						}
+					}
+					catch (e:Error)
+					{
+						FlxG.log(e.getStackTrace);
+					}
+					
+				}
+			}				
+		}
+		
+		//FlxG.log("Update RP");
+		rootPanel.update();
+		//FlxG.log("Update Snippets");
+		for (var i:int = 0; i < whenUpdatedListeners.length; i++)
+		{
+			try
+			{
+				var f:Function = whenUpdatedListeners[i] as Function;
+				f(whenUpdatedListeners);
+				
+				if (whenUpdatedListeners.indexOf(f) == -1)
+				{
+					i--;
+				}
+			}
+			catch (e:Error)
+			{
+				FlxG.log(e.getStackTrace());
+			}
+		}
+		//FlxG.log("Update End");
+		
+		world.Step(STEP_SIZE, 3, 8);
+		
+		//world.Step(STEP_SIZE, ITERATIONS, ITERATIONS - 1);
+		
+		for each(var r:Region in regions)
+		{
+			if(r == null) continue;
+			r.innerUpdate(true);
+		}
+		
+		//
+		collisionPairs = new Dictionary();
+		var disableCollisionList:Array = new Array();
+
+		for each(var a:Actor in actorsOnScreen)
+		{		
+			if(a != null && !a.dead && !a.recycled) 
+			{
+				if(!a.isLightweight && a.body != null)
+				{
+					if(a.killLeaveScreen && !a.isOnScreen())
+					{							
+						//FlxG.log("KILLED: " + a.name);
+						a.kill();
+					}
+					
+					else if(a.body.IsActive())
+					{		
+						//Equivalent to a.update();
+						a.innerUpdate(true);							
+					}
+				}
+				else if (a.isLightweight)
+				{
+					if(a.killLeaveScreen && !a.isOnScreen())
+					{
+						a.kill();
+					}
+					
+					else (a.isAlive())
+					{		
+						//Equivalent to a.update();
+						a.innerUpdate(true);
+					}
+				}
+				
+				if (a.dead)
+				{
+					disableCollisionList.push(a);
+				}
+			}
+		}
+					
+		for each(var a2:Actor in hudActors)
+		{
+			if(a2 != null && (a2.isLightweight || (a2.body != null && a2.body.IsActive())) && !a2.dead && !a2.recycled)
+			{
+				a2.innerUpdate(false);
+			}
+		}
+		
+		for each(var a:Actor in disableCollisionList)
+		{
+			if (a != null)
+			{
+				a.handlesCollisions = false;
+			}
+		}
+		
+		for each (var tile:Tile in animatedTiles)
+		{
+			tile.update();
+		}
+		
+		if(leave != null && leave.isActive())
+		{
+			leave.update(this);
+		}
+			
+		else if(enter != null && enter.isActive())
+		{
+			enter.update(this);
+		} 
+
+		FlxG.follow(camera, 1);
+		parallax.viewport.setPosition(Math.abs(FlxG.scroll.x), Math.abs(FlxG.scroll.y));
+		
+		//Switch to mouse.update()?
+		FlxG.updateInput();
+		}
+	
+	*/
+	
 	//Game Loop
 	private function onUpdate(event:Event):Void 
 	{
@@ -1061,13 +1298,24 @@ class Engine
 		
 		lastTime = currTime;
 			
-		/*framerate = Std.int(1 / elapsedTime);
-		framerateCounter += elapsedTime;
-		
-		if(framerateCounter > 1)
+		//On screen flag reset
+		/*for each(var a:Actor in allActors)
 		{
-			framerateCounter -= 1;
-			fpsLabel.text = Std.string(framerate);
+			if(a == null || (!a.isLightweight && a.body == null))
+			{
+				continue;
+			}
+			
+			if(a.dead || !a.exists)
+			{
+				removeActor(a);
+				continue;
+			}
+			
+			if(a.body == null)
+			{
+				continue;
+			}
 		}*/
 	}
 	
@@ -1710,24 +1958,28 @@ class Engine
 			}									
 		}
 		
-		/*for(var r:int = 0; r < whenPausedListeners.length; r++ )
+		var r = 0;
+		
+		while(r < whenPausedListeners.length)
 		{
 			try
 			{
-				var f:Function = whenPausedListeners[r] as Function;
-				f(whenPausedListeners, true);
-			
-				if(whenPausedListeners.indexOf(f) == -1)
+				var f:Bool->Array<Dynamic>->Void = whenPausedListeners[r];			
+				f(true, whenPausedListeners);
+				
+				if(Utils.indexOf(whenPausedListeners, f) == -1)
 				{
 					r--;
 				}
 			}
 			
-			catch(e:Error)
+			catch(e:String)
 			{
-				FlxG.log(e.getStackTrace());
+				trace(e);
 			}
-		}*/
+			
+			r++;
+		}
 	}
 	
 	public function unpause()
@@ -1742,24 +1994,28 @@ class Engine
 			}								
 		}
 		
-		/*for(var r:int = 0; r < whenPausedListeners.length; r++ )
+		var r = 0;
+		
+		while(r < whenPausedListeners.length)
 		{
 			try
 			{
-				var f:Function = whenPausedListeners[r] as Function;
-				f(whenPausedListeners, false);
-			
-				if(whenPausedListeners.indexOf(f) == -1)
+				var f:Bool->Array<Dynamic>->Void = whenPausedListeners[r];			
+				f(false, whenPausedListeners);
+				
+				if(Utils.indexOf(whenPausedListeners, f) == -1)
 				{
 					r--;
 				}
 			}
 			
-			catch(e:Error)
+			catch(e:String)
 			{
-				FlxG.log(e.getStackTrace());
+				trace(e);
 			}
-		}*/
+			
+			r++;
+		}
 	}
 	
 	public function isPaused():Bool
@@ -1961,15 +2217,6 @@ class Engine
 		v.y = toPixelUnits(v.y);
 		
 		return v;
-	}
-	
-	private function initDebugDraw() 
-	{
-		/*debugDrawer = new b2DebugDraw();
-		debugDrawer.world = world;
-		debugDrawer.scale = physicsScale;
-		
-		addChild(debugDrawer);*/
 	}
 	
 	public function enableGlobalSleeping()
@@ -2452,16 +2699,15 @@ class Engine
 	//* On/Off Screen
 	//*-----------------------------------------------
 	
-	/*
-	
-	public function setOffscreenTolerance(top:int, left:int, bottom:int, right:int):void
+	public function setOffscreenTolerance(top:Int, left:Int, bottom:Int, right:Int)
 	{
-		this.top = top;
-		this.left = left;
-		this.bottom = bottom;
-		this.right = right;
+		Engine.paddingTop = top;
+		Engine.paddingLeft = left;
+		Engine.paddingBottom = bottom;
+		Engine.paddingRight = right;
 	}
 	
+	/*
 	private function fetchActorsToRender():int
 	{
 		actorsOnScreen = cacheActors();
