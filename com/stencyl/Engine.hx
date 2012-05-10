@@ -45,6 +45,7 @@ import scripts.MyScripts;
 
 import com.stencyl.utils.Utils;
 import com.stencyl.utils.HashMap;
+import com.stencyl.utils.SizedIntHash;
 
 #if cpp
 import nme.ui.Accelerometer;
@@ -193,8 +194,8 @@ class Engine
 	//int[]
 	//index -> order
 	//value -> layerID
-	public var layersToDraw:IntHash<Int>;
-	public var layerOrders:IntHash<Int>;		
+	public var layersToDraw:SizedIntHash<Int>;
+	public var layerOrders:SizedIntHash<Int>;		
 	
 	//public var parallax:ParallaxArea;
 	//public var playfield:Area;
@@ -1267,7 +1268,7 @@ class Engine
 		
 		while(acc > STEP_SIZE)
 		{
-			update(STEP_SIZE * 1000);
+			update(STEP_SIZE * MS_PER_SEC);
 			acc -= STEP_SIZE;
 			
 			Input.update();
@@ -2004,8 +2005,6 @@ class Engine
 	//* Custom Drawing
 	//*-----------------------------------------------
 	
-	//TODO
-	
 	/**
      * Renders the game.
      * Elements are rendered in the following order:
@@ -2022,6 +2021,12 @@ class Engine
      * - Debug drawing
 	 * - Transition drawing
          */
+      
+     //The display tree does almost everything now. We only need to invoke the behavior drawers.
+     public function render()
+     {
+     	//TODO:
+     }
 	
 	//*-----------------------------------------------
 	//* Messaging
@@ -2102,44 +2107,44 @@ class Engine
 	
 	public function sendToBack(a:Actor)
 	{
-		/*removeActorFromLayer(a, a.layerID);
+		removeActorFromLayer(a, a.layerID);
 		a.layerID = getBottomLayer();
-		moveActorToLayer(a, a.layerID);*/
+		moveActorToLayer(a, a.layerID);
 	}
 	
 	public function sendBackward(a:Actor)
 	{
-		/*removeActorFromLayer(a, a.layerID);
+		removeActorFromLayer(a, a.layerID);
 		
 		var order:Int = getOrderForLayerID(a.layerID);
 		
-		if(order < layersToDraw.length - 1)
+		if(order < layersToDraw.size - 1)
 		{
-			a.layerID = layersToDraw[order + 1];	
+			a.layerID = layersToDraw.get(order + 1);	
 		}
 		
-		moveActorToLayer(a, a.layerID);*/
+		moveActorToLayer(a, a.layerID);
 	}
 	
 	public function bringToFront(a:Actor)
 	{
-		/*removeActorFromLayer(a, a.layerID);
+		removeActorFromLayer(a, a.layerID);
 		a.layerID = getTopLayer();
-		moveActorToLayer(a, a.layerID);*/
+		moveActorToLayer(a, a.layerID);
 	}
 	
 	public function bringForward(a:Actor)
 	{
-		/*removeActorFromLayer(a, a.layerID);
+		removeActorFromLayer(a, a.layerID);
 		
 		var order:Int = getOrderForLayerID(a.layerID);
 		
 		if(order > 0)
 		{
-			a.layerID = layersToDraw[order - 1];	
+			a.layerID = layersToDraw.get(order - 1);	
 		}
 		
-		moveActorToLayer(a, a.layerID);*/
+		moveActorToLayer(a, a.layerID);
 	}
 	
 	public function getOrderForLayerID(layerID:Int):Int
