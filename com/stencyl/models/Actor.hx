@@ -70,6 +70,7 @@ class Actor extends Sprite
 	public var groupID:Int;
 	public var layerID:Int;
 	public var typeID:Int;
+	public var type:ActorType;
 	
 	
 	//*-----------------------------------------------

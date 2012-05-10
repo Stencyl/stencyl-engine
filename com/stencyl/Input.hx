@@ -25,6 +25,10 @@ class Input
 	public static var mouseReleased:Bool;
 	public static var mouseWheel:Bool;
 	
+	public static var accelX:Float;
+	public static var accelY:Float;
+	public static var accelZ:Float;
+	
 	#if !js
 	public static var multiTouchEnabled:Bool;
 	public static var multiTouchPoints:Hash<TouchEvent>;
@@ -167,6 +171,16 @@ class Input
 
 	public static function update()
 	{
+		#if cpp
+		if(nme.sensors.Accelerometer.isSupported)
+		{
+			var data = Accelerometer.get();
+			accelX = data.x;
+			accelY = data.y;
+			accelZ = data.z;
+		}
+		#end
+	
 		while (_pressNum-- > -1) _press[_pressNum] = -1;
 		_pressNum = 0;
 		while (_releaseNum-- > -1) _release[_releaseNum] = -1;

@@ -35,6 +35,7 @@ import com.stencyl.models.SoundChannel;
 import com.stencyl.models.Region;
 import com.stencyl.models.Terrain;
 
+import com.stencyl.models.scene.DeferredActor;
 import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.Layer;
 import com.stencyl.models.scene.TileLayer;
@@ -169,7 +170,7 @@ class Engine
 	public var recycledActorsOfType:IntHash<Array<Actor>>;
 	
 	//List<DeferredActor>
-	public var actorsToCreateInNextScene:Array<Actor>;
+	public var actorsToCreateInNextScene:Array<DeferredActor>;
 	
 	
 	//*-----------------------------------------------
@@ -680,8 +681,7 @@ class Engine
 	{
 		for(a in actorsToCreateInNextScene)
 		{
-			//TODO
-			//Script.lastCreatedActor = createActorOfType(a.type, a.x, a.y, a.layer);
+			Script.lastCreatedActor = createActorOfType(a.type, a.x, a.y, a.layer);
 		}
 		
 		actorsToCreateInNextScene = [];
@@ -890,18 +890,6 @@ class Engine
 
 	private function update(elapsedTime:Float)
 	{
-		#if cpp
-		/*if(nme.sensors.Accelerometer.isSupported)
-		{
-			var data = Accelerometer.get();
-			
-			//pronger.x += data.x;
-			//pronger.y -= data.y;
-		}*/
-		#end
-		
-		//---
-		
 		//cameraX = pronger.x - screenWidth/2;
 		//cameraY = pronger.y - screenHeight/2;
 		
