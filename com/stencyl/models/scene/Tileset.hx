@@ -38,8 +38,7 @@ class Tileset extends Resource
 		if(tile == null)
 		{
 			return new Rectangle(0, 0, tileWidth, tileHeight);
-		}
-		
+		}	
 		
 		else
 		{

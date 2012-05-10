@@ -173,6 +173,8 @@ class Engine
 	//List<DeferredActor>
 	public var actorsToCreateInNextScene:Array<DeferredActor>;
 	
+	//TODO: Map<String, Layer>
+	
 	
 	//*-----------------------------------------------
 	//* Model - Layers / Terrain
@@ -883,6 +885,109 @@ class Engine
 			a.visible = false;
 			add(a);
 		}*/		
+	}
+	
+	//This is mainly to establish mappings and figure out top, middle, bottom
+	private function initLayers()
+	{
+		var layers = new SizedIntHash<Int>();
+		var orders = new SizedIntHash<Int>();
+		var exists = new SizedIntHash<Int>();
+		
+		tileLayers = scene.terrain;
+		animatedTiles = scene.animatedTiles;
+		
+		if(animatedTiles != null)
+		{
+			for(tile in animatedTiles)
+			{
+				tile.currFrame = 0;
+				tile.currTime = 0;
+			}
+		}
+		
+		if(scene.terrain != null)
+		{
+			for(l in scene.terrain)
+			{
+				layers.set(l.zOrder, l.layerID);
+				orders.set(l.layerID, l.zOrder);
+				exists.set(l.zOrder, l.zOrder);
+			}
+		}
+		
+		for(i in 0...layers.size)
+		{
+			if(!exists.exists(i))
+			{
+				layers.set(i, -1);
+			}
+		}
+		
+		layersToDraw = layers;
+		layerOrders = orders;
+		
+		var foundTop:Bool = false;
+		var foundMiddle:Bool = false;
+		var realNumLayers:Int = 0;
+		
+		//Figure out how many there actually are
+		for(i in 0...layers.size)
+		{
+			var layerID:Int = layersToDraw.get(i);
+			
+			if(layerID != -1)
+			{
+				realNumLayers++;
+			}
+		}
+		
+		var numLayersProcessed:Int = 0;
+		
+		for(i in 0...layers.size)
+		{
+			var layerID:Int = layersToDraw.get(i);
+			
+			if(layerID == -1)
+			{
+				continue;
+			}
+			
+			var list = new Sprite();
+			var terrain = null;
+			
+			if(scene.terrain != null)
+			{
+				terrain = new Layer(layerID, i, scene.terrain.get(layerID));
+			}
+			
+			if(!foundTop)
+			{
+				foundTop = true;
+				topLayer = i;
+			}
+			
+			if(!foundMiddle && numLayersProcessed == Math.floor(realNumLayers / 2))
+			{
+				foundMiddle = true;
+				middleLayer = i;
+			}
+
+			if(terrain != null)
+			{
+				master.addChild(terrain);
+				this.layers.set(layerID, terrain);
+			}
+				
+			master.addChild(list);
+			
+			actorsPerLayer.set(layerID, list);
+			
+			//Eventually, this will become the correct value
+			bottomLayer = i;
+			
+			numLayersProcessed++;
+		}
 	}
 	
 	//*-----------------------------------------------
@@ -2026,6 +2131,10 @@ class Engine
      public function render()
      {
      	//TODO:
+     	
+     	//Clear each of the layer surfaces
+     	
+     	//Walk through each of the drawing events
      }
 	
 	//*-----------------------------------------------
@@ -2092,17 +2201,23 @@ class Engine
 	
 	public function moveToLayerOrder(a:Actor, layerOrder:Int)
 	{
-		/*var lID:Int;
-		lID = layerOrder - 1;
+		var lID = layerOrder - 1;
 
-		if(lID < 0 || lID > layersToDraw.length-1) return;
-		if(a.layerID == layersToDraw[lID]) return;
+		if(lID < 0 || lID > layersToDraw.size - 1) 
+		{
+			return;
+		}
+			
+		if(a.layerID == layersToDraw.get(lID)) 
+		{
+			return;
+		}
 		
-		lID = layersToDraw[lID];
+		lID = layersToDraw.get(lID);
 
 		removeActorFromLayer(a, a.layerID);
 		a.layerID = lID;
-		moveActorToLayer(a,lID);*/
+		moveActorToLayer(a,lID);
 	}
 	
 	public function sendToBack(a:Actor)
@@ -2717,107 +2832,4 @@ class Engine
 		
 		return allActors;
 	}*/
-	
-	//This is mainly to establish mappings and figure out top, middle, bottom
-	private function initLayers()
-	{
-		var layers = new SizedIntHash<Int>();
-		var orders = new SizedIntHash<Int>();
-		var exists = new SizedIntHash<Int>();
-		
-		tileLayers = scene.terrain;
-		animatedTiles = scene.animatedTiles;
-		
-		if(animatedTiles != null)
-		{
-			for(tile in animatedTiles)
-			{
-				tile.currFrame = 0;
-				tile.currTime = 0;
-			}
-		}
-		
-		if(scene.terrain != null)
-		{
-			for(l in scene.terrain)
-			{
-				layers.set(l.zOrder, l.layerID);
-				orders.set(l.layerID, l.zOrder);
-				exists.set(l.zOrder, l.zOrder);
-			}
-		}
-		
-		for(i in 0...layers.size)
-		{
-			if(!exists.exists(i))
-			{
-				layers.set(i, -1);
-			}
-		}
-		
-		layersToDraw = layers;
-		layerOrders = orders;
-		
-		var foundTop:Bool = false;
-		var foundMiddle:Bool = false;
-		var realNumLayers:Int = 0;
-		
-		//Figure out how many there actually are
-		for(i in 0...layers.size)
-		{
-			var layerID:Int = layersToDraw.get(i);
-			
-			if(layerID != -1)
-			{
-				realNumLayers++;
-			}
-		}
-		
-		var numLayersProcessed:Int = 0;
-		
-		for(i in 0...layers.size)
-		{
-			var layerID:Int = layersToDraw.get(i);
-			
-			if(layerID == -1)
-			{
-				continue;
-			}
-			
-			var list = new Sprite();
-			var terrain = null;
-			
-			if(scene.terrain != null)
-			{
-				terrain = new Layer(layerID, i, scene.terrain.get(layerID));
-			}
-			
-			if(!foundTop)
-			{
-				foundTop = true;
-				topLayer = i;
-			}
-			
-			if(!foundMiddle && numLayersProcessed == Math.floor(realNumLayers / 2))
-			{
-				foundMiddle = true;
-				middleLayer = i;
-			}
-
-			if(terrain != null)
-			{
-				master.addChild(terrain);
-				this.layers.set(layerID, terrain);
-			}
-				
-			master.addChild(list);
-			
-			actorsPerLayer.set(layerID, list);
-			
-			//Eventually, this will become the correct value
-			bottomLayer = i;
-			
-			numLayersProcessed++;
-		}
-	}
 }
