@@ -848,7 +848,7 @@ class Engine
 	
 	public function loadTerrain()
 	{				
-		//initLayers();
+		initLayers();
 		
 		/*for each(var item:* in scene.wireframes)
 		{
@@ -2716,41 +2716,42 @@ class Engine
 		}
 		
 		return allActors;
-	}
+	}*/
 	
-	private function initLayers():void
+	private function initLayers()
 	{
-		var layers:Array = new Array();
-		var orders:Array = new Array();
-		var exists:HashSet = new HashSet();
+		var layers = new SizedIntHash<Int>();
+		var orders = new SizedIntHash<Int>();
+		var exists = new SizedIntHash<Int>();
+		
 		tileLayers = scene.terrain;
 		animatedTiles = scene.animatedTiles;
 		
-		for each (var tile:Tile in animatedTiles)
+		for(tile in animatedTiles)
 		{
 			tile.currFrame = 0;
 			tile.currTime = 0;
 		}
 		
-		for each(var l:TileLayer in scene.terrain)
+		for(l in scene.terrain)
 		{
-			layers[l.zOrder] = l.layerID;
-			orders[l.layerID] = l.zOrder;
-			exists.add(l.zOrder);
+			layers.set(l.zOrder, l.layerID);
+			orders.set(l.layerID, l.zOrder);
+			exists.set(l.zOrder, l.zOrder);
 		}
 		
-		for(var i:int = 0; i < layers.length; i++)
+		for(i in 0...layers.size)
 		{
-			if(!exists.has(i))
+			if(!exists.exists(i))
 			{
-				layers[i] = -1;
+				layers.set(i, -1);
 			}
 		}
 		
 		layersToDraw = layers;
 		layerOrders = orders;
 		
-		var foundTop:Boolean = false;
+		/*var foundTop:Boolean = false;
 		var foundMiddle:Boolean = false;
 		
 		var realNumLayers:int = 0;
@@ -2803,8 +2804,6 @@ class Engine
 			bottomLayer = i;
 			
 			numLayersProcessed++;
-		}
+		}*/
 	}
-	
-	*/
 }

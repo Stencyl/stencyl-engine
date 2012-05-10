@@ -3,6 +3,8 @@ package com.stencyl.models;
 import com.stencyl.io.BackgroundReader;
 import com.stencyl.io.ActorTypeReader;
 
+import com.stencyl.models.scene.Tile;
+import com.stencyl.models.scene.TileLayer;
 import com.stencyl.models.background.ColorBackground;
 import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.behavior.BehaviorInstance;
@@ -31,8 +33,8 @@ class Scene
 	public var bgs:Array<Int>;
 	public var fgs:Array<Int>;
 	
-	//public var terrain:Array;
-	public var actors:Hash<ActorInstance>;
+	public var terrain:IntHash<TileLayer>;
+	public var actors:IntHash<ActorInstance>;
 	public var behaviorValues:Hash<BehaviorInstance>;
 	
 	//Box2D
@@ -41,7 +43,7 @@ class Scene
 	//public var regions:Array;
 	//public var terrainRegions:Array;
 	
-	//public var animatedTiles:Array;
+	public var animatedTiles:Array<Tile>;
 	
 	public function new(ID:Int, name:String, xml:Fast)
 	{
@@ -59,7 +61,7 @@ class Scene
 		gravityX = Std.parseFloat(xml.att.gravx);
 		gravityY = Std.parseFloat(xml.att.gravy);
 								
-		//animatedTiles = new Array();
+		animatedTiles = new Array<Tile>();
 		
 		bgs = readBackgrounds(xml.node.backgrounds.elements);
 		fgs = readBackgrounds(xml.node.foregrounds.elements);
@@ -545,9 +547,9 @@ class Scene
 		return map;
 	}*/
 	
-	public function readActors(list:Iterator<Fast>):Hash<ActorInstance>
+	public function readActors(list:Iterator<Fast>):IntHash<ActorInstance>
 	{
-		var map:Hash<ActorInstance> = new Hash<ActorInstance>();
+		var map:IntHash<ActorInstance> = new IntHash<ActorInstance>();
 		
 		for(e in list)
 		{
@@ -555,7 +557,7 @@ class Scene
 			
 			if(ai != null)
 			{
-				map.set(e.att.aid, ai);
+				map.set(Std.parseInt(e.att.aid), ai);
 			}
 		}
 		

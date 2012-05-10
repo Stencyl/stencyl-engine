@@ -10,12 +10,11 @@ import nme.display.Sprite;
 
 class TileLayer extends Sprite
 {
-	/*public var layerID:Number;
-	public var zOrder:Number;
-	public var name:String;
+	public var layerID:Int;
+	public var zOrder:Int;
 	
 	//Data
-	public var rows:Array;
+	/*public var rows:Array;
 	
 	public var scene:Scene;
 	public var numRows:Number;
