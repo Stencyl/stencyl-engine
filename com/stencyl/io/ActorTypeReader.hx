@@ -7,6 +7,9 @@ import com.stencyl.models.Resource;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.behavior.BehaviorInstance;
 
+import box2D.dynamics.B2Body;
+import box2D.dynamics.B2BodyDef;
+
 class ActorTypeReader implements AbstractReader
 {
 	public function new() 
@@ -22,46 +25,41 @@ class ActorTypeReader implements AbstractReader
 	{
 		//trace("Reading ActorType (" + ID + ") - " + name);
 		
-		//Box2D stuff we don't care about
+		var bodyDef = new B2BodyDef();
 		
-		/*
+		bodyDef.fixedRotation = Utils.toBoolean(xml.att.fixedrot);
 		
-			var bodyDef:b2BodyDef = new b2BodyDef();
-			
-			bodyDef.fixedRotation = Util.toBoolean(xml.@fixedrot);
-			
-			if(xml.@static == "true" || xml.@bodytype == 0)
-			{
-				bodyDef.type = b2Body.b2_staticBody;
-			}
-			
-			else if(xml.@bodytype == 1)
-			{
-				bodyDef.type = b2Body.b2_kinematicBody;
-			}
-				
-			else
-			{
-				bodyDef.type = b2Body.b2_dynamicBody;
-			}
-			
-			bodyDef.linearDamping = xml.@ldamp;
-			bodyDef.angularDamping = xml.@adamp;
-			
-			bodyDef.friction = xml.@fric;
-			bodyDef.bounciness = xml.@rest;
-			bodyDef.mass = xml.@mass;
-			bodyDef.aMass = xml.@inertia;
-			
-			bodyDef.active = true;
-			bodyDef.bullet = false;
-			bodyDef.allowSleep = false;
-			bodyDef.awake = true;
-			bodyDef.ignoreGravity = Util.toBoolean(xml.@ignoreg);
-			bodyDef.bullet = Util.toBoolean(xml.@continuous);
+		if(xml.att.bodytype == "0")
+		{
+			bodyDef.type = B2Body.b2_staticBody;
+		}
 		
-		*/
+		else if(xml.att.bodytype == "1")
+		{
+			bodyDef.type = B2Body.b2_kinematicBody;
+		}
+			
+		else
+		{
+			bodyDef.type = B2Body.b2_dynamicBody;
+		}
 		
+		//TODO
+		/*bodyDef.linearDamping = Std.parseFloat(xml.att.ldamp);
+		bodyDef.angularDamping = Std.parseFloat(xml.att.adamp);
+		
+		bodyDef.friction = Std.parseFloat(xml.att.fric);
+		bodyDef.bounciness = Std.parseFloat(ml.att.rest);
+		bodyDef.mass = Std.parseFloat(xml.att.mass);
+		bodyDef.aMass = Std.parseFloat(xml.att.inertia);
+		
+		bodyDef.active = true;
+		bodyDef.bullet = false;
+		bodyDef.allowSleep = false;
+		bodyDef.awake = true;
+		bodyDef.ignoreGravity = Utils.toBoolean(xml.att.ignoreg);
+		bodyDef.bullet = Utils.toBoolean(xml.att.continuous);*/
+
 		var spriteID:Int = Std.parseInt(xml.att.sprite);
 		var groupID:Int = Std.parseInt(xml.att.gid);
 		var isLightweight:Bool = Utils.toBoolean(xml.att.lw);
@@ -82,7 +80,7 @@ class ActorTypeReader implements AbstractReader
 			}
 		}
 			
-		return new ActorType(ID, name, groupID, spriteID, behaviorValues, isLightweight, autoScale, pausable);
+		return new ActorType(ID, name, groupID, spriteID, behaviorValues, null, isLightweight, autoScale, pausable);
 	}
 	
 	public static function readBehaviors(xml:Fast):Hash<BehaviorInstance>

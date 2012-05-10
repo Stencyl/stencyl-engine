@@ -27,16 +27,16 @@ class TimedTask
 	
 	public function update(timeElapsed:Int)
 	{
-		/*if(actor != null && !actor.isAlive())
+		if(actor != null && !actor.isAlive())
 		{
 			done = true;
 			return;
 		}
 		
-		if(FlxG.pause || (actor != null && actor.isPaused()))
+		if(Engine.engine.isPaused() || (actor != null && actor.isPaused()))
 		{
 			return;
-		}*/				
+		}		
 		
 		timer -= timeElapsed;
 		
