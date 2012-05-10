@@ -47,10 +47,6 @@ import com.stencyl.utils.Utils;
 import com.stencyl.utils.HashMap;
 import com.stencyl.utils.SizedIntHash;
 
-#if cpp
-import nme.ui.Accelerometer;
-#end
-
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Elastic;
 
@@ -2192,7 +2188,7 @@ class Engine
 	
 	public function removeHUDActor(a:Actor)
 	{
-		hudActors.remove(a);
+		hudActors.delete(a);
 	}
 	
 	//*-----------------------------------------------

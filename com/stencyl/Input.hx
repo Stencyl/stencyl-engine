@@ -8,6 +8,10 @@ import nme.events.TouchEvent;
 import nme.ui.Multitouch;
 #end
 
+#if cpp
+import nme.ui.Accelerometer;
+#end
+
 import nme.ui.Keyboard;
 import nme.Lib;
 
