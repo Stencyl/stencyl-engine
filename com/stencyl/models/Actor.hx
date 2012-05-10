@@ -44,6 +44,7 @@ import box2D.dynamics.B2BodyDef;
 import box2D.collision.shapes.B2MassData;
 import box2D.dynamics.contacts.B2Contact;
 import box2D.common.math.B2Vec2;
+import box2D.common.math.B2Transform;
 
 
 class Actor extends Sprite 
@@ -827,10 +828,14 @@ class Actor extends Sprite
 			rotation = tweenAngle.angle;
 			currAnimation.rotation = tweenAngle.angle;
 			
-			/*if(!isLightweight)
+			if(!isLightweight)
 			{
-				body.SetTransform(new V2(GameState.toPhysicalUnits(x), GameState.toPhysicalUnits(y)), Util.toRadians(angle));
-			}*/
+				body.setPositionAndAngle
+				(
+					new B2Vec2(Engine.toPhysicalUnits(x), Engine.toPhysicalUnits(y)),
+					Utils.RAD * rotation
+				);
+			}
 		}
 		
 		else
@@ -1296,9 +1301,7 @@ class Actor extends Sprite
 	
 	public function getLayerOrder():Int
 	{
-		return 0;
-		//TODO
-		//return engine.getOrderForLayerID(layerID) + 1;
+		return engine.getOrderForLayerID(layerID) + 1;
 	}
 	
 	public function getType():ActorType
@@ -1355,20 +1358,9 @@ class Actor extends Sprite
 	//* Type
 	//*-----------------------------------------------
 	
-	public function getGroup():Sprite
+	public function getGroup():DisplayObjectContainer
 	{
-		try
-		{
-			//TODO
-			//return engine.groups[getGroupID()];
-		}
-		
-		//Dead
-		catch(e:String)
-		{
-		}
-		
-		return null;
+		return engine.groups.get(getGroupID());
 	}
 	
 	public function getIsRegion():Bool
@@ -1387,27 +1379,27 @@ class Actor extends Sprite
 	
 	public function moveToLayerOrder(layerOrder:Int)
 	{
-		//engine.moveToLayerOrder(this,layerOrder);
+		engine.moveToLayerOrder(this,layerOrder);
 	}
 	
 	public function bringToFront()
 	{
-		//engine.bringToFront(this);
+		engine.bringToFront(this);
 	}
 	
 	public function bringForward()
 	{
-		//engine.bringForward(this);
+		engine.bringForward(this);
 	}
 	
 	public function sendToBack()
 	{
-		//engine.sendToBack(this);
+		engine.sendToBack(this);
 	}
 	
 	public function sendBackward()
 	{
-		//engine.sendBackward(this);
+		engine.sendBackward(this);
 	}
 	
 	//*-----------------------------------------------
@@ -1454,6 +1446,7 @@ class Actor extends Sprite
 		return y;
 	}
 	
+	//TODO: Eliminate?
 	public function getXCenter():Float
 	{
 		/*if(!isLightweight)
@@ -1469,6 +1462,7 @@ class Actor extends Sprite
 		return x + width/2;
 	}
 	
+	//TODO: Eliminate?
 	public function getYCenter():Float
 	{
 		/*if(!isLightweight)

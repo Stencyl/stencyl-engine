@@ -2116,7 +2116,7 @@ class Engine
 	{
 		/*removeActorFromLayer(a, a.layerID);
 		a.layerID = getBottomLayer();
-		moveActorToLayer(a, a.layerID);
+		moveActorToLayer(a, a.layerID);*/
 	}
 	
 	public function sendBackward(a:Actor)
