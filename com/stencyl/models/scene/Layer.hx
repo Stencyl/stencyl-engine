@@ -11,7 +11,7 @@ class Layer extends Sprite
 	public var order:Int;
 	public var color:Int;
 	
-	function new(ID:Int, order:Int, tiles:TileLayer)
+	public function new(ID:Int, order:Int, tiles:TileLayer)
 	{
 		super();
 		

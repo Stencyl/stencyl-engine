@@ -2718,6 +2718,7 @@ class Engine
 		return allActors;
 	}*/
 	
+	//This is mainly to establish mappings and figure out top, middle, bottom
 	private function initLayers()
 	{
 		var layers = new SizedIntHash<Int>();
@@ -2751,15 +2752,14 @@ class Engine
 		layersToDraw = layers;
 		layerOrders = orders;
 		
-		/*var foundTop:Boolean = false;
-		var foundMiddle:Boolean = false;
-		
-		var realNumLayers:int = 0;
+		var foundTop:Bool = false;
+		var foundMiddle:Bool = false;
+		var realNumLayers:Int = 0;
 		
 		//Figure out how many there actually are
-		for(i = 0; i < layers.length; i++)
+		for(i in 0...layers.size)
 		{
-			var layerID:int = layersToDraw[i];
+			var layerID:Int = layersToDraw.get(i);
 			
 			if(layerID != -1)
 			{
@@ -2767,19 +2767,19 @@ class Engine
 			}
 		}
 		
-		var numLayersProcessed:int = 0;
+		var numLayersProcessed:Int = 0;
 		
-		for(i = 0; i < layers.length; i++)
+		for(i in 0...layers.size)
 		{
-			var layerID:int = layersToDraw[i];
+			var layerID:Int = layersToDraw.get(i);
 			
 			if(layerID == -1)
 			{
 				continue;
 			}
 			
-			var list:FlxGroup = new FlxGroup();
-			var terrain:FlxGroup = new Layer(layerID, i, scene.terrain[layerID]);
+			var list = new Sprite();
+			var terrain = new Layer(layerID, i, scene.terrain.get(layerID));
 			
 			if(!foundTop)
 			{
@@ -2793,17 +2793,16 @@ class Engine
 				middleLayer = i;
 			}
 
-			add(terrain);
+			master.addChild(terrain);
+			master.addChild(list);
 			
-			//FlxG.log("layerID: " + layerID +  " === order: " + i);
-			
-			this.layers[layerID] = terrain;
-			actorsPerLayer[layerID] = list;
+			this.layers.set(layerID, terrain);
+			actorsPerLayer.set(layerID, list);
 			
 			//Eventually, this will become the correct value
 			bottomLayer = i;
 			
 			numLayersProcessed++;
-		}*/
+		}
 	}
 }
