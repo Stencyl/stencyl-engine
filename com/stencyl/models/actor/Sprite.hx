@@ -1,13 +1,14 @@
 package com.stencyl.models.actor;
 
 import com.stencyl.models.Resource;
+import com.stencyl.utils.SizedIntHash;
 
 class Sprite extends Resource
 {
 	public var width:Int;
 	public var height:Int;
 	public var defaultAnimation:Int;
-	public var animations:Array<Animation>;
+	public var animations:SizedIntHash<Animation>;
 	
 	public function new(ID:Int, name:String, width:Int, height:Int, defaultAnimation:Int)
 	{
@@ -17,6 +18,6 @@ class Sprite extends Resource
 		this.height = height;
 		this.defaultAnimation = defaultAnimation;
 		
-		animations = new Array<Animation>();
+		animations = new SizedIntHash<Animation>();
 	}
 }

@@ -65,6 +65,26 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		return frameIndex;
 	}
 	
+	public function getNumFrames():Int
+	{
+		return numFrames;
+	}
+	
+	public function setFrame(frame:Int):Void
+	{
+		if(frame < 0 || frame >= numFrames)
+		{
+			frame = 0;
+		}
+		
+		frameIndex = frame;
+	}
+	
+	public function isFinished():Bool
+	{
+		return !looping && frameIndex >= numFrames -1;
+	}
+	
 	public function reset()
 	{
 		timer = 0;

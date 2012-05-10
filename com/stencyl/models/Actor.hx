@@ -24,6 +24,7 @@ import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.AngleHolder;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.scene.ActorInstance;
+import com.stencyl.models.actor.Animation;
 
 import com.stencyl.utils.Utils;
 import com.stencyl.utils.HashMap;
@@ -122,7 +123,6 @@ class Actor extends Sprite
 	public var currAnimationName:String;
 	public var animationMap:Hash<DisplayObject>;
 	
-	//public var hasSprite:Bool; //???
 	public var sprite:com.stencyl.models.actor.Sprite;
 	
 	public var shapeMap:Hash<Dynamic>;
@@ -549,7 +549,7 @@ class Actor extends Sprite
 		animationMap.set(name, sprite);
 		#end
 		
-		#if flash || js
+		#if (flash || js)
 		var sprite = new BitmapAnimation(imgData, frameCount, durations);
 		animationMap.set(name, sprite);
 		#end	
@@ -664,36 +664,59 @@ class Actor extends Sprite
 	
 	public function switchToDefaultAnimation()
 	{
-		/*if(sprite != null && sprite.animations.length > 0)
+		if(sprite != null && sprite.animations.size > 0)
 		{
-			defaultAnim = (sprite.animations[sprite.defaultAnimation] as Animation).animName;
+			defaultAnim = cast(sprite.animations.get(sprite.defaultAnimation), Animation).animName;
 			switchAnimation(defaultAnim);
 			setCurrentFrame(0);
-		}*/
+		}
 	}
 	
 	public function isAnimationPlaying():Bool
 	{
-		return true;
-		//return !currSprite.finished || (currSprite._animations[0] as FlxAnim).looped;
+		if(Std.is(currAnimation, AbstractAnimation))
+		{
+			return !cast(currAnimation, AbstractAnimation).isFinished();
+		}
+		
+		else
+		{
+			return true;
+		}
 	}
 	
 	public function getCurrentFrame():Int
 	{
-		return 0;
-		//return currSprite.frame;
+		if(Std.is(currAnimation, AbstractAnimation))
+		{
+			return cast(currAnimation, AbstractAnimation).getCurrentFrame();
+		}
+		
+		else
+		{
+			return 0;
+		}
 	}
 	
 	public function setCurrentFrame(frame:Int)
 	{
-		//currSprite.finished = false;
-		//currSprite.playFromFrame(frame);
+		if(Std.is(currAnimation, AbstractAnimation))
+		{
+			cast(currAnimation, AbstractAnimation).setFrame(frame);
+		}
 	}
 	
 	public function getNumFrames():Int
 	{
-		return 1;
-		//return currSprite.realFrameCount;
+		if(Std.is(currAnimation, AbstractAnimation))
+		{
+			return cast(currAnimation, AbstractAnimation).getNumFrames();
+		}
+		
+		else
+		{
+			return 0;
+		}
 	}
 	
 	public function switchAnimation(name:String)

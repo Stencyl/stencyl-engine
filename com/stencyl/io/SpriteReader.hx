@@ -31,7 +31,7 @@ class SpriteReader implements AbstractReader
 		
 		for(e in xml.elements)
 		{
-			sprite.animations[Std.parseInt(e.att.id)] = readAnimation(e, sprite);
+			sprite.animations.set(Std.parseInt(e.att.id), readAnimation(e, sprite));
 		}
 
 		return sprite;
