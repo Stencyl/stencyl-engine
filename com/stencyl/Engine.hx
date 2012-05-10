@@ -2728,17 +2728,23 @@ class Engine
 		tileLayers = scene.terrain;
 		animatedTiles = scene.animatedTiles;
 		
-		for(tile in animatedTiles)
+		if(animatedTiles != null)
 		{
-			tile.currFrame = 0;
-			tile.currTime = 0;
+			for(tile in animatedTiles)
+			{
+				tile.currFrame = 0;
+				tile.currTime = 0;
+			}
 		}
 		
-		for(l in scene.terrain)
+		if(scene.terrain != null)
 		{
-			layers.set(l.zOrder, l.layerID);
-			orders.set(l.layerID, l.zOrder);
-			exists.set(l.zOrder, l.zOrder);
+			for(l in scene.terrain)
+			{
+				layers.set(l.zOrder, l.layerID);
+				orders.set(l.layerID, l.zOrder);
+				exists.set(l.zOrder, l.zOrder);
+			}
 		}
 		
 		for(i in 0...layers.size)
@@ -2779,7 +2785,12 @@ class Engine
 			}
 			
 			var list = new Sprite();
-			var terrain = new Layer(layerID, i, scene.terrain.get(layerID));
+			var terrain = null;
+			
+			if(scene.terrain != null)
+			{
+				terrain = new Layer(layerID, i, scene.terrain.get(layerID));
+			}
 			
 			if(!foundTop)
 			{
@@ -2793,10 +2804,14 @@ class Engine
 				middleLayer = i;
 			}
 
-			master.addChild(terrain);
+			if(terrain != null)
+			{
+				master.addChild(terrain);
+				this.layers.set(layerID, terrain);
+			}
+				
 			master.addChild(list);
 			
-			this.layers.set(layerID, terrain);
 			actorsPerLayer.set(layerID, list);
 			
 			//Eventually, this will become the correct value
