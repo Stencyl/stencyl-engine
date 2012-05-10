@@ -1690,8 +1690,7 @@ class Actor extends Sprite
 			return xSpeed;
 		}
 		
-		return 0;
-		//return body.GetLinearVelocity().x;
+		return body.getLinearVelocity().x;
 	}
 	
 	public function getYVelocity():Float
@@ -1701,8 +1700,7 @@ class Actor extends Sprite
 			return ySpeed;
 		}
 		
-		return 0;
-		//return body.GetLinearVelocity().y;
+		return body.getLinearVelocity().y;
 	}
 	
 	public function setXVelocity(dx:Float)
@@ -1713,10 +1711,10 @@ class Actor extends Sprite
 			return;
 		}
 		
-		/*var v:V2 = body.GetLinearVelocity();
-		v.x = dx * Engine.PSCALE;
-		body.SetLinearVelocity(v);
-		body.SetAwake(true);*/
+		var v = body.getLinearVelocity();
+		v.x = dx;
+		body.setLinearVelocity(v);
+		body.setAwake(true);
 	}
 	
 	public function setYVelocity(dy:Float)
@@ -1727,10 +1725,10 @@ class Actor extends Sprite
 			return;
 		}
 		
-		/*var v:V2 = body.GetLinearVelocity();
-		v.y = dy * GameState.PSCALE;
-		body.SetLinearVelocity(v);
-		body.SetAwake(true);*/
+		var v = body.getLinearVelocity();
+		v.y = dy;
+		body.setLinearVelocity(v);
+		body.setAwake(true);
 	}
 	
 	public function setVelocity(angle:Float, speed:Float)
@@ -1766,8 +1764,7 @@ class Actor extends Sprite
 			return Utils.RAD * rotation;
 		}
 		
-		return 0;
-		//return body.GetAngle();
+		return body.getAngle();
 	}
 	
 	public function getAngleInDegrees():Float
@@ -1777,8 +1774,7 @@ class Actor extends Sprite
 			return rotation;
 		}
 		
-		return 0;
-		//return Util.toDegrees(body.GetAngle());
+		return Utils.DEG * body.getAngle();
 	}
 	
 	public function setAngle(angle:Float, inRadians:Bool = true)
@@ -1792,7 +1788,7 @@ class Actor extends Sprite
 			
 			else
 			{
-				//body.SetAngle(angle);				
+				body.setAngle(angle);				
 			}
 		}
 		
@@ -1805,7 +1801,7 @@ class Actor extends Sprite
 			
 			else
 			{
-				//body.SetAngle(Util.toRadians(angle));		
+				body.setAngle(Utils.RAD * angle);		
 			}
 		}
 	}
@@ -1821,7 +1817,7 @@ class Actor extends Sprite
 			
 			else
 			{
-				//body.SetAngle(body.GetAngle() + angle);
+				body.setAngle(body.getAngle() + angle);
 			}
 		}
 			
@@ -1834,7 +1830,7 @@ class Actor extends Sprite
 			
 			else
 			{
-				//body.SetAngle(body.GetAngle() + Util.toRadians(angle));
+				body.setAngle(body.getAngle() + (Utils.RAD * angle));
 			}	
 		}
 	}
@@ -1846,8 +1842,7 @@ class Actor extends Sprite
 			return Utils.RAD * rotation;
 		}
 		
-		return 0;
-		//return body.GetAngularVelocity();
+		return body.getAngularVelocity();
 	}
 	
 	public function setAngularVelocity(omega:Float)
@@ -1859,8 +1854,8 @@ class Actor extends Sprite
 		
 		else
 		{
-			//body.SetAngularVelocity(omega);	
-			//body.SetAwake(true);
+			body.setAngularVelocity(omega);	
+			body.setAwake(true);
 		}
 	}
 	
@@ -1873,8 +1868,8 @@ class Actor extends Sprite
 		
 		else
 		{
-			//body.SetAngularVelocity(body.GetAngularVelocity() + omega);
-			//body.SetAwake(true);
+			body.setAngularVelocity(body.getAngularVelocity() + omega);
+			body.setAwake(true);
 		}
 	}
 	
@@ -1889,16 +1884,16 @@ class Actor extends Sprite
 			return;
 		}
 		
-		/*dummy.x = dirX;
+		dummy.x = dirX;
 		dummy.y = dirY;
 		dummy.normalize();
 		
 		if(magnitude > 0)
 		{
-			dummy.multiplyN(magnitude);
+			dummy.multiply(magnitude);
 		}
 		
-		body.ApplyForce(dummy, body.GetWorldCenter());*/
+		body.applyForce(dummy, body.getWorldCenter());
 	}
 	
 	//in degrees
@@ -1919,16 +1914,16 @@ class Actor extends Sprite
 			return;
 		}
 		
-		/*dummy.x = dirX;
+		dummy.x = dirX;
 		dummy.y = dirY;
 		dummy.normalize();
 		
 		if(magnitude > 0)
 		{
-			dummy.multiplyN(magnitude);
+			dummy.multiply(magnitude);
 		}
 		
-		body.ApplyImpulse(dummy, body.GetWorldCenter());*/
+		body.applyImpulse(dummy, body.getWorldCenter());
 	}
 	
 	//in degrees
@@ -1944,11 +1939,11 @@ class Actor extends Sprite
 	
 	public function applyTorque(torque:Float)
 	{
-		/*if(!isLightweight)
+		if(!isLightweight)
 		{
-			body.ApplyTorque(torque);
-			body.SetAwake(true);
-		}*/
+			body.applyTorque(torque);
+			body.setAwake(true);
+		}
 	}
 	
 	//*-----------------------------------------------
@@ -1981,10 +1976,9 @@ class Actor extends Sprite
 	//* Physics Flags
 	//*-----------------------------------------------
 	
-	public function getBody():Dynamic
+	public function getBody():B2Body
 	{
-		return null;
-		//return body;
+		return body;
 	}
 	
 	public function enableRotation()
@@ -2122,23 +2116,28 @@ class Actor extends Sprite
 			mouseState = 0;
 		}			
 		
-		/*for(var i:int = 0; i < mouseOverListeners.length; i++)
+		var r = 0;
+		
+		while(r < mouseOverListeners.length)
 		{
 			try
 			{
-				var f:Function = mouseOverListeners[i] as Function;
-				f(mouseOverListeners, mouseState);
+				var f:Int->Array<Dynamic>->Void = mouseOverListeners[r];			
+				f(mouseState, mouseOverListeners);
 				
-				if (mouseOverListeners.indexOf(f) == -1)
+				if(Utils.indexOf(mouseOverListeners, f) == -1)
 				{
-					i--;
+					r--;
 				}
 			}
-			catch (e:Error)
+			
+			catch(e:String)
 			{
-				FlxG.log(e.getStackTrace());
+				trace(e);
 			}
-		}*/
+			
+			r++;
+		}
 	}
 	
 	//*-----------------------------------------------
@@ -2496,7 +2495,7 @@ class Actor extends Sprite
 		}
 		
 		isHUD = true;			
-		//engine.addHUDActor(this);
+		engine.addHUDActor(this);
 		
 		for(anim in animationMap)
 		{
@@ -2513,7 +2512,7 @@ class Actor extends Sprite
 		}
 		
 		isHUD = false;			
-		//engine.removeHUDActor(this);
+		engine.removeHUDActor(this);
 		
 		for(anim in animationMap)
 		{
@@ -2535,7 +2534,7 @@ class Actor extends Sprite
 		}
 		
 		alwaysSimulate = true;			
-		//engine.addAlwaysOnActor(this);
+		engine.addAlwaysOnActor(this);
 	}
 	
 	public function makeSometimesSimulate()
@@ -2546,7 +2545,7 @@ class Actor extends Sprite
 		}
 		
 		alwaysSimulate = false;			
-		//engine.removeHUDActor(this);
+		engine.removeHUDActor(this);
 	}
 	
 	public function alwaysSimulates():Bool
@@ -2650,7 +2649,7 @@ class Actor extends Sprite
 		var right = Engine.paddingRight;
 		var bottom = Engine.paddingBottom;
 	
-		return (isLightweight /*|| body.IsActive()*/) && 
+		return (isLightweight || body.isActive()) && 
 			   getX() >= cameraX - left && 
 			   getY() >= cameraY - top &&
 			   getX() < cameraX + Engine.screenWidth + right &&
@@ -2659,7 +2658,7 @@ class Actor extends Sprite
 	
 	public function isInScene():Bool
 	{
-		return (isLightweight /*|| body.IsActive()*/) && 
+		return (isLightweight || body.isActive()) && 
 			   getX() >= 0 && 
 			   getY() >= 0 &&
 			   getX() < Engine.sceneWidth &&
