@@ -227,9 +227,6 @@ class Engine
 	private var lastTime:Float;
 	private var acc:Float;
 	
-	private var framerate:Int;
-	private var framerateCounter:Float;
-	
 	
 	//*-----------------------------------------------
 	//* Debug
@@ -431,7 +428,6 @@ class Engine
 		cameraY = 0;
 
 		acc = 0;
-		framerateCounter = 0;
 		lastTime = Lib.getTimer() / MS_PER_SEC;
 
 		//Constants
