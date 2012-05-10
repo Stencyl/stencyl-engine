@@ -996,16 +996,11 @@ class Engine
 		}			
 	}
 	
-	/*
-	
-	public function innerUpdate():void
+	/*public function innerUpdate()
 	{
-		//FlxG.log("Inner1: " + FlxG.elapsed);
-		//FlxG.log(Math.random());
-		
 		if(scene == null)
 		{
-			FlxG.log("Scene is null. If you this all over, something went fubar.");
+			trace("Scene is null");
 			return;
 		}
 		
@@ -1275,9 +1270,7 @@ class Engine
 		
 		//Switch to mouse.update()?
 		FlxG.updateInput();
-		}
-	
-	*/
+	}*/
 	
 	//Game Loop
 	private function onUpdate(event:Event):Void 
@@ -1299,14 +1292,14 @@ class Engine
 		lastTime = currTime;
 			
 		//On screen flag reset
-		/*for each(var a:Actor in allActors)
+		for(a in allActors)
 		{
 			if(a == null || (!a.isLightweight && a.body == null))
 			{
 				continue;
 			}
 			
-			if(a.dead || !a.exists)
+			if(a.dead || a.dying)
 			{
 				removeActor(a);
 				continue;
@@ -1316,7 +1309,7 @@ class Engine
 			{
 				continue;
 			}
-		}*/
+		}
 	}
 	
 	//*-----------------------------------------------

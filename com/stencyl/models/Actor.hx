@@ -20,6 +20,7 @@ import com.stencyl.graphics.SheetAnimation;
 import com.stencyl.behavior.Behavior;
 import com.stencyl.behavior.BehaviorManager;
 
+import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.AngleHolder;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.scene.ActorInstance;
@@ -37,6 +38,13 @@ import com.eclecticdesignstudio.motion.easing.Quad;
 import com.eclecticdesignstudio.motion.easing.Quart;
 import com.eclecticdesignstudio.motion.easing.Quint;
 import com.eclecticdesignstudio.motion.easing.Sine;
+
+import box2D.dynamics.B2Body;
+import box2D.dynamics.B2BodyDef;
+import box2D.collision.shapes.B2MassData;
+import box2D.dynamics.contacts.B2Contact;
+import box2D.common.math.B2Vec2;
+
 
 class Actor extends Sprite 
 {	
@@ -156,20 +164,18 @@ class Actor extends Sprite
 	//* Physics (Box2D)
 	//*-----------------------------------------------
 	
-	//TODO
-	/*
-	public var body:b2Body;
-	public var bodyDef:b2BodyDef;
-	private var md:b2MassData;
+	public var body:B2Body;
+	public var bodyDef:B2BodyDef;
+	public var md:B2MassData;
 	public var bodyScale:Point;
-	public var contacts:Dictionary;
-	public var regionContacts:Dictionary;
-	public var collisions:Dictionary;
 	
-	private var dummy:V2 = new V2();
-	private var zero:V2 = new V2(0, 0);
-	*/
-
+	public var contacts:Hash<B2Contact>;
+	public var regionContacts:Hash<B2Contact>;
+	public var collisions:Hash<Collision>;
+	
+	private var dummy:B2Vec2;
+	private var zero:B2Vec2;
+	
 
 	//*-----------------------------------------------
 	//* Collisions
@@ -186,6 +192,14 @@ class Actor extends Sprite
 	public function new(engine:Engine, inst:ActorInstance, x:Int = 0, y:Int = 0, behaviorValues:Hash<Dynamic> = null) 
 	{
 		super();
+		
+		//---
+		
+		dummy = new B2Vec2();
+		zero = new B2Vec2(0, 0);
+	
+		//---
+	
 		
 		registry = new Hash<Dynamic>();
 		
