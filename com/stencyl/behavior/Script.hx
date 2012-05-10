@@ -18,6 +18,8 @@ import com.stencyl.models.Actor;
 import com.stencyl.models.Scene;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.scene.Layer;
+import com.stencyl.models.Region;
+import com.stencyl.models.Terrain;
 import com.stencyl.graphics.transitions.Transition;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.Font;
@@ -29,6 +31,8 @@ import com.stencyl.utils.HashMap;
 
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Linear;
+
+import box2D.dynamics.joints.B2Joint;
 
 #if flash
 import com.stencyl.utils.Kongregate;
@@ -64,9 +68,9 @@ class Script
 	//*-----------------------------------------------
 	
 	public static var lastCreatedActor:Actor = null;
-	/*public static var lastCreatedJoint:b2Joint = null;
+	public static var lastCreatedJoint:B2Joint = null;
 	public static var lastCreatedRegion:Region = null;
-	public static var lastCreatedTerrainRegion:TerrainRegion = null;*/
+	public static var lastCreatedTerrainRegion:Terrain = null;
 	
 	public static var mpx:Float = 0;
 	public static var mpy:Float = 0;
@@ -538,8 +542,7 @@ class Script
      */
     public function getLayer(layerID:Int):Layer
     {
-    	return null;
-        //return scene.layers[layerID] as Layer;
+    	return engine.layers.get(layerID);
     }
 	
 	/**
@@ -549,7 +552,7 @@ class Script
 	 */
 	public function showTileLayer(layerID:Int)
 	{
-		//(scene.layers[layerID] as Layer).alpha = 255;
+		engine.layers.get(layerID).alpha = 255;
 	}
 	
 	/**
@@ -559,7 +562,7 @@ class Script
 	 */
 	public function hideTileLayer(layerID:Int)
 	{
-		//(scene.layers[layerID] as Layer).alpha = 0;
+		engine.layers.get(layerID).alpha = 0;
 	}
 	
 	/**
@@ -577,7 +580,7 @@ class Script
 			easing = Linear.easeNone;
 		}
 	
-		//Actuate.tween(scene.layers[layerID, duration, {alpha:alphaPct}).ease(easing);
+		Actuate.tween(engine.layers.get(layerID), duration, {alpha:alphaPct}).ease(easing);
 	}
 	
 	//*-----------------------------------------------
@@ -611,7 +614,7 @@ class Script
 	 */
 	public function getCamera():Actor
 	{
-		return null;
+		return engine.camera;
 	}
 	
 	//*-----------------------------------------------
@@ -659,8 +662,7 @@ class Script
 	*/
 	public function getAllActorTypes():Array<ActorType>
 	{
-		return null;
-		//return Data.get().getAllActorTypes();
+		return Data.get().getAllActorTypes();
 	}
 	
 	/**
@@ -668,8 +670,7 @@ class Script
 	*/
 	public function getActorsOfType(type:ActorType):Array<Actor>
 	{
-		return null;
-		//return engine.getActorsOfType(type);
+		return engine.getActorsOfType(type);
 	}
 	
 	/**
@@ -677,8 +678,7 @@ class Script
 	*/
 	public function getActor(actorID:Int):Actor
 	{
-		return null;
-		//return engine.getActor(actorID);
+		return engine.getActor(actorID);
 	}
 	
 	/**
@@ -686,8 +686,7 @@ class Script
 	*/
 	public function getActorGroup(groupID:Int):Dynamic
 	{
-		return null;
-		//return engine.getGroup(groupID);
+		return engine.getGroup(groupID);
 	}
 	
 	//*-----------------------------------------------
@@ -920,8 +919,7 @@ class Script
 	*/
 	public function getTopLayer():Int
 	{
-		return 0;
-		//return engine.getTopLayer();
+		return engine.getTopLayer();
 	}
 	
 	/**
@@ -929,8 +927,7 @@ class Script
 	*/
 	public function getBottomLayer():Int
 	{
-		return 0;
-		//return engine.getBottomLayer();
+		return engine.getBottomLayer();
 	}
 	
 	/**
@@ -938,8 +935,7 @@ class Script
 	*/
 	public function getMiddleLayer():Int
 	{
-		return 0;
-		//return engine.getMiddleLayer();
+		return engine.getMiddleLayer();
 	}
 	
 	//*-----------------------------------------------
@@ -1003,8 +999,7 @@ class Script
 	*/
 	public function isTransitioning():Bool
 	{
-		return false;
-		//return engine.isTransitioning();
+		return engine.isTransitioning();
 	}
 	
 	/**
@@ -1242,7 +1237,17 @@ class Script
 	//* Debug
 	//*-----------------------------------------------
 	
-	//box2d
+	public function enableDebugDrawing()
+	{
+		Engine.debugDraw = true;
+		Engine.debugDrawer.m_sprite.graphics.clear();
+	}
+
+	public function disableDebugDrawing()
+	{
+		Engine.debugDraw = false;
+		Engine.debugDrawer.m_sprite.graphics.clear();
+	}
 	
 	//*-----------------------------------------------
 	//* Utilities

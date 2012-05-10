@@ -1942,14 +1942,12 @@ class Actor extends Sprite
 	
 	public function getPhysicsWidth():Float
 	{
-		return width / 10;
-		//return Engine.toPhysicalUnits(getWidth());
+		return width / Engine.physicsScale;
 	}
 	
 	public function getPhysicsHeight():Float
 	{
-		return height / 10;
-		//return Engine.toPhysicalUnits(getHeight());
+		return height / Engine.physicsScale;
 	}
 	
 	//*-----------------------------------------------

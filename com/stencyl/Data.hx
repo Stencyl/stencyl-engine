@@ -15,6 +15,8 @@ import haxe.xml.Fast;
 import com.stencyl.behavior.Behavior;
 import com.stencyl.models.Scene;
 import com.stencyl.models.Resource;
+import com.stencyl.models.actor.ActorType;
+
 
 class Data
 {
@@ -164,6 +166,21 @@ class Data
 			if(Std.is(r, type))
 			{
 				a.push(r);
+			}
+		}
+		
+		return a;
+	}
+	
+	public function getAllActorTypes():Array<ActorType>
+	{
+		var a = new Array<ActorType>();
+		
+		for(r in resources)
+		{
+			if(Std.is(r, ActorType))
+			{
+				a.push(cast(r, ActorType));
 			}
 		}
 		
