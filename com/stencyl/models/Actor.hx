@@ -41,8 +41,13 @@ import com.eclecticdesignstudio.motion.easing.Sine;
 
 import box2D.dynamics.B2Body;
 import box2D.dynamics.B2BodyDef;
+import box2D.dynamics.B2Fixture;
+import box2D.dynamics.B2FixtureDef;
+import box2D.collision.shapes.B2Shape;
+import box2D.collision.shapes.B2PolygonShape;
 import box2D.collision.shapes.B2MassData;
 import box2D.dynamics.contacts.B2Contact;
+import box2D.dynamics.contacts.B2ContactEdge;
 import box2D.common.math.B2Vec2;
 import box2D.common.math.B2Transform;
 
@@ -439,44 +444,40 @@ class Actor extends Sprite
 	
 	public function destroy()
 	{
-		//TODO:
-		/*if(destroyed)
+		if(destroyed)
 		{
 			return;
 		}
 		
 		destroyed = true;
 		
-		for each(var anim:FlxSprite in anims)
+		for(anim in animationMap)
 		{
-			anim.destroy();
-			anim.kill();
-			anim.dead = true;
-			anim.exists = false;
 			anim.visible = false;
 		}
+		
+		Utils.removeAllChildren(this);
 
 		if(body != null && !isLightweight)
 		{
-			var contact:b2ContactEdge = body.GetContactList();
+			var contact:B2ContactEdge = body.getContactList();
 			
 			while(contact != null)
 			{	
-				game.world.m_contactListener.EndContact(contact.contact);
+				Engine.engine.world.m_contactManager.m_contactListener.endContact(contact.contact);
 				contact = contact.next;
 			}
 			
-			game.world.DestroyBody(body);
+			Engine.engine.world.destroyBody(body);
 		}			
 		
 		lastCollided = null;
 		
-		game = null;
 		shapeMap = null;
 		originMap = null;
 		defaultAnim = null;
-		anims = null;
-		currSprite = null;
+		animationMap = null;
+		currAnimation = null;
 		currOffset = null;
 		currOrigin = null;
 		body = null;
@@ -495,7 +496,7 @@ class Actor extends Sprite
 		
 		collisions = null;
 		
-		manager.destroy();*/
+		behaviors.destroy();
 	}
 	
 	public function resetListeners()
@@ -526,18 +527,19 @@ class Actor extends Sprite
 		shapes:Array<Dynamic>=null
 	)
 	{
-		/*if(shapes != null)
+		if(shapes != null)
 		{
-			var arr:Array = new Array();
+			var arr = new Array<B2FixtureDef>();
 			
-			for each(var s:b2FixtureDef in shapes)
+			for(s in shapes)
 			{
 				arr.push(s);
 			}
 			
-			shapeMap[name] = arr;
-		}*/
+			shapeMap.set(name, arr);
+		}
 	
+		//TODO: Use sheet-based animation on CPP targets
 		var sprite = new BitmapAnimation(imgData, frameCount, [1000, 1000]);
 		animationMap.set(name, sprite);
 		hasSprite = true;		
@@ -573,28 +575,28 @@ class Actor extends Sprite
 		}			
 	}
 	
-	/*static public function createBox(width:Number, height:Number):b2PolygonShape
+	static public function createBox(width:Float, height:Float):B2PolygonShape
 	{
-		var boxShape:b2PolygonShape = new b2PolygonShape();
-		boxShape.SetAsBox(GameState.toPhysicalUnits(width/2), GameState.toPhysicalUnits(height/2));
+		var boxShape:B2PolygonShape = new B2PolygonShape();
+		boxShape.setAsBox(Engine.toPhysicalUnits(width/2), Engine.toPhysicalUnits(height/2));
 		return boxShape;
 	}
 	
-	private function initFromBody(game:GameState, bodyDef:b2BodyDef):void
+	private function initFromBody(bodyDef:B2BodyDef)
 	{	
 		bodyDef.allowSleep = false;
 		bodyDef.userData = this;
 		this.bodyDef = bodyDef;
-		body = game.world.CreateBody(bodyDef);
+		body = Engine.engine.world.createBody(bodyDef);
 	}
 
-	private function initBody(game:GameState, groupID:int, isSensor:Boolean, isStationary:Boolean, isKinematic:Boolean, canRotate:Boolean, shape:b2Shape):void
+	private function initBody(groupID:Int, isSensor:Bool, isStationary:Bool, isKinematic:Bool, canRotate:Bool, shape:B2Shape)
 	{			
-		var bodyDef:b2BodyDef = new b2BodyDef();
+		var bodyDef:B2BodyDef = new B2BodyDef();
 		
-		bodyDef.groupID = groupID;
-		bodyDef.position.x = GameState.toPhysicalUnits(x);
-		bodyDef.position.y = GameState.toPhysicalUnits(y);
+		//bodyDef.groupID = groupID;
+		bodyDef.position.x = Engine.toPhysicalUnits(x);
+		bodyDef.position.y = Engine.toPhysicalUnits(y);
 			
 		bodyDef.angle = 0;
 		bodyDef.fixedRotation = !canRotate;
@@ -602,34 +604,34 @@ class Actor extends Sprite
 
 		if(isStationary)
 		{
-			bodyDef.type = b2Body.b2_staticBody;
+			bodyDef.type = B2Body.b2_staticBody;
 		}
 		
 		else if(isKinematic)
 		{
-			bodyDef.type = b2Body.b2_kinematicBody;
+			bodyDef.type = B2Body.b2_kinematicBody;
 		}
 		
 		else
 		{
-			bodyDef.type = b2Body.b2_dynamicBody;
+			bodyDef.type = B2Body.b2_dynamicBody;
 		}
 
-		var fixtureDef:b2FixtureDef = new b2FixtureDef();
+		var fixtureDef:B2FixtureDef = new B2FixtureDef();
 		fixtureDef.shape = shape;
 		fixtureDef.friction = 1.0;
 		fixtureDef.density = 0.1;
 		fixtureDef.restitution = 0;
 		fixtureDef.isSensor = isSensor;
-		fixtureDef.groupID = -1000;
+		//fixtureDef.groupID = -1000;
 		fixtureDef.userData = this;
 					
 		bodyDef.userData = this;
-		body = game.world.CreateBody(bodyDef);			
-		body.CreateFixture(fixtureDef);
+		body = Engine.engine.world.createBody(bodyDef);			
+		body.createFixture(fixtureDef);
 
 		this.bodyDef = bodyDef;
-	}*/
+	}
 	
 	public function tileTest()
    	{
