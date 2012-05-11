@@ -228,11 +228,26 @@ class Actor extends Sprite
 		dummy = new B2Vec2();
 		zero = new B2Vec2(0, 0);
 		
-		x = 0;
-		y = 0;
+		this.x = 0;
+		this.y = 0;
 		
 		realX = 0;
 		realY = 0;
+		
+		if(isLightweight)
+		{
+			this.x = x * Engine.physicsScale;
+			this.y = y * Engine.physicsScale;
+		}
+		
+		else
+		{
+			this.x = x;
+			this.y = y;
+		}
+
+		realX = x;
+		realY = y;
 
 		activeAngleTweens = 0;
 		activePositionTweens = 0;

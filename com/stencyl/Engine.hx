@@ -1445,7 +1445,7 @@ class Engine
 	//* Update Loop
 	//*-----------------------------------------------
 	
-		private function update(elapsedTime:Float)
+	private function update(elapsedTime:Float)
 	{
 		//cameraX = pronger.x - screenWidth/2;
 		//cameraY = pronger.y - screenHeight/2;
