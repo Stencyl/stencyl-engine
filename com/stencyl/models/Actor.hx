@@ -489,7 +489,7 @@ class Actor extends Sprite
 		behaviors.destroy();
 	}
 	
-	private function resetListeners()
+	public function resetListeners()
 	{
 		allListeners = new HashMap<Dynamic, Dynamic>();
 		allListenerReferences = new Array<Dynamic>();

@@ -56,6 +56,8 @@ import box2D.dynamics.joints.B2Joint;
 import box2D.dynamics.B2DebugDraw;
 import box2D.collision.B2AABB;
 import box2D.collision.shapes.B2Shape;
+import box2D.dynamics.contacts.B2Contact;
+import box2D.dynamics.contacts.B2ContactEdge;
 
 
 class Engine 
@@ -1183,7 +1185,7 @@ class Engine
 	
 	public function recycleActor(a:Actor)
 	{
-		/*a.setX(1000000);
+		a.setX(1000000);
 		a.setY(1000000);
 		a.recycled = true;
 		a.setFilter(null);
@@ -1198,11 +1200,11 @@ class Engine
 		//Kill previous contacts
 		if(!a.isLightweight && a.body != null)
 		{
-			var contact:b2ContactEdge = a.body.GetContactList();
-
+			var contact:B2ContactEdge = a.body.getContactList();
+			
 			while(contact != null)
-			{
-				world.m_contactListener.EndContact(contact.contact);
+			{	
+				Engine.engine.world.m_contactManager.m_contactListener.endContact(contact.contact);
 				contact = contact.next;
 			}
 		}
@@ -1212,43 +1214,39 @@ class Engine
 		
 		removeActorFromLayer(a, a.layerID);
 		
-		if (!a.isLightweight)
+		if(!a.isLightweight)
 		{
-			a.body.SetAwake(false);
-		}*/
+			a.body.setAwake(false);
+		}
 	}
 	
 	public function getRecycledActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
 	{
-		/*var a:Actor = null;
+		var a:Actor = null;
 		
-		if(recycledActorsOfType[type.ID] == null)
+		if(recycledActorsOfType.get(type.ID) == null)
 		{
-			recycledActorsOfType[type.ID] = new HashSet();
+			//This ought to be a HashSet instead
+			recycledActorsOfType.set(type.ID, new Array<Actor>());
 		}
 
-		var cache:HashSet = recycledActorsOfType[type.ID];
+		var cache = recycledActorsOfType.get(type.ID);
 		
 		if(cache != null)
 		{
 			//Check for next available one O(1)
 			//In practice, this doesn't exceed 10-20.
-			for each(var actor:Actor in cache)
+			for(actor in cache)
 			{
 				if(actor != null && actor.recycled)
 				{
-					//cache.remove(actor);
-					
 					actor.recycled = false;
-					//actor.body.SetActive(true);
-					
-					actor.switchToDefaultAnimation();
-											
+					actor.switchToDefaultAnimation();						
 					actor.enableAllBehaviors();
 					
-					if (!actor.isLightweight)
+					if(!actor.isLightweight)
 					{
-						actor.body.SetAwake(true);
+						actor.body.setAwake(true);
 					}
 					
 					actor.enableActorDrawing();
@@ -1256,13 +1254,13 @@ class Engine
 					actor.setY(y);
 					actor.setAngle(0, false);
 					actor.alpha = 1;
-					actor.scale.x = 1;
-					actor.scale.y = 1;
+					actor.scaleX = 1;
+					actor.scaleY = 1;
 					actor.setFilter(null);
 					actor.initScripts();
 					
 					//move to specified layer
-					var layerID:int = 0;
+					var layerID = 0;
 					
 					if(layerConst == Script.FRONT)
 					{
@@ -1287,12 +1285,10 @@ class Engine
 			
 			//Otherwise make a new one
 			a = createActorOfType(type, x, y, layerConst);
-			cache.add(a);
+			cache.push(a);
 		}
 		
-		return a;*/
-		
-		return null;
+		return a;
 	}
 	
 	public function createActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
