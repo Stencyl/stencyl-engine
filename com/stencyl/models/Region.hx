@@ -27,30 +27,7 @@ class Region extends Actor
 	
 	public function new(game:Engine, x:Float, y:Float, shapes:Array<B2Shape>)
 	{
-		super(game, 0, -2, x, y, game.getTopLayer(), 1, 1, null, null, null, null, false, false, false, false, shapes[0], true);
-	
-		(
-		engine:Engine, 
-		ID:Int,
-		groupID:Int,
-		x:Float=0, 
-		y:Float=0, 
-		layerID:Int=0,
-		width:Int=32, 
-		height:Int=32,
-		sprite:com.stencyl.models.actor.Sprite=null,
-		behaviorValues:Hash<Dynamic>=null,
-		actorType:ActorType=null,
-		bodyDef:B2BodyDef=null,
-		isSensor:Bool=false,
-		isStationary:Bool=false,
-		isKinematic:Bool=false,
-		canRotate:Bool=false,
-		shape:B2Shape=null, //Used only for terrain.
-		typeID:Int = 0,
-		isLightweight:Bool=false,
-		autoScale:Bool=true
-	)
+		super(game, 0, -2, x, y, game.getTopLayer(), 1, 1, null, null, null, null, false, false, false, false, shapes[0]);
 	
 		/*flag = false;
 	
