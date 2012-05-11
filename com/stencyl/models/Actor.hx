@@ -44,6 +44,7 @@ import box2D.dynamics.B2Body;
 import box2D.dynamics.B2BodyDef;
 import box2D.dynamics.B2Fixture;
 import box2D.dynamics.B2FixtureDef;
+import box2D.dynamics.B2World;
 import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2PolygonShape;
 import box2D.collision.shapes.B2MassData;
@@ -196,7 +197,32 @@ class Actor extends Sprite
 	//* Init
 	//*-----------------------------------------------
 
-	public function new(engine:Engine, inst:ActorInstance, x:Int = 0, y:Int = 0, behaviorValues:Hash<Dynamic> = null) 
+	//public function new(engine:Engine, inst:ActorInstance, x:Int = 0, y:Int = 0, behaviorValues:Hash<Dynamic> = null) 
+	
+	public function new
+	(
+		engine:Engine, 
+		ID:Int,
+		groupID:Int,
+		x:Float=0, 
+		y:Float=0, 
+		layerID:Int=0,
+		width:Int=32, 
+		height:Int=32,
+		sprite:com.stencyl.models.actor.Sprite=null,
+		behaviorValues:Hash<Dynamic>=null,
+		actorType:ActorType=null,
+		bodyDef:B2BodyDef=null,
+		isSensor:Bool=false,
+		isStationary:Bool=false,
+		isKinematic:Bool=false,
+		canRotate:Bool=false,
+		shape:B2Shape=null, //Used only for terrain.
+		invisible:Bool=false,
+		typeID:Int = 0,
+		isLightweight:Bool=false,
+		autoScale:Bool=true
+	)
 	{
 		super();
 		
@@ -204,12 +230,15 @@ class Actor extends Sprite
 		
 		dummy = new B2Vec2();
 		zero = new B2Vec2(0, 0);
+		
+		x = 0;
+		y = 0;
+		realX = 0;
+		realY = 0;
 	
 		//---
 		
-		registry = new Hash<Dynamic>();
-		
-		var actorType:ActorType = null;	
+		/*var actorType:ActorType = null;	
 		
 		if(inst == null)
 		{
@@ -226,31 +255,25 @@ class Actor extends Sprite
 		}
 		
 		realX = this.x;
-		realY = this.y;
-		
-		xSpeed = 0;
-		ySpeed = 0;
-		rSpeed = 0;
-		
+		realY = this.y;*/
+
 		activeAngleTweens = 0;
 		activePositionTweens = 0;
 		
 		//---
 		
-		/*
-		
 		tweenLoc = new Point(0, 0);
 		tweenAngle = new AngleHolder();
 		
-		currOrigin = new V2(0, 0);
-		currOffset = new V2(0, 0);			
-		registry = new Object();
+		currOrigin = new Point(0, 0);
+		currOffset = new Point(0, 0);			
+		registry = new Hash<Dynamic>();
 		
 		this.isLightweight = isLightweight;
 		this.autoScale = autoScale;
-		xVel = 0;
-		yVel = 0;
-		angleVel = 0;
+		xSpeed = 0;
+		ySpeed = 0;
+		rSpeed = 0;
 		
 		mouseState = 0;
 		
@@ -260,10 +283,7 @@ class Actor extends Sprite
 		isCamera = false;
 		isRegion = false;
 		isTerrainRegion = false;
-		solid = false;
-		moves = false;
 		drawActor = true;
-		antialiasing = true;
 		
 		killLeaveScreen = false;
 		alwaysSimulate = false;
@@ -272,40 +292,30 @@ class Actor extends Sprite
 		handlesCollisions = true;
 		lastCollided = null;
 		
-		*/
-		
 		//---
 		
 		resetListeners();
 		
-		/*
+		//---
 		
 		recycled = false;
 		paused = false;
 		
+		this.name = "Unknown";
 		this.ID = ID;
-		name = "Unknown";
-		
-		//this.groupID = groupID;
-		
+		this.groupID = groupID;
 		this.layerID = layerID;
 		this.typeID = typeID;
-		
-		this.game = game;
-		
-		if(actorType != null)
-		{
-			trace("Initializing: " + actorType.name);
-		}
+		this.engine = engine;
 		
 		destroyed = false;
 		
-		if(!invisible)
+		/*if(!invisible)
 		{
 			createGraphic(width, height, 0x00ffffff);
-		}
+		}*/
 			
-		*/
+		//---
 		
 		behaviors = new BehaviorManager();
 		
@@ -316,12 +326,11 @@ class Actor extends Sprite
 		shapeMap = new Hash<Dynamic>();
 		originMap = new Hash<Dynamic>();
 		
-		//this.sprite = sprite;
+		this.sprite = sprite;
 		
 		//---
 		
-		//if(sprite != null)
-		if(actorType != null)
+		if(sprite != null)
 		{
 			var s:com.stencyl.models.actor.Sprite = cast(Data.get().resources.get(actorType.spriteID), com.stencyl.models.actor.Sprite);
 			
@@ -357,34 +366,32 @@ class Actor extends Sprite
 		
 		//--
 		
-		/*
-		
 		addAnim("recyclingDefault", null, 1, 1, 1, 1, 1, [1000], false, []);
 			
 		if(bodyDef != null && !isLightweight)
 		{
 			if(bodyDef.bullet)
 			{
-				game.world.m_continuousPhysics = true;
+				B2World.m_continuousPhysics = true;
 			}
 			
-			bodyDef.groupID = groupID;
+			//Not done yet
+			//bodyDef.groupID = groupID;
 
-			initFromBody(game, bodyDef);	
+			initFromBody(bodyDef);	
 			
-			//XXX: Box2D seems to require this to be done, otherwise it will refuse to create
-			//any shapes in the future!
-			var box:b2PolygonShape = new b2PolygonShape();
-			box.SetAsBox(1, 1);
-			body.CreateFixtureShape(box, 0.1);
+			//XXX: Box2D seems to require this to be done, otherwise it will refuse to create any shapes in the future!
+			var box = new B2PolygonShape();
+			box.setAsBox(1, 1);
+			body.createFixture2(box, 0.1);
 			
-			md = new b2MassData();
+			md = new B2MassData();
 			md.mass = bodyDef.mass;
 			md.I = bodyDef.aMass;
 			md.center.x = 0;
 			md.center.y = 0;
 			
-			body.SetMassData(md);
+			body.setMassData(md);
 			bodyScale = new Point(1, 1);
 		}
 		
@@ -395,41 +402,38 @@ class Actor extends Sprite
 				shape = createBox(width, height);
 			}
 			
-			if(this is Region)
+			if(Std.is(this, Region))
 			{
 				isSensor = true;
 				canRotate = false;
 			}
 			
-			if(this is TerrainRegion)
+			if(Std.is(this, Terrain))
 			{
 				canRotate = false;
 			}
 			
 			if(!isLightweight)
 			{
-				initBody(game, groupID, isSensor, isStationary, isKinematic, canRotate, shape);
+				initBody(groupID, isSensor, isStationary, isKinematic, canRotate, shape);
 			}
 		}
 
 		switchToDefaultAnimation();
 		
 		//Use set location to align actors
-		if (sprite != null)
+		if(sprite != null)
 		{ 
-		   setLocation(GameState.toPixelUnits(x), GameState.toPixelUnits(y));
+			setLocation(Engine.toPixelUnits(x), Engine.toPixelUnits(y));
 		}
+		
 		else
 		{
-			if (!isLightweight)
+			if(!isLightweight)
 			{
-				body.SetPosition(new V2(x, y));
+				body.setPosition(new B2Vec2(x, y));
 			}
 		}
-		
-		*/
-		
-		//---
 		
 		//No IC - Default to what the ActorType uses
 		if(behaviorValues == null && actorType != null)
@@ -2683,7 +2687,7 @@ class Actor extends Sprite
 	//* Camera-Only
 	//*-----------------------------------------------
 	
-	public function setLocation(x:Int, y:Int)
+	public function setLocation(x:Float, y:Float)
 	{
 		this.x = x;
 		this.y = y;
