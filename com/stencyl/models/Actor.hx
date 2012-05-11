@@ -514,6 +514,12 @@ class Actor extends Sprite
 			shapeMap.set(name, arr);
 		}
 	
+		if(imgData == null)
+		{
+			animationMap.set(name, new Sprite());
+			return;
+		}
+	
 		#if cpp
 		var tilesheet = new Tilesheet(imgData);
 		
@@ -726,6 +732,11 @@ class Actor extends Sprite
 	//* Events - Update
 	//*-----------------------------------------------
 	
+	public function update(elapsedTime:Float)
+	{
+		innerUpdate(elapsedTime, true);
+	}
+	
 	public function innerUpdate(elapsedTime:Float, hudCheck:Bool)
 	{
 		//HUD / always simulate actors are updated separately to prevent double updates.
@@ -790,23 +801,24 @@ class Actor extends Sprite
 			return;
 		}
 		
-		if(!isLightweight)
+		if(isLightweight)
 		{
-			var p = body.getPosition();
-								
-			x = Math.round(p.x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
-			y = Math.round(p.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);
-		
-			rotation = body.getAngle() * Utils.DEG;
+			/*x += xSpeed / Engine.physicsScale;
+			y += ySpeed / Engine.physicsScale;
+			rotation += rSpeed / Engine.physicsScale / Engine.physicsScale;*/
+			
+			this.x += elapsedTime * xSpeed;
+			this.y += elapsedTime * ySpeed;
+			this.rotation += elapsedTime * rSpeed;
 		}
 		
 		else
 		{
-			x += xSpeed / Engine.physicsScale;
-			y += ySpeed / Engine.physicsScale;
-			
-			//Have to divide twice it seems
-			rotation += rSpeed / Engine.physicsScale / Engine.physicsScale;
+			var p = body.getPosition();
+					
+			x = Math.round(p.x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
+			y = Math.round(p.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);		
+			rotation = body.getAngle() * Utils.DEG;
 		}
 		
 		if(doAll)
@@ -818,39 +830,16 @@ class Actor extends Sprite
 		}
 		
 		updateTweenProperties();
-	}
-		
-		
-	public function update(elapsedTime:Float)
-	{
-		innerUpdate(elapsedTime, true);
 	}	
 	
 	public function updateAnimProperties(elapsedTime:Float, doAll:Bool)
 	{
-		if(currAnimation != null)
+		if(doAll && currAnimation != null)
 		{
-			if(isLightweight)
-			{
-				currAnimation.x = getX();
-				currAnimation.y = getY();
-			}
-			
-			else
-			{
-				currAnimation.x = x;
-				currAnimation.y = y;
-			}
-			
-			currAnimation.rotation = rotation;
-			
-			if(doAll)
-			{
-				if(Std.is(currAnimation, AbstractAnimation))
-		   		{
-		   			cast(currAnimation, AbstractAnimation).update(elapsedTime);
-		   		}
-			}
+			if(Std.is(currAnimation, AbstractAnimation))
+		   	{
+		   		cast(currAnimation, AbstractAnimation).update(elapsedTime);
+		   	}
 		}
 	}
 	

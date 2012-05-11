@@ -1587,7 +1587,7 @@ class Engine
 			false,
 			null,
 			ai.actorType.ID,
-			false, //TODO: ai.actorType.isLightweight,
+			true, //TODO: ai.actorType.isLightweight,
 			ai.actorType.autoScale
 		);
 
