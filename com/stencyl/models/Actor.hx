@@ -2584,9 +2584,8 @@ class Actor extends Sprite
 	{
 		dying = true;
 	
-		/*kill();
-		
-		for (var r:int = 0; r < whenKilledListeners.length; r++)
+		//TODO: Events
+		/*for (var r:int = 0; r < whenKilledListeners.length; r++)
 		{
 			var f:Function = whenKilledListeners[r] as Function;	
 			
@@ -2651,9 +2650,9 @@ class Actor extends Sprite
 					FlxG.log(e.getStackTrace());
 				}
 			}
-		}
+		}*/
 		
-		removeAllListeners();*/
+		removeAllListeners();
 	}
 		
 	public function isDying():Bool
