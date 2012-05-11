@@ -861,12 +861,591 @@ class Engine
 			master.addChild(defaultGroup);
 		}
 	}
+
+	//*-----------------------------------------------
+	//* Scene Switching
+	//*-----------------------------------------------
+	
+	public function cleanup()
+	{
+		debugDrawer.m_sprite.graphics.clear();
+		
+		Utils.removeAllChildren(master);
+		Utils.removeAllChildren(transitionLayer);
+					
+		behaviors.destroy();
+	
+		for(group in actorsPerLayer)
+		{
+			Utils.removeAllChildren(group);
+		}
+		
+		//--
+		
+		camera.destroy();
+		camera = null;
+		
+		//--
+		
+		//Kill the remaining ones
+		var worldbody = world.getBodyList();
+		var j = world.getJointList();
+		
+		while(worldbody != null)
+		{
+			world.destroyBody(worldbody);
+			worldbody = worldbody.getNext();
+		}
+		
+		while(j != null)
+		{
+			world.destroyJoint(j);
+			j.getNext();
+		}
+		
+		for(set in actorsOfType)
+		{
+			Utils.clear(set);
+		}
+		
+		for(set in recycledActorsOfType)
+		{
+			Utils.clear(set);
+		}
+		
+		actorsOfType = null;
+		recycledActorsOfType = null;
+		
+		hudActors = null;
+		layers = null;
+		actorsPerLayer = null;
+		layersToDraw = null;
+		layerOrders = null;
+		dynamicTiles = null;
+		animatedTiles = null;
+		
+		regions = null;
+		terrainRegions = null;
+		joints = null;
+		groups = null;
+		allActors = null;
+		scene = null;
+		tasks = null;
+		
+		whenKeyPressedListeners = null;		
+		whenTypeGroupCreatedListeners = null;
+		whenTypeGroupDiesListeners = null;
+		typeGroupPositionListeners = null;
+		collisionListeners = null;
+		soundListeners = null;
+					
+		whenUpdatedListeners = null;
+		whenDrawingListeners = null;
+		whenMousePressedListeners = null;
+		whenMouseReleasedListeners = null;
+		whenMouseMovedListeners = null;
+		whenMouseDraggedListeners = null;		
+		whenPausedListeners = null;
+		
+		whenFocusChangedListeners = null;
+		
+		//Reset
+		Input.update();
+		
+		world = null;
+	}
+	
+	public function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)
+	{
+		trace("Request to switch to Scene " + sceneID);
+
+		if(isTransitioning())
+		{
+			trace("Warning: Switching Scene while already switching. Ignoring.");
+			return;
+		}
+		
+		if(leave != null && leave.isComplete())
+		{
+			leave.reset();
+		}
+		
+		if(leave == null)
+		{
+			leave = new Transition(0);
+		}
+		
+		if(enter == null || enter.duration == 0)
+		{
+			enter = new Transition(0);
+		}
+		
+		this.leave = leave;
+		this.enter = enter;
+		
+		leaveTimer = 0;
+		
+		if(!this.leave.isComplete())
+		{
+			this.leave.start();
+		}
+		
+		sceneToEnter = sceneID;
+	}
+	
+	public function enterScene()
+	{
+		enterTimer = 0;
+		
+		if(!enter.isComplete())
+		{
+			enter.start();
+		}
+		
+		trace("Entering Scene " + sceneToEnter);
+		
+		cleanup();
+		loadScene(sceneToEnter);
+	}
+	
+	public function isTransitioning():Bool
+	{			
+		if(enter != null && enter.isActive())
+		{
+			return true;
+		}
+			
+		else if(leave != null && leave.isActive())
+		{
+			return true;
+		}
+		
+		return false;
+	}
 	
 	//*-----------------------------------------------
-	//* Events
-	//*-----------------------------------------------	
+	//* Actor Creation
+	//*-----------------------------------------------
+	
+	public function createActor(ai:ActorInstance, offset:Bool = false):Actor
+	{
+		var s:com.stencyl.models.actor.Sprite = cast(Data.get().resources.get(ai.actorType.spriteID), com.stencyl.models.actor.Sprite);
+	
+		var a:Actor = new Actor
+		(
+			this, 
+			ai.elementID,
+			ai.groupID,
+			ai.x / physicsScale, 
+			ai.y / physicsScale, 
+			ai.layerID,
+			s.width, 
+			s.height, 
+			s,
+			ai.behaviorValues,
+			ai.actorType,
+			null, //TODO: ai.actorType.bodyDef,
+			false,
+			false,
+			false,
+			false,
+			null,
+			ai.actorType.ID,
+			true, //TODO: ai.actorType.isLightweight,
+			ai.actorType.autoScale
+		);
 
-	private function update(elapsedTime:Float)
+		if(ai.angle != 0)
+		{
+			a.setAngle(ai.angle + 180, false);
+		}	
+		
+		if(ai.scaleX != 1 || ai.scaleY != 1)
+		{
+			a.growTo(ai.scaleX, ai.scaleY, 0);
+		}
+		
+		a.name = ai.actorType.name;
+		
+		moveActorToLayer(a, ai.layerID);
+		
+		//---
+		
+		var group = groups.get(ai.groupID);
+		
+		if(group != null)
+		{
+			group.addChild(a);
+		}
+		
+		//---
+
+		//Use the next available ID
+		if(ai.elementID == Utils.NUMBER_MAX_VALUE)
+		{
+			nextID++;
+			a.ID = nextID;
+			allActors.set(a.ID, a);
+		}
+		
+		else
+		{
+			allActors.set(a.ID, a);
+			nextID = Std.int(Math.max(a.ID, nextID));
+		}
+
+		a.internalUpdate(0, false);
+		
+		//---
+			
+		//Add to type cache
+		if(ai.actorType != null)
+		{
+			var cache = actorsOfType.get(ai.actorType.ID);
+			
+			if(cache == null)
+			{
+				cache = new Array<Actor>();
+				actorsOfType.set(ai.actorType.ID, cache);
+			}
+			
+			if(cache != null)
+			{
+				cache.push(a);
+			}
+		}
+		
+		//---
+			
+		master.addChild(a);
+		
+		return a;
+	}
+	
+	public function removeActor(a:Actor)
+	{
+		allActors.remove(a.ID);
+
+		//Remove from the layer group
+		removeActorFromLayer(a, a.layerID);
+		
+		//Remove from normal group
+		groups.get(a.getGroupID()).removeChild(a);
+		
+		if(a.isHUD || a.alwaysSimulate)
+		{
+			hudActors.delete(a);
+		}
+		
+		a.destroy();
+		
+		//---
+		
+		var typeID:ActorType = cast(Data.get().resources.get(a.typeID), ActorType);
+		
+		if(typeID != null)
+		{
+			var cache = actorsOfType.get(typeID.ID);
+			
+			if(cache != null)
+			{
+				cache.remove(a);
+			}
+		}
+	}
+	
+	private function removeActorFromLayer(a:Actor, layerID:Int)
+	{
+		var layer = actorsPerLayer.get(layerID);
+		
+		if(layer == null)
+		{
+			trace("Assuming default group");
+			layer = defaultGroup;
+		}
+		
+		layer.removeChild(a);
+	}
+	
+	private function moveActorToLayer(a:Actor, layerID:Int)
+	{
+		var layer = actorsPerLayer.get(layerID);
+		
+		if(layer == null)
+		{
+			trace("Putting actor inside default group");
+			layer = defaultGroup;
+		}
+
+		//To ensure that it draws after.
+		layer.addChild(a);
+	}
+	
+	public function recycleActor(a:Actor)
+	{
+		/*a.setX(1000000);
+		a.setY(1000000);
+		a.recycled = true;
+		a.setFilter(null);
+		a.disableActorDrawing();
+		a.cancelTweens();
+		a.moveTo(1000000, 1000000, 0);
+		a.growTo(1, 1, 0);
+		a.spinTo(0, 0);
+		a.fadeTo(1, 0);
+		a.switchToDefaultAnimation();
+		
+		//Kill previous contacts
+		if(!a.isLightweight && a.body != null)
+		{
+			var contact:b2ContactEdge = a.body.GetContactList();
+
+			while(contact != null)
+			{
+				world.m_contactListener.EndContact(contact.contact);
+				contact = contact.next;
+			}
+		}
+		
+		a.removeAllListeners();
+		a.resetListeners();
+		
+		removeActorFromLayer(a, a.layerID);
+		
+		if (!a.isLightweight)
+		{
+			a.body.SetAwake(false);
+		}*/
+	}
+	
+	public function getRecycledActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
+	{
+		/*var a:Actor = null;
+		
+		if(recycledActorsOfType[type.ID] == null)
+		{
+			recycledActorsOfType[type.ID] = new HashSet();
+		}
+
+		var cache:HashSet = recycledActorsOfType[type.ID];
+		
+		if(cache != null)
+		{
+			//Check for next available one O(1)
+			//In practice, this doesn't exceed 10-20.
+			for each(var actor:Actor in cache)
+			{
+				if(actor != null && actor.recycled)
+				{
+					//cache.remove(actor);
+					
+					actor.recycled = false;
+					//actor.body.SetActive(true);
+					
+					actor.switchToDefaultAnimation();
+											
+					actor.enableAllBehaviors();
+					
+					if (!actor.isLightweight)
+					{
+						actor.body.SetAwake(true);
+					}
+					
+					actor.enableActorDrawing();
+					actor.setX(x);
+					actor.setY(y);
+					actor.setAngle(0, false);
+					actor.alpha = 1;
+					actor.scale.x = 1;
+					actor.scale.y = 1;
+					actor.setFilter(null);
+					actor.initScripts();
+					
+					//move to specified layer
+					var layerID:int = 0;
+					
+					if(layerConst == Script.FRONT)
+					{
+						layerID = getTopLayer();
+					}
+						
+					else if(layerConst == Script.BACK)
+					{
+						layerID = getBottomLayer();
+					}
+						
+					else
+					{
+						layerID = getMiddleLayer();
+					}
+					
+					moveActorToLayer(actor, layerID);
+
+					return actor;
+				}
+			}
+			
+			//Otherwise make a new one
+			a = createActorOfType(type, x, y, layerConst);
+			cache.add(a);
+		}
+		
+		return a;*/
+		
+		return null;
+	}
+	
+	public function createActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
+	{
+		if(type == null)
+		{
+			trace("Tried to create actor with null or invalid type.");
+			return null;
+		}
+		
+		var layerID = 0;
+		
+		if(layerConst == Script.FRONT)
+		{
+			layerID = getTopLayer();
+		}
+			
+		else if(layerConst == Script.BACK)
+		{
+			layerID = getBottomLayer();
+		}
+			
+		else
+		{
+			layerID = getMiddleLayer();
+		}
+		
+		var ai:ActorInstance = new ActorInstance
+		(
+			-1,
+			Std.int(x),
+			Std.int(y),
+			1,
+			1,
+			layerID,
+			0,
+			type.groupID,
+			type.ID,
+			null,
+			false
+		);
+		
+		var a:Actor = createActor(ai, true);
+		a.initScripts();
+		
+		/*if (whenTypeGroupCreatedListeners[type] != null)
+		{
+			var listeners:Array = whenTypeGroupCreatedListeners[type] as Array;
+			
+			for (var r:int = 0; r < listeners.length; r++)
+			{
+				try
+				{
+					var f:Function = listeners[r] as Function;
+					f(listeners, a);
+					
+					if (listeners.indexOf(f) == -1)
+					{
+						r--;
+					}
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+		}
+		
+		if (whenTypeGroupCreatedListeners[a.getGroup()] != null)
+		{
+			var listeners:Array = whenTypeGroupCreatedListeners[a.getGroup()] as Array;
+			
+			for (var r:int = 0; r < listeners.length; r++)
+			{
+				try
+				{
+					var f:Function = listeners[r] as Function;
+					f(listeners, a);
+					
+					if (listeners.indexOf(f) == -1)
+					{
+						r--;
+					}
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+		}*/
+		
+		return a;
+	}
+	
+	//*-----------------------------------------------
+	//* Terrain Creation
+	//*-----------------------------------------------
+	
+	public function createDynamicTile(shape:B2Shape, x:Float, y:Float, layerID:Int, width:Float, height:Float)
+	{
+		/*var a:Actor = new Actor
+		(
+			this, 
+			int.MAX_VALUE,
+			Game.TERRAIN_ID,
+			x, 
+			y, 
+			layerID,
+			width,
+			height, 
+			null, 
+			new Array(),
+			null,
+			null, 
+			false, 
+			true, 
+			false,
+			false, 
+			shape, 
+			true
+		);
+		
+		a.name = "Terrain";
+		a.visible = false;
+		add(a);
+		;
+		var key:String = "ID"
+		key = key.concat("-",toPixelUnits(x).toString(),"-",toPixelUnits(y),"-", layerID.toString());
+
+		dynamicTiles[key] = a;     //keep reference to Tile actor based on position and layer*/
+	}
+		
+	public function getTopLayer():Int
+	{
+		return layersToDraw.get(topLayer);
+	}
+	
+	public function getBottomLayer():Int
+	{
+		return layersToDraw.get(bottomLayer);
+	}
+	
+	public function getMiddleLayer():Int
+	{
+		return layersToDraw.get(middleLayer);
+	}
+		
+		
+	//*-----------------------------------------------
+	//* Update Loop
+	//*-----------------------------------------------
+	
+		private function update(elapsedTime:Float)
 	{
 		//cameraX = pronger.x - screenWidth/2;
 		//cameraY = pronger.y - screenHeight/2;
@@ -1273,589 +1852,6 @@ class Engine
 			}
 		}
 	}
-	
-	//*-----------------------------------------------
-	//* Scene Switching
-	//*-----------------------------------------------
-	
-	public function cleanup()
-	{
-		debugDrawer.m_sprite.graphics.clear();
-		
-		Utils.removeAllChildren(master);
-		Utils.removeAllChildren(transitionLayer);
-					
-		behaviors.destroy();
-	
-		for(group in actorsPerLayer)
-		{
-			Utils.removeAllChildren(group);
-		}
-		
-		//--
-		
-		camera.destroy();
-		camera = null;
-		
-		//--
-		
-		//Kill the remaining ones
-		var worldbody = world.getBodyList();
-		var j = world.getJointList();
-		
-		while(worldbody != null)
-		{
-			world.destroyBody(worldbody);
-			worldbody = worldbody.getNext();
-		}
-		
-		while(j != null)
-		{
-			world.destroyJoint(j);
-			j.getNext();
-		}
-		
-		for(set in actorsOfType)
-		{
-			Utils.clear(set);
-		}
-		
-		for(set in recycledActorsOfType)
-		{
-			Utils.clear(set);
-		}
-		
-		actorsOfType = null;
-		recycledActorsOfType = null;
-		
-		hudActors = null;
-		layers = null;
-		actorsPerLayer = null;
-		layersToDraw = null;
-		layerOrders = null;
-		dynamicTiles = null;
-		animatedTiles = null;
-		
-		regions = null;
-		terrainRegions = null;
-		joints = null;
-		groups = null;
-		allActors = null;
-		scene = null;
-		tasks = null;
-		
-		whenKeyPressedListeners = null;		
-		whenTypeGroupCreatedListeners = null;
-		whenTypeGroupDiesListeners = null;
-		typeGroupPositionListeners = null;
-		collisionListeners = null;
-		soundListeners = null;
-					
-		whenUpdatedListeners = null;
-		whenDrawingListeners = null;
-		whenMousePressedListeners = null;
-		whenMouseReleasedListeners = null;
-		whenMouseMovedListeners = null;
-		whenMouseDraggedListeners = null;		
-		whenPausedListeners = null;
-		
-		whenFocusChangedListeners = null;
-		
-		//Reset
-		Input.update();
-		
-		world = null;
-	}
-	
-	public function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)
-	{
-		trace("Request to switch to Scene " + sceneID);
-
-		if(isTransitioning())
-		{
-			trace("Warning: Switching Scene while already switching. Ignoring.");
-			return;
-		}
-		
-		if(leave != null && leave.isComplete())
-		{
-			leave.reset();
-		}
-		
-		if(leave == null)
-		{
-			leave = new Transition(0);
-		}
-		
-		if(enter == null || enter.duration == 0)
-		{
-			enter = new Transition(0);
-		}
-		
-		this.leave = leave;
-		this.enter = enter;
-		
-		leaveTimer = 0;
-		
-		if(!this.leave.isComplete())
-		{
-			this.leave.start();
-		}
-		
-		sceneToEnter = sceneID;
-	}
-	
-	public function enterScene()
-	{
-		enterTimer = 0;
-		
-		if(!enter.isComplete())
-		{
-			enter.start();
-		}
-		
-		trace("Entering Scene " + sceneToEnter);
-		
-		cleanup();
-		loadScene(sceneToEnter);
-	}
-	
-	public function isTransitioning():Bool
-	{			
-		if(enter != null && enter.isActive())
-		{
-			return true;
-		}
-			
-		else if(leave != null && leave.isActive())
-		{
-			return true;
-		}
-		
-		return false;
-	}
-	
-	//*-----------------------------------------------
-	//* Actor Creation
-	//*-----------------------------------------------
-	
-	public function createActor(ai:ActorInstance, offset:Bool = false):Actor
-	{
-		var s:com.stencyl.models.actor.Sprite = cast(Data.get().resources.get(ai.actorType.spriteID), com.stencyl.models.actor.Sprite);
-	
-		var a:Actor = new Actor
-		(
-			this, 
-			ai.elementID,
-			ai.groupID,
-			ai.x / physicsScale, 
-			ai.y / physicsScale, 
-			ai.layerID,
-			s.width, 
-			s.height, 
-			s,
-			ai.behaviorValues,
-			ai.actorType,
-			null, //TODO: ai.actorType.bodyDef,
-			false,
-			false,
-			false,
-			false,
-			null,
-			ai.actorType.ID,
-			true, //TODO: ai.actorType.isLightweight,
-			ai.actorType.autoScale
-		);
-
-		if(ai.angle != 0)
-		{
-			a.setAngle(ai.angle + 180, false);
-		}	
-		
-		if(ai.scaleX != 1 || ai.scaleY != 1)
-		{
-			a.growTo(ai.scaleX, ai.scaleY, 0);
-		}
-		
-		a.name = ai.actorType.name;
-		
-		moveActorToLayer(a, ai.layerID);
-		
-		//---
-		
-		var group = groups.get(ai.groupID);
-		
-		if(group != null)
-		{
-			group.addChild(a);
-		}
-		
-		//---
-
-		//Use the next available ID
-		if(ai.elementID == Utils.NUMBER_MAX_VALUE)
-		{
-			nextID++;
-			a.ID = nextID;
-			allActors.set(a.ID, a);
-		}
-		
-		else
-		{
-			allActors.set(a.ID, a);
-			nextID = Std.int(Math.max(a.ID, nextID));
-		}
-
-		a.internalUpdate(0, false);
-		
-		//---
-			
-		//Add to type cache
-		if(ai.actorType != null)
-		{
-			var cache = actorsOfType.get(ai.actorType.ID);
-			
-			if(cache == null)
-			{
-				cache = new Array<Actor>();
-				actorsOfType.set(ai.actorType.ID, cache);
-			}
-			
-			if(cache != null)
-			{
-				cache.push(a);
-			}
-		}
-		
-		//---
-			
-		master.addChild(a);
-		
-		return a;
-	}
-	
-	public function removeActor(a:Actor)
-	{
-		allActors.remove(a.ID);
-
-		//Remove from the layer group
-		removeActorFromLayer(a, a.layerID);
-		
-		//Remove from normal group
-		groups.get(a.getGroupID()).removeChild(a);
-		
-		if(a.isHUD || a.alwaysSimulate)
-		{
-			hudActors.remove(a);
-		}
-		
-		a.destroy();
-		
-		//---
-		
-		var typeID:ActorType = cast(Data.get().resources.get(a.typeID), ActorType);
-		
-		if(typeID != null)
-		{
-			var cache = actorsOfType.get(typeID.ID);
-			
-			if(cache != null)
-			{
-				cache.remove(a);
-			}
-		}
-	}
-	
-	private function removeActorFromLayer(a:Actor, layerID:Int)
-	{
-		var layer = actorsPerLayer.get(layerID);
-		
-		if(layer == null)
-		{
-			trace("Assuming default group");
-			layer = defaultGroup;
-		}
-		
-		layer.removeChild(a);
-	}
-	
-	private function moveActorToLayer(a:Actor, layerID:Int)
-	{
-		var layer = actorsPerLayer.get(layerID);
-		
-		if(layer == null)
-		{
-			trace("Putting actor inside default group");
-			layer = defaultGroup;
-		}
-
-		//To ensure that it draws after.
-		layer.addChild(a);
-	}
-	
-	public function recycleActor(a:Actor)
-	{
-		/*a.setX(1000000);
-		a.setY(1000000);
-		a.recycled = true;
-		a.setFilter(null);
-		a.disableActorDrawing();
-		a.cancelTweens();
-		a.moveTo(1000000, 1000000, 0);
-		a.growTo(1, 1, 0);
-		a.spinTo(0, 0);
-		a.fadeTo(1, 0);
-		a.switchToDefaultAnimation();
-		
-		//Kill previous contacts
-		if(!a.isLightweight && a.body != null)
-		{
-			var contact:b2ContactEdge = a.body.GetContactList();
-
-			while(contact != null)
-			{
-				world.m_contactListener.EndContact(contact.contact);
-				contact = contact.next;
-			}
-		}
-		
-		a.removeAllListeners();
-		a.resetListeners();
-		
-		removeActorFromLayer(a, a.layerID);
-		
-		if (!a.isLightweight)
-		{
-			a.body.SetAwake(false);
-		}*/
-	}
-	
-	public function getRecycledActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
-	{
-		/*var a:Actor = null;
-		
-		if(recycledActorsOfType[type.ID] == null)
-		{
-			recycledActorsOfType[type.ID] = new HashSet();
-		}
-
-		var cache:HashSet = recycledActorsOfType[type.ID];
-		
-		if(cache != null)
-		{
-			//Check for next available one O(1)
-			//In practice, this doesn't exceed 10-20.
-			for each(var actor:Actor in cache)
-			{
-				if(actor != null && actor.recycled)
-				{
-					//cache.remove(actor);
-					
-					actor.recycled = false;
-					//actor.body.SetActive(true);
-					
-					actor.switchToDefaultAnimation();
-											
-					actor.enableAllBehaviors();
-					
-					if (!actor.isLightweight)
-					{
-						actor.body.SetAwake(true);
-					}
-					
-					actor.enableActorDrawing();
-					actor.setX(x);
-					actor.setY(y);
-					actor.setAngle(0, false);
-					actor.alpha = 1;
-					actor.scale.x = 1;
-					actor.scale.y = 1;
-					actor.setFilter(null);
-					actor.initScripts();
-					
-					//move to specified layer
-					var layerID:int = 0;
-					
-					if(layerConst == Script.FRONT)
-					{
-						layerID = getTopLayer();
-					}
-						
-					else if(layerConst == Script.BACK)
-					{
-						layerID = getBottomLayer();
-					}
-						
-					else
-					{
-						layerID = getMiddleLayer();
-					}
-					
-					moveActorToLayer(actor, layerID);
-
-					return actor;
-				}
-			}
-			
-			//Otherwise make a new one
-			a = createActorOfType(type, x, y, layerConst);
-			cache.add(a);
-		}
-		
-		return a;*/
-		
-		return null;
-	}
-	
-	public function createActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
-	{
-		if(type == null)
-		{
-			trace("Tried to create actor with null or invalid type.");
-			return null;
-		}
-		
-		var layerID = 0;
-		
-		if(layerConst == Script.FRONT)
-		{
-			layerID = getTopLayer();
-		}
-			
-		else if(layerConst == Script.BACK)
-		{
-			layerID = getBottomLayer();
-		}
-			
-		else
-		{
-			layerID = getMiddleLayer();
-		}
-		
-		var ai:ActorInstance = new ActorInstance
-		(
-			Utils.NUMBER_MAX_VALUE,
-			Std.int(x),
-			Std.int(y),
-			1,
-			1,
-			layerID,
-			0,
-			type.groupID,
-			type.ID,
-			null,
-			false
-		);
-		
-		var a:Actor = createActor(ai, true);
-		a.initScripts();
-		
-		/*if (whenTypeGroupCreatedListeners[type] != null)
-		{
-			var listeners:Array = whenTypeGroupCreatedListeners[type] as Array;
-			
-			for (var r:int = 0; r < listeners.length; r++)
-			{
-				try
-				{
-					var f:Function = listeners[r] as Function;
-					f(listeners, a);
-					
-					if (listeners.indexOf(f) == -1)
-					{
-						r--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
-		}
-		
-		if (whenTypeGroupCreatedListeners[a.getGroup()] != null)
-		{
-			var listeners:Array = whenTypeGroupCreatedListeners[a.getGroup()] as Array;
-			
-			for (var r:int = 0; r < listeners.length; r++)
-			{
-				try
-				{
-					var f:Function = listeners[r] as Function;
-					f(listeners, a);
-					
-					if (listeners.indexOf(f) == -1)
-					{
-						r--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
-		}*/
-		
-		return a;
-	}
-	
-	//*-----------------------------------------------
-	//* Terrain Creation
-	//*-----------------------------------------------
-	
-	public function createDynamicTile(shape:B2Shape, x:Float, y:Float, layerID:Int, width:Float, height:Float)
-	{
-		/*var a:Actor = new Actor
-		(
-			this, 
-			int.MAX_VALUE,
-			Game.TERRAIN_ID,
-			x, 
-			y, 
-			layerID,
-			width,
-			height, 
-			null, 
-			new Array(),
-			null,
-			null, 
-			false, 
-			true, 
-			false,
-			false, 
-			shape, 
-			true
-		);
-		
-		a.name = "Terrain";
-		a.visible = false;
-		add(a);
-		;
-		var key:String = "ID"
-		key = key.concat("-",toPixelUnits(x).toString(),"-",toPixelUnits(y),"-", layerID.toString());
-
-		dynamicTiles[key] = a;     //keep reference to Tile actor based on position and layer*/
-	}
-		
-	public function getTopLayer():Int
-	{
-		return layersToDraw.get(topLayer);
-	}
-	
-	public function getBottomLayer():Int
-	{
-		return layersToDraw.get(bottomLayer);
-	}
-	
-	public function getMiddleLayer():Int
-	{
-		return layersToDraw.get(middleLayer);
-	}
-		
-		
-	//*-----------------------------------------------
-	//* Update Loop
-	//*-----------------------------------------------
 	
 	//*-----------------------------------------------
 	//* Events Finished
