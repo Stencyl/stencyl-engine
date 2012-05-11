@@ -1440,100 +1440,16 @@ class Engine
 	//*-----------------------------------------------
 	//* Update Loop
 	//*-----------------------------------------------
-	
-	private function update(elapsedTime:Float)
-	{
-		//cameraX = pronger.x - screenWidth/2;
-		//cameraY = pronger.y - screenHeight/2;
-		
-		//Camera Control
-		if(cameraX < 0)
-		{
-			cameraX = 0;
-		}
-		
-		if(cameraY < 0)
-		{
-			cameraY = 0;
-		}
-		
-		if(cameraX > sceneWidth - screenWidth)
-		{
-			cameraX = sceneWidth - screenWidth;
-		}
-		
-		if(cameraY > sceneHeight - screenHeight)
-		{
-			cameraY = sceneHeight - screenHeight;
-		}
-
-		master.x = -cameraX;
-		master.y = -cameraY;
-		
-		//---		
-		
-		/*if(Input.multiTouchEnabled)
-		{
-			for(elem in Input.multiTouchPoints)
-			{
-				trace(elem.eventPhase + "," + elem.stageX + "," + elem.stageY);
-			}
-		}*/
-		
-		for(a in actors)
-		{
-			//cameraX = a.x - screenWidth/2;
-			//cameraY = a.y - screenHeight/2;
-			
-			a.update(elapsedTime);
-		}
-
-		//---
-		
-		//Update Timed Tasks
-		var i = 0;
-		
-		while(i < tasks.length)
-		{
-			var t:TimedTask = tasks[i];
-			
-			t.update(10);
-			
-			if(t.done)
-			{
-				tasks.remove(t);	
-				i--;
-			}
-			
-			i++;
-		}
-		
-		//Update Behaviors
-		var r = 0;
-		
-		while(r < whenUpdatedListeners.length)
-		{
-			try
-			{
-				var f:Float->Array<Dynamic>->Void = whenUpdatedListeners[r];			
-				f(elapsedTime, whenUpdatedListeners);
 				
-				if(Utils.indexOf(whenUpdatedListeners, f) == -1)
-				{
-					r--;
-				}
-			}
-			
-			catch(e:String)
-			{
-				trace(e);
-			}
-			
-			r++;
-		}			
-	}
+	/*if(Input.multiTouchEnabled)
+	{
+		for(elem in Input.multiTouchPoints)
+		{
+			trace(elem.eventPhase + "," + elem.stageX + "," + elem.stageY);
+		}
+	}*/
 	
-	public function innerUpdate()
+	public function update(elapsedTime:Float)
 	{
 		if(scene == null)
 		{
@@ -1728,8 +1644,9 @@ class Engine
 		}*/
 		
 		//collisionPairs = new Dictionary();
-		//var disableCollisionList:Array = new Array();
+		var disableCollisionList = new Array<Actor>();
 
+		//TODO:
 		//for(a in actorsOnScreen)
 		for(a in actors)
 		{		
@@ -1761,10 +1678,10 @@ class Engine
 					}
 				}
 				
-				/*if(a.dead)
+				if(a.dead)
 				{
 					disableCollisionList.push(a);
-				}*/
+				}
 			}
 		}
 					
@@ -1776,13 +1693,13 @@ class Engine
 			}
 		}
 		
-		/*for each(var a:Actor in disableCollisionList)
+		for(a in disableCollisionList)
 		{
-			if (a != null)
+			if(a != null)
 			{
 				a.handlesCollisions = false;
 			}
-		}*/
+		}
 		
 		for(tile in animatedTiles)
 		{
