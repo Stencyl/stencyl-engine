@@ -142,6 +142,7 @@ class Engine
 	public var joints:IntHash<B2Joint>;
 	
 	public static var stage:Stage;
+	public var defaultGroup:Sprite; //The default layer (bottom-most)
 	public var root:Sprite; //The absolute root
 	public var master:Sprite; // the root of the main node
 	public var transitionLayer:Sprite; //Shows above everything else
@@ -363,12 +364,12 @@ class Engine
 		
 		groups = new IntHash<DisplayObjectContainer>();
 		
-		/*for each(var grp:GroupDef in Game.get().groups)
+		for(grp in GameModel.get().groups)
 		{
-			var g:FlxGroup = new FlxGroup();
-			groups[grp.ID] = g;
+			var g = new Sprite();
+			groups.set(grp.ID, g);
 			g.name = grp.name;
-		}*/
+		}
 		
 		actorsOfType = new IntHash<Array<Actor>>();
 		recycledActorsOfType = new IntHash<Array<Actor>>();
@@ -848,8 +849,16 @@ class Engine
 			
 			//Eventually, this will become the correct value
 			bottomLayer = i;
+			defaultGroup = list;
 			
 			numLayersProcessed++;
+		}
+		
+		//For scenes with no scene data
+		if(defaultGroup == null)
+		{
+			defaultGroup = new Sprite();
+			master.addChild(defaultGroup);
 		}
 	}
 	
@@ -1474,13 +1483,12 @@ class Engine
 		
 		//---
 		
-		//TODO
-		/*var group = groups.get(ai.groupID);
+		var group = groups.get(ai.groupID);
 		
 		if(group != null)
 		{
-			group.add(a);
-		}*/
+			group.addChild(a);
+		}
 		
 		//---
 
@@ -1528,21 +1536,13 @@ class Engine
 	
 	public function removeActor(a:Actor)
 	{
-		/*var i:Int = allActors.indexOf(a);
-		
-		if(i != -1)
-		{
-			allActors[i] = null;
-		}
+		allActors.remove(a.ID);
 
 		//Remove from the layer group
 		removeActorFromLayer(a, a.layerID);
 		
 		//Remove from normal group
-		if (!a.isLightweight)
-		{
-			(groups[a.getGroupID()] as FlxGroup).remove(a, true);
-		}
+		groups.get(a.getGroupID()).removeChild(a);
 		
 		if(a.isHUD || a.alwaysSimulate)
 		{
@@ -1553,22 +1553,22 @@ class Engine
 		
 		//---
 		
-		var typeID:ActorType = Assets.get().resources[a.typeID] as ActorType;
+		var typeID:ActorType = cast(Data.get().resources.get(a.typeID), ActorType);
 		
 		if(typeID != null)
 		{
-			var cache:HashSet = actorsOfType[typeID.ID];
+			var cache = actorsOfType.get(typeID.ID);
 			
 			if(cache != null)
 			{
 				cache.remove(a);
 			}
-		}*/
+		}
 	}
 	
 	private function removeActorFromLayer(a:Actor, layerID:Int)
 	{
-		/*var layer:FlxGroup = actorsPerLayer[layerID] as FlxGroup;
+		var layer = actorsPerLayer.get(layerID);
 		
 		if(layer == null)
 		{
@@ -1576,31 +1576,21 @@ class Engine
 			layer = defaultGroup;
 		}
 		
-		layer.remove(a, true);
-		
-		for each(var anim:FlxSprite in a.anims)
-		{
-			layer.remove(anim, true);	
-		}*/
+		layer.removeChild(a);
 	}
 	
 	private function moveActorToLayer(a:Actor, layerID:Int)
 	{
-		/*var layer:FlxGroup = actorsPerLayer[layerID] as FlxGroup;
+		var layer = actorsPerLayer.get(layerID);
 		
 		if(layer == null)
 		{
 			trace("Putting actor inside default group");
 			layer = defaultGroup;
 		}
-		
-		for each(var anim:FlxSprite in a.anims)
-		{
-			layer.add(anim);	
-		}
-		
+
 		//To ensure that it draws after.
-		layer.add(a);*/
+		layer.addChild(a);
 	}
 	
 	public function recycleActor(a:Actor)
@@ -1719,13 +1709,13 @@ class Engine
 	
 	public function createActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
 	{
-		/*if(type == null)
+		if(type == null)
 		{
-			FlxG.log("Tried to create actor with null or invalid type.");
+			trace("Tried to create actor with null or invalid type.");
 			return null;
 		}
 		
-		var layerID:int = 0;
+		var layerID = 0;
 		
 		if(layerConst == Script.FRONT)
 		{
@@ -1744,9 +1734,9 @@ class Engine
 		
 		var ai:ActorInstance = new ActorInstance
 		(
-			int.MAX_VALUE,
-			x,
-			y,
+			Utils.NUMBER_MAX_VALUE,
+			Std.int(x),
+			Std.int(y),
 			1,
 			1,
 			layerID,
@@ -1760,7 +1750,7 @@ class Engine
 		var a:Actor = createActor(ai, true);
 		a.initScripts();
 		
-		if (whenTypeGroupCreatedListeners[type] != null)
+		/*if (whenTypeGroupCreatedListeners[type] != null)
 		{
 			var listeners:Array = whenTypeGroupCreatedListeners[type] as Array;
 			
@@ -1804,11 +1794,9 @@ class Engine
 					FlxG.log(e.getStackTrace());
 				}
 			}
-		}
+		}*/
 		
-		return a;*/
-		
-		return null;
+		return a;
 	}
 	
 	//*-----------------------------------------------
