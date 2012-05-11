@@ -56,6 +56,8 @@ import box2D.dynamics.joints.B2Joint;
 import box2D.dynamics.B2DebugDraw;
 import box2D.collision.B2AABB;
 import box2D.collision.shapes.B2Shape;
+import box2D.collision.shapes.B2PolygonShape;
+import box2D.collision.shapes.B2CircleShape;
 import box2D.dynamics.contacts.B2Contact;
 import box2D.dynamics.contacts.B2ContactEdge;
 
@@ -2407,97 +2409,102 @@ class Engine
 	//* Regions
 	//*-----------------------------------------------
 	
-	/*private function createRegion(x:Number, y:Number, shape:b2Shape, offset:Boolean=false):Region
+	private function createRegion(x:Float, y:Float, shape:B2Shape, offset:Bool=false):Region
 	{
-		var shapeList:Array = new Array(shape);
-		var region:Region = new Region(this, x, y, shapeList);
+		var shapeList = new Array<B2Shape>();
+		shapeList.push(shape);
+		var region = new Region(this, x, y, shapeList);
 		
 		if(offset)
 		{
-			region.setX(GameState.toPixelUnits(x) + region.width / 2);
-			region.setY(GameState.toPixelUnits(y) + region.height / 2);
+			region.setX(Engine.toPixelUnits(x) + region.width / 2);
+			region.setY(Engine.toPixelUnits(y) + region.height / 2);
 		}
 		
 		addRegion(region);
 		return region;
 	}
 	
-	public function createBoxRegion(x:Number, y:Number, w:Number, h:Number):Region
+	public function createBoxRegion(x:Float, y:Float, w:Float, h:Float):Region
 	{
-		x = GameState.toPhysicalUnits(x);
-		y = GameState.toPhysicalUnits(y);
-		w = GameState.toPhysicalUnits(w);
-		h = GameState.toPhysicalUnits(h);
+		x = Engine.toPhysicalUnits(x);
+		y = Engine.toPhysicalUnits(y);
+		w = Engine.toPhysicalUnits(w);
+		h = Engine.toPhysicalUnits(h);
 	
-		var p:b2PolygonShape = new b2PolygonShape();
-		p.SetAsBox(w/2, h/2);
+		var p = new B2PolygonShape();
+		p.setAsBox(w/2, h/2);
 		
 		return createRegion(x, y, p, true);
 	}
 	
-	public function createCircularRegion(x:Number, y:Number, r:Number):Region
+	public function createCircularRegion(x:Float, y:Float, r:Float):Region
 	{
-		x = GameState.toPhysicalUnits(x);
-		y = GameState.toPhysicalUnits(y);
-		r = GameState.toPhysicalUnits(r);
+		x = Engine.toPhysicalUnits(x);
+		y = Engine.toPhysicalUnits(y);
+		r = Engine.toPhysicalUnits(r);
 		
-		var cShape:b2CircleShape = new b2CircleShape();
+		var cShape = new B2CircleShape();
 		cShape.m_radius = r;
 		
 		return createRegion(x, y, cShape, true);
 	}
 	
-	public function addRegion(r:Region):void
+	public function addRegion(r:Region)
 	{
-		var nextID:int = nextRegionID();
+		var nextID = nextRegionID();
 		r.ID = nextID;
-		regions[nextID] = r;
+		regions.set(nextID, r);
 	}
 	
-	public function removeRegion(ID:int):void
+	public function removeRegion(ID:Int)
 	{
-		var r:Region = getRegion(ID);	
+		var r = getRegion(ID);	
 		//regions.splice(r.ID, 1);
-		regions[r.ID] = null;
+		regions.remove(r.ID);
 		r.destroy();
 	}
 	
-	public function getRegion(ID:int):Region
+	public function getRegion(ID:Int):Region
 	{
-		return regions[ID];
+		return regions.get(ID);
 	}
 	
-	public function getRegions(ID:int):Array
+	public function getRegions():IntHash<Region>
 	{
 		return regions;
 	}
 	
-	public function nextRegionID():int
+	public function nextRegionID():Int
 	{
-		var ID:int = -1;
+		var ID = -1;
 		
-		for each(var r:Region in regions)
+		for(r in regions)
 		{
-			if(r == null) continue;
-			ID = Math.max(ID, r.ID);
+			if(r == null) 
+			{
+				continue;
+			}
+				
+			ID = Std.int(Math.max(ID, r.ID));
 		}
 		
 		return ID + 1;
 	}
 	
-	public function isInRegion(a:Actor, r:Region):Boolean
+	public function isInRegion(a:Actor, r:Region):Bool
 	{			
-		if(r != null && regions[r.getID()] != null)
+		if(r != null && regions.get(r.getID()) != null)
 		{
-			return ((r as Region).containsActor(a))
+			return r.containsActor(a);
 		}
 			
 		else
 		{
-			FlxG.log("Region does not exist.");
+			trace("Region does not exist.");
 			return false;
 		}
-	}*/
+	}
 	
 	//*-----------------------------------------------
 	//* Terrain Regions
