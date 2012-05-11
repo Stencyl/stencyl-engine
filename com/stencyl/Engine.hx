@@ -1537,7 +1537,7 @@ class Engine
 		}			
 	}
 	
-	/*public function innerUpdate()
+	public function innerUpdate()
 	{
 		if(scene == null)
 		{
@@ -1546,20 +1546,20 @@ class Engine
 		}
 		
 		//TODO: This is inefficient to recalculate each frame.
-		var aabb:AABB = world.GetScreenBounds();
+		/*var aabb:AABB = world.GetScreenBounds();
 		aabb.lowerBound.x = (Math.abs(FlxG.scroll.x) - left) / physicsScale;
 		aabb.lowerBound.y = (Math.abs(FlxG.scroll.y) - top) / physicsScale;
 		aabb.upperBound.x = aabb.lowerBound.x + ((FlxG.width + right + left) / physicsScale);
 		aabb.upperBound.y = aabb.lowerBound.y + ((FlxG.height + bottom + top) / physicsScale);
-		world.SetScreenBounds(aabb);
+		world.SetScreenBounds(aabb);*/
 		
 				
-		if(FlxG.mouse.justPressed())
+		if(Input.mousePressed)
 		{
-			Script.mpx = FlxG.mouse.screenX;
-			Script.mpy = FlxG.mouse.screenY;
+			Script.mpx = Input.mouseX;
+			Script.mpy = Input.mouseY;
 			
-			//Fire events
+			/*//Fire events
 			for (var i:int = 0; i < whenMousePressedListeners.length; i++)
 			{
 				try
@@ -1576,15 +1576,15 @@ class Engine
 				{
 					FlxG.log(e.getStackTrace());
 				}
-			}
+			}*/
 		}
 		
-		if(FlxG.mouse.justReleased())
+		if(Input.mouseReleased)
 		{
-			Script.mrx = FlxG.mouse.screenX;
-			Script.mry = FlxG.mouse.screenY;
+			Script.mrx = Input.mouseX;
+			Script.mry = Input.mouseY;
 			
-			//Fire events
+			/*//Fire events
 			for (var i:int = 0; i < whenMouseReleasedListeners.length; i++)
 			{
 				try
@@ -1601,15 +1601,15 @@ class Engine
 				{
 					FlxG.log(e.getStackTrace());
 				}
-			}
+			}*/
 		}
 		
-		if (mx != FlxG.mouse.screenX || my != FlxG.mouse.screenY)
+		if(mx != Input.mouseX || my != Input.mouseY)
 		{
-			mx = FlxG.mouse.screenX;
-			my = FlxG.mouse.screenY;
+			mx = Input.mouseX;
+			my = Input.mouseY;
 			
-			for (var i:int = 0; i < whenMouseMovedListeners.length; i++)
+			/*for (var i:int = 0; i < whenMouseMovedListeners.length; i++)
 			{
 				try
 				{
@@ -1646,24 +1646,29 @@ class Engine
 						FlxG.log(e.getStackTrace());
 					}
 				}
-			}
+			}*/
 		}				
 		
-		for(var i:int = 0; i < tasks.length; i++)
+		//Update Timed Tasks
+		var i = 0;
+		
+		while(i < tasks.length)
 		{
-			var t:TimedTask  = tasks[i];
+			var t:TimedTask = tasks[i];
 			
-			t.update(STEP_SIZE_MS);
+			t.update(10);
 			
 			if(t.done)
 			{
-				tasks.splice(i, 1);	
+				tasks.remove(t);	
 				i--;
 			}
+			
+			i++;
 		}
 		
 		//Poll Keyboard Inputs
-		for (var key:String in whenKeyPressedListeners)
+		/*for (var key:String in whenKeyPressedListeners)
 		{
 			var k:String = Game.get().controller["_" + key];
 			
@@ -1698,12 +1703,9 @@ class Engine
 					
 				}
 			}				
-		}
+		}*/
 		
-		//FlxG.log("Update RP");
-		rootPanel.update();
-		//FlxG.log("Update Snippets");
-		for (var i:int = 0; i < whenUpdatedListeners.length; i++)
+		/*for (var i:int = 0; i < whenUpdatedListeners.length; i++)
 		{
 			try
 			{
@@ -1719,24 +1721,21 @@ class Engine
 			{
 				FlxG.log(e.getStackTrace());
 			}
-		}
-		//FlxG.log("Update End");
-		
-		world.Step(STEP_SIZE, 3, 8);
-		
-		//world.Step(STEP_SIZE, ITERATIONS, ITERATIONS - 1);
-		
-		for each(var r:Region in regions)
+		}*/
+
+		//world.Step(STEP_SIZE, 3, 8);
+
+		/*for each(var r:Region in regions)
 		{
 			if(r == null) continue;
 			r.innerUpdate(true);
-		}
+		}*/
 		
-		//
-		collisionPairs = new Dictionary();
-		var disableCollisionList:Array = new Array();
+		//collisionPairs = new Dictionary();
+		//var disableCollisionList:Array = new Array();
 
-		for each(var a:Actor in actorsOnScreen)
+		//for(a in actorsOnScreen)
+		for(a in actors)
 		{		
 			if(a != null && !a.dead && !a.recycled) 
 			{
@@ -1744,74 +1743,98 @@ class Engine
 				{
 					if(a.killLeaveScreen && !a.isOnScreen())
 					{							
-						//FlxG.log("KILLED: " + a.name);
-						a.kill();
+						a.die();
 					}
 					
-					else if(a.body.IsActive())
+					else if(a.body.isActive())
 					{		
-						//Equivalent to a.update();
-						a.innerUpdate(true);							
-					}
-				}
-				else if (a.isLightweight)
-				{
-					if(a.killLeaveScreen && !a.isOnScreen())
-					{
-						a.kill();
-					}
-					
-					else (a.isAlive())
-					{		
-						//Equivalent to a.update();
-						a.innerUpdate(true);
+						a.innerUpdate(elapsedTime, true);							
 					}
 				}
 				
-				if (a.dead)
+				else if(a.isLightweight)
+				{
+					if(a.killLeaveScreen && !a.isOnScreen())
+					{
+						a.die();
+					}
+					
+					else if(a.isAlive())
+					{		
+						a.innerUpdate(elapsedTime, true);
+					}
+				}
+				
+				/*if(a.dead)
 				{
 					disableCollisionList.push(a);
-				}
+				}*/
 			}
 		}
 					
-		for each(var a2:Actor in hudActors)
+		for(a2 in hudActors)
 		{
-			if(a2 != null && (a2.isLightweight || (a2.body != null && a2.body.IsActive())) && !a2.dead && !a2.recycled)
+			if(a2 != null && (a2.isLightweight || (a2.body != null && a2.body.isActive())) && !a2.dead && !a2.recycled)
 			{
-				a2.innerUpdate(false);
+				a2.innerUpdate(elapsedTime, false);
 			}
 		}
 		
-		for each(var a:Actor in disableCollisionList)
+		/*for each(var a:Actor in disableCollisionList)
 		{
 			if (a != null)
 			{
 				a.handlesCollisions = false;
 			}
-		}
+		}*/
 		
-		for each (var tile:Tile in animatedTiles)
+		for(tile in animatedTiles)
 		{
-			tile.update();
+			tile.update(elapsedTime);
 		}
 		
 		if(leave != null && leave.isActive())
 		{
-			leave.update(this);
+			leave.update(elapsedTime);
 		}
 			
 		else if(enter != null && enter.isActive())
 		{
-			enter.update(this);
+			enter.update(elapsedTime);
 		} 
 
-		FlxG.follow(camera, 1);
-		parallax.viewport.setPosition(Math.abs(FlxG.scroll.x), Math.abs(FlxG.scroll.y));
+		//---
 		
-		//Switch to mouse.update()?
-		FlxG.updateInput();
-	}*/
+		//Camera Control
+		if(cameraX < 0)
+		{
+			cameraX = 0;
+		}
+		
+		if(cameraY < 0)
+		{
+			cameraY = 0;
+		}
+		
+		if(cameraX > sceneWidth - screenWidth)
+		{
+			cameraX = sceneWidth - screenWidth;
+		}
+		
+		if(cameraY > sceneHeight - screenHeight)
+		{
+			cameraY = sceneHeight - screenHeight;
+		}
+
+		master.x = -cameraX;
+		master.y = -cameraY;
+		
+		//FlxG.follow(camera, 1);
+		//parallax.viewport.setPosition(Math.abs(FlxG.scroll.x), Math.abs(FlxG.scroll.y));
+		
+		//Should we do it here or outside?
+		//Input.update();
+	}
 	
 	//Game Loop
 	private function onUpdate(event:Event):Void 

@@ -51,11 +51,11 @@ class Transition
 		return complete;
 	}
 	
-	public function update(engine:Engine, elapsedTime:Float)
+	public function update(elapsedTime:Float)
 	{
 	}
 	
-	public function draw(engine:Engine, g:Graphics)
+	public function draw(g:Graphics)
 	{
 	}
 	
