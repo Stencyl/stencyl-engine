@@ -197,8 +197,6 @@ class Actor extends Sprite
 	//* Init
 	//*-----------------------------------------------
 
-	//public function new(engine:Engine, inst:ActorInstance, x:Int = 0, y:Int = 0, behaviorValues:Hash<Dynamic> = null) 
-	
 	public function new
 	(
 		engine:Engine, 
@@ -218,7 +216,6 @@ class Actor extends Sprite
 		isKinematic:Bool=false,
 		canRotate:Bool=false,
 		shape:B2Shape=null, //Used only for terrain.
-		invisible:Bool=false,
 		typeID:Int = 0,
 		isLightweight:Bool=false,
 		autoScale:Bool=true
@@ -233,29 +230,9 @@ class Actor extends Sprite
 		
 		x = 0;
 		y = 0;
+		
 		realX = 0;
 		realY = 0;
-	
-		//---
-		
-		/*var actorType:ActorType = null;	
-		
-		if(inst == null)
-		{
-			this.x = x;
-			this.y = y;
-		}
-		
-		else
-		{
-			this.x = inst.x;
-			this.y = inst.y;
-			
-			actorType = inst.actorType;
-		}
-		
-		realX = this.x;
-		realY = this.y;*/
 
 		activeAngleTweens = 0;
 		activePositionTweens = 0;
@@ -298,8 +275,9 @@ class Actor extends Sprite
 		
 		//---
 		
-		recycled = false;
-		paused = false;
+		this.recycled = false;
+		this.paused = false;
+		this.destroyed = false;
 		
 		this.name = "Unknown";
 		this.ID = ID;
@@ -307,14 +285,7 @@ class Actor extends Sprite
 		this.layerID = layerID;
 		this.typeID = typeID;
 		this.engine = engine;
-		
-		destroyed = false;
-		
-		/*if(!invisible)
-		{
-			createGraphic(width, height, 0x00ffffff);
-		}*/
-			
+
 		//---
 		
 		behaviors = new BehaviorManager();
@@ -336,6 +307,8 @@ class Actor extends Sprite
 			
 			if(s != null)
 			{
+				this.type = cast(Data.get().resources.get(typeID), ActorType);
+				
 				var defaultAnim:String = "";
 				
 				for(a in s.animations)
@@ -501,7 +474,7 @@ class Actor extends Sprite
 		behaviors.destroy();
 	}
 	
-	public function resetListeners()
+	private function resetListeners()
 	{
 		allListeners = new HashMap<Dynamic, Dynamic>();
 		allListenerReferences = new Array<Dynamic>();
@@ -750,19 +723,30 @@ class Actor extends Sprite
 	}
 	
 	//*-----------------------------------------------
-	//* Events
+	//* Events - Update
 	//*-----------------------------------------------
-		
-	public function update(elapsedTime:Float)
+	
+	public function innerUpdate(elapsedTime:Float, hudCheck:Bool)
 	{
-		if(Std.is(currAnimation, AbstractAnimation))
-   		{
-   			cast(currAnimation, AbstractAnimation).update(elapsedTime);
-   		}
-   		
-		this.x += elapsedTime * xSpeed;
-		this.y += elapsedTime * ySpeed;
-		this.rotation += elapsedTime * rSpeed;
+		//HUD / always simulate actors are updated separately to prevent double updates.
+		if(paused || isCamera || dying || dead || destroyed || hudCheck && (isHUD || alwaysSimulate))
+		{
+			return;
+		}
+		
+		if(mouseOverListeners.length > 0)
+		{
+			checkMouseState();
+		}
+				
+		/*if(collisionListeners.length > 0 || 
+		  engine.collisionListeners[type] != null || 
+		  engine.collisionListeners[getGroup()] != null) 
+		{
+			handleCollisions();		
+		}*/
+
+		internalUpdate(elapsedTime, true);
 		
 		var r = 0;
 		
@@ -785,12 +769,64 @@ class Actor extends Sprite
 			}
 			
 			r++;
-		}			
+		}				
+
+		/*if(positionListeners.length > 0 || 
+		   engine.typeGroupPositionListeners[type] != null || 
+		   engine.typeGroupPositionListeners[getGroup()] != null)
+		{
+			checkScreenState();
+		}*/
+		
+		updateAnimProperties(elapsedTime, true);
+	}
+	
+	//doAll prevents super.update from being called, which can often muck with
+	//animations happening if they are updated before play() is called.
+	public function internalUpdate(elapsedTime:Float, doAll:Bool)
+	{
+		if(paused)
+		{
+			return;
+		}
+		
+		if(!isLightweight)
+		{
+			var p = body.getPosition();
+								
+			x = Math.round(p.x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
+			y = Math.round(p.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);
+		
+			rotation = body.getAngle() * Utils.DEG;
+		}
+		
+		else
+		{
+			x += xSpeed / Engine.physicsScale;
+			y += ySpeed / Engine.physicsScale;
 			
-		//behaviors.update(elapsedTime);
+			//Have to divide twice it seems
+			rotation += rSpeed / Engine.physicsScale / Engine.physicsScale;
+		}
+		
+		if(doAll)
+		{
+			if(Std.is(currAnimation, AbstractAnimation))
+	   		{
+	   			cast(currAnimation, AbstractAnimation).update(elapsedTime);
+	   		}
+		}
+		
+		updateTweenProperties();
+	}
+		
+		
+	public function update(elapsedTime:Float)
+	{
+		innerUpdate(elapsedTime, true);
 	}	
 	
-	public function updateAnimProperties(doAll:Bool)
+	public function updateAnimProperties(elapsedTime:Float, doAll:Bool)
 	{
 		if(currAnimation != null)
 		{
@@ -810,8 +846,10 @@ class Actor extends Sprite
 			
 			if(doAll)
 			{
-				//TODO: 
-				//currAnimation.updateAnimation();
+				if(Std.is(currAnimation, AbstractAnimation))
+		   		{
+		   			cast(currAnimation, AbstractAnimation).update(elapsedTime);
+		   		}
 			}
 		}
 	}
@@ -880,6 +918,10 @@ class Actor extends Sprite
 		}
 	}
 		
+	//*-----------------------------------------------
+	//* Events - Other
+	//*-----------------------------------------------
+	
 	public function scaleBody(width:Float, height:Float)
 	{
 		/*var fixtureList:Array = new Array;
@@ -1011,10 +1053,10 @@ class Actor extends Sprite
 	//* Collision
 	//*-----------------------------------------------
 	
-	/*
-	private function handleCollisions():void
+	
+	private function handleCollisions()
 	{			
-		for each(var p:b2Contact in contacts)
+		/*for each(var p:b2Contact in contacts)
 		{
 			var a1:Actor = p.GetFixtureA().GetUserData() as Actor;
 			var a2:Actor = p.GetFixtureB().GetUserData() as Actor;
@@ -1099,10 +1141,10 @@ class Actor extends Sprite
 			handleCollision(collision);
 		}
 		
-		contacts = new Dictionary();
+		contacts = new Dictionary();*/
 	}
 	
-	public function collidedFromBottom(c:b2Contact, normal:V2):Boolean
+	/*public function collidedFromBottom(c:b2Contact, normal:V2):Boolean
 	{
 		var thisActor:Actor = this;
 		var body:b2Body = thisActor.getBody();
@@ -1521,7 +1563,7 @@ class Actor extends Sprite
 		if(isLightweight)
 		{
 			this.x = x + width / 2 + currOffset.x;
-			updateAnimProperties(false);
+			updateAnimProperties(0, false);
 		}
 		
 		else
@@ -1546,7 +1588,7 @@ class Actor extends Sprite
 			}
 			
 			this.x = Math.round(dummy.x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
-			updateAnimProperties(false);
+			updateAnimProperties(0, false);
 		}
 	}
 	
@@ -1555,7 +1597,7 @@ class Actor extends Sprite
 		if(isLightweight)
 		{
 			this.y = y + height / 2 + currOffset.y;
-			updateAnimProperties(false);
+			updateAnimProperties(0, false);
 		}
 		
 		else
@@ -1580,7 +1622,7 @@ class Actor extends Sprite
 			}
 			
 			this.y = Math.round(dummy.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);
-			updateAnimProperties(false);
+			updateAnimProperties(0, false);
 		}
 	}
 	

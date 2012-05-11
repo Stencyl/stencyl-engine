@@ -1565,11 +1565,9 @@ class Engine
 	
 	public function createActor(ai:ActorInstance, offset:Bool = false):Actor
 	{
-		//trace(ai.actorType);
-		var a:Actor = new Actor(this, ai);
-		
-		//TODO: Mount grpahic and add
-		/*var a:Actor = new Actor
+		var s:com.stencyl.models.actor.Sprite = cast(Data.get().resources.get(ai.actorType.spriteID), com.stencyl.models.actor.Sprite);
+	
+		var a:Actor = new Actor
 		(
 			this, 
 			ai.elementID,
@@ -1582,19 +1580,18 @@ class Engine
 			s,
 			ai.behaviorValues,
 			ai.actorType,
-			ai.actorType.bodyDef,
+			null, //TODO: ai.actorType.bodyDef,
 			false,
 			false,
 			false,
 			false,
 			null,
-			false,
 			ai.actorType.ID,
-			ai.actorType.isLightweight,
+			false, //TODO: ai.actorType.isLightweight,
 			ai.actorType.autoScale
-		);*/
+		);
 
-		/*if(ai.angle != 0)
+		if(ai.angle != 0)
 		{
 			a.setAngle(ai.angle + 180, false);
 		}	
@@ -1602,13 +1599,16 @@ class Engine
 		if(ai.scaleX != 1 || ai.scaleY != 1)
 		{
 			a.growTo(ai.scaleX, ai.scaleY, 0);
-		}*/
+		}
 		
-		/*moveActorToLayer(a, ai.layerID);
+		a.name = ai.actorType.name;
+		
+		moveActorToLayer(a, ai.layerID);
 		
 		//---
 		
-		var group:FlxGroup = groups[ai.groupID] as FlxGroup;
+		//TODO
+		/*var group = groups.get(ai.groupID);
 		
 		if(group != null)
 		{
@@ -1618,21 +1618,42 @@ class Engine
 		//---
 
 		//Use the next available ID
-		/*if(ai.elementID == Int.MAX_VALUE)
+		if(ai.elementID == Utils.NUMBER_MAX_VALUE)
 		{
 			nextID++;
 			a.ID = nextID;
-			allActors[a.ID] = a;
+			allActors.set(a.ID, a);
 		}
 		
 		else
 		{
-			allActors[a.ID] = a;
-			nextID = Math.max(a.ID, nextID);
-		}*/
+			allActors.set(a.ID, a);
+			nextID = Std.int(Math.max(a.ID, nextID));
+		}
 
-		//a.internalUpdate(false);
+		a.internalUpdate(0, false);
 		
+		//---
+			
+		//Add to type cache
+		if(ai.actorType != null)
+		{
+			var cache = actorsOfType.get(ai.actorType.ID);
+			
+			if(cache == null)
+			{
+				cache = new Array<Actor>();
+				actorsOfType.set(ai.actorType.ID, cache);
+			}
+			
+			if(cache != null)
+			{
+				cache.push(a);
+			}
+		}
+		
+		//---
+			
 		master.addChild(a);
 		
 		return a;
