@@ -7,6 +7,7 @@ import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.TileLayer;
 import com.stencyl.models.background.ColorBackground;
 import com.stencyl.models.scene.ActorInstance;
+import com.stencyl.models.scene.RegionDef;
 import com.stencyl.behavior.BehaviorInstance;
 
 import haxe.xml.Fast;
@@ -40,7 +41,7 @@ class Scene
 	//Box2D
 	//public var wireframes:Array;
 	//public var joints:Array;
-	//public var regions:Array;
+	public var regions:IntHash<RegionDef>;
 	//public var terrainRegions:Array;
 	
 	public var animatedTiles:Array<Tile>;
@@ -91,7 +92,7 @@ class Scene
 		}
 		
 		//joints = readJoints(xml.joints);
-		//regions = readRegions(xml.regions);
+		regions = readRegions(xml.node.regions.elements);
 		//terrainRegions = readTerrainRegions(xml.terrainRegions);
 		
 		//wireframes = readWireframes(xml.terrain);
@@ -100,21 +101,20 @@ class Scene
 		//terrain = readLayers(xml.layers, rawLayers);
 	}
 	
-	/*public function readRegions(list:Iterator<Fast>):Array
+	public function readRegions(list:Iterator<Fast>):IntHash<RegionDef>
 	{
-		var map:Array = new Array();
+		var map = new IntHash<RegionDef>();
 		
 		for(e in list)
 		{
-			var r:RegionDef = readRegion(e);
-			
-			map[r.ID] = r;
+			var r:RegionDef = null; //readRegion(e);
+			map.set(r.ID, r);
 		}
 		
 		return map;
 	}
 	
-	public function readRegion(e:XML):RegionDef
+	/*public function readRegion(e:XML):RegionDef
 	{
 		var type:String = e.att.type;
 		var elementID:Number = e.@id;

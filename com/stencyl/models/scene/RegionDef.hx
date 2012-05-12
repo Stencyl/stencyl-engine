@@ -7,13 +7,13 @@ class RegionDef
 	public var x:Int;
 	public var y:Int;
 	public var shape:B2Shape;
-	public var shapes:Array<Dynamic>;
+	public var shapes:Array<B2Shape>;
 	
-	public var ID:Number;
+	public var ID:Int;
 	public var name:String;
-	public var shapeID:Number;
+	public var shapeID:Int;
 	
-	public function RegionDef(shapes:Array<Dynamic>;, ID:Int, name:String, x:Int, y:Int, shapeID:Int=0)
+	public function RegionDef(shapes:Array<B2Shape>, ID:Int, name:String, x:Int, y:Int, shapeID:Int=0)
 	{
 		this.x = x;
 		this.y = y;
