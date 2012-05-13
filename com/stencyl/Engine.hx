@@ -240,7 +240,7 @@ class Engine
 	//* Timing
 	//*-----------------------------------------------
 	
-	public static var STEP_SIZE:Float = 0.01;
+	public static var STEP_SIZE:Int = 10;
 	public static var MS_PER_SEC:Int = 1000;
 	
 	public static var elapsedTime:Float = 0;
@@ -323,7 +323,7 @@ class Engine
 		cameraY = 0;
 
 		acc = 0;
-		lastTime = Lib.getTimer() / MS_PER_SEC;
+		lastTime = Lib.getTimer();
 
 		//Constants
 		Engine.sceneWidth = 640; //Overriden once scene loads
@@ -1762,7 +1762,7 @@ class Engine
 		{
 			update(10);
 			acc -= 10;
-			
+
 			Input.update();
 		}
 		
