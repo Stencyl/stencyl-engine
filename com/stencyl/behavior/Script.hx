@@ -5,6 +5,7 @@ import nme.net.SharedObject;
 import nme.net.SharedObjectFlushStatus;
 #end
 
+import nme.ui.Mouse;
 import nme.events.Event;
 import nme.net.URLLoader;
 import nme.net.URLRequest;
@@ -621,7 +622,127 @@ class Script
 	//* Input
 	//*-----------------------------------------------
 	
-	//ALL DONE IN THE INPUT CLASS
+	//Programmers: Use the Input class directly. It's much nicer.
+	//We're keeping this API around for compatibility for now.
+	
+	public function isCtrlDown():Bool
+	{
+		return Input.check(Key.SHIFT);
+	}
+	
+	public function isShiftDown():Bool
+	{
+		return Input.check(Key.CONTROL);
+	}
+	
+	/*public function simulateKeyPress(abstractKey:String)
+	{
+		var k:String = Game.get().controller["_" + abstractKey];
+		
+		if(k == null)
+		{
+			return;
+		}
+		
+		FlxG.keys.simulatePress(k);
+	}
+	
+	public function simulateKeyRelease(abstractKey:String)
+	{
+		var k:String = Game.get().controller["_" + abstractKey];
+		
+		if(k == null)
+		{
+			return;
+		}
+		
+		FlxG.keys.simulateRelease(k);
+	}*/
+
+	public function isKeyDown(abstractKey:String):Bool
+	{
+		return Input.check(abstractKey);
+	}
+
+	public function isKeyPressed(abstractKey:String):Bool
+	{
+		return Input.pressed(abstractKey);
+	}
+	
+	public function isKeyReleased(abstractKey:String):Bool
+	{
+		return Input.released(abstractKey);
+	}
+	
+	public function isMouseDown():Bool
+	{
+		return Input.mouseDown;
+	}
+	
+	public function isMousePressed():Bool
+	{
+		return Input.mousePressed;
+	}
+
+	public function isMouseReleased():Bool
+	{
+		return Input.mouseReleased;
+	}
+	
+	public function getMouseX():Float
+	{
+		return Engine.stage.mouseX;
+	}
+
+	public function getMouseY():Float
+	{
+		return Engine.stage.mouseY;
+	}
+	
+	public function getMouseWorldX():Float
+	{
+		return Engine.stage.mouseX + Engine.cameraY;
+	}
+	
+	public function getMouseWorldY():Float
+	{
+		return Engine.stage.mouseY + Engine.cameraX;
+	}
+	
+	public function getMousePressedX():Float
+	{
+		return mpx;
+	}
+	
+	public function getMousePressedY():Float
+	{
+		return mpy;
+	}
+
+	public function getMouseReleasedX():Float
+	{
+		return mrx;
+	}
+	
+	public function getMouseReleasedY():Float
+	{
+		return mry;
+	}
+	
+	/*public function setCursor(graphic:Class=null, xOffset:int=0, yOffset:int=0);
+	{
+		FlxG.mouse.show(graphic, xOffset, yOffset);
+	}*/
+
+	public function enableCursor()
+	{
+		Mouse.show();
+	}
+
+	public function disableCursor()
+	{
+		Mouse.hide();
+	}
 	
 	//*-----------------------------------------------
 	//* Actor Creation
@@ -1165,6 +1286,7 @@ class Script
 	*/
 	public function postToURL(URL:String, data:String = null, fn:Event->Void = null)
 	{
+		#if !js
 		if(fn == null)
 		{
 			fn = defaultURLHandler;
@@ -1190,6 +1312,7 @@ class Script
 		{
 			trace("Cannot open URL.");
 		}
+		#end
 	}
 	
 	//*-----------------------------------------------
