@@ -773,29 +773,7 @@ class Actor extends Sprite
 		}*/
 
 		internalUpdate(elapsedTime, true);
-		
-		var r = 0;
-		
-		while(r < whenUpdatedListeners.length)
-		{
-			try
-			{
-				var f:Float->Array<Dynamic>->Void = whenUpdatedListeners[r];			
-				f(elapsedTime, whenUpdatedListeners);
-				
-				if(Utils.indexOf(whenUpdatedListeners, f) == -1)
-				{
-					r--;
-				}
-			}
-			
-			catch(e:String)
-			{
-				trace(e);
-			}
-			
-			r++;
-		}				
+		Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
 
 		/*if(positionListeners.length > 0 || 
 		   engine.typeGroupPositionListeners[type] != null || 
@@ -803,8 +781,6 @@ class Actor extends Sprite
 		{
 			checkScreenState();
 		}*/
-		
-		updateAnimProperties(elapsedTime, true);
 	}
 	
 	//doAll prevents super.update from being called, which can often muck with
@@ -846,17 +822,6 @@ class Actor extends Sprite
 		
 		updateTweenProperties();
 	}	
-	
-	public function updateAnimProperties(elapsedTime:Float, doAll:Bool)
-	{
-		if(doAll && currAnimation != null)
-		{
-			if(Std.is(currAnimation, AbstractAnimation))
-		   	{
-		   		cast(currAnimation, AbstractAnimation).update(elapsedTime);
-		   	}
-		}
-	}
 	
 	function updateTweenProperties()
 	{
@@ -1567,7 +1532,6 @@ class Actor extends Sprite
 		if(isLightweight)
 		{
 			this.x = x + width / 2 + currOffset.x;
-			updateAnimProperties(0, false);
 		}
 		
 		else
@@ -1592,7 +1556,6 @@ class Actor extends Sprite
 			}
 			
 			this.x = Math.round(dummy.x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
-			updateAnimProperties(0, false);
 		}
 	}
 	
@@ -1601,7 +1564,6 @@ class Actor extends Sprite
 		if(isLightweight)
 		{
 			this.y = y + height / 2 + currOffset.y;
-			updateAnimProperties(0, false);
 		}
 		
 		else
@@ -1626,7 +1588,6 @@ class Actor extends Sprite
 			}
 			
 			this.y = Math.round(dummy.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);
-			updateAnimProperties(0, false);
 		}
 	}
 	

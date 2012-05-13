@@ -1752,19 +1752,19 @@ class Engine
 	//Game Loop
 	private function onUpdate(event:Event):Void 
 	{
-		var currTime:Float = Lib.getTimer() / MS_PER_SEC;
+		var currTime:Float = Lib.getTimer();
 		var elapsedTime:Float = (currTime - lastTime);
 		acc += elapsedTime;
 		
 		Engine.elapsedTime = elapsedTime;
 		
-		while(acc > STEP_SIZE)
+		while(acc > 10)
 		{
-			update(STEP_SIZE * MS_PER_SEC);
-			acc -= STEP_SIZE;
+			update(10);
+			acc -= 10;
 			
 			Input.update();
-		}	
+		}
 		
 		lastTime = currTime;
 			
@@ -2626,7 +2626,7 @@ class Engine
 	//*-----------------------------------------------
 	
 	//0 args
-	public static function invokeListeners(listeners:Array<Dynamic>)
+	public static inline function invokeListeners(listeners:Array<Dynamic>)
 	{
 		var r = 0;
 		
@@ -2653,7 +2653,7 @@ class Engine
 	}
 	
 	//1 args
-	public static function invokeListeners2(listeners:Array<Dynamic>, value:Dynamic)
+	public static inline function invokeListeners2(listeners:Array<Dynamic>, value:Dynamic)
 	{
 		var r = 0;
 		
@@ -2680,7 +2680,7 @@ class Engine
 	}
 	
 	//2 args
-	public static function invokeListeners3(listeners:Array<Dynamic>, value:Dynamic, value2:Dynamic)
+	public static inline function invokeListeners3(listeners:Array<Dynamic>, value:Dynamic, value2:Dynamic)
 	{
 		var r = 0;
 		
