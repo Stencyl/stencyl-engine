@@ -39,7 +39,10 @@ import com.stencyl.models.scene.DeferredActor;
 import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.Layer;
 import com.stencyl.models.scene.TileLayer;
+import com.stencyl.models.scene.ScrollingBitmap;
 
+import com.stencyl.models.background.ImageBackground;
+import com.stencyl.models.background.ScrollingBackground;
 
 import scripts.MyScripts;
 
@@ -68,7 +71,9 @@ class Engine
 	//* Constants
 	//*-----------------------------------------------
 		
-	//None?
+	public static var BACKGROUND:String = "b";
+	public static var REGULAR_LAYER:String = "l";
+	public static var DOODAD:String = "";
 	
 	
 	//*-----------------------------------------------
@@ -85,6 +90,9 @@ class Engine
 	
 	public static var sceneWidth:Int;
 	public static var sceneHeight:Int;
+	
+	public static var screenWidthHalf:Int;
+	public static var screenHeightHalf:Int;
 	
 	public static var paused:Bool = false;
 	public static var started:Bool = false;
@@ -128,6 +136,15 @@ class Engine
 	
 	public var enterTimer:Int;
 	public var leaveTimer:Int;
+	
+	
+	//*-----------------------------------------------
+	//* Shaking
+	//*-----------------------------------------------
+	
+	public var shakeTimer:Int;
+	public var shakeIntensity:Float;
+	public var isShaking:Bool;
 	
 		
 	//*-----------------------------------------------
@@ -293,6 +310,12 @@ class Engine
 		
 		//---
 		
+		shakeTimer = 0;
+		shakeIntensity = 0.01;
+		isShaking = false;
+	
+		//---
+		
 		leave = null;
 		enter = null;
 		
@@ -303,10 +326,12 @@ class Engine
 		lastTime = Lib.getTimer() / MS_PER_SEC;
 
 		//Constants
-		Engine.sceneWidth = 640;
-		Engine.sceneHeight = 480;
+		Engine.sceneWidth = 640; //Overriden once scene loads
+		Engine.sceneHeight = 480; //Overriden once scene loads
 		Engine.screenWidth = Std.int(stage.stageWidth);
 		Engine.screenHeight = Std.int(stage.stageHeight);
+		Engine.screenWidthHalf = Std.int(stage.stageWidth/2);
+		Engine.screenHeightHalf = Std.int(stage.stageHeight/2);
 			
 		//Display List
 		master = new Sprite();
@@ -428,7 +453,43 @@ class Engine
 		scene.colorBackground.draw(bg.graphics, 0, 0, screenWidth, screenHeight);
 		master.addChild(bg);
 		
-		//add in the backgrounds as sprites, not as the funny stuff from before
+		for(backgroundID in scene.bgs)
+		{
+			var background = cast(Data.get().resources.get(backgroundID), ImageBackground);
+			
+			if(background == null || background.img == null)
+			{
+				trace("Warning: Could not load a background. Ignoring...");
+	            continue;
+			}
+			
+			if(Std.is(background, ScrollingBackground))
+			{
+				var scroller = cast(background, ScrollingBackground);
+				var img = new ScrollingBitmap(background.img, scroller.xVelocity, scroller.yVelocity);
+				img.name = BACKGROUND;
+				master.addChild(img);
+			}
+			
+			else
+			{
+				if(background.repeats)
+				{
+					var img = new Bitmap();
+					background.drawRepeated(img, screenWidth, screenHeight);
+					
+					img.name = BACKGROUND;
+					master.addChild(img);
+				}
+				
+				else
+				{
+					var img = new Bitmap(background.img);
+					img.name = BACKGROUND;
+					master.addChild(img);
+				}
+			}
+		}
 	}
 	
 	public static function initBehaviors
@@ -571,12 +632,12 @@ class Engine
 	
 	private function loadCamera()
 	{
-		/*camera = new Actor(this, int.MAX_VALUE, Game.DOODAD_ID, 0, 0, getTopLayer(), 2, 2, null, new Array(), null, null, true, false, true);
-		camera.name = name;
-		camera.body.SetIgnoreGravity(true);
+		camera = new Actor(this, -1, GameModel.DOODAD_ID, 0, 0, getTopLayer(), 2, 2, null, null, null, null, true, false, true, false, null, 0, true, false);
+		camera.name = "Camera";
 		camera.isCamera = true;
 		
-		FlxG.followBounds(0, 0, scene.sceneWidth, scene.sceneHeight);*/
+		//TODO?
+		//FlxG.followBounds(0, 0, scene.sceneWidth, scene.sceneHeight);
 	}
 	
 	private function loadRegions()
@@ -843,10 +904,12 @@ class Engine
 
 			if(terrain != null)
 			{
+				terrain.name = REGULAR_LAYER;
 				master.addChild(terrain);
 				this.layers.set(layerID, terrain);
 			}
 				
+			list.name = REGULAR_LAYER;
 			master.addChild(list);
 			
 			actorsPerLayer.set(layerID, list);
@@ -862,6 +925,7 @@ class Engine
 		if(defaultGroup == null)
 		{
 			defaultGroup = new Sprite();
+			defaultGroup.name = REGULAR_LAYER;
 			master.addChild(defaultGroup);
 		}
 	}
@@ -1336,51 +1400,18 @@ class Engine
 		var a:Actor = createActor(ai, true);
 		a.initScripts();
 		
-		/*if (whenTypeGroupCreatedListeners[type] != null)
+		var f1 = whenTypeGroupCreatedListeners.get(type);
+		var f2 = whenTypeGroupCreatedListeners.get(a.getGroup());
+		
+		if(f1 != null)
 		{
-			var listeners:Array = whenTypeGroupCreatedListeners[type] as Array;
-			
-			for (var r:int = 0; r < listeners.length; r++)
-			{
-				try
-				{
-					var f:Function = listeners[r] as Function;
-					f(listeners, a);
-					
-					if (listeners.indexOf(f) == -1)
-					{
-						r--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
+			invokeListeners2(f1, a);
 		}
 		
-		if (whenTypeGroupCreatedListeners[a.getGroup()] != null)
+		if(f2 != null)
 		{
-			var listeners:Array = whenTypeGroupCreatedListeners[a.getGroup()] as Array;
-			
-			for (var r:int = 0; r < listeners.length; r++)
-			{
-				try
-				{
-					var f:Function = listeners[r] as Function;
-					f(listeners, a);
-					
-					if (listeners.indexOf(f) == -1)
-					{
-						r--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
-		}*/
+			invokeListeners2(f2, a);
+		}
 		
 		return a;
 	}
@@ -1472,50 +1503,14 @@ class Engine
 		{
 			Script.mpx = Input.mouseX;
 			Script.mpy = Input.mouseY;
-			
-			/*//Fire events
-			for (var i:int = 0; i < whenMousePressedListeners.length; i++)
-			{
-				try
-				{
-					var f:Function = whenMousePressedListeners[i] as Function;
-					f(whenMousePressedListeners);
-					
-					if (whenMousePressedListeners.indexOf(f) == -1)
-					{
-						i--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}*/
+			invokeListeners(whenMousePressedListeners);
 		}
 		
 		if(Input.mouseReleased)
 		{
 			Script.mrx = Input.mouseX;
 			Script.mry = Input.mouseY;
-			
-			/*//Fire events
-			for (var i:int = 0; i < whenMouseReleasedListeners.length; i++)
-			{
-				try
-				{
-					var f:Function = whenMouseReleasedListeners[i] as Function;
-					f(whenMouseReleasedListeners);
-					
-					if (whenMouseReleasedListeners.indexOf(f) == -1)
-					{
-						i--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}*/
+			invokeListeners(whenMouseReleasedListeners);
 		}
 		
 		if(mx != Input.mouseX || my != Input.mouseY)
@@ -1523,44 +1518,12 @@ class Engine
 			mx = Input.mouseX;
 			my = Input.mouseY;
 			
-			/*for (var i:int = 0; i < whenMouseMovedListeners.length; i++)
-			{
-				try
-				{
-					var f:Function = whenMouseMovedListeners[i] as Function;
-					f(whenMouseMovedListeners);
-					
-					if (whenMouseMovedListeners.indexOf(f) == -1)
-					{
-						i--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
+			invokeListeners(whenMouseMovedListeners);
 			
-			if (FlxG.mouse.pressed())
+			if(Input.mouseDown)
 			{
-				for (var i:int = 0; i < whenMouseDraggedListeners.length; i++)
-				{
-					try
-					{
-						var f:Function = whenMouseDraggedListeners[i] as Function;
-						f(whenMouseDraggedListeners);
-						
-						if (whenMouseDraggedListeners.indexOf(f) == -1)
-						{
-							i--;
-						}
-					}
-					catch (e:Error)
-					{
-						FlxG.log(e.getStackTrace());
-					}
-				}
-			}*/
+				invokeListeners(whenMouseDraggedListeners);
+			}
 		}				
 		
 		//Update Timed Tasks
@@ -1619,23 +1582,8 @@ class Engine
 			}				
 		}*/
 		
-		/*for (var i:int = 0; i < whenUpdatedListeners.length; i++)
-		{
-			try
-			{
-				var f:Function = whenUpdatedListeners[i] as Function;
-				f(whenUpdatedListeners);
-				
-				if (whenUpdatedListeners.indexOf(f) == -1)
-				{
-					i--;
-				}
-			}
-			catch (e:Error)
-			{
-				FlxG.log(e.getStackTrace());
-			}
-		}*/
+		invokeListeners2(whenUpdatedListeners, elapsedTime);
+		
 
 		//world.Step(STEP_SIZE, 3, 8);
 
@@ -1721,33 +1669,83 @@ class Engine
 		//---
 		
 		//Camera Control
-		if(cameraX < 0)
+		cameraX = -Math.abs(camera.x) + screenWidthHalf;
+		cameraY = -Math.abs(camera.y) + screenHeightHalf;
+		
+		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
+		var maxCamX = -Engine.sceneWidth + screenWidthHalf;
+		var maxCamY = -Engine.sceneHeight + screenHeightHalf;
+		
+		if(cameraX < maxCamX)
 		{
-			cameraX = 0;
+			cameraX = maxCamX;
+		} 
+		
+		if(cameraY < maxCamY)
+		{
+			cameraY = maxCamY;
 		}
 		
-		if(cameraY < 0)
+		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
+		cameraX = Math.min(screenWidthHalf, cameraX);
+		cameraY = Math.min(screenHeightHalf, cameraY);
+		
+		for(i in 0...master.numChildren)
 		{
-			cameraY = 0;
+			var child = master.getChildAt(i);
+			
+			//Background
+			if(child.name == BACKGROUND)
+			{
+				if(Std.is(child, ScrollingBitmap))
+				{
+					var bg = cast(child, ScrollingBitmap);
+					bg.update(elapsedTime);
+				}
+				
+				else
+				{
+					var endX = -Math.abs(child.width - Engine.screenWidth);
+					var endY = -Math.abs(child.height - Engine.screenHeight);
+					
+					child.x = endX * -(cameraX - screenWidthHalf) / Engine.sceneWidth;
+					child.y = endY * -(cameraY - screenHeightHalf) / Engine.sceneHeight;
+				}
+			}
+			
+			//Regular Layer
+			else if(child.name == REGULAR_LAYER)
+			{
+				child.x = cameraX;
+				child.y = cameraY;
+			}
+			
+			//Something that doesn't scroll
+			else
+			{
+				continue;
+			}
 		}
 		
-		if(cameraX > sceneWidth - screenWidth)
+		//Shaking
+		if(isShaking)
 		{
-			cameraX = sceneWidth - screenWidth;
+			shakeTimer -= 10;
+        
+	        if(shakeTimer <= 0)
+	        {
+	        	stopShakingScreen();
+	            return;
+	        }
+	        
+	        var randX = (-shakeIntensity * Engine.screenWidth + Math.random() * (2 * shakeIntensity * Engine.screenWidth));
+	        var randY = (-shakeIntensity * Engine.screenHeight + Math.random() * (2 * shakeIntensity * Engine.screenHeight));
+	        
+	        master.x = randX;
+	        master.y = randY;
 		}
 		
-		if(cameraY > sceneHeight - screenHeight)
-		{
-			cameraY = sceneHeight - screenHeight;
-		}
-
-		master.x = -cameraX;
-		master.y = -cameraY;
-		
-		//FlxG.follow(camera, 1);
-		//parallax.viewport.setPosition(Math.abs(FlxG.scroll.x), Math.abs(FlxG.scroll.y));
-		
-		//Should we do it here or outside?
+		//TODO: Should we do it here or outside?
 		//Input.update();
 	}
 	
@@ -1795,6 +1793,8 @@ class Engine
 	//* Events Finished
 	//*-----------------------------------------------
 	
+	//???
+	
 	//*-----------------------------------------------
 	//* Timed Tasks
 	//*-----------------------------------------------
@@ -1810,7 +1810,27 @@ class Engine
 	}	
 	
 	//*-----------------------------------------------
-	//* Pausing
+	//* Effects
+	//*-----------------------------------------------
+	
+	public function shakeScreen(intensity:Float, duration:Float)
+	{
+		shakeTimer = Std.int(1000 * duration);
+	    isShaking = true;
+	    shakeIntensity = intensity;
+	}
+	
+	public function stopShakingScreen()
+	{
+		shakeTimer = 0;
+	    isShaking = false;
+	    
+	    master.x = 0;
+	    master.y = 0;
+	}
+	
+	//*-----------------------------------------------
+	//* Camera
 	//*-----------------------------------------------
 	
 	public function cameraFollow(actor:Actor, lockX:Bool=true, lockY:Bool=true)
@@ -1847,28 +1867,7 @@ class Engine
 			}									
 		}
 		
-		var r = 0;
-		
-		while(r < whenPausedListeners.length)
-		{
-			try
-			{
-				var f:Bool->Array<Dynamic>->Void = whenPausedListeners[r];			
-				f(true, whenPausedListeners);
-				
-				if(Utils.indexOf(whenPausedListeners, f) == -1)
-				{
-					r--;
-				}
-			}
-			
-			catch(e:String)
-			{
-				trace(e);
-			}
-			
-			r++;
-		}
+		invokeListeners2(whenPausedListeners, true);
 	}
 	
 	public function unpause()
@@ -1883,28 +1882,7 @@ class Engine
 			}								
 		}
 		
-		var r = 0;
-		
-		while(r < whenPausedListeners.length)
-		{
-			try
-			{
-				var f:Bool->Array<Dynamic>->Void = whenPausedListeners[r];			
-				f(false, whenPausedListeners);
-				
-				if(Utils.indexOf(whenPausedListeners, f) == -1)
-				{
-					r--;
-				}
-			}
-			
-			catch(e:String)
-			{
-				trace(e);
-			}
-			
-			r++;
-		}
+		invokeListeners2(whenPausedListeners, false);
 	}
 	
 	public function isPaused():Bool
@@ -2136,7 +2114,7 @@ class Engine
 	//* Groups
 	//*-----------------------------------------------
 	
-	public function getGroup(ID:Int, a:Actor = null):Dynamic
+	public function getGroup(ID:Int, a:Actor = null):DisplayObjectContainer
 	{
 		if(ID == -1000 && a != null)
 		{
@@ -2460,7 +2438,6 @@ class Engine
 	public function removeRegion(ID:Int)
 	{
 		var r = getRegion(ID);	
-		//regions.splice(r.ID, 1);
 		regions.remove(r.ID);
 		r.destroy();
 	}
@@ -2643,4 +2620,89 @@ class Engine
 		
 		return allActors;
 	}*/
+	
+	//*-----------------------------------------------
+	//* Utils
+	//*-----------------------------------------------
+	
+	//0 args
+	public static function invokeListeners(listeners:Array<Dynamic>)
+	{
+		var r = 0;
+		
+		while(r < listeners.length)
+		{
+			try
+			{
+				var f:Array<Dynamic>->Void = listeners[r];			
+				f(listeners);
+				
+				if(Utils.indexOf(listeners, f) == -1)
+				{
+					r--;
+				}
+			}
+			
+			catch(e:String)
+			{
+				trace(e);
+			}	
+			
+			r++;			
+		}
+	}
+	
+	//1 args
+	public static function invokeListeners2(listeners:Array<Dynamic>, value:Dynamic)
+	{
+		var r = 0;
+		
+		while(r < listeners.length)
+		{
+			try
+			{
+				var f:Dynamic->Array<Dynamic>->Void = listeners[r];			
+				f(value, listeners);
+				
+				if(Utils.indexOf(listeners, f) == -1)
+				{
+					r--;
+				}
+			}
+			
+			catch(e:String)
+			{
+				trace(e);
+			}
+			
+			r++;
+		}
+	}
+	
+	//2 args
+	public static function invokeListeners3(listeners:Array<Dynamic>, value:Dynamic, value2:Dynamic)
+	{
+		var r = 0;
+		
+		while(r < listeners.length)
+		{
+			try
+			{
+				var f:Dynamic->Dynamic->Array<Dynamic>->Void = listeners[r];			
+				f(value, value2, listeners);
+				
+				if(Utils.indexOf(listeners, f) == -1)
+				{
+					r--;
+				}
+			}
+			
+			catch(e:String)
+			{
+				trace(e);
+			}
+			
+			r++;
+		}
+	}
 }

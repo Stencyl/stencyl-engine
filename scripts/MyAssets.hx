@@ -13,6 +13,7 @@ class MyAssets implements AssetLoader
 	public function loadResources(resourceMap:Hash<Dynamic>):Void
 	{
 		resourceMap.set("1-0.png", Assets.getBitmapData("assets/graphics/1-0.png"));
+		resourceMap.set("18-0.png", Assets.getBitmapData("assets/graphics/18-0.png"));
 	}
 	
 	public function loadScenes(scenesXML:IntHash<Fast>, scenesTerrain:IntHash<Dynamic>):Void

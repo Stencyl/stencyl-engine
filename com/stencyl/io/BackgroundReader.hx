@@ -6,6 +6,8 @@ import com.stencyl.utils.Utils;
 import com.stencyl.models.Resource;
 import com.stencyl.models.background.ColorBackground;
 import com.stencyl.models.background.GradientBackground;
+import com.stencyl.models.background.ImageBackground;
+import com.stencyl.models.background.ScrollingBackground;
 
 class BackgroundReader implements AbstractReader
 {
@@ -79,30 +81,26 @@ class BackgroundReader implements AbstractReader
 			
 			for(i in 0...numFrames)
 			{
-				//TODO frameData.push(Assets.get().resourceAssets[ID + "-" + i + ".png"]);
+				frameData.push(Data.get().resourceAssets.get(ID + "-" + i + ".png"));
 			}
 		}
 		
 		else
 		{
-			//TODO frameData.push(Assets.get().resourceAssets[ID + "-0.png"]);
+			frameData.push(Data.get().resourceAssets.get(ID + "-0.png"));
 		}
-		
+
 		var repeats:Bool = Utils.toBoolean(xml.att.repeats);						
 		
 		if(scrollX != 0 || scrollY != 0)
 		{
-			return null;
-			//return new ScrollingBackground(ID, name, frameData, durations, repeats, parallaxX, parallaxY, scrollX, scrollY);
+			return new ScrollingBackground(ID, name, frameData, durations, parallaxX, parallaxY, repeats, scrollX, scrollY);
 		}
 		
 		else
 		{
-			return null;
-			//return new ImageBackground(ID, name, frameData, durations, repeats, parallaxX, parallaxY);
+			//return new ScrollingBackground(ID, name, frameData, durations, parallaxX, parallaxY, repeats, 10, 10);
+			return new ImageBackground(ID, name, frameData, durations, parallaxX, parallaxY, repeats);
 		}
-	
-		return null;
-		//return new SoundClip(ID, name, streaming, looping, panning, volume, ext);
 	}
 }
