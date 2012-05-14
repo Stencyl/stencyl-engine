@@ -2566,6 +2566,7 @@ class Actor extends Sprite
 		isHUD = true;			
 		engine.addHUDActor(this);
 		
+		//TODO: Just apply to main actor
 		for(anim in animationMap)
 		{
 			//anim.scrollFactor.x = 0;
@@ -2583,6 +2584,7 @@ class Actor extends Sprite
 		isHUD = false;			
 		engine.removeHUDActor(this);
 		
+		//TODO: Just apply to main actor
 		for(anim in animationMap)
 		{
 			//anim.scrollFactor.x = 1;

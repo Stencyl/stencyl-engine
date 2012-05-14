@@ -1189,10 +1189,6 @@ class Engine
 			}
 		}
 		
-		//---
-			
-		master.addChild(a);
-		
 		return a;
 	}
 	
@@ -1234,6 +1230,7 @@ class Engine
 		
 		if(layer == null)
 		{
+			trace("Layer ID: " + layerID + " does not exist");
 			trace("Assuming default group");
 			layer = defaultGroup;
 		}
@@ -1247,6 +1244,7 @@ class Engine
 		
 		if(layer == null)
 		{
+			trace("Layer ID: " + layerID + " does not exist");
 			trace("Putting actor inside default group");
 			layer = defaultGroup;
 		}
