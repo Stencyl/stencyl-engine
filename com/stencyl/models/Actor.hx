@@ -1885,7 +1885,18 @@ class Actor extends Sprite
 	
 	public function push(dirX:Float, dirY:Float, magnitude:Float)
 	{
-		if(isLightweight || (dirX == 0 && dirY == 0))
+		if(isLightweight)
+		{
+			dummy.x = dirX;
+			dummy.y = dirY;
+			dummy.normalize();
+		
+			accelerateX(dummy.x * magnitude / 100);
+			accelerateY(dummy.y * magnitude / 100);
+			return;
+		}
+		
+		if(dirX == 0 && dirY == 0)
 		{
 			return;
 		}
@@ -1915,7 +1926,18 @@ class Actor extends Sprite
 	
 	public function applyImpulse(dirX:Float, dirY:Float, magnitude:Float)
 	{
-		if(isLightweight || (dirX == 0 && dirY == 0))
+		if(isLightweight)
+		{
+			dummy.x = dirX;
+			dummy.y = dirY;
+			dummy.normalize();
+		
+			accelerateX(dummy.x * magnitude / 20);
+			accelerateY(dummy.y * magnitude / 20);
+			return;
+		}
+		
+		if(dirX == 0 && dirY == 0)
 		{
 			return;
 		}
@@ -1945,7 +1967,15 @@ class Actor extends Sprite
 	
 	public function applyTorque(torque:Float)
 	{
-		if(!isLightweight)
+		if(isLightweight)
+		{
+			if(!fixedRotation)
+			{
+				rSpeed -= torque;
+			}
+		}
+		
+		else
 		{
 			body.applyTorque(torque);
 			body.setAwake(true);
