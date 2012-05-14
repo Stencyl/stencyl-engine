@@ -101,7 +101,7 @@ class Scene
 		//wireframes = readWireframes(xml.terrain);
 		
 		var rawLayers = readRawLayers(Data.get().scenesTerrain.get(ID), numLayers);
-		terrain = readLayers(xml.layers, rawLayers);
+		terrain = readLayers(xml.node.layers.elements, rawLayers);
 	}
 	
 	public function readRegions(list:Iterator<Fast>):IntHash<RegionDef>

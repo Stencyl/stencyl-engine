@@ -1103,6 +1103,9 @@ class Engine
 	
 	public function createActor(ai:ActorInstance, offset:Bool = false):Actor
 	{
+		trace(ai.actorType.ID);
+		trace(ai.actorType.spriteID);
+	
 		var s:com.stencyl.models.actor.Sprite = cast(Data.get().resources.get(ai.actorType.spriteID), com.stencyl.models.actor.Sprite);
 	
 		var a:Actor = new Actor
@@ -1188,6 +1191,8 @@ class Engine
 				cache.push(a);
 			}
 		}
+		
+		//master.addChild(a);
 		
 		return a;
 	}
