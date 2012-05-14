@@ -4,6 +4,7 @@ import com.stencyl.io.BackgroundReader;
 import com.stencyl.io.ActorTypeReader;
 
 import com.stencyl.models.scene.Tile;
+import com.stencyl.models.scene.Tileset;
 import com.stencyl.models.scene.TileLayer;
 import com.stencyl.models.background.ColorBackground;
 import com.stencyl.models.scene.ActorInstance;
@@ -492,10 +493,10 @@ class Scene
 					var tile = tset.tiles[tileID];
 					
 					//If animated tile, add to update list
-					if (tile != null && tile.pixels != null && animatedTiles.indexOf(tile) == -1)
+					/*if (tile != null && tile.pixels != null && animatedTiles.indexOf(tile) == -1)
 					{
 						animatedTiles.push(tile);
-					}
+					}*/
 				}
 				
 				col++;
