@@ -13,6 +13,8 @@ import com.stencyl.behavior.BehaviorInstance;
 import haxe.xml.Fast;
 import com.stencyl.utils.Utils;
 
+import nme.utils.ByteArray;
+
 class Scene
 {
 	public var ID:Int;
@@ -409,7 +411,7 @@ class Scene
 	//TODO: Finish up scene reading so that layers are properly reflected for actors (Was testing out actor layer blocks) 
 	//Do not need to implement tiles yet.
 
-	public function readLayers(list:Iterator<Fast>, rawLayers:Array = null):IntHash<TileLayer>
+	public function readLayers(list:Iterator<Fast>, rawLayers:IntHash<TileLayer> = null):IntHash<TileLayer>
 	{
 		var map = new IntHash<TileLayer>();
 		
@@ -417,15 +419,15 @@ class Scene
 		{
 			var eid = Std.parseInt(e.att.id);
 		
-			map.set(eid, rawLayers[eid]);
+			map.set(eid, rawLayers.get(eid));
 			
-			var layer:TileLayer = map[eid];
+			var layer:TileLayer = map.get(eid);
 			layer.name = e.att.name;
 			layer.zOrder = Std.parseInt(e.att.order);
 		}
 		
 		return map;
-	}*/
+	}
 	
 	public function readRawLayers(bytes:ByteArray, numLayers:Int):IntHash<TileLayer>
 	{
@@ -474,7 +476,7 @@ class Scene
 			var tileID:Int = bytes.readShort();
 			var runLength:Int = bytes.readShort();
 			
-			var tset = Assets.get().resources[tilesetID] as Tileset;
+			var tset:Tileset = cast(Data.get().resources.get(tilesetID), Tileset);
 			
 			for(runIndex in 0...runLength)
 			{

@@ -16,6 +16,7 @@ class TileLayer extends Sprite
 	//placeholder
 	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
 	{
+		super();
 	}
 	
 	//Data
