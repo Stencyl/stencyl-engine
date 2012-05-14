@@ -98,6 +98,8 @@ class Actor extends Sprite
 	public var dead:Bool; //gone from the game - don't touch
 	public var dying:Bool; //in the process of dying but not yet removed
 	
+	public var fixedRotation:Bool;
+	
 
 	//*-----------------------------------------------
 	//* Position / Motion
@@ -283,6 +285,8 @@ class Actor extends Sprite
 		
 		handlesCollisions = true;
 		lastCollided = null;
+		
+		fixedRotation = false;
 		
 		//---
 		
@@ -801,6 +805,12 @@ class Actor extends Sprite
 			this.x += elapsedTime * xSpeed;
 			this.y += elapsedTime * ySpeed;
 			this.rotation += elapsedTime * rSpeed;
+			
+			if(fixedRotation)
+			{
+				this.rotation = 0;
+				this.rSpeed = 0;
+			}
 		}
 		
 		else
@@ -847,22 +857,14 @@ class Actor extends Sprite
 		if(a && b)
 		{
 			x = tweenLoc.x;
-			currAnimation.x = tweenLoc.x;
-			
 			y = tweenLoc.y;
-			currAnimation.y = tweenLoc.y;
-			
 			rotation = tweenAngle.angle;
-			currAnimation.rotation = tweenAngle.angle;
 			
-			if(!isLightweight)
-			{
-				body.setPositionAndAngle
-				(
-					new B2Vec2(Engine.toPhysicalUnits(x), Engine.toPhysicalUnits(y)),
-					Utils.RAD * rotation
-				);
-			}
+			body.setPositionAndAngle
+			(
+				new B2Vec2(Engine.toPhysicalUnits(x), Engine.toPhysicalUnits(y)),
+				Utils.RAD * rotation
+			);
 		}
 		
 		else
@@ -870,18 +872,15 @@ class Actor extends Sprite
 			if(a)
 			{
 				x = tweenLoc.x;
-				currAnimation.x = tweenLoc.x;
 				setX(tweenLoc.x);
 				
 				y = tweenLoc.y;
-				currAnimation.y = tweenLoc.y;
 				setY(tweenLoc.y);
 			}
 			
 			if(b)
 			{
 				rotation = tweenAngle.angle;
-				currAnimation.rotation = tweenAngle.angle;
 				setAngle(tweenAngle.angle, false);
 			}
 		}
@@ -1437,6 +1436,8 @@ class Actor extends Sprite
 	//* Physics: Position
 	//*-----------------------------------------------
 	
+	//Big Change: Returns relative to the origin point as (0,0). Meaning if the origin = center, the center is now (0,0)!
+	
 	public function getX():Float
 	{
 		if(isRegion || isTerrainRegion)
@@ -1844,7 +1845,7 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			return Utils.RAD * rotation;
+			return Utils.RAD * rSpeed;
 		}
 		
 		return body.getAngularVelocity();
@@ -1984,9 +1985,30 @@ class Actor extends Sprite
 		return body;
 	}
 	
-	public function enableRotation()
+	public function setFriction(value:Float)
 	{
 		if(!isLightweight)
+		{
+			//body.setFriction(value);
+		}
+	}
+	
+	public function setBounciness(value:Float)
+	{
+		if(!isLightweight)
+		{
+			//body.setBounciness(value);
+		}
+	}
+	
+	public function enableRotation()
+	{
+		if(isLightweight)
+		{
+			fixedRotation = false;
+		}
+		
+		else
 		{
 			//body.SetFixedRotation(false);
 		}
@@ -1994,12 +2016,18 @@ class Actor extends Sprite
 	
 	public function disableRotation()
 	{
-		if(!isLightweight)
+		if(isLightweight)
+		{
+			fixedRotation = true;
+		}
+		
+		else
 		{
 			//body.SetFixedRotation(true);
 		}
 	}
 	
+	//Irrelevant to lightweight
 	public function setIgnoreGravity(state:Bool)
 	{
 		if(!isLightweight)
@@ -2008,6 +2036,7 @@ class Actor extends Sprite
 		}
 	}
 	
+	//Irrelevant to lightweight
 	public function ignoresGravity():Bool
 	{
 		if(isLightweight)
@@ -2149,40 +2178,31 @@ class Actor extends Sprite
 	
 	public function cancelTweens()
 	{
-		for(s in animationMap)
-		{
-			Actuate.stop(s);
-		}
+		Actuate.stop(this);
 	}
 	
-	public function fadeTo(value:Float, duration:Float = 1, easing:Dynamic = null, delay:Int = 0)
+	public function fadeTo(value:Float, duration:Float = 1, easing:Dynamic = null)
 	{	
 		if(easing == null)
 		{
 			easing = Linear.easeNone;
 		}
 	
-		for(s in animationMap)
-		{
-			Actuate.tween(s, duration, {alpha:value}).ease(easing).delay(delay);
-		}
+		Actuate.tween(this, duration, {alpha:value}).ease(easing);
 	}
 	
-	public function growTo(scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:Dynamic = null, delay:Int = 0)
+	public function growTo(scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:Dynamic = null)
 	{
 		if(easing == null)
 		{
 			easing = Linear.easeNone;
 		}
 	
-		for(s in animationMap)
-		{
-			Actuate.tween(this, duration, {x:scaleX, y:scaleY}).ease(easing).delay(delay);
-		}
+		Actuate.tween(this, duration, {scaleX:scaleX, scaleY:scaleY}).ease(easing);
 	}
 	
 	//In degrees
-	public function spinTo(angle:Float, duration:Float = 1, easing:Dynamic = null, delay:Int = 0)
+	public function spinTo(angle:Float, duration:Float = 1, easing:Dynamic = null)
 	{
 		tweenAngle.angle = this.rotation;
 
@@ -2193,10 +2213,18 @@ class Actor extends Sprite
 		
 		activeAngleTweens++;
 	
-		Actuate.tween(tweenAngle, duration, {rotation:angle}).ease(easing).delay(delay).onComplete(onTweenAngleComplete);
+		if(isLightweight)
+		{
+			Actuate.tween(this, duration, {rotation:angle}).ease(easing).onComplete(onTweenAngleComplete);
+		}
+		
+		else
+		{
+			Actuate.tween(tweenAngle, duration, {angle:angle}).ease(easing).onComplete(onTweenAngleComplete);
+		}
 	}
 	
-	public function moveTo(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null, delay:Int = 0)
+	public function moveTo(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
 	{
 		tweenLoc.x = getX();
 		tweenLoc.y = getY();
@@ -2208,18 +2236,26 @@ class Actor extends Sprite
 		
 		activePositionTweens++;
 		
-		Actuate.tween(tweenLoc, duration, {x:x, y:y}).ease(easing).delay(delay).onComplete(onTweenPositionComplete);
+		if(isLightweight)
+		{
+			Actuate.tween(this, duration, {x:x, y:y}).ease(easing).onComplete(onTweenPositionComplete);
+		}
+		
+		else
+		{
+			Actuate.tween(tweenLoc, duration, {x:x, y:y}).ease(easing).onComplete(onTweenPositionComplete);
+		}
 	}
 	
 	//In degrees
-	public function spinBy(angle:Float, duration:Float = 1, easing:Dynamic = null, delay:Int = 0)
+	public function spinBy(angle:Float, duration:Float = 1, easing:Dynamic = null)
 	{
-		spinTo(this.rotation + angle, duration, easing, delay);
+		spinTo(this.rotation + angle, duration, easing);
 	}
 	
-	public function moveBy(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null, delay:Int = 0)
+	public function moveBy(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
 	{
-		moveTo(getX() + x, getY() + y, duration, easing, delay);
+		moveTo(getX() + x, getY() + y, duration, easing);
 	}
 	
 	public function onTweenAngleComplete()
