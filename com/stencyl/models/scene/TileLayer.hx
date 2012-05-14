@@ -23,17 +23,18 @@ class TileLayer extends Sprite
 	public var numCols:Int;
 	
 	//Internal
-	/*protected var _pixels:BitmapData;
-	protected var _data:Array;
-	protected var _rects:Array;
-	protected var original:ColorTransform;
-	protected var _mtx:Matrix;
+	private var pixels:BitmapData;
+	private var original:ColorTransform;
+	private var mtx:Matrix;
+	
+	//???
+	private var data:Array<Dynamic>;
+	private var rects:Array<Dynamic>;
 	
 	//Semi-transparent tile drawing
-	protected var _translatedSource:Rectangle;
-	protected var _alphaCT:ColorTransform;*/
+	private var translatedSource:Rectangle;
+	private var alphaCT:ColorTransform;
 	
-	//placeholder
 	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
 	{
 		super();
@@ -45,10 +46,10 @@ class TileLayer extends Sprite
 		this.numRows = numRows;
 		this.numCols = numCols;
 		
-		/*original = new ColorTransform();
-		_mtx = new Matrix();
-		_translatedSource = new Rectangle();
-		_alphaCT = new ColorTransform(1, 1, 1, 1);*/
+		original = new ColorTransform();
+		mtx = new Matrix();
+		translatedSource = new Rectangle();
+		alphaCT = new ColorTransform(1, 1, 1, 1);
 
 		rows = new Array<Array<Tile>>();
 		

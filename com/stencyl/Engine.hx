@@ -1101,11 +1101,9 @@ class Engine
 	//* Actor Creation
 	//*-----------------------------------------------
 	
+	//TODO: Actor doesn't show up? Why? Is it still defaulting to default group?
 	public function createActor(ai:ActorInstance, offset:Bool = false):Actor
 	{
-		trace(ai.actorType.ID);
-		trace(ai.actorType.spriteID);
-	
 		var s:com.stencyl.models.actor.Sprite = cast(Data.get().resources.get(ai.actorType.spriteID), com.stencyl.models.actor.Sprite);
 	
 		var a:Actor = new Actor

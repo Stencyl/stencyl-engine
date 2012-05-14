@@ -409,9 +409,6 @@ class Scene
 		return null;
 	}*/
 
-	//TODO: Finish up scene reading so that layers are properly reflected for actors (Was testing out actor layer blocks) 
-	//Do not need to implement tiles yet.
-
 	public function readLayers(list:Iterator<Fast>, rawLayers:IntHash<TileLayer> = null):IntHash<TileLayer>
 	{
 		var map = new IntHash<TileLayer>();
