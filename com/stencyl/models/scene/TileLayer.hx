@@ -8,26 +8,22 @@ import nme.geom.Point;
 import nme.geom.Rectangle;
 import nme.display.Sprite;
 
+import com.stencyl.models.Scene;
+
 class TileLayer extends Sprite
 {
 	public var layerID:Int;
 	public var zOrder:Int;
-	
-	//placeholder
-	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
-	{
-		super();
-	}
-	
+		
 	//Data
-	/*public var rows:Array;
+	public var rows:Array<Array<Tile>>;
 	
 	public var scene:Scene;
-	public var numRows:Number;
-	public var numCols:Number;
+	public var numRows:Int;
+	public var numCols:Int;
 	
 	//Internal
-	protected var _pixels:BitmapData;
+	/*protected var _pixels:BitmapData;
 	protected var _data:Array;
 	protected var _rects:Array;
 	protected var original:ColorTransform;
@@ -35,10 +31,13 @@ class TileLayer extends Sprite
 	
 	//Semi-transparent tile drawing
 	protected var _translatedSource:Rectangle;
-	protected var _alphaCT:ColorTransform;
+	protected var _alphaCT:ColorTransform;*/
 	
-	public function TileLayer(layerID:Number, zOrder:Number, scene:Scene, numCols:Number, numRows:Number)
+	//placeholder
+	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
 	{
+		super();
+		
 		this.layerID = layerID;
 		this.zOrder = zOrder;
 		
@@ -46,26 +45,25 @@ class TileLayer extends Sprite
 		this.numRows = numRows;
 		this.numCols = numCols;
 		
-		original = new ColorTransform();
+		/*original = new ColorTransform();
 		_mtx = new Matrix();
-		
 		_translatedSource = new Rectangle();
-		_alphaCT = new ColorTransform(1, 1, 1, 1);
+		_alphaCT = new ColorTransform(1, 1, 1, 1);*/
 
-		rows = new Array();
+		rows = new Array<Array<Tile>>();
 		
-		for(var row:Number = 0; row < numRows; row++)
+		for(row in 0...numRows)
 		{
-			rows[row] = new Array();
+			rows[row] = new Array<Tile>();
 			
-			for(var col:Number = 0; col < numCols; col++)
+			for(col in 0...numCols)
 			{
 				rows[row][col] = null;
 			}
 		}			
 	}
 	
-	public function setTileAt(row:Number, col:Number, tile:Tile):void
+	public function setTileAt(row:Int, col:Int, tile:Tile)
 	{
 		if(col < 0 || row < 0 || col >= numCols || row >= numRows)
 		{
@@ -75,7 +73,7 @@ class TileLayer extends Sprite
 		rows[row][col] = tile;			
 	}
 	
-	public function getTileAt(row:Number, col:Number):Tile
+	public function getTileAt(row:Int, col:Int):Tile
 	{
 		if(col < 0 || row < 0 || col >= numCols || row >= numRows)
 		{
@@ -85,7 +83,7 @@ class TileLayer extends Sprite
 		return rows[row][col];
 	}
 			
-	public function draw(viewX:Number, viewY:Number, alpha:Number):void
+	/*public function draw(viewX:Number, viewY:Number, alpha:Number):void
 	{
 		viewX = Math.round(Math.abs(viewX));
 		viewY = Math.round(Math.abs(viewY));
