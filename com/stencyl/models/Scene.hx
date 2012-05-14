@@ -97,8 +97,8 @@ class Scene
 		
 		//wireframes = readWireframes(xml.terrain);
 		
-		//var rawLayers:Array = readRawLayers(Assets.get().scenesTerrain[ID], numLayers);
-		//terrain = readLayers(xml.layers, rawLayers);
+		var rawLayers = readRawLayers(Data.get().scenesTerrain.get(ID), numLayers);
+		terrain = readLayers(xml.layers, rawLayers);
 	}
 	
 	public function readRegions(list:Iterator<Fast>):IntHash<RegionDef>
@@ -406,72 +406,77 @@ class Scene
 		return null;
 	}*/
 
-	/*public function readLayers(list:XMLList, rawLayers:Array = null):Array
+	//TODO: Finish up scene reading so that layers are properly reflected for actors (Was testing out actor layer blocks) 
+	//Do not need to implement tiles yet.
+
+	public function readLayers(list:Iterator<Fast>, rawLayers:Array = null):IntHash<TileLayer>
 	{
-		var map:Array = new Array();
+		var map = new IntHash<TileLayer>();
 		
-		for each(var e:XML in list.children())
+		for(e in list)
 		{
-			map[e.@id] = rawLayers[e.@id];
+			var eid = Std.parseInt(e.att.id);
+		
+			map.set(eid, rawLayers[eid]);
 			
-			var layer:TileLayer = map[e.@id];
-			layer.name = e.@name;
-			layer.zOrder = e.@order;
+			var layer:TileLayer = map[eid];
+			layer.name = e.att.name;
+			layer.zOrder = Std.parseInt(e.att.order);
 		}
 		
 		return map;
 	}*/
 	
-	/*public function readRawLayers(bytes:ByteArray, numLayers:Number):Array
+	public function readRawLayers(bytes:ByteArray, numLayers:Int):IntHash<TileLayer>
 	{
-		var map:Array = new Array();
-		var layerHeaders:Array = new Array();
+		var map = new IntHash<TileLayer>();
+		var layerHeaders = new Array<Int>();
 		
-		for(var i:Number = 0; i < numLayers; i++)
+		for(i in 0...numLayers)
 		{
 			layerHeaders[i] = bytes.readInt();
 		}
 		
-		for(i = 0; i < numLayers; i++)
+		for(i in 0...numLayers)
 		{
-			var newLayer:TileLayer = readRawLayer(bytes, layerHeaders[i]);
-			map[newLayer.layerID] = newLayer;
+			var newLayer = readRawLayer(bytes, layerHeaders[i]);
+			map.set(newLayer.layerID, newLayer);
 		}
 		
 		return map;
 	}
 	
-	public function readRawLayer(bytes:ByteArray, length:Number):TileLayer
+	public function readRawLayer(bytes:ByteArray, length:Int):TileLayer
 	{
-		var width:Number = Math.floor(sceneWidth / tileWidth);
-		var height:Number = Math.floor(sceneHeight / tileHeight);
+		var width = Std.int(Math.floor(sceneWidth / tileWidth));
+		var height = Std.int(Math.floor(sceneHeight / tileHeight));
 		
-		var layerID:Number = bytes.readInt();
+		var layerID = bytes.readInt();
 		length -= 4;
 		
-		var zOrder:Number = bytes.readInt();
+		var zOrder = bytes.readInt();
 		length -= 4;
 		
-		var layer:TileLayer = new TileLayer(layerID, zOrder, this, width, height);
+		var layer = new TileLayer(layerID, zOrder, this, width, height);
 		
-		var row:Number = 0;
-		var col:Number = 0;
+		var row = 0;
+		var col = 0;
 		
-		var RLETILE_BYTE_COUNT:Number = 8;
-		var numChunks:Number = length / RLETILE_BYTE_COUNT;
+		var RLETILE_BYTE_COUNT = 8;
+		var numChunks:Int = Std.int(length / RLETILE_BYTE_COUNT);
 		
-		for(var i:Number = 0; i < numChunks; i++)
+		for(i in 0...numChunks)
 		{
 			//Unused value we have to keep for compatibility reasons.
 			bytes.readShort();
 			
-			var tilesetID:Number = bytes.readShort();
-			var tileID:Number = bytes.readShort();
-			var runLength:Number = bytes.readShort();
+			var tilesetID:Int = bytes.readShort();
+			var tileID:Int = bytes.readShort();
+			var runLength:Int = bytes.readShort();
 			
-			var tset:Tileset = Assets.get().resources[tilesetID] as Tileset;
+			var tset = Assets.get().resources[tilesetID] as Tileset;
 			
-			for(var runIndex:Number = 0; runIndex < runLength; runIndex++)
+			for(runIndex in 0...runLength)
 			{
 				if(tset == null || tileID < 0 || tset == null)
 				{
@@ -482,7 +487,7 @@ class Scene
 				{
 					layer.setTileAt(row, col, tset.tiles[tileID]);
 					
-					var tile:Tile = tset.tiles[tileID];
+					var tile = tset.tiles[tileID];
 					
 					//If animated tile, add to update list
 					if (tile != null && tile.pixels != null && animatedTiles.indexOf(tile) == -1)
@@ -502,7 +507,7 @@ class Scene
 		}
 		
 		return layer;
-	}*/
+	}
 	
 	public function readBackgrounds(list:Iterator<Fast>):Array<Int>
 	{

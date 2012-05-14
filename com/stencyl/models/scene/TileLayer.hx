@@ -13,6 +13,11 @@ class TileLayer extends Sprite
 	public var layerID:Int;
 	public var zOrder:Int;
 	
+	//placeholder
+	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
+	{
+	}
+	
 	//Data
 	/*public var rows:Array;
 	
