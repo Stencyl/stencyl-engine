@@ -77,7 +77,7 @@ class Motion extends ActorScript
 			trace(getGameAttribute("yoshi"));
 		};
 	
-		runLater(1000, f);
+		runLater(1000, function(task:TimedTask):Void {});
 		
 		setGameAttribute("yoshi", "dino");
 		

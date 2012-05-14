@@ -192,6 +192,19 @@ class Input
 		if (mousePressed) mousePressed = false;
 		if (mouseReleased) mouseReleased = false;
 	}
+	
+	public static function simulateKeyPress(key:String)
+	{
+		var v:Int = _control.get(key)[0];
+		trace(v);
+		Input.onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, v, v));
+	}
+	
+	public static function simulateKeyRelease(key:String)
+	{
+		var v:Int = _control.get(key)[0];
+		Input.onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, v, v));
+	}
 
 	private static function onKeyDown(e:KeyboardEvent = null)
 	{

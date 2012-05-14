@@ -75,6 +75,9 @@ class Engine
 	public static var REGULAR_LAYER:String = "l";
 	public static var DOODAD:String = "";
 	
+	public static var INTERNAL_SHIFT:String = "iSHIFT";
+	public static var INTERNAL_CTRL:String = "iCTRL";
+	
 	
 	//*-----------------------------------------------
 	//* Important Values
@@ -301,6 +304,9 @@ class Engine
 	public function begin(initSceneID:Int)
 	{		
 		Input.enable();
+		Input.define(INTERNAL_SHIFT, [Key.SHIFT]);
+		Input.define(INTERNAL_CTRL, [Key.CONTROL]);
+		
 		Data.get();
 		GameModel.get();
 			
@@ -1533,7 +1539,7 @@ class Engine
 		{
 			var t:TimedTask = tasks[i];
 			
-			t.update(10);
+			t.update(STEP_SIZE);
 			
 			if(t.done)
 			{
@@ -1730,7 +1736,7 @@ class Engine
 		//Shaking
 		if(isShaking)
 		{
-			shakeTimer -= 10;
+			shakeTimer -= STEP_SIZE;
         
 	        if(shakeTimer <= 0)
 	        {
@@ -1758,10 +1764,10 @@ class Engine
 		
 		Engine.elapsedTime = elapsedTime;
 		
-		while(acc > 10)
+		while(acc > STEP_SIZE)
 		{
-			update(10);
-			acc -= 10;
+			update(STEP_SIZE);
+			acc -= STEP_SIZE;
 
 			Input.update();
 		}
@@ -1815,7 +1821,7 @@ class Engine
 	
 	public function shakeScreen(intensity:Float, duration:Float)
 	{
-		shakeTimer = Std.int(1000 * duration);
+		shakeTimer = Std.int(MS_PER_SEC * duration);
 	    isShaking = true;
 	    shakeIntensity = intensity;
 	}

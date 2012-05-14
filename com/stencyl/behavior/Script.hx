@@ -47,7 +47,9 @@ class Script
 	//*-----------------------------------------------
 	
 	public var wrapper:Behavior;
+	
 	public var engine:Engine;
+	public var scene:Engine; //for compatibility - we'll remove it later
 	
 	public var propertyChangeListeners:HashMap<Dynamic, Dynamic>;
 	public var equalityPairs:HashMap<Dynamic, Dynamic>;
@@ -92,7 +94,7 @@ class Script
 	
 	public function new(engine:Engine) 
 	{
-		this.engine = engine;
+		this.engine = this.scene = engine;
 		
 		nameMap = new Hash<Dynamic>();	
 		propertyChangeListeners = new HashMap<Dynamic, Dynamic>();
@@ -103,6 +105,64 @@ class Script
 	//* Internals
 	//*-----------------------------------------------
 	
+	public inline function asBoolean(o:Dynamic):Bool
+	{
+		return (o == true || o == "true");
+	}
+	
+	public inline function strCompare(one:String, two:String, whichWay:Int):Bool
+	{
+		if(whichWay < 0)
+		{
+			return strCompareBefore(one, two);
+		}
+		
+		else
+		{
+			return strCompareAfter(one, two);
+		}
+	}
+	
+	public inline function strCompareBefore(a:String, b:String):Bool
+	{
+		if(a < b)
+		{
+			return true;
+		}
+		
+		return false;
+	} 
+	
+	public inline function strCompareAfter(a:String, b:String):Bool
+	{
+		if(a > b)
+		{
+			return true;
+		}
+		
+		return false;
+	} 
+	
+	public inline function asNumber(o:Dynamic):Float
+	{
+		if(Std.is(o, String))
+		{
+			return Std.parseFloat(o);
+		}
+		
+		else if(Std.is(o, Float) || Std.is(o, Int))
+		{
+			return o;
+		}
+		
+		//Can't do it - return junk
+		else
+		{
+			trace(o + " is not a number!");
+			return 0;
+		}
+	}
+		
 	public function toInternalName(displayName:String)
 	{
 		if(nameMap == null)
@@ -391,9 +451,9 @@ class Script
 	 * @param	delay		Delay in execution (in milliseconds)
 	 * @param	toExecute	The function to execute after the delay
 	 */
-	public function runLater(delay:Int, toExecute:TimedTask->Void, actor:Actor = null):TimedTask
+	public function runLater(delay:Float, toExecute:TimedTask->Void, actor:Actor = null):TimedTask
 	{
-		var t:TimedTask = new TimedTask(toExecute, delay, false, actor);
+		var t:TimedTask = new TimedTask(toExecute, Std.int(delay), false, actor);
 		engine.addTask(t);
 
 		return t;
@@ -405,12 +465,17 @@ class Script
 	 * @param	interval	How frequently to execute (in milliseconds)
 	 * @param	toExecute	The function to execute after the delay
 	 */
-	public function runPeriodically(interval:Int, toExecute:TimedTask->Void, actor:Actor = null):TimedTask
+	public function runPeriodically(interval:Float, toExecute:TimedTask->Void, actor:Actor = null):TimedTask
 	{
-		var t:TimedTask = new TimedTask(toExecute, interval, true, actor);
+		var t:TimedTask = new TimedTask(toExecute, Std.int(interval), true, actor);
 		engine.addTask(t);
 		
 		return t;
+	}
+	
+	public function getStepSize():Int
+	{
+		return Engine.STEP_SIZE;
 	}
 	
 	//*-----------------------------------------------
@@ -627,37 +692,23 @@ class Script
 	
 	public function isCtrlDown():Bool
 	{
-		return Input.check(Key.SHIFT);
+		return Input.check(Engine.INTERNAL_CTRL);
 	}
 	
 	public function isShiftDown():Bool
 	{
-		return Input.check(Key.CONTROL);
+		return Input.check(Engine.INTERNAL_SHIFT);
 	}
 	
-	/*public function simulateKeyPress(abstractKey:String)
+	public function simulateKeyPress(abstractKey:String)
 	{
-		var k:String = Game.get().controller["_" + abstractKey];
-		
-		if(k == null)
-		{
-			return;
-		}
-		
-		FlxG.keys.simulatePress(k);
+		Input.simulateKeyPress(abstractKey);
 	}
 	
 	public function simulateKeyRelease(abstractKey:String)
 	{
-		var k:String = Game.get().controller["_" + abstractKey];
-		
-		if(k == null)
-		{
-			return;
-		}
-		
-		FlxG.keys.simulateRelease(k);
-	}*/
+		Input.simulateKeyRelease(abstractKey);
+	}
 
 	public function isKeyDown(abstractKey:String):Bool
 	{
@@ -734,12 +785,12 @@ class Script
 		FlxG.mouse.show(graphic, xOffset, yOffset);
 	}*/
 
-	public function enableCursor()
+	public function showCursor()
 	{
 		Mouse.show();
 	}
 
-	public function disableCursor()
+	public function hideCursor()
 	{
 		Mouse.hide();
 	}
