@@ -317,6 +317,46 @@ class Script
 		}
 	}
 	
+	public function propertyChanged(propertyKey:String, property:Dynamic)
+	{
+		/*var listeners:Array = propertyChangeListeners[propertyKey];
+		
+		if (listeners != null)
+		{
+			for (var r:int = 0; r < listeners.length; r++)
+			{
+				try
+				{
+					var f:Function = listeners[r] as Function;
+					f(listeners, property);
+					
+					if (listeners.indexOf(f) == -1)
+					{
+						r--;
+						
+						//If equality, remove from other list as well
+						if (equalityPairs[f] != null)
+						{
+							for each(var list:Array in equalityPairs[f])
+							{
+								if (list != listeners)
+								{
+									list.splice(list.indexOf(f), 1);
+								}
+							}
+							
+							delete equalityPairs[f];
+						}
+					}
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+		}*/
+	}
+	
 	//*-----------------------------------------------
 	//* Regions
 	//*-----------------------------------------------

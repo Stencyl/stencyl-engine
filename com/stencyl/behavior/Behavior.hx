@@ -100,73 +100,66 @@ class Behavior
 	
 	private function initAttributes()
 	{
-		//TODO
-		/*
-		for each(var a:Attribute in attributes)
+		for(a in attributes)
 		{
-			if(a.type == "actor" && a.fieldName == "actor" && script is ActorScript)
+			if(a.type == "actor" && a.fieldName == "actor" && Std.is(script, ActorScript))
 			{
 				continue;
 			}
 			
+			var attributeName = script.toInternalName(a.fieldName);
+			
 			if(a.type == "actor" || a.type == "joint" || a.type == "region")
 			{
-				var eID:Number = a.getRealValue();
+				var eID:Int = Std.parseInt(a.getRealValue());
 				
 				if(a.type == "actor")
 				{
-					script[a.fieldName] = game.getActor(eID);
+					Reflect.setField(script, attributeName, engine.getActor(eID));
 				}
 				
 				else if(a.type == "joint")
 				{
-					script[a.fieldName] = game.getJoint(eID);
+					//TODO:
+					//Reflect.setField(script, attributeName, engine.getJoint(eID));
 				}
 				
 				else if(a.type == "region")
 				{
-					script[a.fieldName] = game.getRegion(eID);
+					Reflect.setField(script, attributeName, engine.getRegion(eID));
 				}
 				
 				else if (a.type == "terrainregion")
 				{
-					script[a.fieldName] = game.getTerrainRegion(eID);
+					//TODO:
+					//Reflect.setField(script, attributeName, engine.getTerrainRegion(eID));
 				}
 			}
 			
 			else if(a.type == "actorgroup")
 			{
-				var groupID:Number = a.getRealValue();
-				script[a.fieldName] = game.getGroup(groupID);
+				var groupID:Int = Std.parseInt(a.getRealValue());
+				Reflect.setField(script, attributeName, engine.getGroup(groupID));
 			}
 			
 			else
 			{
-				var realValue:* = a.getRealValue();
+				var realValue:Dynamic = a.getRealValue();
 				
+				//TODO???
 				if(a.type == "list")
 				{
-					//?????
-					if(realValue is XMLList)
-					{
-						var arr:Array = ActorTypeReader.readList(realValue as XMLList);
-						script[a.fieldName] = arr;
-					}
-					
-					else
-					{
-						script[a.fieldName] = realValue;
-					}
+					Reflect.setField(script, attributeName, realValue);
 				}
 				
 				else
 				{
-					script[a.fieldName] = realValue;
+					Reflect.setField(script, attributeName, realValue);
 				}
 				
 				trace("Set att(" + a.fieldName + ") to " + realValue);
 			}
-		}*/
+		}
 	}
 
 	public function update(elapsedTime:Float)
