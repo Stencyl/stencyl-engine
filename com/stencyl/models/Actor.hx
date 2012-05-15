@@ -1408,9 +1408,9 @@ class Actor extends Sprite
 	//* Layering
 	//*-----------------------------------------------
 	
-	public function moveToLayerOrder(layerOrder:Int)
+	public function moveToLayer(layerID:Int)
 	{
-		engine.moveToLayerOrder(this,layerOrder);
+		engine.moveToLayer(this, layerID);
 	}
 	
 	public function bringToFront()
@@ -2755,7 +2755,7 @@ class Actor extends Sprite
 			return "Unknown Actor " + ID;
 		}
 		
-		return name;
+		return "[Actor " + ID + "," + name + "]";
 	}
 	
 	//*-----------------------------------------------

@@ -25,4 +25,9 @@ class Group
 	{
 		list.delete(a);
 	}
+	
+	public function toString():String
+	{
+		return "[Group " + ID + "," + name + "]";
+	}
 }

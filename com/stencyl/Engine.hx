@@ -863,7 +863,7 @@ class Engine
 		layersToDraw = layers;
 		layerOrders = orders;
 		
-		var foundTop:Bool = false;
+		var foundBottom:Bool = false;
 		var foundMiddle:Bool = false;
 		var realNumLayers:Int = 0;
 		
@@ -882,7 +882,8 @@ class Engine
 		
 		for(i in 0...layers.size)
 		{
-			var layerID:Int = layersToDraw.get(i);
+			var j = layers.size - i - 1;
+			var layerID:Int = layersToDraw.get(j);
 			
 			if(layerID == -1)
 			{
@@ -894,19 +895,19 @@ class Engine
 			
 			if(scene.terrain != null)
 			{
-				terrain = new Layer(layerID, i, scene.terrain.get(layerID));
+				terrain = new Layer(layerID, j, scene.terrain.get(layerID));
 			}
 			
-			if(!foundTop)
+			if(!foundBottom)
 			{
-				foundTop = true;
-				topLayer = i;
+				foundBottom = true;
+				bottomLayer = j;
 			}
 			
 			if(!foundMiddle && numLayersProcessed == Math.floor(realNumLayers / 2))
 			{
 				foundMiddle = true;
-				middleLayer = i;
+				middleLayer = j;
 			}
 
 			if(terrain != null)
@@ -918,11 +919,10 @@ class Engine
 				
 			list.name = REGULAR_LAYER;
 			master.addChild(list);
-			
 			actorsPerLayer.set(layerID, list);
 			
 			//Eventually, this will become the correct value
-			bottomLayer = i;
+			topLayer = j;
 			defaultGroup = list;
 			
 			numLayersProcessed++;
@@ -1991,9 +1991,9 @@ class Engine
 	//* Actors - Layering
 	//*-----------------------------------------------
 	
-	public function moveToLayerOrder(a:Actor, layerOrder:Int)
+	public function moveToLayer(a:Actor, layerID:Int)
 	{
-		var lID = layerOrder - 1;
+		var lID = layerID;
 
 		if(lID < 0 || lID > layersToDraw.size - 1) 
 		{
@@ -2004,7 +2004,7 @@ class Engine
 		{
 			return;
 		}
-		
+
 		lID = layersToDraw.get(lID);
 
 		removeActorFromLayer(a, a.layerID);

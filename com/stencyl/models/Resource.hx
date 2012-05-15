@@ -9,5 +9,10 @@ class Resource
 	{
 		this.ID = ID;
 		this.name = name;
-	}		
+	}	
+	
+	public function toString():String
+	{
+		return ID + "," + name;
+	}	
 }

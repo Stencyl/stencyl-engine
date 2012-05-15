@@ -34,6 +34,8 @@ import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Linear;
 
 import box2D.dynamics.joints.B2Joint;
+import box2D.common.math.B2Vec2;
+import box2D.dynamics.B2World;
 
 #if flash
 import com.stencyl.utils.Kongregate;
@@ -872,6 +874,41 @@ class Script
 	//*-----------------------------------------------
 	
 	//wait for Box2D
+	
+	public function setGravity(x:Float, y:Float)
+	{
+		engine.world.setGravity(new B2Vec2(x, y));
+	}
+
+	public function getGravity():B2Vec2
+	{
+		return engine.world.getGravity();
+	}
+
+	public function enableContinuousCollisions()
+	{
+		B2World.m_continuousPhysics = true;
+	}
+		
+	public function toPhysicalUnits(value:Float):Float
+	{
+		return Engine.toPhysicalUnits(value);
+	}
+
+	public function toPixelUnits(value:Float):Float
+	{
+		return Engine.toPixelUnits(value);
+	}
+	
+	public function makeActorNotPassThroughTerrain(actor:Actor)
+	{
+		B2World.m_continuousPhysics = true;
+		
+		if(actor != null && !actor.isLightweight)
+		{
+			actor.body.setBullet(true);
+		}
+	}
 	
 	//*-----------------------------------------------
 	//* Sounds
