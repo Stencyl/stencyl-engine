@@ -310,7 +310,7 @@ class Engine
 		
 		Data.get();
 		GameModel.get();
-			
+					
 		//---
 			
 		started = true;
@@ -359,10 +359,12 @@ class Engine
 		#end
 		
 		//GA's
-		for(key in GameModel.get().gameAttributes)
+		for(key in GameModel.get().gameAttributes.keys())
 		{
 			setGameAttribute(key, GameModel.get().gameAttributes.get(key));
 		}
+		
+		trace(gameAttributes);
 		
 		//Sound
 		channels = new Array<SoundChannel>();

@@ -62,7 +62,9 @@ class GameModel
 		
 		//---
 		
-		readInput(xml.node.input.elements);
+		//Defined in MyScripts
+		//readInput(xml.node.input.elements);
+		
 		gameAttributes = readGameAttributes(xml.node.attributes.elements);
 		scenes = readScenes(Data.get().sceneListXML);	
 	}
@@ -104,19 +106,6 @@ class GameModel
 		}
 		
 		return map;
-	}
-	
-	public function readInput(list:Iterator<Fast>):Void
-	{
-		for(e in list)
-		{
-			//map["_" + e.att.name] = e.att.keyname; 
-			
-			//TODO:
-			var mapping = e.att.keyname.split(",");
-			//TODO: Don't read this in - just have it generate code instead!
-			//Input.define("left", [Key.A]);
-		}
 	}
 	
 	public static function readGameAttributes(list:Iterator<Fast>):Hash<Dynamic>

@@ -121,7 +121,7 @@ class Attribute
 			{
 				realValue = value;
 				
-				if(value == null)
+				if(value == null || value == "")
 				{
 					realValue = new Array();
 				}	

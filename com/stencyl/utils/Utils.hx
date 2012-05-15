@@ -145,6 +145,25 @@ class Utils
 		}				
 	}
 	
+	public static inline function contains(arr:Array<Dynamic>, value:Dynamic):Bool
+	{
+		var len:Int = arr.length;
+		
+		var i:Int = len;
+		
+		while(i > -1)
+		{
+			if(arr[i] == value)
+			{
+				return true;
+			}
+			
+			i--;
+		}
+		
+		return false;
+	}
+	
 	public static function removeAllChildren(container:DisplayObjectContainer)
 	{
 		while(container.numChildren > 0)
