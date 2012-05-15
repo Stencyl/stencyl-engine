@@ -450,7 +450,7 @@ class Script
 	/**
 	 * Send a messege to this scene with optional arguments.
 	 */
-	public function shoutToScene(msg:String, args:Array<Dynamic>):Dynamic
+	public function shoutToScene(msg:String, args:Array<Dynamic> = null):Dynamic
 	{
 		return engine.shout(msg, args);
 	}
@@ -458,7 +458,7 @@ class Script
 	/**
 	 * Send a messege to a behavior in this scene with optional arguments.
 	 */		
-	public function sayToScene(behaviorName:String, msg:String, args:Array<Dynamic>):Dynamic
+	public function sayToScene(behaviorName:String, msg:String, args:Array<Dynamic> = null):Dynamic
 	{
 		return engine.say(behaviorName, msg, args);
 	}

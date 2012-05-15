@@ -270,22 +270,25 @@ class BehaviorManager
 		{
 			var item:Behavior = behaviors[i];
 			
-			if(!item.enabled) 
+			if(!item.enabled || item.script == null) 
 			{
 				continue;
 			}
+			
+			if(Reflect.hasField(item.script, msg))
+			{
+				var f = Reflect.field(item.script, msg);
+			
+				if(f != null)
+				{
+					toReturn = Reflect.callMethod(item.script, f, args);
+				}
 				
-			var f = Reflect.field(item.script, msg);
-			
-			if(f != null)
-			{
-				toReturn = Reflect.callMethod(item.script, f, args);
-			}
-			
-			else
-			{
-				//???
-				//item.script.forwardMessage(msg);
+				else
+				{
+					//???
+					//item.script.forwardMessage(msg);
+				}
 			}
 		}
 		
@@ -304,22 +307,25 @@ class BehaviorManager
 		
 		if(item != null)
 		{
-			if (!item.enabled)
+			if(!item.enabled || item.script == null)
 			{
 				return toReturn;
 			}
 			
-			var f = Reflect.field(item.script, msg);
-			
-			if(f != null)
+			if(Reflect.hasField(item.script, msg))
 			{
-				toReturn = Reflect.callMethod(item.script, f, args);
-			}
-			
-			else
-			{
-				//TODO:
-				//item.script.forwardMessage(msg);
+				var f = Reflect.field(item.script, msg);
+				
+				if(f != null)
+				{
+					toReturn = Reflect.callMethod(item.script, f, args);
+				}
+				
+				else
+				{
+					//TODO:
+					//item.script.forwardMessage(msg);
+				}
 			}
 		}
 

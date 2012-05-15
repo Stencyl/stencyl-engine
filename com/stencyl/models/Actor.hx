@@ -2462,12 +2462,12 @@ class Actor extends Sprite
 		behaviors.setAttribute(behaviorName, attributeName, value);
 	}
 	
-	public function shout(msg:String, args:Array<Dynamic>):Dynamic
+	public function shout(msg:String, args:Array<Dynamic> = null):Dynamic
 	{
 		return behaviors.call(msg, args);
 	}
 	
-	public function say(behaviorName:String, msg:String, args:Array<Dynamic>):Dynamic
+	public function say(behaviorName:String, msg:String, args:Array<Dynamic> = null):Dynamic
 	{
 		return behaviors.call2(behaviorName, msg, args);
 	}
