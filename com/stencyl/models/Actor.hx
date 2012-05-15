@@ -20,6 +20,7 @@ import com.stencyl.graphics.SheetAnimation;
 import com.stencyl.behavior.Behavior;
 import com.stencyl.behavior.BehaviorManager;
 
+import com.stencyl.models.actor.Group;
 import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.AngleHolder;
 import com.stencyl.models.actor.ActorType;
@@ -1388,7 +1389,7 @@ class Actor extends Sprite
 	//* Type
 	//*-----------------------------------------------
 	
-	public function getGroup():DisplayObjectContainer
+	public function getGroup():Group
 	{
 		return engine.groups.get(getGroupID());
 	}

@@ -27,6 +27,7 @@ import com.stencyl.graphics.transitions.FadeInTransition;
 import com.stencyl.graphics.BitmapFont;
 
 import com.stencyl.models.Actor;
+import com.stencyl.models.actor.Group;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.GameModel;
@@ -176,7 +177,7 @@ class Engine
 	//* Model - Actors & Groups
 	//*-----------------------------------------------
 	
-	public var groups:IntHash<DisplayObjectContainer>;
+	public var groups:IntHash<Group>;
 	public var allActors:IntHash<Actor>;
 	public var nextID:Int;
 	
@@ -397,11 +398,11 @@ class Engine
 		
 		behaviors = new BehaviorManager();
 		
-		groups = new IntHash<DisplayObjectContainer>();
+		groups = new IntHash<Group>();
 		
 		for(grp in GameModel.get().groups)
 		{
-			var g = new Sprite();
+			var g = new Group(grp.ID, grp.name);
 			groups.set(grp.ID, g);
 			g.name = grp.name;
 		}
@@ -1190,8 +1191,6 @@ class Engine
 			}
 		}
 		
-		//master.addChild(a);
-		
 		return a;
 	}
 	
@@ -1252,7 +1251,7 @@ class Engine
 			layer = defaultGroup;
 		}
 
-		//To ensure that it draws after.
+		//To ensure that it draws after
 		layer.addChild(a);
 	}
 	
@@ -1694,8 +1693,10 @@ class Engine
 		}
 		
 		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
-		cameraX = Math.min(screenWidthHalf, cameraX);
-		cameraY = Math.min(screenHeightHalf, cameraY);
+		//cameraX = Math.min(screenWidthHalf, cameraX);
+		//cameraY = Math.min(screenHeightHalf, cameraY);
+		cameraX = Math.min(0, cameraX);
+		cameraY = Math.min(0, cameraY);
 		
 		for(i in 0...master.numChildren)
 		{
@@ -2121,7 +2122,7 @@ class Engine
 	//* Groups
 	//*-----------------------------------------------
 	
-	public function getGroup(ID:Int, a:Actor = null):DisplayObjectContainer
+	public function getGroup(ID:Int, a:Actor = null):Group
 	{
 		if(ID == -1000 && a != null)
 		{
