@@ -21,8 +21,8 @@ class SoundReader implements AbstractReader
 	{
 		//trace("Reading Sound (" + ID + ") - " + name);
 
-		var streaming:Bool = Utils.toBoolean(xml.att.streaming);
-		var looping:Bool = Utils.toBoolean(xml.att.looping);
+		var streaming:Bool = Utils.toBoolean(xml.att.stream);
+		var looping:Bool = Utils.toBoolean(xml.att.loop);
 		var panning:Float = Std.parseFloat(xml.att.pan);
 		var volume:Float = Std.parseFloat(xml.att.volume);	
 		var ext:String = xml.att.type;

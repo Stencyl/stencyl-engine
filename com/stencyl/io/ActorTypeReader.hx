@@ -113,17 +113,16 @@ class ActorTypeReader implements AbstractReader
 			
 			if(e.elements.hasNext())
 			{
-				var list:Hash<Dynamic> = readList(e);
-				map.set(e.att.id, list);
+				map.set(e.att.id, readList(e));
 			}
 		}
 		
 		return new BehaviorInstance(ID, map);
 	}
 	
-	public static function readList(list:Fast):Hash<Dynamic>
+	public static function readList(list:Fast):Array<Dynamic>
 	{
-		var map:Hash<Dynamic> = new Hash<Dynamic>();
+		var map:Array<Dynamic> = new Array<Dynamic>();
 			
 		for(e in list.elements)
 		{
@@ -133,19 +132,19 @@ class ActorTypeReader implements AbstractReader
 			if(type == "number")
 			{
 				var num:Float = Std.parseFloat(e.att.value);
-				map.set(e.att.order, num);
+				map.insert(index, num);
 			}
 				
 			else if(type == "text")
 			{
 				var str:String = e.att.value;
-				map.set(e.att.order, str);
+				map.insert(index, str);
 			}
 				
 			else if(type == "bool")
 			{
 				var bool:Bool = Utils.toBoolean(e.att.value);
-				map.set(e.att.order, bool);
+				map.insert(index, bool);
 			}
 				
 			else if(type == "list")
@@ -158,7 +157,7 @@ class ActorTypeReader implements AbstractReader
 					value[index2] = item.att.value;
 				}
 				
-				map.set(e.att.order, value);
+				map.insert(index, value);
 			}
 		}
 		

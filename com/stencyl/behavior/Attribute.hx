@@ -69,7 +69,7 @@ class Attribute
 			{
 				if(value != null)
 				{
-					if(value == "null")
+					if(value == "null" || value == "")
 					{
 						realValue = null;
 					}
@@ -77,6 +77,21 @@ class Attribute
 					else
 					{
 						realValue = Data.get().resources.get(value);
+					}
+					
+					if(type == "font" && !Std.is(realValue, com.stencyl.models.Font))
+					{
+						realValue = null;
+					}
+					
+					if(type == "sound" && !Std.is(realValue, com.stencyl.models.Sound))
+					{
+						realValue = null;
+					}
+					
+					if(type == "actortype" && !Std.is(realValue, com.stencyl.models.actor.ActorType))
+					{
+						realValue = null;
 					}
 				}
 			}
@@ -123,7 +138,7 @@ class Attribute
 				
 				if(value == null || value == "")
 				{
-					realValue = new Array();
+					realValue = new Array<Dynamic>();
 				}	
 			}
 			

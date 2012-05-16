@@ -146,6 +146,8 @@ class Behavior
 			{
 				var realValue:Dynamic = a.getRealValue();
 				
+				trace("Set att(" + a.fieldName + ") to " + realValue);
+				
 				//TODO???
 				if(a.type == "list")
 				{
@@ -156,8 +158,6 @@ class Behavior
 				{
 					Reflect.setField(script, attributeName, realValue);
 				}
-				
-				trace("Set att(" + a.fieldName + ") to " + realValue);
 			}
 		}
 	}
