@@ -661,6 +661,7 @@ class Script
 	public function showTileLayer(layerID:Int)
 	{
 		engine.layers.get(layerID).alpha = 255;
+		engine.actorsPerLayer.get(layerID).alpha = 255;
 	}
 	
 	/**
@@ -671,6 +672,7 @@ class Script
 	public function hideTileLayer(layerID:Int)
 	{
 		engine.layers.get(layerID).alpha = 0;
+		engine.actorsPerLayer.get(layerID).alpha = 0;
 	}
 	
 	/**
@@ -681,7 +683,7 @@ class Script
 	 * @param	duration	the duration of the fading (in milliseconds)
 	 * @param	easing		easing function to apply. Linear (no smoothing) is the default.
 	 */
-	public function fadeTileLayerTo(layerID:Int, alphaPct:Int, duration:Float, easing:Dynamic = null)
+	public function fadeTileLayerTo(layerID:Int, alphaPct:Float, duration:Float, easing:Dynamic = null)
 	{
 		if(easing == null)
 		{
@@ -689,6 +691,7 @@ class Script
 		}
 	
 		Actuate.tween(engine.layers.get(layerID), duration, {alpha:alphaPct}).ease(easing);
+		Actuate.tween(engine.actorsPerLayer.get(layerID), duration, {alpha:alphaPct}).ease(easing);
 	}
 	
 	//*-----------------------------------------------
@@ -1148,7 +1151,7 @@ class Script
 	*/
 	public function startShakingScreen(intensity:Float=0.05, duration:Float=0.5)
 	{
-		//FlxG.quake.start(intensity, duration);
+		engine.shakeScreen(intensity, duration);
 	}
 	
 	/**
@@ -1156,7 +1159,7 @@ class Script
 	*/
 	public function stopShakingScreen()
 	{
-		//FlxG.quake.stop();
+		engine.stopShakingScreen();
 	}
 	
 	//*-----------------------------------------------
@@ -1200,6 +1203,16 @@ class Script
 	//* Global
 	//*-----------------------------------------------
 	
+	public function enableFullScreen()
+	{
+		Engine.stage.displayState = nme.display.StageDisplayState.FULL_SCREEN;
+	}
+	
+	public function disableFullScreen()
+	{
+		Engine.stage.displayState = nme.display.StageDisplayState.NORMAL;
+	}
+		
 	/**
 	* Pause the game
 	*/
