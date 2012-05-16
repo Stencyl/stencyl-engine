@@ -112,7 +112,7 @@ class Script
 		return (o == true || o == "true");
 	}
 	
-	public inline function strCompare(one:String, two:String, whichWay:Int):Bool
+	public static inline function strCompare(one:String, two:String, whichWay:Int):Bool
 	{
 		if(whichWay < 0)
 		{
@@ -125,24 +125,14 @@ class Script
 		}
 	}
 	
-	public inline function strCompareBefore(a:String, b:String):Bool
+	public static inline function strCompareBefore(a:String, b:String):Bool
 	{
-		if(a < b)
-		{
-			return true;
-		}
-		
-		return false;
+		return(a < b);
 	} 
 	
-	public inline function strCompareAfter(a:String, b:String):Bool
+	public static inline function strCompareAfter(a:String, b:String):Bool
 	{
-		if(a > b)
-		{
-			return true;
-		}
-		
-		return false;
+		return(a > b);
 	} 
 	
 	public inline function asNumber(o:Dynamic):Float
