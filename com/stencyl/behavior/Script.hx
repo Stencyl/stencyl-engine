@@ -629,6 +629,16 @@ class Script
 		engine.switchScene(sceneID, leave, enter);
 	}
 	
+	public function createFadeOut(duration:Float, color:Int=0xff000000):Transition
+	{
+		return new com.stencyl.graphics.transitions.FadeOutTransition(duration, color);
+	}
+	
+	public function createFadeIn(duration:Float, color:Int=0xff000000):Transition
+	{
+		return new com.stencyl.graphics.transitions.FadeInTransition(duration, color);
+	}
+	
 	//*-----------------------------------------------
 	//* Tile Layers
 	//*-----------------------------------------------
