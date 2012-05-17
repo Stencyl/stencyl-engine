@@ -854,6 +854,16 @@ class Script
 	//* Actor Creation
 	//*-----------------------------------------------
 	
+	public function getLastCreatedActor():Actor
+	{
+		return lastCreatedActor;
+	}
+		
+	public function createActorInNextScene(type:ActorType, x:Float, y:Float, layerConst:Int)
+	{
+		engine.createActorInNextScene(type, x, y, layerConst);
+	}
+	
 	//*-----------------------------------------------
 	//* Actor-Related Getters
 	//*-----------------------------------------------
@@ -1212,6 +1222,16 @@ class Script
 	//*-----------------------------------------------
 	//* Global
 	//*-----------------------------------------------
+	
+	public function pause()
+	{
+		engine.pause();
+	}
+	
+	public function unpause()
+	{
+		engine.unpause();
+	}
 	
 	public function enableFullScreen()
 	{

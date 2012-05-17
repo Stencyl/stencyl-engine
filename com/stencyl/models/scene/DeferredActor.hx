@@ -6,13 +6,13 @@ class DeferredActor
 {
 	public var type:ActorType;
 	
-	public var x:Int;
-	public var y:Int;
+	public var x:Float;
+	public var y:Float;
 	
 	//Script.FRONT/MIDDLE/BACK
 	public var layer:Int;
 	
-	public function DeferredActor(type:ActorType, x:Int, y:Int, layer:Int)
+	public function new(type:ActorType, x:Float, y:Float, layer:Int)
 	{
 		this.type = type;
 		this.x = x;

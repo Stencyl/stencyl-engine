@@ -29,6 +29,7 @@ import com.stencyl.graphics.transitions.CircleTransition;
 import com.stencyl.graphics.BitmapFont;
 
 import com.stencyl.models.Actor;
+import com.stencyl.models.scene.DeferredActor;
 import com.stencyl.models.actor.Group;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.scene.ActorInstance;
@@ -1105,7 +1106,11 @@ class Engine
 	//* Actor Creation
 	//*-----------------------------------------------
 	
-	//TODO: Actor doesn't show up? Why? Is it still defaulting to default group?
+	public function createActorInNextScene(type:ActorType, x:Float, y:Float, layer:Int)
+	{
+		actorsToCreateInNextScene.push(new DeferredActor(type, x, y, layer));
+	}
+		
 	public function createActor(ai:ActorInstance, offset:Bool = false):Actor
 	{
 		var s:com.stencyl.models.actor.Sprite = cast(Data.get().resources.get(ai.actorType.spriteID), com.stencyl.models.actor.Sprite);
@@ -1905,7 +1910,7 @@ class Engine
 		
 		for(a in allActors)
 		{
-			if (a != null)
+			if(a != null)
 			{
 				a.pause();
 			}									
