@@ -36,6 +36,12 @@ class FadeOutTransition extends Transition
 	}
 	
 	override public function stop()
+	{	
+		active = false;
+		complete = true;
+	}
+	
+	override public function done()
 	{
 		if(rect != null)
 		{

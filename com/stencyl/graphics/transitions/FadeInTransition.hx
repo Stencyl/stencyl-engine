@@ -36,6 +36,12 @@ class FadeInTransition extends Transition
 	
 	override public function stop()
 	{
+		active = false;
+		complete = true;
+	}
+	
+	override public function done()
+	{
 		if(rect != null)
 		{
 			Engine.engine.transitionLayer.removeChild(rect);

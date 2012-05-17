@@ -41,6 +41,11 @@ class Transition
 		active = false;
 	}
 	
+	//Usually hides the transition
+	public function done()
+	{
+	}
+	
 	public function isActive():Bool
 	{
 		return active;

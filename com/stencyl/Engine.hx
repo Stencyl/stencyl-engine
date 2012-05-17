@@ -138,9 +138,6 @@ class Engine
 	private var enter:Transition;
 	private var sceneToEnter:Int;	
 	
-	public var enterTimer:Int;
-	public var leaveTimer:Int;
-	
 	
 	//*-----------------------------------------------
 	//* Shaking
@@ -948,8 +945,7 @@ class Engine
 		debugDrawer.m_sprite.graphics.clear();
 		
 		Utils.removeAllChildren(master);
-		Utils.removeAllChildren(transitionLayer);
-					
+		
 		behaviors.destroy();
 	
 		for(group in actorsPerLayer)
@@ -1060,8 +1056,6 @@ class Engine
 		this.leave = leave;
 		this.enter = enter;
 		
-		leaveTimer = 0;
-		
 		if(!this.leave.isComplete())
 		{
 			this.leave.start();
@@ -1072,12 +1066,17 @@ class Engine
 	
 	public function enterScene()
 	{
-		enterTimer = 0;
-		
 		if(!enter.isComplete())
 		{
 			enter.start();
+			
+			if(leave != null)
+			{
+				leave.done();
+			}
 		}
+		
+		leave = null;
 		
 		trace("Entering Scene " + sceneToEnter);
 		
@@ -1767,7 +1766,40 @@ class Engine
 		acc += elapsedTime;
 		
 		Engine.elapsedTime = elapsedTime;
+
+		if(leave != null)
+		{
+			if(leave.isComplete())
+			{
+				leave.stop();
+				enterScene();
+			}
+			
+			else
+			{
+				postUpdate(currTime);
+			}
+			
+			return;
+		}
 		
+		if(enter != null)
+		{
+			if(enter.isComplete())
+			{
+				enter.stop();
+				enter.done();
+				enter = null;
+			}
+		}
+			
+		//---
+		
+		postUpdate(currTime);
+	}
+	
+	private function postUpdate(currTime:Float)
+	{
 		while(acc > STEP_SIZE)
 		{
 			update(STEP_SIZE);
