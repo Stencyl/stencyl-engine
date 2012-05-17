@@ -22,15 +22,7 @@ import nme.display.DisplayObjectContainer;
  */
 class Utils
 {
-	/**
-	 * The HaxePunk major version.
-	 */
-	public static inline var VERSION:String = "2.5.0";
-
-	/**
-	 * The standard layer used since only flash can handle negative indicies in arrays, set your layers to some offset of this
-	 */
-	public static inline var BASELAYER:Int = 10;
+	public static inline var INT_MAX:Int = 100000000;
 
 	/**
 	 * Flash equivalent: Number.MAX_VALUE
@@ -89,15 +81,6 @@ class Utils
 	 * A rectangle representing the size of the screen.
 	 */
 	public static var bounds:Rectangle;
-
-	/**
-	 * The default font file to use
-	 */
-#if nme
-	public static var defaultFont:String = "font/04B_03__.ttf";
-#else
-	public static var defaultFont:String = "default";
-#end
 
 	/**
 	 * Point used to determine drawing offset in the render loop.

@@ -2304,6 +2304,32 @@ class Actor extends Sprite
 	//* Drawing
 	//*-----------------------------------------------
 	
+	public function draw(g:Graphics)
+	{
+		var r = 0;
+		
+		while(r < whenDrawingListeners.length)
+		{
+			try
+			{
+				var f:Graphics->Float->Float->Array<Dynamic>->Void = whenDrawingListeners[r];			
+				f(g, x, y, whenDrawingListeners);
+				
+				if(Utils.indexOf(whenDrawingListeners, f) == -1)
+				{
+					r--;
+				}
+			}
+			
+			catch(e:String)
+			{
+				trace(e);
+			}
+			
+			r++;
+		}
+	}
+	
 	public function enableActorDrawing()
 	{
 		drawActor = true;

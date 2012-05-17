@@ -1,8 +1,11 @@
 package com.stencyl.models;
 
+import nme.events.Event;
 import com.stencyl.Engine;
 import com.stencyl.models.Sound;
 import com.eclecticdesignstudio.motion.Actuate;
+
+import nme.media.SoundTransform;
 
 class SoundChannel 
 {	
@@ -19,6 +22,7 @@ class SoundChannel
 	public var position:Float;
 	
 	public var engine:Engine;
+	public var transform:SoundTransform;
 	
 	public function new(engine:Engine, channelNum:Int) 
 	{
@@ -31,6 +35,8 @@ class SoundChannel
 		
 		this.channelNum = channelNum;
 		this.engine = engine;
+		
+		transform = new SoundTransform();
 	}
 	
 	public function playSound(clip:Sound):nme.media.SoundChannel
@@ -71,7 +77,7 @@ class SoundChannel
 			
 			//currentSound.setScene(engine);
 		}
-		
+
 		position = 0;
 		currentSource = clip.src;
 		looping = true;
@@ -93,10 +99,22 @@ class SoundChannel
 			{
 				if(currentSource != null)
 				{
-					currentSource.play(position);
+					currentSound = currentClip.play(channelNum, position);
+					currentSound.soundTransform = transform;
+				
+					if(looping)
+					{
+						currentSound.addEventListener(Event.SOUND_COMPLETE, looped);
+					}
 				}
 			}
 		}
+	}
+	
+	private function looped(event:Event=null)
+	{
+        currentSound.removeEventListener(Event.SOUND_COMPLETE,looped);
+		loopSound(currentClip);
 	}
 	
 	public function stopSound()
@@ -113,7 +131,7 @@ class SoundChannel
 	{
 		if(currentSound != null)
 		{
-			Actuate.tween(currentSound.soundTransform, time, {volume:1});
+			Actuate.tween(transform, time, {volume:1}).onUpdate(onUpdate);
 		}
 	}
 	
@@ -121,8 +139,13 @@ class SoundChannel
 	{
 		if(currentSound != null)
 		{
-			Actuate.tween(currentSound.soundTransform, time, {volume:0});
+			Actuate.tween(transform, time, {volume:0}).onUpdate(onUpdate);
 		}
+	}
+	
+	public function onUpdate()
+	{
+		currentSound.soundTransform = transform;
 	}
 	
 	public function setVolume(volume:Float)
@@ -131,7 +154,8 @@ class SoundChannel
 		
 		if(currentSound != null)
 		{
-			currentSound.soundTransform.volume = volume;
+			transform.volume = volume;
+			currentSound.soundTransform = transform;
 		}
 	}
 }

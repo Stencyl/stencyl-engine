@@ -3,6 +3,9 @@ package com.stencyl.models.scene;
 import nme.display.Sprite;
 import nme.geom.ColorTransform;
 
+import nme.display.Bitmap;
+import nme.display.BitmapData;
+
 class Layer extends Sprite
 {
 	private var tiles:TileLayer;
@@ -10,6 +13,9 @@ class Layer extends Sprite
 	public var ID:Int;
 	public var order:Int;
 	public var color:Int;
+	
+	public var customDrawing:Bitmap;
+	public var canvas:BitmapData;
 	
 	public function new(ID:Int, order:Int, tiles:TileLayer)
 	{
@@ -24,18 +30,10 @@ class Layer extends Sprite
 		
 		alpha = 255;
 		color = 0x00ffffff;
-	}
-	
-	//No longer needed! Just set the properties directly.
-	/*public function render()
-	{
-		if(alpha <= 0) 
-		{	
-			return;
-		}
 		
-		//Don't use draw! Set the property instead!
-		//tiles.draw(FlxG.scroll.x, FlxG.scroll.y, _alpha);
-		//renderMembers();
-	}*/
+		canvas = new BitmapData(Engine.screenWidth, Engine.screenHeight);
+		customDrawing = new Bitmap(canvas);
+		
+		addChild(customDrawing);
+	}
 }

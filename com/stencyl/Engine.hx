@@ -208,6 +208,7 @@ class Engine
 	
 	public var layers:IntHash<Layer>;
 	public var tileLayers:IntHash<TileLayer>;
+	
 	public var dynamicTiles:Hash<Actor>;
 	public var animatedTiles:Array<Tile>;
 	
@@ -1625,7 +1626,7 @@ class Engine
 					
 					else if(a.body.isActive())
 					{		
-						a.innerUpdate(elapsedTime, true);							
+						a.innerUpdate(elapsedTime, true);						
 					}
 				}
 				
@@ -1836,6 +1837,8 @@ class Engine
 				continue;
 			}
 		}
+		
+		draw();
 	}
 	
 	//*-----------------------------------------------
@@ -1961,12 +1964,16 @@ class Engine
          */
       
      //The display tree does almost everything now. We only need to invoke the behavior drawers.
-     public function render()
+     public function draw()
      {
-     	//TODO:
-     	
-     	//Clear each of the layer surfaces
-     	
+		//Walk through all actors
+		//TODO:
+		//for(a in actorsOnScreen)
+		/*for(a in actors)
+		{
+			a.draw(null);	
+		}*/
+
      	//Walk through each of the drawing events
      }
 	

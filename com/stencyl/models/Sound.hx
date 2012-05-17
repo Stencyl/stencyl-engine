@@ -27,37 +27,39 @@ class Sound extends Resource
 		this.ext = ext;
 	}		
 	
-	public function play(channelNum:Int = 1):SoundChannel
+	public function play(channelNum:Int = 1, position:Float = 0):SoundChannel
 	{
 		if(streaming)
 		{
-			var sound = Assets.getSound("assets/music/" + ID + "." + ext);
+			var sound = Assets.getSound("assets/music/sound-" + ID + "." + ext);
 			src = sound;
-			return sound.play();
+			return sound.play(position);
 		}
 		
 		else
 		{
-			var sound = Assets.getSound("assets/sound/" + ID + "." + ext);
+			var sound = Assets.getSound("assets/sound/sound-" + ID + "." + ext);
 			src = sound;
-			return sound.play();
+			return sound.play(position);
 		}	
 	}
 	
-	public function loop(channelNum:Int = 1):SoundChannel
+	public function loop(channelNum:Int = 1, position:Float = 0):SoundChannel
 	{
+		trace(position);
+	
 		if(streaming)
 		{
-			var sound = Assets.getSound("assets/music/" + ID + "." + ext);
+			var sound = Assets.getSound("assets/music/sound-" + ID + "." + ext);
 			src = sound;
-			return sound.play(0, -1);
+			return sound.play(position, com.stencyl.utils.Utils.INT_MAX);
 		}
 		
 		else
 		{
-			var sound = Assets.getSound("assets/sound/" + ID + "." + ext);
+			var sound = Assets.getSound("assets/sound/sound-" + ID + "." + ext);
 			src = sound;
-			return sound.play(0, -1);
+			return sound.play(position, com.stencyl.utils.Utils.INT_MAX);
 		}
 	}
 }
