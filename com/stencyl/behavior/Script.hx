@@ -16,6 +16,7 @@ import nme.Lib;
 import nme.display.Graphics;
 
 import com.stencyl.models.Actor;
+import com.stencyl.models.actor.Group;
 import com.stencyl.models.Scene;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.scene.Layer;
@@ -858,6 +859,25 @@ class Script
 	{
 		return lastCreatedActor;
 	}
+	
+	public function createActor(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
+	{
+		var a:Actor = engine.createActorOfType(type, x, y, layerConst);
+		Script.lastCreatedActor = a;
+		return a;
+	}	
+		
+	public function createRecycledActor(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
+	{
+		var a:Actor = engine.getRecycledActorOfType(type, x, y, layerConst);		
+		Script.lastCreatedActor = a;	
+		return a;
+	}
+	
+	public function recycleActor(a:Actor)
+	{
+		engine.recycleActor(a);
+	}
 		
 	public function createActorInNextScene(type:ActorType, x:Float, y:Float, layerConst:Int)
 	{
@@ -921,7 +941,7 @@ class Script
 	/**
 	* Returns an ActorGroup by ID
 	*/
-	public function getActorGroup(groupID:Int):Dynamic
+	public function getActorGroup(groupID:Int):Group
 	{
 		return engine.getGroup(groupID);
 	}
