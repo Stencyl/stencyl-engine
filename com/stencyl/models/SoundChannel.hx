@@ -91,6 +91,8 @@ class SoundChannel
 		{
 			if(pause)
 			{
+				currentSound.removeEventListener(Event.SOUND_COMPLETE,looped);
+			
 				position = currentSound.position;
 				currentSound.stop();	
 			}

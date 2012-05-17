@@ -46,8 +46,6 @@ class Sound extends Resource
 	
 	public function loop(channelNum:Int = 1, position:Float = 0):SoundChannel
 	{
-		trace(position);
-	
 		if(streaming)
 		{
 			var sound = Assets.getSound("assets/music/sound-" + ID + "." + ext);
