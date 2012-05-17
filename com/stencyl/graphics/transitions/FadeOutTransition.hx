@@ -35,13 +35,7 @@ class FadeOutTransition extends Transition
 		Actuate.tween(rect, duration, {alpha:1}).ease(Linear.easeNone).onComplete(stop);
 	}
 	
-	override public function stop()
-	{	
-		active = false;
-		complete = true;
-	}
-	
-	override public function done()
+	override public function cleanup()
 	{
 		if(rect != null)
 		{

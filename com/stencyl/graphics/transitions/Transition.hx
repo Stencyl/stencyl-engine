@@ -39,10 +39,11 @@ class Transition
 	public function stop()
 	{
 		active = false;
+		complete = true;
 	}
 	
 	//Usually hides the transition
-	public function done()
+	public function cleanup()
 	{
 	}
 	

@@ -24,6 +24,8 @@ import nme.ui.Keyboard;
 
 import com.stencyl.graphics.transitions.Transition;
 import com.stencyl.graphics.transitions.FadeInTransition;
+import com.stencyl.graphics.transitions.FadeOutTransition;
+import com.stencyl.graphics.transitions.CircleTransition;
 import com.stencyl.graphics.BitmapFont;
 
 import com.stencyl.models.Actor;
@@ -1072,7 +1074,7 @@ class Engine
 			
 			if(leave != null)
 			{
-				leave.done();
+				leave.cleanup();
 			}
 		}
 		
@@ -1788,7 +1790,7 @@ class Engine
 			if(enter.isComplete())
 			{
 				enter.stop();
-				enter.done();
+				enter.cleanup();
 				enter = null;
 			}
 		}
