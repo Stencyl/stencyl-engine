@@ -24,6 +24,8 @@ class FadeOutTransition extends Transition
 	
 	override public function start()
 	{
+		active = true;
+		
 		rect = new Shape();
 		rect.alpha = 0;
 		var g = rect.graphics;

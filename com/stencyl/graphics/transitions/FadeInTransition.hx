@@ -24,6 +24,8 @@ class FadeInTransition extends Transition
 	
 	override public function start()
 	{
+		active = true;
+	
 		rect = new Shape();
 		var g = rect.graphics;
 		g.beginFill(color);

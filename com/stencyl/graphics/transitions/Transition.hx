@@ -28,7 +28,7 @@ class Transition
 	
 	public function start()
 	{
-		complete = true;
+		complete = true; //???
 	}
 	
 	public function reset()
