@@ -330,7 +330,61 @@ class Script
 		}
 	}
 	
-	//mouse-related
+	public function addMousePressedListener(func:Array<Dynamic>->Void)
+	{
+		engine.whenMousePressedListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenMousePressedListeners, func);
+		}
+	}
+	
+	public function addMouseReleasedListener(func:Array<Dynamic>->Void)
+	{
+		engine.whenMouseReleasedListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenMouseReleasedListeners, func);
+		}
+	}
+	
+	public function addMouseMovedListener(func:Array<Dynamic>->Void)
+	{
+		engine.whenMouseMovedListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenMouseMovedListeners, func);
+		}
+	}
+	
+	public function addMouseDraggedListener(func:Array<Dynamic>->Void)
+	{
+		engine.whenMouseDraggedListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenMouseDraggedListeners, func);
+		}
+	}
+	
+	public function addMouseOverActorListener(a:Actor, func:Int->Array<Dynamic>->Void)
+	{	
+		if(a == null)
+		{
+			trace("Error in " + wrapper.classname +": Cannot add listener function to null actor.");
+			return;
+		}
+		
+		a.mouseOverListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(a.mouseOverListeners, func);
+		}
+	}
 	
 	public function addPropertyChangeListener(propertyKey:String, propertyKey2:String, func:Dynamic->Array<Dynamic>->Void)
 	{
@@ -419,10 +473,40 @@ class Script
 	
 	//collision
 	//scene collision
-	//type group created
-	//type group killed
 	
-	public function addSoundListener(obj:Dynamic, func:Dynamic->Void)
+	public function addWhenTypeGroupCreatedListener(obj:Dynamic, func:Actor->Array<Dynamic>->Void)
+	{
+		if(!engine.whenTypeGroupCreatedListeners.exists(obj))
+		{
+			engine.whenTypeGroupCreatedListeners.set(obj, new Array<Dynamic>());
+		}
+		
+		var listeners = engine.whenTypeGroupCreatedListeners.get(obj);
+		listeners.push(func);		
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(listeners, func);
+		}
+	}
+	
+	public function addWhenTypeGroupKilledListener(obj:Dynamic, func:Actor->Array<Dynamic>->Void)
+	{
+		if(!engine.whenTypeGroupDiesListeners.exists(obj))
+		{
+			engine.whenTypeGroupDiesListeners.set(obj, new Array<Dynamic>());
+		}
+		
+		var listeners = engine.whenTypeGroupDiesListeners.get(obj);
+		listeners.push(func);		
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(listeners, func);
+		}
+	}
+	
+	public function addSoundListener(obj:Dynamic, func:Array<Dynamic>->Void)
 	{
 		if(!engine.soundListeners.exists(obj))
 		{
@@ -438,7 +522,7 @@ class Script
 		}
 	}
 	
-	public function addFocusChangeListener(func:Bool->Dynamic->Void)
+	public function addFocusChangeListener(func:Bool->Array<Dynamic>->Void)
 	{						
 		engine.whenFocusChangedListeners.push(func);
 		
@@ -448,7 +532,7 @@ class Script
 		}
 	}
 	
-	public function addPauseListener(func:Bool->Dynamic->Void)
+	public function addPauseListener(func:Bool->Array<Dynamic>->Void)
 	{						
 		engine.whenPausedListeners.push(func);
 		
