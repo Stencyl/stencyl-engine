@@ -2177,30 +2177,9 @@ class Actor extends Sprite
 		else if(mouseState == -1 && !mouseOver)
 		{
 			mouseState = 0;
-		}			
+		}	
 		
-		var r = 0;
-		
-		while(r < mouseOverListeners.length)
-		{
-			try
-			{
-				var f:Int->Array<Dynamic>->Void = mouseOverListeners[r];			
-				f(mouseState, mouseOverListeners);
-				
-				if(Utils.indexOf(mouseOverListeners, f) == -1)
-				{
-					r--;
-				}
-			}
-			
-			catch(e:String)
-			{
-				trace(e);
-			}
-			
-			r++;
-		}
+		Engine.invokeListeners2(mouseOverListeners, mouseState);
 	}
 	
 	//*-----------------------------------------------
@@ -2654,74 +2633,21 @@ class Actor extends Sprite
 	public function die()
 	{
 		dying = true;
+		
+		var a = engine.whenTypeGroupDiesListeners.get(getType());
+		var b = engine.whenTypeGroupDiesListeners.get(getGroup());
 	
-		//TODO: Events
-		/*for (var r:int = 0; r < whenKilledListeners.length; r++)
+		Engine.invokeListeners(whenKilledListeners);
+
+		if(a != null)
 		{
-			var f:Function = whenKilledListeners[r] as Function;	
-			
-			try
-			{
-				f(whenKilledListeners);
-				
-				if (whenKilledListeners.indexOf(f) == -1)
-				{
-					r--;
-				}
-			}
-			catch(e:Error)
-			{
-				FlxG.log("Error in die listener function");
-				FlxG.log(e.getStackTrace());
-			}
+			Engine.invokeListeners2(a, this);
 		}
 		
-		//Move to GameState level?
-		if (game.whenTypeGroupDiesListeners[getType()] != null)
+		if(b != null)
 		{
-			var listeners:Array = game.whenTypeGroupDiesListeners[getType()] as Array;
-			
-			for (var r:int = 0; r < listeners.length; r++)
-			{
-				try
-				{
-					var f:Function = listeners[r] as Function;
-					f(listeners, this);
-					
-					if (listeners.indexOf(f) == -1)
-					{
-						r--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
+			Engine.invokeListeners2(b, this);
 		}
-		
-		if (game.whenTypeGroupDiesListeners[getGroup()] != null)
-		{
-			var listeners:Array = game.whenTypeGroupDiesListeners[getGroup()] as Array;
-			
-			for (var r:int = 0; r < listeners.length; r++)
-			{
-				try
-				{
-					var f:Function = listeners[r] as Function;
-					f(listeners, this);
-					
-					if (listeners.indexOf(f) == -1)
-					{
-						r--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
-		}*/
 		
 		removeAllListeners();
 	}
