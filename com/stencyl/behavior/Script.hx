@@ -308,11 +308,40 @@ class Script
 		}
 	}
 	
-	
 	//enters region
 	//exits region
-	//actor position
-	//actor type group position
+	
+	public function addActorPositionListener(a:Actor, func:Dynamic->Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void)
+	{
+		if(a == null)
+		{
+			trace("Error in " + wrapper.classname + ": Cannot add listener function to null actor.");
+			return;
+		}
+		
+		a.positionListeners.push(func);
+								
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(a.positionListeners, func);
+		}
+	}
+	
+	public function addActorTypeGroupPositionListener(obj:Dynamic, func:Actor->Dynamic->Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void)
+	{
+		if(!engine.typeGroupPositionListeners.exists(obj))
+		{
+			engine.typeGroupPositionListeners.set(obj, new Array<Dynamic>());
+		}
+		
+		var listeners = cast(engine.typeGroupPositionListeners.get(obj), Array<Dynamic>);
+		listeners.push(func);		
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(listeners, func);
+		}
+	}
 	
 	public function addKeyStateListener(key:String, func:Dynamic->Dynamic->Array<Dynamic>->Void)
 	{			

@@ -2774,4 +2774,85 @@ class Engine
 			r++;
 		}
 	}
+	
+	//3 args
+	public static inline function invokeListeners4(listeners:Array<Dynamic>, value:Dynamic, value2:Dynamic, value3:Dynamic)
+	{
+		var r = 0;
+		
+		while(r < listeners.length)
+		{
+			try
+			{
+				var f:Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void = listeners[r];			
+				f(value, value2, value3, listeners);
+				
+				if(Utils.indexOf(listeners, f) == -1)
+				{
+					r--;
+				}
+			}
+			
+			catch(e:String)
+			{
+				trace(e);
+			}
+			
+			r++;
+		}
+	}
+	
+	//4 args
+	public static inline function invokeListeners5(listeners:Array<Dynamic>, value:Dynamic, value2:Dynamic, value3:Dynamic, value4:Dynamic)
+	{
+		var r = 0;
+		
+		while(r < listeners.length)
+		{
+			try
+			{
+				var f:Dynamic->Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void = listeners[r];			
+				f(value, value2, value3, value4, listeners);
+				
+				if(Utils.indexOf(listeners, f) == -1)
+				{
+					r--;
+				}
+			}
+			
+			catch(e:String)
+			{
+				trace(e);
+			}
+			
+			r++;
+		}
+	}
+	
+	//5 args
+	public static inline function invokeListeners6(listeners:Array<Dynamic>, value:Dynamic, value2:Dynamic, value3:Dynamic, value4:Dynamic, value5:Dynamic)
+	{
+		var r = 0;
+		
+		while(r < listeners.length)
+		{
+			try
+			{
+				var f:Dynamic->Dynamic->Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void = listeners[r];			
+				f(value, value2, value3, value4, value5, listeners);
+				
+				if(Utils.indexOf(listeners, f) == -1)
+				{
+					r--;
+				}
+			}
+			
+			catch(e:String)
+			{
+				trace(e);
+			}
+			
+			r++;
+		}
+	}
 }

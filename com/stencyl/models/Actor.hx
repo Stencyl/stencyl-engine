@@ -780,12 +780,11 @@ class Actor extends Sprite
 		internalUpdate(elapsedTime, true);
 		Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
 
-		/*if(positionListeners.length > 0 || 
-		   engine.typeGroupPositionListeners[type] != null || 
-		   engine.typeGroupPositionListeners[getGroup()] != null)
+		//TODO: Are these hashmap lookups slow? Try using integers instead.
+		if(positionListeners.length > 0 || engine.typeGroupPositionListeners.exists(type) || engine.typeGroupPositionListeners.exists(getGroup()))
 		{
 			checkScreenState();
-		}*/
+		}
 	}
 	
 	//doAll prevents super.update from being called, which can often muck with
@@ -942,80 +941,31 @@ class Actor extends Sprite
 	
 	private function checkScreenState()
 	{
-		/*var onScreen:Boolean = isOnScreen();
-		var inScene:Boolean = onScreen || isInScene();
+		var onScreen:Bool = isOnScreen();
+		var inScene:Bool = onScreen || isInScene();
 		
-		var enteredScreen:Boolean = !lastScreenState && onScreen;
-		var enteredScene:Boolean = !lastSceneState && inScene;
-		var exitedScreen:Boolean = lastScreenState && !onScreen;
-		var exitedScene:Boolean = lastSceneState && !inScene;
+		var enteredScreen:Bool = !lastScreenState && onScreen;
+		var enteredScene:Bool = !lastSceneState && inScene;
+		var exitedScreen:Bool = lastScreenState && !onScreen;
+		var exitedScene:Bool = lastSceneState && !inScene;
 		
-		for (var r:int = 0; r < positionListeners.length; r++)
+		Engine.invokeListeners5(positionListeners, enteredScreen, exitedScreen, enteredScene, exitedScene);
+		
+		var typeListeners = cast(engine.typeGroupPositionListeners.get(getGroup()), Array<Dynamic>);
+		var groupListeners = cast(engine.typeGroupPositionListeners.get(getType()), Array<Dynamic>);
+		
+		if(typeListeners != null)
 		{
-			try
-			{
-				var f:Function = positionListeners[r] as Function;				
-				f(positionListeners, enteredScreen, exitedScreen, enteredScene, exitedScene);
-				
-				if (positionListeners.indexOf(f) == -1)
-				{
-					r--;
-				}
-			}
-			catch (e:Error)
-			{
-				FlxG.log(e.getStackTrace());
-			}
+			Engine.invokeListeners6(typeListeners, this, enteredScreen, exitedScreen, enteredScene, exitedScene);
 		}
 		
-		var typeListeners:Array = game.typeGroupPositionListeners[getGroup()] as Array;
-		var groupListeners:Array = game.typeGroupPositionListeners[getType()] as Array;
-		
-		//Move to scene level?
-		if (typeListeners != null)
+		if(groupListeners != null)
 		{
-			for (var r:int = 0; r < typeListeners.length; r++)
-			{
-				try
-				{
-					var f:Function = typeListeners[r] as Function;				
-					f(typeListeners, this, enteredScreen, exitedScreen, enteredScene, exitedScene);
-					
-					if (typeListeners.indexOf(f) == -1)
-					{
-						r--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
-		}
-		
-		if (groupListeners != null)
-		{
-			for (var r:int = 0; r < groupListeners.length; r++)
-			{
-				try
-				{
-					var f:Function = groupListeners[r] as Function;				
-					f(groupListeners, this, enteredScreen, exitedScreen, enteredScene, exitedScene);
-					
-					if (groupListeners.indexOf(f) == -1)
-					{
-						r--;
-					}						
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
+			Engine.invokeListeners6(groupListeners, this, enteredScreen, exitedScreen, enteredScene, exitedScene);
 		}
 		
 		lastScreenState = onScreen;
-		lastSceneState = inScene;*/
+		lastSceneState = inScene;
 	}
 		
 	//*-----------------------------------------------
