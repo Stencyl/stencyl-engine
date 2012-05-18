@@ -316,44 +316,89 @@ class Script
 	//key
 	//mouse-related
 	
+	public function addPropertyChangeListener(propertyKey:String, propertyKey2:String, func:Dynamic->Array<Dynamic>->Void)
+	{
+		if(!propertyChangeListeners.exists(propertyKey))
+		{
+			propertyChangeListeners.set(propertyKey, new Array<Dynamic>());
+		}
+		
+		//Equality block needs to be added to two listener lists
+		if(propertyKey2 != null && !propertyChangeListeners.exists(propertyKey2))
+		{
+			propertyChangeListeners.set(propertyKey2, new Array<Dynamic>());
+		}
+		
+		var listeners = propertyChangeListeners.get(propertyKey);
+		var listeners2 = propertyChangeListeners.get(propertyKey2);
+		
+		listeners.push(func);			
+		
+		if(propertyKey2 != null)
+		{
+			listeners2.push(func);
+			
+			//If equality, keep note of other listener list
+			var arr = new Array<Dynamic>();
+			arr.push(listeners);
+			arr.push(listeners2);
+			equalityPairs.set(func, arr);
+		}
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(listeners, func);
+			
+			if(propertyKey2 != null)
+			{
+				cast(this, ActorScript).actor.registerListener(listeners2, func);
+			}
+		}
+	}
+	
 	public function propertyChanged(propertyKey:String, property:Dynamic)
 	{
-		/*var listeners:Array = propertyChangeListeners[propertyKey];
+		var listeners = propertyChangeListeners.get(propertyKey);
 		
-		if (listeners != null)
+		if(listeners != null)
 		{
-			for (var r:int = 0; r < listeners.length; r++)
+			var r = 0;
+		
+			while(r < listeners.length)
 			{
 				try
 				{
-					var f:Function = listeners[r] as Function;
-					f(listeners, property);
+					var f:Dynamic->Array<Dynamic>->Void = listeners[r];			
+					f(property, listeners);
 					
-					if (listeners.indexOf(f) == -1)
+					if(com.stencyl.utils.Utils.indexOf(listeners, f) == -1)
 					{
 						r--;
 						
 						//If equality, remove from other list as well
-						if (equalityPairs[f] != null)
+						if(equalityPairs.get(f) != null)
 						{
-							for each(var list:Array in equalityPairs[f])
+							for(list in cast(equalityPairs.get(f), Array<Dynamic>))
 							{
-								if (list != listeners)
+								if(list != listeners)
 								{
-									list.splice(list.indexOf(f), 1);
+									list.splice(com.stencyl.utils.Utils.indexOf(list, f), 1);
 								}
 							}
 							
-							delete equalityPairs[f];
+							equalityPairs.delete(f);
 						}
 					}
 				}
-				catch (e:Error)
+				
+				catch(e:String)
 				{
-					FlxG.log(e.getStackTrace());
+					trace(e);
 				}
+				
+				r++;
 			}
-		}*/
+		}
 	}
 	
 	//collision
@@ -363,7 +408,7 @@ class Script
 	
 	public function addSoundListener(obj:Dynamic, func:Dynamic->Void)
 	{
-		if(engine.soundListeners.exists(obj))
+		if(!engine.soundListeners.exists(obj))
 		{
 			engine.soundListeners.set(obj, new Array<Dynamic>());
 		}
