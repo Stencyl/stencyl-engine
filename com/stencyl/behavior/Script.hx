@@ -313,7 +313,23 @@ class Script
 	//exits region
 	//actor position
 	//actor type group position
-	//key
+	
+	public function addKeyStateListener(key:String, func:Dynamic->Dynamic->Array<Dynamic>->Void)
+	{			
+		if(!engine.whenKeyPressedListeners.exists(key))
+		{
+			engine.whenKeyPressedListeners.set(key, new Array<Dynamic>());
+		}
+		
+		var listeners = engine.whenKeyPressedListeners.get(key);
+		listeners.push(func);
+								
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(listeners, func);
+		}
+	}
+	
 	//mouse-related
 	
 	public function addPropertyChangeListener(propertyKey:String, propertyKey2:String, func:Dynamic->Array<Dynamic>->Void)
@@ -328,9 +344,6 @@ class Script
 		{
 			propertyChangeListeners.set(propertyKey2, new Array<Dynamic>());
 		}
-		
-		trace(propertyChangeListeners);
-		trace(propertyChangeListeners.get(propertyKey));
 		
 		var listeners = propertyChangeListeners.get(propertyKey);
 		var listeners2 = propertyChangeListeners.get(propertyKey2);

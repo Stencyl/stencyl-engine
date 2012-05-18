@@ -1562,42 +1562,17 @@ class Engine
 		}
 		
 		//Poll Keyboard Inputs
-		/*for (var key:String in whenKeyPressedListeners)
+		for(key in whenKeyPressedListeners.keys())
 		{
-			var k:String = Game.get().controller["_" + key];
+			var listeners = whenKeyPressedListeners.get(key);
+			var pressed = Input.pressed(key);
+			var released = Input.released(key);
 			
-			if (k == null)
+			if(pressed || released)
 			{
-				continue;
-			}
-			
-			var listeners:Array = whenKeyPressedListeners[key] as Array;
-			
-			var pressed:Boolean = FlxG.keys.justPressed(k);
-			var released:Boolean = FlxG.keys.justReleased(k);
-			
-			if (pressed || released)
-			{
-				for (var i:int = 0; i < listeners.length; i++)
-				{
-					try
-					{
-						var f:Function = listeners[i] as Function;					
-						f(listeners, pressed, released);
-						
-						if (listeners.indexOf(f) == -1)
-						{
-							i--;
-						}
-					}
-					catch (e:Error)
-					{
-						FlxG.log(e.getStackTrace);
-					}
-					
-				}
+				invokeListeners3(listeners, pressed, released);
 			}				
-		}*/
+		}
 		
 		invokeListeners2(whenUpdatedListeners, elapsedTime);
 		
