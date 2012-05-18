@@ -54,7 +54,7 @@ class Script
 	public var engine:Engine;
 	public var scene:Engine; //for compatibility - we'll remove it later
 	
-	public var propertyChangeListeners:HashMap<Dynamic, Dynamic>;
+	public var propertyChangeListeners:Hash<Dynamic>;
 	public var equalityPairs:HashMap<Dynamic, Dynamic>;
 		
 		
@@ -100,7 +100,7 @@ class Script
 		this.engine = this.scene = engine;
 		
 		nameMap = new Hash<Dynamic>();	
-		propertyChangeListeners = new HashMap<Dynamic, Dynamic>();
+		propertyChangeListeners = new Hash<Dynamic>();
 		equalityPairs = new HashMap<Dynamic, Dynamic>();
 	}		
 
@@ -183,7 +183,7 @@ class Script
 	
 	public function clearListeners()
 	{
-		propertyChangeListeners = new HashMap<Dynamic, Dynamic>();
+		propertyChangeListeners = new Hash<Dynamic>();
 	}
 	
 	//*-----------------------------------------------
@@ -328,6 +328,9 @@ class Script
 		{
 			propertyChangeListeners.set(propertyKey2, new Array<Dynamic>());
 		}
+		
+		trace(propertyChangeListeners);
+		trace(propertyChangeListeners.get(propertyKey));
 		
 		var listeners = propertyChangeListeners.get(propertyKey);
 		var listeners2 = propertyChangeListeners.get(propertyKey2);
