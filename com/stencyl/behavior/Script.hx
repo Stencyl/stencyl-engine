@@ -308,6 +308,14 @@ class Script
 		}
 	}
 	
+	
+	//enters region
+	//exits region
+	//actor position
+	//actor type group position
+	//key
+	//mouse-related
+	
 	public function propertyChanged(propertyKey:String, property:Dynamic)
 	{
 		/*var listeners:Array = propertyChangeListeners[propertyKey];
@@ -346,6 +354,47 @@ class Script
 				}
 			}
 		}*/
+	}
+	
+	//collision
+	//scene collision
+	//type group created
+	//type group killed
+	
+	public function addSoundListener(obj:Dynamic, func:Dynamic->Void)
+	{
+		if(engine.soundListeners.exists(obj))
+		{
+			engine.soundListeners.set(obj, new Array<Dynamic>());
+		}
+		
+		var listeners:Array<Dynamic> = engine.soundListeners.get(obj);
+		listeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(listeners, func);
+		}
+	}
+	
+	public function addFocusChangeListener(func:Bool->Dynamic->Void)
+	{						
+		engine.whenFocusChangedListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenFocusChangedListeners, func);
+		}
+	}
+	
+	public function addPauseListener(func:Bool->Dynamic->Void)
+	{						
+		engine.whenPausedListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenPausedListeners, func);
+		}
 	}
 	
 	//*-----------------------------------------------

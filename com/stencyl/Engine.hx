@@ -300,6 +300,8 @@ class Engine
 		Engine.engine = this;
 		this.root = root;
 		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
+		stage.addEventListener(Event.DEACTIVATE, onFocusLost);
+		stage.addEventListener(Event.ACTIVATE, onFocus);
 		begin(0);
 	}
 	
@@ -311,7 +313,7 @@ class Engine
 		
 		Data.get();
 		GameModel.get();
-					
+		
 		//---
 			
 		started = true;
@@ -1845,7 +1847,43 @@ class Engine
 	//* Events Finished
 	//*-----------------------------------------------
 	
-	//???
+	public function onFocus(event:Event=null)
+	{
+		focusChanged(false);
+	}
+	
+	public function onFocusLost(event:Event=null)
+	{
+		focusChanged(true);
+	}
+	
+	public function focusChanged(lost:Bool)
+	{
+		if(whenFocusChangedListeners == null)
+		{
+			return;
+		}
+		
+		invokeListeners2(whenFocusChangedListeners, lost);
+	}		
+	
+	public function soundFinished(channelNum:Int)
+	{
+		var sc:SoundChannel = cast(channels[channelNum], SoundChannel);
+		
+		var channelListeners = soundListeners.get(channelNum);
+		var clipListeners = soundListeners.get(sc.currentClip);
+		
+		if(channelListeners != null)
+		{
+			invokeListeners(channelListeners);
+		}
+		
+		if(clipListeners != null)
+		{
+			invokeListeners(clipListeners);
+		}
+	}
 	
 	//*-----------------------------------------------
 	//* Timed Tasks

@@ -52,7 +52,7 @@ class SoundChannel
 			currentClip = clip;
 			currentSound = clip.play(channelNum);	
 			
-			//currentSound.setScene(engine);
+			currentSound.addEventListener(Event.SOUND_COMPLETE, stopped);
 		}
 		
 		position = 0;
@@ -75,7 +75,7 @@ class SoundChannel
 			currentClip = clip;
 			currentSound = clip.loop(channelNum);
 			
-			//currentSound.setScene(engine);
+			currentSound.addEventListener(Event.SOUND_COMPLETE, stopped);
 		}
 
 		position = 0;
@@ -117,6 +117,13 @@ class SoundChannel
 	{
         currentSound.removeEventListener(Event.SOUND_COMPLETE,looped);
 		loopSound(currentClip);
+	}
+	
+	private function stopped(event:Event=null)
+	{
+        currentSound.removeEventListener(Event.SOUND_COMPLETE,stopped);
+		
+		Engine.engine.soundFinished(channelNum);
 	}
 	
 	public function stopSound()
