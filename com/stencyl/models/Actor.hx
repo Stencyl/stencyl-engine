@@ -106,6 +106,9 @@ class Actor extends Sprite
 	//* Position / Motion
 	//*-----------------------------------------------
 	
+	public var originX:Float;
+	public var originY:Float;
+	
 	public var realX:Float;
 	public var realY:Float;
 
@@ -236,6 +239,9 @@ class Actor extends Sprite
 		
 		realX = 0;
 		realY = 0;
+		
+		originX = 0;
+		originY = 0;
 		
 		if(isLightweight)
 		{

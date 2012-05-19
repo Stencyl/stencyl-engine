@@ -49,6 +49,7 @@ import com.stencyl.models.background.ImageBackground;
 import com.stencyl.models.background.ScrollingBackground;
 
 import scripts.MyScripts;
+import com.stencyl.models.collision.Mask;
 
 import com.stencyl.utils.Utils;
 import com.stencyl.utils.HashMap;
