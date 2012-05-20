@@ -16,6 +16,7 @@ import nme.Lib;
 import nme.display.Graphics;
 
 import com.stencyl.models.Actor;
+import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.Group;
 import com.stencyl.models.Scene;
 import com.stencyl.models.GameModel;
@@ -107,6 +108,11 @@ class Script
 	//*-----------------------------------------------
 	//* Internals
 	//*-----------------------------------------------
+	
+	public inline function sameAsAny(o:Dynamic, one:Dynamic, two:Dynamic):Bool
+	{
+		return (o == one) || (o == two);
+	}
 	
 	public inline function asBoolean(o:Dynamic):Bool
 	{
@@ -500,8 +506,48 @@ class Script
 		}
 	}
 	
-	//collision
-	//scene collision
+	public function addCollisionListener(a:Actor, func:Collision->Array<Dynamic>->Void)
+	{					
+		if(a == null)
+		{				
+			trace("Error in " + wrapper.classname +": Cannot add listener function to null actor.");
+			return;
+		}
+		
+		a.collisionListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(a.collisionListeners, func);
+		}
+	}
+	
+	//Only used for type/group type/group collisions
+	/*public function addSceneCollisionListener(obj:Object, obj2:Object, func:Collision->Array<Dynamic>->Void)
+	{
+		if (scene.collisionListeners[obj] == null)
+		{
+			scene.collisionListeners[obj] = new Dictionary();									
+		}
+		
+		if (scene.collisionListeners[obj2] == null)
+		{
+			scene.collisionListeners[obj2] = new Dictionary();
+		}	
+		
+		if (scene.collisionListeners[obj][obj2] == null)
+		{				
+			scene.collisionListeners[obj][obj2] = new Array();			
+		}
+		
+		var listeners:Array = scene.collisionListeners[obj][obj2] as Array;
+		listeners.push(func);	
+		
+		if (this is ActorScript)
+		{
+			(this as ActorScript).actor.registerListener(listeners, func);
+		}
+	}*/
 	
 	public function addWhenTypeGroupCreatedListener(obj:Dynamic, func:Actor->Array<Dynamic>->Void)
 	{
