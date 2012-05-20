@@ -231,7 +231,7 @@ class Engine
 	//* Model - ?????
 	//*-----------------------------------------------
 	
-	public var actors:Array<Actor>;
+	public var actorsToCreate:Array<Actor>;
 	
 	
 	//*-----------------------------------------------
@@ -614,11 +614,11 @@ class Engine
 	
 	private function loadActors()
 	{
-		actors = new Array<Actor>();
+		actorsToCreate = new Array<Actor>();
 		
 		for(instance in scene.actors)
 		{
-			actors.push(createActor(instance, true));
+			actorsToCreate.push(createActor(instance, true));
 		}
 	}
 	
@@ -634,13 +634,12 @@ class Engine
 	
 	private function initActorScripts()
 	{
-		for(a in actors)
+		for(a in actorsToCreate)
 		{
 			a.initScripts();
 		}
 		
-		//???
-		//actors = null;
+		actorsToCreate = null;
 	}
 	
 	private function loadCamera()
@@ -1431,9 +1430,6 @@ class Engine
 			invokeListeners2(f2, a);
 		}
 		
-		//TODO: Remove
-		actors.push(a);
-		
 		return a;
 	}
 	
@@ -1594,7 +1590,7 @@ class Engine
 
 		//TODO:
 		//for(a in actorsOnScreen)
-		for(a in actors)
+		for(a in allActors)
 		{		
 			if(a != null && !a.dead && !a.recycled) 
 			{
