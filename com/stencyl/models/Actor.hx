@@ -3066,6 +3066,8 @@ class Actor extends Sprite
 
 		Engine.invokeListeners2(collisionListeners, Utils.collision);
 		
+		//---
+		
 		//TODO: deal with the type to type, group to group listeners
 	}
 	

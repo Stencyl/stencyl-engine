@@ -1169,7 +1169,7 @@ class Engine
 		//---
 
 		//Use the next available ID
-		if(ai.elementID == Utils.NUMBER_MAX_VALUE)
+		if(ai.elementID == Utils.INT_MAX)
 		{
 			nextID++;
 			a.ID = nextID;
@@ -1402,7 +1402,7 @@ class Engine
 		
 		var ai:ActorInstance = new ActorInstance
 		(
-			-1,
+			Utils.INT_MAX,
 			Std.int(x),
 			Std.int(y),
 			1,
