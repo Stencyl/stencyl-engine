@@ -3065,6 +3065,8 @@ class Actor extends Sprite
 		Utils.collision.otherCollidedWithTerrain = false;
 
 		Engine.invokeListeners2(collisionListeners, Utils.collision);
+		
+		//TODO: deal with the type to type, group to group listeners
 	}
 	
 	private var HITBOX:Mask;

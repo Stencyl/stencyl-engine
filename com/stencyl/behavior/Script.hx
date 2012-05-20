@@ -523,31 +523,31 @@ class Script
 	}
 	
 	//Only used for type/group type/group collisions
-	/*public function addSceneCollisionListener(obj:Object, obj2:Object, func:Collision->Array<Dynamic>->Void)
+	public function addSceneCollisionListener(obj:Dynamic, obj2:Dynamic, func:Collision->Array<Dynamic>->Void)
 	{
-		if (scene.collisionListeners[obj] == null)
+		if(!engine.collisionListeners.exists(obj))
 		{
-			scene.collisionListeners[obj] = new Dictionary();									
+			engine.collisionListeners.set(obj, new HashMap<Dynamic, Dynamic>());									
 		}
 		
-		if (scene.collisionListeners[obj2] == null)
+		if(!engine.collisionListeners.exists(obj2))
 		{
-			scene.collisionListeners[obj2] = new Dictionary();
+			engine.collisionListeners.set(obj2, new HashMap<Dynamic, Dynamic>());
 		}	
 		
-		if (scene.collisionListeners[obj][obj2] == null)
+		if(!engine.collisionListeners.get(obj).exists(obj2))
 		{				
-			scene.collisionListeners[obj][obj2] = new Array();			
+			engine.collisionListeners.get(obj).set(obj2, new Array<Dynamic>());			
 		}
 		
-		var listeners:Array = scene.collisionListeners[obj][obj2] as Array;
+		var listeners = cast(engine.collisionListeners.get(obj).get(obj2), Array<Dynamic>);
 		listeners.push(func);	
 		
-		if (this is ActorScript)
+		if(Std.is(this, ActorScript))
 		{
-			(this as ActorScript).actor.registerListener(listeners, func);
+			cast(this, ActorScript).actor.registerListener(listeners, func);
 		}
-	}*/
+	}
 	
 	public function addWhenTypeGroupCreatedListener(obj:Dynamic, func:Actor->Array<Dynamic>->Void)
 	{
