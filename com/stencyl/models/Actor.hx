@@ -3023,18 +3023,48 @@ class Actor extends Sprite
 	 * When you collide with an Entity on the x-axis with moveTo() or moveBy().
 	 * @param	e		The Entity you collided with.
 	 */
-	public function moveCollideX(e:Actor)
+	public function moveCollideX(a:Actor)
 	{
-		//TODO: Do stuff to report this properly.
+		handleCollisionsSimple(a, true, false);
 	}
 
 	/**
 	 * When you collide with an Entity on the y-axis with moveTo() or moveBy().
 	 * @param	e		The Entity you collided with.
 	 */
-	public function moveCollideY(e:Actor)
+	public function moveCollideY(a:Actor)
 	{
-		//TODO: Do stuff to report this properly.
+		handleCollisionsSimple(a, false, true);
+	}
+	
+	private function handleCollisionsSimple(a:Actor, fromX:Bool, fromY:Bool)
+	{
+		Utils.collision.thisActor = Utils.collision.actorA = this;
+		Utils.collision.otherActor = Utils.collision.actorB = a;
+		
+		Utils.collision.thisFromTop = false;
+		Utils.collision.otherFromTop = !Utils.collision.thisFromTop;
+		
+		Utils.collision.thisFromBottom = false;
+		Utils.collision.otherFromBottom = !Utils.collision.thisFromBottom;
+		
+		Utils.collision.thisFromLeft = false;
+		Utils.collision.otherFromLeft = !Utils.collision.thisFromLeft;
+		
+		Utils.collision.thisFromRight = false;
+		Utils.collision.otherFromRight = !Utils.collision.thisFromRight;
+		
+		Utils.collision.thisCollidedWithActor = true;
+		Utils.collision.thisCollidedWithTile = false;
+		Utils.collision.thisCollidedWithSensor = false;
+		Utils.collision.thisCollidedWithTerrain = false;
+		
+		Utils.collision.otherCollidedWithActor = true;
+		Utils.collision.otherCollidedWithTile = false;
+		Utils.collision.otherCollidedWithSensor = false;
+		Utils.collision.otherCollidedWithTerrain = false;
+
+		Engine.invokeListeners2(collisionListeners, Utils.collision);
 	}
 	
 	private var HITBOX:Mask;

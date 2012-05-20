@@ -17,6 +17,7 @@ import nme.utils.ByteArray;
 import haxe.Timer;
 import nme.display.DisplayObjectContainer;
 import com.stencyl.models.Actor;
+import com.stencyl.models.actor.Collision;
 
 /**
  * Static catch-all class used to access global properties and functions.
@@ -870,6 +871,8 @@ class Utils
 	public static var rect:Rectangle = new Rectangle();
 	public static var matrix:Matrix = new Matrix();
 	public static var sprite:Sprite = new Sprite();
+	
+	public static var collision:Collision = new Collision();
 
 
 	#if hardware
