@@ -16,6 +16,7 @@ import nme.system.System;
 import nme.utils.ByteArray;
 import haxe.Timer;
 import nme.display.DisplayObjectContainer;
+import com.stencyl.models.Actor;
 
 /**
  * Static catch-all class used to access global properties and functions.

@@ -54,6 +54,9 @@ import box2D.dynamics.contacts.B2ContactEdge;
 import box2D.common.math.B2Vec2;
 import box2D.common.math.B2Transform;
 
+import com.stencyl.models.collision.Mask;
+import com.stencyl.models.collision.Hitbox;
+
 
 class Actor extends Sprite 
 {	
@@ -100,6 +103,7 @@ class Actor extends Sprite
 	public var dying:Bool; //in the process of dying but not yet removed
 	
 	public var fixedRotation:Bool;
+	public var collidable:Bool;
 	
 
 	//*-----------------------------------------------
@@ -234,6 +238,10 @@ class Actor extends Sprite
 		dummy = new B2Vec2();
 		zero = new B2Vec2(0, 0);
 		
+		_point = Utils.point;
+		
+		//---
+		
 		this.x = 0;
 		this.y = 0;
 		
@@ -242,6 +250,7 @@ class Actor extends Sprite
 		
 		originX = 0;
 		originY = 0;
+		collidable = true;
 		
 		if(isLightweight)
 		{
@@ -2678,4 +2687,333 @@ class Actor extends Sprite
 		setX(x);
 		setY(y);
 	}
+	
+	//*-----------------------------------------------
+	//* Simple Collision system (via FlashPunk)
+	//*-----------------------------------------------
+
+	/**
+	 * An optional Mask component, used for specialized collision. If this is
+	 * not assigned, collision checks will use the Entity's hitbox by default.
+	 */
+	public var shape(getShape, setShape):Mask;
+	private inline function getShape():Mask { return _mask; }
+	private function setShape(value:Mask):Mask
+	{
+		if (_mask == value) return value;
+		if (_mask != null) _mask.assignTo(null);
+		_mask = value;
+		if (value != null) _mask.assignTo(this);
+		return _mask;
+	}
+	
+	/**
+	 * Checks for a collision against an Entity type.
+	 * @param	type		The Entity type to check for.
+	 * @param	x			Virtual x position to place this Entity.
+	 * @param	y			Virtual y position to place this Entity.
+	 * @return	The first Entity collided with, or null if none were collided.
+	 */
+	public function collide(groupID:Int, x:Float, y:Float):Actor
+	{
+		//Grab all actors from a group. For us, that means grabbing the group! (instead of a string type)
+		var actorList = engine.getGroup(groupID);
+
+		_x = this.x; _y = this.y;
+		this.x = x; this.y = y;
+
+		if (_mask == null)
+		{
+			for(actor in actorList.list)
+			{
+				var e = actor;
+				
+				if (x - originX + width > e.x - e.originX
+				&& y - originY + height > e.y - e.originY
+				&& x - originX < e.x - e.originX + e.width
+				&& y - originY < e.y - e.originY + e.height
+				&& e.collidable && e != this)
+				{
+					if (e._mask == null || e._mask.collide(HITBOX))
+					{
+						this.x = _x; this.y = _y;
+						return e;
+					}
+				}
+			}
+			this.x = _x; this.y = _y;
+			return null;
+		}
+
+		for(actor in actorList.list)
+		{
+			var e = actor;
+				
+			if (x - originX + width > e.x - e.originX
+			&& y - originY + height > e.y - e.originY
+			&& x - originX < e.x - e.originX + e.width
+			&& y - originY < e.y - e.originY + e.height
+			&& e.collidable && e != this)
+			{
+				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
+				{
+					this.x = _x; this.y = _y;
+					return e;
+				}
+			}
+		}
+		this.x = _x; this.y = _y;
+		return null;
+	}
+
+	/**
+	 * Checks for collision against multiple Entity types.
+	 * @param	types		An Array or Vector of Entity types to check for.
+	 * @param	x			Virtual x position to place this Entity.
+	 * @param	y			Virtual y position to place this Entity.
+	 * @return	The first Entity collided with, or null if none were collided.
+	 */
+	public function collideTypes(types:Dynamic, x:Float, y:Float):Actor
+	{
+		if (Std.is(types, String))
+		{
+			return collide(types, x, y);
+		}
+		else
+		{
+			var a:Array<Int> = cast types;
+			if (a != null)
+			{
+				var e:Actor;
+				var type:Int;
+				for (type in a)
+				{
+					e = collide(type, x, y);
+					if (e != null) return e;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Checks if this Entity collides with a specific Entity.
+	 * @param	e		The Entity to collide against.
+	 * @param	x		Virtual x position to place this Entity.
+	 * @param	y		Virtual y position to place this Entity.
+	 * @return	The Entity if they overlap, or null if they don't.
+	 */
+	public function collideWith(e:Actor, x:Float, y:Float):Actor
+	{
+		_x = this.x; _y = this.y;
+		this.x = x; this.y = y;
+
+		if (x - originX + width > e.x - e.originX
+		&& y - originY + height > e.y - e.originY
+		&& x - originX < e.x - e.originX + e.width
+		&& y - originY < e.y - e.originY + e.height
+		&& collidable && e.collidable)
+		{
+			if (_mask == null)
+			{
+				if (e._mask == null || e._mask.collide(HITBOX))
+				{
+					this.x = _x; this.y = _y;
+					return e;
+				}
+				this.x = _x; this.y = _y;
+				return null;
+			}
+			if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
+			{
+				this.x = _x; this.y = _y;
+				return e;
+			}
+		}
+		this.x = _x; this.y = _y;
+		return null;
+	}
+
+	/**
+	 * Populates an array with all collided Entities of a type.
+	 * @param	type		The Entity type to check for.
+	 * @param	x			Virtual x position to place this Entity.
+	 * @param	y			Virtual y position to place this Entity.
+	 * @param	array		The Array or Vector object to populate.
+	 * @return	The array, populated with all collided Entities.
+	 */
+	public function collideInto(groupID:Int, x:Float, y:Float, array:Array<Actor>)
+	{
+		//Grab all actors from a group. For us, that means grabbing the group! (instead of a string type)
+		var actorList = engine.getGroup(groupID);
+
+		_x = this.x; _y = this.y;
+		this.x = x; this.y = y;
+		var n:Int = array.length;
+
+		if (_mask == null)
+		{
+			for(actor in actorList.list)
+			{
+				var e = actor;
+				
+				if (x - originX + width > e.x - e.originX
+				&& y - originY + height > e.y - e.originY
+				&& x - originX < e.x - e.originX + e.width
+				&& y - originY < e.y - e.originY + e.height
+				&& e.collidable && e != this)
+				{
+					if (e._mask == null || e._mask.collide(HITBOX)) array[n++] = e;
+				}
+			}
+			this.x = _x; this.y = _y;
+			return;
+		}
+
+		for(actor in actorList.list)
+		{
+			var e = actor;
+			
+			if (x - originX + width > e.x - e.originX
+			&& y - originY + height > e.y - e.originY
+			&& x - originX < e.x - e.originX + e.width
+			&& y - originY < e.y - e.originY + e.height
+			&& e.collidable && e != this)
+			{
+				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX)) array[n++] = e;
+			};
+		}
+		this.x = _x; this.y = _y;
+		return;
+	}
+
+	/**
+	 * Populates an array with all collided Entities of multiple types.
+	 * @param	types		An array of Entity types to check for.
+	 * @param	x			Virtual x position to place this Entity.
+	 * @param	y			Virtual y position to place this Entity.
+	 * @param	array		The Array or Vector object to populate.
+	 * @return	The array, populated with all collided Entities.
+	 */
+	public function collideTypesInto(types:Array<Int>, x:Float, y:Float, array:Array<Actor>)
+	{
+		var type:String;
+		for (type in types) collideInto(type, x, y, array);
+	}
+
+	public function moveActorBy(x:Float, y:Float, solidType:Dynamic = null, sweep:Bool = false)
+	{
+		_moveX += x;
+		_moveY += y;
+		x = Math.round(_moveX);
+		y = Math.round(_moveY);
+		_moveX -= x;
+		_moveY -= y;
+		if (solidType != null)
+		{
+			var sign:Int, e:Actor;
+			if (x != 0)
+			{
+				if (collidable && (sweep || collideTypes(solidType, this.x + x, this.y) != null))
+				{
+					sign = x > 0 ? 1 : -1;
+					while (x != 0)
+					{
+						if ((e = collideTypes(solidType, this.x + sign, this.y)) != null)
+						{
+							moveCollideX(e);
+							break;
+						}
+						else
+						{
+							this.x += sign;
+							x -= sign;
+						}
+					}
+				}
+				else this.x += x;
+			}
+			if (y != 0)
+			{
+				if (collidable && (sweep || collideTypes(solidType, this.x, this.y + y) != null))
+				{
+					sign = y > 0 ? 1 : -1;
+					while (y != 0)
+					{
+						if ((e = collideTypes(solidType, this.x, this.y + sign)) != null)
+						{
+							moveCollideY(e);
+							break;
+						}
+						else
+						{
+							this.y += sign;
+							y -= sign;
+						}
+					}
+				}
+				else this.y += y;
+			}
+		}
+		else
+		{
+			this.x += x;
+			this.y += y;
+		}
+	}
+	
+	/**
+	 * Moves the Entity to the position, retaining integer values for its x and y.
+	 * @param	x			X position.
+	 * @param	y			Y position.
+	 * @param	solidType	An optional collision type to stop flush against upon collision.
+	 * @param	sweep		If sweeping should be used (prevents fast-moving objects from going through solidType).
+	 */
+	public inline function moveActorTo(x:Float, y:Float, solidType:Dynamic = null, sweep:Bool = false)
+	{
+		moveBy(x - this.x, y - this.y, solidType, sweep);
+	}
+
+	/**
+	 * Moves towards the target position, retaining integer values for its x and y.
+	 * @param	x			X target.
+	 * @param	y			Y target.
+	 * @param	amount		Amount to move.
+	 * @param	solidType	An optional collision type to stop flush against upon collision.
+	 * @param	sweep		If sweeping should be used (prevents fast-moving objects from going through solidType).
+	 */
+	public inline function moveActorTowards(x:Float, y:Float, amount:Float, solidType:Dynamic = null, sweep:Bool = false)
+	{
+		_point.x = x - this.x;
+		_point.y = y - this.y;
+		_point.normalize(amount);
+		moveBy(_point.x, _point.y, solidType, sweep);
+	}
+
+	/**
+	 * When you collide with an Entity on the x-axis with moveTo() or moveBy().
+	 * @param	e		The Entity you collided with.
+	 */
+	public function moveCollideX(e:Actor)
+	{
+
+	}
+
+	/**
+	 * When you collide with an Entity on the y-axis with moveTo() or moveBy().
+	 * @param	e		The Entity you collided with.
+	 */
+	public function moveCollideY(e:Actor)
+	{
+
+	}
+	
+	private var HITBOX:Mask;
+	private var _mask:Mask;
+	private var _x:Float;
+	private var _y:Float;
+	private var _moveX:Float;
+	private var _moveY:Float;
+	private var _point:Point;
 }
