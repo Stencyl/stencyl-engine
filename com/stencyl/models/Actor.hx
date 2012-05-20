@@ -105,6 +105,7 @@ class Actor extends Sprite
 	public var dying:Bool; //in the process of dying but not yet removed
 	
 	public var fixedRotation:Bool;
+	public var ignoreGravity:Bool;
 	public var collidable:Bool;
 	public var solid:Bool; //for non Box2D collisions
 	
@@ -308,6 +309,7 @@ class Actor extends Sprite
 		lastCollided = null;
 		
 		fixedRotation = false;
+		ignoreGravity = false;
 		
 		//---
 		
@@ -796,12 +798,13 @@ class Actor extends Sprite
 			checkMouseState();
 		}
 				
-		/*if(collisionListeners.length > 0 || 
-		  engine.collisionListeners[type] != null || 
-		  engine.collisionListeners[getGroup()] != null) 
+		if(!isLightweight)
 		{
-			handleCollisions();		
-		}*/
+			/*if(collisionListeners.length > 0 || engine.collisionListeners[type] != null || engine.collisionListeners[getGroup()] != null) 
+			{
+				handleCollisions();		
+			}*/
+		}
 
 		internalUpdate(elapsedTime, true);
 		Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
@@ -830,6 +833,9 @@ class Actor extends Sprite
 			
 			//this.x += elapsedTime * xSpeed;
 			//this.y += elapsedTime * ySpeed;
+			
+			//TODO: Gravity
+			//push(Engine.engine.gravityX, Engine.engine, 10);
 			
 			moveActorBy(elapsedTime * xSpeed, elapsedTime * ySpeed, groupsToCollideWith);
 			
@@ -2043,21 +2049,21 @@ class Actor extends Sprite
 		}
 	}
 	
-	//Irrelevant to lightweight
 	public function setIgnoreGravity(state:Bool)
 	{
+		ignoreGravity = state;
+	
 		if(!isLightweight)
 		{
 			//body.SetIgnoreGravity(state);
 		}
 	}
 	
-	//Irrelevant to lightweight
 	public function ignoresGravity():Bool
 	{
 		if(isLightweight)
 		{
-			return true;
+			return ignoreGravity;
 		}
 		
 		return false;
@@ -3042,18 +3048,31 @@ class Actor extends Sprite
 		Utils.collision.thisActor = Utils.collision.actorA = this;
 		Utils.collision.otherActor = Utils.collision.actorB = a;
 		
-		Utils.collision.thisFromTop = false;
-		Utils.collision.otherFromTop = !Utils.collision.thisFromTop;
+		if(fromX)
+		{
+			Utils.collision.thisFromLeft = a.x < this.x;
+			Utils.collision.thisFromRight = a.x > this.x;
+			
+			Utils.collision.otherFromLeft = !Utils.collision.thisFromLeft;
+			Utils.collision.otherFromRight = !Utils.collision.thisFromRight;
 		
-		Utils.collision.thisFromBottom = false;
-		Utils.collision.otherFromBottom = !Utils.collision.thisFromBottom;
+			Utils.collision.thisFromTop = Utils.collision.otherFromTop = false;
+			Utils.collision.thisFromBottom = Utils.collision.otherFromBottom = false;
+		}
 		
-		Utils.collision.thisFromLeft = false;
-		Utils.collision.otherFromLeft = !Utils.collision.thisFromLeft;
+		if(fromY)
+		{
+			Utils.collision.thisFromTop = a.y < this.y;
+			Utils.collision.thisFromBottom = a.y > this.y;
 		
-		Utils.collision.thisFromRight = false;
-		Utils.collision.otherFromRight = !Utils.collision.thisFromRight;
+			Utils.collision.otherFromTop = !Utils.collision.thisFromTop;
+			Utils.collision.otherFromBottom = !Utils.collision.thisFromBottom;
 		
+			Utils.collision.thisFromLeft = Utils.collision.otherFromLeft = false;
+			Utils.collision.thisFromRight = Utils.collision.otherFromRight = false;
+		}
+		
+		//TODO
 		Utils.collision.thisCollidedWithActor = true;
 		Utils.collision.thisCollidedWithTile = false;
 		Utils.collision.thisCollidedWithSensor = false;
