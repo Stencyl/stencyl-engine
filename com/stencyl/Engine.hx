@@ -1635,13 +1635,13 @@ class Engine
 			}
 		}
 		
-		for(a in disableCollisionList)
+		/*for(a in disableCollisionList)
 		{
 			if(a != null)
 			{
 				a.handlesCollisions = false;
 			}
-		}
+		}*/
 		
 		for(tile in animatedTiles)
 		{

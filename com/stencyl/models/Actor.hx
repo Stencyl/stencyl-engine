@@ -202,8 +202,7 @@ class Actor extends Sprite
 	//*-----------------------------------------------
 	//* Collisions
 	//*-----------------------------------------------
-	
-	public var handlesCollisions:Bool; //???
+
 	public var lastCollided:Actor;
 	
 	
@@ -305,7 +304,7 @@ class Actor extends Sprite
 		alwaysSimulate = false;
 		isHUD = false;
 		
-		handlesCollisions = true;
+		//handlesCollisions = true;
 		lastCollided = null;
 		
 		fixedRotation = false;
@@ -584,7 +583,7 @@ class Actor extends Sprite
 	
 	public function initScripts()
 	{		
-		handlesCollisions = true;
+		//handlesCollisions = true;
 		
 		behaviors.initScripts();
 		
@@ -2276,28 +2275,7 @@ class Actor extends Sprite
 	
 	public function draw(g:Graphics)
 	{
-		var r = 0;
-		
-		while(r < whenDrawingListeners.length)
-		{
-			try
-			{
-				var f:Graphics->Float->Float->Array<Dynamic>->Void = whenDrawingListeners[r];			
-				f(g, x, y, whenDrawingListeners);
-				
-				if(Utils.indexOf(whenDrawingListeners, f) == -1)
-				{
-					r--;
-				}
-			}
-			
-			catch(e:String)
-			{
-				trace(e);
-			}
-			
-			r++;
-		}
+		Engine.invokeListeners4(whenDrawingListeners, g, x, y);
 	}
 	
 	public function enableActorDrawing()
@@ -3048,6 +3026,8 @@ class Actor extends Sprite
 		Utils.collision.thisActor = Utils.collision.actorA = this;
 		Utils.collision.otherActor = Utils.collision.actorB = a;
 		
+		lastCollided = a;
+		
 		if(fromX)
 		{
 			Utils.collision.thisFromLeft = a.x < this.x;
@@ -3088,6 +3068,151 @@ class Actor extends Sprite
 		//---
 		
 		//TODO: deal with the type to type, group to group listeners
+		
+		/*
+		
+		var type1:ActorType = a.getType();
+		var type2:ActorType = event.otherActor.getType();
+		var group1:FlxGroup = getGroup(event.thisShape.groupID, a);
+		var group2:FlxGroup = getGroup(event.otherShape.groupID, event.otherActor);;
+		
+		//Check if collision between actors has already happened
+		if (collisionPairs[a] == null)
+		{
+			collisionPairs[a] = new Dictionary();
+		}
+		
+		if (collisionPairs[event.otherActor] == null)
+		{
+			collisionPairs[event.otherActor] = new Dictionary();
+		}
+		
+		if (collisionPairs[a][event.otherActor] != null || collisionPairs[event.otherActor][a] != null)
+		{
+			return;
+		}
+		
+		//
+		
+		if (!event.otherCollidedWithTerrain && collisionListeners[type1] != null && collisionListeners[type1][type2] != null)
+		{
+			var listeners:Array = collisionListeners[type1][type2] as Array;
+			
+			for (var r:int = 0; r < listeners.length; r++)
+			{
+				try
+				{
+					var f:Function = listeners[r] as Function;
+					f(listeners, event);
+					
+					if (listeners.indexOf(f) == -1)
+					{
+						r--;
+					}
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+			
+			if (listeners.length == 0)
+			{
+				collisionListeners[type1][type2] = null;
+			}
+		}	
+		
+		if (type1 != type2 && collisionListeners[type2] != null && collisionListeners[type2][type1] != null)
+		{
+			var listeners:Array = collisionListeners[type2][type1] as Array;
+			var reverseEvent:Collision = event.switchData();
+			
+			for (var r:int = 0; r < listeners.length; r++)
+			{
+				try
+				{
+					var f:Function = listeners[r] as Function;
+					f(listeners, reverseEvent);
+					
+					if (listeners.indexOf(f) == -1)
+					{
+						r--;
+					}
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+			
+			if (listeners.length == 0)
+			{
+				collisionListeners[type2][type1] = null;
+			}
+		}	
+		
+		if (collisionListeners[group1] != null && collisionListeners[group1][group2] != null)
+		{
+			var listeners:Array = collisionListeners[group1][group2] as Array;
+			
+			for (var r:int = 0; r < listeners.length; r++)
+			{
+				try
+				{
+					var f:Function = listeners[r] as Function;
+					f(listeners, event);
+					
+					if (listeners.indexOf(f) == -1)
+					{
+						r--;
+					}
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+			
+			if (listeners.length == 0)
+			{
+				collisionListeners[group1][group2] = null;
+			}
+		}	
+		
+		if (group1 != group2 && collisionListeners[group2] != null && collisionListeners[group2][group1] != null)
+		{
+			var listeners:Array = collisionListeners[group2][group1] as Array;
+			var reverseEvent:Collision = event.switchData();
+			
+			for (var r:int = 0; r < listeners.length; r++)
+			{
+				try
+				{
+					var f:Function = listeners[r] as Function;
+					f(listeners, reverseEvent);
+					
+					if (listeners.indexOf(f) == -1)
+					{
+						r--;
+					}
+				}
+				catch (e:Error)
+				{
+					FlxG.log(e.getStackTrace());
+				}
+			}
+			
+			if (listeners.length == 0)
+			{
+				collisionListeners[group2][group1] = null;
+			}
+		}	
+		
+		//Collision has been handled once, hold to prevent from double reporting collisions
+		collisionPairs[a][event.otherActor] = new Boolean();
+		collisionPairs[event.otherActor][a] = new Boolean();
+		
+		*/
 	}
 	
 	private var HITBOX:Mask;
