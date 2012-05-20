@@ -78,6 +78,8 @@ class Actor extends Sprite
 	public var typeID:Int;
 	public var type:ActorType;
 	
+	private var groupsToCollideWith:Array<Int>; //cached value
+	
 	
 	//*-----------------------------------------------
 	//* States
@@ -104,6 +106,7 @@ class Actor extends Sprite
 	
 	public var fixedRotation:Bool;
 	public var collidable:Bool;
+	public var solid:Bool; //for non Box2D collisions
 	
 
 	//*-----------------------------------------------
@@ -252,6 +255,7 @@ class Actor extends Sprite
 		originX = 0;
 		originY = 0;
 		collidable = true;
+		solid = true;
 		
 		if(isLightweight)
 		{
@@ -321,6 +325,8 @@ class Actor extends Sprite
 		this.layerID = layerID;
 		this.typeID = typeID;
 		this.engine = engine;
+		
+		groupsToCollideWith = GameModel.get().groupsCollidesWith.get(groupID);
 
 		//---
 		
@@ -759,6 +765,10 @@ class Actor extends Sprite
 			
 			addChild(newAnimation);
 			
+			//TEMP: Origin = Center
+			//originX = Math.floor(newAnimation.width/2);
+			//originY = Math.floor(newAnimation.height/2);
+			
 			this.x = realX + Math.floor(newAnimation.width/2);
 			this.y = realY + Math.floor(newAnimation.height/2);
 		}
@@ -818,8 +828,11 @@ class Actor extends Sprite
 			y += ySpeed / Engine.physicsScale;
 			rotation += rSpeed / Engine.physicsScale / Engine.physicsScale;*/
 			
-			this.x += elapsedTime * xSpeed;
-			this.y += elapsedTime * ySpeed;
+			//this.x += elapsedTime * xSpeed;
+			//this.y += elapsedTime * ySpeed;
+			
+			moveActorBy(elapsedTime * xSpeed, elapsedTime * ySpeed, groupsToCollideWith);
+			
 			this.rotation += elapsedTime * rSpeed;
 			
 			if(fixedRotation)
@@ -1499,7 +1512,8 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			this.x = x + width / 2 + currOffset.x;
+			//this.x = x + width / 2 + currOffset.x;
+			moveActorTo(x, y);
 		}
 		
 		else
@@ -1531,7 +1545,8 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			this.y = y + height / 2 + currOffset.y;
+			//this.y = y + height / 2 + currOffset.y;
+			moveActorTo(x, y);
 		}
 		
 		else
@@ -1563,8 +1578,10 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			x = a.getXCenter();
-			y = a.getYCenter();
+			//x = a.getXCenter();
+			//y = a.getYCenter();
+			
+			moveActorTo(a.getXCenter(), a.getYCenter());
 			
 			return;
 		}
@@ -1576,8 +1593,10 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			x = a.getXCenter() + ox;
-			y = a.getYCenter() + oy;
+			//x = a.getXCenter() + ox;
+			//y = a.getYCenter() + oy;
+			
+			moveActorTo(a.getXCenter() + ox, a.getYCenter() + oy);
 			
 			return;
 		}
@@ -2737,7 +2756,11 @@ class Actor extends Sprite
 				{
 					if (e._mask == null || e._mask.collide(HITBOX))
 					{
-						this.x = _x; this.y = _y;
+						if(solid && e.solid)
+						{
+							this.x = _x; this.y = _y;
+						}
+						
 						return e;
 					}
 				}
@@ -2758,7 +2781,11 @@ class Actor extends Sprite
 			{
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
 				{
-					this.x = _x; this.y = _y;
+					if(solid && e.solid)
+					{
+						this.x = _x; this.y = _y;
+					}
+					
 					return e;
 				}
 			}
@@ -2973,7 +3000,7 @@ class Actor extends Sprite
 	 */
 	public inline function moveActorTo(x:Float, y:Float, solidType:Dynamic = null, sweep:Bool = false)
 	{
-		moveBy(x - this.x, y - this.y, solidType, sweep);
+		moveActorBy(x - this.x, y - this.y, solidType, sweep);
 	}
 
 	/**
@@ -2989,7 +3016,7 @@ class Actor extends Sprite
 		_point.x = x - this.x;
 		_point.y = y - this.y;
 		_point.normalize(amount);
-		moveBy(_point.x, _point.y, solidType, sweep);
+		moveActorBy(_point.x, _point.y, solidType, sweep);
 	}
 
 	/**
@@ -2998,7 +3025,7 @@ class Actor extends Sprite
 	 */
 	public function moveCollideX(e:Actor)
 	{
-
+		//TODO: Do stuff to report this properly.
 	}
 
 	/**
@@ -3007,7 +3034,7 @@ class Actor extends Sprite
 	 */
 	public function moveCollideY(e:Actor)
 	{
-
+		//TODO: Do stuff to report this properly.
 	}
 	
 	private var HITBOX:Mask;

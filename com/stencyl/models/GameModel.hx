@@ -16,6 +16,7 @@ class GameModel
 	public var defaultSceneID:Int;
 	
 	public var groups:Array<GroupDef>;
+	public var groupsCollidesWith:IntHash<Array<Int>>;
 	public var collisionGroups:Array<CollisionGroupDef>;
 	public var gameAttributes:Hash<Dynamic>;
 	public var scenes:IntHash<Scene>;
@@ -56,9 +57,30 @@ class GameModel
 		
 		//---
 		
+		groupsCollidesWith = new IntHash<Array<Int>>();
+		
 		collisionGroups = readCollisionGroups(xml.node.cgroups.elements);
 		collisionGroups.push(new CollisionGroupDef(PLAYER_ID, TERRAIN_ID));
 		collisionGroups.push(new CollisionGroupDef(ACTOR_ID, TERRAIN_ID));
+		
+		for(cg in collisionGroups)
+		{
+			var g1 = cg.group1;
+			var g2 = cg.group2;
+		
+			if(!groupsCollidesWith.exists(g1))
+			{
+				groupsCollidesWith.set(g1, new Array<Int>());
+			}
+			
+			if(!groupsCollidesWith.exists(g2))
+			{
+				groupsCollidesWith.set(g2, new Array<Int>());
+			}
+		
+			groupsCollidesWith.get(g1).push(g2);
+			groupsCollidesWith.get(g2).push(g1);
+		}
 		
 		//---
 		

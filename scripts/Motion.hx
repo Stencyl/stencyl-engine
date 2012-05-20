@@ -25,21 +25,21 @@ class Motion extends ActorScript
 		{ 
 			//actor.ySpeed = 0.02;
 			
-			if(actor.y >= 17)
+			if(actor.y >= 1)
 			{
 				return;
 			}
 		
 			if(Input.check("left"))
 			{
-				//actor.xSpeed = -0.2;
-				actor.moveActorBy(-1, 0, [3]);
+				actor.xSpeed = -0.2;
+				//actor.moveActorBy(-1, 0, [3]);
 			}
 			
 			else if(Input.check("right"))
 			{
-				//actor.xSpeed = 0.2;
-				actor.moveActorBy(1, 0, [3]);
+				actor.xSpeed = 0.2;
+				//actor.moveActorBy(1, 0, [3]);
 			}
 			
 			else
@@ -49,12 +49,14 @@ class Motion extends ActorScript
 			
 			if(Input.check("up"))
 			{
-				//actor.ySpeed = -0.2;
+				actor.ySpeed = -0.2;
+				//actor.moveActorBy(0, -1, [3]);
 			}
 			
 			else if(Input.check("down"))
 			{
-				//actor.ySpeed = 0.2;
+				actor.ySpeed = 0.2;
+				//actor.moveActorBy(0, 1, [3]);
 			}
 			
 			else
