@@ -239,6 +239,7 @@ class Actor extends Sprite
 		zero = new B2Vec2(0, 0);
 		
 		_point = Utils.point;
+		_moveX = _moveY = 0;
 		
 		//---
 		

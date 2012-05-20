@@ -23,16 +23,23 @@ class Motion extends ActorScript
 		
 		var evt = function(elapsedTime:Float, junk:Array<Dynamic>) 
 		{ 
-			actor.ySpeed = 0.02;
+			//actor.ySpeed = 0.02;
+			
+			if(actor.y >= 17)
+			{
+				return;
+			}
 		
 			if(Input.check("left"))
 			{
-				actor.xSpeed = -0.2;
+				//actor.xSpeed = -0.2;
+				actor.moveActorBy(-1, 0, [3]);
 			}
 			
 			else if(Input.check("right"))
 			{
-				actor.xSpeed = 0.2;
+				//actor.xSpeed = 0.2;
+				actor.moveActorBy(1, 0, [3]);
 			}
 			
 			else
@@ -42,17 +49,17 @@ class Motion extends ActorScript
 			
 			if(Input.check("up"))
 			{
-				actor.ySpeed = -0.2;
+				//actor.ySpeed = -0.2;
 			}
 			
 			else if(Input.check("down"))
 			{
-				actor.ySpeed = 0.2;
+				//actor.ySpeed = 0.2;
 			}
 			
 			else
 			{
-				actor.ySpeed = 0;
+				//actor.ySpeed = 0;
 			}
 			
 			if(Input.mouseDown)
