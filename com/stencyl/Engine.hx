@@ -1431,6 +1431,9 @@ class Engine
 			invokeListeners2(f2, a);
 		}
 		
+		//TODO: Remove
+		actors.push(a);
+		
 		return a;
 	}
 	
