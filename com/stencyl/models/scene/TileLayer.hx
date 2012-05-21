@@ -54,10 +54,12 @@ class TileLayer extends Sprite
 				rows[row][col] = null;
 			}
 		}	
-
+		
+		flashPoint = new Point();
+		
 		bitmapData = new BitmapData(Engine.screenWidth, Engine.screenHeight);
 		bitmap = new Bitmap(bitmapData);
-		addChild(bitmap);		
+		addChild(bitmap);
 	}
 	
 	public function setTileAt(row:Int, col:Int, tile:Tile)
@@ -79,9 +81,12 @@ class TileLayer extends Sprite
 		
 		return rows[row][col];
 	}
-			
+	
+	//We're directly drawing since pre-rendering the layer might not be so memory friendly on large levels and I don't know if it clips.
 	public function draw(viewX:Int, viewY:Int, alpha:Float)
 	{
+		bitmapData.fillRect(bitmapData.rect, 0);
+	
 		this.alpha = alpha;
 	
 		viewX = Math.round(Math.abs(viewX));
@@ -120,12 +125,12 @@ class TileLayer extends Sprite
 				
 				if(t == null)
 				{
+					x++;
 					continue;
 				}
 													
 				if(cacheSource.get(t) == null)
 				{
-					
 					if(t.pixels == null)
 					{
 						cacheSource.set(t, t.parent.getImageSourceForTile(t.tileID, tw, th));
@@ -141,13 +146,14 @@ class TileLayer extends Sprite
 														
 				if(source == null)
 				{
+					x++;
 					continue;
 				}
 				
 				else
 				{
 					//If animated, used animated tile pixels
-					if (t.pixels == null)
+					if(t.pixels == null)
 					{
 						pixels = t.parent.pixels;
 					}
@@ -162,13 +168,18 @@ class TileLayer extends Sprite
 
 					if(source != null)
 					{
+						//TODO: Use drawTiles for CPP targets.
 						bitmapData.copyPixels(pixels, source, flashPoint, null, null, true);
 					}
 				}
+				
+				x++;
 			}
 			
 			px = startX * tw;
 			py += th;
+			
+			y++;
 		}
 	}
 }

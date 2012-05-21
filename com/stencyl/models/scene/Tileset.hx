@@ -12,7 +12,7 @@ class Tileset extends Resource
 	
 	public var pixels:BitmapData;
 	
-	public function new(ID:Int, name:String, framesAcross:Int, framesDown:Int, tiles:Array<Tile>, imgData:Dynamic)
+	public function new(ID:Int, name:String, framesAcross:Int, framesDown:Int, tiles:Array<Tile>, imgData:BitmapData)
 	{
 		super(ID, name);
 		
@@ -20,15 +20,7 @@ class Tileset extends Resource
 		this.framesDown = framesDown;
 		this.tiles = tiles;
 
-		/*if(imgData is Bitmap)
-		{
-			pixels = FlxG.addLoadedBitmap(imgData, false, false);
-		}
-		
-		else
-		{
-			pixels = FlxG.addBitmap(imgData, false, false);
-		}*/
+		pixels = imgData;
 	}
 	
 	public function getImageSourceForTile(tileID:Int, tileWidth:Int, tileHeight:Int):Rectangle

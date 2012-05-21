@@ -932,6 +932,7 @@ class Engine
 			{
 				terrain.name = REGULAR_LAYER;
 				master.addChild(terrain);
+				master.addChild(scene.terrain.get(layerID));
 				this.layers.set(layerID, terrain);
 			}
 				
@@ -1144,14 +1145,14 @@ class Engine
 			s,
 			ai.behaviorValues,
 			ai.actorType,
-			null, //TODO: ai.actorType.bodyDef,
+			NO_PHYSICS ? null : ai.actorType.bodyDef,
 			false,
 			false,
 			false,
 			false,
 			null,
 			ai.actorType.ID,
-			true, //TODO: ai.actorType.isLightweight,
+			ai.actorType.isLightweight || NO_PHYSICS,
 			ai.actorType.autoScale
 		);
 
@@ -2001,6 +2002,12 @@ class Engine
 		}*/
 
      	//Walk through each of the drawing events
+     	
+     	//Only if camera changed?
+     	for(layer in tileLayers)
+     	{
+     		layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO *./);
+     	}
      }
 	
 	//*-----------------------------------------------

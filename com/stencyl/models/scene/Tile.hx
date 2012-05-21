@@ -18,7 +18,7 @@ class Tile
 	public var currFrame:Int;
 	public var currTime:Int;
 	
-	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, imgData:Dynamic, parent:Tileset)
+	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, imgData:BitmapData, parent:Tileset)
 	{
 		this.tileID = tileID;
 		this.collisionID = collisionID;
@@ -29,15 +29,7 @@ class Tile
 		currFrame = 0;
 		currTime = 0;
 					
-		/*if(imgData != null && imgData is Bitmap)
-		{
-			pixels = FlxG.addLoadedBitmap(imgData, false, false);
-		}
-		
-		else if (imgData != null)
-		{
-			pixels = FlxG.addBitmap(imgData, false, false);
-		}*/
+		pixels = imgData;
 	}
 	
 	public function update(elapsedTime:Float)
