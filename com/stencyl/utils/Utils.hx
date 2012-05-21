@@ -153,7 +153,8 @@ class Utils
 	{
 		while(container.numChildren > 0)
 		{
-			container.removeChildAt(0);	
+			container.removeChild(container.getChildAt(0));
+			//container.removeChildAt(0);	
 		}
 	}
 
