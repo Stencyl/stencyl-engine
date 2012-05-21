@@ -83,6 +83,8 @@ class Engine
 	public static var INTERNAL_SHIFT:String = "iSHIFT";
 	public static var INTERNAL_CTRL:String = "iCTRL";
 	
+	public static var NO_PHYSICS:Bool = true;
+	
 	
 	//*-----------------------------------------------
 	//* Important Values
@@ -367,9 +369,7 @@ class Engine
 		{
 			setGameAttribute(key, GameModel.get().gameAttributes.get(key));
 		}
-		
-		trace(gameAttributes);
-		
+				
 		//Sound
 		channels = new Array<SoundChannel>();
 		
@@ -397,6 +397,14 @@ class Engine
 		if(sceneID == -1 || scene == null)
 		{
 			scene = GameModel.get().scenes.get(GameModel.get().defaultSceneID);
+			
+			//Something really went wrong!
+			if(scene == null)
+			{
+				trace("Could not load scene: " + sceneID);
+				stage.removeEventListener(Event.ENTER_FRAME, onUpdate);
+				return;
+			}
 		}
 		
 		Engine.sceneWidth = scene.sceneWidth;
@@ -444,8 +452,12 @@ class Engine
 		whenMouseDraggedListeners = new Array<Dynamic>();
 		whenPausedListeners = new Array<Dynamic>();
 		whenFocusChangedListeners = new Array();
-											
-		initPhysics();
+		
+		if(!NO_PHYSICS)
+		{									
+			initPhysics();
+		}
+		
 		loadBackgrounds();
 		loadTerrain();
 		loadRegions();

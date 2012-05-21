@@ -420,8 +420,18 @@ class Scene
 			map.set(eid, rawLayers.get(eid));
 			
 			var layer:TileLayer = map.get(eid);
-			layer.name = e.att.name;
-			layer.zOrder = Std.parseInt(e.att.order);
+			
+			if(layer != null)
+			{
+				layer.name = e.att.name;
+				layer.zOrder = Std.parseInt(e.att.order);
+			}
+			
+			else
+			{
+				var dummy = new TileLayer(eid, Std.parseInt(e.att.order), this, Std.int(Math.floor(sceneWidth / tileWidth)), Std.int(Math.floor(sceneHeight / tileHeight)));
+				map.set(eid, dummy);
+			}
 		}
 		
 		return map;
@@ -432,22 +442,25 @@ class Scene
 		var map = new IntHash<TileLayer>();
 		var layerHeaders = new Array<Int>();
 		
-		for(i in 0...numLayers)
+		if(bytes != null)
 		{
-			layerHeaders[i] = bytes.readInt();
+			for(i in 0...numLayers)
+			{
+				layerHeaders[i] = bytes.readInt();
+			}
+			
+			for(i in 0...numLayers)
+			{
+				var newLayer = readRawLayer(bytes, layerHeaders[i]);
+				map.set(newLayer.layerID, newLayer);
+			}
 		}
-		
-		for(i in 0...numLayers)
-		{
-			var newLayer = readRawLayer(bytes, layerHeaders[i]);
-			map.set(newLayer.layerID, newLayer);
-		}
-		
+				
 		return map;
 	}
 	
 	public function readRawLayer(bytes:ByteArray, length:Int):TileLayer
-	{
+	{	
 		var width = Std.int(Math.floor(sceneWidth / tileWidth));
 		var height = Std.int(Math.floor(sceneHeight / tileHeight));
 		
