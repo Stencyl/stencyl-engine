@@ -1,5 +1,6 @@
 package com.stencyl.models.scene;
 
+import nme.display.Bitmap;
 import nme.display.BitmapData;
 import nme.display.PixelSnapping;
 import nme.geom.ColorTransform;
@@ -9,6 +10,7 @@ import nme.geom.Rectangle;
 import nme.display.Sprite;
 
 import com.stencyl.models.Scene;
+import com.stencyl.utils.HashMap;
 
 class TileLayer extends Sprite
 {
@@ -22,19 +24,14 @@ class TileLayer extends Sprite
 	public var numRows:Int;
 	public var numCols:Int;
 	
-	//Internal
+	//What's actually drawn
+	public var bitmap:Bitmap;
+	public var bitmapData:BitmapData;
+	
+	//Internal/Temporary stuff
 	private var pixels:BitmapData;
-	private var original:ColorTransform;
-	private var mtx:Matrix;
-	
-	//???
-	private var data:Array<Dynamic>;
-	private var rects:Array<Dynamic>;
-	
-	//Semi-transparent tile drawing
-	private var translatedSource:Rectangle;
-	private var alphaCT:ColorTransform;
-	
+	private var flashPoint:Point;
+
 	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
 	{
 		super();
@@ -45,11 +42,6 @@ class TileLayer extends Sprite
 		this.scene = scene;
 		this.numRows = numRows;
 		this.numCols = numCols;
-		
-		original = new ColorTransform();
-		mtx = new Matrix();
-		translatedSource = new Rectangle();
-		alphaCT = new ColorTransform(1, 1, 1, 1);
 
 		rows = new Array<Array<Tile>>();
 		
@@ -61,7 +53,11 @@ class TileLayer extends Sprite
 			{
 				rows[row][col] = null;
 			}
-		}			
+		}	
+
+		bitmapData = new BitmapData(Engine.screenWidth, Engine.screenHeight);
+		bitmap = new Bitmap(bitmapData);
+		addChild(bitmap);		
 	}
 	
 	public function setTileAt(row:Int, col:Int, tile:Tile)
@@ -84,64 +80,68 @@ class TileLayer extends Sprite
 		return rows[row][col];
 	}
 			
-	/*public function draw(viewX:Number, viewY:Number, alpha:Number):void
+	public function draw(viewX:Int, viewY:Int, alpha:Float)
 	{
+		this.alpha = alpha;
+	
 		viewX = Math.round(Math.abs(viewX));
 		viewY = Math.round(Math.abs(viewY));
 		
-		var width:uint = numCols;
-		var height:uint = numRows;
+		var width:Int = numCols;
+		var height:Int = numRows;
 		
-		var tw:uint = scene.tileWidth;
-		var th:uint = scene.tileHeight;
+		var tw:Int = scene.tileWidth;
+		var th:Int = scene.tileHeight;
 		
-		var startX:uint = viewX / tw;
-		var startY:uint = viewY / th;
-		var endX:uint = 2 + startX + FlxG.width / tw;
-		var endY:uint = 2 + startY + FlxG.height / th;
+		var startX:Int = Std.int(viewX / tw);
+		var startY:Int = Std.int(viewY / th);
+		var endX:Int = 2 + startX + Std.int(Engine.screenWidth / tw);
+		var endY:Int = 2 + startY + Std.int(Engine.screenHeight / th);
 		
-		endX = Math.min(endX, width);
-		endY = Math.min(endY, height);
+		endX = Std.int(Math.min(endX, width));
+		endY = Std.int(Math.min(endY, height));
 		
-		var px:Number = startX * tw;
-		var py:Number = startY * th;
+		var px:Int = startX * tw;
+		var py:Int = startY * th;
 		
-		var cacheSource:Array = new Array();
+		var cacheSource = new HashMap<Tile, Rectangle>();
 		
-		for(var y:uint = startY; y < endY; y++)
+		var y = startY;
+		
+		while(y < endY)
 		{
-			for(var x:uint = startX; x < endX; x++)
+			var x = startX;
+			
+			while(x < endX)
 			{
 				var t:Tile = getTileAt(y, x);
 									
-				px += tw
+				px += tw;
 				
 				if(t == null)
 				{
 					continue;
 				}
-				
-				var key:String = t.toString();
-														
-				if(cacheSource[key] == null)
+													
+				if(cacheSource.get(t) == null)
 				{
 					
-					if (t.pixels == null)
+					if(t.pixels == null)
 					{
-						cacheSource[key] = t.parent.getImageSourceForTile(t.tileID, tw, th);
+						cacheSource.set(t, t.parent.getImageSourceForTile(t.tileID, tw, th));
 					}
 					
 					else
 					{
-						cacheSource[key] = t.getSource(tw, th);
+						cacheSource.set(t, t.getSource(tw, th));
 					}						
 				}
 				
-				var source:Rectangle = cacheSource[key];
+				var source:Rectangle = cacheSource.get(t);
 														
 				if(source == null)
 				{
-					continue
+					continue;
 				}
 				
 				else
@@ -149,41 +149,20 @@ class TileLayer extends Sprite
 					//If animated, used animated tile pixels
 					if (t.pixels == null)
 					{
-						_pixels = t.parent.pixels;
-					}
-					else 
-					{
-						_pixels = t.pixels;
+						pixels = t.parent.pixels;
 					}
 					
-					_flashPoint.x = x * tw - viewX;
-					_flashPoint.y = y * th - viewY;
+					else 
+					{
+						pixels = t.pixels;
+					}
+					
+					flashPoint.x = x * tw - viewX;
+					flashPoint.y = y * th - viewY;
 
 					if(source != null)
 					{
-						if(alpha >= 255)
-						{
-							FlxG.buffer.copyPixels(_pixels, source, _flashPoint, null, null, true);
-						}
-						
-						else
-						{
-							FlxG.workaround.bitmapData = _pixels;
-							FlxG.workaround.pixelSnapping = PixelSnapping.AUTO;
-							FlxG.workaround.smoothing = true;
-							
-							_mtx.identity();
-							_mtx.translate((-source.x + _flashPoint.x), (-source.y + _flashPoint.y));
-							
-							_alphaCT.alphaMultiplier = alpha / 255;
-							
-							_translatedSource.x = _flashPoint.x;
-							_translatedSource.y = _flashPoint.y;
-							_translatedSource.width = source.width;
-							_translatedSource.height = source.height; 
-							
-							FlxG.buffer.draw(FlxG.workaround, _mtx, _alphaCT, null, _translatedSource);
-						}
+						bitmapData.copyPixels(pixels, source, flashPoint, null, null, true);
 					}
 				}
 			}
@@ -191,5 +170,5 @@ class TileLayer extends Sprite
 			px = startX * tw;
 			py += th;
 		}
-	}*/
+	}
 }

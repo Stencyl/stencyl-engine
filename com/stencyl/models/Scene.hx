@@ -500,6 +500,8 @@ class Scene
 				{
 					layer.setTileAt(row, col, tset.tiles[tileID]);
 					
+					//trace("set some tile at (" + col + "," + row + ")");
+					
 					var tile = tset.tiles[tileID];
 					
 					//If animated tile, add to update list

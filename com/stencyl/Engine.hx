@@ -314,6 +314,11 @@ class Engine
 		Input.define(INTERNAL_SHIFT, [Key.SHIFT]);
 		Input.define(INTERNAL_CTRL, [Key.CONTROL]);
 		
+		Engine.screenWidth = Std.int(stage.stageWidth);
+		Engine.screenHeight = Std.int(stage.stageHeight);
+		Engine.screenWidthHalf = Std.int(stage.stageWidth/2);
+		Engine.screenHeightHalf = Std.int(stage.stageHeight/2);
+		
 		Data.get();
 		GameModel.get();
 		
@@ -341,10 +346,6 @@ class Engine
 		//Constants
 		Engine.sceneWidth = 640; //Overriden once scene loads
 		Engine.sceneHeight = 480; //Overriden once scene loads
-		Engine.screenWidth = Std.int(stage.stageWidth);
-		Engine.screenHeight = Std.int(stage.stageHeight);
-		Engine.screenWidthHalf = Std.int(stage.stageWidth/2);
-		Engine.screenHeightHalf = Std.int(stage.stageHeight/2);
 			
 		//Display List
 		master = new Sprite();

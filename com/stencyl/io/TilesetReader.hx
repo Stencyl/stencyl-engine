@@ -39,7 +39,6 @@ class TilesetReader implements AbstractReader
 	public function readTile(xml:Fast, parent:Tileset):Tile
 	{
 		var tileID:Int = Std.parseInt(xml.att.id);
-		var looping:Bool = Utils.toBoolean(xml.att.loop);
 		var collisionID:Int = Std.parseInt(xml.att.collision);
 		
 		//Always single for now!
