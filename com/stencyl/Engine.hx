@@ -807,7 +807,7 @@ class Engine
 	{				
 		initLayers();
 		
-		for(wireframe in scene.wireframes)
+		/*for(wireframe in scene.wireframes)
 		{
 			var a:Actor = null;
 			
@@ -868,7 +868,7 @@ class Engine
 			
 			getGroup(GameModel.TERRAIN_ID).list.set(a, a);
 			//master.addChild(a);
-		}
+		}*/
 	}
 	
 	//This is mainly to establish mappings and figure out top, middle, bottom
@@ -1630,7 +1630,7 @@ class Engine
 		}*/
 		
 		//collisionPairs = new Dictionary();
-		var disableCollisionList = new Array<Actor>();
+		//var disableCollisionList = new Array<Actor>();
 
 		//TODO:
 		//for(a in actorsOnScreen)
@@ -1664,10 +1664,10 @@ class Engine
 					}
 				}
 				
-				if(a.dead)
+				/*if(a.dead)
 				{
 					disableCollisionList.push(a);
-				}
+				}*/
 			}
 		}
 					
@@ -1723,8 +1723,6 @@ class Engine
 		}
 		
 		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
-		//cameraX = Math.min(screenWidthHalf, cameraX);
-		//cameraY = Math.min(screenHeightHalf, cameraY);
 		cameraX = Math.min(0, cameraX);
 		cameraY = Math.min(0, cameraY);
 		
@@ -1746,8 +1744,8 @@ class Engine
 					var endX = -Math.abs(child.width - Engine.screenWidth);
 					var endY = -Math.abs(child.height - Engine.screenHeight);
 					
-					child.x = endX * -(cameraX - screenWidthHalf) / Engine.sceneWidth;
-					child.y = endY * -(cameraY - screenHeightHalf) / Engine.sceneHeight;
+					child.x = endX * -(cameraX) / Engine.sceneWidth;
+					child.y = endY * -(cameraY) / Engine.sceneHeight;
 				}
 			}
 			
