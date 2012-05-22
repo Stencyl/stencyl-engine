@@ -1638,20 +1638,22 @@ class Script
 	 *
 	 * Callback = function(success:Boolean):void
 	 */
-	public function saveGame(fileName:String, fn:Bool->Void=null)
+	public function saveGame(fileName:String, onComplete:Bool->Void=null)
 	{
 		#if !js
 		var so = SharedObject.getLocal(fileName);
-		so.data.message = "<somexml></somexml>";
+		
+		for(key in engine.gameAttributes.keys())
+		{
+			Reflect.setField(so.data, key, engine.gameAttributes.get(key));
+		}
+		
 		#end
 		
-		//Prepare to save.. with some checks
 		#if ( cpp || neko )
-		        // Android didn't wanted SharedObjectFlushStatus not to be a String
-		        var flushStatus:SharedObjectFlushStatus = null;
+		var flushStatus:SharedObjectFlushStatus = null;
 		#else
-		        // Flash wanted it very much to be a String
-		        var flushStatus:String = null;
+		var flushStatus:String = null;
 		#end
 		
 		#if !js
@@ -1662,7 +1664,8 @@ class Script
 		
 		catch(e:Dynamic) 
 		{
-			trace("Error: Failed to save");
+			trace("Error: Failed to save - " + fileName +  " - " + e);
+			//TODO: Event
 		}
 		
 		if(flushStatus != null) 
@@ -1672,7 +1675,8 @@ class Script
 		        case SharedObjectFlushStatus.PENDING:
 		            //trace('requesting permission to save');
 		        case SharedObjectFlushStatus.FLUSHED:
-		            //trace('value saved');
+		            trace("Saved Game: " + fileName);
+		            //TODO: Event
 		    }
 		}
 		#end
@@ -1683,20 +1687,17 @@ class Script
 	 *
 	 * Callback = function(success:Boolean):void
 	 */
-	public function loadGame(fileName:String, fn:Bool->Void=null)
+	public function loadGame(fileName:String, onComplete:Bool->Void=null)
 	{
 		#if !js
 		var data = SharedObject.getLocal(fileName);
-		trace('Loaded Save: ' + data.data.message);
-		#end
-	}
-	
-	/*
-	 * Callback: function(success:Boolean, saveFile:String, isLast:Boolean):void
-	 */
-	public function retrieveSaves(fn:Bool->String->Bool->Void=null)
-	{
-		#if !js
+		
+		trace("Loaded Save: " + fileName);
+		
+		for(key in Reflect.fields(data.data))
+		{
+			trace(key + Reflect.field(data.data, key));
+		}
 		#end
 	}
 	

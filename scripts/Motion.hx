@@ -89,6 +89,7 @@ class Motion extends ActorScript
 		runLater(1000, function(task:TimedTask):Void {});
 		
 		setGameAttribute("yoshi", "dino");
+		setGameAttribute("list", [1,2,3]);
 		
 		//saveGame("donkey2");
 		//loadGame("donkey2");
