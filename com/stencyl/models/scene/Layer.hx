@@ -28,12 +28,12 @@ class Layer extends Sprite
 		//scrollFactor.x = 0;
 		//scrollFactor.y = 0;
 		
-		alpha = 255;
-		color = 0x00ffffff;
+		//alpha = 255;
+		//color = 0x00ffffff;
 		
 		canvas = new BitmapData(Engine.screenWidth, Engine.screenHeight);
 		customDrawing = new Bitmap(canvas);
 		
-		addChild(customDrawing);
+		//addChild(customDrawing);
 	}
 }
