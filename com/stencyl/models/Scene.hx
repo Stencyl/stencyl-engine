@@ -493,7 +493,12 @@ class Scene
 			var tileID:Int = bytes.readShort();
 			var runLength:Int = bytes.readShort();
 			
-			var tset:Tileset = cast(Data.get().resources.get(tilesetID), Tileset);
+			var tset:Tileset = null;
+			
+			if(tilesetID != -1)
+			{
+				tset = cast(Data.get().resources.get(tilesetID), Tileset);
+			}
 			
 			for(runIndex in 0...runLength)
 			{
