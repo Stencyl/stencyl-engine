@@ -3,6 +3,8 @@ package com.stencyl.models.collision;
 import nme.display.Graphics;
 import nme.geom.Point;
 
+import com.stencyl.utils.Utils;
+
 using Std;
 
 class Polygon extends Mask
@@ -26,7 +28,7 @@ class Polygon extends Mask
 		_check.set(Type.getClassName(Hitbox), collideHitbox);
 		_check.set(Type.getClassName(Circle), collideCircle);
 		_check.set(Type.getClassName(Polygon), collidePolygon);
-		_check.set(Type.getClassName(Grid), collideGrid);
+		//_check.set(Type.getClassName(Grid), collideGrid);
 
 		this.centerPoint = centerPoint != null ? centerPoint : new Point();
 		_angle = 0;
@@ -90,7 +92,7 @@ class Polygon extends Mask
 	 * @param	grid
 	 * @return
 	 */
-	public function collideGrid(grid:Grid):Bool
+	/*public function collideGrid(grid:Grid):Bool
 	{
 		for (ii in 0..._points.length - 1)
 		{
@@ -144,8 +146,9 @@ class Polygon extends Mask
 		}
 
 		return false;
-	}
+	}*/
 
+	//This was commented out to begin with
 	/*public function collideGrid(grid:Grid):Bool
 	{
 		function collideSquare(x:Int, y:Int):Bool
@@ -198,7 +201,7 @@ class Polygon extends Mask
 		var offset:Float;
 
 		//First find the point closest to the circle
-		var distanceSquared:Float = HXP.NUMBER_MAX_VALUE;
+		var distanceSquared:Float = Utils.NUMBER_MAX_VALUE;
 		var closestPoint = null;
 		for (p in _points)
 		{
@@ -392,8 +395,8 @@ class Polygon extends Mask
 	public inline function projectOn(axis:Point, collisionInfo:CollisionInfo):Void
 	{
 		var cur:Float,
-			max:Float = -HXP.NUMBER_MAX_VALUE,
-			min:Float = HXP.NUMBER_MAX_VALUE;
+			max:Float = -Utils.NUMBER_MAX_VALUE,
+			min:Float = Utils.NUMBER_MAX_VALUE;
 
 		for (vertex in _points)
 		{
@@ -414,7 +417,7 @@ class Polygon extends Mask
 
 	private function rotate(angle:Float):Void
 	{
-		angle *= HXP.RAD;
+		angle *= Utils.RAD;
 
 		for (p in _points)
 		{
@@ -443,8 +446,8 @@ class Polygon extends Mask
 	{
 		if (parent != null)
 		{
-			var	offsetX = parent.x - HXP.camera.x,
-				offsetY = parent.y - HXP.camera.y;
+			var	offsetX = parent.x - Utils.camera.x,
+				offsetY = parent.y - Utils.camera.y;
 
 			graphics.moveTo((points[_points.length - 1].x + offsetX) * scaleX , (_points[_points.length - 1].y + offsetY) * scaleY);
 			for (ii in 0..._points.length)
@@ -493,6 +496,14 @@ class Polygon extends Mask
 		if (list != null) { updateAxes(); update(); }
 		else if (parent != null) {updateAxes(); update();  }
 		return _points;
+	}
+	
+	public function updateDimensions()
+	{
+		projectOn(horizontal, firstCollisionInfo);//width
+		width = Math.ceil(firstCollisionInfo.max - firstCollisionInfo.min);
+		projectOn(vertical, secondCollisionInfo);//height
+		height = Math.ceil(secondCollisionInfo.max - secondCollisionInfo.min);
 	}
 
 	/** Updates the parent's bounds for this mask. */

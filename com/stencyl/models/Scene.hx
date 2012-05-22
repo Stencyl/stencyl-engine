@@ -6,10 +6,16 @@ import com.stencyl.io.ActorTypeReader;
 import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.Tileset;
 import com.stencyl.models.scene.TileLayer;
+
 import com.stencyl.models.background.ColorBackground;
 import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.scene.RegionDef;
+import com.stencyl.models.scene.Wireframe;
+import com.stencyl.models.collision.Polygon;
 import com.stencyl.behavior.BehaviorInstance;
+
+import nme.geom.Point;
+import box2D.collision.shapes.B2EdgeShape;
 
 import haxe.xml.Fast;
 import com.stencyl.utils.Utils;
@@ -42,7 +48,7 @@ class Scene
 	public var behaviorValues:Hash<BehaviorInstance>;
 	
 	//Box2D
-	//public var wireframes:Array;
+	public var wireframes:Array<Wireframe>;
 	//public var joints:Array;
 	public var regions:IntHash<RegionDef>;
 	//public var terrainRegions:Array;
@@ -98,7 +104,7 @@ class Scene
 		regions = readRegions(xml.node.regions.elements);
 		//terrainRegions = readTerrainRegions(xml.terrainRegions);
 		
-		//wireframes = readWireframes(xml.terrain);
+		wireframes = readWireframes(xml.node.terrain.elements);
 		
 		var rawLayers = readRawLayers(Data.get().scenesTerrain.get(ID), numLayers);
 		terrain = readLayers(xml.node.layers.elements, rawLayers);
@@ -536,36 +542,69 @@ class Scene
 		return map;
 	}
 	
-	/*private var MAX_VERTICES:uint = 200;
+	private static var MAX_VERTICES:Int = 200;
 	
-	public function readWireframes(list:XMLList):Array
+	public function readWireframes(list:Iterator<Fast>):Array<Wireframe>
 	{
-		var map:Array = new Array();
+		var map = new Array<Wireframe>();
 		
-		for each(var e:XML in list.children())
+		for(e in list)
 		{
-			var x:Number = e.@x;
-			var y:Number = e.@y;
+			var x = Std.parseFloat(e.att.x);
+			var y = Std.parseFloat(e.att.y);
 			
 			var shapeType:String = "wireframe";
-			var shapeParams:Array = e.@pts.split(",");
-			var shape:b2LoopShape = SpriteReader.createShape(shapeType, shapeParams, x, y) as b2LoopShape;
-			
-			map.push
-			(
-				new Wireframe
+			var shapeParams:Array<String> = e.att.pts.split(",");
+						
+			if(Engine.NO_PHYSICS)
+			{
+				var points = new Array<Point>();
+				
+				var i = 1;
+				
+				while(i < shapeParams.length)
+				{
+					points.push(new Point(Std.parseFloat(shapeParams[i]), Std.parseFloat(shapeParams[i+1])));
+					i += 2;
+				}
+				
+				var shape2:Polygon = new Polygon(points);
+				
+				map.push
 				(
-					GameState.toPhysicalUnits(x), 
-					GameState.toPhysicalUnits(y), 
-					shape.width, 
-					shape.height,
-					shape
-				)
-			);
+					new Wireframe
+					(
+						x,
+						y, 
+						shape2.width, 
+						shape2.height,
+						null,
+						shape2
+					)
+				);
+			}
+			
+			else
+			{
+				var shape:B2EdgeShape = null; //SpriteReader.createShape(shapeType, shapeParams, x, y) as b2LoopShape;
+			
+				map.push
+				(
+					new Wireframe
+					(
+						Engine.toPhysicalUnits(x), 
+						Engine.toPhysicalUnits(y), 
+						0, //shape.width, 
+						0, //shape.height,
+						shape,
+						null
+					)
+				);
+			}
 		}
 		
 		return map;
-	}*/
+	}
 	
 	public function readActors(list:Iterator<Fast>):IntHash<ActorInstance>
 	{

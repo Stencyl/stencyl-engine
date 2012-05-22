@@ -56,6 +56,7 @@ import box2D.common.math.B2Transform;
 
 import com.stencyl.models.collision.Mask;
 import com.stencyl.models.collision.Hitbox;
+import com.stencyl.models.collision.Polygon;
 
 
 class Actor extends Sprite 
@@ -90,6 +91,7 @@ class Actor extends Sprite
 	
 	public var isRegion:Bool;
 	public var isTerrainRegion:Bool;
+	public var isTerrain:Bool;
 
 	public var destroyed:Bool;	
 	public var drawActor:Bool;	
@@ -204,6 +206,7 @@ class Actor extends Sprite
 	//*-----------------------------------------------
 
 	public var lastCollided:Actor;
+
 	
 	
 	//*-----------------------------------------------
@@ -228,7 +231,7 @@ class Actor extends Sprite
 		isStationary:Bool=false,
 		isKinematic:Bool=false,
 		canRotate:Bool=false,
-		shape:B2Shape=null, //Used only for terrain.
+		shape:Dynamic=null, //B2Shape or Polygon - Used only for terrain.
 		typeID:Int = 0,
 		isLightweight:Bool=false,
 		autoScale:Bool=true
@@ -243,6 +246,9 @@ class Actor extends Sprite
 		
 		_point = Utils.point;
 		_moveX = _moveY = 0;
+		
+		HITBOX = new Mask();
+		HITBOX.assignTo(this);
 		
 		//---
 		
@@ -328,7 +334,7 @@ class Actor extends Sprite
 		this.engine = engine;
 		
 		groupsToCollideWith = GameModel.get().groupsCollidesWith.get(groupID);
-
+		
 		//---
 		
 		behaviors = new BehaviorManager();
@@ -429,7 +435,13 @@ class Actor extends Sprite
 				canRotate = false;
 			}
 			
-			if(!isLightweight)
+			if(shape != null && Std.is(shape, com.stencyl.models.collision.Polygon))
+			{
+				setShape(shape);
+				isTerrain = true;
+			}
+			
+			else if(!isLightweight)
 			{
 				initBody(groupID, isSensor, isStationary, isKinematic, canRotate, shape);
 			}
@@ -445,7 +457,15 @@ class Actor extends Sprite
 		
 		else
 		{
-			if(!isLightweight)
+			if(shape != null && Std.is(shape, com.stencyl.models.collision.Polygon))
+			{
+				/*var dummy = new BitmapData(width, height);
+				addChild(new Bitmap(dummy));
+				this.width = width;
+				this.height = height;*/
+			}
+			
+			else if(!isLightweight)
 			{
 				body.setPosition(new B2Vec2(x, y));
 			}
@@ -2722,7 +2742,7 @@ class Actor extends Sprite
 	{
 		//Grab all actors from a group. For us, that means grabbing the group! (instead of a string type)
 		var actorList = engine.getGroup(groupID);
-
+		
 		_x = this.x; _y = this.y;
 		this.x = x; this.y = y;
 

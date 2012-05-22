@@ -7,7 +7,7 @@ import com.stencyl.behavior.BehaviorManager;
 import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.behavior.Script;
 
-
+import nme.geom.Point;
 import nme.display.Bitmap;
 import nme.display.Sprite;
 import nme.display.Stage;
@@ -50,6 +50,7 @@ import com.stencyl.models.background.ScrollingBackground;
 
 import scripts.MyScripts;
 import com.stencyl.models.collision.Mask;
+import com.stencyl.models.collision.Polygon;
 
 import com.stencyl.utils.Utils;
 import com.stencyl.utils.HashMap;
@@ -806,39 +807,68 @@ class Engine
 	{				
 		initLayers();
 		
-		/*for each(var item:* in scene.wireframes)
+		for(wireframe in scene.wireframes)
 		{
-			var wireframe:Wireframe = item as Wireframe;
+			var a:Actor = null;
 			
-			FlxG.log("Num vertices: " + (wireframe.shape as b2LoopShape).m_count);
+			if(NO_PHYSICS)
+			{
+				var p = cast(wireframe.shape2, Polygon);
+				p.updateDimensions();
+
+				a = new Actor
+				(
+					this, 
+					Utils.INT_MAX,
+					GameModel.TERRAIN_ID,
+					wireframe.x, 
+					wireframe.y, 
+					getTopLayer(),
+					Std.int(p.width), 
+					Std.int(p.height), 
+					null, 
+					new Hash<Dynamic>(),
+					null,
+					null, 
+					false, 
+					true, 
+					false,
+					false, 
+					wireframe.shape2
+				);
+			}
 			
-			var a:Actor = new Actor
-			(
-				this, 
-				int.MAX_VALUE,
-				Game.TERRAIN_ID,
-				x, 
-				y, 
-				getTopLayer(),
-				wireframe.width, 
-				wireframe.height, 
-				null, 
-				new Array(),
-				null,
-				null, 
-				false, 
-				true, 
-				false,
-				false, 
-				wireframe.shape, 
-				true
-			);
+			else
+			{
+				a = new Actor
+				(
+					this, 
+					Utils.INT_MAX,
+					GameModel.TERRAIN_ID,
+					wireframe.x, 
+					wireframe.y, 
+					getTopLayer(),
+					Std.int(wireframe.width), 
+					Std.int(wireframe.height), 
+					null, 
+					new Hash<Dynamic>(),
+					null,
+					null, 
+					false, 
+					true, 
+					false,
+					false, 
+					wireframe.shape
+				);
+			}
 			
 			a.name = "Terrain";
 			a.typeID = -1;
 			a.visible = false;
-			add(a);
-		}*/		
+			
+			getGroup(GameModel.TERRAIN_ID).list.set(a, a);
+			//master.addChild(a);
+		}
 	}
 	
 	//This is mainly to establish mappings and figure out top, middle, bottom
@@ -2006,7 +2036,7 @@ class Engine
      	//Only if camera changed?
      	for(layer in tileLayers)
      	{
-     		layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO *./);
+     		layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */);
      	}
      }
 	

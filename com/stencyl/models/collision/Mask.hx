@@ -43,7 +43,7 @@ class Mask
 		{
 			throw "Mask must be attached to a parent Entity";
 		}
-
+		
 		var cbFunc:MaskCallback = _check.get(mask._class);
 		if (cbFunc != null) return cbFunc(mask);
 

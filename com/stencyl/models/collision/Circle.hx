@@ -3,6 +3,8 @@ package com.stencyl.models.collision;
 import nme.display.Graphics;
 import nme.geom.Point;
 
+import com.stencyl.utils.Utils;
+
 /**
  * Uses circular area to determine collision.
  */
@@ -25,7 +27,7 @@ class Circle extends Mask
 		_check.set(Type.getClassName(Mask), collideMask);
 		_check.set(Type.getClassName(Circle), collideCircle);
 		_check.set(Type.getClassName(Hitbox), collideHitbox);
-		_check.set(Type.getClassName(Grid), collideGrid);
+		//_check.set(Type.getClassName(Grid), collideGrid);
 	}
 
 	/** @private Collides against an Entity. */
@@ -56,7 +58,7 @@ class Circle extends Mask
 		return (dx * dx + dy * dy) < Math.pow(_radius + other._radius, 2);
 	}
 
-	private function collideGrid(other:Grid):Bool
+	/*private function collideGrid(other:Grid):Bool
 	{
 		var thisX:Float = parent.x + _x,
 			thisY:Float = parent.y + _y,
@@ -124,7 +126,7 @@ class Circle extends Mask
 			}
 		}
 		return false;
-	}
+	}*/
 
 	/** @private Collides against a Hitbox. */
 	private function collideHitbox(other:Hitbox):Bool
@@ -152,7 +154,7 @@ class Circle extends Mask
 
 	override public function debugDraw(graphics:Graphics, scaleX:Float, scaleY:Float):Void
 	{
-		graphics.drawCircle((parent.x + _x - HXP.camera.x) * scaleX, (parent.y + _y - HXP.camera.y) * scaleY, radius * scaleX);
+		graphics.drawCircle((parent.x + _x - Utils.camera.x) * scaleX, (parent.y + _y - Utils.camera.y) * scaleY, radius * scaleX);
 	}
 
 	/**
