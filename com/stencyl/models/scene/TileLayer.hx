@@ -10,7 +10,9 @@ import nme.geom.Rectangle;
 import nme.display.Sprite;
 
 import com.stencyl.models.Scene;
+import com.stencyl.utils.Utils;
 import com.stencyl.utils.HashMap;
+import com.stencyl.models.collision.Grid;
 
 class TileLayer extends Sprite
 {
@@ -19,6 +21,7 @@ class TileLayer extends Sprite
 		
 	//Data
 	public var rows:Array<Array<Tile>>;
+	public var grid:Grid;
 	
 	public var scene:Scene;
 	public var numRows:Int;
@@ -60,6 +63,37 @@ class TileLayer extends Sprite
 		bitmapData = new BitmapData(Engine.screenWidth, Engine.screenHeight);
 		bitmap = new Bitmap(bitmapData);
 		addChild(bitmap);
+	}
+	
+	//TODO: It makes more sense to mount it to this, than make a new actor for it
+	public function mountGrid()
+	{
+		var a = new Actor
+		(
+			Engine.engine, 
+			Utils.INT_MAX,
+			GameModel.TERRAIN_ID,
+			0, 
+			0, 
+			Engine.engine.getTopLayer(),
+			grid.width, 
+			grid.height, 
+			null, 
+			new Hash<Dynamic>(),
+			null,
+			null, 
+			false, 
+			true, 
+			false,
+			false, 
+			grid
+		);
+		
+		a.name = "Terrain";
+		a.typeID = -1;
+		a.visible = false;
+		
+		Engine.engine.getGroup(GameModel.TERRAIN_ID).list.set(a, a);
 	}
 	
 	public function setTileAt(row:Int, col:Int, tile:Tile)

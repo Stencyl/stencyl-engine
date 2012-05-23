@@ -484,6 +484,10 @@ class Scene
 		var RLETILE_BYTE_COUNT = 8;
 		var numChunks:Int = Std.int(length / RLETILE_BYTE_COUNT);
 		
+		//Grid for non-Box2D games
+		var grid = new com.stencyl.models.collision.Grid(sceneWidth, sceneHeight, tileWidth, tileHeight);
+		layer.grid = grid;
+
 		for(i in 0...numChunks)
 		{
 			//Unused value we have to keep for compatibility reasons.
@@ -510,6 +514,11 @@ class Scene
 				else
 				{
 					layer.setTileAt(row, col, tset.tiles[tileID]);
+					
+					if(tset.tiles[tileID].collisionID > 0)
+					{
+						grid.setTile(col, row, true);
+					}
 					
 					//trace("set some tile at (" + col + "," + row + ")");
 					

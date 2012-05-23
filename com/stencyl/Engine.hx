@@ -806,39 +806,6 @@ class Engine
 	{				
 		initLayers();
 		
-		var grid = new com.stencyl.models.collision.Grid(Engine.sceneWidth, Engine.sceneHeight, 32, 32);
-		grid.setTile(2, 0, true);
-		grid.setTile(2, 1, true);
-		grid.setTile(2, 2, true);
-		
-		var a = new Actor
-		(
-			this, 
-			Utils.INT_MAX,
-			GameModel.TERRAIN_ID,
-			0, 
-			0, 
-			getTopLayer(),
-			grid.width, 
-			grid.height, 
-			null, 
-			new Hash<Dynamic>(),
-			null,
-			null, 
-			false, 
-			true, 
-			false,
-			false, 
-			grid
-		);
-		
-		a.name = "Terrain";
-		a.typeID = -1;
-		a.visible = false;
-		
-		getGroup(GameModel.TERRAIN_ID).list.set(a, a);
-		master.addChild(a);
-		
 		/*for(wireframe in scene.wireframes)
 		{
 			var a:Actor = null;
@@ -995,6 +962,12 @@ class Engine
 				terrain.name = REGULAR_LAYER;
 				master.addChild(terrain);
 				master.addChild(scene.terrain.get(layerID));
+				
+				if(NO_PHYSICS)
+				{
+					scene.terrain.get(layerID).mountGrid();
+				}
+				
 				this.layers.set(layerID, terrain);
 			}
 				
