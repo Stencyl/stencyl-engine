@@ -23,8 +23,9 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 	{
 		super();
 		
-		this.x = -width/2;
-		this.y = -height/2;
+		//TODO: Offset
+		//this.x = -width/2;
+		//this.y = -height/2;
 		
 		this.timer = 0;
 		this.frameIndex = 0;

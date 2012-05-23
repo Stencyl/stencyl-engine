@@ -3,6 +3,9 @@ package com.stencyl.models.collision;
 import nme.display.Graphics;
 import nme.geom.Point;
 import nme.geom.Rectangle;
+import nme.display.BitmapData;
+
+import com.stencyl.utils.Utils;
 
 /**
  * A bitmap mask used for pixel-perfect collision. 
@@ -26,14 +29,14 @@ class Pixelmask extends Hitbox
 		
 		// fetch mask data
 		if (Std.is(source, BitmapData)) _data = source;
-		else _data = HXP.getBitmap(source);
+		else _data = Utils.getBitmap(source);
 		if (_data == null) throw "Invalid Pixelmask source image.";
 		
 		threshold = 1;
 		
-		_rect = HXP.rect;
-		_point = HXP.point;
-		_point2 = HXP.point2;
+		_rect = Utils.rect;
+		_point = Utils.point;
+		_point2 = Utils.point2;
 		
 		// set mask properties
 		_width = data.width;

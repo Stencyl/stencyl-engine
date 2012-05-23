@@ -11,7 +11,7 @@ import com.stencyl.models.background.ColorBackground;
 import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.scene.RegionDef;
 import com.stencyl.models.scene.Wireframe;
-import com.stencyl.models.collision.Polygon;
+import com.stencyl.models.collision.Mask;
 import com.stencyl.behavior.BehaviorInstance;
 
 import nme.geom.Point;
@@ -563,7 +563,7 @@ class Scene
 						
 			if(Engine.NO_PHYSICS)
 			{
-				var points = new Array<Point>();
+				/*var points = new Array<Point>();
 				
 				var i = 1;
 				
@@ -573,7 +573,7 @@ class Scene
 					i += 2;
 				}
 				
-				var shape2:Polygon = new Polygon(points);
+				var shape2 = new Polygon(points);
 				
 				map.push
 				(
@@ -586,7 +586,9 @@ class Scene
 						null,
 						shape2
 					)
-				);
+				);*/
+				
+				//Broken - Use the simple grid instead
 			}
 			
 			else

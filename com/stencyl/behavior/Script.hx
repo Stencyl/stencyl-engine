@@ -1646,8 +1646,7 @@ class Script
 		for(key in engine.gameAttributes.keys())
 		{
 			Reflect.setField(so.data, key, engine.gameAttributes.get(key));
-		}
-		
+		}	
 		#end
 		
 		#if ( cpp || neko )

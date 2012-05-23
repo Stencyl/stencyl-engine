@@ -56,7 +56,6 @@ import box2D.common.math.B2Transform;
 
 import com.stencyl.models.collision.Mask;
 import com.stencyl.models.collision.Hitbox;
-import com.stencyl.models.collision.Polygon;
 
 
 class Actor extends Sprite 
@@ -435,7 +434,7 @@ class Actor extends Sprite
 				canRotate = false;
 			}
 			
-			if(shape != null && Std.is(shape, com.stencyl.models.collision.Polygon))
+			if(shape != null && Std.is(shape, com.stencyl.models.collision.Mask))
 			{
 				setShape(shape);
 				isTerrain = true;
@@ -457,12 +456,12 @@ class Actor extends Sprite
 		
 		else
 		{
-			if(shape != null && Std.is(shape, com.stencyl.models.collision.Polygon))
+			if(shape != null && Std.is(shape, com.stencyl.models.collision.Mask))
 			{
-				/*var dummy = new BitmapData(width, height);
+				var dummy = new BitmapData(width, height);
 				addChild(new Bitmap(dummy));
 				this.width = width;
-				this.height = height;*/
+				this.height = height;
 			}
 			
 			else if(!isLightweight)
@@ -790,8 +789,8 @@ class Actor extends Sprite
 			//originX = Math.floor(newAnimation.width/2);
 			//originY = Math.floor(newAnimation.height/2);
 			
-			this.x = realX + Math.floor(newAnimation.width/2);
-			this.y = realY + Math.floor(newAnimation.height/2);
+			//this.x = realX + Math.floor(newAnimation.width/2);
+			//this.y = realY + Math.floor(newAnimation.height/2);
 		}
 	}
 	
