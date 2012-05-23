@@ -1213,6 +1213,19 @@ class Engine
 		
 		//---
 		
+		//Pre-Recycle
+		
+		if(recycledActorsOfType.get(ai.actorType.ID) == null)
+		{
+			//This ought to be a HashSet instead
+			recycledActorsOfType.set(ai.actorType.ID, new Array<Actor>());
+		}
+		
+		var cache = recycledActorsOfType.get(ai.actorType.ID);
+		cache.push(a);
+		
+		//----
+		
 		var group = groups.get(ai.groupID);
 		
 		if(group != null)
@@ -1323,7 +1336,7 @@ class Engine
 	
 	public function recycleActor(a:Actor)
 	{
-		//trace("recycle " + a);
+		trace("recycle " + a);
 	
 		var l1 = engine.whenTypeGroupDiesListeners.get(a.getType());
 		var l2 = engine.whenTypeGroupDiesListeners.get(a.getGroup());

@@ -68,6 +68,11 @@ class TileLayer extends Sprite
 	//TODO: It makes more sense to mount it to this, than make a new actor for it
 	public function mountGrid()
 	{
+		if(grid == null)
+		{
+			return;
+		}
+	
 		var a = new Actor
 		(
 			Engine.engine, 
