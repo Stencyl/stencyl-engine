@@ -228,9 +228,6 @@ class Engine
 	public var layersToDraw:SizedIntHash<Int>;
 	public var layerOrders:SizedIntHash<Int>;		
 	
-	//public var parallax:ParallaxArea;
-	//public var playfield:Area;
-	
 	
 	//*-----------------------------------------------
 	//* Model - ?????
@@ -1326,6 +1323,23 @@ class Engine
 	
 	public function recycleActor(a:Actor)
 	{
+		//trace("recycle " + a);
+	
+		var l1 = engine.whenTypeGroupDiesListeners.get(a.getType());
+		var l2 = engine.whenTypeGroupDiesListeners.get(a.getGroup());
+	
+		Engine.invokeListeners(a.whenKilledListeners);
+
+		if(l1 != null)
+		{
+			Engine.invokeListeners2(l1, a);
+		}
+		
+		if(l2 != null)
+		{
+			Engine.invokeListeners2(l2, a);
+		}
+	
 		a.setX(1000000);
 		a.setY(1000000);
 		a.recycled = true;
@@ -1655,8 +1669,9 @@ class Engine
 				if(!a.isLightweight && a.body != null)
 				{
 					if(a.killLeaveScreen && !a.isOnScreen())
-					{							
-						a.die();
+					{		
+						recycleActor(a);
+						//a.die();
 					}
 					
 					else if(a.body.isActive())
@@ -1669,7 +1684,8 @@ class Engine
 				{
 					if(a.killLeaveScreen && !a.isOnScreen())
 					{
-						a.die();
+						recycleActor(a);
+						//a.die();
 					}
 					
 					else if(a.isAlive())

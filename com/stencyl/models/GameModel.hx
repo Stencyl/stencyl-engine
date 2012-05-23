@@ -79,7 +79,7 @@ class GameModel
 			}
 		
 			groupsCollidesWith.get(g1).push(g2);
-			//groupsCollidesWith.get(g2).push(g1); //leads to duplicates
+			groupsCollidesWith.get(g2).push(g1);
 		}
 		
 		//---
