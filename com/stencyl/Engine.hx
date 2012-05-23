@@ -27,6 +27,7 @@ import com.stencyl.graphics.transitions.FadeInTransition;
 import com.stencyl.graphics.transitions.FadeOutTransition;
 import com.stencyl.graphics.transitions.CircleTransition;
 import com.stencyl.graphics.BitmapFont;
+import com.stencyl.graphics.G;
 
 import com.stencyl.models.Actor;
 import com.stencyl.models.scene.DeferredActor;
@@ -175,6 +176,8 @@ class Engine
 	public var master:Sprite; // the root of the main node
 	public var transitionLayer:Sprite; //Shows above everything else
 	
+	public var g:G;
+	
 	
 	//*-----------------------------------------------
 	//* Model - Actors & Groups
@@ -321,6 +324,8 @@ class Engine
 		
 		Data.get();
 		GameModel.get();
+		
+		g = new G();
 		
 		//---
 			
@@ -2029,9 +2034,10 @@ class Engine
 		//Walk through all actors
 		//TODO:
 		//for(a in actorsOnScreen)
-		/*for(a in actors)
+		/*for(a in allActors)
 		{
-			a.draw(null);	
+			var layer = layers.get(a.layerID);
+			a.draw(null);
 		}*/
 
      	//Walk through each of the drawing events
@@ -2041,6 +2047,22 @@ class Engine
      	{
      		layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */);
      	}
+     	
+     	g.graphics = transitionLayer.graphics;
+     	g.graphics.clear();
+     	
+     	g.alpha = 0.2;
+     	g.x = 32;
+     	g.y = 32;
+     	g.strokeSize = 3;
+     	g.strokeColor = 0xffffff;
+     	g.fillColor = 0x336699;
+ 
+     	g.beginFillPolygon();
+     	g.addPointToPolygon(0, 0);
+     	g.addPointToPolygon(64, 64);
+     	g.addPointToPolygon(0, 64);
+     	g.endDrawingPolygon();
      }
 	
 	//*-----------------------------------------------

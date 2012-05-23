@@ -14,9 +14,6 @@ class Layer extends Sprite
 	public var order:Int;
 	public var color:Int;
 	
-	public var customDrawing:Bitmap;
-	public var canvas:BitmapData;
-	
 	public function new(ID:Int, order:Int, tiles:TileLayer)
 	{
 		super();
@@ -27,13 +24,5 @@ class Layer extends Sprite
 
 		//scrollFactor.x = 0;
 		//scrollFactor.y = 0;
-		
-		//alpha = 255;
-		//color = 0x00ffffff;
-		
-		canvas = new BitmapData(Engine.screenWidth, Engine.screenHeight);
-		customDrawing = new Bitmap(canvas);
-		
-		//addChild(customDrawing);
 	}
 }
