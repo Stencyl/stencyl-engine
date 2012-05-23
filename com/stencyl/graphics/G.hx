@@ -2,6 +2,9 @@ package com.stencyl.graphics;
 
 import nme.display.Graphics;
 import nme.display.Shape;
+import nme.display.BlendMode;
+
+import com.stencyl.models.Actor;
 
 class G 
 {
@@ -11,11 +14,9 @@ class G
 	public var y:Float;
 	public var scaleX:Float; //[1]
 	public var scaleY:Float; //[1]
-	
 	public var alpha:Float; // [0,1]
-	
+	public var blendMode:BlendMode;
 	public var strokeSize:Int;
-	
 	public var fillColor:Int;
 	public var strokeColor:Int;
 	
@@ -30,8 +31,9 @@ class G
 		x = y = 0;
 		scaleX = scaleY = 1;
 		alpha = 1;
+		blendMode = BlendMode.NORMAL;
 		
-		strokeSize = 1;
+		strokeSize = 0;
 		
 		fillColor = 0x000000;
 		strokeColor = 0x000000;
@@ -51,6 +53,39 @@ class G
 	
 	public inline function endGraphics()
 	{
+	}
+	
+	public function translate(x:Float, y:Float)
+	{
+		this.x += x * scaleX;
+		this.y += y * scaleY;
+	}
+	
+	public function moveTo(x:Float, y:Float)
+	{
+		this.x = x;
+		this.y = y;
+	}
+	
+	public function translateToScreen()
+	{
+		x = 0;
+		y = 0;
+	}
+	
+	public function translateToActor(a:Actor)
+	{
+		x = a.x - a.width * (a.scaleX - 1) / 2;
+		y = a.y - a.height * (a.scaleY - 1) / 2;
+	}
+	
+	public function drawString(s:String, x:Float, y:Float)
+	{
+		startGraphics();
+		
+		//TODO
+		
+		endGraphics();
 	}
 	
 	public function drawLine(x1:Float, y1:Float, x2:Float, y2:Float)
@@ -187,6 +222,8 @@ class G
 			graphics.lineTo(this.x + firstX, this.y + firstY);
 			graphics.endFill();
 		}
+		
+		endGraphics();
 	}
 	
 	public function beginDrawPolygon()
@@ -220,4 +257,8 @@ class G
 		
 		graphics.lineTo(this.x + x, this.y + y);
 	}
+	
+	//Draw Image?
+	
+	//Blend Modes?
 }

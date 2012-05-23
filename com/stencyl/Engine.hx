@@ -944,10 +944,11 @@ class Engine
 			
 			var list = new Sprite();
 			var terrain = null;
+			var overlay = new Sprite();
 			
 			if(scene.terrain != null)
 			{
-				terrain = new Layer(layerID, j, scene.terrain.get(layerID));
+				terrain = new Layer(layerID, j, scene.terrain.get(layerID), overlay);
 			}
 			
 			if(!foundBottom)
@@ -976,9 +977,12 @@ class Engine
 				this.layers.set(layerID, terrain);
 			}
 				
-			list.name = REGULAR_LAYER;
+			overlay.name = list.name = REGULAR_LAYER;
 			master.addChild(list);
+			master.addChild(overlay);
+			
 			actorsPerLayer.set(layerID, list);
+			
 			
 			//Eventually, this will become the correct value
 			topLayer = j;
@@ -2031,14 +2035,25 @@ class Engine
      //The display tree does almost everything now. We only need to invoke the behavior drawers.
      public function draw()
      {
+     	for(l in layers)
+		{
+			l.overlay.graphics.clear();
+		}
+     
 		//Walk through all actors
 		//TODO:
 		//for(a in actorsOnScreen)
-		/*for(a in allActors)
+		for(a in allActors)
 		{
-			var layer = layers.get(a.layerID);
-			a.draw(null);
-		}*/
+			if(a.whenDrawingListeners.length > 0)
+			{
+				var layer = layers.get(a.layerID);
+				g.graphics = layer.overlay.graphics;
+
+				g.translateToActor(a);			
+				Engine.invokeListeners4(a.whenDrawingListeners, g, 0, 0);
+			}
+		}
 
      	//Walk through each of the drawing events
      	
@@ -2048,21 +2063,10 @@ class Engine
      		layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */);
      	}
      	
+     	//Scene Behavior/Event Drawing
      	g.graphics = transitionLayer.graphics;
      	g.graphics.clear();
-     	
-     	g.alpha = 0.2;
-     	g.x = 32;
-     	g.y = 32;
-     	g.strokeSize = 3;
-     	g.strokeColor = 0xffffff;
-     	g.fillColor = 0x336699;
- 
-     	g.beginFillPolygon();
-     	g.addPointToPolygon(0, 0);
-     	g.addPointToPolygon(64, 64);
-     	g.addPointToPolygon(0, 64);
-     	g.endDrawingPolygon();
+     	Engine.invokeListeners4(whenDrawingListeners, g, 0, 0);
      }
 	
 	//*-----------------------------------------------

@@ -14,11 +14,15 @@ class Layer extends Sprite
 	public var order:Int;
 	public var color:Int;
 	
-	public function new(ID:Int, order:Int, tiles:TileLayer)
+	public var overlay:Sprite;
+	
+	public function new(ID:Int, order:Int, tiles:TileLayer, overlay:Sprite)
 	{
 		super();
 		
 		this.tiles = tiles;
+		this.overlay = overlay;
+		
 		this.ID = ID;
 		this.order = order;
 

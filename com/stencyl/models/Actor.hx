@@ -161,6 +161,7 @@ class Actor extends Sprite
 	//*-----------------------------------------------
 	
 	public var registry:Hash<Dynamic>;
+	//public var overlay:Sprite;
 	
 	
 	//*-----------------------------------------------
@@ -477,6 +478,8 @@ class Actor extends Sprite
 		}
 
 		Engine.initBehaviors(behaviors, behaviorValues, this, engine, false);
+		
+		//addChild(overlay = new Sprite());
 	}	
 	
 	public function destroy()

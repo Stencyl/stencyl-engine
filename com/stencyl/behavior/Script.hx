@@ -15,6 +15,8 @@ import nme.Lib;
 
 import nme.display.Graphics;
 
+import com.stencyl.graphics.G;
+
 import com.stencyl.models.Actor;
 import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.Group;
@@ -282,7 +284,7 @@ class Script
 		}
 	}
 	
-	public function addWhenDrawingListener(a:Actor, func:Graphics->Int->Int->Dynamic->Void)
+	public function addWhenDrawingListener(a:Actor, func:G->Int->Int->Dynamic->Void)
 	{
 		var isActorScript = Std.is(this, ActorScript);
 	
