@@ -876,6 +876,12 @@ class Actor extends Sprite
 			x = Math.round(p.x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
 			y = Math.round(p.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);		
 			rotation = body.getAngle() * Utils.DEG;
+			
+			if(isHUD)
+			{
+				transform.matrix.identity();
+				transform.matrix.translate(Engine.cameraX, Engine.cameraY);
+			}
 		}
 		
 		if(doAll)
@@ -2562,31 +2568,21 @@ class Actor extends Sprite
 		
 		isHUD = true;			
 		engine.addHUDActor(this);
-		
-		//TODO: Just apply to main actor
-		for(anim in animationMap)
-		{
-			//anim.scrollFactor.x = 0;
-			//anim.scrollFactor.y = 0;
-		}
+		engine.removeActorFromLayer(this, layerID);
+		engine.hudLayer.addChild(this);
 	}
 	
 	public function unanchorFromScreen()
 	{
 		if(!isLightweight)
 		{
-			//body.SetAlwaysActive(alwaysSimulate || false);
+			//body.SetAlwaysActive(alwaysSimulate);
 		}
 		
 		isHUD = false;			
 		engine.removeHUDActor(this);
-		
-		//TODO: Just apply to main actor
-		for(anim in animationMap)
-		{
-			//anim.scrollFactor.x = 1;
-			//anim.scrollFactor.y = 1;
-		}
+		engine.moveActorToLayer(this, layerID);
+		engine.hudLayer.removeChild(this);
 	}
 	
 	public function isAnchoredToScreen():Bool

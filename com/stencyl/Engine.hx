@@ -174,6 +174,7 @@ class Engine
 	public var defaultGroup:Sprite; //The default layer (bottom-most)
 	public var root:Sprite; //The absolute root
 	public var master:Sprite; // the root of the main node
+	public var hudLayer:Sprite; //Shows above everything else
 	public var transitionLayer:Sprite; //Shows above everything else
 	
 	public var g:G;
@@ -352,6 +353,9 @@ class Engine
 		//Display List
 		master = new Sprite();
 		root.addChild(master);
+		
+		hudLayer = new Sprite();
+		root.addChild(hudLayer);
 		
 		transitionLayer = new Sprite();
 		root.addChild(transitionLayer);
@@ -1304,7 +1308,7 @@ class Engine
 		}
 	}
 	
-	private function removeActorFromLayer(a:Actor, layerID:Int)
+	public function removeActorFromLayer(a:Actor, layerID:Int)
 	{
 		var layer = actorsPerLayer.get(layerID);
 		
@@ -1318,7 +1322,7 @@ class Engine
 		layer.removeChild(a);
 	}
 	
-	private function moveActorToLayer(a:Actor, layerID:Int)
+	public function moveActorToLayer(a:Actor, layerID:Int)
 	{
 		var layer = actorsPerLayer.get(layerID);
 		
@@ -1686,9 +1690,9 @@ class Engine
 						//a.die();
 					}
 					
-					else if(a.body.isActive() || a.alwaysSimulate)
+					else if(a.body.isActive() || a.alwaysSimulate || a.isHUD)
 					{		
-						a.innerUpdate(elapsedTime, true);						
+						a.innerUpdate(elapsedTime, false);						
 					}
 				}
 				
@@ -1700,9 +1704,9 @@ class Engine
 						//a.die();
 					}
 					
-					else if(isOnScreen || a.alwaysSimulate)
+					else if(isOnScreen || a.alwaysSimulate || a.isHUD)
 					{		
-						a.innerUpdate(elapsedTime, true);
+						a.innerUpdate(elapsedTime, false);
 					}
 				}
 				
@@ -1713,13 +1717,13 @@ class Engine
 			}
 		}
 					
-		for(a2 in hudActors)
+		/*for(a2 in hudActors)
 		{
 			if(a2 != null && (a2.isLightweight || (a2.body != null && a2.body.isActive())) && !a2.dead && !a2.recycled)
 			{
 				a2.innerUpdate(elapsedTime, false);
 			}
-		}
+		}*/
 		
 		/*for(a in disableCollisionList)
 		{
@@ -2162,6 +2166,7 @@ class Engine
 	{
 		hudActors.delete(a);
 	}
+	
 	
 	//*-----------------------------------------------
 	//* Actors - Layering
