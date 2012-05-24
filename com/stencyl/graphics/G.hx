@@ -13,6 +13,8 @@ import com.stencyl.models.Font;
 
 class G 
 {
+	private var defaultFont:Font;
+
 	public var graphics:Graphics;
 	public var canvas:BitmapData;
 	
@@ -61,7 +63,8 @@ class G
 		firstX = 0;
 		firstY = 0;
 		
-		//TODO: Default font built in
+		font = defaultFont = new Font(0, "", "", null, 0, 0, null); 
+		defaultFont.font = new BitmapFont("assets/graphics/font.png", 32, 32, BitmapFont.TEXT_SET11 + "#", 9, 1, 1);
 	}
 	
 	public inline function startGraphics()
@@ -291,5 +294,6 @@ class G
 	
 	public function resetFont()
 	{
+		font = defaultFont;
 	}
 }

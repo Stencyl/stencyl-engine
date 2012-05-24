@@ -15,8 +15,9 @@ class Layer extends Sprite
 	public var color:Int;
 	
 	public var overlay:Sprite;
+	public var bitmapOverlay:Bitmap;
 	
-	public function new(ID:Int, order:Int, tiles:TileLayer, overlay:Sprite)
+	public function new(ID:Int, order:Int, tiles:TileLayer, overlay:Sprite, bitmapOverlay:Bitmap)
 	{
 		super();
 		

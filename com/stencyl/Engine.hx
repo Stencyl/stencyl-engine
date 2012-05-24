@@ -9,6 +9,7 @@ import com.stencyl.behavior.Script;
 
 import nme.geom.Point;
 import nme.display.Bitmap;
+import nme.display.BitmapData;
 import nme.display.Sprite;
 import nme.display.Stage;
 import nme.display.Shape;
@@ -175,6 +176,7 @@ class Engine
 	public var root:Sprite; //The absolute root
 	public var master:Sprite; // the root of the main node
 	public var hudLayer:Sprite; //Shows above everything else
+	public var transitionBitmapLayer:Bitmap; //Shows above everything else
 	public var transitionLayer:Sprite; //Shows above everything else
 	
 	public var g:G;
@@ -359,6 +361,9 @@ class Engine
 		
 		transitionLayer = new Sprite();
 		root.addChild(transitionLayer);
+		
+		transitionBitmapLayer = new Bitmap(new BitmapData(Engine.screenWidth, Engine.screenHeight, true, 0));
+		root.addChild(transitionBitmapLayer);
 		
 		//Initialize things	
 		actorsToCreateInNextScene = new Array();			
@@ -945,10 +950,11 @@ class Engine
 			var list = new Sprite();
 			var terrain = null;
 			var overlay = new Sprite();
+			var bitmapOverlay = new Bitmap(new BitmapData(Engine.screenWidth, Engine.screenHeight, true, 0));
 			
 			if(scene.terrain != null)
 			{
-				terrain = new Layer(layerID, j, scene.terrain.get(layerID), overlay);
+				terrain = new Layer(layerID, j, scene.terrain.get(layerID), overlay, bitmapOverlay);
 			}
 			
 			if(!foundBottom)
@@ -980,6 +986,7 @@ class Engine
 			overlay.name = list.name = REGULAR_LAYER;
 			master.addChild(list);
 			master.addChild(overlay);
+			master.addChild(bitmapOverlay);
 			
 			actorsPerLayer.set(layerID, list);
 			
@@ -2062,14 +2069,22 @@ class Engine
      * - Scene custom drawing
      * - Debug drawing
 	 * - Transition drawing
-         */
-      
+     */
+     
+      //TODO: Consider a repainting scheme if performance suffers. Custom drawing only happens when
+      //you decide to repaint a layer or all layers. Will likely help on labels.
+        
      //The display tree does almost everything now. We only need to invoke the behavior drawers.
      public function draw()
      {
      	for(l in layers)
 		{
 			l.overlay.graphics.clear();
+			
+			if(l.bitmapOverlay != null)
+			{
+				l.bitmapOverlay.bitmapData.fillRect(l.bitmapOverlay.bitmapData.rect, 0);
+			}
 		}
 		
 		//Clean up HUD actors
@@ -2089,7 +2104,7 @@ class Engine
 			{
 				var layer = layers.get(a.layerID);
 				g.graphics = layer.overlay.graphics;
-
+     			g.canvas = layer.bitmapOverlay.bitmapData;
 				g.translateToActor(a);			
 				Engine.invokeListeners4(a.whenDrawingListeners, g, 0, 0);
 			}
@@ -2105,7 +2120,9 @@ class Engine
      	
      	//Scene Behavior/Event Drawing
      	g.graphics = transitionLayer.graphics;
+     	g.canvas = transitionBitmapLayer.bitmapData;
      	g.graphics.clear();
+     	g.canvas.fillRect(g.canvas.rect, 0);
      	Engine.invokeListeners4(whenDrawingListeners, g, 0, 0);
      }
 	
