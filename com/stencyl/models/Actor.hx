@@ -9,6 +9,7 @@ import nme.display.DisplayObjectContainer;
 import nme.Assets;
 import nme.display.Graphics;
 import nme.geom.Point;
+import nme.geom.Rectangle;
 
 import com.stencyl.Input;
 import com.stencyl.Engine;
@@ -56,6 +57,13 @@ import box2D.common.math.B2Transform;
 
 import com.stencyl.models.collision.Mask;
 import com.stencyl.models.collision.Hitbox;
+
+import nme.filters.BitmapFilter;
+
+#if flash
+import flash.filters.ColorMatrixFilter;
+import com.stencyl.utils.ColorMatrix;
+#end
 
 
 class Actor extends Sprite 
@@ -1125,7 +1133,7 @@ class Actor extends Sprite
 		contacts = new Dictionary();*/
 	}
 	
-	/*public function collidedFromBottom(c:b2Contact, normal:V2):Boolean
+	/*public function collidedFromBottom(c:b2Contact, normal:V2):Bool
 	{
 		var thisActor:Actor = this;
 		var body:b2Body = thisActor.getBody();
@@ -1146,7 +1154,7 @@ class Actor extends Sprite
 		return false;
 	}
 	
-	public function collidedFromTop(c:b2Contact, normal:V2):Boolean
+	public function collidedFromTop(c:b2Contact, normal:V2):Bool
 	{
 		var thisActor:Actor = this;
 		var body:b2Body = thisActor.getBody();
@@ -1167,7 +1175,7 @@ class Actor extends Sprite
 		return false;
 	}
 	
-	public function collidedFromLeft(c:b2Contact, normal:V2):Boolean
+	public function collidedFromLeft(c:b2Contact, normal:V2):Bool
 	{
 		var thisActor:Actor = this;
 		var body:b2Body = thisActor.getBody();
@@ -1188,7 +1196,7 @@ class Actor extends Sprite
 		return false;
 	}
 	
-	public function collidedFromRight(c:b2Contact, normal:V2):Boolean
+	public function collidedFromRight(c:b2Contact, normal:V2):Bool
 	{
 		var thisActor:Actor = this;
 		var body:b2Body = thisActor.getBody();
@@ -1209,7 +1217,7 @@ class Actor extends Sprite
 		return false;
 	}
 	
-	private function collidedWithActor(a:Actor):Boolean
+	private function collidedWithActor(a:Actor):Bool
 	{
 		if(a != null)
 		{
@@ -1219,7 +1227,7 @@ class Actor extends Sprite
 		return false;
 	}
 	
-	private function collidedWithTerrain(a:Actor):Boolean
+	private function collidedWithTerrain(a:Actor):Bool
 	{
 		if(a != null)
 		{
@@ -1229,7 +1237,7 @@ class Actor extends Sprite
 		return false;
 	}
 	
-	private function collidedWithTile(a:Actor):Boolean
+	private function collidedWithTile(a:Actor):Bool
 	{
 		if(a != null)
 		{
@@ -2334,62 +2342,118 @@ class Actor extends Sprite
 	//*-----------------------------------------------
 	//* Filters
 	//*-----------------------------------------------
-	
-	public function setFilter(filter:Dynamic)
-	{
-		/*if(currAnimation != null)
-		{
-			currAnimation.setFilter(filter);
-		}*/
-	}
-	
-	//Pulpcore-like filter addon
-	/*public var filter:*;
-	
 
-	public function setFilter(filter:*):void
+	public function setFilter(filter:Array<Dynamic>)
 	{			
-		//sent in null (remove all), or no filters currently applied (apply all)
-		if(filter == null || this.filter == null)
-		{
-			this.filter = filter;
-			calcFrame();
-			return;
-		}
-		
-		this.filter = [this.filter].concat(filter);
-		
-		calcFrame();
+		filters = filter;
 	}
-
-	public function applyFilter(filter:*):void
+	
+	public function clearFilters()
 	{
-		if(filter != null)
-		{
-			_flashRect.x = _flashRect.y = 0;
-			
-			_flashRect.width = _framePixels.width;
-			_flashRect.height = _framePixels.height;
-
-			_flashPointZero.x = 0;
-			_flashPointZero.y = 0;
-						
-			//var rect:Rectangle = _framePixels.generateFilterRect(_flashRect, filter);
-			
-			if(filter is Array)
-			{
-				for each(var o:Object in filter)
-				{
-					applyFilter(o);
-				}
-			}
-			else if(filter is BitmapFilter)
-			{
-				_framePixels.applyFilter(_framePixels, _flashRect, _flashPointZero, filter as BitmapFilter);
-			}
-		}
+		filters = [];
 	}
+	
+	//Flash only till NME supports ColorMatrixFilter!
+	
+	#if flash
+	
+	public function createGrayscaleFilter():ColorMatrixFilter
+	{
+		var matrix:Array<Dynamic> = new Array<Dynamic>();
+		
+		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
+		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
+		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
+		matrix = matrix.concat([0,0,0,1,0]);
+		
+		return new ColorMatrixFilter(matrix);
+	}
+	
+	/**
+	* Returns a ColorMatrixFilter that is sepia colored 
 	*/
+	public function createSepiaFilter():ColorMatrixFilter
+	{
+		var matrix:Array<Dynamic> = new Array<Dynamic>();
+		
+		matrix = matrix.concat([0.34, 0.33, 0.33, 0.00, 30.00]);
+		matrix = matrix.concat([0.33, 0.34, 0.33, 0.00, 20.00]);
+		matrix = matrix.concat([0.33, 0.33, 0.34, 0.00, 0.00]);
+		matrix = matrix.concat([0.00, 0.00, 0.00, 1.00, 0.00]);
+		
+		return new ColorMatrixFilter(matrix);
+	}
+	
+	/**
+	* Returns a ColorMatrixFilter that is a negative
+	*/
+	public function createNegativeFilter():ColorMatrixFilter
+	{
+		var matrix:Array<Dynamic> = new Array<Dynamic>();
+		
+		matrix = matrix.concat([-1, 0, 0, 0, 255]);
+		matrix = matrix.concat([0, -1, 0, 0, 255]);
+		matrix = matrix.concat([0, 0, -1, 0, 255]);
+		matrix = matrix.concat([0, 0, 0, 1, 0]);
+		
+		return new ColorMatrixFilter(matrix);
+	}
+	
+	/**
+	* Returns a ColorMatrixFilter that is a specific color
+	*/
+	public function createTintFilter(color:Int, amount:Float = 1):ColorMatrixFilter
+	{
+		var cm:ColorMatrix = new ColorMatrix();
+		
+		cm.colorize(color, amount);
+		
+		return new ColorMatrixFilter(cm.matrix);
+	}
+	
+	/*
+	h is in degrees (RELATIVE)
+	s is [0-2 where 1 is reset] (ABSOLUTE)
+	b is [0-100] (RELATIVE)
+	*/
+	/**
+	* Returns a ColorMatrixFilter that adjusts hue (in relative degrees) 
+	*/
+	public function createHueFilter(h:Float):ColorMatrixFilter
+	{
+		var cm:ColorMatrix = new ColorMatrix();
+		
+		cm.adjustHue(h);
+		cm.adjustSaturation(1);
+		
+		return new ColorMatrixFilter(cm.matrix);
+	}
+	
+	/**
+	* Returns a ColorMatrixFilter that adjusts saturation (measured 0 - 2 with 1 being normal) 
+	*/
+	public static function createSaturationFilter(s:Float):ColorMatrixFilter
+	{
+		var cm:ColorMatrix = new ColorMatrix();
+		
+		cm.adjustSaturation(s/100);
+		
+		return new ColorMatrixFilter(cm.matrix);
+	}
+	
+	/**
+	* Returns a ColorMatrixFilter that adjusts brightness (in relative degrees) 
+	*/
+	public function createBrightnessFilter(b:Float):ColorMatrixFilter
+	{
+		var cm:ColorMatrix = new ColorMatrix();
+		
+		cm.adjustBrightness(b);
+		
+		return new ColorMatrixFilter(cm.matrix);
+	}
+		
+	#end
 	
 	//*-----------------------------------------------
 	//* Behaviors
@@ -3227,8 +3291,8 @@ class Actor extends Sprite
 		}	
 		
 		//Collision has been handled once, hold to prevent from double reporting collisions
-		collisionPairs[a][event.otherActor] = new Boolean();
-		collisionPairs[event.otherActor][a] = new Boolean();
+		collisionPairs[a][event.otherActor] = new Bool();
+		collisionPairs[event.otherActor][a] = new Bool();
 		
 		*/
 	}

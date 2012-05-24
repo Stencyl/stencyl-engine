@@ -2077,7 +2077,7 @@ class Engine
 		{
 			if(a == null || a.dead)
 			{
-				hudActors.remove(a);
+				hudActors.delete(a);
 			}
 		}
      
