@@ -469,8 +469,7 @@ class Engine
 		loadCamera();
 		loadJoints();
 		
-		loadDeferredActors();
-		//actorsOnScreen = cacheActors();		
+		loadDeferredActors();		
 		initBehaviors(behaviors, scene.behaviorValues, this, this, true);			
 		initActorScripts();
 	}
@@ -1673,21 +1672,21 @@ class Engine
 		//collisionPairs = new Dictionary();
 		//var disableCollisionList = new Array<Actor>();
 
-		//TODO:
-		//for(a in actorsOnScreen)
 		for(a in allActors)
 		{		
 			if(a != null && !a.dead && !a.recycled) 
 			{
+				var isOnScreen = a.isOnScreen();
+			
 				if(!a.isLightweight && a.body != null)
 				{
-					if(a.killLeaveScreen && !a.isOnScreen())
+					if(a.killLeaveScreen && !isOnScreen)
 					{		
 						recycleActor(a);
 						//a.die();
 					}
 					
-					else if(a.body.isActive())
+					else if(a.body.isActive() || a.alwaysSimulate)
 					{		
 						a.innerUpdate(elapsedTime, true);						
 					}
@@ -1695,13 +1694,13 @@ class Engine
 				
 				else if(a.isLightweight)
 				{
-					if(a.killLeaveScreen && !a.isOnScreen())
+					if(a.killLeaveScreen && !isOnScreen)
 					{
 						recycleActor(a);
 						//a.die();
 					}
 					
-					else if(a.isAlive())
+					else if(isOnScreen || a.alwaysSimulate)
 					{		
 						a.innerUpdate(elapsedTime, true);
 					}
@@ -2068,10 +2067,18 @@ class Engine
 		{
 			l.overlay.graphics.clear();
 		}
+		
+		//Clean up HUD actors
+		for(a in hudActors)
+		{
+			if(a == null || a.dead)
+			{
+				hudActors.remove(a);
+			}
+		}
      
 		//Walk through all actors
-		//TODO:
-		//for(a in actorsOnScreen)
+		//TODO: cache the actors that need to be drawn instead upon creation
 		for(a in allActors)
 		{
 			if(a.whenDrawingListeners.length > 0)
@@ -2768,35 +2775,6 @@ class Engine
 		Engine.paddingBottom = bottom;
 		Engine.paddingRight = right;
 	}
-	
-	/*
-	private function fetchActorsToRender():int
-	{
-		actorsOnScreen = cacheActors();
-		
-		for each(var curr:Actor in actorsOnScreen)
-		{
-			if(curr != null && curr.body != null && curr.currSprite != null)
-			{
-				curr.currSprite.exists = (curr.body.IsActive() || curr.paused) && !curr.recycled;
-			}
-		}
-		
-		return 0;
-	}
-	
-	public function cacheActors():Array
-	{
-		for each(var a:Actor in hudActors)
-		{
-			if(a == null || a.dead)
-			{
-				hudActors.remove(a);
-			}
-		}
-		
-		return allActors;
-	}*/
 	
 	//*-----------------------------------------------
 	//* Utils

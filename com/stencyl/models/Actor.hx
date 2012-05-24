@@ -2652,7 +2652,7 @@ class Actor extends Sprite
 	{
 		return !(dead || dying);
 	}
-	
+
 	public function isOnScreen():Bool
 	{
 		var cameraX = Engine.cameraX;
