@@ -1898,7 +1898,7 @@ class Script
 		
 		cm.colorize(color, amount);
 		
-		return new ColorMatrixFilter(cm.matrix);
+		return cm.getFilter();
 	}
 	
 	/*
@@ -1916,19 +1916,19 @@ class Script
 		cm.adjustHue(h);
 		cm.adjustSaturation(1);
 		
-		return new ColorMatrixFilter(cm.matrix);
+		return cm.getFilter();
 	}
 	
 	/**
 	* Returns a ColorMatrixFilter that adjusts saturation (measured 0 - 2 with 1 being normal) 
 	*/
-	public static function createSaturationFilter(s:Float):ColorMatrixFilter
+	public function createSaturationFilter(s:Float):ColorMatrixFilter
 	{
 		var cm:ColorMatrix = new ColorMatrix();
 		
 		cm.adjustSaturation(s/100);
 		
-		return new ColorMatrixFilter(cm.matrix);
+		return cm.getFilter();
 	}
 	
 	/**
@@ -1940,7 +1940,7 @@ class Script
 		
 		cm.adjustBrightness(b);
 		
-		return new ColorMatrixFilter(cm.matrix);
+		return cm.getFilter();
 	}
 		
 	#end	
