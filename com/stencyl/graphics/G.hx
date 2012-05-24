@@ -1,14 +1,20 @@
 package com.stencyl.graphics;
 
+import nme.display.BitmapData;
 import nme.display.Graphics;
 import nme.display.Shape;
 import nme.display.BlendMode;
 
+import nme.geom.Rectangle;
+import nme.geom.Point;
+
 import com.stencyl.models.Actor;
+import com.stencyl.models.Font;
 
 class G 
 {
 	public var graphics:Graphics;
+	public var canvas:BitmapData;
 	
 	public var x:Float;
 	public var y:Float;
@@ -19,6 +25,11 @@ class G
 	public var strokeSize:Int;
 	public var fillColor:Int;
 	public var strokeColor:Int;
+	public var font:Font;
+	
+	//Temp to avoid creating objects
+	private var rect:Rectangle;
+	private var point:Point;
 	
 	//Polygon Specific
 	private var drawPoly:Bool;
@@ -40,10 +51,17 @@ class G
 		
 		//
 		
+		rect = new Rectangle();
+		point = new Point();
+		
+		//
+		
 		drawPoly = false;
 		pointCounter = 0;
 		firstX = 0;
 		firstY = 0;
+		
+		//TODO: Default font built in
 	}
 	
 	public inline function startGraphics()
@@ -81,11 +99,8 @@ class G
 	
 	public function drawString(s:String, x:Float, y:Float)
 	{
-		startGraphics();
-		
-		//TODO
-		
-		endGraphics();
+		font.font.text = s;
+		drawImage(font.font.bitmapData, x, y); // this is kinda slow unless we only update when a repaint in requested?
 	}
 	
 	public function drawLine(x1:Float, y1:Float, x2:Float, y2:Float)
@@ -258,7 +273,23 @@ class G
 		graphics.lineTo(this.x + x, this.y + y);
 	}
 	
-	//Draw Image?
+	public function drawImage(img:BitmapData, x:Float, y:Float)
+	{
+		x *= scaleX;
+		y *= scaleY;
+		
+		rect.x = 0;
+		rect.y = 0;
+		rect.width = img.width;
+		rect.height = img.height;
+		
+		point.x = this.x + x;
+		point.y = this.y + y;
 	
-	//Blend Modes?
+		canvas.copyPixels(img, rect, point);
+	}
+	
+	public function resetFont()
+	{
+	}
 }
