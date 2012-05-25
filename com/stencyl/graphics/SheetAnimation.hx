@@ -104,4 +104,15 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
   		tilesheet.drawTiles(graphics, data, true);
   		#end
 	}
+	
+	public function draw(g:G, x:Float, y:Float)
+	{
+		#if !js
+		data[0] = x;
+		data[1] = y;
+		data[2] = frameIndex;
+
+  		tilesheet.drawTiles(g.graphics, data, true);
+  		#end
+	}
 }

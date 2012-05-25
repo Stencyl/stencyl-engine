@@ -100,4 +100,9 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		this.bitmapData.fillRect(this.bitmapData.rect, 0x00000000);
 		this.bitmapData.copyPixels(sheet, region, pt);
 	}
+	
+	public function draw(g:G, x:Float, y:Float)
+	{
+		g.drawImage(bitmapData, x, y);
+	}
 }

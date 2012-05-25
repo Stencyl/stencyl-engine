@@ -2104,7 +2104,12 @@ class Engine
 			{
 				var layer = layers.get(a.layerID);
 				g.graphics = layer.overlay.graphics;
-     			g.canvas = layer.bitmapOverlay.bitmapData;
+				
+				if(layer.bitmapOverlay != null)
+				{
+     				g.canvas = layer.bitmapOverlay.bitmapData;
+     			}
+     				
 				g.translateToActor(a);			
 				Engine.invokeListeners4(a.whenDrawingListeners, g, 0, 0);
 			}

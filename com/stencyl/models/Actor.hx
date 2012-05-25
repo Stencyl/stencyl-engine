@@ -14,6 +14,7 @@ import nme.geom.Rectangle;
 import com.stencyl.Input;
 import com.stencyl.Engine;
 
+import com.stencyl.graphics.G;
 import com.stencyl.graphics.AbstractAnimation;
 import com.stencyl.graphics.BitmapAnimation;
 import com.stencyl.graphics.SheetAnimation;
@@ -2309,9 +2310,12 @@ class Actor extends Sprite
 	//* Drawing
 	//*-----------------------------------------------
 	
-	public function draw(g:Graphics)
+	public function drawImage(g:G)
 	{
-		Engine.invokeListeners4(whenDrawingListeners, g, x, y);
+		if(currAnimation != null)
+		{
+			cast(currAnimation, AbstractAnimation).draw(g, x, y);
+		}
 	}
 	
 	public function enableActorDrawing()

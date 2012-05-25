@@ -8,4 +8,5 @@ interface AbstractAnimation
 	public function setFrame(frame:Int):Void;
 	public function isFinished():Bool;
 	public function reset():Void;
+	public function draw(g:G, x:Float, y:Float):Void;
 }
