@@ -76,37 +76,37 @@ class G
 	{
 	}
 	
-	public function translate(x:Float, y:Float)
+	public inline function translate(x:Float, y:Float)
 	{
 		this.x += x * scaleX;
 		this.y += y * scaleY;
 	}
 	
-	public function moveTo(x:Float, y:Float)
+	public inline function moveTo(x:Float, y:Float)
 	{
 		this.x = x;
 		this.y = y;
 	}
 	
-	public function translateToScreen()
+	public inline function translateToScreen()
 	{
 		x = 0;
 		y = 0;
 	}
 	
-	public function translateToActor(a:Actor)
+	public inline function translateToActor(a:Actor)
 	{
 		x = a.x;// - a.width * (a.scaleX - 1) / 2;
 		y = a.y;// - a.height * (a.scaleY - 1) / 2;
 	}
 	
-	public function drawString(s:String, x:Float, y:Float)
+	public inline function drawString(s:String, x:Float, y:Float)
 	{
 		font.font.text = s;
 		drawImage(font.font.bitmapData, x, y); // this is kinda slow unless we only update when a repaint in requested?
 	}
 	
-	public function drawLine(x1:Float, y1:Float, x2:Float, y2:Float)
+	public inline function drawLine(x1:Float, y1:Float, x2:Float, y2:Float)
 	{
 		x1 *= scaleX;
 		y1 *= scaleY;
@@ -121,12 +121,12 @@ class G
      	endGraphics();
 	}
 	
-	public function fillPixel(x:Float, y:Float)
+	public inline function fillPixel(x:Float, y:Float)
 	{
 		fillRect(x, y, 1, 1);
 	}
 	
-	public function drawRect(x:Float, y:Float, w:Float, h:Float)
+	public inline function drawRect(x:Float, y:Float, w:Float, h:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -140,7 +140,7 @@ class G
      	endGraphics();
 	}
 	
-	public function fillRect(x:Float, y:Float, w:Float, h:Float)
+	public inline function fillRect(x:Float, y:Float, w:Float, h:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -156,7 +156,7 @@ class G
      	endGraphics();
 	}
 	
-	public function drawRoundRect(x:Float, y:Float, w:Float, h:Float, arc:Float)
+	public inline function drawRoundRect(x:Float, y:Float, w:Float, h:Float, arc:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -170,7 +170,7 @@ class G
      	endGraphics();
 	}
 	
-	public function fillRoundRect(x:Float, y:Float, w:Float, h:Float, arc:Float)
+	public inline function fillRoundRect(x:Float, y:Float, w:Float, h:Float, arc:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -186,7 +186,7 @@ class G
      	endGraphics();
 	}
 	
-	public function drawCircle(x:Float, y:Float, r:Float)
+	public inline function drawCircle(x:Float, y:Float, r:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -199,7 +199,7 @@ class G
      	endGraphics();
 	}
 	
-	public function fillCircle(x:Float, y:Float, r:Float)
+	public inline function fillCircle(x:Float, y:Float, r:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -214,7 +214,7 @@ class G
      	endGraphics();
 	}
 	
-	public function beginFillPolygon()
+	public inline function beginFillPolygon()
 	{
 		drawPoly = false;
 		
@@ -223,7 +223,7 @@ class G
 		pointCounter = 0;
 	}
 	
-	public function endDrawingPolygon()
+	public inline function endDrawingPolygon()
 	{
 		if(pointCounter < 2)
 		{
@@ -244,7 +244,7 @@ class G
 		endGraphics();
 	}
 	
-	public function beginDrawPolygon()
+	public inline function beginDrawPolygon()
 	{
 		drawPoly = true;
 	
@@ -253,7 +253,7 @@ class G
 		pointCounter = 0;
 	}
 	
-	public function addPointToPolygon(x:Float, y:Float)
+	public inline function addPointToPolygon(x:Float, y:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -276,7 +276,7 @@ class G
 		graphics.lineTo(this.x + x, this.y + y);
 	}
 	
-	public function drawImage(img:BitmapData, x:Float, y:Float)
+	public inline function drawImage(img:BitmapData, x:Float, y:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -292,7 +292,7 @@ class G
 		canvas.copyPixels(img, rect, point);
 	}
 	
-	public function resetFont()
+	public inline function resetFont()
 	{
 		font = defaultFont;
 	}

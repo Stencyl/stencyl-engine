@@ -2626,10 +2626,10 @@ class Actor extends Sprite
 		var bottom = Engine.paddingBottom;
 	
 		return (isLightweight || body.isActive()) && 
-			   getX() >= cameraX - left && 
-			   getY() >= cameraY - top &&
-			   getX() < cameraX + Engine.screenWidth + right &&
-			   getY() < cameraY + Engine.screenHeight + bottom;
+			   getX() >= -cameraX - left && 
+			   getY() >= -cameraY - top &&
+			   getX() < -cameraX + Engine.screenWidth + right &&
+			   getY() < -cameraY + Engine.screenHeight + bottom;
 	}
 	
 	public function isInScene():Bool

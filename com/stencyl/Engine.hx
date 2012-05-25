@@ -2303,12 +2303,12 @@ class Engine
 		return v;
 	}
 	
-	public function enableGlobalSleeping()
+	public inline function enableGlobalSleeping()
 	{
 		world.m_allowSleep = true;
 	}
 	
-	public function disableGlobalSleeping()
+	public inline function disableGlobalSleeping()
 	{
 		world.m_allowSleep = false;
 	}
@@ -2773,7 +2773,7 @@ class Engine
 	//* Game Attributes
 	//*-----------------------------------------------
 	
-	public function setGameAttribute(name:String, value:Dynamic)
+	public inline function setGameAttribute(name:String, value:Dynamic)
 	{
 		gameAttributes.set(name, value);
 	}
@@ -2787,7 +2787,7 @@ class Engine
 	//* On/Off Screen
 	//*-----------------------------------------------
 	
-	public function setOffscreenTolerance(top:Int, left:Int, bottom:Int, right:Int)
+	public inline function setOffscreenTolerance(top:Int, left:Int, bottom:Int, right:Int)
 	{
 		Engine.paddingTop = top;
 		Engine.paddingLeft = left;
