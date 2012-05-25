@@ -96,8 +96,8 @@ class G
 	
 	public function translateToActor(a:Actor)
 	{
-		x = a.x - a.width * (a.scaleX - 1) / 2;
-		y = a.y - a.height * (a.scaleY - 1) / 2;
+		x = a.x;// - a.width * (a.scaleX - 1) / 2;
+		y = a.y;// - a.height * (a.scaleY - 1) / 2;
 	}
 	
 	public function drawString(s:String, x:Float, y:Float)
@@ -288,7 +288,7 @@ class G
 		
 		point.x = this.x + x;
 		point.y = this.y + y;
-	
+		
 		canvas.copyPixels(img, rect, point);
 	}
 	

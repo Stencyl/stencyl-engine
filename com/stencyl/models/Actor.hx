@@ -2314,7 +2314,7 @@ class Actor extends Sprite
 	{
 		if(currAnimation != null)
 		{
-			cast(currAnimation, AbstractAnimation).draw(g, x, y);
+			cast(currAnimation, AbstractAnimation).draw(g, 0, 0);
 		}
 	}
 	

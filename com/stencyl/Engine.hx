@@ -2080,11 +2080,7 @@ class Engine
      	for(l in layers)
 		{
 			l.overlay.graphics.clear();
-			
-			if(l.bitmapOverlay != null)
-			{
-				l.bitmapOverlay.bitmapData.fillRect(l.bitmapOverlay.bitmapData.rect, 0);
-			}
+			l.bitmapOverlay.bitmapData.fillRect(l.bitmapOverlay.bitmapData.rect, 0);
 		}
 		
 		//Clean up HUD actors
@@ -2104,11 +2100,7 @@ class Engine
 			{
 				var layer = layers.get(a.layerID);
 				g.graphics = layer.overlay.graphics;
-				
-				if(layer.bitmapOverlay != null)
-				{
-     				g.canvas = layer.bitmapOverlay.bitmapData;
-     			}
+				g.canvas = layer.bitmapOverlay.bitmapData;
      				
 				g.translateToActor(a);			
 				Engine.invokeListeners4(a.whenDrawingListeners, g, 0, 0);

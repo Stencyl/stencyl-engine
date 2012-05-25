@@ -23,6 +23,7 @@ class Layer extends Sprite
 		
 		this.tiles = tiles;
 		this.overlay = overlay;
+		this.bitmapOverlay = bitmapOverlay;
 		
 		this.ID = ID;
 		this.order = order;
