@@ -64,7 +64,7 @@ class G
 		firstY = 0;
 		
 		font = defaultFont = new Font(0, "", "", null, 0, 0, null); 
-		defaultFont.font = new BitmapFont("assets/graphics/font.png", 32, 32, BitmapFont.TEXT_SET11 + "#", 9, 1, 1);
+		defaultFont.font = new BitmapFont("assets/graphics/default-font.png", 16, 16, BitmapFont.TEXT_SET25, 55, 0, 0);
 	}
 	
 	public inline function startGraphics()

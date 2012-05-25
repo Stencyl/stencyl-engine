@@ -69,6 +69,7 @@ class BitmapFont extends Bitmap
 	 * Text Set 2 =  !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ
 	 */
 	public static inline var TEXT_SET2:String = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	public static inline var TEXT_SET25:String = " !\"'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	
 	/**
 	 * Text Set 3 = ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 
