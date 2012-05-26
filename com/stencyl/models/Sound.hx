@@ -25,6 +25,9 @@ class Sound extends Resource
 		this.panning = panning;
 		this.volume = volume;
 		this.ext = ext;
+		
+		//TODO: For now, it's always...
+		this.ext = "mp3";
 	}		
 	
 	public function play(channelNum:Int = 1, position:Float = 0):SoundChannel
@@ -38,7 +41,7 @@ class Sound extends Resource
 		
 		else
 		{
-			var sound = Assets.getSound("assets/sound/sound-" + ID + "." + ext);
+			var sound = Assets.getSound("assets/sfx/sound-" + ID + "." + ext);
 			src = sound;
 			return sound.play(position);
 		}	
@@ -55,7 +58,7 @@ class Sound extends Resource
 		
 		else
 		{
-			var sound = Assets.getSound("assets/sound/sound-" + ID + "." + ext);
+			var sound = Assets.getSound("assets/sfx/sound-" + ID + "." + ext);
 			src = sound;
 			return sound.play(position, com.stencyl.utils.Utils.INT_MAX);
 		}

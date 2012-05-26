@@ -1700,7 +1700,17 @@ class Engine
 		{		
 			if(a != null && !a.dead && !a.recycled) 
 			{
-				var isOnScreen = a.isOnScreen();
+				//--- HAND INLINED THIS SINCE ITS CALLED SO MUCH
+				
+				//var isOnScreen = a.isOnScreen();
+				
+				var isOnScreen = (a.isLightweight || a.body.isActive()) && 
+			   	a.x >= -Engine.cameraX - Engine.paddingLeft && 
+			   	a.y >= -Engine.cameraY - Engine.paddingTop &&
+			   	a.x < -Engine.cameraX + Engine.screenWidth + Engine.paddingRight &&
+			   	a.y < -Engine.cameraY + Engine.screenHeight + Engine.paddingBottom;
+				
+				//---
 			
 				if(!a.isLightweight && a.body != null)
 				{

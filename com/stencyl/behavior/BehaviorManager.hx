@@ -286,9 +286,13 @@ class BehaviorManager
 				
 				else
 				{
-					//???
-					//item.script.forwardMessage(msg);
+					item.script.forwardMessage(msg);
 				}
+			}
+			
+			else
+			{
+				item.script.forwardMessage(msg);
 			}
 		}
 		
@@ -323,9 +327,13 @@ class BehaviorManager
 				
 				else
 				{
-					//TODO:
-					//item.script.forwardMessage(msg);
+					item.script.forwardMessage(msg);
 				}
+			}
+			
+			else
+			{
+				item.script.forwardMessage(msg);
 			}
 		}
 

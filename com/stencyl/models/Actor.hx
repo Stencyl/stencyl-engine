@@ -1931,8 +1931,8 @@ class Actor extends Sprite
 			dummy.y = dirY;
 			dummy.normalize();
 		
-			accelerateX(dummy.x * magnitude / 100);
-			accelerateY(dummy.y * magnitude / 100);
+			accelerateX(dummy.x * magnitude / 50);
+			accelerateY(dummy.y * magnitude / 50);
 			return;
 		}
 		
@@ -1972,8 +1972,8 @@ class Actor extends Sprite
 			dummy.y = dirY;
 			dummy.normalize();
 		
-			accelerateX(dummy.x * magnitude / 20);
-			accelerateY(dummy.y * magnitude / 20);
+			accelerateX(dummy.x * magnitude / 10);
+			accelerateY(dummy.y * magnitude / 10);
 			return;
 		}
 		
@@ -2627,6 +2627,7 @@ class Actor extends Sprite
 		return !(dead || dying);
 	}
 
+	//hand-inlined to engine to avoid overhead
 	public function isOnScreen():Bool
 	{
 		var cameraX = Engine.cameraX;
