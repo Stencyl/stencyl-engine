@@ -2118,6 +2118,7 @@ class Engine
      	//Scene Behavior/Event Drawing
      	g.graphics = transitionLayer.graphics;
      	g.canvas = transitionBitmapLayer.bitmapData;
+     	g.translateToScreen();
      	g.graphics.clear();
      	g.canvas.fillRect(g.canvas.rect, 0);
      	Engine.invokeListeners4(whenDrawingListeners, g, 0, 0);

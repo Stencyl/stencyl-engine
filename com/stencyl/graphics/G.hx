@@ -286,8 +286,9 @@ class G
 		rect.width = img.width;
 		rect.height = img.height;
 		
-		point.x = this.x + x;
-		point.y = this.y + y;
+		//Why this has to be treated differently (add camera coords), I don't know...
+		point.x = this.x + x + Engine.cameraX;
+		point.y = this.y + y + Engine.cameraY;
 		
 		canvas.copyPixels(img, rect, point);
 	}
