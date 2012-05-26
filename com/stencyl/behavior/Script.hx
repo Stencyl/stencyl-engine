@@ -117,6 +117,11 @@ class Script
 	//* Internals
 	//*-----------------------------------------------
 	
+	public inline function sameAs(o:Dynamic, o2:Dynamic):Bool
+	{
+		return o == o2;
+	}
+	
 	public inline function sameAsAny(o:Dynamic, one:Dynamic, two:Dynamic):Bool
 	{
 		return (o == one) || (o == two);
@@ -1632,9 +1637,9 @@ class Script
 	/**
 	 * Generates a random number. Set the lowest and highest values.
 	 */
-	public function randomInt(low:Int, high:Int):Int
+	public function randomInt(low:Float, high:Float):Int
 	{
-		return low + Math.floor(randomFloat() * (high - low + 1));
+		return Std.int(low) + Math.floor(randomFloat() * (Std.int(high) - Std.int(low) + 1));
 	}
 	
 	/**
