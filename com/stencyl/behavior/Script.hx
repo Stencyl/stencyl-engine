@@ -12,6 +12,7 @@ import nme.net.URLRequest;
 import nme.net.URLRequestMethod;
 import nme.net.URLVariables;
 import nme.Lib;
+import nme.filters.BitmapFilter;
 
 import nme.display.Graphics;
 
@@ -1919,7 +1920,45 @@ class Script
 	//* Utilities
 	//*-----------------------------------------------
 	
+	
 	//Flash only till NME supports ColorMatrixFilter!
+	
+	#if (cpp || js)
+	public function createGrayscaleFilter():BitmapFilter
+	{
+		return new BitmapFilter("");
+	}
+	
+	public function createSepiaFilter():BitmapFilter
+	{
+		return new BitmapFilter("");
+	}
+	
+	public function createNegativeFilter():BitmapFilter
+	{
+		return new BitmapFilter("");
+	}
+	
+	public function createTintFilter(color:Int, amount:Float = 1):BitmapFilter
+	{
+		return new BitmapFilter("");
+	}
+	
+	public function createHueFilter(h:Float):BitmapFilter
+	{
+		return new BitmapFilter("");
+	}
+
+	public function createSaturationFilter(s:Float):BitmapFilter
+	{
+		return new BitmapFilter("");
+	}
+
+	public function createBrightnessFilter(b:Float):BitmapFilter
+	{
+		return new BitmapFilter("");
+	}
+	#end
 	
 	#if flash
 	
