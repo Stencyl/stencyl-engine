@@ -55,21 +55,6 @@ class Utils
 	public static var height:Int;
 
 	/**
-	 * If the game is running at a fixed framerate.
-	 */
-	public static var fixed:Bool;
-
-	/**
-	 * The framerate assigned to the stage.
-	 */
-	public static var frameRate:Float = 0;
-
-	/**
-	 * The framerate assigned to the stage.
-	 */
-	public static var assignedFrameRate:Float;
-
-	/**
 	 * Time elapsed since the last frame (non-fixed framerate only).
 	 */
 	public static var elapsed:Float;
@@ -622,34 +607,6 @@ class Utils
 	}
 
 	/**
-	 * Creates a color value with the chosen HSV values.
-	 * @param	h		The hue of the color (from 0 to 1).
-	 * @param	s		The saturation of the color (from 0 to 1).
-	 * @param	v		The value of the color (from 0 to 1).
-	 * @return	The color Int.
-	 */
-	public static function getColorHSV(h:Float, s:Float, v:Float):Int
-	{
-		h = Std.int(h * 360);
-		var hi:Int = Math.floor(h / 60) % 6,
-			f:Float = h / 60 - Math.floor(h / 60),
-			p:Float = (v * (1 - s)),
-			q:Float = (v * (1 - f * s)),
-			t:Float = (v * (1 - (1 - f) * s));
-		switch (hi)
-		{
-			case 0: return Std.int(v * 255) << 16 | Std.int(t * 255) << 8 | Std.int(p * 255);
-			case 1: return Std.int(q * 255) << 16 | Std.int(v * 255) << 8 | Std.int(p * 255);
-			case 2: return Std.int(p * 255) << 16 | Std.int(v * 255) << 8 | Std.int(t * 255);
-			case 3: return Std.int(p * 255) << 16 | Std.int(q * 255) << 8 | Std.int(v * 255);
-			case 4: return Std.int(t * 255) << 16 | Std.int(p * 255) << 8 | Std.int(v * 255);
-			case 5: return Std.int(v * 255) << 16 | Std.int(p * 255) << 8 | Std.int(q * 255);
-			default: return 0;
-		}
-		return 0;
-	}
-
-	/**
 	 * Finds the red factor of a color.
 	 * @param	color		The color to evaluate.
 	 * @return	A Int from 0 to 255.
@@ -680,49 +637,6 @@ class Utils
 	}
 
 	/**
-	 * Fetches a stored BitmapData object represented by the source.
-	 * @param	source		Embedded Bitmap class.
-	 * @return	The stored BitmapData object.
-	 */
-	public static function getBitmap(source:Dynamic):BitmapData
-	{
-		var name:String = Std.string(source);
-		if (_bitmap.exists(name))
-			return _bitmap.get(name);
-
-#if nme
-		var data:BitmapData = nme.Assets.getBitmapData(source);
-#else
-		var data:BitmapData = source.bitmapData;
-#end
-		if (data != null)
-			_bitmap.set(name, data);
-
-		return data;
-	}
-
-	/**
-	 * Creates BitmapData based on platform specifics
-	 */
-	public static function createBitmap(width:Int, height:Int, ?transparent:Bool = false, ?color:Int = 0):BitmapData
-	{
-#if flash
-	#if flash8
-		var sizeError:Bool = (width > 2880 || height > 2880);
-	#else
-		var sizeError:Bool = (width * height > 16777215 || width > 8191 || height > 8191); // flash 10 requires size to be under 16,777,215
-	#end
-		if (sizeError)
-		{
-			trace("BitmapData is too large (" + width + ", " + height + ")");
-			return null;
-		}
-#end // flash
-
-		return new BitmapData(width, height, transparent, Utils.convertColor(color));
-	}
-
-	/**
 	 * Converts a color to platform specific type (BitmapInt32)
 	 */
 	public static inline function convertColor(color:Int):Dynamic
@@ -733,49 +647,6 @@ class Utils
 		return color; // do nothing
 #end
 	}
-
-#if hardware
-	public static function getBitmapIndex(source:Dynamic):Int
-	{
-		var name:String = Std.string(source);
-		if (_bitmapIndex.exists(name))
-			return _bitmapIndex.get(name);
-
-		trace('Could not find the image : ' + Std.string(source));
-		return -1;
-	}
-
-	/**
-	 * Takes a bitmapdata and creates the tilesheet has an optional parameter which can take the string from the SpriteSheetPacker found here
-	 * http://spritesheetpacker.codeplex.com/ which will generate the rectangles as well
-	 * @param	source
-	 * @param	?rectangleData	 A string where a rectangle is formatted as 'name = x y width height\n'
-	 */
-	public static function loadTilesheet(source:BitmapData, ?rectangleData:String):Void
-	{
-		HXP.tilesheet = new nme.display.Tilesheet(source);
-
-		if (rectangleData != null)
-		{
-
-			var array:Array<String> = rectangleData.split('\n');
-
-			for (ii in 0...array.length)
-			{
-
-				var data = array[ii].split(' ');
-				var name = data[0];
-
-				var rectangle = new Rectangle(Std.parseInt(data[2]), Std.parseInt(data[3]), Std.parseInt(data[4]), Std.parseInt(data[5]));
-
-				HXP.sheetRectangles.push(rectangle);
-				HXP.tilesheet.addTileRect(rectangle);
-
-				HXP._bitmapIndex.set(name, ii);
-			}
-		}
-	}
-#end // hardware
 
 	/**
 	 * Sets a time flag.

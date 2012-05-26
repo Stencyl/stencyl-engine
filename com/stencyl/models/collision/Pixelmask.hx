@@ -29,7 +29,7 @@ class Pixelmask extends Hitbox
 		
 		// fetch mask data
 		if (Std.is(source, BitmapData)) _data = source;
-		else _data = Utils.getBitmap(source);
+		//else _data = Utils.getBitmap(source);
 		if (_data == null) throw "Invalid Pixelmask source image.";
 		
 		threshold = 1;
