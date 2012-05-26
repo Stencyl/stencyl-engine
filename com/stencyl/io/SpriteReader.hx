@@ -24,7 +24,16 @@ class SpriteReader implements AbstractReader
 		
 		var width:Int = Std.parseInt(xml.att.width);
 		var height:Int = Std.parseInt(xml.att.height);
-		var defaultAnimation:Int = Std.parseInt(xml.att.defaultAnimation);
+		var defaultAnimation:Int = 0;
+		
+		try
+		{
+			defaultAnimation = Std.parseInt(xml.att.defaultAnimation);
+		}
+		
+		catch(e:String)
+		{
+		}
 		
 		var animations:Array<Animation> = new Array<Animation>();
 		var sprite:Sprite = new Sprite(ID, name, width, height, defaultAnimation);

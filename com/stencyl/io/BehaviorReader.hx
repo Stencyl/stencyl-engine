@@ -15,7 +15,17 @@ class BehaviorReader
 	{
 		var elementID:Int = Std.parseInt(xml.att.id);
 		var name:String = xml.att.name;
-		var classname:String = xml.att.classname;
+		var classname:String = "";
+		
+		try
+		{
+			classname = xml.att.classname;
+		}
+		
+		catch(e:String)
+		{
+		}
+		
 		var attributes:Hash<Attribute> = new Hash<Attribute>();
 		var type:String = xml.att.type;
 	
@@ -66,7 +76,17 @@ class BehaviorReader
 		var ID:Int = Std.parseInt(xml.att.id);
 		var fieldName:String = xml.att.name;
 		var fullName:String = xml.att.fullname;
-		var defaultValue:String = xml.att.defaultValue;
+		var defaultValue:String = "";
+		
+		try
+		{
+			defaultValue = xml.att.defaultValue;
+		}
+		
+		catch(e:String)
+		{
+		}
+		
 		var type:String = xml.name;
 		
 		return new Attribute(ID, fieldName, fullName, defaultValue, type, null);

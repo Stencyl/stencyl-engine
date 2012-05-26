@@ -44,7 +44,16 @@ class GameModel
 		actualWidth = Std.parseInt(xml.att.awidth);
 		actualHeight = Std.parseInt(xml.att.aheight);
 		scale = Std.parseInt(xml.att.scale);
-		defaultSceneID = Std.parseInt(xml.att.defaultSceneID);
+		defaultSceneID = 0;
+		
+		try
+		{
+			defaultSceneID = Std.parseInt(xml.att.defaultSceneID);
+		}
+		
+		catch(e:String)
+		{
+		}
 		
 		//---
 		
