@@ -185,12 +185,4 @@ class Behavior
 			script.draw(g, x, y);	
 		}
 	}
-	
-	/*public function drawLayer(g:Graphics, x:Int, y:Int, layerID:Int)
-	{
-		if(script != null && Std.is(script, SceneScript))
-		{
-			script.drawLayer(g, x, y, layerID);	
-		}
-	}*/
 }
