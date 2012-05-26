@@ -16,6 +16,7 @@ import nme.Lib;
 import nme.display.Graphics;
 
 import com.stencyl.graphics.G;
+import com.stencyl.models.scene.ScrollingBitmap;
 
 import com.stencyl.models.Actor;
 import com.stencyl.models.actor.Collision;
@@ -1483,9 +1484,56 @@ class Script
 	
 	
 	//*-----------------------------------------------
-	//* Background Manipulation (?)
+	//* Background Manipulation
 	//*-----------------------------------------------
 	
+	/**
+	* Set the speed of all scrolling backgrounds (Backgrounds must already be set to scrolling)
+	*/
+	public function setScrollSpeedForBackground(xSpeed:Float, ySpeed:Float)
+	{
+		for(i in 0...Engine.engine.master.numChildren)
+		{
+			var child = Engine.engine.master.getChildAt(i);
+			
+			//Background
+			if(child.name == Engine.BACKGROUND)
+			{
+				if(Std.is(child, ScrollingBitmap))
+				{
+					var bg = cast(child, ScrollingBitmap);
+					bg.xVelocity = xSpeed;
+					bg.yVelocity = ySpeed;
+				}
+			}
+		}
+	}
+	
+	/**
+	* Switches one background for another
+	*/
+	public function setBackground(oldBackName:String, newBackName:String)
+	{
+		/*var newBg:ImageBackground = Assets.get().resources[getIDForResource(newBackName)];
+		
+		if (newBg == null || !(newBg is ImageBackground))
+		{
+			print("Entered background does not exist");
+			return;
+		}
+		
+		for each (var bArea:Area in scene.parallax.backLayers)
+		{		
+			var oldBg:ImageBackground = bArea.getBackgroundImage();
+			
+			if (oldBg != null && oldBg.name == oldBackName)
+			{
+				bArea.setBackgroundImage(newBg);
+				return;
+			}
+		}*/
+	}
+		
 	//*-----------------------------------------------
 	//* Eye Candy
 	//*-----------------------------------------------

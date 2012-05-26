@@ -102,6 +102,11 @@ class G
 	
 	public inline function drawString(s:String, x:Float, y:Float)
 	{
+		if(font == null)
+		{
+			resetFont();
+		}
+	
 		font.font.text = s;
 		drawImage(font.font.bitmapData, x, y); // this is kinda slow unless we only update when a repaint in requested?
 	}
