@@ -90,13 +90,25 @@ class Scene
 		actors = readActors(xml.node.actors.elements);
 		behaviorValues = ActorTypeReader.readBehaviors(xml.node.snippets);
 		
-		if(xml.att.eventsnippetid != "")
+		var eventSnippetID = "";
+		
+		try
 		{
-			eventID = Std.parseInt(xml.att.eventsnippetid);
+			eventSnippetID = xml.att.eventsnippetid;
+		}
+		
+		catch(e:String)
+		{
+		}
+		
+		
+		if(eventSnippetID != "")
+		{
+			eventID = Std.parseInt(eventSnippetID);
 			
 			if(eventID > -1)
 			{
-				behaviorValues.set(xml.att.eventsnippetid, new BehaviorInstance(eventID, new Hash<Dynamic>()));
+				behaviorValues.set(eventSnippetID, new BehaviorInstance(eventID, new Hash<Dynamic>()));
 			}
 		}
 		
@@ -114,11 +126,12 @@ class Scene
 	{
 		var map = new IntHash<RegionDef>();
 		
-		for(e in list)
+		//TODO
+		/*for(e in list)
 		{
 			var r:RegionDef = null; //readRegion(e);
 			map.set(r.ID, r);
-		}
+		}*/
 		
 		return map;
 	}
@@ -644,8 +657,20 @@ class Scene
 		var elementID:Int = Std.parseInt(xml.att.aid);
 		var x:Int = Std.parseInt(xml.att.x);
 		var y:Int = Std.parseInt(xml.att.y);
-		var scaleX:Float = Std.parseFloat(xml.att.sx);
-		var scaleY:Float = Std.parseFloat(xml.att.sy);
+		
+		var scaleX:Float = 1;
+		var scaleY:Float = 1;
+		
+		try
+		{
+			scaleX = Std.parseFloat(xml.att.sx);
+			scaleY = Std.parseFloat(xml.att.sy);
+		}
+		
+		catch(e:String)
+		{
+		}
+		
 		var layerID:Int = Std.parseInt(xml.att.z);
 		var angle:Int = Std.parseInt(xml.att.a);
 		var groupID:Int =  Std.parseInt(xml.att.group);

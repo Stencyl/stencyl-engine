@@ -564,7 +564,14 @@ class Engine
 					continue;
 				}
 				
-				var attribute:Attribute = cast(template.attributes.get(key), Attribute);
+				var att = template.attributes.get(key);
+				
+				if(att == null)
+				{
+					continue;
+				}
+				
+				var attribute:Attribute = cast(att, Attribute);
 
 				if(attribute == null)
 				{

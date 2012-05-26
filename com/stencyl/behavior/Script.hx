@@ -37,6 +37,7 @@ import com.stencyl.utils.HashMap;
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Linear;
 
+import box2D.collision.shapes.B2Shape;
 import box2D.dynamics.joints.B2Joint;
 import box2D.common.math.B2Vec2;
 import box2D.dynamics.B2World;
@@ -151,7 +152,12 @@ class Script
 	
 	public inline function asNumber(o:Dynamic):Float
 	{
-		if(Std.is(o, String))
+		if(Std.is(o, Bool))
+		{
+			return cast(o, Bool) ? 1 : 0;
+		}
+		
+		else if(Std.is(o, String))
 		{
 			return Std.parseFloat(o);
 		}
@@ -197,6 +203,23 @@ class Script
 	public function clearListeners()
 	{
 		propertyChangeListeners = new Hash<Dynamic>();
+	}
+	
+	//Physics = Pass in event.~Shape (a b2Shape)
+	//No-Physics = Pass in the actor
+	public function internalGetGroup(arg:Dynamic, arg2:Dynamic):Group
+	{
+		if(Engine.NO_PHYSICS)
+		{
+			return cast(arg, Actor).getGroup();
+		}
+		
+		else
+		{
+			return null;
+			//return return engine.getGroup(arg2.groupID, cast(arg2.getBody().getUserData(), Actor));
+			//return scene.getGroup(event.~Shape.groupID, (event.`Shape.GetBody().GetUserData() as Actor))
+		}
 	}
 	
 	//*-----------------------------------------------

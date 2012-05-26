@@ -867,7 +867,7 @@ class Actor extends Sprite
 			//TODO: Gravity
 			//push(Engine.engine.gravityX, Engine.engine, 10);
 			
-			moveActorBy(elapsedTime * xSpeed, elapsedTime * ySpeed, groupsToCollideWith);
+			moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);
 			
 			this.rotation += elapsedTime * rSpeed;
 			

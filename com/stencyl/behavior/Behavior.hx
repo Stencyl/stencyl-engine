@@ -102,62 +102,70 @@ class Behavior
 	{
 		for(a in attributes)
 		{
-			if(a.type == "actor" && a.fieldName == "actor" && Std.is(script, ActorScript))
+			try
 			{
-				continue;
-			}
-			
-			var attributeName = script.toInternalName(a.fieldName);
-			
-			if(a.type == "actor" || a.type == "joint" || a.type == "region")
-			{
-				var eID:Int = Std.parseInt(a.getRealValue());
-				
-				if(a.type == "actor")
+				if(a.type == "actor" && a.fieldName == "actor" && Std.is(script, ActorScript))
 				{
-					Reflect.setField(script, attributeName, engine.getActor(eID));
+					continue;
 				}
 				
-				else if(a.type == "joint")
+				var attributeName = script.toInternalName(a.fieldName);
+				
+				if(a.type == "actor" || a.type == "joint" || a.type == "region")
 				{
-					//TODO:
-					//Reflect.setField(script, attributeName, engine.getJoint(eID));
+					var eID:Int = Std.parseInt("" + a.getRealValue());
+					
+					if(a.type == "actor")
+					{
+						Reflect.setField(script, attributeName, engine.getActor(eID));
+					}
+					
+					else if(a.type == "joint")
+					{
+						//TODO:
+						//Reflect.setField(script, attributeName, engine.getJoint(eID));
+					}
+					
+					else if(a.type == "region")
+					{
+						Reflect.setField(script, attributeName, engine.getRegion(eID));
+					}
+					
+					else if (a.type == "terrainregion")
+					{
+						//TODO:
+						//Reflect.setField(script, attributeName, engine.getTerrainRegion(eID));
+					}
 				}
 				
-				else if(a.type == "region")
+				else if(a.type == "actorgroup")
 				{
-					Reflect.setField(script, attributeName, engine.getRegion(eID));
-				}
-				
-				else if (a.type == "terrainregion")
-				{
-					//TODO:
-					//Reflect.setField(script, attributeName, engine.getTerrainRegion(eID));
-				}
-			}
-			
-			else if(a.type == "actorgroup")
-			{
-				var groupID:Int = Std.parseInt(a.getRealValue());
-				Reflect.setField(script, attributeName, engine.getGroup(groupID));
-			}
-			
-			else
-			{
-				var realValue:Dynamic = a.getRealValue();
-				
-				trace("Set att(" + a.fieldName + ") to " + realValue);
-				
-				//TODO???
-				if(a.type == "list")
-				{
-					Reflect.setField(script, attributeName, realValue);
+					var groupID:Int = Std.parseInt("" + a.getRealValue());
+					Reflect.setField(script, attributeName, engine.getGroup(groupID));
 				}
 				
 				else
 				{
-					Reflect.setField(script, attributeName, realValue);
+					var realValue:Dynamic = a.getRealValue();
+					
+					//trace("Set att(" + a.fieldName + ") to " + realValue);
+					
+					//TODO???
+					if(a.type == "list")
+					{
+						Reflect.setField(script, attributeName, realValue);
+					}
+					
+					else
+					{
+						Reflect.setField(script, attributeName, realValue);
+					}
 				}
+			}
+			
+			catch(e:String)
+			{
+				trace("Could not init attribute: " + a.fieldName + " - " + e);
 			}
 		}
 	}
