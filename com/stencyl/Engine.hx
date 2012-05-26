@@ -1371,6 +1371,7 @@ class Engine
 
 		//To ensure that it draws after
 		layer.addChild(a);
+		a.layerID = layerID;
 	}
 	
 	public function recycleActor(a:Actor)

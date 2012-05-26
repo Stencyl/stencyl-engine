@@ -1931,8 +1931,8 @@ class Actor extends Sprite
 			dummy.y = dirY;
 			dummy.normalize();
 		
-			accelerateX(dummy.x * magnitude / 50);
-			accelerateY(dummy.y * magnitude / 50);
+			accelerateX(dummy.x * magnitude / 100);
+			accelerateY(dummy.y * magnitude / 100);
 			return;
 		}
 		
@@ -1972,8 +1972,8 @@ class Actor extends Sprite
 			dummy.y = dirY;
 			dummy.normalize();
 		
-			accelerateX(dummy.x * magnitude / 10);
-			accelerateY(dummy.y * magnitude / 10);
+			accelerateX(dummy.x * magnitude / 20);
+			accelerateY(dummy.y * magnitude / 20);
 			return;
 		}
 		
@@ -2624,7 +2624,7 @@ class Actor extends Sprite
 	
 	public function isAlive():Bool
 	{
-		return !(dead || dying);
+		return !(dead || dying || recycled);
 	}
 
 	//hand-inlined to engine to avoid overhead
