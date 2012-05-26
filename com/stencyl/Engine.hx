@@ -1020,7 +1020,10 @@ class Engine
 	
 	public function cleanup()
 	{
-		debugDrawer.m_sprite.graphics.clear();
+		if(debugDrawer != null && debugDrawer.m_sprite != null)
+		{
+			debugDrawer.m_sprite.graphics.clear();
+		}
 		
 		Utils.removeAllChildren(master);
 		
@@ -1039,19 +1042,22 @@ class Engine
 		//--
 		
 		//Kill the remaining ones
-		var worldbody = world.getBodyList();
-		var j = world.getJointList();
-		
-		while(worldbody != null)
+		if(world != null)
 		{
-			world.destroyBody(worldbody);
-			worldbody = worldbody.getNext();
-		}
-		
-		while(j != null)
-		{
-			world.destroyJoint(j);
-			j.getNext();
+			var worldbody = world.getBodyList();
+			var j = world.getJointList();
+			
+			while(worldbody != null)
+			{
+				world.destroyBody(worldbody);
+				worldbody = worldbody.getNext();
+			}
+			
+			while(j != null)
+			{
+				world.destroyJoint(j);
+				j.getNext();
+			}
 		}
 		
 		for(set in actorsOfType)
