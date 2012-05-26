@@ -8,6 +8,7 @@ import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.behavior.Script;
 
 import nme.geom.Point;
+import nme.display.DisplayObject;
 import nme.display.Bitmap;
 import nme.display.BitmapData;
 import nme.display.Sprite;
@@ -176,7 +177,7 @@ class Engine
 	public var root:Sprite; //The absolute root
 	public var master:Sprite; // the root of the main node
 	public var hudLayer:Sprite; //Shows above everything else
-	public var transitionBitmapLayer:Bitmap; //Shows above everything else
+	public var transitionBitmapLayer:DisplayObject; //Shows above everything else
 	public var transitionLayer:Sprite; //Shows above everything else
 	
 	public var g:G;
@@ -362,8 +363,16 @@ class Engine
 		transitionLayer = new Sprite();
 		root.addChild(transitionLayer);
 		
+		#if (flash || js)
 		transitionBitmapLayer = new Bitmap(new BitmapData(Engine.screenWidth, Engine.screenHeight, true, 0));
+		#end
+		
+		#if cpp
+		transitionBitmapLayer = new Sprite();
+		#end
+		
 		root.addChild(transitionBitmapLayer);
+		
 		
 		//Initialize things	
 		actorsToCreateInNextScene = new Array();			
@@ -957,7 +966,14 @@ class Engine
 			var list = new Sprite();
 			var terrain = null;
 			var overlay = new Sprite();
+			
+			#if (flash || js)
 			var bitmapOverlay = new Bitmap(new BitmapData(Engine.screenWidth, Engine.screenHeight, true, 0));
+			#end
+			
+			#if cpp
+			var bitmapOverlay = new Sprite();
+			#end
 			
 			if(scene.terrain != null)
 			{
@@ -2103,7 +2119,14 @@ class Engine
      	for(l in layers)
 		{
 			l.overlay.graphics.clear();
+			
+			#if (flash || js)
 			l.bitmapOverlay.bitmapData.fillRect(l.bitmapOverlay.bitmapData.rect, 0);
+			#end
+			
+			#if cpp
+			l.bitmapOverlay.graphics.clear();
+			#end
 		}
 		
 		//Clean up HUD actors
@@ -2123,8 +2146,15 @@ class Engine
 			{
 				var layer = layers.get(a.layerID);
 				g.graphics = layer.overlay.graphics;
+				
+				#if (flash || js)
 				g.canvas = layer.bitmapOverlay.bitmapData;
-     				
+     			#end
+     			
+     			#if cpp
+				g.canvas = layer.bitmapOverlay;
+				#end		
+     			
 				g.translateToActor(a);			
 				Engine.invokeListeners4(a.whenDrawingListeners, g, 0, 0);
 			}
@@ -2140,10 +2170,26 @@ class Engine
      	
      	//Scene Behavior/Event Drawing
      	g.graphics = transitionLayer.graphics;
-     	g.canvas = transitionBitmapLayer.bitmapData;
+     	
+     	#if (flash || js)
+     	g.canvas = cast(transitionBitmapLayer, Bitmap).bitmapData;
+     	#end
+     	
+     	#if cpp
+     	g.canvas = transitionBitmapLayer;
+     	#end
+     	
      	g.translateToScreen();
      	g.graphics.clear();
+     	
+     	#if (flash || js)
      	g.canvas.fillRect(g.canvas.rect, 0);
+     	#end
+     	
+     	#if cpp
+     	g.canvas.graphics.clear();
+     	#end
+     	
      	Engine.invokeListeners4(whenDrawingListeners, g, 0, 0);
      }
 	

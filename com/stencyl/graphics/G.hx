@@ -4,6 +4,8 @@ import nme.display.BitmapData;
 import nme.display.Graphics;
 import nme.display.Shape;
 import nme.display.BlendMode;
+import nme.display.DisplayObject;
+import nme.display.Tilesheet;
 
 import nme.geom.Rectangle;
 import nme.geom.Point;
@@ -16,7 +18,7 @@ class G
 	private var defaultFont:Font;
 
 	public var graphics:Graphics;
-	public var canvas:BitmapData;
+	public var canvas:Dynamic; //Sprite for cpp targets, BitmapData for flash
 	
 	public var x:Float;
 	public var y:Float;
@@ -32,6 +34,7 @@ class G
 	//Temp to avoid creating objects
 	private var rect:Rectangle;
 	private var point:Point;
+	private var data:Array<Float>;
 	
 	//Polygon Specific
 	private var drawPoly:Bool;
@@ -55,7 +58,8 @@ class G
 		
 		rect = new Rectangle();
 		point = new Point();
-		
+		data = [0.0, 0.0, 0];
+
 		//
 		
 		drawPoly = false;
@@ -295,7 +299,18 @@ class G
 		point.x = this.x + x + Engine.cameraX;
 		point.y = this.y + y + Engine.cameraY;
 		
+		#if (flash || js)
 		canvas.copyPixels(img, rect, point);
+		#end
+		
+		#if cpp
+		var sheet = new Tilesheet(img);
+		sheet.addTileRect(rect, point);
+		data[0] = 0;
+		data[1] = 0;
+		data[2] = 0;
+  		sheet.drawTiles(canvas, data, true);
+		#end
 	}
 	
 	public inline function resetFont()
