@@ -312,7 +312,7 @@ class Script
 		}
 		
 		listeners.push(func);
-						
+			
 		if(isActorScript)
 		{
 			cast(this, ActorScript).actor.registerListener(listeners, func);

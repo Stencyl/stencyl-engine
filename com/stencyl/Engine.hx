@@ -1377,6 +1377,11 @@ class Engine
 	public function recycleActor(a:Actor)
 	{
 		//trace("recycle " + a);
+		
+		if(a == null)
+		{
+			return;
+		}
 	
 		var l1 = engine.whenTypeGroupDiesListeners.get(a.getType());
 		var l2 = engine.whenTypeGroupDiesListeners.get(a.getGroup());

@@ -214,7 +214,7 @@ class Actor extends Sprite
 	//* Collisions
 	//*-----------------------------------------------
 
-	public var lastCollided:Actor;
+	public static var lastCollided:Actor;
 
 	
 	
@@ -320,7 +320,6 @@ class Actor extends Sprite
 		isHUD = false;
 		
 		//handlesCollisions = true;
-		lastCollided = null;
 		
 		fixedRotation = false;
 		ignoreGravity = false;
@@ -1931,8 +1930,8 @@ class Actor extends Sprite
 			dummy.y = dirY;
 			dummy.normalize();
 		
-			accelerateX(dummy.x * magnitude / 100);
-			accelerateY(dummy.y * magnitude / 100);
+			accelerateX(dummy.x * magnitude);
+			accelerateY(dummy.y * magnitude);
 			return;
 		}
 		
@@ -1972,8 +1971,8 @@ class Actor extends Sprite
 			dummy.y = dirY;
 			dummy.normalize();
 		
-			accelerateX(dummy.x * magnitude / 20);
-			accelerateY(dummy.y * magnitude / 20);
+			accelerateX(dummy.x * magnitude * 8);
+			accelerateY(dummy.y * magnitude * 8);
 			return;
 		}
 		
@@ -2656,7 +2655,7 @@ class Actor extends Sprite
 	
 	public function getLastCollidedActor():Actor
 	{
-		return lastCollided;
+		return Actor.lastCollided;
 	}
 	
 
@@ -3023,8 +3022,6 @@ class Actor extends Sprite
 		Utils.collision.thisActor = Utils.collision.actorA = this;
 		Utils.collision.otherActor = Utils.collision.actorB = a;
 		
-		lastCollided = a;
-		
 		if(fromX)
 		{
 			Utils.collision.thisFromLeft = a.x < this.x;
@@ -3060,8 +3057,12 @@ class Actor extends Sprite
 		Utils.collision.otherCollidedWithSensor = false;
 		Utils.collision.otherCollidedWithTerrain = false;
 
+		lastCollided = a;
 		Engine.invokeListeners2(collisionListeners, Utils.collision);
 		
+		lastCollided = this;
+		Engine.invokeListeners2(a.collisionListeners, Utils.collision.switchData());
+				
 		//---
 		
 		//TODO: deal with the type to type, group to group listeners
