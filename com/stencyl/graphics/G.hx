@@ -34,6 +34,7 @@ class G
 	//Temp to avoid creating objects
 	private var rect:Rectangle;
 	private var point:Point;
+	private var point2:Point;
 	private var data:Array<Float>;
 	
 	//Polygon Specific
@@ -58,6 +59,7 @@ class G
 		
 		rect = new Rectangle();
 		point = new Point();
+		point2 = new Point();
 		data = [0.0, 0.0, 0];
 
 		//
@@ -297,7 +299,7 @@ class G
 		
 		//Why this has to be treated differently (add camera coords), I don't know...
 		point.x = this.x + x + Engine.cameraX;
-		point.y = this.y + y + Engine.cameraY;
+		point.y = this.y + y + Engine.cameraY;	
 		
 		#if (flash || js)
 		canvas.copyPixels(img, rect, point);
@@ -305,11 +307,11 @@ class G
 		
 		#if cpp
 		var sheet = new Tilesheet(img);
-		sheet.addTileRect(rect, point);
-		data[0] = 0;
-		data[1] = 0;
+		sheet.addTileRect(rect, point2);
+		data[0] = point.x;
+		data[1] = point.y;
 		data[2] = 0;
-  		sheet.drawTiles(canvas, data, true);
+  		sheet.drawTiles(canvas.graphics, data, true);
 		#end
 	}
 	
