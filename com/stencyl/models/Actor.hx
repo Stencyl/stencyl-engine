@@ -723,7 +723,19 @@ class Actor extends Sprite
 	{
 		if(sprite != null && sprite.animations.size > 0)
 		{
-			defaultAnim = cast(sprite.animations.get(sprite.defaultAnimation), Animation).animName;
+			var anim = sprite.animations.get(sprite.defaultAnimation);
+		
+			//In case the animation ID is bogus...
+			if(anim == null)
+			{
+				for(a in sprite.animations)
+				{
+					anim = a;
+					break;
+				}
+			}
+			
+			defaultAnim = cast(anim, Animation).animName;
 			switchAnimation(defaultAnim);
 			setCurrentFrame(0);
 		}
