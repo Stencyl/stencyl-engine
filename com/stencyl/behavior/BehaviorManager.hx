@@ -3,9 +3,7 @@ package com.stencyl.behavior;
 class BehaviorManager
 {
 	public var behaviors:Array<Behavior>;
-	public var drawBehaviors:Array<Behavior>;
-	public var collisionHandlers:Array<Behavior>;
-	
+
 	public var cache:Hash<Behavior>;
 	
 	//*-----------------------------------------------
@@ -15,18 +13,12 @@ class BehaviorManager
 	public function new()
 	{
 		behaviors = new Array<Behavior>();
-		drawBehaviors = new Array<Behavior>();
-		collisionHandlers = new Array<Behavior>();
-		
 		cache = new Hash<Behavior>();
 	}
 	
 	public function destroy()
 	{
 		behaviors = null;
-		drawBehaviors = null;
-		collisionHandlers = null;
-		
 		cache = null;
 	}
 	
@@ -36,11 +28,6 @@ class BehaviorManager
 	
 	public function add(b:Behavior)
 	{
-		if(b.drawable)
-		{
-			drawBehaviors.push(b);
-		}
-		
 		cache.set(b.name, b);
 		behaviors.push(b);
 	}
@@ -116,96 +103,6 @@ class BehaviorManager
 		}	
 	}
 	
-	/*public function draw(g:Graphics, x:Number, y:Number, screen:Boolean=false):void
-	{
-		var b:Behavior = null;
-		var i:Number;
-		
-		for(i in 0...behaviors.length)
-		{
-			b = behaviors[i];
-			
-			if(b.drawable && b.enabled && b.visible)
-			{
-				if(screen)
-				{
-					g.translateToScreen();
-				}
-				
-				var blend:String = g.getBlendMode();
-				
-				try
-				{
-					b.draw(g, x, y);
-				}
-				
-				catch(e:String)
-				{
-					FlxG.log("Error in draw for behavior: " + b.name);
-					FlxG.log(e.getStackTrace());
-				}
-				
-				g.setBlendMode(blend);
-			}
-		}
-	}*/
-	
-	/**
-     * Draws on a specific layer. 
-     * Automatically called by the engine when a <code>Layer<code> is drawn.
-     * Must call doesCustomDrawing() for this to happen.
-     *
-     * @param   g       A <code>Graphics</code> context
-     * @param   x       The screen x-position.
-     * @param   y       The screen y-position.
-     * @param   layerID The ID of the layer to draw on.
-     */
-    /*public function drawLayer(g:Graphics, x:Number, y:Number, layerID:int)
-    {
-        var b:Behavior = null;
-        var i:Number;
-        
-        for(i in 0...behaviors.length)
-        {
-            b = behaviors[i];
-            
-            if(b.drawable && b.enabled && b.visible)
-            {
-                g.translateToScreen();
-                
-                var blend:String = g.getBlendMode();
-                
-                try
-                {
-                    b.drawLayer(g, x, y, layerID);
-                }
-                
-                catch(e:Error)
-                {
-                    FlxG.log("Error in draw for behavior: " + b.name);
-                    FlxG.log(e.getStackTrace());
-                }
-                
-                g.setBlendMode(blend);
-            }
-        }
-    }
-	
-	public function registerCollisionHandler(b:Behavior)
-	{
-		for(var key:String in collisionHandlers)
-		{
-			var item:Behavior = collisionHandlers[key];
-			
-			if(item.ID == b.ID)
-			{
-				return;
-			}
-		}
-
-		collisionHandlers.push(b);
-	}*/
-	
 	//*-----------------------------------------------
 	//* Messaging
 	//*-----------------------------------------------
@@ -275,7 +172,14 @@ class BehaviorManager
 				continue;
 			}
 			
+			//XXX: Flash works slightly differently from the rest on this... :(
+			#if flash
 			if(Reflect.hasField(item.script, msg))
+			#end
+			
+			#if (cpp || js)
+			try
+			#end
 			{
 				var f = Reflect.field(item.script, msg);
 			
@@ -290,7 +194,13 @@ class BehaviorManager
 				}
 			}
 			
+			#if flash
 			else
+			#end
+			
+			#if (cpp || js)
+			catch(e:String)
+			#end
 			{
 				item.script.forwardMessage(msg);
 			}
@@ -316,10 +226,17 @@ class BehaviorManager
 				return toReturn;
 			}
 			
+			//XXX: Flash works slightly differently from the rest on this... :(
+			#if flash
 			if(Reflect.hasField(item.script, msg))
+			#end
+			
+			#if (cpp || js)
+			try
+			#end
 			{
 				var f = Reflect.field(item.script, msg);
-				
+			
 				if(f != null)
 				{
 					toReturn = Reflect.callMethod(item.script, f, args);
@@ -331,7 +248,13 @@ class BehaviorManager
 				}
 			}
 			
+			#if flash
 			else
+			#end
+			
+			#if (cpp || js)
+			catch(e:String)
+			#end
 			{
 				item.script.forwardMessage(msg);
 			}
