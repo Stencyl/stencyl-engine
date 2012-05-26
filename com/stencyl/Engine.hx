@@ -1130,7 +1130,7 @@ class Engine
 	
 	public function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)
 	{
-		trace("Request to switch to Scene " + sceneID);
+		//trace("Request to switch to Scene " + sceneID);
 
 		if(isTransitioning())
 		{
@@ -1178,7 +1178,7 @@ class Engine
 		
 		leave = null;
 		
-		trace("Entering Scene " + sceneToEnter);
+		//trace("Entering Scene " + sceneToEnter);
 		
 		cleanup();
 		loadScene(sceneToEnter);
@@ -1355,7 +1355,11 @@ class Engine
 			layer = defaultGroup;
 		}
 		
-		layer.removeChild(a);
+		//Be gentle and don't error out if it's not in here (in case of a double-remove)
+		if(layer.contains(a))
+		{
+			layer.removeChild(a);
+		}
 	}
 	
 	public function moveActorToLayer(a:Actor, layerID:Int)

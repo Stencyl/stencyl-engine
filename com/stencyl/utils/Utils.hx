@@ -153,8 +153,14 @@ class Utils
 	{
 		while(container.numChildren > 0)
 		{
-			container.removeChild(container.getChildAt(0));
-			//container.removeChildAt(0);	
+			var c = container.getChildAt(0);
+			
+			if(Std.is(c, DisplayObjectContainer))
+			{
+				Utils.removeAllChildren(cast(c, DisplayObjectContainer));
+			}
+			
+			container.removeChild(c);
 		}
 	}
 
