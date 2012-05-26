@@ -1134,7 +1134,7 @@ class Engine
 
 		if(isTransitioning())
 		{
-			trace("Warning: Switching Scene while already switching. Ignoring.");
+			//trace("Warning: Switching Scene while already switching. Ignoring.");
 			return;
 		}
 		
