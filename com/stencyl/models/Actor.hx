@@ -467,8 +467,11 @@ class Actor extends Sprite
 		{
 			if(shape != null && Std.is(shape, com.stencyl.models.collision.Mask))
 			{
-				var dummy = new BitmapData(width, height);
-				addChild(new Bitmap(dummy));
+				//TODO: Very inefficient for CPP/mobile - can we force width/height a different way?
+				var dummy = new Bitmap(new BitmapData(1, 1, true, 0));
+				dummy.x = width;
+				dummy.y = height;
+				addChild(dummy);
 				this.width = width;
 				this.height = height;
 			}
