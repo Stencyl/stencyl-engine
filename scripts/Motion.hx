@@ -29,41 +29,41 @@ class Motion extends ActorScript
 			
 			if(actor.y >= 1)
 			{
-				return;
+				//return;
 			}
 		
 			if(Input.check("left"))
 			{
-				actor.xSpeed = -0.2;
+				actor.setXVelocity(-10);
 				//actor.moveActorBy(-1, 0, [3]);
 			}
 			
 			else if(Input.check("right"))
 			{
-				actor.xSpeed = 0.2;
+				actor.setXVelocity(10);
 				//actor.moveActorBy(1, 0, [3]);
 			}
 			
 			else
 			{
-				actor.xSpeed = 0;
+				actor.setXVelocity(0);
 			}
 			
 			if(Input.check("up"))
 			{
-				actor.ySpeed = -0.2;
+				actor.setYVelocity(-10);
 				//actor.moveActorBy(0, -1, [3]);
 			}
 			
 			else if(Input.check("down"))
 			{
-				actor.ySpeed = 0.2;
+				actor.setYVelocity(10);
 				//actor.moveActorBy(0, 1, [3]);
 			}
 			
 			else
 			{
-				//actor.ySpeed = 0;
+				actor.setYVelocity(0);
 			}
 			
 			if(Input.mouseDown)

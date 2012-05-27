@@ -86,7 +86,8 @@ class Engine
 	public static var INTERNAL_SHIFT:String = "iSHIFT";
 	public static var INTERNAL_CTRL:String = "iCTRL";
 	
-	public static var NO_PHYSICS:Bool = true;
+	public static var NO_PHYSICS:Bool = false;
+	public static var DEBUG_DRAW:Bool = true;
 	
 	
 	//*-----------------------------------------------
@@ -179,6 +180,7 @@ class Engine
 	public var hudLayer:Sprite; //Shows above everything else
 	public var transitionBitmapLayer:DisplayObject; //Shows above everything else
 	public var transitionLayer:Sprite; //Shows above everything else
+	public var debugLayer:Sprite;
 	
 	public var g:G;
 	
@@ -373,6 +375,8 @@ class Engine
 		
 		root.addChild(transitionBitmapLayer);
 		
+		debugLayer = new Sprite();
+		root.addChild(debugLayer);
 		
 		//Initialize things	
 		actorsToCreateInNextScene = new Array();			
@@ -642,9 +646,10 @@ class Engine
 		world.SetScreenBounds(aabb);*/
 		
 		debugDrawer = new B2DebugDraw();
-		debugDrawer.setSprite(new Sprite());
+		debugDrawer.setSprite(debugLayer);
+		debugDrawer.setDrawScale(10);
+		debugDrawer.setFlags(B2DebugDraw.e_shapeBit);
 		world.setDebugDraw(debugDrawer);
-		master.addChild(debugDrawer.m_sprite);
 	}
 	
 	//*-----------------------------------------------
@@ -1709,6 +1714,11 @@ class Engine
 		if(!NO_PHYSICS)
 		{
 			world.step(0.01, 3, 5);
+			
+			if(DEBUG_DRAW)
+			{
+				world.drawDebugData();
+			}
 		}
 
 		/*for each(var r:Region in regions)
@@ -1843,6 +1853,12 @@ class Engine
 			}
 			
 			//Something that doesn't scroll - Do nothing
+		}
+		
+		if(!NO_PHYSICS && DEBUG_DRAW)
+		{
+			debugLayer.x = cameraX;
+			debugLayer.y = cameraY;
 		}
 		
 		//Shaking

@@ -81,7 +81,6 @@ class Actor extends Sprite
 	//*-----------------------------------------------
 	
 	public var ID:Int;
-	//public var name:String; //Already a prop
 	public var groupID:Int;
 	public var layerID:Int;
 	public var typeID:Int;
@@ -878,10 +877,13 @@ class Actor extends Sprite
 		{
 			var p = body.getPosition();
 					
-			x = Math.round(p.x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
-			y = Math.round(p.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);		
-			rotation = body.getAngle() * Utils.DEG;
+			//x = Math.round(p.x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
+			//y = Math.round(p.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);	
 			
+			x = Math.round(p.x * Engine.physicsScale);
+			y = Math.round(p.y * Engine.physicsScale);		
+			rotation = body.getAngle() * Utils.DEG;
+
 			if(isHUD)
 			{
 				transform.matrix.identity();
