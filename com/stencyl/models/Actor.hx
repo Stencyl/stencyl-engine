@@ -170,8 +170,7 @@ class Actor extends Sprite
 	//*-----------------------------------------------
 	
 	public var registry:Hash<Dynamic>;
-	//public var overlay:Sprite;
-	
+
 	
 	//*-----------------------------------------------
 	//* Events
@@ -240,7 +239,7 @@ class Actor extends Sprite
 		isStationary:Bool=false,
 		isKinematic:Bool=false,
 		canRotate:Bool=false,
-		shape:Dynamic=null, //B2Shape or Polygon - Used only for terrain.
+		shape:Dynamic=null, //B2Shape or Mask - Used only for terrain.
 		typeID:Int = 0,
 		isLightweight:Bool=false,
 		autoScale:Bool=true
@@ -318,9 +317,7 @@ class Actor extends Sprite
 		killLeaveScreen = false;
 		alwaysSimulate = false;
 		isHUD = false;
-		
-		//handlesCollisions = true;
-		
+
 		fixedRotation = false;
 		ignoreGravity = false;
 		
@@ -405,8 +402,7 @@ class Actor extends Sprite
 				B2World.m_continuousPhysics = true;
 			}
 			
-			//Not done yet
-			//bodyDef.groupID = groupID;
+			bodyDef.groupID = groupID;
 
 			initFromBody(bodyDef);	
 			
@@ -489,8 +485,6 @@ class Actor extends Sprite
 		}
 
 		Engine.initBehaviors(behaviors, behaviorValues, this, engine, false);
-		
-		//addChild(overlay = new Sprite());
 	}	
 	
 	public function destroy()
@@ -616,8 +610,6 @@ class Actor extends Sprite
 	
 	public function initScripts()
 	{		
-		//handlesCollisions = true;
-		
 		behaviors.initScripts();
 		
 		var r = 0;
@@ -663,7 +655,7 @@ class Actor extends Sprite
 	{			
 		var bodyDef:B2BodyDef = new B2BodyDef();
 		
-		//bodyDef.groupID = groupID;
+		bodyDef.groupID = groupID;
 		bodyDef.position.x = Engine.toPhysicalUnits(x);
 		bodyDef.position.y = Engine.toPhysicalUnits(y);
 			
@@ -692,7 +684,7 @@ class Actor extends Sprite
 		fixtureDef.density = 0.1;
 		fixtureDef.restitution = 0;
 		fixtureDef.isSensor = isSensor;
-		//fixtureDef.groupID = -1000;
+		fixtureDef.groupID = -1000;
 		fixtureDef.userData = this;
 					
 		bodyDef.userData = this;
@@ -871,16 +863,6 @@ class Actor extends Sprite
 		
 		if(isLightweight)
 		{
-			/*x += xSpeed / Engine.physicsScale;
-			y += ySpeed / Engine.physicsScale;
-			rotation += rSpeed / Engine.physicsScale / Engine.physicsScale;*/
-			
-			//this.x += elapsedTime * xSpeed;
-			//this.y += elapsedTime * ySpeed;
-			
-			//TODO: Gravity
-			//push(Engine.engine.gravityX, Engine.engine, 10);
-			
 			moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);
 			
 			this.rotation += elapsedTime * rSpeed;
@@ -1355,8 +1337,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			return 0;
-			//return body.groupID;
+			return body.groupID;
 		}
 	}
 	
@@ -1400,10 +1381,10 @@ class Actor extends Sprite
 		{
 			this.paused = true;
 			
-			/*if(!isLightweight)
+			if(!isLightweight)
 			{
-				this.body.SetPaused(true);
-			}*/
+				this.body.setPaused(true);
+			}
 		}
 	}
 	
@@ -1413,10 +1394,10 @@ class Actor extends Sprite
 		{
 			this.paused = false;
 			
-			/*if(!isLightweight)
+			if(!isLightweight)
 			{
-				this.body.SetPaused(false);
-			}*/
+				this.body.setPaused(false);
+			}
 		}
 	}
 	
@@ -1634,11 +1615,7 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			//x = a.getXCenter();
-			//y = a.getYCenter();
-			
-			moveActorTo(a.getXCenter(), a.getYCenter());
-			
+			moveActorTo(a.getXCenter(), a.getYCenter());	
 			return;
 		}
 		
@@ -1649,11 +1626,7 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			//x = a.getXCenter() + ox;
-			//y = a.getYCenter() + oy;
-			
 			moveActorTo(a.getXCenter() + ox, a.getYCenter() + oy);
-			
 			return;
 		}
 		
@@ -2061,7 +2034,7 @@ class Actor extends Sprite
 	{
 		if(!isLightweight)
 		{
-			//body.setFriction(value);
+			body.setFriction(value);
 		}
 	}
 	
@@ -2069,7 +2042,7 @@ class Actor extends Sprite
 	{
 		if(!isLightweight)
 		{
-			//body.setBounciness(value);
+			body.setBounciness(value);
 		}
 	}
 	
@@ -2082,7 +2055,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			//body.SetFixedRotation(false);
+			body.setFixedRotation(false);
 		}
 	}
 	
@@ -2095,7 +2068,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			//body.SetFixedRotation(true);
+			body.setFixedRotation(true);
 		}
 	}
 	
@@ -2105,7 +2078,7 @@ class Actor extends Sprite
 	
 		if(!isLightweight)
 		{
-			//body.SetIgnoreGravity(state);
+			body.setIgnoreGravity(state);
 		}
 	}
 	
@@ -2116,8 +2089,7 @@ class Actor extends Sprite
 			return ignoreGravity;
 		}
 		
-		return false;
-		//return body.IsIgnoringGravity();
+		return body.isIgnoringGravity();
 	}
 	
 	//*-----------------------------------------------
@@ -2543,7 +2515,7 @@ class Actor extends Sprite
 	{
 		if(!isLightweight)
 		{
-			//body.SetAlwaysActive(true);
+			body.setAlwaysActive(true);
 		}
 		
 		isHUD = true;			
@@ -2556,7 +2528,7 @@ class Actor extends Sprite
 	{
 		if(!isLightweight)
 		{
-			//body.SetAlwaysActive(alwaysSimulate);
+			body.setAlwaysActive(alwaysSimulate);
 		}
 		
 		isHUD = false;			
@@ -2574,7 +2546,7 @@ class Actor extends Sprite
 	{
 		if(!isLightweight)
 		{
-			//body.SetAlwaysActive(true);
+			body.setAlwaysActive(true);
 		}
 		
 		alwaysSimulate = true;			
@@ -2585,7 +2557,7 @@ class Actor extends Sprite
 	{
 		if(!isLightweight)
 		{
-			//body.SetAlwaysActive(false);
+			body.setAlwaysActive(false);
 		}
 		
 		alwaysSimulate = false;			

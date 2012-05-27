@@ -686,9 +686,6 @@ class Engine
 		camera = new Actor(this, -1, GameModel.DOODAD_ID, 0, 0, getTopLayer(), 2, 2, null, null, null, null, true, false, true, false, null, 0, true, false);
 		camera.name = "Camera";
 		camera.isCamera = true;
-		
-		//TODO?
-		//FlxG.followBounds(0, 0, scene.sceneWidth, scene.sceneHeight);
 	}
 	
 	private function loadRegions()
@@ -1648,7 +1645,6 @@ class Engine
 		aabb.upperBound.x = aabb.lowerBound.x + ((FlxG.width + right + left) / physicsScale);
 		aabb.upperBound.y = aabb.lowerBound.y + ((FlxG.height + bottom + top) / physicsScale);
 		world.SetScreenBounds(aabb);*/
-		
 				
 		if(Input.mousePressed)
 		{
@@ -1710,8 +1706,10 @@ class Engine
 		
 		invokeListeners2(whenUpdatedListeners, elapsedTime);
 		
-
-		//world.Step(STEP_SIZE, 3, 8);
+		if(!NO_PHYSICS)
+		{
+			world.step(0.01, 3, 5);
+		}
 
 		/*for each(var r:Region in regions)
 		{
@@ -1720,7 +1718,6 @@ class Engine
 		}*/
 		
 		//collisionPairs = new Dictionary();
-		//var disableCollisionList = new Array<Actor>();
 
 		for(a in allActors)
 		{		
@@ -1765,11 +1762,6 @@ class Engine
 						a.innerUpdate(elapsedTime, false);
 					}
 				}
-				
-				/*if(a.dead)
-				{
-					disableCollisionList.push(a);
-				}*/
 			}
 		}
 					
@@ -1778,14 +1770,6 @@ class Engine
 			if(a2 != null && (a2.isLightweight || (a2.body != null && a2.body.isActive())) && !a2.dead && !a2.recycled)
 			{
 				a2.innerUpdate(elapsedTime, false);
-			}
-		}*/
-		
-		/*for(a in disableCollisionList)
-		{
-			if(a != null)
-			{
-				a.handlesCollisions = false;
 			}
 		}*/
 		
@@ -1858,11 +1842,7 @@ class Engine
 				child.y = cameraY;
 			}
 			
-			//Something that doesn't scroll
-			else
-			{
-				continue;
-			}
+			//Something that doesn't scroll - Do nothing
 		}
 		
 		//Shaking
@@ -1882,9 +1862,6 @@ class Engine
 	        master.x = randX;
 	        master.y = randY;
 		}
-		
-		//TODO: Should we do it here or outside?
-		//Input.update();
 	}
 	
 	//Game Loop
