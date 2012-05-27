@@ -95,6 +95,8 @@ class Motion extends ActorScript
 		
 		//saveGame("donkey2");
 		//loadGame("donkey2");
+		
+		trace(actor.getX());
 	}
 
 	override public function update(elapsedTime:Float)

@@ -1551,7 +1551,6 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			//this.x = x + width / 2 + currOffset.x;
 			moveActorTo(x, y);
 		}
 		
@@ -1584,7 +1583,6 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			//this.y = y + height / 2 + currOffset.y;
 			moveActorTo(x, y);
 		}
 		
