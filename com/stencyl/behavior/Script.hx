@@ -43,6 +43,7 @@ import box2D.collision.shapes.B2Shape;
 import box2D.dynamics.joints.B2Joint;
 import box2D.common.math.B2Vec2;
 import box2D.dynamics.B2World;
+import box2D.dynamics.B2Fixture;
 
 #if flash
 import com.stencyl.utils.Kongregate;
@@ -223,9 +224,8 @@ class Script
 		
 		else
 		{
-			return null;
-			//return return engine.getGroup(arg2.groupID, cast(arg2.getBody().getUserData(), Actor));
-			//return scene.getGroup(event.~Shape.groupID, (event.`Shape.GetBody().GetUserData() as Actor))
+			var fixture = cast(arg2, B2Fixture);
+			return engine.getGroup(fixture.groupID, cast(fixture.getBody().getUserData(), Actor));
 		}
 	}
 	
