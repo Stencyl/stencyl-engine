@@ -87,7 +87,7 @@ class Engine
 	public static var INTERNAL_SHIFT:String = "iSHIFT";
 	public static var INTERNAL_CTRL:String = "iCTRL";
 	
-	public static var NO_PHYSICS:Bool = false;
+	public static var NO_PHYSICS:Bool = true;
 	public static var DEBUG_DRAW:Bool = !NO_PHYSICS && true;
 	
 	
@@ -2003,8 +2003,21 @@ class Engine
 	{
 		var type1 = a.getType();
 		var type2 = event.otherActor.getType();
-		var group1 = getGroup(event.thisShape.groupID, a);
-		var group2 = getGroup(event.otherShape.groupID, event.otherActor);
+		
+		var group1:Group = null;
+		var group2:Group = null;
+		
+		if(NO_PHYSICS)
+		{
+			group1 = getGroup(event.thisActor.groupID);
+			group2 = getGroup(event.otherActor.groupID);
+		}
+		
+		else
+		{
+			group1 = getGroup(event.thisShape.groupID, a);
+			group2 = getGroup(event.otherShape.groupID, event.otherActor);
+		}
 		
 		//Check if collision between actors has already happened
 		if(!collisionPairs.exists(a))

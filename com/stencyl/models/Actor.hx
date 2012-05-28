@@ -3152,11 +3152,10 @@ class Actor extends Sprite
 
 		lastCollided = a;
 		Engine.invokeListeners2(collisionListeners, Utils.collision);
+		engine.handleCollision(this, Utils.collision);
 		
 		lastCollided = this;
 		Engine.invokeListeners2(a.collisionListeners, Utils.collision.switchData());
-				
-		engine.handleCollision(a, Utils.collision);
 	}
 	
 	private var HITBOX:Mask;
