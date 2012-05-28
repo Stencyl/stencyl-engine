@@ -1730,6 +1730,7 @@ class Engine
 		}*/
 		
 		//collisionPairs = new Dictionary();
+		var disableCollisionList = new Array<Actor>();
 
 		for(a in allActors)
 		{		
@@ -1774,6 +1775,11 @@ class Engine
 						a.innerUpdate(elapsedTime, false);
 					}
 				}
+				
+				if(a.dead)
+				{
+					disableCollisionList.push(a);
+				}
 			}
 		}
 					
@@ -1784,6 +1790,14 @@ class Engine
 				a2.innerUpdate(elapsedTime, false);
 			}
 		}*/
+		
+		for(a in disableCollisionList)
+		{
+			if (a != null)
+			{
+				a.handlesCollisions = false;
+			}
+		}
 		
 		for(tile in animatedTiles)
 		{

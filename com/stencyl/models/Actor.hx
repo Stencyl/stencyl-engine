@@ -201,9 +201,10 @@ class Actor extends Sprite
 	public var md:B2MassData;
 	public var bodyScale:Point;
 	
-	public var contacts:Hash<B2Contact>;
-	public var regionContacts:Hash<B2Contact>;
-	public var collisions:Hash<Collision>;
+	public var handlesCollisions:Bool;
+	public var contacts:IntHash<B2Contact>;
+	public var regionContacts:IntHash<B2Contact>;
+	public var collisions:IntHash<Collision>;
 	
 	private var dummy:B2Vec2;
 	private var zero:B2Vec2;
@@ -340,9 +341,11 @@ class Actor extends Sprite
 		
 		groupsToCollideWith = GameModel.get().groupsCollidesWith.get(groupID);
 		
-		collisions = new Hash<Collision>();
-		contacts = new Hash<B2Contact>();
-		regionContacts = new Hash<B2Contact>();
+		collisions = new IntHash<Collision>();
+		contacts = new IntHash<B2Contact>();
+		regionContacts = new IntHash<B2Contact>();
+		
+		handlesCollisions = true;
 		
 		//---
 		
@@ -612,6 +615,7 @@ class Actor extends Sprite
 	
 	public function initScripts()
 	{		
+		handlesCollisions = true;
 		behaviors.initScripts();
 		
 		var r = 0;
@@ -866,9 +870,9 @@ class Actor extends Sprite
 					collisions.remove(k);
 				}
 				
-				collisions = new Hash<Collision>();
-				contacts = new Hash<B2Contact>();
-				regionContacts = new Hash<B2Contact>();
+				collisions = new IntHash<Collision>();
+				contacts = new IntHash<B2Contact>();
+				regionContacts = new IntHash<B2Contact>();
 				//END HACK
 
 				while(body.m_fixtureCount > 0)
@@ -962,17 +966,22 @@ class Actor extends Sprite
 				
 		if(!isLightweight)
 		{
-			/*if(collisionListeners.length > 0 || engine.collisionListeners[type] != null || engine.collisionListeners[getGroup()] != null) 
+			//TODO: Are these hashmap lookups slow? Try using integers instead.
+			if(collisionListeners.length > 0 || 
+			   engine.collisionListeners.exists(type) || 
+			   engine.collisionListeners.exists(getGroup())) 
 			{
 				handleCollisions();		
-			}*/
+			}
 		}
 
 		internalUpdate(elapsedTime, true);
 		Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
 
 		//TODO: Are these hashmap lookups slow? Try using integers instead.
-		if(positionListeners.length > 0 || engine.typeGroupPositionListeners.exists(type) || engine.typeGroupPositionListeners.exists(getGroup()))
+		if(positionListeners.length > 0 || 
+		   engine.typeGroupPositionListeners.exists(type) || 
+		   engine.typeGroupPositionListeners.exists(getGroup()))
 		{
 			checkScreenState();
 		}
@@ -1169,18 +1178,16 @@ class Actor extends Sprite
 	//* Collision
 	//*-----------------------------------------------
 	
-	
 	private function handleCollisions()
-	{			
-		/*for each(var p:b2Contact in contacts)
+	{		
+		/*var otherActor:Actor;
+		var otherShape:b2Fixture;
+		var thisShape:b2Fixture;
+				
+		for each(var p:b2Contact in contacts)
 		{
-			var a1:Actor = p.GetFixtureA().GetUserData() as Actor;
-			var a2:Actor = p.GetFixtureB().GetUserData() as Actor;
-											
-			var otherActor:Actor;
-			var otherShape:b2Fixture;
-			var thisShape:b2Fixture;
-			
+			var a1 = cast(contact.getFixtureA().getUserData(), Actor);
+			var a2 = cast(contact.getFixtureB().getUserData(), Actor);
 			var key:String = String(p._ptr);
 				
 			if(a1 == this)
@@ -1197,11 +1204,12 @@ class Actor extends Sprite
 				thisShape = p.GetFixtureB();
 			}
 							
-			if(collisions[key] != null)
+			if(collisions.exists(key))
 			{
 				continue;
 			}
 			
+			//TODO: roll this out and reuse instead
 			var d:Collision = new Collision();
 			d.otherActor = otherActor;
 			d.otherShape = otherShape;
@@ -1254,19 +1262,19 @@ class Actor extends Sprite
 			}
 			
 			lastCollided = collision.otherActor;
-			handleCollision(collision);
+			Engine.invokeListeners2(collisionListeners, collision);
+			game.handleCollision(this, collision);	
 		}
 		
 		contacts = new Dictionary();*/
 	}
 	
-	/*public function collidedFromBottom(c:b2Contact, normal:V2):Bool
+	public function collidedFromBottom(c:B2Contact, normal:B2Vec2):Bool
 	{
 		var thisActor:Actor = this;
-		var body:b2Body = thisActor.getBody();
-		
-		var body1:b2Body = c.GetFixtureA().GetBody();
-		var body2:b2Body = c.GetFixtureB().GetBody();
+		var body = thisActor.getBody();	
+		var body1 = c.getFixtureA().getBody();
+		var body2 = c.getFixtureB().getBody();
 
 		if(body1 == body)
 		{
@@ -1281,13 +1289,12 @@ class Actor extends Sprite
 		return false;
 	}
 	
-	public function collidedFromTop(c:b2Contact, normal:V2):Bool
+	public function collidedFromTop(c:B2Contact, normal:B2Vec2):Bool
 	{
 		var thisActor:Actor = this;
-		var body:b2Body = thisActor.getBody();
-		
-		var body1:b2Body = c.GetFixtureA().GetBody();
-		var body2:b2Body = c.GetFixtureB().GetBody();
+		var body = thisActor.getBody();	
+		var body1 = c.getFixtureA().getBody();
+		var body2 = c.getFixtureB().getBody();
 		
 		if(body1 == body)
 		{
@@ -1302,13 +1309,12 @@ class Actor extends Sprite
 		return false;
 	}
 	
-	public function collidedFromLeft(c:b2Contact, normal:V2):Bool
+	public function collidedFromLeft(c:B2Contact, normal:B2Vec2):Bool
 	{
 		var thisActor:Actor = this;
-		var body:b2Body = thisActor.getBody();
-		
-		var body1:b2Body = c.GetFixtureA().GetBody();
-		var body2:b2Body = c.GetFixtureB().GetBody();
+		var body = thisActor.getBody();	
+		var body1 = c.getFixtureA().getBody();
+		var body2 = c.getFixtureB().getBody();
 		
 		if(body1 == body)
 		{
@@ -1323,13 +1329,12 @@ class Actor extends Sprite
 		return false;
 	}
 	
-	public function collidedFromRight(c:b2Contact, normal:V2):Bool
+	public function collidedFromRight(c:B2Contact, normal:B2Vec2):Bool
 	{
 		var thisActor:Actor = this;
-		var body:b2Body = thisActor.getBody();
-		
-		var body1:b2Body = c.GetFixtureA().GetBody();
-		var body2:b2Body = c.GetFixtureB().GetBody();
+		var body = thisActor.getBody();	
+		var body1 = c.getFixtureA().getBody();
+		var body2 = c.getFixtureB().getBody();
 		
 		if(body1 == body)
 		{
@@ -1348,7 +1353,7 @@ class Actor extends Sprite
 	{
 		if(a != null)
 		{
-			return a.getGroupID() != 1 && a.getGroupID() != -2 && !a.isTerrainRegion; //not tile, region, or terrain
+			return a.groupID != 1 && a.groupID != -2 && !a.isTerrainRegion; //not tile, region, or terrain
 		}
 		
 		return false;
@@ -1368,81 +1373,49 @@ class Actor extends Sprite
 	{
 		if(a != null)
 		{
-			return a.getGroupID() == 1; //Game.TILE_GROUP_ID;
+			return a.groupID == 1; //Game.TILE_GROUP_ID;
 		}
 		
 		return false;
 	}
 	
-	public function addContact(point:b2Contact):void
+	public inline function addContact(point:B2Contact)
 	{
 		if(contacts != null)
 		{
-			var key:String = String(point._ptr);	
-			contacts[key] = point;
-			delete collisions[key];
+			contacts.set(point.key, point);
+			collisions.remove(point.key);
 		}			
 	}
 	
-	public function removeContact(point:b2Contact):void
+	public inline function removeContact(point:B2Contact)
 	{
-		var key:String = String(point._ptr);
-
 		if(collisions != null)
 		{
-			delete collisions[key];
+			collisions.remove(point.key);
 		}
 		
 		if(contacts != null)
 		{
-			delete contacts[key];
+			contacts.remove(point.key);
 		}
 	}
 	
-	public function addRegionContact(point:b2Contact):void
+	public inline function addRegionContact(point:B2Contact)
 	{
 		if(regionContacts != null)
 		{
-			var key:String = String(point._ptr);	
-			regionContacts[key] = point;
+			regionContacts.set(point.key, point);
 		}			
 	}
 	
-	public function removeRegionContact(point:b2Contact):void
+	public inline function removeRegionContact(point:B2Contact)
 	{
-		var key:String = String(point._ptr);
-		
 		if(regionContacts != null)
 		{
-			delete regionContacts[key];
+			regionContacts.remove(point.key);
 		}
 	}
-	
-	public function handleCollision(event:Collision):void
-	{
-		//Move to GameState level with type?
-		for (var r:int = 0; r < collisionListeners.length; r++)
-		{
-			try
-			{					
-				var f:Function = collisionListeners[r] as Function;
-				f(collisionListeners, event);
-									
-				if (collisionListeners.indexOf(f) == -1)
-				{
-					r--;
-				}									
-			}
-			catch (e:Error)
-			{
-				FlxG.log(e.getStackTrace());
-			}
-		}
-		
-		game.handleCollision(this, event);			
-	}
-	
-	*/
 	
 	//*-----------------------------------------------
 	//* Properties
