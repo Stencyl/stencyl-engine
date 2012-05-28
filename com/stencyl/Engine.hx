@@ -35,6 +35,7 @@ import com.stencyl.models.Actor;
 import com.stencyl.models.scene.DeferredActor;
 import com.stencyl.models.actor.Group;
 import com.stencyl.models.actor.ActorType;
+import com.stencyl.models.actor.Collision;
 import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.Scene;
@@ -280,7 +281,7 @@ class Engine
 	private var mx:Float;
 	private var my:Float;
 	
-	private var collisionPairs:HashMap<Dynamic, Dynamic>;
+	private var collisionPairs:HashMap<Dynamic, HashMap<Dynamic, Bool>>;
 	
 	public var whenKeyPressedListeners:HashMap<Dynamic, Dynamic>;
 	public var whenTypeGroupCreatedListeners:HashMap<Dynamic, Dynamic>;
@@ -1730,7 +1731,7 @@ class Engine
 			r.innerUpdate(true);
 		}*/
 		
-		//collisionPairs = new HashMap<Actor, HashMap<Actor, Array<Dynamic>>>();
+		collisionPairs = new HashMap<Actor, HashMap<Actor, Bool>>();
 		var disableCollisionList = new Array<Actor>();
 
 		for(a in allActors)
@@ -1996,6 +1997,86 @@ class Engine
 		
 		invokeListeners2(whenFocusChangedListeners, lost);
 	}		
+	
+	//TODO: Redo this using ints as lookup keys rather than objects - I feel this is a really inefficient function.
+	public function handleCollision(a:Actor, event:Collision)
+	{
+		var type1 = a.getType();
+		var type2 = event.otherActor.getType();
+		var group1 = getGroup(event.thisShape.groupID, a);
+		var group2 = getGroup(event.otherShape.groupID, event.otherActor);
+		
+		//Check if collision between actors has already happened
+		if(!collisionPairs.exists(a))
+		{
+			collisionPairs.set(a, new HashMap<Dynamic, Bool>());
+		}
+		
+		if(!collisionPairs.exists(event.otherActor))
+		{
+			collisionPairs.set(event.otherActor, new HashMap<Dynamic, Bool>());
+		}
+		
+		if(collisionPairs.get(a).exists(event.otherActor) || collisionPairs.get(event.otherActor).exists(a))
+		{
+			return;
+		}
+		
+		//
+		
+		//QUESTION: Why does this check terrain but none of the others do?
+		if(!event.otherCollidedWithTerrain && collisionListeners.exists(type1) && collisionListeners.get(type1).exists(type2))
+		{
+			var listeners = collisionListeners.get(type1).get(type2);
+			invokeListeners2(listeners, event);
+			
+			if(listeners.length == 0)
+			{
+				collisionListeners.get(type1).delete(type2);
+			}
+		}
+		
+		if(type1 != type2 && collisionListeners.exists(type2) && collisionListeners.get(type2).exists(type1))
+		{
+			var listeners = collisionListeners.get(type2).get(type1);
+			var reverseEvent = event.switchData();
+			
+			invokeListeners2(listeners, reverseEvent);
+			
+			if(listeners.length == 0)
+			{
+				collisionListeners.get(type2).delete(type1);
+			}
+		}
+		
+		if(collisionListeners.exists(group1) && collisionListeners.get(group1).exists(group2))
+		{
+			var listeners = collisionListeners.get(group1).get(group2);
+			invokeListeners2(listeners, event);
+			
+			if(listeners.length == 0)
+			{
+				collisionListeners.get(group1).delete(group2);
+			}
+		}
+		
+		if(group1 != group2 && collisionListeners.exists(group2) && collisionListeners.get(group2).exists(group1))
+		{
+			var listeners = collisionListeners.get(group2).get(group1);
+			var reverseEvent = event.switchData();
+			
+			invokeListeners2(listeners, reverseEvent);
+			
+			if(listeners.length == 0)
+			{
+				collisionListeners.get(group2).delete(group1);
+			}
+		}
+		
+		//Collision has been handled once, hold to prevent from double reporting collisions
+		collisionPairs.get(a).set(event.otherActor, false);
+		collisionPairs.get(event.otherActor).set(a, false);
+	}
 	
 	public function soundFinished(channelNum:Int)
 	{

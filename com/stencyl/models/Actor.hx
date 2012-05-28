@@ -912,8 +912,8 @@ class Actor extends Sprite
 				
 				if(body.getFixtureList() != null)
 				{
-					//bodyScale.x = 1;
-					//bodyScale.y = 1;
+					bodyScale.x = 1;
+					bodyScale.y = 1;
 			
 					for(r in regions)
 					{
@@ -1279,8 +1279,7 @@ class Actor extends Sprite
 			lastCollided = collision.otherActor;
 			Engine.invokeListeners2(collisionListeners, collision);
 			
-			//TODO
-			//engine.handleCollision(this, collision);	
+			engine.handleCollision(this, collision);	
 		}
 		
 		//TODO: Can we avoid remaking this?
@@ -3157,154 +3156,7 @@ class Actor extends Sprite
 		lastCollided = this;
 		Engine.invokeListeners2(a.collisionListeners, Utils.collision.switchData());
 				
-		//---
-		
-		//TODO: deal with the type to type, group to group listeners
-		
-		/*
-		
-		var type1:ActorType = a.getType();
-		var type2:ActorType = event.otherActor.getType();
-		var group1:FlxGroup = getGroup(event.thisShape.groupID, a);
-		var group2:FlxGroup = getGroup(event.otherShape.groupID, event.otherActor);;
-		
-		//Check if collision between actors has already happened
-		if (collisionPairs[a] == null)
-		{
-			collisionPairs[a] = new Dictionary();
-		}
-		
-		if (collisionPairs[event.otherActor] == null)
-		{
-			collisionPairs[event.otherActor] = new Dictionary();
-		}
-		
-		if (collisionPairs[a][event.otherActor] != null || collisionPairs[event.otherActor][a] != null)
-		{
-			return;
-		}
-		
-		//
-		
-		if (!event.otherCollidedWithTerrain && collisionListeners[type1] != null && collisionListeners[type1][type2] != null)
-		{
-			var listeners:Array = collisionListeners[type1][type2] as Array;
-			
-			for (var r:int = 0; r < listeners.length; r++)
-			{
-				try
-				{
-					var f:Function = listeners[r] as Function;
-					f(listeners, event);
-					
-					if (listeners.indexOf(f) == -1)
-					{
-						r--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
-			
-			if (listeners.length == 0)
-			{
-				collisionListeners[type1][type2] = null;
-			}
-		}	
-		
-		if (type1 != type2 && collisionListeners[type2] != null && collisionListeners[type2][type1] != null)
-		{
-			var listeners:Array = collisionListeners[type2][type1] as Array;
-			var reverseEvent:Collision = event.switchData();
-			
-			for (var r:int = 0; r < listeners.length; r++)
-			{
-				try
-				{
-					var f:Function = listeners[r] as Function;
-					f(listeners, reverseEvent);
-					
-					if (listeners.indexOf(f) == -1)
-					{
-						r--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
-			
-			if (listeners.length == 0)
-			{
-				collisionListeners[type2][type1] = null;
-			}
-		}	
-		
-		if (collisionListeners[group1] != null && collisionListeners[group1][group2] != null)
-		{
-			var listeners:Array = collisionListeners[group1][group2] as Array;
-			
-			for (var r:int = 0; r < listeners.length; r++)
-			{
-				try
-				{
-					var f:Function = listeners[r] as Function;
-					f(listeners, event);
-					
-					if (listeners.indexOf(f) == -1)
-					{
-						r--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
-			
-			if (listeners.length == 0)
-			{
-				collisionListeners[group1][group2] = null;
-			}
-		}	
-		
-		if (group1 != group2 && collisionListeners[group2] != null && collisionListeners[group2][group1] != null)
-		{
-			var listeners:Array = collisionListeners[group2][group1] as Array;
-			var reverseEvent:Collision = event.switchData();
-			
-			for (var r:int = 0; r < listeners.length; r++)
-			{
-				try
-				{
-					var f:Function = listeners[r] as Function;
-					f(listeners, reverseEvent);
-					
-					if (listeners.indexOf(f) == -1)
-					{
-						r--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
-			
-			if (listeners.length == 0)
-			{
-				collisionListeners[group2][group1] = null;
-			}
-		}	
-		
-		//Collision has been handled once, hold to prevent from double reporting collisions
-		collisionPairs[a][event.otherActor] = new Bool();
-		collisionPairs[event.otherActor][a] = new Bool();
-		
-		*/
+		engine.handleCollision(a, Utils.collision);
 	}
 	
 	private var HITBOX:Mask;
