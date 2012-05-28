@@ -2220,14 +2220,8 @@ class Actor extends Sprite
 		var mx:Int = Input.mouseX;
 		var my:Int = Input.mouseY;
 		
-		var xPos:Float = this.x;
-		var yPos:Float = this.y;
-		
-		if(isLightweight)
-		{
-			xPos = getX();
-			yPos = getY();
-		}
+		var xPos:Float = getX();
+		var yPos:Float = getY();
 		
 		if(isHUD)
 		{
