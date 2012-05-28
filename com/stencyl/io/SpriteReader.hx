@@ -8,6 +8,11 @@ import com.stencyl.models.actor.Sprite;
 import com.stencyl.models.actor.Animation;
 
 import box2D.common.math.B2Vec2;
+import box2D.dynamics.B2FixtureDef;
+import box2D.collision.B2AABB;
+import box2D.common.math.B2Transform;
+import box2D.collision.shapes.B2Shape;
+import box2D.collision.shapes.B2CircleShape;
 import box2D.collision.shapes.B2EdgeShape;
 import box2D.collision.shapes.B2PolygonShape;
 
@@ -65,7 +70,7 @@ class SpriteReader implements AbstractReader
 		var framesDown:Int = Std.parseInt(xml.att.down);
 		
 		var parentID:Int = parent.ID;
-		var shapes:Array<Dynamic> = null; //readShapes(xml, imgWidth/framesAcross, imgHeight/framesDown);
+		var shapes = readShapes(xml, imgWidth/framesAcross, imgHeight/framesDown);
 		var looping:Bool = Utils.toBoolean(xml.att.loop);
 		var imgData:Dynamic = Data.get().resourceAssets.get(parentID + "-" + animID + ".png");
 		var durations:Array<Int> = new Array<Int>();
@@ -103,36 +108,36 @@ class SpriteReader implements AbstractReader
 		);
 	}
 	
-	/*public function readShapes(xml:XML, imgWidth:Number, imgHeight:Number):Array
+	public function readShapes(xml:Fast, imgWidth:Float, imgHeight:Float):IntHash<B2FixtureDef>
 	{
-		var shapes:Array = new Array();
+		var shapes = new IntHash<B2FixtureDef>();
 		
-		for each(var e:XML in xml.children())
+		for(e in xml.elements)
 		{
-			var shapeID:Number = e.@id;
-			var groupID:Number = e.@gid;
+			var shapeID = Std.parseInt(e.att.id);
+			var groupID = Std.parseInt(e.att.gid);
 			
-			var shapeType:String = e.name();
-			var shapeParams:Array = e.@data.split(",");
-			var shape:b2Shape = createShape(shapeType, shapeParams, 0, 0, imgWidth, imgHeight);
+			var shapeType:String = e.name;
+			var shapeParams:Array<String> = e.att.data.split(",");
+			var shape = createShape(shapeType, shapeParams, 0, 0, imgWidth, imgHeight);
 			
-			var fixtureDef:b2FixtureDef = new b2FixtureDef();
+			var fixtureDef = new B2FixtureDef();
 			fixtureDef.shape = shape;
 			
-			fixtureDef.density = e.@density;
+			fixtureDef.density = Std.parseFloat(e.att.density);
 
 			//These have no effect.
-			fixtureDef.friction = e.@fric;
-			fixtureDef.restitution = e.@rest;
+			fixtureDef.friction = Std.parseFloat(e.att.fric);
+			fixtureDef.restitution = Std.parseFloat(e.att.rest);
 			
-			fixtureDef.isSensor = Util.toBoolean(e.@sensor);
-			fixtureDef.groupID = e.@gid;
+			fixtureDef.isSensor = Utils.toBoolean(e.att.sensor);
+			fixtureDef.groupID = Std.parseInt(e.att.gid);
 			
-			shapes[shapeID] = fixtureDef;
+			shapes.set(shapeID, fixtureDef);
 		}
 		
 		return shapes;
-	}*/
+	}
 	
 	public static function createShape(type:String, params:Array<String>, xOffset:Float=0, yOffset:Float=0, imgWidth:Float=-1, imgHeight:Float=-1):Dynamic
 	{
@@ -141,87 +146,87 @@ class SpriteReader implements AbstractReader
 		var w:Float = 0;
 		var h:Float = 0;
 		
-		/*if(type == "circle")
+		if(type == "circle")
 		{
-			var radius:Number = params[0];
-			x = params[1];
-			y = params[2];
+			var radius = Std.parseFloat(params[0]);
+			x = Std.parseFloat(params[1]);
+			y = Std.parseFloat(params[2]);
 			
-			var diameter:Number = radius * 2;
+			var diameter = radius * 2;
 			
-			var c:b2CircleShape = new b2CircleShape();
-			c.m_radius = GameState.toPhysicalUnits(radius);
-			c.m_p.x = GameState.toPhysicalUnits(x - (imgWidth - diameter)/2);
-			c.m_p.y = GameState.toPhysicalUnits(y - (imgHeight - diameter)/2);
+			var c = new B2CircleShape();
+			c.m_radius = Engine.toPhysicalUnits(radius);
+			c.m_p.x = Engine.toPhysicalUnits(x - (imgWidth - diameter)/2);
+			c.m_p.y = Engine.toPhysicalUnits(y - (imgHeight - diameter)/2);
 			
 			return c;
 		}
 		
 		else if(type == "poly" || type == "polyregion")
 		{			
-			var vertices:Vector.<V2> = new Vector.<V2>();
+			var vertices = new Array<B2Vec2>();
 			
-			var numVertices:Number = params[0];
-			var vIndex:Number = 0;
-			var i:Number = 1;
+			var numVertices:Int = Std.parseInt(params[0]);
+			var vIndex:Int = 0;
+			var i:Int = 1;
 			
 			
-			var x0:Number = 0;
-			var y0:Number = 0;
-			if (type == "polyregion")
+			var x0:Float = 0;
+			var y0:Float = 0;
+			
+			if(type == "polyregion")
 			{
-				x0 = int.MAX_VALUE;
-				y0 = int.MAX_VALUE;
+				x0 = 10000000;
+				y0 = 10000000;
 			}
-			var x1:Number = 0;
-			var y1:Number = 0;
+			
+			var x1:Float = 0;
+			var y1:Float = 0;
 			
 			while(vIndex < numVertices)
 			{
-				x = GameState.toPhysicalUnits(params[i]);
-				y = GameState.toPhysicalUnits(params[i + 1]);
+				x = Engine.toPhysicalUnits(Std.parseFloat(params[i]));
+				y = Engine.toPhysicalUnits(Std.parseFloat(params[i + 1]));
 				
-				x0 = Math.min(x0, params[i]);
-				y0 = Math.min(y0, params[i + 1]);
-				x1 = Math.max(x1, params[i]);
-				y1 = Math.max(y1, params[i + 1]);
+				x0 = Math.min(x0, Std.parseFloat(params[i]));
+				y0 = Math.min(y0, Std.parseFloat(params[i + 1]));
+				x1 = Math.max(x1, Std.parseFloat(params[i]));
+				y1 = Math.max(y1, Std.parseFloat(params[i + 1]));
 				
-				vertices[vIndex] = new V2(x, y);
+				vertices[vIndex] = new B2Vec2(x, y);
 				vIndex++;
 				i += 2;
 			}
 											
-			b2PolygonShape.EnsureCorrectVertexDirection(vertices);
+			EnsureCorrectVertexDirection(vertices);
 							
 			w = x1 - x0;
 			h = y1 - y0;
-			var xDiff:Number = x0 - GameState.toPixelUnits(xOffset);
-			var yDiff:Number = y0 - GameState.toPixelUnits(yOffset);
+			var xDiff:Float = x0 - Engine.toPixelUnits(xOffset);
+			var yDiff:Float = y0 - Engine.toPixelUnits(yOffset);
 
-			var hw:int = w/2;
-			var hh:int = h/2;
+			var hw:Float = w/2;
+			var hh:Float = h/2;
 
 			//Axis-orient the polygon otherwise it rotates around the wrong point.
-			var s:b2PolygonShape = new b2PolygonShape();
-			s.Set(vertices);
+			var s = B2PolygonShape.asArray(vertices, vertices.length);
 
-			var aabb:AABB = new AABB();
-			var t:XF = new XF();
+			var aabb = new B2AABB();
+			var t = new B2Transform();
 			t.setIdentity();
-			
-			s.ComputeAABB(aabb, t); 
+			s.computeAABB(aabb, t); 
 						
 			//Account for origin and subtract by half the difference.
 			if(w < imgWidth)
 			{	
 				if(type ==  "polyregion") x0 += Math.abs(imgWidth - w) / 2;
-				else x0 += GameState.toPhysicalUnits(Math.abs(imgWidth - w) / 2);
+				else x0 += Engine.toPhysicalUnits(Math.abs(imgWidth - w) / 2);
 			}
 			
 			if(h < imgHeight)
 			{
 				if(type == "polyregion") y0 += Math.abs(imgHeight - h) / 2;
-				else y0 += GameState.toPhysicalUnits(Math.abs(imgHeight - h) / 2);
+				else y0 += Engine.toPhysicalUnits(Math.abs(imgHeight - h) / 2);
 			}
 			
 			//Reconstruct a new polygon that's axis-oriented.
@@ -232,29 +237,26 @@ class SpriteReader implements AbstractReader
 			{
 				if (type == "polyregion")
 				{
-					var vX:Number = GameState.toPhysicalUnits(params[i] - hw - x0 + xDiff);
-					var vY:Number = GameState.toPhysicalUnits(params[i + 1] - hh  - y0 + yDiff);
-					vertices[vIndex] = new V2(vX, vY);
+					var vX:Float = Engine.toPhysicalUnits(Std.parseFloat(params[i]) - hw - x0 + xDiff);
+					var vY:Float = Engine.toPhysicalUnits(Std.parseFloat(params[i + 1]) - hh  - y0 + yDiff);
+					vertices[vIndex] = new B2Vec2(vX, vY);
 				}
 				else
 				{
-					vertices[vIndex] = new V2(GameState.toPhysicalUnits(params[i] - hw) - x0, 
-					                      GameState.toPhysicalUnits(params[i + 1] - hh) - y0);
+					vertices[vIndex] = new B2Vec2(Engine.toPhysicalUnits(Std.parseFloat(params[i]) - hw) - x0, 
+					                              Engine.toPhysicalUnits(Std.parseFloat(params[i + 1]) - hh) - y0);
 				}						  
 
 				vIndex++;
 				i += 2;
 			}
 
-			b2PolygonShape.EnsureCorrectVertexDirection(vertices);			
+			EnsureCorrectVertexDirection(vertices);			
 
-			var p:b2PolygonShape = new b2PolygonShape();
-			p.Set(vertices);
-			
-			return p;
+			return B2PolygonShape.asArray(vertices, vertices.length);
 		}
 		
-		else*/ if(type == "wireframe")
+		else if(type == "wireframe")
 		{
 			var vertices:Array<B2Vec2> = new Array<B2Vec2>();
 			
@@ -311,6 +313,48 @@ class SpriteReader implements AbstractReader
 		return pshapes;
 	}*/
 	
+	/// Check the orientation of vertices. If they are in the wrong direction, flip them. Returns true if the vertecies need to be flipped.
+	public static function CheckVertexDirection(v:Array<B2Vec2>):Bool {
+		if(v.length > 2) {
+			var wind:Float = 0;
+			var i:Int = 0;
+			while(wind == 0 && i < (v.length - 2)) {
+				wind = v[i].winding(v[i + 1], v[i + 2]);
+				++i;
+			}
+			if(wind < 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/// If the vertices are in the wrong direction, flips them. Returns true if they were ok to start with, false if they were flipped.
+	public static function EnsureCorrectVertexDirection(v:Array<B2Vec2>):Bool {
+		if(!CheckVertexDirection(v)) {
+			ReverseVertices(v);
+			return false;
+		}
+		return true;
+	}
+	
+	/// Reverses the direction of a V2 vector.
+	public static function ReverseVertices(v:Array<B2Vec2>) {
+		var low:Int = 0;
+		var high:Int = v.length - 1;
+		var tmp:Float;
+		while(high > low) {
+			tmp = v[low].x;
+			v[low].x = v[high].x;
+			v[high].x = tmp;
+			tmp = v[low].y;
+			v[low].y = v[high].y;
+			v[high].y = tmp;
+			++low;
+			--high;
+		}			
+	}
+		
 	public static function getWidth(vertices:Array<B2Vec2>):Float
 	{
 		var minX:Float = 10000000;

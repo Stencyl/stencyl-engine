@@ -393,7 +393,7 @@ class Actor extends Sprite
 		
 		//--
 		
-		addAnim("recyclingDefault", null, 1, 1, 1, 1, 1, [1000], false, []);
+		addAnim("recyclingDefault", null, 1, 1, 1, 1, 1, [1000], false, null);
 			
 		if(bodyDef != null && !isLightweight)
 		{
@@ -569,7 +569,7 @@ class Actor extends Sprite
 		originY:Float = 0,
 		durations:Array<Int>=null, 
 		looping:Bool=true, 
-		shapes:Array<Dynamic>=null
+		shapes:IntHash<B2FixtureDef>=null
 	)
 	{
 		if(shapes != null)
@@ -827,6 +827,8 @@ class Actor extends Sprite
 			currAnimation = newAnimation;
 			
 			addChild(newAnimation);
+			
+			//TODO
 			
 			//TEMP: Origin = Center
 			//originX = Math.floor(newAnimation.width/2);

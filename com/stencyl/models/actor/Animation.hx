@@ -1,6 +1,7 @@
 package com.stencyl.models.actor;
 
 import nme.display.BitmapData;
+import box2D.dynamics.B2FixtureDef;
 
 class Animation
 {
@@ -8,7 +9,7 @@ class Animation
 	public var animName:String;
 	
 	public var parentID:Int;
-	public var shapes:Array<Dynamic>;
+	public var shapes:IntHash<B2FixtureDef>;
 	public var looping:Bool;
 	public var durations:Array<Int>;
 	
@@ -27,7 +28,7 @@ class Animation
 		animID:Int,
 		animName:String,
 		parentID:Int, 
-		shapes:Array<Dynamic>, 
+		shapes:IntHash<B2FixtureDef>, 
 		looping:Bool, 
 		imgData:Dynamic,
 		imgWidth:Int,
