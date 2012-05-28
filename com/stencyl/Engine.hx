@@ -1723,13 +1723,14 @@ class Engine
 			}
 		}
 
+		//TODO
 		/*for each(var r:Region in regions)
 		{
 			if(r == null) continue;
 			r.innerUpdate(true);
 		}*/
 		
-		//collisionPairs = new Dictionary();
+		//collisionPairs = new HashMap<Actor, HashMap<Actor, Array<Dynamic>>>();
 		var disableCollisionList = new Array<Actor>();
 
 		for(a in allActors)
@@ -1782,7 +1783,8 @@ class Engine
 				}
 			}
 		}
-					
+			
+		//NOT NEEDED		
 		/*for(a2 in hudActors)
 		{
 			if(a2 != null && (a2.isLightweight || (a2.body != null && a2.body.isActive())) && !a2.dead && !a2.recycled)
@@ -1793,7 +1795,7 @@ class Engine
 		
 		for(a in disableCollisionList)
 		{
-			if (a != null)
+			if(a != null)
 			{
 				a.handlesCollisions = false;
 			}

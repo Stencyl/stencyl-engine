@@ -24,6 +24,7 @@ import com.stencyl.behavior.BehaviorManager;
 
 import com.stencyl.models.actor.Group;
 import com.stencyl.models.actor.Collision;
+import com.stencyl.models.actor.CollisionPoint;
 import com.stencyl.models.actor.AngleHolder;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.scene.ActorInstance;
@@ -56,6 +57,7 @@ import box2D.dynamics.contacts.B2Contact;
 import box2D.dynamics.contacts.B2ContactEdge;
 import box2D.common.math.B2Vec2;
 import box2D.common.math.B2Transform;
+import box2D.collision.B2WorldManifold;
 
 import com.stencyl.models.collision.Mask;
 import com.stencyl.models.collision.Hitbox;
@@ -1180,28 +1182,28 @@ class Actor extends Sprite
 	
 	private function handleCollisions()
 	{		
-		/*var otherActor:Actor;
-		var otherShape:b2Fixture;
-		var thisShape:b2Fixture;
+		var otherActor:Actor;
+		var otherShape:B2Fixture;
+		var thisShape:B2Fixture;
 				
-		for each(var p:b2Contact in contacts)
+		for(p in contacts)
 		{
-			var a1 = cast(contact.getFixtureA().getUserData(), Actor);
-			var a2 = cast(contact.getFixtureB().getUserData(), Actor);
-			var key:String = String(p._ptr);
+			var a1 = cast(p.getFixtureA().getUserData(), Actor);
+			var a2 = cast(p.getFixtureB().getUserData(), Actor);
+			var key = p.key;
 				
 			if(a1 == this)
 			{
 				otherActor = a2;
-				otherShape = p.GetFixtureB();
-				thisShape = p.GetFixtureA();
+				otherShape = p.getFixtureB();
+				thisShape = p.getFixtureA();
 			}
 			
 			else
 			{
 				otherActor = a1;
-				otherShape = p.GetFixtureA();
-				thisShape = p.GetFixtureB();
+				otherShape = p.getFixtureA();
+				thisShape = p.getFixtureB();
 			}
 							
 			if(collisions.exists(key))
@@ -1218,14 +1220,13 @@ class Actor extends Sprite
 			d.actorA = a1;
 			d.actorB = a2;
 			
-			var manifold:b2WorldManifold = new b2WorldManifold();
-			p.GetWorldManifold(manifold);
+			//TODO: Don't remake this each loop! Is there a side-effect to that?
+			var manifold = new B2WorldManifold();
+			p.getWorldManifold(manifold);
 			
-			var cp:CollisionPoint = new CollisionPoint();
-			cp.point = manifold.GetPoint();
-			cp.normal = manifold.normal;
-			
-			collisions[key] = d;
+			var cp = new CollisionPoint(manifold.getPoint(), manifold.m_normal);
+
+			collisions.set(key, d);
 			
 			if(cp.point != null)
 			{
@@ -1246,15 +1247,15 @@ class Actor extends Sprite
 			d.thisCollidedWithActor = collidedWithActor(otherActor);						
 			d.thisCollidedWithTerrain = collidedWithTerrain(otherActor);				
 			d.thisCollidedWithTile = collidedWithTile(otherActor);
-			d.thisCollidedWithSensor = otherShape.IsSensor();		
+			d.thisCollidedWithSensor = otherShape.isSensor();		
 			
 			d.otherCollidedWithActor = collidedWithActor(this);						
 			d.otherCollidedWithTerrain = collidedWithTerrain(this);				
 			d.otherCollidedWithTile = collidedWithTile(this);
-			d.otherCollidedWithSensor = thisShape.IsSensor();		
+			d.otherCollidedWithSensor = thisShape.isSensor();		
 		}
 		
-		for each(var collision:Collision in collisions)
+		for(collision in collisions)
 		{
 			if (!collision.thisActor.handlesCollisions || !collision.otherActor.handlesCollisions)
 			{
@@ -1263,10 +1264,13 @@ class Actor extends Sprite
 			
 			lastCollided = collision.otherActor;
 			Engine.invokeListeners2(collisionListeners, collision);
-			game.handleCollision(this, collision);	
+			
+			//TODO
+			//engine.handleCollision(this, collision);	
 		}
 		
-		contacts = new Dictionary();*/
+		//TODO: Can we avoid remaking this?
+		contacts = new IntHash<B2Contact>();
 	}
 	
 	public function collidedFromBottom(c:B2Contact, normal:B2Vec2):Bool

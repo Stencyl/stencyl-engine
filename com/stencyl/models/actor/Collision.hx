@@ -28,7 +28,7 @@ class Collision
 	public var otherCollidedWithSensor:Bool;
 	public var otherCollidedWithTerrain:Bool;
 
-	public var points:Array<B2Vec2>;
+	public var points:Array<CollisionPoint>;
 	
 	public var thisActor:Actor;
 	public var otherActor:Actor;
@@ -41,7 +41,7 @@ class Collision
 	
 	public function new()
 	{
-		points = new Array<B2Vec2>();
+		points = new Array<CollisionPoint>();
 		
 		thisFromTop = false;
 		thisFromLeft = false;
