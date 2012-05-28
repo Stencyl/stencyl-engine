@@ -44,12 +44,11 @@ class ActorTypeReader implements AbstractReader
 			bodyDef.type = B2Body.b2_dynamicBody;
 		}
 		
-		//TODO
-		/*bodyDef.linearDamping = Std.parseFloat(xml.att.ldamp);
+		bodyDef.linearDamping = Std.parseFloat(xml.att.ldamp);
 		bodyDef.angularDamping = Std.parseFloat(xml.att.adamp);
 		
 		bodyDef.friction = Std.parseFloat(xml.att.fric);
-		bodyDef.bounciness = Std.parseFloat(ml.att.rest);
+		bodyDef.bounciness = Std.parseFloat(xml.att.rest);
 		bodyDef.mass = Std.parseFloat(xml.att.mass);
 		bodyDef.aMass = Std.parseFloat(xml.att.inertia);
 		
@@ -58,7 +57,7 @@ class ActorTypeReader implements AbstractReader
 		bodyDef.allowSleep = false;
 		bodyDef.awake = true;
 		bodyDef.ignoreGravity = Utils.toBoolean(xml.att.ignoreg);
-		bodyDef.bullet = Utils.toBoolean(xml.att.continuous);*/
+		bodyDef.bullet = Utils.toBoolean(xml.att.continuous);
 
 		var spriteID:Int = Std.parseInt(xml.att.sprite);
 		var groupID:Int = Std.parseInt(xml.att.gid);
@@ -80,7 +79,7 @@ class ActorTypeReader implements AbstractReader
 			}
 		}
 			
-		return new ActorType(ID, name, groupID, spriteID, behaviorValues, null, isLightweight, autoScale, pausable);
+		return new ActorType(ID, name, groupID, spriteID, behaviorValues, bodyDef, isLightweight, autoScale, pausable);
 	}
 	
 	public static function readBehaviors(xml:Fast):Hash<BehaviorInstance>

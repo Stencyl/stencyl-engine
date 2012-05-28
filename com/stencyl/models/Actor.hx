@@ -340,6 +340,10 @@ class Actor extends Sprite
 		
 		groupsToCollideWith = GameModel.get().groupsCollidesWith.get(groupID);
 		
+		collisions = new Hash<Collision>();
+		contacts = new Hash<B2Contact>();
+		regionContacts = new Hash<B2Contact>();
+		
 		//---
 		
 		behaviors = new BehaviorManager();
@@ -386,15 +390,13 @@ class Actor extends Sprite
 						defaultAnim = a.animName;
 					}
 				}
-				
-				switchAnimation(defaultAnim);
 			}
 		}
 		
 		//--
 		
 		addAnim("recyclingDefault", null, 1, 1, 1, 1, 1, [1000], false, null);
-			
+
 		if(bodyDef != null && !isLightweight)
 		{
 			if(bodyDef.bullet)
@@ -828,7 +830,104 @@ class Actor extends Sprite
 			
 			addChild(newAnimation);
 			
-			//TODO
+			//----------------
+			
+			//var animOrigin:V2 = originMap[name];		
+			
+			updateTweenProperties();
+			
+			//var centerx = (currSprite.width / 2) - animOrigin.x;
+			//var centery = (currSprite.height / 2) - animOrigin.y;
+			
+			if(body != null && !isLightweight)
+			{
+				//Remember regions
+				var regions = new Array<Region>();
+			
+				//BEGIN EXPLICIT ENDCONTACT HACK
+				//SECRET/showthread.php?tid=9564
+				var contact = body.getContactList();
+				
+				while(contact != null)
+				{
+					if(Std.is(contact.other.getUserData(), Region) && contact.contact.isTouching())
+					{
+						regions.push(contact.other.getUserData());
+					}
+					
+					Engine.engine.world.m_contactManager.m_contactListener.endContact(contact.contact);
+					contact = contact.next;
+				}
+				
+				//Catch any residual contacts.
+				//SECRET/showthread.php?tid=9773&page=3
+				for(k in collisions.keys()) 
+				{
+					collisions.remove(k);
+				}
+				
+				collisions = new Hash<Collision>();
+				contacts = new Hash<B2Contact>();
+				regionContacts = new Hash<B2Contact>();
+				//END HACK
+
+				while(body.m_fixtureCount > 0)
+				{			
+					body.DestroyFixture(body.getFixtureList());
+				}
+				
+				for(f in cast(shapeMap.get(name), Array<Dynamic>))
+				{
+					var originFixDef = new B2FixtureDef();
+					
+					originFixDef.density = f.density;						
+					originFixDef.isSensor = f.isSensor;
+					originFixDef.groupID = f.groupID;
+					originFixDef.shape = f.shape;
+
+					//TODO: Origin point junk goes here
+					
+					var fix = body.createFixture(originFixDef);
+					fix.SetUserData(this);	
+				}
+				
+				if(body.getFixtureList() != null)
+				{
+					//bodyScale.x = 1;
+					//bodyScale.y = 1;
+			
+					for(r in regions)
+					{
+						var mine = body.getFixtureList().m_aabb;
+						var other = r.getBody().getFixtureList().m_aabb;
+						
+						if(other.testOverlap(mine))
+						{
+							r.addActor(this);
+						}
+					}
+				}
+				
+				if(md != null)
+				{
+					body.setMassData(md);
+				}
+			}	
+			
+			//Origin setter
+			/*if(animOrigin != null)
+			{	
+				setOriginPoint(animOrigin.x, animOrigin.y);				
+			}*/
+			
+			//----------------
+			
+			if(Std.is(currAnimation, AbstractAnimation))
+			{
+				cast(currAnimation, AbstractAnimation).reset();
+			}
+			
+			//----------------
 			
 			//TEMP: Origin = Center
 			//originX = Math.floor(newAnimation.width/2);

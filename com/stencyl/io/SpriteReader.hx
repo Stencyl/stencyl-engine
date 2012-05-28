@@ -202,6 +202,7 @@ class SpriteReader implements AbstractReader
 							
 			w = x1 - x0;
 			h = y1 - y0;
+			
 			var xDiff:Float = x0 - Engine.toPixelUnits(xOffset);
 			var yDiff:Float = y0 - Engine.toPixelUnits(yOffset);
 
@@ -241,6 +242,7 @@ class SpriteReader implements AbstractReader
 					var vY:Float = Engine.toPhysicalUnits(Std.parseFloat(params[i + 1]) - hh  - y0 + yDiff);
 					vertices[vIndex] = new B2Vec2(vX, vY);
 				}
+				
 				else
 				{
 					vertices[vIndex] = new B2Vec2(Engine.toPhysicalUnits(Std.parseFloat(params[i]) - hw) - x0, 
