@@ -8,13 +8,13 @@ class Wireframe
 	public var x:Float;
 	public var y:Float;
 	
-	public var shape:B2Shape;
+	public var shape:Dynamic; //Usually an array of B2PolygonShapes
 	public var shape2:Mask;
 	
 	public var width:Float;
 	public var height:Float;
 	
-	public function new(x:Float, y:Float, width:Float, height:Float, shape:B2Shape, shape2:Mask)
+	public function new(x:Float, y:Float, width:Float, height:Float, shape:Dynamic, shape2:Mask)
 	{
 		this.x = x;
 		this.y = y;

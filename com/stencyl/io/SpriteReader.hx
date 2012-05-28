@@ -7,6 +7,10 @@ import com.stencyl.models.Resource;
 import com.stencyl.models.actor.Sprite;
 import com.stencyl.models.actor.Animation;
 
+import box2D.common.math.B2Vec2;
+import box2D.collision.shapes.B2EdgeShape;
+import box2D.collision.shapes.B2PolygonShape;
+
 class SpriteReader implements AbstractReader
 {
 	public function new() 
@@ -130,14 +134,14 @@ class SpriteReader implements AbstractReader
 		return shapes;
 	}*/
 	
-	/*public static function createShape(type:String, params:Array, xOffset:Number=0, yOffset:Number=0, imgWidth:Number=-1, imgHeight:Number=-1):b2Shape
+	public static function createShape(type:String, params:Array<String>, xOffset:Float=0, yOffset:Float=0, imgWidth:Float=-1, imgHeight:Float=-1):Dynamic
 	{
-		var x:Number = 0;
-		var y:Number = 0;
-		var w:Number = 0;
-		var h:Number = 0;
+		var x:Float = 0;
+		var y:Float = 0;
+		var w:Float = 0;
+		var h:Float = 0;
 		
-		if(type == "circle")
+		/*if(type == "circle")
 		{
 			var radius:Number = params[0];
 			x = params[1];
@@ -250,18 +254,17 @@ class SpriteReader implements AbstractReader
 			return p;
 		}
 		
-		else if(type == "wireframe")
+		else*/ if(type == "wireframe")
 		{
-			var polyline:b2LoopShape = new b2LoopShape();
-			var vertices:Vector.<V2> = new Vector.<V2>();
+			var vertices:Array<B2Vec2> = new Array<B2Vec2>();
 			
-			var numVertices2:Number = params[0];
-			var vIndex2:Number = 0;
-			var i2:Number = 1;
+			var numVertices2 = Std.parseFloat(params[0]);
+			var vIndex2 = 0;
+			var i2 = 1;
 			
 			while(vIndex2 < numVertices2)
 			{
-				vertices.push(new V2(GameState.toPhysicalUnits(params[i2]), GameState.toPhysicalUnits(params[i2 + 1])));
+				vertices.push(new B2Vec2(Engine.toPhysicalUnits(Std.parseFloat(params[i2])), Engine.toPhysicalUnits(Std.parseFloat(params[i2 + 1]))));
 				vIndex2++;
 				i2 += 2;
 			}
@@ -269,24 +272,26 @@ class SpriteReader implements AbstractReader
 			w = getWidth(vertices);
 			h = getHeight(vertices);
 			
-			//Now pass through again and shift by a half dimension
-			for each(var v:V2 in vertices)
-			{
-				v.x = v.x + GameState.toPhysicalUnits(xOffset);
-				v.y = v.y + GameState.toPhysicalUnits(yOffset);
-			}
+			var arr = new Array<Dynamic>();
 
-			polyline.m_vertices = vertices;
-			polyline.width = w;
-			polyline.height = h;
+			for(i in 0...vertices.length + 1)
+			{
+				var poly = B2PolygonShape.asEdge(vertices[i%vertices.length], vertices[(i+1)%vertices.length]);
+				arr.push(poly);
+			}
 			
-			return polyline;				
+			var toReturn = new IntHash<Dynamic>();
+			toReturn.set(0, arr);
+			toReturn.set(1, w);
+			toReturn.set(2, h);
+			
+			return toReturn;				
 		}
 		
 		return null;
 	}
 	
-	public static function decomposeShape(params:Array):Vector.<b2PolygonShape>
+	/*public static function decomposeShape(params:Array):Vector.<b2PolygonShape>
 	{
 		var vlist:Vector.<Number> = new Vector.<Number>();
 		var numVertices:Number = params[0];
@@ -304,14 +309,14 @@ class SpriteReader implements AbstractReader
 		var pshapes:Vector.<b2PolygonShape> = b2PolygonShape.Decompose(vlist);
 		
 		return pshapes;
-	}
+	}*/
 	
-	public static function getWidth(m_vertices:Vector.<V2>):Number
+	public static function getWidth(vertices:Array<B2Vec2>):Float
 	{
-		var minX:Number = int.MAX_VALUE;
-		var maxX:Number = 0;
+		var minX:Float = 10000000;
+		var maxX:Float = 0;
 		
-		for each(var v:V2 in m_vertices)
+		for(v in vertices)
 		{
 			minX = Math.min(minX, v.x);
 			maxX = Math.max(maxX, v.x);
@@ -320,17 +325,17 @@ class SpriteReader implements AbstractReader
 		return maxX - minX;
 	}
 	
-	public static function getHeight(m_vertices:Vector.<V2>):Number
+	public static function getHeight(vertices:Array<B2Vec2>):Float
 	{
-		var minY:Number = int.MAX_VALUE;
-		var maxY:Number = 0;
+		var minY:Float = 10000000;
+		var maxY:Float = 0;
 		
-		for each(var v:V2 in m_vertices)
+		for(v in vertices)
 		{
 			minY = Math.min(minY, v.y);
 			maxY = Math.max(maxY, v.y);
 		}
 		
 		return maxY - minY;
-	}*/
+	}
 }

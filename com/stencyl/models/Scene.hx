@@ -2,6 +2,7 @@ package com.stencyl.models;
 
 import com.stencyl.io.BackgroundReader;
 import com.stencyl.io.ActorTypeReader;
+import com.stencyl.io.SpriteReader;
 
 import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.Tileset;
@@ -16,6 +17,7 @@ import com.stencyl.behavior.BehaviorInstance;
 
 import nme.geom.Point;
 import box2D.collision.shapes.B2EdgeShape;
+import box2D.collision.shapes.B2PolygonShape;
 
 import haxe.xml.Fast;
 import com.stencyl.utils.Utils;
@@ -583,6 +585,7 @@ class Scene
 			var shapeType:String = "wireframe";
 			var shapeParams:Array<String> = e.att.pts.split(",");
 						
+			//TODO: Does not work
 			if(Engine.NO_PHYSICS)
 			{
 				/*var points = new Array<Point>();
@@ -615,7 +618,7 @@ class Scene
 			
 			else
 			{
-				var shape:B2EdgeShape = null; //SpriteReader.createShape(shapeType, shapeParams, x, y) as b2LoopShape;
+				var shapeData = cast(SpriteReader.createShape(shapeType, shapeParams, x, y), IntHash<Dynamic>);
 			
 				map.push
 				(
@@ -623,12 +626,12 @@ class Scene
 					(
 						Engine.toPhysicalUnits(x), 
 						Engine.toPhysicalUnits(y), 
-						0, //shape.width, 
-						0, //shape.height,
-						shape,
+						shapeData.get(1), 
+						shapeData.get(2),
+						shapeData.get(0),
 						null
 					)
-				);
+				);		
 			}
 		}
 		

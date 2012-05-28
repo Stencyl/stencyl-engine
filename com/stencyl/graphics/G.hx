@@ -102,8 +102,17 @@ class G
 	
 	public inline function translateToActor(a:Actor)
 	{
-		x = a.x;// - a.width * (a.scaleX - 1) / 2;
-		y = a.y;// - a.height * (a.scaleY - 1) / 2;
+		if(Engine.NO_PHYSICS)
+		{
+			x = a.x;// - a.width * (a.scaleX - 1) / 2;
+			y = a.y;// - a.height * (a.scaleY - 1) / 2;
+		}
+		
+		else
+		{
+			x = a.x - a.width / 2;
+			y = a.y - a.height / 2;
+		}
 	}
 	
 	public inline function drawString(s:String, x:Float, y:Float)

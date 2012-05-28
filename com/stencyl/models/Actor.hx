@@ -28,6 +28,7 @@ import com.stencyl.models.actor.AngleHolder;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.actor.Animation;
+import com.stencyl.models.GameModel;
 
 import com.stencyl.utils.Utils;
 import com.stencyl.utils.HashMap;
@@ -650,7 +651,7 @@ class Actor extends Sprite
 		body = Engine.engine.world.createBody(bodyDef);
 	}
 
-	private function initBody(groupID:Int, isSensor:Bool, isStationary:Bool, isKinematic:Bool, canRotate:Bool, shape:B2Shape)
+	private function initBody(groupID:Int, isSensor:Bool, isStationary:Bool, isKinematic:Bool, canRotate:Bool, shape:Dynamic)
 	{			
 		var bodyDef:B2BodyDef = new B2BodyDef();
 		
@@ -676,19 +677,44 @@ class Actor extends Sprite
 		{
 			bodyDef.type = B2Body.b2_dynamicBody;
 		}
+		
+		if(Std.is(shape, Array))
+		{
+			bodyDef.userData = this;
+			body = Engine.engine.world.createBody(bodyDef);			
+				
+			var arr:Array<Dynamic> = cast(shape, Array<Dynamic>);
+		
+			for(item in arr)
+			{
+				var fixtureDef:B2FixtureDef = new B2FixtureDef();
+				fixtureDef.shape = item;
+				fixtureDef.friction = 1.0;
+				fixtureDef.density = 0.1;
+				fixtureDef.restitution = 0;
+				fixtureDef.isSensor = false;
+				fixtureDef.groupID = GameModel.TERRAIN_ID;
+				fixtureDef.userData = this;
+							
+				body.createFixture(fixtureDef);
+			}
+		}
 
-		var fixtureDef:B2FixtureDef = new B2FixtureDef();
-		fixtureDef.shape = shape;
-		fixtureDef.friction = 1.0;
-		fixtureDef.density = 0.1;
-		fixtureDef.restitution = 0;
-		fixtureDef.isSensor = isSensor;
-		fixtureDef.groupID = -1000;
-		fixtureDef.userData = this;
-					
-		bodyDef.userData = this;
-		body = Engine.engine.world.createBody(bodyDef);			
-		body.createFixture(fixtureDef);
+		else
+		{
+			var fixtureDef:B2FixtureDef = new B2FixtureDef();
+			fixtureDef.shape = shape;
+			fixtureDef.friction = 1.0;
+			fixtureDef.density = 0.1;
+			fixtureDef.restitution = 0;
+			fixtureDef.isSensor = isSensor;
+			fixtureDef.groupID = -1000;
+			fixtureDef.userData = this;
+						
+			bodyDef.userData = this;
+			body = Engine.engine.world.createBody(bodyDef);			
+			body.createFixture(fixtureDef);
+		}
 
 		this.bodyDef = bodyDef;
 	}   	

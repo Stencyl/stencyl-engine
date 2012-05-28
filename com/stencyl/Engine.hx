@@ -834,13 +834,13 @@ class Engine
 	{				
 		initLayers();
 		
-		/*for(wireframe in scene.wireframes)
+		for(wireframe in scene.wireframes)
 		{
 			var a:Actor = null;
 			
 			if(NO_PHYSICS)
 			{
-				var p = cast(wireframe.shape2, Polygon);
+				/*var p = cast(wireframe.shape2, Polygon);
 				p.updateDimensions();
 
 				a = new Actor
@@ -862,7 +862,9 @@ class Engine
 					false,
 					false, 
 					wireframe.shape2
-				);
+				);*/
+				
+				//master.addChild(a);
 			}
 			
 			else
@@ -893,9 +895,8 @@ class Engine
 			a.typeID = -1;
 			a.visible = false;
 			
-			getGroup(GameModel.TERRAIN_ID).list.set(a, a);
-			//master.addChild(a);
-		}*/
+			getGroup(GameModel.TERRAIN_ID).list.set(a, a);	
+		}
 	}
 	
 	//This is mainly to establish mappings and figure out top, middle, bottom
