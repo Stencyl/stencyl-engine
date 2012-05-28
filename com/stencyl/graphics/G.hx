@@ -104,8 +104,8 @@ class G
 	{
 		if(Engine.NO_PHYSICS)
 		{
-			x = a.x;// - a.width * (a.scaleX - 1) / 2;
-			y = a.y;// - a.height * (a.scaleY - 1) / 2;
+			x = a.x - a.width / 2;
+			y = a.y - a.height / 2;
 		}
 		
 		else

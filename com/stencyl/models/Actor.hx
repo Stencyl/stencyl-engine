@@ -886,8 +886,9 @@ class Actor extends Sprite
 			return;
 		}
 		
+		//TODO: Actor now off by half in no-physics mode :(	
 		if(isLightweight)
-		{
+		{		
 			moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);
 			
 			this.rotation += elapsedTime * rSpeed;
