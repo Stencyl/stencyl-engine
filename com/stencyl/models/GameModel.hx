@@ -73,8 +73,8 @@ class GameModel
 		collisionGroups = readCollisionGroups(xml.node.cgroups.elements);
 		
 		//Should we?
-		//collisionGroups.push(new CollisionGroupDef(PLAYER_ID, TERRAIN_ID));
-		//collisionGroups.push(new CollisionGroupDef(ACTOR_ID, TERRAIN_ID));
+		collisionGroups.push(new CollisionGroupDef(PLAYER_ID, TERRAIN_ID));
+		collisionGroups.push(new CollisionGroupDef(ACTOR_ID, TERRAIN_ID));
 		
 		collisionMap = new Array<Array<Bool>>();
 		
@@ -105,6 +105,8 @@ class GameModel
 			
 			collisionMap[g1][g2] = true;
 			collisionMap[g2][g1] = true;
+			
+			trace(g1 + " - " + g2);
 		
 			groupsCollidesWith.get(g1).push(g2);
 			groupsCollidesWith.get(g2).push(g1);

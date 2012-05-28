@@ -886,11 +886,24 @@ class Actor extends Sprite
 				{
 					var originFixDef = new B2FixtureDef();
 					
+					if(bodyDef.friction < Utils.NUMBER_MAX_VALUE)
+					{
+						originFixDef.friction = bodyDef.friction;
+						originFixDef.restitution = bodyDef.bounciness;							
+						
+						if(bodyDef.mass > 0)
+						{
+							originFixDef.density = 0.1;//bodyDef.mass;
+						}
+					}
+					
 					originFixDef.density = f.density;						
 					originFixDef.isSensor = f.isSensor;
 					originFixDef.groupID = f.groupID;
 					originFixDef.shape = f.shape;
 
+
+					trace(f.isSensor);
 					//TODO: Origin point junk goes here
 					
 					var fix = body.createFixture(originFixDef);
