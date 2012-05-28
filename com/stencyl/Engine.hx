@@ -648,6 +648,7 @@ class Engine
 		debugDrawer = new B2DebugDraw();
 		debugDrawer.setSprite(debugLayer);
 		debugDrawer.setDrawScale(10);
+		debugDrawer.setFillAlpha(0);
 		debugDrawer.setFlags(B2DebugDraw.e_shapeBit);
 		world.setDebugDraw(debugDrawer);
 	}
