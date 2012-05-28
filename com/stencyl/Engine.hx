@@ -638,13 +638,12 @@ class Engine
 		B2World.m_continuousPhysics = false;
 		B2World.m_warmStarting = true;
 		
-		//Cusotmization TODO
-		/*var aabb:B2AABB = new B2AABB();
+		var aabb:B2AABB = new B2AABB();
 		aabb.lowerBound.x = 0;
 		aabb.lowerBound.y = 0;
 		aabb.upperBound.x = Engine.screenWidth / physicsScale;
 		aabb.upperBound.y = Engine.screenHeight / physicsScale;
-		world.SetScreenBounds(aabb);*/
+		world.setScreenBounds(aabb);
 		
 		debugDrawer = new B2DebugDraw();
 		debugDrawer.setSprite(debugLayer);
@@ -1646,13 +1645,14 @@ class Engine
 			return;
 		}
 		
-		//TODO: This is inefficient to recalculate each frame.
-		/*var aabb:AABB = world.GetScreenBounds();
-		aabb.lowerBound.x = (Math.abs(FlxG.scroll.x) - left) / physicsScale;
-		aabb.lowerBound.y = (Math.abs(FlxG.scroll.y) - top) / physicsScale;
-		aabb.upperBound.x = aabb.lowerBound.x + ((FlxG.width + right + left) / physicsScale);
-		aabb.upperBound.y = aabb.lowerBound.y + ((FlxG.height + bottom + top) / physicsScale);
-		world.SetScreenBounds(aabb);*/
+		if(!NO_PHYSICS)
+		{
+			var aabb = world.getScreenBounds();
+			aabb.lowerBound.x = (Math.abs(cameraX) - paddingLeft) / physicsScale;
+			aabb.lowerBound.y = (Math.abs(cameraY) - paddingTop) / physicsScale;
+			aabb.upperBound.x = aabb.lowerBound.x + ((Engine.screenWidth + paddingRight + paddingLeft) / physicsScale);
+			aabb.upperBound.y = aabb.lowerBound.y + ((Engine.screenHeight + paddingBottom + paddingTop) / physicsScale);
+		}
 				
 		if(Input.mousePressed)
 		{
