@@ -1185,6 +1185,7 @@ class Actor extends Sprite
 		var otherActor:Actor;
 		var otherShape:B2Fixture;
 		var thisShape:B2Fixture;
+		//var manifold = new B2WorldManifold();
 				
 		for(p in contacts)
 		{
@@ -1389,7 +1390,7 @@ class Actor extends Sprite
 		{
 			contacts.set(point.key, point);
 			collisions.remove(point.key);
-		}			
+		}
 	}
 	
 	public inline function removeContact(point:B2Contact)
