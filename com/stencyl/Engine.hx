@@ -67,6 +67,10 @@ import box2D.common.math.B2Vec2;
 import box2D.dynamics.joints.B2Joint;
 import box2D.dynamics.joints.B2DistanceJoint;
 import box2D.dynamics.joints.B2DistanceJointDef;
+import box2D.dynamics.joints.B2RevoluteJoint;
+import box2D.dynamics.joints.B2RevoluteJointDef;
+import box2D.dynamics.joints.B2LineJoint;
+import box2D.dynamics.joints.B2LineJointDef;
 import box2D.dynamics.B2DebugDraw;
 import box2D.dynamics.B2Body;
 import box2D.collision.B2AABB;
@@ -2638,20 +2642,20 @@ class Engine
 	
 	//---
 	
-	/*public function createHingeJoint
+	public function createHingeJoint
 	(
-		one:b2Body, 
-		two:b2Body = null, 
-		pt:V2 = null, 
-		jointID:int = -1,
-		collide:Boolean = false, 
-		limit:Boolean = false, 
-		motor:Boolean = false, 
-		lower:Number = 0, 
-		upper:Number = 0, 
-		torque:Number = 0, 
-		speed:Number = 0
-	):b2RevoluteJoint
+		one:B2Body, 
+		two:B2Body = null, 
+		pt:B2Vec2 = null, 
+		jointID:Int = -1,
+		collide:Bool = false, 
+		limit:Bool = false, 
+		motor:Bool = false, 
+		lower:Float = 0, 
+		upper:Float = 0, 
+		torque:Float = 0, 
+		speed:Float = 0
+	):B2RevoluteJoint
 	{
 		if(two == null)
 		{
@@ -2660,19 +2664,19 @@ class Engine
 		
 		if(pt == null)
 		{
-			pt = one.GetLocalCenter();
+			pt = one.getLocalCenter();
 		}
 	
-		var jd:b2RevoluteJointDef = new b2RevoluteJointDef();
+		var jd = new B2RevoluteJointDef();
 		
 		jd.bodyA = one;
 		jd.bodyB = two;
 		
-		pt.x = GameState.toPhysicalUnits(pt.x);
-		pt.y = GameState.toPhysicalUnits(pt.y);
+		pt.x = Engine.toPhysicalUnits(pt.x);
+		pt.y = Engine.toPhysicalUnits(pt.y);
 		
-		jd.localAnchorA.v2 = pt;
-		jd.localAnchorB.v2 = two.GetLocalPoint(one.GetWorldPoint(pt));
+		jd.localAnchorA = pt;
+		jd.localAnchorB = two.getLocalPoint(one.getWorldPoint(pt));
 		jd.collideConnected = collide;
 		jd.enableLimit = limit;
 		jd.enableMotor = motor;
@@ -2681,7 +2685,7 @@ class Engine
 		jd.maxMotorTorque = torque;
 		jd.motorSpeed = speed;
 		
-		var toReturn:b2Joint = world.CreateJoint(jd);
+		var toReturn = world.createJoint(jd);
 		
 		if(jointID == -1)
 		{
@@ -2690,16 +2694,16 @@ class Engine
 			
 		else
 		{
-			joints[jointID] = toReturn;
+			joints.set(jointID, toReturn);
 			toReturn.ID = jointID;
 		}
 		
-		return toReturn as b2RevoluteJoint;
+		return cast(toReturn, B2RevoluteJoint);
 	}
 	
 	//---
 											
-	public function createSlidingJoint
+	/*public function createSlidingJoint
 	(
 		one:b2Body, 
 		two:b2Body = null, 
