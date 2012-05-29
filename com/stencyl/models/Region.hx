@@ -61,7 +61,7 @@ class Region extends Actor
 		var lowerYBound:Float = 0;
 		var upperYBound:Float = 0;
 		
-		if(Std.is(shape, B2PolygonShape))
+		if(Std.is(shapes[0], B2PolygonShape))
 		{
 			isCircle = false;
 			var trans = new B2Transform();
@@ -69,7 +69,7 @@ class Region extends Actor
 			
 			var aabb = new B2AABB();
 			
-			cast(shape, B2PolygonShape).computeAABB(aabb, trans);
+			cast(shapes[0], B2PolygonShape).computeAABB(aabb, trans);
 			
 			lowerXBound = aabb.lowerBound.x;
 			upperXBound = aabb.upperBound.x;
@@ -100,7 +100,7 @@ class Region extends Actor
 			originalHeight = regionHeight = Math.round(Engine.toPixelUnits(Math.abs(lowerYBound - upperYBound)));
 		}
 			
-		else if(Std.is(shape, B2CircleShape))
+		else if(Std.is(shapes[0], B2CircleShape))
 		{
 			isCircle = true;
 			
