@@ -2703,20 +2703,20 @@ class Engine
 	
 	//---
 											
-	/*public function createSlidingJoint
+	public function createSlidingJoint
 	(
-		one:b2Body, 
-		two:b2Body = null, 
-		dir:V2 = null, 
-		jointID:int = -1,
-		collide:Boolean = false, 
-		limit:Boolean = false, 
-		motor:Boolean = false, 
-		lower:Number = 0, 
-		upper:Number = 0, 
-		force:Number = 0, 
-		speed:Number = 0
-	):b2LineJoint
+		one:B2Body, 
+		two:B2Body = null, 
+		dir:B2Vec2 = null, 
+		jointID:Int = -1,
+		collide:Bool = false, 
+		limit:Bool = false, 
+		motor:Bool = false, 
+		lower:Float = 0, 
+		upper:Float = 0, 
+		force:Float = 0, 
+		speed:Float = 0
+	):B2LineJoint
 	{
 		if(two == null)
 		{
@@ -2725,37 +2725,37 @@ class Engine
 		
 		if(dir == null)
 		{
-			dir = new V2(1, 0);
+			dir = new B2Vec2(1, 0);
 		}
 	
 		dir.normalize();
 		
-		var pt1:V2 = one.GetWorldCenter();
-		var pt2:V2 = two.GetWorldCenter();
+		var pt1 = one.getWorldCenter();
+		var pt2 = two.getWorldCenter();
 		
 		//Static body
-		if(one.GetType() == 0)
+		if(one.getType() == 0)
 		{
-			if((one.GetUserData() as Actor) != null)
+			if(cast(one.getUserData(), Actor) != null)
 			{
-				pt1.x = (one.GetUserData() as Actor).getPhysicsWidth() / 2;
-				pt1.y = (one.GetUserData() as Actor).getPhysicsHeight() / 2;
-				pt1 = one.GetWorldPoint(pt1);	
+				pt1.x = cast(one.getUserData(), Actor).getPhysicsWidth() / 2;
+				pt1.y = cast(one.getUserData(), Actor).getPhysicsHeight() / 2;
+				pt1 = one.getWorldPoint(pt1);	
 			}
 		}
 		
-		if(two.GetType() == 0)
+		if(two.getType() == 0)
 		{
-			if((two.GetUserData() as Actor) != null)
+			if(cast(two.getUserData(), Actor) != null)
 			{
-				pt2.x = (two.GetUserData() as Actor).getPhysicsWidth() / 2;
-				pt2.y = (two.GetUserData() as Actor).getPhysicsHeight() / 2;
-				pt2 = two.GetWorldPoint(pt2);	
+				pt2.x = cast(two.getUserData(), Actor).getPhysicsWidth() / 2;
+				pt2.y = cast(two.getUserData(), Actor).getPhysicsHeight() / 2;
+				pt2 = two.getWorldPoint(pt2);	
 			}
 		}
 		
-		var pjd:b2LineJointDef = new b2LineJointDef();
-		pjd.Initialize(one, two, pt1, dir);
+		var pjd = new B2LineJointDef();
+		pjd.initialize(one, two, pt1, dir);
 
 		pjd.collideConnected = collide;
 		pjd.enableLimit = limit;
@@ -2765,7 +2765,7 @@ class Engine
 		pjd.maxMotorForce = force;
 		pjd.motorSpeed = toPhysicalUnits(speed);
 		
-		var toReturn:b2Joint = world.CreateJoint(pjd);
+		var toReturn = world.createJoint(pjd);
 		
 		if(jointID == -1)
 		{
@@ -2774,12 +2774,12 @@ class Engine
 			
 		else
 		{
-			joints[jointID] = toReturn;
+			joints.set(jointID, toReturn);
 			toReturn.ID = jointID;
 		}
 		
-		return toReturn as b2LineJoint;
-	}*/
+		return cast(toReturn, B2LineJoint);
+	}
 			
 	//*-----------------------------------------------
 	//* Regions
