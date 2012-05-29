@@ -724,19 +724,19 @@ class Engine
 	{						
 		terrainRegions = new IntHash<Terrain>();
 		
-		/*for each(var t:TerrainRegionDef in scene.terrainRegions)
+		for(r in scene.terrainRegions)
 		{
-			var terrainRegion:TerrainRegion = new TerrainRegion(this, t.x, t.y, t.shapes, t.groupID,t.fillColor);
-			terrainRegion.name = t.name;
+			var region = new Terrain(this, r.x, r.y, r.shapes, r.groupID, r.fillColor);
+			region.name = r.name;
 			
-			terrainRegion.setX(GameState.toPixelUnits(t.x) + (terrainRegion.width / 2));
-			terrainRegion.setY(GameState.toPixelUnits(t.y) + (terrainRegion.height / 2));
+			region.setX(Engine.toPixelUnits(r.x) + (region.regionWidth / 2));
+			region.setY(Engine.toPixelUnits(r.y) + (region.regionHeight / 2));
 			
-			terrainRegion.ID = t.ID;
+			region.ID = r.ID;
 			
-			add(terrainRegion);
-			terrainRegions[t.ID] = terrainRegion;
-		}*/
+			addTerrainRegion(region);
+			terrainRegions.set(r.ID, region);
+		}
 	}
 			
 	private function loadJoints()
@@ -2792,8 +2792,8 @@ class Engine
 		
 		if(offset)
 		{
-			region.setX(Engine.toPixelUnits(x) + region.width / 2);
-			region.setY(Engine.toPixelUnits(y) + region.height / 2);
+			region.setX(Engine.toPixelUnits(x) + region.regionWidth / 2);
+			region.setY(Engine.toPixelUnits(y) + region.regionHeight / 2);
 		}
 		
 		addRegion(region);
@@ -2884,84 +2884,83 @@ class Engine
 	//* Terrain Regions
 	//*-----------------------------------------------
 	
-	/*private function createTerrainRegion(x:Number, y:Number, shape:b2Shape, offset:Boolean=false, groupID:int = 1):TerrainRegion
+	private function createTerrainRegion(x:Float, y:Float, shape:B2Shape, offset:Bool=false, groupID:Int = 1):Terrain
 	{
-		var shapeList:Array = new Array(shape);
-		var terrainRegion:TerrainRegion = new TerrainRegion(this, x, y, shapeList, groupID);
+		var shapeList = new Array<B2Shape>();
+		shapeList.push(shape);
+		var region = new Terrain(this, x, y, shapeList, groupID);
 		
 		if(offset)
 		{
-			terrainRegion.setX(GameState.toPixelUnits(x) + terrainRegion.width / 2);
-			terrainRegion.setY(GameState.toPixelUnits(y) + terrainRegion.height / 2);
+			region.setX(Engine.toPixelUnits(x) + region.regionWidth / 2);
+			region.setY(Engine.toPixelUnits(y) + region.regionHeight / 2);
 		}
 		
-		addTerrainRegion(terrainRegion);
-		return terrainRegion;
+		addTerrainRegion(region);
+		return region;
 	}
 	
-	public function createBoxTerrainRegion(x:Number, y:Number, w:Number, h:Number, groupID:int=1):TerrainRegion
+	public function createBoxTerrainRegion(x:Float, y:Float, w:Float, h:Float, groupID:Int=1):Terrain
 	{
-		x = GameState.toPhysicalUnits(x);
-		y = GameState.toPhysicalUnits(y);
-		w = GameState.toPhysicalUnits(w);
-		h = GameState.toPhysicalUnits(h);
+		x = Engine.toPhysicalUnits(x);
+		y = Engine.toPhysicalUnits(y);
+		w = Engine.toPhysicalUnits(w);
+		h = Engine.toPhysicalUnits(h);
 	
-		var p:b2PolygonShape = new b2PolygonShape();
-		p.SetAsBox(w/2, h/2);
+		var p = new B2PolygonShape();
+		p.setAsBox(w/2, h/2);
 		
 		return createTerrainRegion(x, y, p, true, groupID);
 	}
 	
-	public function createCircularTerrainRegion(x:Number, y:Number, r:Number, groupID:int = 1):TerrainRegion
+	public function createCircularTerrainRegion(x:Float, y:Float, r:Float, groupID:Int = 1):Terrain
 	{
-		x = GameState.toPhysicalUnits(x);
-		y = GameState.toPhysicalUnits(y);
-		r = GameState.toPhysicalUnits(r);
+		x = Engine.toPhysicalUnits(x);
+		y = Engine.toPhysicalUnits(y);
+		r = Engine.toPhysicalUnits(r);
 		
-		var cShape:b2CircleShape = new b2CircleShape();
+		var cShape = new B2CircleShape();
 		cShape.m_radius = r;
 		
 		return createTerrainRegion(x, y, cShape, true, groupID);
 	}
 	
-	public function addTerrainRegion(r:TerrainRegion):void
+	public function addTerrainRegion(r:Terrain)
 	{
-		var nextID:int = nextTerrainRegionID();
+		var nextID = nextTerrainRegionID();
 		r.ID = nextID;
-		terrainRegions[nextID] = new Array(r);
+		terrainRegions.set(nextID, r);
 	}
 	
-	public function removeTerrainRegion(ID:int):void
+	public function removeTerrainRegion(ID:Int)
 	{
-		var t:TerrainRegion = getTerrainRegion(ID);
-		
-		terrainRegions[ID] = null;
-		
+		var t = getTerrainRegion(ID);
+		terrainRegions.remove(ID);
 		t.destroy();
 	}
 	
-	public function getTerrainRegion(ID:int):TerrainRegion
+	public function getTerrainRegion(ID:Int):Terrain
 	{
-		return terrainRegions[ID];
+		return terrainRegions.get(ID);
 	}
 	
-	public function getTerrainRegions(ID:int):Array
+	public function getTerrainRegions():IntHash<Terrain>
 	{
 		return terrainRegions;
 	}
 	
-	public function nextTerrainRegionID():int
+	public function nextTerrainRegionID():Int
 	{
-		var ID:int = -1;
+		var ID = -1;
 		
-		for each(var r:TerrainRegion in terrainRegions)
+		for(r in terrainRegions)
 		{
 			if(r == null) continue;
-			ID = Math.max(ID, r.ID);
+			ID = Std.int(Math.max(ID, r.ID));
 		}
 		
 		return ID + 1;
-	}*/
+	}
 	
 	//*-----------------------------------------------
 	//* Game Attributes

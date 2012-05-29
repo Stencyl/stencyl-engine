@@ -11,6 +11,7 @@ import com.stencyl.models.scene.TileLayer;
 import com.stencyl.models.background.ColorBackground;
 import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.scene.RegionDef;
+import com.stencyl.models.scene.TerrainDef;
 import com.stencyl.models.scene.Wireframe;
 import com.stencyl.models.collision.Mask;
 import com.stencyl.behavior.BehaviorInstance;
@@ -61,7 +62,7 @@ class Scene
 	public var wireframes:Array<Wireframe>;
 	public var joints:IntHash<B2JointDef>;
 	public var regions:IntHash<RegionDef>;
-	//public var terrainRegions:Array;
+	public var terrainRegions:IntHash<TerrainDef>;
 	
 	public var animatedTiles:Array<Tile>;
 	
@@ -123,7 +124,7 @@ class Scene
 		
 		joints = readJoints(xml.node.joints.elements);
 		regions = readRegions(xml.node.regions.elements);
-		//terrainRegions = readTerrainRegions(xml.node.terrainRegions.elements);
+		terrainRegions = readTerrainRegions(xml.node.terrainRegions.elements);
 		
 		wireframes = readWireframes(xml.node.terrain.elements);
 		
@@ -251,59 +252,60 @@ class Scene
 		return region;
 	}
 	
-	/*public function readTerrainRegions(list:XMLList):Array
+	public function readTerrainRegions(list:Iterator<Fast>):IntHash<TerrainDef>
 	{
-		var map:Array = new Array();
+		var map = new IntHash<TerrainDef>();
 		
-		for each(var e:XML in list.children())
+		for(e in list)
 		{
-			var t:TerrainRegionDef = readTerrainRegion(e);
-			map[t.ID] = t;
+			var r:TerrainDef = readTerrainRegion(e);
+			map.set(r.ID, r);
 		}
 		
 		return map;
 	}
 	
-	public function readTerrainRegion(e:XML):TerrainRegionDef
+	public function readTerrainRegion(e:Fast):TerrainDef
 	{
-		var type:String = e.@type;
-		var elementID:Number = e.@id;
-		var name:String = e.@name;
-		var group:int = e.@group;
-		var terrainRegion:TerrainRegionDef;
+		var type = e.att.type;
+		var elementID = Std.parseInt(e.att.id);
+		var name = e.att.name;
+		var group = Std.parseInt(e.att.group);
+		var terrainRegion:TerrainDef;
 		
-		var x:Number = GameState.toPhysicalUnits(e.@x);
-		var y:Number = GameState.toPhysicalUnits(e.@y);
-		var r:Number = e.@r;
-		var g:Number = e.@g;
-		var b:Number = e.@b;
-		var fillColor:uint = Util.RGBToHex(r, g, b);
+		var x:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.x));
+		var y:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.y));
+		var r:Int = Std.parseInt(e.att.r);
+		var g:Int = Std.parseInt(e.att.g);
+		var b:Int = Std.parseInt(e.att.b);
+		var fillColor = Utils.getColorRGB(r, g, b);
 		
-		var shape:b2Shape = null;
-		var ps:Vector.<b2PolygonShape> = new Vector.<b2PolygonShape>();
-		var tr:Array = new Array();
-		var shapeList:Array = new Array();
-		var decompParams:Array;
+		var shape:B2Shape = null;
+		var ps = new Array<B2PolygonShape>();
+		var shapeList = new Array<B2Shape>();
+		var decompParams:Array<String>;
 		
 		if(type == "box")
 		{
-			var w:Number = GameState.toPhysicalUnits(e.@w); 
-			var h:Number = GameState.toPhysicalUnits(e.@h); 
-			var box:b2PolygonShape = new b2PolygonShape();
-			box.SetAsBox(w / 2, h / 2);
+			var w:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.w)); 
+			var h:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.h)); 
+			var box = new B2PolygonShape();
+			box.setAsBox(w/2, h/2);
 			shape = box;
 			shapeList[0] = shape;
-			terrainRegion= new TerrainRegionDef(shapeList, elementID, name, x, y, group, fillColor);
+			terrainRegion= new TerrainDef(shapeList, elementID, name, x, y, group, fillColor);
 		}
+		
 		else if(type == "poly")
 		{
-			var w:Number = e.@w;
-			var h:Number = e.@h;
+			var w = Std.parseFloat(e.att.w);
+			var h = Std.parseFloat(e.att.h);
 			
 			var shapeType:String = "polyregion";
-			var shapeParams:Array = e.@pts.split(",");
+			var shapeParams = e.att.pts.split(",");
 
-			ps = SpriteReader.decomposeShape(shapeParams);
+			//TODO: Hard to port this over - figure out a different way
+			/*ps = SpriteReader.decomposeShape(shapeParams);
 			
 			for (var i:int = 0; i < ps.length; i++)
 			{
@@ -335,22 +337,32 @@ class Scene
 				
 				var polyShape:b2PolygonShape = SpriteReader.createShape(shapeType, decompParams, x, y, w, h) as b2PolygonShape;
 				shapeList[i] = polyShape;
+			}*/
+			
+			var vertices = new Array<Dynamic>();
+
+			for(i in 1...shapeParams.length)
+			{
+				var pt = new B2Vec2(Std.parseFloat(shapeParams[i%vertices.length]), Std.parseFloat(shapeParams[(i+1)%vertices.length]));
+				vertices.push(pt);
 			}
 			
-			terrainRegion = new TerrainRegionDef(shapeList, elementID, name, x, y, group, fillColor);
+			shapeList.push(B2PolygonShape.asArray(vertices, vertices.length));
+			
+			terrainRegion = new TerrainDef(shapeList, elementID, name, x, y, group, fillColor);
 		}
 		
 		else
 		{
-			var radius:Number = GameState.toPhysicalUnits(e.@rad);
-			shape = new b2CircleShape();
+			var radius:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.rad));
+			shape = new B2CircleShape();
 			shape.m_radius = radius;
 			shapeList[0] = shape;
-			terrainRegion = new TerrainRegionDef(shapeList, elementID, name, x, y, group, fillColor);
+			terrainRegion = new TerrainDef(shapeList, elementID, name, x, y, group, fillColor);
 		}
 		
 		return terrainRegion;
-	}*/
+	}
 	
 	public function readJoints(list:Iterator<Fast>):IntHash<B2JointDef>
 	{

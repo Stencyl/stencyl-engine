@@ -42,6 +42,7 @@ class Region extends Actor
 	
 		alwaysSimulate = true;
 		isRegion = true;
+		isTerrainRegion = false;
 		
 		copy = shapes[0];
 		
