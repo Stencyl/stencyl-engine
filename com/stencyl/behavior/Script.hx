@@ -351,8 +351,37 @@ class Script
 		}
 	}
 	
-	//enters region
-	//exits region
+	public function addActorEntersRegionListener(reg:Region, func:Dynamic->Array<Dynamic>->Void)
+	{
+		if(reg == null)
+		{
+			trace("Error in " + wrapper.classname +": Cannot add listener function to null region.");
+			return;
+		}
+		
+		reg.whenActorEntersListeners.push(func);
+								
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(reg.whenActorEntersListeners, func);
+		}
+	}
+	
+	public function addActorExitsRegionListener(reg:Region, func:Dynamic->Array<Dynamic>->Void)
+	{
+		if(reg == null)
+		{
+			trace("Error in " + wrapper.classname +": Cannot add listener function to null region.");
+			return;
+		}
+		
+		reg.whenActorExitsListeners.push(func);
+								
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(reg.whenActorExitsListeners, func);
+		}
+	}
 	
 	public function addActorPositionListener(a:Actor, func:Dynamic->Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void)
 	{

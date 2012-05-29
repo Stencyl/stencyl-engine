@@ -1731,12 +1731,11 @@ class Engine
 			}
 		}
 
-		//TODO
-		/*for each(var r:Region in regions)
+		for(r in regions)
 		{
 			if(r == null) continue;
-			r.innerUpdate(true);
-		}*/
+			r.innerUpdate(elapsedTime, true);
+		}
 		
 		collisionPairs = new HashMap<Actor, HashMap<Actor, Bool>>();
 		var disableCollisionList = new Array<Actor>();
