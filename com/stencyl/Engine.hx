@@ -741,33 +741,33 @@ class Engine
 			
 	private function loadJoints()
 	{
-		/*for each(var jd:b2JointDef in scene.joints)
+		for(jd in scene.joints)
 		{
-			var a1:int = jd.actor1;
-			var a2:int = jd.actor2;
-			var collide:Boolean = jd.collideConnected;
+			var a1 = jd.actor1;
+			var a2 = jd.actor2;
+			var collide = jd.collideConnected;
 			
-			var one:b2Body = null;
-			var two:b2Body = null;
+			var one:B2Body = null;
+			var two:B2Body = null;
 			
-			var pt:V2 = null;
+			var pt:B2Vec2 = null;
 			
 			//Types are defined in b2Joint.h
 			
 			//STICK
 			if(jd.type == 3)
 			{
-				joints[jd.ID] = createStickJoint(getActor(a1).body, getActor(a2).body, jd.ID, collide);
+				joints.set(jd.ID, createStickJoint(getActor(a1).body, getActor(a2).body, jd.ID, collide));
 			}
 			
 			//HINGE
 			else if(jd.type == 1)
 			{
-				var r:b2RevoluteJointDef = jd as b2RevoluteJointDef;
-				pt = getActor(a1).body.GetLocalCenter().clone();
+				var r = cast(jd, B2RevoluteJointDef);
+				pt = getActor(a1).body.getLocalCenter().copy();
 				
-				pt.x = GameState.toPixelUnits(pt.x);
-				pt.y = GameState.toPixelUnits(pt.y);
+				pt.x = Engine.toPixelUnits(pt.x);
+				pt.y = Engine.toPixelUnits(pt.y);
 				
 				one = getActor(a1).body;
 				two = null;
@@ -782,7 +782,7 @@ class Engine
 					two = getActor(a2).body;
 				}
 				
-				joints[jd.ID] = createHingeJoint
+				joints.set(jd.ID, createHingeJoint
 				(
 					one, 
 					two, 
@@ -795,17 +795,17 @@ class Engine
 					r.upperAngle, 
 					r.maxMotorTorque, 
 					-r.motorSpeed
-				);
+				));
 			}
 			
 			//SLIDING
 			else if(jd.type == 2 || jd.type == 7)
 			{
-				var s:b2LineJointDef = jd as b2LineJointDef;
-				pt = getActor(a1).body.GetLocalCenter().clone();
+				var s = cast(jd, B2LineJointDef);
+				pt = getActor(a1).body.getLocalCenter().copy();
 				
-				pt.x = GameState.toPixelUnits(pt.x);
-				pt.y = GameState.toPixelUnits(pt.y);
+				pt.x = Engine.toPixelUnits(pt.x);
+				pt.y = Engine.toPixelUnits(pt.y);
 				
 				one = getActor(a1).body;
 				two = null;
@@ -820,11 +820,11 @@ class Engine
 					two = getActor(a2).body;
 				}
 				
-				joints[jd.ID] = createSlidingJoint
+				joints.set(jd.ID, createSlidingJoint
 				(
 					one,
 					two,
-					s.localAxisA.v2,
+					s.localAxisA,
 					jd.ID,
 					collide,
 					s.enableLimit,
@@ -833,9 +833,9 @@ class Engine
 					s.upperTranslation,
 					s.maxMotorForce,
 					s.motorSpeed
-				);
+				));
 			}
-		}*/
+		}
 	}
 	
 	public function loadTerrain()

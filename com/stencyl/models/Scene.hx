@@ -18,6 +18,11 @@ import com.stencyl.behavior.BehaviorInstance;
 import nme.geom.Point;
 import box2D.collision.shapes.B2EdgeShape;
 import box2D.collision.shapes.B2PolygonShape;
+import box2D.dynamics.joints.B2Joint;
+import box2D.dynamics.joints.B2JointDef;
+import box2D.dynamics.joints.B2DistanceJointDef;
+import box2D.dynamics.joints.B2RevoluteJointDef;
+import box2D.dynamics.joints.B2LineJointDef;
 
 import haxe.xml.Fast;
 import com.stencyl.utils.Utils;
@@ -51,7 +56,7 @@ class Scene
 	
 	//Box2D
 	public var wireframes:Array<Wireframe>;
-	//public var joints:Array;
+	public var joints:IntHash<B2JointDef>;
 	public var regions:IntHash<RegionDef>;
 	//public var terrainRegions:Array;
 	
@@ -102,8 +107,7 @@ class Scene
 		catch(e:String)
 		{
 		}
-		
-		
+
 		if(eventSnippetID != "")
 		{
 			eventID = Std.parseInt(eventSnippetID);
@@ -114,9 +118,9 @@ class Scene
 			}
 		}
 		
-		//joints = readJoints(xml.joints);
+		joints = readJoints(xml.node.joints.elements);
 		regions = readRegions(xml.node.regions.elements);
-		//terrainRegions = readTerrainRegions(xml.terrainRegions);
+		//terrainRegions = readTerrainRegions(xml.node.terrainRegions.elements);
 		
 		wireframes = readWireframes(xml.node.terrain.elements);
 		
@@ -332,35 +336,33 @@ class Scene
 		}
 		
 		return terrainRegion;
-	}
+	}*/
 	
-	public function readJoints(list:XMLList):Array
+	public function readJoints(list:Iterator<Fast>):IntHash<B2JointDef>
 	{
-		var map:Array = new Array();
+		var map = new IntHash<B2JointDef>();
 		
-		for each(var e:XML in list.children())
+		for(e in list)
 		{
-			var j:b2JointDef = readJoint(e);
-			
-			map[j.ID] = j;
+			var j = readJoint(e);
+			map.set(j.ID, j);
 		}
 		
 		return map;
 	}
 	
-	public function readJoint(e:XML):b2JointDef
+	public function readJoint(e:Fast):B2JointDef
 	{
-		var type:String = e.name();
+		var type:String = e.name;
+		var elementID = Std.parseInt(e.att.id);
 		
-		var elementID:Number = e.@id;
-		
-		var a1:Number = e.@a1;
-		var a2:Number = e.@a2;
-		var collide:Boolean = Util.toBoolean(e.@collide);
+		var a1 = Std.parseInt(e.att.a1);
+		var a2 = Std.parseInt(e.att.a2);
+		var collide = Utils.toBoolean(e.att.collide);
 		
 		if(type == "STICK_JOINT")
 		{
-			var j:b2DistanceJointDef = new b2DistanceJointDef();
+			var j = new B2DistanceJointDef();
 			
 			j.ID = elementID;
 			j.actor1 = a1;
@@ -371,15 +373,15 @@ class Scene
 			
 			//---
 			
-			j.dampingRatio = e.@damping;
-			j.frequencyHz = e.@freq;
+			j.dampingRatio = Std.parseFloat(e.att.damping);
+			j.frequencyHz = Std.parseFloat(e.att.freq);
 			
 			return j;
 		}
 		
 		else if(type == "HINGE_JOINT")
 		{
-			var j2:b2RevoluteJointDef = new b2RevoluteJointDef();
+			var j2 = new B2RevoluteJointDef();
 			
 			j2.ID = elementID;
 			j2.actor1 = a1;
@@ -390,19 +392,19 @@ class Scene
 			
 			//---
 			
-			j2.enableLimit = Util.toBoolean(e.@limit);
-			j2.enableMotor = Util.toBoolean(e.@motor);
-			j2.lowerAngle = e.@lower;
-			j2.upperAngle = e.@upper;
-			j2.maxMotorTorque = e.@torque;
-			j2.motorSpeed = e.@speed;
+			j2.enableLimit = Utils.toBoolean(e.att.limit);
+			j2.enableMotor = Utils.toBoolean(e.att.motor);
+			j2.lowerAngle = Std.parseFloat(e.att.lower);
+			j2.upperAngle = Std.parseFloat(e.att.upper);
+			j2.maxMotorTorque = Std.parseFloat(e.att.torque);
+			j2.motorSpeed = Std.parseFloat(e.att.speed);
 			
 			return j2;
 		}
 		
 		else if(type == "SLIDING_JOINT")
 		{
-			var j3:b2LineJointDef = new b2LineJointDef();
+			var j3 = new B2LineJointDef();
 			
 			j3.ID = elementID;
 			j3.actor1 = a1;
@@ -413,14 +415,14 @@ class Scene
 			
 			//---
 			
-			j3.enableLimit = Util.toBoolean(e.@limit);
-			j3.enableMotor = Util.toBoolean(e.@motor);
-			j3.lowerTranslation = e.@lower;
-			j3.upperTranslation = e.@upper;
-			j3.maxMotorForce = e.@force;
-			j3.motorSpeed = e.@speed;
-			j3.localAxisA.x = e.@x;
-			j3.localAxisA.y = e.@y;
+			j3.enableLimit = Utils.toBoolean(e.att.limit);
+			j3.enableMotor = Utils.toBoolean(e.att.motor);
+			j3.lowerTranslation = Std.parseFloat(e.att.lower);
+			j3.upperTranslation = Std.parseFloat(e.att.upper);
+			j3.maxMotorForce = Std.parseFloat(e.att.force);
+			j3.motorSpeed = Std.parseFloat(e.att.speed);
+			j3.localAxisA.x = Std.parseFloat(e.att.x);
+			j3.localAxisA.y = Std.parseFloat(e.att.y);
 			
 			return j3;
 		}
@@ -428,7 +430,7 @@ class Scene
 		trace("Error: unsuppported joint type: " + type);
 		
 		return null;
-	}*/
+	}
 
 	public function readLayers(list:Iterator<Fast>, rawLayers:IntHash<TileLayer> = null):IntHash<TileLayer>
 	{
@@ -534,12 +536,10 @@ class Scene
 					{
 						grid.setTile(col, row, true);
 					}
-					
-					//trace("set some tile at (" + col + "," + row + ")");
-					
+
 					var tile = tset.tiles[tileID];
 					
-					//If animated tile, add to update list
+					//TODO: If animated tile, add to update list
 					/*if (tile != null && tile.pixels != null && animatedTiles.indexOf(tile) == -1)
 					{
 						animatedTiles.push(tile);
