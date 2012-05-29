@@ -258,8 +258,8 @@ class Region extends Actor
 		var mx:Int = Input.mouseX;
 		var my:Int = Input.mouseY;
 		
-		var xPos:Float = getX();
-		var yPos:Float = getY();
+		var xPos:Float = getX() - regionWidth/2;
+		var yPos:Float = getY() - regionHeight/2;
 
 		return (mx >= xPos && 
 		   		my >= yPos && 
