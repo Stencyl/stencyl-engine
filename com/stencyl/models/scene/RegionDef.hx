@@ -4,8 +4,8 @@ import box2D.collision.shapes.B2Shape;
 
 class RegionDef
 {
-	public var x:Int;
-	public var y:Int;
+	public var x:Float;
+	public var y:Float;
 	public var shape:B2Shape;
 	public var shapes:Array<B2Shape>;
 	
@@ -13,7 +13,7 @@ class RegionDef
 	public var name:String;
 	public var shapeID:Int;
 	
-	public function RegionDef(shapes:Array<B2Shape>, ID:Int, name:String, x:Int, y:Int, shapeID:Int=0)
+	public function new(shapes:Array<B2Shape>, ID:Int, name:String, x:Float, y:Float, shapeID:Int=0)
 	{
 		this.x = x;
 		this.y = y;

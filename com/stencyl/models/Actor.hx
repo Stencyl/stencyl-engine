@@ -902,8 +902,6 @@ class Actor extends Sprite
 					originFixDef.groupID = f.groupID;
 					originFixDef.shape = f.shape;
 
-
-					trace(f.isSensor);
 					//TODO: Origin point junk goes here
 					
 					var fix = body.createFixture(originFixDef);

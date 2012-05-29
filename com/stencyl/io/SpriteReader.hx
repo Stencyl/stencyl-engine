@@ -295,24 +295,22 @@ class SpriteReader implements AbstractReader
 		return null;
 	}
 	
-	/*public static function decomposeShape(params:Array):Vector.<b2PolygonShape>
+	/*public static function decomposeShape(params:Array<String>):Array<B2PolygonShape>
 	{
-		var vlist:Vector.<Number> = new Vector.<Number>();
-		var numVertices:Number = params[0];
-		var vIndex:Number = 0;
-		var i:Number = 0;
+		var vlist = new Array<Float>();
+		var numVertices = Std.parseFloat(params[0]);
+		var vIndex:Int = 0;
+		var i:Int = 0;
 			
 		while(vIndex < numVertices)
 		{			
-			vlist[i] = params[i+1];
-		    vlist[i + 1] = params[i + 2];
+			vlist[i] = Std.parseFloat(params[i+1]);
+		    vlist[i + 1] = Std.parseFloat(params[i + 2]);
 			vIndex++;
 			i += 2;
 		}
 
-		var pshapes:Vector.<b2PolygonShape> = b2PolygonShape.Decompose(vlist);
-		
-		return pshapes;
+		return B2PolygonShape.decompose(vlist);
 	}*/
 	
 	/// Check the orientation of vertices. If they are in the wrong direction, flip them. Returns true if the vertecies need to be flipped.

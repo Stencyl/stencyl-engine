@@ -1,20 +1,28 @@
 package com.stencyl.models;
 
 import com.stencyl.models.Actor;
+import com.stencyl.utils.Utils;
 
+import box2D.collision.B2AABB;
+import box2D.common.math.B2Transform;
+import box2D.dynamics.B2Body;
+import box2D.dynamics.B2Fixture;
+import box2D.dynamics.B2FixtureDef;
 import box2D.collision.shapes.B2Shape;
+import box2D.collision.shapes.B2CircleShape;
+import box2D.collision.shapes.B2PolygonShape;
 
 class Region extends Actor
 {
 	public var isCircle:Bool;
 	
-	//???
-	private var flag:Bool;
-	
 	///All Hash sets of Integers
 	private var containedActors:IntHash<Int>;
 
 	private var copy:B2Shape;
+	
+	public var regionWidth:Float;
+	public var regionHeight:Float;
 	
 	private var originalWidth:Float;
 	private var originalHeight:Float;
@@ -27,51 +35,50 @@ class Region extends Actor
 	
 	public function new(game:Engine, x:Float, y:Float, shapes:Array<B2Shape>)
 	{
-		super(game, 0, -2, x, y, game.getTopLayer(), 1, 1, null, null, null, null, false, false, false, false, shapes[0]);
+		super(game, 0, -2, x, y, game.getTopLayer(), 1, 1, 
+		      null, null, null, null, 
+		      false, false, false, false, 
+		      shapes[0]);
 	
-		/*flag = false;
-	
-		var shape:b2Shape = shapes[0];
-		super(game, 0, -2, x, y, game.getTopLayer(), 1, 1, null, null, null, null, false, false, false, false, shape, true);
-		
 		alwaysSimulate = true;
 		isRegion = true;
 		
-		copy = shape;
+		copy = shapes[0];
 		
-		whenActorEntersListeners = new Array();
-		whenActorExitsListeners = new Array();
+		containedActors = new IntHash<Int>();
+		whenActorEntersListeners = new Array<Dynamic>();
+		whenActorExitsListeners = new Array<Dynamic>();
 		
-		justAdded = new Array();
-		justRemoved = new Array();
+		justAdded = new Array<Dynamic>();
+		justRemoved = new Array<Dynamic>();
 		
-		body.SetSleepingAllowed(true);
-		body.SetAwake(false);
-		body.SetIgnoreGravity(true);
+		body.setSleepingAllowed(true);
+		body.setAwake(false);
+		body.setIgnoreGravity(true);
 		
-		var lowerXBound:Number = 0;
-		var upperXBound:Number = 0;
-		var lowerYBound:Number = 0;
-		var upperYBound:Number = 0;
+		var lowerXBound:Float = 0;
+		var upperXBound:Float = 0;
+		var lowerYBound:Float = 0;
+		var upperYBound:Float = 0;
 		
-		if(shape is b2PolygonShape)
+		if(Std.is(shape, B2PolygonShape))
 		{
 			isCircle = false;
-			var trans:XF = new XF();
+			var trans = new B2Transform();
 			trans.setIdentity();
 			
-			var aabb:AABB = new AABB();
+			var aabb = new B2AABB();
 			
-			(shape as b2PolygonShape).ComputeAABB(aabb, trans);
+			cast(shape, B2PolygonShape).computeAABB(aabb, trans);
 			
 			lowerXBound = aabb.lowerBound.x;
 			upperXBound = aabb.upperBound.x;
 			lowerYBound = aabb.lowerBound.y;
 			upperYBound = aabb.upperBound.y;
 			
-			for (var i:int = 0; i < shapes.length; i++)
+			for(i in 0...shapes.length)
 			{
-				var fixture:b2FixtureDef = new b2FixtureDef();
+				var fixture = new B2FixtureDef();
 				fixture.isSensor = true;
 				fixture.userData = this;
 				fixture.shape = shapes[i];
@@ -80,223 +87,188 @@ class Region extends Actor
 				fixture.restitution = 0;
 				fixture.groupID = -1000;
 
-				body.CreateFixture(fixture);
+				body.createFixture(fixture);
 				
-				(shapes[i] as b2PolygonShape).ComputeAABB(aabb, trans);
+				cast(shapes[i], B2PolygonShape).computeAABB(aabb, trans);
 				lowerXBound = Math.min(lowerXBound, aabb.lowerBound.x);
 				upperXBound = Math.max(upperXBound, aabb.upperBound.x);
 				lowerYBound = Math.min(lowerYBound, aabb.lowerBound.y);
 				upperYBound = Math.max(upperYBound, aabb.upperBound.y);
 			}
 			
-			this.originalWidth = this.width = this.frameWidth = Math.round(GameState.toPixelUnits(Math.abs(lowerXBound - upperXBound)));
-			this.originalHeight = this.height = this.frameHeight = Math.round(GameState.toPixelUnits(Math.abs(lowerYBound - upperYBound)));
+			originalWidth = regionWidth = Math.round(Engine.toPixelUnits(Math.abs(lowerXBound - upperXBound)));
+			originalHeight = regionHeight = Math.round(Engine.toPixelUnits(Math.abs(lowerYBound - upperYBound)));
 		}
 			
-		else if(shape is b2CircleShape)
+		else if(Std.is(shape, B2CircleShape))
 		{
 			isCircle = true;
 			
-			this.originalWidth = this.width = this.frameWidth = GameState.toPixelUnits((shape as b2CircleShape).m_radius * 2);
-			this.originalHeight = this.height = this.frameHeight = GameState.toPixelUnits((shape as b2CircleShape).m_radius * 2);
-		}*/
+			originalWidth = regionWidth = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
+			originalHeight = regionHeight = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
+		}
 	}
 	
 	public function containsActor(actor:Actor):Bool
 	{
-		/*if(actor != null)
+		if(actor != null)
 		{
-			return contains.has(actor.getID());
+			return containedActors.exists(actor.ID);
 		}
 		
 		else
 		{
 			return false;
-		}*/
-		
-		return false;
+		}
 	}
 	
 	public function getContainedActors():IntHash<Int>
 	{
-		return null;
-		//return containedActors;
+		return containedActors;
 	}
 	
 	public function addActor(actor:Actor)
 	{
-		/*if(actor == null)
+		if(actor == null)
 		{
 			return;	
 		}
 		
-		if(actor.getID() != -1 && !containedActors.has(actor.getID()))
+		if(actor.ID != -1 && !containedActors.exists(actor.ID))
 		{
-			containedActors.add(actor.getID());
+			containedActors.set(actor.ID, actor.ID);
 			
-			if (justRemoved.indexOf(actor) == -1)
+			var index = Utils.indexOf(justRemoved, actor);
+			
+			if(index == -1)
 			{
 				justAdded.push(actor);					
 			}
 			
 			else 
 			{
-				justRemoved.splice(justRemoved.indexOf(actor), 1);
+				justRemoved.splice(index, 1);
 			}
-		}*/
+		}
 	}
 	
 	public function removeActor(actor:Actor)
 	{
-		/*if(actor == null)
+		if(actor == null)
 		{
 			return;	
 		}
 		
-		if(actor.getID() != -1)
+		if(actor.ID != -1)
 		{
-			containedActors.remove(actor.getID());
+			containedActors.remove(actor.ID);
 			justRemoved.push(actor);				
-		}/*
+		}
 	}
 	
 	override public function follow(actor:Actor)
 	{
-		/*var x:Number = actor.getX() + actor.getWidth() / 2;
-		var y:Number = actor.getY() + actor.getHeight() / 2;
+		var x = actor.getX() + actor.getWidth() / 2;
+		var y = actor.getY() + actor.getHeight() / 2;
 		
 		setX(x);
-		setY(y);*/
+		setY(y);
 		
 		//technically we should clear containedActors...
 	}
 	
 	public function resetSize()
 	{
-		//setRegionSize(originalWidth, originalHeight);
+		setRegionSize(originalWidth, originalHeight);
 	}
 	
 	public function setRegionDiameter(diameter:Float)
 	{
-		//setRegionSize(diameter, diameter);
+		setRegionSize(diameter, diameter);
 	}
 	
 	public function setRegionSize(width:Float, height:Float)
 	{
-		/*var oldWidth:Number = this.width;
-		var oldHeight:Number = this.height;
+		var oldWidth:Float = regionWidth;
+		var oldHeight:Float = regionHeight;
 		
-		width = GameState.toPhysicalUnits(width);
-		height = GameState.toPhysicalUnits(height);
+		width = Engine.toPhysicalUnits(width);
+		height = Engine.toPhysicalUnits(height);
 		
-		var shape:b2Shape;
+		var shape:B2Shape;
 		
 		if(isCircle)
 		{
-			var s:b2CircleShape = new b2CircleShape();
+			var s = new B2CircleShape();
 			s.m_radius = width / 2;
 			shape = s;
 		}
 			
 		else
 		{
-			var s2:b2PolygonShape = new b2PolygonShape();
-			s2.SetAsBox(width/2, height/2);
+			var s2 = new B2PolygonShape();
+			s2.setAsBox(width/2, height/2);
 			shape = s2;
 		}
 		
-		var fixture:b2FixtureDef = new b2FixtureDef();
+		var fixture = new B2FixtureDef();
 		fixture.isSensor = true;
 		fixture.userData = this;
 		fixture.shape = shape;
 		
-		if(getBody() != null && getBody().GetFixtureList() != null)
+		if(body != null && body.getFixtureList() != null)
 		{
-			while(getBody().m_fixtureCount > 0)
+			while(body.m_fixtureCount > 0)
 			{
-				getBody().DestroyFixture(getBody().GetFixtureList());
+				body.DestroyFixture(body.getFixtureList());
 			}
 			
-			getBody().CreateFixture(fixture);
+			body.createFixture(fixture);
 			
-			this.width = GameState.toPixelUnits(width);
-			this.height = GameState.toPixelUnits(height);
+			regionWidth = Engine.toPixelUnits(width);
+			regionHeight = Engine.toPixelUnits(height);
 		}
 		
-		var dw:Number = (this.width - oldWidth);
-		var dh:Number = (this.height - oldHeight);
+		var dw = (regionWidth - oldWidth);
+		var dh = (regionHeight - oldHeight);
 		
 		//Back up
-		setLocation(getX() + (dw)/2, getY() + (dh)/2);*/
+		setLocation(getX() + (dw)/2, getY() + (dh)/2);
 	}
 	
 	override public function setLocation(x:Float, y:Float)
 	{
-		//setX(x + width / 2);
-		//setY(y + height / 2);
+		setX(x + regionWidth / 2);
+		setY(y + regionHeight / 2);
 	}
 	
 	override public function getWidth():Float
 	{
-		return width;
+		return regionWidth;
 	}
 	
 	override public function getHeight():Float
 	{
-		return height;
+		return regionHeight;
 	}
 	
 	override public function innerUpdate(elapsedTime:Float, hudCheck:Bool)
 	{					
-		/*while (justAdded.length > 0)
+		while(justAdded.length > 0)
 		{				
-			var a:Actor = justAdded.pop() as Actor;
-			
-			for (var r:int = 0; r < whenActorEntersListeners.length; r++)
-			{
-				try
-				{						
-					var f:Function = whenActorEntersListeners[r] as Function;
-					f(whenActorEntersListeners, a);
-					
-					if (whenActorEntersListeners.indexOf(f) == -1)
-					{
-						r--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
+			var a = cast(justAdded.pop(), Actor);
+			Engine.invokeListeners2(whenActorEntersListeners, a);
 		}
 		
-		while (justRemoved.length > 0)
+		while(justRemoved.length > 0)
 		{
-			var a:Actor = justRemoved.pop() as Actor;
-			
-			for (var r:int = 0; r < whenActorExitsListeners.length; r++)
-			{
-				try
-				{
-					var f:Function = whenActorExitsListeners[r] as Function;
-					f(whenActorExitsListeners, a);
-					
-					if (whenActorExitsListeners.indexOf(f) == -1)
-					{
-						r--;
-					}
-				}
-				catch (e:Error)
-				{
-					FlxG.log(e.getStackTrace());
-				}
-			}
+			var a = cast(justRemoved.pop(), Actor);
+			Engine.invokeListeners2(whenActorExitsListeners, a);
 		}
 		
-		if (mouseOverListeners.length > 0)
+		if(mouseOverListeners.length > 0)
 		{
 			checkMouseState();
-		}*/
+		}
 	}
 }

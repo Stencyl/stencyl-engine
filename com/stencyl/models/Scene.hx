@@ -16,13 +16,16 @@ import com.stencyl.models.collision.Mask;
 import com.stencyl.behavior.BehaviorInstance;
 
 import nme.geom.Point;
+import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2EdgeShape;
+import box2D.collision.shapes.B2CircleShape;
 import box2D.collision.shapes.B2PolygonShape;
 import box2D.dynamics.joints.B2Joint;
 import box2D.dynamics.joints.B2JointDef;
 import box2D.dynamics.joints.B2DistanceJointDef;
 import box2D.dynamics.joints.B2RevoluteJointDef;
 import box2D.dynamics.joints.B2LineJointDef;
+import box2D.common.math.B2Vec2;
 
 import haxe.xml.Fast;
 import com.stencyl.utils.Utils;
@@ -132,110 +135,121 @@ class Scene
 	{
 		var map = new IntHash<RegionDef>();
 		
-		//TODO
-		/*for(e in list)
+		for(e in list)
 		{
-			var r:RegionDef = null; //readRegion(e);
+			var r:RegionDef = readRegion(e);
 			map.set(r.ID, r);
-		}*/
+		}
 		
 		return map;
 	}
 	
-	/*public function readRegion(e:XML):RegionDef
+	public function readRegion(e:Fast):RegionDef
 	{
-		var type:String = e.att.type;
-		var elementID:Number = e.@id;
-		var name:String = e.@name;
-		var pts:String = e.@pts;
+		var type = e.att.type;
+		var elementID = Std.parseInt(e.att.id);
+		var name = e.att.name;
+		var pts = e.att.pts;
 		var region:RegionDef;
 		
-		var x:Number = GameState.toPhysicalUnits(e.@x);
-		var y:Number = GameState.toPhysicalUnits(e.@y);
+		var x:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.x));
+		var y:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.y));
 		
-		var shape:b2Shape = null;
-		var ps:Vector.<b2PolygonShape> = new Vector.<b2PolygonShape>();
-		var shapeList:Array = new Array();
-		var decompParams:Array;
+		var shape:B2Shape = null;
+		var ps = new Array<B2PolygonShape>();
+		var shapeList = new Array<B2Shape>();
+		var decompParams:Array<String>;
 		
 		if(type == "box")
 		{
-			var w:Number = GameState.toPhysicalUnits(e.@w); 
-			var h:Number = GameState.toPhysicalUnits(e.@h); 
-			var box:b2PolygonShape = new b2PolygonShape();
-			box.SetAsBox(w / 2, h / 2);
+			var w:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.w)); 
+			var h:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.h)); 
+			var box = new B2PolygonShape();
+			box.setAsBox(w/2, h/2);
 			shape = box;
 			shapeList[0] = shape;
-			region= new RegionDef(shapeList, elementID, name, x, y);
+			region = new RegionDef(shapeList, elementID, name, x, y);
 		}
-		else if (type == "poly")
+		
+		else if(type == "poly")
 		{
-			var w:Number = e.@w;
-			var h:Number = e.@h;
+			var w = Std.parseFloat(e.att.w);
+			var h = Std.parseFloat(e.att.h);
 			
 			var shapeType:String = "polyregion";
 			
 			//backwards compatibility for box regions
-			if (pts == null)
+			if(pts == null)
 			{
-				var box:b2PolygonShape = new b2PolygonShape();
-				box.SetAsBox(w / 2, h / 2);
+				var box = new B2PolygonShape();
+				box.setAsBox(w/2, h/2);
 				shape = box;
 				shapeList[0] = shape;
 				region = new RegionDef(shapeList, elementID, name, x, y);
 				return region;
 			}
 			
-			var shapeParams:Array = pts.split(",");
-
-			ps = SpriteReader.decomposeShape(shapeParams);
+			var shapeParams = pts.split(",");
 			
-			for (var i:int = 0; i < ps.length; i++)
+			//TODO: Hard to port this over - figure out a different way
+			//ps = SpriteReader.decomposeShape(shapeParams);
+			
+			/*for(i in 0...ps.length)
 			{
-				var loX:Number = int.MAX_VALUE;
-				var loY:Number = int.MAX_VALUE;
-				var hiX:Number = 0;
-				var hiY:Number = 0;
-				var j:Number = 0;
-				
-				decompParams = new Array();
-				decompParams[0] = ps[i].GetVertexCount();
+				var loX:Float = Utils.NUMBER_MAX_VALUE;
+				var loY:Float = Utils.NUMBER_MAX_VALUE;
+				var hiX:Float = 0;
+				var hiY:Float = 0;
 
-				for (j= 0; j < ps[i].m_vertices.length; j++)
+				decompParams = new Array<String>();
+				decompParams[0] = "" + ps[i].getVertexCount();
+
+				for(j in 0...ps[i].m_vertices.length)
 				{
 					loX = Math.min(loX, ps[i].m_vertices[j].x);
 					loY = Math.min(loY, ps[i].m_vertices[j].y);
 					hiX = Math.min(hiX, ps[i].m_vertices[j].x);
 					hiY = Math.min(hiY, ps[i].m_vertices[j].y);
-					decompParams.push(ps[i].m_vertices[j].x);
-					decompParams.push(ps[i].m_vertices[j].y);
+					decompParams.push("" + ps[i].m_vertices[j].x);
+					decompParams.push("" + ps[i].m_vertices[j].y);
 				}
 				
-				var localWidth:Number;
-				var localHeight:Number;
+				var localWidth:Float;
+				var localHeight:Float;
 				
 				localWidth = hiX - loX;
 				localHeight = hiY - loY;
-				loX = GameState.toPhysicalUnits(loX);
-				loY = GameState.toPhysicalUnits(loY);
+				loX = Engine.toPhysicalUnits(loX);
+				loY = Engine.toPhysicalUnits(loY);
 				
-				var polyShape:b2PolygonShape = SpriteReader.createShape(shapeType, decompParams, x, y, w, h) as b2PolygonShape;
+				var polyShape = cast(SpriteReader.createShape(shapeType, decompParams, x, y, w, h), B2PolygonShape);
 				shapeList[i] = polyShape;
+			}*/
+			
+			var vertices = new Array<Dynamic>();
+
+			for(i in 1...shapeParams.length)
+			{
+				var pt = new B2Vec2(Std.parseFloat(shapeParams[i%vertices.length]), Std.parseFloat(shapeParams[(i+1)%vertices.length]));
+				vertices.push(pt);
 			}
 			
+			shapeList.push(B2PolygonShape.asArray(vertices, vertices.length));
+			
 			region = new RegionDef(shapeList, elementID, name, x, y);
-		}	
+		}
+			
 		else
 		{
-			var radius:Number = GameState.toPhysicalUnits(e.@rad);
-			shape = new b2CircleShape();
+			var radius:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.rad));
+			shape = new B2CircleShape();
 			shape.m_radius = radius;
 			shapeList[0] = shape;
-			region= new RegionDef(shapeList, elementID, name, x, y);
+			region = new RegionDef(shapeList, elementID, name, x, y);
 		}
 		
 		return region;
-	}*/
+	}
 	
 	/*public function readTerrainRegions(list:XMLList):Array
 	{

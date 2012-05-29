@@ -658,7 +658,62 @@ class Script
 	//* Regions
 	//*-----------------------------------------------
 	
-	//wait for Box2D
+	public function getLastCreatedRegion():Region
+	{
+		return lastCreatedRegion;
+	}
+	
+	public function getAllRegions():Array<Region>
+	{
+		var regions = new Array<Region>();
+		
+		for(r in engine.regions)
+		{
+			if(r == null) continue;
+			regions.push(r);
+		}
+		
+		return regions;
+	}
+	
+	public function getRegion(regionID:Int):Region
+	{
+		return engine.getRegion(regionID);
+	}
+	
+	public function removeRegion(regionID:Int)
+	{
+		engine.removeRegion(regionID);
+	}
+		
+	public function createBoxRegion(x:Float, y:Float, w:Float, h:Float):Region
+	{
+		return lastCreatedRegion = engine.createBoxRegion(x, y, w, h);
+	}
+			
+	public function createCircularRegion(x:Float, y:Float, r:Float):Region
+	{
+		return lastCreatedRegion = engine.createCircularRegion(x, y, r);
+	}
+			
+	public function isInRegion(a:Actor, r:Region):Bool
+	{
+		return engine.isInRegion(a, r);
+	}
+	
+	public function getActorsInRegion(r:Region):Array<Actor>
+	{
+		var ids = r.getContainedActors();
+		
+		var toReturn = new Array<Actor>();
+		
+		for(i in ids)
+		{
+			toReturn.push(engine.getActor(i));
+		}
+		
+		return toReturn;
+	}
 	
 	//*-----------------------------------------------
 	//* Terrain
