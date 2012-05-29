@@ -252,6 +252,21 @@ class Region extends Actor
 		return regionHeight;
 	}
 	
+	override public function isMouseOver():Bool
+	{
+		//This may need to be in global x/y???
+		var mx:Int = Input.mouseX;
+		var my:Int = Input.mouseY;
+		
+		var xPos:Float = getX();
+		var yPos:Float = getY();
+
+		return (mx >= xPos && 
+		   		my >= yPos && 
+		   		mx < xPos + regionWidth && 
+		   		my < yPos + regionHeight);
+	}
+	
 	override public function innerUpdate(elapsedTime:Float, hudCheck:Bool)
 	{					
 		while(justAdded.length > 0)
