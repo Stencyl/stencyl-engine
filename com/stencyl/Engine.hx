@@ -2516,41 +2516,44 @@ class Engine
 	//* Joints
 	//*-----------------------------------------------
 	
-	/*public function nextJointID():int
+	public function nextJointID():Int
 	{
-		var ID:int = -1;
+		var ID = -1;
 
-		for each(var j:b2Joint in joints)
+		for(j in joints)
 		{
-			if(j == null) continue;
-			ID = Math.max(ID, j.ID);
+			if(j == null) 
+			{
+				continue;
+			}
+			
+			ID = Std.int(Math.max(ID, j.ID));
 		}
 		
 		return ID + 1;
 	}
 	
-	public function addJoint(j:b2Joint):void
+	public function addJoint(j:B2Joint)
 	{
-		var nextID:int = nextJointID();
+		var nextID = nextJointID();
 		j.ID = nextID;
-		joints[nextID] = j;
+		joints.set(nextID, j);
 	}
 	
-	public function getJoint(ID:int):b2Joint
+	public function getJoint(ID:Int):B2Joint
 	{
-		return joints[ID];
+		return joints.get(ID);
 	}
 	
-	public function destroyJoint(j:b2Joint):void
+	public function destroyJoint(j:B2Joint)
 	{
-		//joints.splice(j.ID,1);
-		joints[j.ID] = null;
-		world.DestroyJoint(j as b2Joint);
+		joints.remove(j.ID);
+		world.destroyJoint(j);
 	}
 	
 	//---
 	
-	public function createStickJoint
+	/*public function createStickJoint
 	(
 		one:b2Body, 
 		two:b2Body, 
