@@ -65,7 +65,10 @@ import com.eclecticdesignstudio.motion.easing.Elastic;
 import box2D.dynamics.B2World;
 import box2D.common.math.B2Vec2;
 import box2D.dynamics.joints.B2Joint;
+import box2D.dynamics.joints.B2DistanceJoint;
+import box2D.dynamics.joints.B2DistanceJointDef;
 import box2D.dynamics.B2DebugDraw;
+import box2D.dynamics.B2Body;
 import box2D.collision.B2AABB;
 import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2PolygonShape;
@@ -2553,41 +2556,41 @@ class Engine
 	
 	//---
 	
-	/*public function createStickJoint
+	public function createStickJoint
 	(
-		one:b2Body, 
-		two:b2Body, 
-		jointID:int = -1, 
-		collide:Boolean = false, 
-		damping:Number = 0, 
-		frequencyHz:Number = 0
-	):b2DistanceJoint
+		one:B2Body, 
+		two:B2Body, 
+		jointID:Int = -1, 
+		collide:Bool = false, 
+		damping:Float = 0, 
+		frequencyHz:Float = 0
+	):B2DistanceJoint
 	{
-		var v1:V2 = one.GetLocalCenter()
-		var v2:V2 = two.GetLocalCenter();
+		var v1 = one.getLocalCenter();
+		var v2 = two.getLocalCenter();
 		
-		if(one.GetType() == 0)
+		if(one.getType() == 0)
 		{
-			v1.x = (one.GetUserData() as Actor).getPhysicsWidth() / 2;
-			v1.y = (one.GetUserData() as Actor).getPhysicsHeight() / 2;
+			v1.x = cast(one.getUserData(), Actor).getPhysicsWidth() / 2;
+			v1.y = cast(one.getUserData(), Actor).getPhysicsHeight() / 2;
 		}
 		
-		if(two.GetType() == 0)
+		if(two.getType() == 0)
 		{
-			v2.x = (two.GetUserData() as Actor).getPhysicsWidth() / 2;
-			v2.y = (two.GetUserData() as Actor).getPhysicsHeight() / 2;
+			v2.x = cast(two.getUserData(), Actor).getPhysicsWidth() / 2;
+			v2.y = cast(two.getUserData(), Actor).getPhysicsHeight() / 2;
 		}
 		
-		v1 = one.GetWorldPoint(v1);
-		v2 = two.GetWorldPoint(v2);
+		v1 = one.getWorldPoint(v1);
+		v2 = two.getWorldPoint(v2);
 		
-		var jd:b2DistanceJointDef = new b2DistanceJointDef();
-		jd.Initialize(one, two, v1, v2);
+		var jd = new B2DistanceJointDef();
+		jd.initialize(one, two, v1, v2);
 		jd.collideConnected = collide;
 		jd.dampingRatio = damping;
 		jd.frequencyHz = frequencyHz;
 		
-		var toReturn:b2Joint = world.CreateJoint(jd);
+		var toReturn = world.createJoint(jd);
 		
 		if(jointID == -1)
 		{
@@ -2596,14 +2599,14 @@ class Engine
 			
 		else
 		{
-			joints[jointID] = toReturn;
+			joints.set(jointID, toReturn);
 			toReturn.ID = jointID;
 		}
 		
-		return toReturn as b2DistanceJoint;
+		return cast(toReturn, B2DistanceJoint);
 	}
 	
-	public function createCustomStickJoint
+	/*public function createCustomStickJoint
 	(
 		one:b2Body,
 		x1:Number, 
