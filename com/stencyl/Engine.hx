@@ -2606,39 +2606,39 @@ class Engine
 		return cast(toReturn, B2DistanceJoint);
 	}
 	
-	/*public function createCustomStickJoint
+	public function createCustomStickJoint
 	(
-		one:b2Body,
-		x1:Number, 
-		y1:Number, 
-		two:b2Body, 
-		x2:Number, 
-		y2:Number
-	):b2DistanceJoint
+		one:B2Body,
+		x1:Float, 
+		y1:Float, 
+		two:B2Body, 
+		x2:Float, 
+		y2:Float
+	):B2DistanceJoint
 	{
-		var v1:V2 = new V2(x1, y1);
-		var v2:V2 = new V2(x2, y2);
+		var v1 = new B2Vec2(x1, y1);
+		var v2 = new B2Vec2(x2, y2);
 		
-		v1.x = GameState.toPhysicalUnits(v1.x);
-		v1.y = GameState.toPhysicalUnits(v1.y);
-		v2.x = GameState.toPhysicalUnits(v2.x);
-		v2.y = GameState.toPhysicalUnits(v2.y);
+		v1.x = Engine.toPhysicalUnits(v1.x);
+		v1.y = Engine.toPhysicalUnits(v1.y);
+		v2.x = Engine.toPhysicalUnits(v2.x);
+		v2.y = Engine.toPhysicalUnits(v2.y);
 		
-		v1 = one.GetWorldPoint(v1);
-		v2 = two.GetWorldPoint(v2);
+		v1 = one.getWorldPoint(v1);
+		v2 = two.getWorldPoint(v2);
 		
-		var jd:b2DistanceJointDef = new b2DistanceJointDef();
-		jd.Initialize(one, two, v1, v2);
+		var jd = new B2DistanceJointDef();
+		jd.initialize(one, two, v1, v2);
 		
-		var toReturn:b2Joint = world.CreateJoint(jd);
+		var toReturn = world.createJoint(jd);
 		addJoint(toReturn);
 		
-		return toReturn as b2DistanceJoint;
+		return cast(toReturn, B2DistanceJoint);
 	}
 	
 	//---
 	
-	public function createHingeJoint
+	/*public function createHingeJoint
 	(
 		one:b2Body, 
 		two:b2Body = null, 
