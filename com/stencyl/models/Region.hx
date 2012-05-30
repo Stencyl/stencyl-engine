@@ -82,8 +82,8 @@ class Region extends Actor
 			upperXBound = simpleBounds.width;
 			upperYBound = simpleBounds.height;
 					
-			originalWidth = regionWidth = Math.round(Engine.toPixelUnits(Math.abs(lowerXBound - upperXBound)));
-			originalHeight = regionHeight = Math.round(Engine.toPixelUnits(Math.abs(lowerYBound - upperYBound)));
+			originalWidth = regionWidth = Math.round(Math.abs(lowerXBound - upperXBound));
+			originalHeight = regionHeight = Math.round(Math.abs(lowerYBound - upperYBound));
 		}
 		
 		else
@@ -202,7 +202,7 @@ class Region extends Actor
 		setX(x);
 		setY(y);
 		
-		//technically we should clear containedActors...
+		//TODO: technically we should clear/re-check containedActors...
 	}
 	
 	public function resetSize()
