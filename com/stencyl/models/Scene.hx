@@ -29,8 +29,10 @@ import box2D.dynamics.joints.B2LineJointDef;
 import box2D.common.math.B2Vec2;
 
 import haxe.xml.Fast;
+import com.stencyl.Engine;
 import com.stencyl.utils.Utils;
 
+import nme.geom.Rectangle;
 import nme.utils.ByteArray;
 
 class Scene
@@ -165,11 +167,23 @@ class Scene
 		{
 			var w:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.w)); 
 			var h:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.h)); 
-			var box = new B2PolygonShape();
-			box.setAsBox(w/2, h/2);
-			shape = box;
-			shapeList[0] = shape;
-			region = new RegionDef(shapeList, elementID, name, x, y);
+			
+			if(Engine.NO_PHYSICS)
+			{
+				w = Std.parseFloat(e.att.w);
+				h = Std.parseFloat(e.att.h);
+			
+				region = new RegionDef(shapeList, elementID, name, x, y, 0, new Rectangle(0, 0, w, h));
+			}
+			
+			else
+			{
+				var box = new B2PolygonShape();
+				box.setAsBox(w/2, h/2);
+				shape = box;
+				shapeList[0] = shape;
+				region = new RegionDef(shapeList, elementID, name, x, y);
+			}
 		}
 		
 		else if(type == "poly")
@@ -180,13 +194,25 @@ class Scene
 			var shapeType:String = "polyregion";
 			
 			//backwards compatibility for box regions
-			if(pts == null)
+			if(pts == null || Engine.NO_PHYSICS)
 			{
-				var box = new B2PolygonShape();
-				box.setAsBox(w/2, h/2);
-				shape = box;
-				shapeList[0] = shape;
-				region = new RegionDef(shapeList, elementID, name, x, y);
+				if(Engine.NO_PHYSICS)
+				{
+					w = Std.parseFloat(e.att.w);
+					h = Std.parseFloat(e.att.h);
+				
+					region = new RegionDef(shapeList, elementID, name, x, y, 0, new Rectangle(0, 0, w, h));
+				}
+				
+				else
+				{
+					var box = new B2PolygonShape();
+					box.setAsBox(w/2, h/2);
+					shape = box;
+					shapeList[0] = shape;
+					region = new RegionDef(shapeList, elementID, name, x, y);
+				}
+				
 				return region;
 			}
 			
@@ -243,10 +269,21 @@ class Scene
 		else
 		{
 			var radius:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.rad));
-			shape = new B2CircleShape();
-			shape.m_radius = radius;
-			shapeList[0] = shape;
-			region = new RegionDef(shapeList, elementID, name, x, y);
+			
+			if(Engine.NO_PHYSICS)
+			{
+				radius = Std.parseFloat(e.att.rad);
+				
+				region = new RegionDef(shapeList, elementID, name, x, y, 0, new Rectangle(0, 0, radius*2, radius*2));
+			}
+			
+			else
+			{
+				shape = new B2CircleShape();
+				shape.m_radius = radius;
+				shapeList[0] = shape;
+				region = new RegionDef(shapeList, elementID, name, x, y);
+			}		
 		}
 		
 		return region;

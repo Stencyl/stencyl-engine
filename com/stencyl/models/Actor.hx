@@ -232,8 +232,8 @@ class Actor extends Sprite
 		x:Float=0, 
 		y:Float=0, 
 		layerID:Int=0,
-		width:Int=32, 
-		height:Int=32,
+		width:Float=32, 
+		height:Float=32,
 		sprite:com.stencyl.models.actor.Sprite=null,
 		behaviorValues:Hash<Dynamic>=null,
 		actorType:ActorType=null,
@@ -260,6 +260,11 @@ class Actor extends Sprite
 		
 		HITBOX = new Mask();
 		HITBOX.assignTo(this);
+		
+		if(Std.is(this, Region) && Engine.NO_PHYSICS)
+		{
+			_mask = HITBOX = shape = new Hitbox(Std.int(width), Std.int(height));
+		}
 		
 		//---
 		

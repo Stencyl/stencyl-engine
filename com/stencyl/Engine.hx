@@ -8,6 +8,7 @@ import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.behavior.Script;
 
 import nme.geom.Point;
+import nme.geom.Rectangle;
 import nme.display.DisplayObject;
 import nme.display.Bitmap;
 import nme.display.BitmapData;
@@ -94,7 +95,7 @@ class Engine
 	public static var INTERNAL_SHIFT:String = "iSHIFT";
 	public static var INTERNAL_CTRL:String = "iCTRL";
 	
-	public static var NO_PHYSICS:Bool = false;
+	public static var NO_PHYSICS:Bool = true;
 	public static var DEBUG_DRAW:Bool = !NO_PHYSICS && true;
 	
 	
@@ -454,6 +455,9 @@ class Engine
 			g.name = grp.name;
 		}
 		
+		//force regions in here
+		groups.set(GameModel.REGION_ID, new Group(GameModel.REGION_ID, "Regions"));
+		
 		actorsOfType = new IntHash<Array<Actor>>();
 		recycledActorsOfType = new IntHash<Array<Actor>>();
 		
@@ -707,7 +711,7 @@ class Engine
 
 		for(r in scene.regions)
 		{
-			var region:Region = new Region(this, r.x, r.y, r.shapes);
+			var region:Region = new Region(this, r.x, r.y, r.shapes, r.simpleBounds);
 			region.name = r.name;
 			
 			region.setX(Engine.toPixelUnits(r.x) + (region.regionWidth / 2));
@@ -2817,10 +2821,19 @@ class Engine
 		w = Engine.toPhysicalUnits(w);
 		h = Engine.toPhysicalUnits(h);
 	
-		var p = new B2PolygonShape();
-		p.setAsBox(w/2, h/2);
+		if(NO_PHYSICS)
+		{
+			var region = new Region(this, x, y, [], new Rectangle(0, 0, w, h));
+			addRegion(region);
+			return region;
+		}
 		
-		return createRegion(x, y, p, true);
+		else
+		{
+			var p = new B2PolygonShape();
+			p.setAsBox(w/2, h/2);
+			return createRegion(x, y, p, true);
+		}
 	}
 	
 	public function createCircularRegion(x:Float, y:Float, r:Float):Region
@@ -2829,10 +2842,19 @@ class Engine
 		y = Engine.toPhysicalUnits(y);
 		r = Engine.toPhysicalUnits(r);
 		
-		var cShape = new B2CircleShape();
-		cShape.m_radius = r;
+		if(NO_PHYSICS)
+		{
+			var region = new Region(this, x, y, [], new Rectangle(0, 0, r*2, r*2));
+			addRegion(region);
+			return region;
+		}
 		
-		return createRegion(x, y, cShape, true);
+		else
+		{
+			var cShape = new B2CircleShape();
+			cShape.m_radius = r;
+			return createRegion(x, y, cShape, true);
+		}
 	}
 	
 	public function addRegion(r:Region)

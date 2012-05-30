@@ -86,6 +86,14 @@ class GameModel
 			}
 		}
 		
+		if(Engine.NO_PHYSICS)
+		{
+			for(g in groups)
+			{
+				collisionGroups.push(new CollisionGroupDef(g.ID, REGION_ID));
+			}
+		}
+		
 		for(cg in collisionGroups)
 		{
 			var g1 = cg.group1;
@@ -101,8 +109,11 @@ class GameModel
 				groupsCollidesWith.set(g2, new Array<Int>());
 			}
 			
-			collisionMap[g1][g2] = true;
-			collisionMap[g2][g1] = true;
+			if(!Engine.NO_PHYSICS)
+			{
+				collisionMap[g1][g2] = true;
+				collisionMap[g2][g1] = true;
+			}
 			
 			groupsCollidesWith.get(g1).push(g2);
 			groupsCollidesWith.get(g2).push(g1);

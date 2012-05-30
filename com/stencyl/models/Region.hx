@@ -1,6 +1,7 @@
 package com.stencyl.models;
 
 import com.stencyl.models.Actor;
+import com.stencyl.models.collision.Hitbox;
 import com.stencyl.utils.Utils;
 
 import box2D.collision.B2AABB;
@@ -12,6 +13,8 @@ import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2CircleShape;
 import box2D.collision.shapes.B2PolygonShape;
 
+import nme.geom.Rectangle;
+
 class Region extends Actor
 {
 	public var isCircle:Bool;
@@ -20,6 +23,9 @@ class Region extends Actor
 	private var containedActors:IntHash<Int>;
 
 	private var copy:B2Shape;
+	
+	//Strictly used in non-Box2D mode
+	public var simpleBounds:Rectangle;
 	
 	public var regionWidth:Float;
 	public var regionHeight:Float;
@@ -32,11 +38,10 @@ class Region extends Actor
 	
 	private var justAdded:Array<Dynamic>;
 	private var justRemoved:Array<Dynamic>;
-	
-	//TODO: Make friendly for non-Box2D games!
-	public function new(game:Engine, x:Float, y:Float, shapes:Array<B2Shape>)
+
+	public function new(game:Engine, x:Float, y:Float, shapes:Array<B2Shape>, simpleBounds:Rectangle = null)
 	{
-		super(game, 0, -2, x, y, game.getTopLayer(), 1, 1, 
+		super(game, 0, -2, x, y, game.getTopLayer(), Engine.NO_PHYSICS ? simpleBounds.width : 1, Engine.NO_PHYSICS ? simpleBounds.height : 1, 
 		      null, null, null, null, 
 		      false, false, false, false, 
 		      Engine.NO_PHYSICS ? null : shapes[0],
@@ -46,7 +51,9 @@ class Region extends Actor
 		alwaysSimulate = true;
 		isRegion = true;
 		isTerrainRegion = false;
+		solid = true;
 		
+		this.simpleBounds = simpleBounds;
 		copy = shapes[0];
 		
 		containedActors = new IntHash<Int>();
@@ -70,7 +77,8 @@ class Region extends Actor
 		
 		if(Engine.NO_PHYSICS)
 		{
-			upperXBound = upperYBound = 32;
+			upperXBound = simpleBounds.width;
+			upperYBound = simpleBounds.height;
 					
 			originalWidth = regionWidth = Math.round(Engine.toPixelUnits(Math.abs(lowerXBound - upperXBound)));
 			originalHeight = regionHeight = Math.round(Engine.toPixelUnits(Math.abs(lowerYBound - upperYBound)));

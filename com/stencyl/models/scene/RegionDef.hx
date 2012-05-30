@@ -1,6 +1,7 @@
 package com.stencyl.models.scene;
 
 import box2D.collision.shapes.B2Shape;
+import nme.geom.Rectangle;
 
 class RegionDef
 {
@@ -12,8 +13,9 @@ class RegionDef
 	public var ID:Int;
 	public var name:String;
 	public var shapeID:Int;
+	public var simpleBounds:Rectangle;
 	
-	public function new(shapes:Array<B2Shape>, ID:Int, name:String, x:Float, y:Float, shapeID:Int=0)
+	public function new(shapes:Array<B2Shape>, ID:Int, name:String, x:Float, y:Float, shapeID:Int=0, simpleBounds:Rectangle = null)
 	{
 		this.x = x;
 		this.y = y;
@@ -23,5 +25,6 @@ class RegionDef
 		this.ID = ID;
 		this.name = name;
 		this.shapeID = shapeID;
+		this.simpleBounds = simpleBounds;
 	}
 }
