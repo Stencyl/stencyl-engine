@@ -2843,7 +2843,7 @@ class Actor extends Sprite
 		for(actor in actorList.list)
 		{
 			var e = actor;
-				
+	
 			if (x - originX + width > e.x - e.originX
 			&& y - originY + height > e.y - e.originY
 			&& x - originX < e.x - e.originX + e.width
@@ -3110,6 +3110,13 @@ class Actor extends Sprite
 	
 	private function handleCollisionsSimple(a:Actor, fromX:Bool, fromY:Bool)
 	{
+		if(Std.is(a, Region))
+		{
+			var region = cast(a, Region);
+			region.addActor(this);
+			return;
+		}
+	
 		Utils.collision.thisActor = Utils.collision.actorA = this;
 		Utils.collision.otherActor = Utils.collision.actorB = a;
 		

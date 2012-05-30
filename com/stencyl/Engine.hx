@@ -714,8 +714,11 @@ class Engine
 			var region:Region = new Region(this, r.x, r.y, r.shapes, r.simpleBounds);
 			region.name = r.name;
 			
-			region.setX(Engine.toPixelUnits(r.x) + (region.regionWidth / 2));
-			region.setY(Engine.toPixelUnits(r.y) + (region.regionHeight / 2));
+			if(!NO_PHYSICS)
+			{
+				region.setX(Engine.toPixelUnits(r.x) + (region.regionWidth / 2));
+				region.setY(Engine.toPixelUnits(r.y) + (region.regionHeight / 2));
+			}
 			
 			region.ID = r.ID;
 			

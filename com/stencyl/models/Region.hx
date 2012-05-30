@@ -26,7 +26,7 @@ class Region extends Actor
 	
 	//Strictly used in non-Box2D mode
 	public var simpleBounds:Rectangle;
-	
+
 	public var regionWidth:Float;
 	public var regionHeight:Float;
 	
@@ -51,7 +51,9 @@ class Region extends Actor
 		alwaysSimulate = true;
 		isRegion = true;
 		isTerrainRegion = false;
-		solid = true;
+		solid = false;
+		
+		name = "Region";
 		
 		this.simpleBounds = simpleBounds;
 		copy = shapes[0];
@@ -294,7 +296,20 @@ class Region extends Actor
 	}
 	
 	override public function innerUpdate(elapsedTime:Float, hudCheck:Bool)
-	{					
+	{		
+		if(Engine.NO_PHYSICS)
+		{
+			for(id in containedActors)
+			{
+				var a = Engine.engine.getActor(id);
+
+				if(!HITBOX.collide(a.HITBOX))
+				{
+					removeActor(a);
+				}
+			}
+		}
+							
 		while(justAdded.length > 0)
 		{				
 			var a = cast(justAdded.pop(), Actor);
