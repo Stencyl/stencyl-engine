@@ -263,7 +263,8 @@ class Actor extends Sprite
 		
 		if(Std.is(this, Region) && Engine.NO_PHYSICS)
 		{
-			_mask = HITBOX = shape = new Hitbox(Std.int(width), Std.int(height));
+			shape = new Hitbox(Std.int(width), Std.int(height));
+			setShape(shape);
 		}
 		
 		//---

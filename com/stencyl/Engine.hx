@@ -2862,6 +2862,11 @@ class Engine
 		var nextID = nextRegionID();
 		r.ID = nextID;
 		regions.set(nextID, r);
+		
+		if(NO_PHYSICS)
+		{
+			groups.get(GameModel.REGION_ID).addChild(r);
+		}
 	}
 	
 	public function removeRegion(ID:Int)
@@ -2869,6 +2874,11 @@ class Engine
 		var r = getRegion(ID);	
 		regions.remove(r.ID);
 		r.destroy();
+		
+		if(NO_PHYSICS)
+		{
+			groups.get(GameModel.REGION_ID).removeChild(r);
+		}
 	}
 	
 	public function getRegion(ID:Int):Region
