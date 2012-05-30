@@ -1575,12 +1575,12 @@ class Actor extends Sprite
 	
 	public function getX():Float
 	{
-		if(isRegion || isTerrainRegion)
+		if(!Engine.NO_PHYSICS && (isRegion || isTerrainRegion))
 		{
 			return Math.round(Engine.toPixelUnits(body.getPosition().x) - width/2);
 		}
 		
-		else if (!isLightweight)
+		else if(!isLightweight)
 		{
 			return Math.round(body.getPosition().x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
 		}
@@ -1593,12 +1593,12 @@ class Actor extends Sprite
 	
 	public function getY():Float
 	{
-		if(isRegion || isTerrainRegion)
+		if(!Engine.NO_PHYSICS && (isRegion || isTerrainRegion))
 		{
 			return Math.round(Engine.toPixelUnits(body.getPosition().y) - height/2);
 		}
 			
-		else if (!isLightweight)
+		else if(!isLightweight)
 		{
 			return Math.round(body.getPosition().y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);
 		}

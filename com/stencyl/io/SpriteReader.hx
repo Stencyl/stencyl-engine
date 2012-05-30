@@ -110,6 +110,13 @@ class SpriteReader implements AbstractReader
 	
 	public function readShapes(xml:Fast, imgWidth:Float, imgHeight:Float):IntHash<B2FixtureDef>
 	{
+		//TODO - We should load a custom hitbox instead based on the AABB of the actual shape
+		//so that smaller boxes are supported!
+		if(Engine.NO_PHYSICS)
+		{
+			return null;
+		}
+		
 		var shapes = new IntHash<B2FixtureDef>();
 		
 		for(e in xml.elements)

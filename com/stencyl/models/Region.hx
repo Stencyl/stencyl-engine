@@ -33,12 +33,15 @@ class Region extends Actor
 	private var justAdded:Array<Dynamic>;
 	private var justRemoved:Array<Dynamic>;
 	
+	//TODO: Make friendly for non-Box2D games!
 	public function new(game:Engine, x:Float, y:Float, shapes:Array<B2Shape>)
 	{
 		super(game, 0, -2, x, y, game.getTopLayer(), 1, 1, 
 		      null, null, null, null, 
 		      false, false, false, false, 
-		      shapes[0]);
+		      Engine.NO_PHYSICS ? null : shapes[0],
+		      0, Engine.NO_PHYSICS
+		      );
 	
 		alwaysSimulate = true;
 		isRegion = true;
@@ -53,60 +56,74 @@ class Region extends Actor
 		justAdded = new Array<Dynamic>();
 		justRemoved = new Array<Dynamic>();
 		
-		body.setSleepingAllowed(true);
-		body.setAwake(false);
-		body.setIgnoreGravity(true);
+		if(!Engine.NO_PHYSICS)
+		{
+			body.setSleepingAllowed(true);
+			body.setAwake(false);
+			body.setIgnoreGravity(true);
+		}
 		
 		var lowerXBound:Float = 0;
 		var upperXBound:Float = 0;
 		var lowerYBound:Float = 0;
 		var upperYBound:Float = 0;
 		
-		if(Std.is(shapes[0], B2PolygonShape))
+		if(Engine.NO_PHYSICS)
 		{
-			isCircle = false;
-			var trans = new B2Transform();
-			trans.setIdentity();
-			
-			var aabb = new B2AABB();
-			
-			cast(shapes[0], B2PolygonShape).computeAABB(aabb, trans);
-			
-			lowerXBound = aabb.lowerBound.x;
-			upperXBound = aabb.upperBound.x;
-			lowerYBound = aabb.lowerBound.y;
-			upperYBound = aabb.upperBound.y;
-			
-			for(i in 0...shapes.length)
-			{
-				var fixture = new B2FixtureDef();
-				fixture.isSensor = true;
-				fixture.userData = this;
-				fixture.shape = shapes[i];
-				fixture.friction = 1.0;
-				fixture.density = 0.1;
-				fixture.restitution = 0;
-				fixture.groupID = -1000;
-
-				body.createFixture(fixture);
-				
-				cast(shapes[i], B2PolygonShape).computeAABB(aabb, trans);
-				lowerXBound = Math.min(lowerXBound, aabb.lowerBound.x);
-				upperXBound = Math.max(upperXBound, aabb.upperBound.x);
-				lowerYBound = Math.min(lowerYBound, aabb.lowerBound.y);
-				upperYBound = Math.max(upperYBound, aabb.upperBound.y);
-			}
-			
+			upperXBound = upperYBound = 32;
+					
 			originalWidth = regionWidth = Math.round(Engine.toPixelUnits(Math.abs(lowerXBound - upperXBound)));
 			originalHeight = regionHeight = Math.round(Engine.toPixelUnits(Math.abs(lowerYBound - upperYBound)));
 		}
-			
-		else if(Std.is(shapes[0], B2CircleShape))
+		
+		else
 		{
-			isCircle = true;
-			
-			originalWidth = regionWidth = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
-			originalHeight = regionHeight = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
+			if(Std.is(shapes[0], B2PolygonShape))
+			{
+				isCircle = false;
+				var trans = new B2Transform();
+				trans.setIdentity();
+				
+				var aabb = new B2AABB();
+				
+				cast(shapes[0], B2PolygonShape).computeAABB(aabb, trans);
+				
+				lowerXBound = aabb.lowerBound.x;
+				upperXBound = aabb.upperBound.x;
+				lowerYBound = aabb.lowerBound.y;
+				upperYBound = aabb.upperBound.y;
+				
+				for(i in 0...shapes.length)
+				{
+					var fixture = new B2FixtureDef();
+					fixture.isSensor = true;
+					fixture.userData = this;
+					fixture.shape = shapes[i];
+					fixture.friction = 1.0;
+					fixture.density = 0.1;
+					fixture.restitution = 0;
+					fixture.groupID = -1000;
+	
+					body.createFixture(fixture);
+					
+					cast(shapes[i], B2PolygonShape).computeAABB(aabb, trans);
+					lowerXBound = Math.min(lowerXBound, aabb.lowerBound.x);
+					upperXBound = Math.max(upperXBound, aabb.upperBound.x);
+					lowerYBound = Math.min(lowerYBound, aabb.lowerBound.y);
+					upperYBound = Math.max(upperYBound, aabb.upperBound.y);
+				}
+				
+				originalWidth = regionWidth = Math.round(Engine.toPixelUnits(Math.abs(lowerXBound - upperXBound)));
+				originalHeight = regionHeight = Math.round(Engine.toPixelUnits(Math.abs(lowerYBound - upperYBound)));
+			}
+				
+			else if(Std.is(shapes[0], B2CircleShape))
+			{
+				isCircle = true;
+				
+				originalWidth = regionWidth = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
+				originalHeight = regionHeight = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
+			}
 		}
 	}
 	

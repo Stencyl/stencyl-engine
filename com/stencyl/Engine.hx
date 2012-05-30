@@ -94,7 +94,7 @@ class Engine
 	public static var INTERNAL_SHIFT:String = "iSHIFT";
 	public static var INTERNAL_CTRL:String = "iCTRL";
 	
-	public static var NO_PHYSICS:Bool = true;
+	public static var NO_PHYSICS:Bool = false;
 	public static var DEBUG_DRAW:Bool = !NO_PHYSICS && true;
 	
 	
@@ -724,6 +724,11 @@ class Engine
 	{						
 		terrainRegions = new IntHash<Terrain>();
 		
+		if(NO_PHYSICS)
+		{
+			return;
+		}
+		
 		for(r in scene.terrainRegions)
 		{
 			var region = new Terrain(this, r.x, r.y, r.shapes, r.groupID, r.fillColor);
@@ -741,6 +746,11 @@ class Engine
 			
 	private function loadJoints()
 	{
+		if(NO_PHYSICS)
+		{
+			return;
+		}
+	
 		for(jd in scene.joints)
 		{
 			var a1 = jd.actor1;
