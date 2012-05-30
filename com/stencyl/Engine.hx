@@ -2060,52 +2060,57 @@ class Engine
 		
 		//
 		
-		//QUESTION: Why does this check terrain but none of the others do?
-		if(!event.otherCollidedWithTerrain && collisionListeners.exists(type1) && collisionListeners.get(type1).exists(type2))
+		if(type1 != null && type2 != null)
 		{
-			var listeners = collisionListeners.get(type1).get(type2);
-			invokeListeners2(listeners, event);
-			
-			if(listeners.length == 0)
+			if(!event.otherCollidedWithTerrain && collisionListeners.exists(type1) && collisionListeners.get(type1).exists(type2))
 			{
-				collisionListeners.get(type1).delete(type2);
+				var listeners = collisionListeners.get(type1).get(type2);
+				invokeListeners2(listeners, event);
+				
+				if(listeners.length == 0)
+				{
+					collisionListeners.get(type1).delete(type2);
+				}
+			}
+			
+			if(type1 != type2 && collisionListeners.exists(type2) && collisionListeners.get(type2).exists(type1))
+			{
+				var listeners = collisionListeners.get(type2).get(type1);
+				var reverseEvent = event.switchData();
+				
+				invokeListeners2(listeners, reverseEvent);
+				
+				if(listeners.length == 0)
+				{
+					collisionListeners.get(type2).delete(type1);
+				}
 			}
 		}
 		
-		if(type1 != type2 && collisionListeners.exists(type2) && collisionListeners.get(type2).exists(type1))
+		if(group1 != null && group2 != null)
 		{
-			var listeners = collisionListeners.get(type2).get(type1);
-			var reverseEvent = event.switchData();
-			
-			invokeListeners2(listeners, reverseEvent);
-			
-			if(listeners.length == 0)
+			if(collisionListeners.exists(group1) && collisionListeners.get(group1).exists(group2))
 			{
-				collisionListeners.get(type2).delete(type1);
+				var listeners = collisionListeners.get(group1).get(group2);
+				invokeListeners2(listeners, event);
+				
+				if(listeners.length == 0)
+				{
+					collisionListeners.get(group1).delete(group2);
+				}
 			}
-		}
-		
-		if(collisionListeners.exists(group1) && collisionListeners.get(group1).exists(group2))
-		{
-			var listeners = collisionListeners.get(group1).get(group2);
-			invokeListeners2(listeners, event);
 			
-			if(listeners.length == 0)
+			if(group1 != group2 && collisionListeners.exists(group2) && collisionListeners.get(group2).exists(group1))
 			{
-				collisionListeners.get(group1).delete(group2);
-			}
-		}
-		
-		if(group1 != group2 && collisionListeners.exists(group2) && collisionListeners.get(group2).exists(group1))
-		{
-			var listeners = collisionListeners.get(group2).get(group1);
-			var reverseEvent = event.switchData();
-			
-			invokeListeners2(listeners, reverseEvent);
-			
-			if(listeners.length == 0)
-			{
-				collisionListeners.get(group2).delete(group1);
+				var listeners = collisionListeners.get(group2).get(group1);
+				var reverseEvent = event.switchData();
+				
+				invokeListeners2(listeners, reverseEvent);
+				
+				if(listeners.length == 0)
+				{
+					collisionListeners.get(group2).delete(group1);
+				}
 			}
 		}
 		

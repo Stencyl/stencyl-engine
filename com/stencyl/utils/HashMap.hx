@@ -150,7 +150,6 @@ class HashMap<Key, Val>
 	public function exists(k:Key):Bool
 	{
 		var oid = getObjectId(k);
-		
 		var removed = false;
 		
 		var g = ival.get(oid);
