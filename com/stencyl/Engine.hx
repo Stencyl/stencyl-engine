@@ -1848,8 +1848,8 @@ class Engine
 		cameraY = -Math.abs(camera.y) + screenHeightHalf;
 		
 		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
-		var maxCamX = -Engine.sceneWidth + screenWidthHalf;
-		var maxCamY = -Engine.sceneHeight + screenHeightHalf;
+		var maxCamX = -Engine.sceneWidth + screenWidth;
+		var maxCamY = -Engine.sceneHeight + screenHeight;
 		
 		if(cameraX < maxCamX)
 		{
@@ -1880,8 +1880,8 @@ class Engine
 				
 				else
 				{
-					var endX = -Math.abs(child.width - Engine.screenWidth);
-					var endY = -Math.abs(child.height - Engine.screenHeight);
+					var endX = -Math.abs(child.width);
+					var endY = -Math.abs(child.height);
 					
 					child.x = endX * -(cameraX) / Engine.sceneWidth;
 					child.y = endY * -(cameraY) / Engine.sceneHeight;
