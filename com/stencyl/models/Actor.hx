@@ -1087,7 +1087,7 @@ class Actor extends Sprite
 			
 			body.setPositionAndAngle
 			(
-				new B2Vec2(Engine.toPhysicalUnits(x), Engine.toPhysicalUnits(y)),
+				new B2Vec2(Engine.toPhysicalUnits(x), Engine.toPhysicalUnits(y)), //TODO: very bad for performance
 				Utils.RAD * rotation
 			);
 		}
