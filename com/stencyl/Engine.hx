@@ -1741,6 +1741,7 @@ class Engine
 		if(!NO_PHYSICS)
 		{
 			world.step(0.01, 3, 5);
+			world.clearForces();
 			
 			if(DEBUG_DRAW)
 			{
