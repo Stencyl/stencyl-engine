@@ -125,7 +125,6 @@ class TileLayer extends Sprite
 	public function draw(viewX:Int, viewY:Int, alpha:Float)
 	{
 		bitmapData.fillRect(bitmapData.rect, 0);
-	
 		this.alpha = alpha;
 	
 		viewX = Math.round(Math.abs(viewX));

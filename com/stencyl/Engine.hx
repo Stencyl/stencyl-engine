@@ -1022,9 +1022,17 @@ class Engine
 
 			if(terrain != null)
 			{
+				var tileLayer = scene.terrain.get(layerID);
+			
 				terrain.name = REGULAR_LAYER;
 				master.addChild(terrain);
-				master.addChild(scene.terrain.get(layerID));
+				master.addChild(tileLayer);
+				
+				//Remount bitmap which was likely removed in cleanup process
+				if(tileLayer.bitmap.parent == null)
+				{
+					tileLayer.addChild(tileLayer.bitmap);
+				}
 				
 				if(NO_PHYSICS)
 				{
