@@ -60,11 +60,11 @@ class GameModel
 		//---
 		
 		groups = readGroups(xml.node.groups.elements);
-		groups[REGION_ID] = new GroupDef(REGION_ID, "Regions");
-		groups[PLAYER_ID] = new GroupDef(PLAYER_ID, "Players");
-		groups[TERRAIN_ID] = new GroupDef(TERRAIN_ID, "Terrain");
-		groups[DOODAD_ID] = new GroupDef(DOODAD_ID, "Doodads");
-		groups[ACTOR_ID] = new GroupDef(ACTOR_ID, "Actors");
+		groups.push(new GroupDef(REGION_ID, "Regions"));
+		groups.push(new GroupDef(PLAYER_ID, "Players"));
+		groups.push(new GroupDef(TERRAIN_ID, "Terrain"));
+		groups.push(new GroupDef(DOODAD_ID, "Doodads"));
+		groups.push(new GroupDef(ACTOR_ID, "Actors"));
 		
 		//---
 		
@@ -76,11 +76,20 @@ class GameModel
 		
 		collisionMap = new Array<Array<Bool>>();
 		
-		for(i in 0...groups.length)
+		var groupCount = 0;
+			
+		for(g in groups)
+		{
+			groupCount = Std.int(Math.max(Std.int(g.ID), groupCount));
+		}
+		
+		groupCount++;
+		
+		for(i in 0...groupCount)
 		{
 			collisionMap.push(new Array<Bool>());
 		
-			for(j in 0...groups.length)
+			for(j in 0...groupCount)
 			{
 				collisionMap[i].push(false);
 			}
@@ -147,7 +156,7 @@ class GameModel
 		
 		for(e in list)
 		{
-			map[Std.parseInt(e.att.id)] = new GroupDef(Std.parseInt(e.att.id), e.att.name);
+			map.push(new GroupDef(Std.parseInt(e.att.id), e.att.name));
 		}
 		
 		return map;

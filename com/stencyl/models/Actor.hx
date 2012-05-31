@@ -1275,7 +1275,11 @@ class Actor extends Sprite
 		
 		for(collision in collisions)
 		{
-			if (!collision.thisActor.handlesCollisions || !collision.otherActor.handlesCollisions)
+			if
+			(
+			   collision == null || collision.thisActor == null || collision.otherActor == null ||
+			   !collision.thisActor.handlesCollisions || 
+			   !collision.otherActor.handlesCollisions)
 			{
 				continue;
 			}

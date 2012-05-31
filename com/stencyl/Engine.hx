@@ -95,8 +95,8 @@ class Engine
 	public static var INTERNAL_SHIFT:String = "iSHIFT";
 	public static var INTERNAL_CTRL:String = "iCTRL";
 	
-	public static var NO_PHYSICS:Bool = true;
-	public static var DEBUG_DRAW:Bool = !NO_PHYSICS && true;
+	public static var NO_PHYSICS:Bool = false;
+	public static var DEBUG_DRAW:Bool = false; //!NO_PHYSICS && true;
 	
 	
 	//*-----------------------------------------------
