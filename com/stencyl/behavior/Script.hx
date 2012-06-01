@@ -160,7 +160,12 @@ class Script
 	
 	public inline function asNumber(o:Dynamic):Float
 	{
-		if(Std.is(o, Bool))
+		if(o == null)
+		{
+			return 0;
+		}
+		
+		else if(Std.is(o, Bool))
 		{
 			return cast(o, Bool) ? 1 : 0;
 		}

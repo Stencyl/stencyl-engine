@@ -38,6 +38,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		this.sheet = sheet;
 		this.durations = durations;
 		this.numFrames = numFrames;
+		this.smoothing = true;
 		
 		region = new Rectangle(0, 0, frameWidth, sheet.height);
 		pt = new Point(0, 0);

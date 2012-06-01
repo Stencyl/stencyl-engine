@@ -114,19 +114,21 @@ class BehaviorManager
 		if(b != null && b.script != null)
 		{
 			attributeName = b.script.toInternalName(attributeName);
+			
+			var field = Reflect.field(b.script, attributeName);
 
-			if(Reflect.hasField(b.script, attributeName))
+			if(field == null)
 			{
-				return Reflect.field(b.script, attributeName);
+				trace("Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
 			}
 			
-			else
-			{
-				trace("Warning: Attribute " + attributeName + " does not exist for " + behaviorName);		
-			}
+			return field;
 		}
 		
-		trace("Warning: Behavior does not exist - " + behaviorName);
+		else
+		{
+			trace("Warning: Behavior does not exist - " + behaviorName);
+		}
 		
 		return null;
 	}
@@ -137,7 +139,9 @@ class BehaviorManager
 		
 		if(b != null && b.script != null)
 		{
-			if(Reflect.hasField(b.script, attributeName))
+			var field = Reflect.field(b.script, attributeName);
+			
+			if(field != null)
 			{
 				Reflect.setField(b.script, attributeName, value);
 			}
