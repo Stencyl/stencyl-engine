@@ -218,7 +218,6 @@ class SpriteReader implements AbstractReader
 
 			//Axis-orient the polygon otherwise it rotates around the wrong point.
 			var s = B2PolygonShape.asArray(vertices, vertices.length);
-
 			var aabb = new B2AABB();
 			var t = new B2Transform();
 			t.setIdentity();

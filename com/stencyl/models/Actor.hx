@@ -1700,8 +1700,6 @@ class Actor extends Sprite
 			{
 				body.setLinearVelocity(zero);
 			}
-			
-			this.x = Math.round(dummy.x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
 		}
 	}
 	
@@ -1732,8 +1730,6 @@ class Actor extends Sprite
 			{
 				body.setLinearVelocity(zero);
 			}
-			
-			this.y = Math.round(dummy.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);
 		}
 	}
 	
