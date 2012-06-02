@@ -94,8 +94,8 @@ class Terrain extends Actor
 		{
 			isCircle = true;
 			
-			originalWidth = regionWidth = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
-			originalHeight = regionHeight = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
+			originalWidth = regionWidth = Engine.toPixelUnits(cast(shapes[0], B2CircleShape).m_radius * 2);
+			originalHeight = regionHeight = Engine.toPixelUnits(cast(shapes[0], B2CircleShape).m_radius * 2);
 		}
 	}
 	

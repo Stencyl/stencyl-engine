@@ -4,9 +4,7 @@ import com.stencyl.Engine;
 
 import nme.Lib;
 import nme.display.Sprite;
-
 import nme.events.Event;
-
 import nme.display.StageAlign;
 import nme.display.StageScaleMode;
 
@@ -42,7 +40,10 @@ class Universal extends Sprite
 		Engine.stage = stage;
 		stage.align = StageAlign.TOP_LEFT;
 		stage.scaleMode = StageScaleMode.NO_SCALE;		
-
+		
+		//var stats = new com.nmefermmmtools.debug.Stats();
+		//stage.addChild(stats);
+		
 		engine = new Engine(this);
 	}
 	

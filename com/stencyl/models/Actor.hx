@@ -1081,13 +1081,16 @@ class Actor extends Sprite
 		
 		if(a && b)
 		{
-			x = tweenLoc.x;
-			y = tweenLoc.y;
-			rotation = tweenAngle.angle;
+			//x = tweenLoc.x;
+			//y = tweenLoc.y;
+			//rotation = tweenAngle.angle;
+			
+			dummy.x = Engine.toPhysicalUnits(x);
+			dummy.y = Engine.toPhysicalUnits(y);
 			
 			body.setPositionAndAngle
 			(
-				new B2Vec2(Engine.toPhysicalUnits(x), Engine.toPhysicalUnits(y)), //TODO: very bad for performance
+				dummy,
 				Utils.RAD * rotation
 			);
 		}
@@ -1096,16 +1099,12 @@ class Actor extends Sprite
 		{
 			if(a)
 			{
-				x = tweenLoc.x;
 				setX(tweenLoc.x);
-				
-				y = tweenLoc.y;
 				setY(tweenLoc.y);
 			}
 			
 			if(b)
 			{
-				rotation = tweenAngle.angle;
 				setAngle(tweenAngle.angle, false);
 			}
 		}

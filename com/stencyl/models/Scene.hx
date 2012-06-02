@@ -377,10 +377,11 @@ class Scene
 			}*/
 			
 			var vertices = new Array<Dynamic>();
-
-			for(i in 1...shapeParams.length)
+			var arr = shapeParams.slice(1);
+			
+			for(i in 0...Std.int(arr.length/2))
 			{
-				var pt = new B2Vec2(Std.parseFloat(shapeParams[i%vertices.length]), Std.parseFloat(shapeParams[(i+1)%vertices.length]));
+				var pt = new B2Vec2(Std.parseFloat(arr[(i*2)%arr.length]), Std.parseFloat(arr[(i*2 + 1)%arr.length]));
 				vertices.push(pt);
 			}
 			
