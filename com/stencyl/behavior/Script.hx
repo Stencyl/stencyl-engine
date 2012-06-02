@@ -242,14 +242,6 @@ class Script
 	{
 	}
 	
-	public function update(elapsedTime:Float)
-	{
-	}
-	
-	public function draw(g:Graphics, x:Int, y:Int)
-	{
-	}
-	
 	//*-----------------------------------------------
 	//* Event Registration
 	//*-----------------------------------------------

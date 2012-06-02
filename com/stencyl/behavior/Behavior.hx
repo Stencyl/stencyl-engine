@@ -169,20 +169,4 @@ class Behavior
 			}
 		}
 	}
-
-	public function update(elapsedTime:Float)
-	{
-		if(script != null)
-		{
-			script.update(elapsedTime);
-		}
-	}
-	
-	public function draw(g:Graphics, x:Int, y:Int)
-	{
-		if(script != null)
-		{
-			script.draw(g, x, y);	
-		}
-	}
 }

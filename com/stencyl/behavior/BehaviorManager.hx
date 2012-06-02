@@ -81,28 +81,6 @@ class BehaviorManager
 		}	
 	}
 	
-	public function update(elapsedTime:Float)
-	{
-		for(i in 0...behaviors.length)
-		{
-			var b:Behavior = behaviors[i];
-			
-			if(b.enabled)
-			{
-				try
-				{
-					b.update(elapsedTime);	
-				}
-				
-				catch(e:String)
-				{
-					trace("Error in always for behavior: " + b.name);
-					trace(e);
-				}
-			}
-		}	
-	}
-	
 	//*-----------------------------------------------
 	//* Messaging
 	//*-----------------------------------------------

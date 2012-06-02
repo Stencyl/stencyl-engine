@@ -98,8 +98,4 @@ class Motion extends ActorScript
 		
 		actor.makeAlwaysSimulate();
 	}
-
-	override public function update(elapsedTime:Float)
-	{
-	}
 }
