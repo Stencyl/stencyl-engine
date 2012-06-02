@@ -2448,7 +2448,7 @@ class Actor extends Sprite
 	//* Filters
 	//*-----------------------------------------------
 
-	public function setFilter(filter:Array<Dynamic>)
+	public function setFilter(filter:Array<nme.filters.BitmapFilter>)
 	{			
 		filters = filter;
 	}

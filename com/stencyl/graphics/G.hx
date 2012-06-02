@@ -25,7 +25,7 @@ class G
 	public var scaleX:Float; //[1]
 	public var scaleY:Float; //[1]
 	public var alpha:Float; // [0,1]
-	public var blendMode:BlendMode;
+	public var blendMode:Dynamic;
 	public var strokeSize:Int;
 	public var fillColor:Int;
 	public var strokeColor:Int;

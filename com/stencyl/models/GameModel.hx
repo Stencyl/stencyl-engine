@@ -144,7 +144,9 @@ class GameModel
 		for(e in list.elements)
 		{
 			var sceneID = Std.parseInt(e.att.id);
-			map.set(Std.parseInt(e.att.id), new Scene(sceneID, e.att.name, Data.get().scenesXML.get(Std.parseInt(e.att.id))));
+			var data = Data.get().scenesXML.get(Std.parseInt(e.att.id));
+			
+			map.set(Std.parseInt(e.att.id), new Scene(sceneID, e.att.name, data));
 		}
 		
 		return map;

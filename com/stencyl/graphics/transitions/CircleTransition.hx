@@ -55,7 +55,7 @@ class CircleTransition extends Transition
 		active = true;
 			
 		s = new Shape();
-		s.blendMode = BlendMode.LAYER;
+		//s.blendMode = BlendMode.LAYER;
 		circleImg = new BitmapData(Engine.screenWidth, Engine.screenHeight, true, color);
 		circleImgRect = new Rectangle(0, 0, circleImg.width, circleImg.height);
 		radius = beginRadius;

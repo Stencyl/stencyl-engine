@@ -2,6 +2,7 @@ package com.stencyl.graphics;
 
 import nme.display.Sprite;
 import nme.display.BitmapData;
+
 import nme.display.Tilesheet;
 
 class SheetAnimation extends Sprite, implements AbstractAnimation

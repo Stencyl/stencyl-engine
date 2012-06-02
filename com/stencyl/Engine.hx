@@ -96,7 +96,7 @@ class Engine
 	public static var INTERNAL_CTRL:String = "iCTRL";
 	
 	public static var NO_PHYSICS:Bool = false;
-	public static var DEBUG_DRAW:Bool = true; //!NO_PHYSICS && true;
+	public static var DEBUG_DRAW:Bool = false; //!NO_PHYSICS && true;
 	
 	
 	//*-----------------------------------------------
@@ -1408,7 +1408,7 @@ class Engine
 			trace("Putting actor inside default group");
 			layer = defaultGroup;
 		}
-
+		
 		//To ensure that it draws after
 		layer.addChild(a);
 		a.layerID = layerID;
@@ -1673,7 +1673,7 @@ class Engine
 	{
 		if(scene == null)
 		{
-			trace("Scene is null");
+			//trace("Scene is null");
 			return;
 		}
 		

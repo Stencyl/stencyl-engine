@@ -130,7 +130,14 @@ class Scene
 		
 		wireframes = readWireframes(xml.node.terrain.elements);
 		
+		#if js
+		var rawLayers = readRawLayers(nme.Assets.getText("assets/data/scene-" + ID + ".txt"), numLayers);
+		#end
+		
+		#if !js
 		var rawLayers = readRawLayers(Data.get().scenesTerrain.get(ID), numLayers);
+		#end
+		
 		terrain = readLayers(xml.node.layers.elements, rawLayers);
 	}
 	
@@ -524,21 +531,18 @@ class Scene
 		return map;
 	}
 	
-	public function readRawLayers(bytes:ByteArray, numLayers:Int):IntHash<TileLayer>
+	#if js
+	public function readRawLayers(data:String, numLayers:Int):IntHash<TileLayer>
 	{
 		var map = new IntHash<TileLayer>();
-		var layerHeaders = new Array<Int>();
-		
-		if(bytes != null)
+
+		if(data != null)
 		{
+			var split = data.split("~");
+		
 			for(i in 0...numLayers)
 			{
-				layerHeaders[i] = bytes.readInt();
-			}
-			
-			for(i in 0...numLayers)
-			{
-				var newLayer = readRawLayer(bytes, layerHeaders[i]);
+				var newLayer = readRawLayer(split[i]);
 				map.set(newLayer.layerID, newLayer);
 			}
 		}
@@ -546,40 +550,41 @@ class Scene
 		return map;
 	}
 	
-	public function readRawLayer(bytes:ByteArray, length:Int):TileLayer
+	public function readRawLayer(data:String):TileLayer
 	{	
+		var split = data.split("#");
 		var width = Std.int(Math.floor(sceneWidth / tileWidth));
 		var height = Std.int(Math.floor(sceneHeight / tileHeight));
 		
-		var layerID = bytes.readInt();
-		length -= 4;
-		
-		var zOrder = bytes.readInt();
-		length -= 4;
-		
+		var layerID = Std.parseInt(split[0]);
+		var zOrder = Std.parseInt(split[1]);
+
 		var layer = new TileLayer(layerID, zOrder, this, width, height);
 		
 		var row = 0;
 		var col = 0;
 		
-		var RLETILE_BYTE_COUNT = 8;
-		var numChunks:Int = Std.int(length / RLETILE_BYTE_COUNT);
-		
 		//Grid for non-Box2D games
 		var grid = new com.stencyl.models.collision.Grid(sceneWidth, sceneHeight, tileWidth, tileHeight);
 		layer.grid = grid;
 
-		for(i in 0...numChunks)
+		split = split[2].split("|");
+		
+		for(i in 0...split.length)
 		{
-			//Unused value we have to keep for compatibility reasons.
-			bytes.readShort();
+			if(split[i] == "" || split[i] == "E" || split[i] == "EMPTY")
+			{
+				continue;
+			}
 			
-			var tilesetID:Int = bytes.readShort();
-			var tileID:Int = bytes.readShort();
-			var runLength:Int = bytes.readShort();
+			var item = split[i].split(",");
+		
+			var tilesetID:Int = Std.parseInt(item[0]);
+			var tileID:Int = Std.parseInt(item[1]);
+			var runLength:Int = Std.parseInt(item[2]);
 			
 			var tset:Tileset = null;
-			
+
 			if(tilesetID != -1)
 			{
 				tset = cast(Data.get().resources.get(tilesetID), Tileset);
@@ -622,6 +627,108 @@ class Scene
 		
 		return layer;
 	}
+	#end
+	
+	#if !js
+	public function readRawLayers(bytes:ByteArray, numLayers:Int):IntHash<TileLayer>
+	{
+		var map = new IntHash<TileLayer>();
+		var layerHeaders = new Array<Int>();
+		
+		if(bytes != null)
+		{
+			for(i in 0...numLayers)
+			{
+				layerHeaders[i] = bytes.readInt();
+			}
+			
+			for(i in 0...numLayers)
+			{
+				var newLayer = readRawLayer(bytes, layerHeaders[i]);
+				map.set(newLayer.layerID, newLayer);
+			}
+		}
+				
+		return map;
+	}
+	
+	public function readRawLayer(bytes:ByteArray, length:Int):TileLayer
+	{	
+		var width = Std.int(Math.floor(sceneWidth / tileWidth));
+		var height = Std.int(Math.floor(sceneHeight / tileHeight));
+		
+		var layerID = bytes.readInt();
+		length -= 4;
+		
+		var zOrder = bytes.readInt();
+		length -= 4;
+		
+		var layer = new TileLayer(layerID, zOrder, this, width, height);
+		
+		var row = 0;
+		var col = 0;
+		
+		var RLETILE_BYTE_COUNT = 8;
+		var numChunks:Int = Std.int(length / RLETILE_BYTE_COUNT);
+		
+		//Grid for non-Box2D games - TODO: Don't make this for Box2D games?
+		var grid = new com.stencyl.models.collision.Grid(sceneWidth, sceneHeight, tileWidth, tileHeight);
+		layer.grid = grid;
+
+		for(i in 0...numChunks)
+		{
+			//Unused value we have to keep for compatibility reasons.
+			bytes.readShort();
+			
+			var tilesetID:Int = bytes.readShort();
+			var tileID:Int = bytes.readShort();
+			var runLength:Int = bytes.readShort();
+			
+			var tset:Tileset = null;
+			
+			if(tilesetID != -1)
+			{
+				tset = cast(Data.get().resources.get(tilesetID), Tileset);
+			}
+			
+			for(runIndex in 0...runLength)
+			{
+				if(tset == null || tileID < 0 || tset == null)
+				{
+					layer.setTileAt(row, col, null);
+				}
+				
+				else
+				{
+					layer.setTileAt(row, col, tset.tiles[tileID]);
+					
+					if(tset.tiles[tileID].collisionID > 0)
+					{
+						grid.setTile(col, row, true);
+					}
+
+					var tile = tset.tiles[tileID];
+					
+					//TODO: If animated tile, add to update list
+					//if (tile != null && tile.pixels != null && animatedTiles.indexOf(tile) == -1)
+					//{
+					//	animatedTiles.push(tile);
+					//}
+				}
+				
+				col++;
+				
+				if(col >= width)
+				{
+					col = 0;
+					row++;
+				}
+			}
+		}
+		
+		return layer;
+	}
+	#end
 	
 	public function readBackgrounds(list:Iterator<Fast>):Array<Int>
 	{
