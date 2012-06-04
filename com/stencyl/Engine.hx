@@ -96,7 +96,7 @@ class Engine
 	public static var INTERNAL_CTRL:String = "iCTRL";
 	
 	public static var NO_PHYSICS:Bool = false;
-	public static var DEBUG_DRAW:Bool = false; //!NO_PHYSICS && true;
+	public static var DEBUG_DRAW:Bool = true; //!NO_PHYSICS && true;
 	
 	
 	//*-----------------------------------------------
@@ -1751,10 +1751,10 @@ class Engine
 			world.step(0.01, 3, 5);
 			world.clearForces();
 			
-			if(DEBUG_DRAW)
+			/*if(DEBUG_DRAW)
 			{
 				world.drawDebugData();
-			}
+			}*/
 		}
 
 		for(r in regions)

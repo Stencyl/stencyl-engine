@@ -28,6 +28,11 @@ class Sound extends Resource
 		
 		//TODO: For now, it's always...
 		this.ext = "mp3";
+		
+		if(!streaming)
+		{
+			Assets.getSound("assets/sfx/sound-" + ID + "." + ext);
+		}
 	}		
 	
 	public function play(channelNum:Int = 1, position:Float = 0):SoundChannel

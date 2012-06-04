@@ -271,6 +271,7 @@ class Actor extends Sprite
 		
 		this.x = 0;
 		this.y = 0;
+		this.rotation = 0;
 		
 		realX = 0;
 		realY = 0;
@@ -1038,8 +1039,19 @@ class Actor extends Sprite
 			
 			x = Math.round(p.x * Engine.physicsScale);
 			y = Math.round(p.y * Engine.physicsScale);		
+			
+			#if js
+			//TODO: Flawed - it rotates by top left corner
+			currAnimation.rotation = body.getAngle() * Utils.DEG;
+			
+			//Goes haywire with this :(
+			//rotation = body.getAngle() * Utils.DEG;
+			#end
+			
+			#if !js
 			rotation = body.getAngle() * Utils.DEG;
-
+			#end
+			
 			if(isHUD)
 			{
 				transform.matrix.identity();
@@ -2448,7 +2460,7 @@ class Actor extends Sprite
 	//* Filters
 	//*-----------------------------------------------
 
-	public function setFilter(filter:Array<nme.filters.BitmapFilter>)
+	public function setFilter(filter:Array<Dynamic>)
 	{			
 		filters = filter;
 	}
