@@ -18,7 +18,7 @@ class G
 	private var defaultFont:Font;
 
 	public var graphics:Graphics;
-	public var canvas:Dynamic; //Sprite for cpp targets, BitmapData for flash
+	public var canvas:Dynamic; //Sprite for cpp, flash targets, BitmapData for js
 	
 	public var x:Float;
 	public var y:Float;
@@ -310,11 +310,11 @@ class G
 		point.x = this.x + x + Engine.cameraX;
 		point.y = this.y + y + Engine.cameraY;	
 		
-		#if (flash || js)
+		#if (js)
 		canvas.copyPixels(img, rect, point);
 		#end
 		
-		#if cpp
+		#if (cpp || flash)
 		var sheet = new Tilesheet(img);
 		sheet.addTileRect(rect, point2);
 		data[0] = point.x;

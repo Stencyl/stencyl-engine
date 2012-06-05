@@ -374,15 +374,15 @@ class Engine
 		transitionLayer = new Sprite();
 		root.addChild(transitionLayer);
 		
-		#if (flash || js)
-		transitionBitmapLayer = new Bitmap(new BitmapData(Engine.screenWidth, Engine.screenHeight, true, 0));
+		#if (js)
+		transitionBitmapLayer = new Bitmap(new BitmapData(1, 1, true, 0));
 		#end
 		
-		#if cpp
+		#if (cpp || flash)
 		transitionBitmapLayer = new Sprite();
 		#end
 		
-		root.addChild(transitionBitmapLayer);
+		//root.addChild(transitionBitmapLayer);
 		
 		debugLayer = new Sprite();
 		root.addChild(debugLayer);
@@ -995,11 +995,11 @@ class Engine
 			var terrain = null;
 			var overlay = new Sprite();
 			
-			#if (flash || js)
+			#if (js)
 			var bitmapOverlay = new Bitmap(new BitmapData(Engine.screenWidth, Engine.screenHeight, true, 0));
 			#end
 			
-			#if cpp
+			#if (cpp || flash)
 			var bitmapOverlay = new Sprite();
 			#end
 			
@@ -1027,12 +1027,6 @@ class Engine
 				terrain.name = REGULAR_LAYER;
 				master.addChild(terrain);
 				master.addChild(tileLayer);
-				
-				//Remount bitmap which was likely removed in cleanup process
-				if(tileLayer.bitmap.parent == null)
-				{
-					tileLayer.addChild(tileLayer.bitmap);
-				}
 				
 				if(NO_PHYSICS)
 				{
@@ -2264,6 +2258,10 @@ class Engine
      
       //TODO: Consider a repainting scheme if performance suffers. Custom drawing only happens when
       //you decide to repaint a layer or all layers. Will likely help on labels.
+      
+      //Flash + mouse movement = FPS down the drain due to this function
+      //Consider pre-rendering the entire tile layers to fix that file part
+      //Not sure what to do with the rest...
         
      //The display tree does almost everything now. We only need to invoke the behavior drawers.
      public function draw()
@@ -2272,11 +2270,11 @@ class Engine
 		{
 			l.overlay.graphics.clear();
 			
-			#if (flash || js)
+			#if (js)
 			l.bitmapOverlay.bitmapData.fillRect(l.bitmapOverlay.bitmapData.rect, 0);
 			#end
 			
-			#if cpp
+			#if (cpp || flash)
 			l.bitmapOverlay.graphics.clear();
 			#end
 		}
@@ -2299,11 +2297,11 @@ class Engine
 				var layer = layers.get(a.layerID);
 				g.graphics = layer.overlay.graphics;
 				
-				#if (flash || js)
+				#if (js)
 				g.canvas = layer.bitmapOverlay.bitmapData;
      			#end
      			
-     			#if cpp
+     			#if (cpp || flash)
 				g.canvas = layer.bitmapOverlay;
 				#end		
      			
@@ -2317,28 +2315,28 @@ class Engine
      	//Only if camera changed?
      	for(layer in tileLayers)
      	{
-     		layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */);
+     		layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */); // FLASH MOUSE SLOWDOWN
      	}
      	
      	//Scene Behavior/Event Drawing
      	g.graphics = transitionLayer.graphics;
      	
-     	#if (flash || js)
+     	#if (js)
      	g.canvas = cast(transitionBitmapLayer, Bitmap).bitmapData;
      	#end
      	
-     	#if cpp
+     	#if (cpp || flash)
      	g.canvas = transitionBitmapLayer;
      	#end
      	
      	g.translateToScreen();
      	g.graphics.clear();
      	
-     	#if (flash || js)
+     	#if (js)
      	g.canvas.fillRect(g.canvas.rect, 0);
      	#end
      	
-     	#if cpp
+     	#if (cpp || flash)
      	g.canvas.graphics.clear();
      	#end
      	

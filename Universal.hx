@@ -1,27 +1,19 @@
 package;
 
-import com.stencyl.Engine;
-
 import nme.Lib;
 import nme.display.Sprite;
 import nme.events.Event;
 import nme.display.StageAlign;
 import nme.display.StageScaleMode;
 
-#if flash
-import com.nmefermmmtools.debug.Console;
-#end
-
 class Universal extends Sprite 
 {
-	var engine:Engine;
-
 	public function new() 
 	{
 		super();
 		
 		#if flash
-		Console.create(true, 192, false);
+		com.nmefermmmtools.debug.Console.create(true, 192, false);
 		
 		//MochiServices.connect("60347b2977273733", root);
 		//MochiAd.showPreGameAd( { id:"60347b2977273733", res:"640x580", clip: root});
@@ -37,14 +29,18 @@ class Universal extends Sprite
 	
 	public function init()
 	{
-		Engine.stage = stage;
+		com.stencyl.Engine.stage = stage;
 		stage.align = StageAlign.TOP_LEFT;
-		stage.scaleMode = StageScaleMode.NO_SCALE;		
+		stage.scaleMode = StageScaleMode.NO_SCALE;
+
+		mouseChildren = false;
+		mouseEnabled = false;
+		stage.mouseChildren = false;
+
+		var stats = new com.nmefermmmtools.debug.Stats();
+		stage.addChild(stats);
 		
-		//var stats = new com.nmefermmmtools.debug.Stats();
-		//stage.addChild(stats);
-		
-		engine = new Engine(this);
+		new com.stencyl.Engine(this);
 	}
 	
 	public static function main() 

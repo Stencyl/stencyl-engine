@@ -14,7 +14,7 @@ import com.stencyl.utils.Utils;
 import com.stencyl.utils.HashMap;
 import com.stencyl.models.collision.Grid;
 
-class TileLayer extends Sprite
+class TileLayer extends Bitmap
 {
 	public var layerID:Int;
 	public var zOrder:Int;
@@ -26,18 +26,16 @@ class TileLayer extends Sprite
 	public var scene:Scene;
 	public var numRows:Int;
 	public var numCols:Int;
-	
-	//What's actually drawn
-	public var bitmap:Bitmap;
-	public var bitmapData:BitmapData;
-	
+
 	//Internal/Temporary stuff
 	private var pixels:BitmapData;
 	private var flashPoint:Point;
+	
+	public var isEmpty:Bool;
 
 	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
 	{
-		super();
+		super(bitmapData = new BitmapData(Engine.screenWidth, Engine.screenHeight, true, 0));
 		
 		this.layerID = layerID;
 		this.zOrder = zOrder;
@@ -60,9 +58,7 @@ class TileLayer extends Sprite
 		
 		flashPoint = new Point();
 		
-		bitmapData = new BitmapData(Engine.screenWidth, Engine.screenHeight);
-		bitmap = new Bitmap(bitmapData);
-		addChild(bitmap);
+		isEmpty = false;
 	}
 	
 	//TODO: It makes more sense to mount it to this, than make a new actor for it
@@ -124,7 +120,15 @@ class TileLayer extends Sprite
 	//We're directly drawing since pre-rendering the layer might not be so memory friendly on large levels and I don't know if it clips.
 	public function draw(viewX:Int, viewY:Int, alpha:Float)
 	{
+		if(isEmpty)
+		{
+			return;
+		}
+		
+		var atLeastOneTile = false;
+	
 		bitmapData.fillRect(bitmapData.rect, 0);
+		
 		this.alpha = alpha;
 	
 		viewX = Math.round(Math.abs(viewX));
@@ -208,6 +212,7 @@ class TileLayer extends Sprite
 					{
 						//TODO: Use drawTiles for CPP targets.
 						bitmapData.copyPixels(pixels, source, flashPoint, null, null, true);
+						atLeastOneTile = true;
 					}
 				}
 				
@@ -218,6 +223,11 @@ class TileLayer extends Sprite
 			py += th;
 			
 			y++;
+		}
+		
+		if(!atLeastOneTile)
+		{
+			isEmpty = true;
 		}
 	}
 }

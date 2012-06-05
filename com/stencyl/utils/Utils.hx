@@ -148,6 +148,22 @@ class Utils
 			container.removeChild(c);
 		}
 	}
+	
+	public static function demouse(container:DisplayObjectContainer)
+	{
+		for(i in 0...container.numChildren)
+		{
+			var c = container.getChildAt(i);
+			
+			if(Std.is(c, DisplayObjectContainer))
+			{
+				Utils.demouse(cast(c, DisplayObjectContainer));
+			}
+			
+			container.mouseChildren = false;
+			container.mouseEnabled = false;
+		}
+	}
 
 	/**
 	 * Sets the camera position.
