@@ -31,8 +31,6 @@ class TileLayer extends Bitmap
 	private var pixels:BitmapData;
 	private var flashPoint:Point;
 	
-	public var isEmpty:Bool;
-
 	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
 	{
 		super(bitmapData = new BitmapData(Engine.screenWidth, Engine.screenHeight, true, 0));
@@ -57,8 +55,6 @@ class TileLayer extends Bitmap
 		}	
 		
 		flashPoint = new Point();
-		
-		isEmpty = false;
 	}
 	
 	//TODO: It makes more sense to mount it to this, than make a new actor for it
@@ -120,13 +116,6 @@ class TileLayer extends Bitmap
 	//We're directly drawing since pre-rendering the layer might not be so memory friendly on large levels and I don't know if it clips.
 	public function draw(viewX:Int, viewY:Int, alpha:Float)
 	{
-		if(isEmpty)
-		{
-			return;
-		}
-		
-		var atLeastOneTile = false;
-	
 		bitmapData.fillRect(bitmapData.rect, 0);
 		
 		this.alpha = alpha;
@@ -212,7 +201,6 @@ class TileLayer extends Bitmap
 					{
 						//TODO: Use drawTiles for CPP targets.
 						bitmapData.copyPixels(pixels, source, flashPoint, null, null, true);
-						atLeastOneTile = true;
 					}
 				}
 				
@@ -223,11 +211,6 @@ class TileLayer extends Bitmap
 			py += th;
 			
 			y++;
-		}
-		
-		if(!atLeastOneTile)
-		{
-			isEmpty = true;
 		}
 	}
 }
