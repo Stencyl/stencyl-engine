@@ -37,9 +37,6 @@ class Universal extends Sprite
 		mouseEnabled = false;
 		stage.mouseChildren = false;
 
-		var stats = new com.nmefermmmtools.debug.Stats();
-		stage.addChild(stats);
-		
 		new com.stencyl.Engine(this);
 	}
 	
