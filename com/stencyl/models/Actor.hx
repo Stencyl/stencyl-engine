@@ -847,7 +847,10 @@ class Actor extends Sprite
 			
 			//var animOrigin:V2 = originMap[name];		
 			
-			updateTweenProperties();
+			if(!isLightweight)
+			{
+				updateTweenProperties();
+			}
 			
 			//var centerx = (currSprite.width / 2) - animOrigin.x;
 			//var centery = (currSprite.height / 2) - animOrigin.y;
@@ -971,6 +974,9 @@ class Actor extends Sprite
 		innerUpdate(elapsedTime, true);
 	}
 	
+	//mouse/col/screen checks kill 5 FPS (is it even active?)
+	//actor update kills 20-25 FPS (!!)
+	//internal update kills 5 FPS
 	public function innerUpdate(elapsedTime:Float, hudCheck:Bool)
 	{
 		//HUD / always simulate actors are updated separately to prevent double updates.
@@ -979,26 +985,70 @@ class Actor extends Sprite
 			return;
 		}
 		
-		/*if(mouseOverListeners.length > 0)
+		if(mouseOverListeners.length > 0)
 		{
-			checkMouseState();
+			//Previously was checkMouseState() - inlined for performance. See Region:innerUpdate for other instance
+			var mouseOver:Bool = isMouseOver();
+				
+			if(mouseState <= 0 && mouseOver)
+			{
+				//Just Entered
+				mouseState = 1;
+			}
+					
+			else if(mouseState >= 1 && mouseOver)
+			{
+				//Over
+				mouseState = 2;
+						
+				if(Input.mousePressed)
+				{
+					//Clicked On
+					mouseState = 3;
+				}
+						
+				else if(Input.mouseDown)
+				{
+					//Dragged
+					mouseState = 4;
+				}
+						
+				if(Input.mouseReleased)
+				{
+					//Released
+					mouseState = 5;
+				}
+			}
+					
+			else if(mouseState > 0 && !mouseOver)
+			{
+				//Just Exited
+				mouseState = -1;
+			}
+				
+			else if(mouseState == -1 && !mouseOver)
+			{
+				mouseState = 0;
+			}	
+			
+			Engine.invokeListeners2(mouseOverListeners, mouseState);
 		}
 				
 		if(!isLightweight)
 		{
-			//TODO: Are these hashmap lookups slow? Try using integers instead.
-			if(collisionListeners.length > 0 || 
+			//TODO: Are these hashmap lookups slow? Try using integers instead. (YES ON MOBILE) - change to t1, g1 (t/g + ID) as string key
+			/*if(collisionListeners.length > 0 || 
 			   engine.collisionListeners.exists(type) || 
 			   engine.collisionListeners.exists(getGroup())) 
 			{
 				handleCollisions();		
-			}
-		}*/
+			}*/
+		}
 
 		internalUpdate(elapsedTime, true);
-		//Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
+		Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
 
-		//TODO: Are these hashmap lookups slow? Try using integers instead.
+		//TODO: Are these hashmap lookups slow? Try using integers instead. (YES ON MOBILE)
 		/*if(positionListeners.length > 0 || 
 		   engine.typeGroupPositionListeners.exists(type) || 
 		   engine.typeGroupPositionListeners.exists(getGroup()))
@@ -1024,7 +1074,10 @@ class Actor extends Sprite
 				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);
 			}
 			
-			this.rotation += elapsedTime * rSpeed;
+			if(rSpeed != 0)
+			{
+				this.rotation += elapsedTime * rSpeed;
+			}
 			
 			if(fixedRotation)
 			{
@@ -1069,6 +1122,7 @@ class Actor extends Sprite
 	   		{
 	   			var a = cast(currAnimation, AbstractAnimation);
 	   			
+	   			//This may be a slowdown on iOS by 3-5 FPS due to clear and redraw?
 	   			if(a.getNumFrames() > 1)
 	   			{
 	   				a.update(elapsedTime);
@@ -1076,7 +1130,10 @@ class Actor extends Sprite
 	   		}
 		}
 		
-		updateTweenProperties();
+		if(!isLightweight)
+		{
+			updateTweenProperties();
+		}
 	}	
 	
 	private function updateTweenProperties()
@@ -2281,54 +2338,6 @@ class Actor extends Sprite
 	public function isMouseReleased():Bool
 	{
 		return isMouseOver() && Input.mouseReleased;
-	}
-	
-	public function checkMouseState()
-	{
-		var mouseOver:Bool = isMouseOver();
-				
-		if(mouseState <= 0 && mouseOver)
-		{
-			//Just Entered
-			mouseState = 1;
-		}
-				
-		else if(mouseState >= 1 && mouseOver)
-		{
-			//Over
-			mouseState = 2;
-					
-			if(Input.mousePressed)
-			{
-				//Clicked On
-				mouseState = 3;
-			}
-					
-			else if(Input.mouseDown)
-			{
-				//Dragged
-				mouseState = 4;
-			}
-					
-			if(Input.mouseReleased)
-			{
-				//Released
-				mouseState = 5;
-			}
-		}
-				
-		else if(mouseState > 0 && !mouseOver)
-		{
-			//Just Exited
-			mouseState = -1;
-		}
-			
-		else if(mouseState == -1 && !mouseOver)
-		{
-			mouseState = 0;
-		}	
-		
-		Engine.invokeListeners2(mouseOverListeners, mouseState);
 	}
 	
 	//*-----------------------------------------------
