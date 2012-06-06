@@ -36,7 +36,7 @@ class Universal extends Sprite
 		mouseChildren = false;
 		mouseEnabled = false;
 		stage.mouseChildren = false;
-
+			
 		new com.stencyl.Engine(this);
 	}
 	

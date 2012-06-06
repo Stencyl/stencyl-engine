@@ -95,8 +95,8 @@ class Engine
 	public static var INTERNAL_SHIFT:String = "iSHIFT";
 	public static var INTERNAL_CTRL:String = "iCTRL";
 	
-	public static var NO_PHYSICS:Bool = false;
-	public static var DEBUG_DRAW:Bool = true; //!NO_PHYSICS && true;
+	public static var NO_PHYSICS:Bool = true;
+	public static var DEBUG_DRAW:Bool = false; //!NO_PHYSICS && true;
 	
 	
 	//*-----------------------------------------------
@@ -395,6 +395,18 @@ class Engine
 		#if !js
 		var stats = new com.nmefermmmtools.debug.Stats();
 		stage.addChild(stats);
+		//stats.visible = false;
+		#end
+		
+		#if js
+		var stats = new nme.display.FPS(stage.stageWidth - 50, 0);
+		stats.backgroundColor = 0x444444;
+		stats.background = true;
+		stats.opaqueBackground = 0x444444;
+		stats.textColor = 0xffffff;
+		stats.height = 20;
+		stats.width = 50;
+		//stage.addChild(stats); // NO MATTER WHAT THIS DOES NOT SHOW UP. WHY?!?!?!
 		//stats.visible = false;
 		#end
 		
@@ -1023,6 +1035,7 @@ class Engine
 			if(terrain != null)
 			{
 				var tileLayer = scene.terrain.get(layerID);
+				tileLayer.reset();
 			
 				terrain.name = REGULAR_LAYER;
 				master.addChild(terrain);
@@ -1969,7 +1982,7 @@ class Engine
 	{
 		while(acc > STEP_SIZE)
 		{
-			update(STEP_SIZE);
+			//update(STEP_SIZE);
 			acc -= STEP_SIZE;
 
 			Input.update();

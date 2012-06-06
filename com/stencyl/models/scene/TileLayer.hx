@@ -14,7 +14,11 @@ import com.stencyl.utils.Utils;
 import com.stencyl.utils.HashMap;
 import com.stencyl.models.collision.Grid;
 
-class TileLayer extends Bitmap
+#if cpp
+import nme.display.Tilesheet;
+#end
+
+class TileLayer extends Sprite
 {
 	public var layerID:Int;
 	public var zOrder:Int;
@@ -28,12 +32,15 @@ class TileLayer extends Bitmap
 	public var numCols:Int;
 
 	//Internal/Temporary stuff
+	public var bitmapData:BitmapData;
 	private var pixels:BitmapData;
 	private var flashPoint:Point;
 	
+	private static var cacheSource = new HashMap<Tile, Rectangle>();
+	
 	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
 	{
-		super(bitmapData = new BitmapData(Engine.screenWidth, Engine.screenHeight, true, 0));
+		super();
 		
 		this.layerID = layerID;
 		this.zOrder = zOrder;
@@ -55,6 +62,14 @@ class TileLayer extends Bitmap
 		}	
 		
 		flashPoint = new Point();
+	}
+	
+	public function reset()
+	{
+		#if !cpp
+		bitmapData = new BitmapData(Engine.screenWidth, Engine.screenHeight, true, 0);
+		addChild(new Bitmap(bitmapData));
+		#end
 	}
 	
 	//TODO: It makes more sense to mount it to this, than make a new actor for it
@@ -116,7 +131,13 @@ class TileLayer extends Bitmap
 	//We're directly drawing since pre-rendering the layer might not be so memory friendly on large levels and I don't know if it clips.
 	public function draw(viewX:Int, viewY:Int, alpha:Float)
 	{
+		#if cpp
+		graphics.clear();
+		#end
+		
+		#if !cpp
 		bitmapData.fillRect(bitmapData.rect, 0);
+		#end
 		
 		this.alpha = alpha;
 	
@@ -140,7 +161,7 @@ class TileLayer extends Bitmap
 		var px:Int = startX * tw;
 		var py:Int = startY * th;
 		
-		var cacheSource = new HashMap<Tile, Rectangle>();
+		//var cacheSource = new HashMap<Tile, Rectangle>();
 		
 		var y = startY;
 		
@@ -199,8 +220,17 @@ class TileLayer extends Bitmap
 
 					if(source != null)
 					{
-						//TODO: Use drawTiles for CPP targets.
+						#if (flash || js)
 						bitmapData.copyPixels(pixels, source, flashPoint, null, null, true);
+						#end
+						
+						#if cpp
+						t.parent.data[0] = flashPoint.x;
+						t.parent.data[1] = flashPoint.y;
+						t.parent.data[2] = t.parent.sheetMap.get(t.tileID);
+				
+				  		t.parent.tilesheet.drawTiles(graphics, t.parent.data, true);
+				  		#end
 					}
 				}
 				

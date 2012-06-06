@@ -24,14 +24,18 @@ class TilesetReader implements AbstractReader
 
 		var framesAcross:Int = Std.parseInt(xml.att.across);
 		var framesDown:Int = Std.parseInt(xml.att.down);
+		var tileWidth:Int = Std.parseInt(xml.att.tw);
+		var tileHeight:Int = Std.parseInt(xml.att.th);
 		var tiles:Array<Tile> = new Array<Tile>();
 
-		var tset:Tileset = new Tileset(ID, name, framesAcross, framesDown, tiles, Data.get().resourceAssets.get(ID + ".png"));
+		var tset:Tileset = new Tileset(ID, name, framesAcross, framesDown, tileWidth, tileHeight, tiles, Data.get().resourceAssets.get(ID + ".png"));
 		
 		for(e in xml.elements)
 		{
 			tiles[Std.parseInt(e.att.id)] = readTile(e, tset);
 		}
+		
+		tset.setupTilesheet();
 
 		return tset;
 	}
