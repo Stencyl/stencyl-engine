@@ -241,7 +241,11 @@ class Engine
 	//index -> order
 	//value -> layerID
 	public var layersToDraw:SizedIntHash<Int>;
-	public var layerOrders:SizedIntHash<Int>;		
+	public var layerOrders:SizedIntHash<Int>;
+	
+	public var cameraMoved:Bool;
+	public var cameraOldX:Float;
+	public var cameraOldY:Float;	
 	
 	
 	//*-----------------------------------------------
@@ -342,6 +346,7 @@ class Engine
 		//---
 			
 		started = true;
+		cameraMoved = false;
 		
 		//---
 		
@@ -356,6 +361,9 @@ class Engine
 		
 		cameraX = 0;
 		cameraY = 0;
+		
+		cameraOldX = -1;
+		cameraOldY = -1;
 
 		acc = 0;
 		lastTime = Lib.getTimer();
@@ -1982,7 +1990,7 @@ class Engine
 	{
 		while(acc > STEP_SIZE)
 		{
-			//update(STEP_SIZE);
+			update(STEP_SIZE);
 			acc -= STEP_SIZE;
 
 			Input.update();
@@ -2009,6 +2017,12 @@ class Engine
 				continue;
 			}
 		}
+		
+		//Drawing
+		cameraMoved = !(cameraOldX == cameraX && cameraOldY == cameraY);
+		
+		cameraOldX = cameraX;
+		cameraOldY = cameraY;
 		
 		draw();
 	}
@@ -2326,9 +2340,12 @@ class Engine
      	//Walk through each of the drawing events
      	
      	//Only if camera changed?
-     	for(layer in tileLayers)
+     	if(cameraMoved)
      	{
-     		layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */); // FLASH MOUSE SLOWDOWN
+	     	for(layer in tileLayers)
+	     	{
+	     		layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */); // FLASH MOUSE SLOWDOWN
+	     	}
      	}
      	
      	//Scene Behavior/Event Drawing

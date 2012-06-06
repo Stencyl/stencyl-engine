@@ -161,8 +161,6 @@ class TileLayer extends Sprite
 		var px:Int = startX * tw;
 		var py:Int = startY * th;
 		
-		//var cacheSource = new HashMap<Tile, Rectangle>();
-		
 		var y = startY;
 		
 		while(y < endY)
