@@ -46,7 +46,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		updateBitmap();
 	}		
 
-	public function update(elapsedTime:Float)
+	public inline function update(elapsedTime:Float)
 	{
 		timer += elapsedTime;
 		
@@ -90,14 +90,14 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		return !looping && frameIndex >= numFrames -1;
 	}
 	
-	public function reset()
+	public inline function reset()
 	{
 		timer = 0;
 		frameIndex = 0;
 		updateBitmap();
 	}
 	
-	private function updateBitmap()
+	private inline function updateBitmap()
 	{
 		region.x = frameWidth * frameIndex;
 		
@@ -105,7 +105,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		bitmapData.copyPixels(sheet, region, pt);
 	}
 	
-	public function draw(g:G, x:Float, y:Float)
+	public inline function draw(g:G, x:Float, y:Float)
 	{
 		g.drawImage(bitmapData, x, y);
 	}

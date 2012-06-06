@@ -979,7 +979,7 @@ class Actor extends Sprite
 			return;
 		}
 		
-		if(mouseOverListeners.length > 0)
+		/*if(mouseOverListeners.length > 0)
 		{
 			checkMouseState();
 		}
@@ -993,18 +993,18 @@ class Actor extends Sprite
 			{
 				handleCollisions();		
 			}
-		}
+		}*/
 
 		internalUpdate(elapsedTime, true);
-		Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
+		//Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
 
 		//TODO: Are these hashmap lookups slow? Try using integers instead.
-		if(positionListeners.length > 0 || 
+		/*if(positionListeners.length > 0 || 
 		   engine.typeGroupPositionListeners.exists(type) || 
 		   engine.typeGroupPositionListeners.exists(getGroup()))
 		{
 			checkScreenState();
-		}
+		}*/
 	}
 	
 	//doAll prevents super.update from being called, which can often muck with
@@ -1019,7 +1019,10 @@ class Actor extends Sprite
 		//TODO: Actor now off by half in no-physics mode :(	
 		if(isLightweight)
 		{		
-			moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);
+			if(xSpeed != 0 || ySpeed != 0)
+			{
+				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);
+			}
 			
 			this.rotation += elapsedTime * rSpeed;
 			
@@ -1052,6 +1055,7 @@ class Actor extends Sprite
 			rotation = body.getAngle() * Utils.DEG;
 			#end
 			
+			//TODO: Why isn't this above too?
 			if(isHUD)
 			{
 				transform.matrix.identity();
@@ -1063,14 +1067,19 @@ class Actor extends Sprite
 		{
 			if(Std.is(currAnimation, AbstractAnimation))
 	   		{
-	   			cast(currAnimation, AbstractAnimation).update(elapsedTime);
+	   			var a = cast(currAnimation, AbstractAnimation);
+	   			
+	   			if(a.getNumFrames() > 1)
+	   			{
+	   				a.update(elapsedTime);
+	   			}
 	   		}
 		}
 		
 		updateTweenProperties();
 	}	
 	
-	function updateTweenProperties()
+	private function updateTweenProperties()
 	{
 		//In lightweight mode, none of this junk has to happen - it just works like it should!
 		if(isLightweight)

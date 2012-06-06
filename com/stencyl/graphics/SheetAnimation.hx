@@ -16,7 +16,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 	#end
 	
 	private var durations:Array<Int>;
-	private var numFrames:Int;
+	public var numFrames:Int;
 	
 	private var data:Array<Float>;
 	
@@ -46,7 +46,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		updateBitmap();
 	}		
 
-	public function update(elapsedTime:Float)
+	public inline function update(elapsedTime:Float)
 	{
 		timer += elapsedTime;
 		
@@ -90,14 +90,14 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		return !looping && frameIndex >= numFrames -1;
 	}
 	
-	public function reset()
+	public inline function reset()
 	{
 		timer = 0;
 		frameIndex = 0;
 		updateBitmap();
 	}
 	
-	private function updateBitmap()
+	private inline function updateBitmap()
 	{
 		#if !js
 		data[0] = 0;
@@ -109,7 +109,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
   		#end
 	}
 	
-	public function draw(g:G, x:Float, y:Float)
+	public inline function draw(g:G, x:Float, y:Float)
 	{
 		#if !js
 		data[0] = x;

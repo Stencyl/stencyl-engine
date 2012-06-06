@@ -1766,10 +1766,10 @@ class Engine
 			world.step(0.01, 3, 5);
 			world.clearForces();
 			
-			/*if(DEBUG_DRAW)
+			if(DEBUG_DRAW)
 			{
 				world.drawDebugData();
-			}*/
+			}
 		}
 
 		for(r in regions)
@@ -1778,9 +1778,14 @@ class Engine
 			r.innerUpdate(elapsedTime, true);
 		}
 		
-		collisionPairs = new HashMap<Actor, HashMap<Actor, Bool>>();
+		//TODO: Don't like making a new list each time...
 		var disableCollisionList = new Array<Actor>();
-
+		
+		if(!NO_PHYSICS)
+		{
+			collisionPairs = new HashMap<Actor, HashMap<Actor, Bool>>();	
+		}
+		
 		for(a in allActors)
 		{		
 			if(a != null && !a.dead && !a.recycled) 
@@ -1832,15 +1837,6 @@ class Engine
 			}
 		}
 			
-		//NOT NEEDED		
-		/*for(a2 in hudActors)
-		{
-			if(a2 != null && (a2.isLightweight || (a2.body != null && a2.body.isActive())) && !a2.dead && !a2.recycled)
-			{
-				a2.innerUpdate(elapsedTime, false);
-			}
-		}*/
-		
 		for(a in disableCollisionList)
 		{
 			if(a != null)
@@ -2291,6 +2287,8 @@ class Engine
       //Not sure what to do with the rest...
         
      //The display tree does almost everything now. We only need to invoke the behavior drawers.
+     
+     //Change to a repaint on demand mechanism
      public function draw()
      {
      	for(l in layers)
