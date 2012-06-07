@@ -50,7 +50,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 	{
 		timer += elapsedTime;
 		
-		if(timer > durations[frameIndex])
+		if(numFrames > 1 && timer > durations[frameIndex])
 		{
 			timer -= durations[frameIndex];
 			

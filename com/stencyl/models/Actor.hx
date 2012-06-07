@@ -154,6 +154,7 @@ class Actor extends Sprite
 	//* Sprite-Based Animation
 	//*-----------------------------------------------
 	
+	public var currAnimationAsAnim:AbstractAnimation;
 	public var currAnimation:DisplayObject;
 	public var currAnimationName:String;
 	public var animationMap:Hash<DisplayObject>;
@@ -544,6 +545,7 @@ class Actor extends Sprite
 		originMap = null;
 		defaultAnim = null;
 		animationMap = null;
+		currAnimationAsAnim = null;
 		currAnimation = null;
 		currOffset = null;
 		currOrigin = null;
@@ -849,6 +851,8 @@ class Actor extends Sprite
 			currAnimationName = name;
 			currAnimation = newAnimation;
 			
+			currAnimationAsAnim = cast(currAnimation, AbstractAnimation);
+			
 			addChild(newAnimation);
 			
 			//----------------
@@ -1049,27 +1053,28 @@ class Actor extends Sprite
 		
 		var checkType = type.ID;
 		var groupType = GROUP_OFFSET + groupID;
+		
+		var ec = engine.collisionListeners;
+		var ep = engine.typeGroupPositionListeners;
 				
 		if(!isLightweight)
 		{
-			//TODO: Are these hashmap lookups slow? Try using integers instead. (YES ON MOBILE) - add 100000 to groups, don't use strings
+			//TODO: .length is a function call, degrades performance on mobile by 2-3 FPS
 			if(collisionListeners.length > 0 || 
-			   engine.collisionListeners.exists(checkType) || 
-			   engine.collisionListeners.exists(groupType)) 
+			   ec.exists(checkType) || 
+			   ec.exists(groupType)) 
 			{
 				handleCollisions();		
 			}
 		}
 
 		internalUpdate(elapsedTime, true);
-		
-		//Slow on mobile. Why? Seems to completely lock up eventually.
 		Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
 
-		//TODO: Are these hashmap lookups slow? Try using integers instead. (YES ON MOBILE)
+		//TODO: .length is a function call, degrades performance on mobile by 2-3 FPS
 		if(positionListeners.length > 0 || 
-		   engine.typeGroupPositionListeners.exists(checkType) || 
-		   engine.typeGroupPositionListeners.exists(groupType))
+		   ep.exists(checkType) || 
+		   ep.exists(groupType))
 		{
 			checkScreenState();
 		}
@@ -1139,16 +1144,8 @@ class Actor extends Sprite
 		
 		if(doAll)
 		{
-			if(Std.is(currAnimation, AbstractAnimation))
-	   		{
-	   			var a = cast(currAnimation, AbstractAnimation);
-	   			
-	   			//This may be a slowdown on iOS by 3-5 FPS due to clear and redraw?
-	   			if(a.getNumFrames() > 1)
-	   			{
-	   				a.update(elapsedTime);
-	   			}
-	   		}
+   			//This may be a slowdown on iOS by 3-5 FPS due to clear and redraw?
+   			currAnimationAsAnim.update(elapsedTime);
 		}
 		
 		if(!isLightweight)
