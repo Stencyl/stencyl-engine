@@ -95,7 +95,7 @@ class Engine
 	public static var INTERNAL_SHIFT:String = "iSHIFT";
 	public static var INTERNAL_CTRL:String = "iCTRL";
 	
-	public static var NO_PHYSICS:Bool = true;
+	public static var NO_PHYSICS:Bool = false;
 	public static var DEBUG_DRAW:Bool = false; //!NO_PHYSICS && true;
 	
 	
@@ -298,8 +298,8 @@ class Engine
 	public var whenKeyPressedListeners:HashMap<Dynamic, Dynamic>;
 	public var whenTypeGroupCreatedListeners:HashMap<Dynamic, Dynamic>;
 	public var whenTypeGroupDiesListeners:HashMap<Dynamic, Dynamic>;
-	public var typeGroupPositionListeners:HashMap<Dynamic, Dynamic>;
-	public var collisionListeners:HashMap<Dynamic, Dynamic>;
+	public var typeGroupPositionListeners:IntHash<Dynamic>;
+	public var collisionListeners:IntHash<Dynamic>;
 	public var soundListeners:HashMap<Dynamic, Dynamic>;		
 			
 	public var whenUpdatedListeners:Array<Dynamic>;
@@ -497,8 +497,8 @@ class Engine
 		whenKeyPressedListeners = new HashMap<Dynamic, Dynamic>();
 		whenTypeGroupCreatedListeners = new HashMap<Dynamic, Dynamic>();
 		whenTypeGroupDiesListeners = new HashMap<Dynamic, Dynamic>();
-		typeGroupPositionListeners = new HashMap<Dynamic, Dynamic>();
-		collisionListeners = new HashMap<Dynamic, Dynamic>();
+		typeGroupPositionListeners = new IntHash<Dynamic>();
+		collisionListeners = new IntHash<Dynamic>();
 		soundListeners = new HashMap<Dynamic, Dynamic>();
 		
 		whenUpdatedListeners = new Array<Dynamic>();
@@ -723,6 +723,10 @@ class Engine
 		camera = new Actor(this, -1, GameModel.DOODAD_ID, 0, 0, getTopLayer(), 2, 2, null, null, null, null, true, false, true, false, null, 0, true, false);
 		camera.name = "Camera";
 		camera.isCamera = true;
+		
+		cameraMoved = true;
+		cameraOldX = -1;
+		cameraOldY = -1;
 	}
 	
 	private function loadRegions()
@@ -2050,22 +2054,22 @@ class Engine
 	//TODO: Redo this using ints as lookup keys rather than objects - I feel this is a really inefficient function.
 	public function handleCollision(a:Actor, event:Collision)
 	{
-		var type1 = a.getType();
-		var type2 = event.otherActor.getType();
+		var type1 = a.typeID;
+		var type2 = event.otherActor.typeID;
 		
-		var group1:Group = null;
-		var group2:Group = null;
+		var group1:Int = 0;
+		var group2:Int = 0;
 		
 		if(NO_PHYSICS)
 		{
-			group1 = getGroup(event.thisActor.groupID);
-			group2 = getGroup(event.otherActor.groupID);
+			group1 = event.thisActor.groupID;
+			group2 = event.otherActor.groupID;
 		}
 		
 		else
 		{
-			group1 = getGroup(event.thisShape.groupID, a);
-			group2 = getGroup(event.otherShape.groupID, event.otherActor);
+			group1 = Actor.GROUP_OFFSET + event.thisShape.groupID;
+			group2 = Actor.GROUP_OFFSET + event.otherShape.groupID;
 		}
 		
 		//Check if collision between actors has already happened
@@ -2089,7 +2093,7 @@ class Engine
 		
 		//
 		
-		if(type1 != null && type2 != null)
+		if(type1 > 0 && type2 > 0)
 		{
 			if(!event.otherCollidedWithTerrain && collisionListeners.exists(type1) && collisionListeners.get(type1).exists(type2))
 			{
@@ -2116,7 +2120,7 @@ class Engine
 			}
 		}
 		
-		if(group1 != null && group2 != null)
+		if(group1 > 0 && group2 > 0)
 		{
 			if(collisionListeners.exists(group1) && collisionListeners.get(group1).exists(group2))
 			{

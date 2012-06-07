@@ -973,6 +973,8 @@ class Actor extends Sprite
 			
 			cacheWidth = getWidth();
 			cacheHeight = getHeight();
+			cacheX = getX();
+			cacheY = getY();
 		}
 	}
 	
@@ -1051,12 +1053,12 @@ class Actor extends Sprite
 		if(!isLightweight)
 		{
 			//TODO: Are these hashmap lookups slow? Try using integers instead. (YES ON MOBILE) - add 100000 to groups, don't use strings
-			/*if(collisionListeners.length > 0 || 
-			   engine.collisionListeners.exists(type) || 
-			   engine.collisionListeners.exists(getGroup())) 
+			if(collisionListeners.length > 0 || 
+			   engine.collisionListeners.exists(checkType) || 
+			   engine.collisionListeners.exists(groupType)) 
 			{
 				handleCollisions();		
-			}*/
+			}
 		}
 
 		internalUpdate(elapsedTime, true);
@@ -1065,12 +1067,12 @@ class Actor extends Sprite
 		Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
 
 		//TODO: Are these hashmap lookups slow? Try using integers instead. (YES ON MOBILE)
-		/*if(positionListeners.length > 0 || 
-		   engine.typeGroupPositionListeners.exists(type) || 
-		   engine.typeGroupPositionListeners.exists(getGroup()))
+		if(positionListeners.length > 0 || 
+		   engine.typeGroupPositionListeners.exists(checkType) || 
+		   engine.typeGroupPositionListeners.exists(groupType))
 		{
 			checkScreenState();
-		}*/
+		}
 	}
 	
 	//doAll prevents super.update from being called, which can often muck with
@@ -1272,8 +1274,8 @@ class Actor extends Sprite
 		
 		Engine.invokeListeners5(positionListeners, enteredScreen, exitedScreen, enteredScene, exitedScene);
 		
-		var typeListeners = cast(engine.typeGroupPositionListeners.get(getGroup()), Array<Dynamic>);
-		var groupListeners = cast(engine.typeGroupPositionListeners.get(getType()), Array<Dynamic>);
+		var typeListeners = cast(engine.typeGroupPositionListeners.get(groupID), Array<Dynamic>);
+		var groupListeners = cast(engine.typeGroupPositionListeners.get(typeID), Array<Dynamic>);
 		
 		if(typeListeners != null)
 		{
