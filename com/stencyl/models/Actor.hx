@@ -91,6 +91,8 @@ class Actor extends Sprite
 	
 	private var groupsToCollideWith:Array<Int>; //cached value
 	
+	public static var GROUP_OFFSET:Int = 1000000; //for collision reporting
+	
 	
 	//*-----------------------------------------------
 	//* States
@@ -140,6 +142,12 @@ class Actor extends Sprite
 	public var tweenAngle:AngleHolder;
 	public var activeAngleTweens:Int;
 	public var activePositionTweens:Int;
+	
+	//Cache values
+	public var cacheX:Float;
+	public var cacheY:Float;
+	public var cacheWidth:Float;
+	public var cacheHeight:Float;
 	
 	
 	//*-----------------------------------------------
@@ -962,6 +970,9 @@ class Actor extends Sprite
 			
 			//this.x = realX + Math.floor(newAnimation.width/2);
 			//this.y = realY + Math.floor(newAnimation.height/2);
+			
+			cacheWidth = getWidth();
+			cacheHeight = getHeight();
 		}
 	}
 	
@@ -1033,10 +1044,13 @@ class Actor extends Sprite
 			
 			Engine.invokeListeners2(mouseOverListeners, mouseState);
 		}
+		
+		var checkType = type.ID;
+		var groupType = GROUP_OFFSET + groupID;
 				
 		if(!isLightweight)
 		{
-			//TODO: Are these hashmap lookups slow? Try using integers instead. (YES ON MOBILE) - change to t1, g1 (t/g + ID) as string key
+			//TODO: Are these hashmap lookups slow? Try using integers instead. (YES ON MOBILE) - add 100000 to groups, don't use strings
 			/*if(collisionListeners.length > 0 || 
 			   engine.collisionListeners.exists(type) || 
 			   engine.collisionListeners.exists(getGroup())) 
@@ -1046,6 +1060,8 @@ class Actor extends Sprite
 		}
 
 		internalUpdate(elapsedTime, true);
+		
+		//Slow on mobile. Why? Seems to completely lock up eventually.
 		Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
 
 		//TODO: Are these hashmap lookups slow? Try using integers instead. (YES ON MOBILE)
@@ -1072,6 +1088,9 @@ class Actor extends Sprite
 			if(xSpeed != 0 || ySpeed != 0)
 			{
 				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);
+				
+				cacheX = x;
+				cacheY = y;
 			}
 			
 			if(rSpeed != 0)
@@ -1093,8 +1112,8 @@ class Actor extends Sprite
 			//x = Math.round(p.x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
 			//y = Math.round(p.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);	
 			
-			x = Math.round(p.x * Engine.physicsScale);
-			y = Math.round(p.y * Engine.physicsScale);		
+			cacheX = x = Math.round(p.x * Engine.physicsScale);
+			cacheY = y = Math.round(p.y * Engine.physicsScale);		
 			
 			#if js
 			//TODO: Flawed - it rotates by top left corner
@@ -1662,38 +1681,38 @@ class Actor extends Sprite
 	
 	public function getX():Float
 	{
-		if(!Engine.NO_PHYSICS && (isRegion || isTerrainRegion))
+		if(!Engine.NO_PHYSICS)
 		{
-			return Math.round(Engine.toPixelUnits(body.getPosition().x) - width/2);
+			if(isRegion || isTerrainRegion)
+			{
+				return Math.round(Engine.toPixelUnits(body.getPosition().x) - width/2);
+			}
+			
+			else if(!isLightweight)
+			{
+				return Math.round(body.getPosition().x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
+			}
 		}
 		
-		else if(!isLightweight)
-		{
-			return Math.round(body.getPosition().x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
-		}
-		
-		else 
-		{
-			return x - currOffset.x;
-		}
+		return x - currOffset.x;
 	}
 	
 	public function getY():Float
 	{
-		if(!Engine.NO_PHYSICS && (isRegion || isTerrainRegion))
+		if(!Engine.NO_PHYSICS)
 		{
-			return Math.round(Engine.toPixelUnits(body.getPosition().y) - height/2);
-		}
+			if(isRegion || isTerrainRegion)
+			{
+				return Math.round(Engine.toPixelUnits(body.getPosition().y) - height/2);
+			}
 			
-		else if(!isLightweight)
-		{
-			return Math.round(body.getPosition().y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);
+			else if(!isLightweight)
+			{
+				return Math.round(body.getPosition().y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);
+			}
 		}
 		
-		else
-		{
-			return y - currOffset.y;
-		}
+		return y - currOffset.y;
 	}
 	
 	//TODO: Eliminate?
@@ -2298,26 +2317,26 @@ class Actor extends Sprite
 	public function isMouseOver():Bool
 	{
 		//This may need to be in global x/y???
-		var mx:Int = Input.mouseX;
-		var my:Int = Input.mouseY;
+		var mx = Input.mouseX;
+		var my = Input.mouseY;
 		
-		var xPos:Float = getX();
-		var yPos:Float = getY();
+		var xPos = cacheX; //getX();
+		var yPos = cacheY; //getY();
 		
 		if(isHUD)
 		{
 			//This said screen x/y???
-			mx = Input.mouseX;
-			my = Input.mouseY;
+			//mx = Input.mouseX;
+			//my = Input.mouseY;
 			
-			xPos = getScreenX();
-			yPos = getScreenY();
+			xPos = cacheX + Engine.cameraX; //getScreenX();
+			yPos = cacheY + Engine.cameraY; //getScreenY();
 		}
 		
 		return (mx >= xPos && 
 		   		my >= yPos && 
-		   		mx < xPos + width && 
-		   		my < yPos + height);
+		   		mx < xPos + cacheWidth && 
+		   		my < yPos + cacheHeight);
 	}
 	
 	public function isMouseHover():Bool

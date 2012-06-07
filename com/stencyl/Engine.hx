@@ -1715,7 +1715,7 @@ class Engine
 			invokeListeners(whenMouseReleasedListeners);
 		}
 		
-		if(mx != Input.mouseX || my != Input.mouseY)
+		if(mx != stage.mouseX || my != stage.mouseY)
 		{
 			mx = Input.mouseX;
 			my = Input.mouseY;
@@ -2069,19 +2069,22 @@ class Engine
 		}
 		
 		//Check if collision between actors has already happened
-		if(!collisionPairs.exists(a))
+		if(collisionPairs != null)
 		{
-			collisionPairs.set(a, new HashMap<Dynamic, Bool>());
-		}
-		
-		if(!collisionPairs.exists(event.otherActor))
-		{
-			collisionPairs.set(event.otherActor, new HashMap<Dynamic, Bool>());
-		}
-		
-		if(collisionPairs.get(a).exists(event.otherActor) || collisionPairs.get(event.otherActor).exists(a))
-		{
-			return;
+			if(!collisionPairs.exists(a))
+			{
+				collisionPairs.set(a, new HashMap<Dynamic, Bool>());
+			}
+			
+			if(!collisionPairs.exists(event.otherActor))
+			{
+				collisionPairs.set(event.otherActor, new HashMap<Dynamic, Bool>());
+			}
+			
+			if(collisionPairs.get(a).exists(event.otherActor) || collisionPairs.get(event.otherActor).exists(a))
+			{
+				return;
+			}
 		}
 		
 		//
@@ -2141,8 +2144,11 @@ class Engine
 		}
 		
 		//Collision has been handled once, hold to prevent from double reporting collisions
-		collisionPairs.get(a).set(event.otherActor, false);
-		collisionPairs.get(event.otherActor).set(a, false);
+		if(collisionPairs != null)
+		{
+			collisionPairs.get(a).set(event.otherActor, false);
+			collisionPairs.get(event.otherActor).set(a, false);
+		}
 	}
 	
 	public function soundFinished(channelNum:Int)

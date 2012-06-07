@@ -22,6 +22,9 @@ class Input
 	public static var keyString:String = "";
 
 	public static var lastKey:Int;
+	
+	public static var mouseX:Float = 0;
+	public static var mouseY:Float = 0;
 
 	public static var mouseDown:Bool;
 	public static var mouseUp:Bool;
@@ -38,23 +41,6 @@ class Input
 	public static var multiTouchPoints:Hash<TouchEvent>;
 	#end
 
-	/**
-	 * X position of the mouse on the screen.
-	 */
-	public static var mouseX(getMouseX, null):Int;
-	private static function getMouseX():Int
-	{
-		return Std.int(Engine.stage.mouseX);
-	}
-
-	/**
-	 * Y position of the mouse on the screen.
-	 */
-	public static var mouseY(getMouseY, null):Int;
-	private static function getMouseY():Int
-	{
-		return Std.int(Engine.stage.mouseY);
-	}
 
 	/**
 	 * Defines a new input.
@@ -184,6 +170,9 @@ class Input
 			accelZ = data.z;
 		}
 		#end
+		
+		mouseX = Engine.stage.mouseX;
+		mouseY = Engine.stage.mouseY;
 	
 		while (_pressNum-- > -1) _press[_pressNum] = -1;
 		_pressNum = 0;

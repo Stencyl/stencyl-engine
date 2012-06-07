@@ -68,8 +68,8 @@ class Motion extends ActorScript
 			
 			if(Input.mouseDown)
 			{
-				actor.x = Input.mouseX;
-				actor.y = Input.mouseY;
+				actor.x = Engine.stage.mouseX;
+				actor.y = Engine.stage.mouseY;
 			}
 		};
 		
