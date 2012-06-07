@@ -283,8 +283,8 @@ class Region extends Actor
 	override public function isMouseOver():Bool
 	{
 		//This may need to be in global x/y???
-		var mx = stage.mouseX;
-		var my = stage.mouseY;
+		var mx = Input.mouseX;
+		var my = Input.mouseY;
 		
 		var xPos:Float = getX() - regionWidth/2;
 		var yPos:Float = getY() - regionHeight/2;

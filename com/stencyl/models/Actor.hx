@@ -1271,7 +1271,7 @@ class Actor extends Sprite
 		
 		Engine.invokeListeners5(positionListeners, enteredScreen, exitedScreen, enteredScene, exitedScene);
 		
-		var typeListeners = cast(engine.typeGroupPositionListeners.get(groupID), Array<Dynamic>);
+		var typeListeners = cast(engine.typeGroupPositionListeners.get(groupID + Actor.GROUP_OFFSET), Array<Dynamic>);
 		var groupListeners = cast(engine.typeGroupPositionListeners.get(typeID), Array<Dynamic>);
 		
 		if(typeListeners != null)
