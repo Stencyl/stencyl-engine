@@ -89,6 +89,7 @@ class Engine
 	//*-----------------------------------------------
 		
 	public static var BACKGROUND:String = "b";
+	public static var SCROLLING_BACKGROUND:String = "s";
 	public static var REGULAR_LAYER:String = "l";
 	public static var DOODAD:String = "";
 	
@@ -548,7 +549,7 @@ class Engine
 			{
 				var scroller = cast(background, ScrollingBackground);
 				var img = new ScrollingBitmap(background.img, scroller.xVelocity, scroller.yVelocity);
-				img.name = BACKGROUND;
+				img.name = SCROLLING_BACKGROUND;
 				master.addChild(img);
 			}
 			
@@ -1719,7 +1720,7 @@ class Engine
 			invokeListeners(whenMouseReleasedListeners);
 		}
 		
-		if(mx != stage.mouseX || my != stage.mouseY)
+		if(mx != Input.mouseX || my != Input.mouseY)
 		{
 			mx = Input.mouseX;
 			my = Input.mouseY;
@@ -1767,7 +1768,7 @@ class Engine
 		
 		if(!NO_PHYSICS)
 		{
-			world.step(0.01, 3, 5);
+			world.step(0.01, 3, 3);
 			world.clearForces();
 			
 			if(DEBUG_DRAW)
@@ -1895,20 +1896,18 @@ class Engine
 			//Background
 			if(child.name == BACKGROUND)
 			{
-				if(Std.is(child, ScrollingBitmap))
-				{
-					var bg = cast(child, ScrollingBitmap);
-					bg.update(elapsedTime);
-				}
-				
-				else
-				{
-					var endX = -Math.abs(child.width);
-					var endY = -Math.abs(child.height);
+				//TODO: Don't call width/height! It's expensive.
+				var endX = -Math.abs(child.width);
+				var endY = -Math.abs(child.height);
 					
-					child.x = endX * -(cameraX) / Engine.sceneWidth;
-					child.y = endY * -(cameraY) / Engine.sceneHeight;
-				}
+				child.x = endX * -(cameraX) / Engine.sceneWidth;
+				child.y = endY * -(cameraY) / Engine.sceneHeight;
+			}
+			
+			else if(child.name == SCROLLING_BACKGROUND)
+			{
+				var bg = cast(child, ScrollingBitmap);
+				bg.update(elapsedTime);
 			}
 			
 			//Regular Layer

@@ -101,8 +101,8 @@ class Terrain extends Actor
 	
 	override public function follow(actor:Actor)
 	{
-		var x = actor.getX() + actor.getWidth() / 2;
-		var y = actor.getY() + actor.getHeight() / 2;
+		var x = actor.cacheX + actor.cacheWidth / 2;
+		var y = actor.cacheY + actor.cacheHeight / 2;
 		
 		setX(x);
 		setY(y);
@@ -173,12 +173,12 @@ class Terrain extends Actor
 		setY(y + regionHeight / 2);
 	}
 	
-	override public function getWidth():Float
+	public function getWidth():Float
 	{
 		return regionWidth;
 	}
 	
-	override public function getHeight():Float
+	public function getHeight():Float
 	{
 		return regionHeight;
 	}

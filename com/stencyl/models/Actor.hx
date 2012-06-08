@@ -491,8 +491,8 @@ class Actor extends Sprite
 				dummy.x = width;
 				dummy.y = height;
 				addChild(dummy);
-				this.width = width;
-				this.height = height;
+				cacheWidth = this.width = width;
+				cacheHeight = this.height = height;
 			}
 			
 			else if(!isLightweight)
@@ -975,8 +975,8 @@ class Actor extends Sprite
 			//this.x = realX + Math.floor(newAnimation.width/2);
 			//this.y = realY + Math.floor(newAnimation.height/2);
 			
-			cacheWidth = getWidth();
-			cacheHeight = getHeight();
+			cacheWidth = width;
+			cacheHeight = height;
 			cacheX = getX();
 			cacheY = getY();
 		}
@@ -1684,12 +1684,12 @@ class Actor extends Sprite
 		{
 			if(isRegion || isTerrainRegion)
 			{
-				return Math.round(Engine.toPixelUnits(body.getPosition().x) - width/2);
+				return Math.round(Engine.toPixelUnits(body.getPosition().x) - cacheWidth/2);
 			}
 			
 			else if(!isLightweight)
 			{
-				return Math.round(body.getPosition().x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
+				return Math.round(body.getPosition().x * Engine.physicsScale - Math.floor(cacheWidth / 2) - currOffset.x);
 			}
 		}
 		
@@ -1702,12 +1702,12 @@ class Actor extends Sprite
 		{
 			if(isRegion || isTerrainRegion)
 			{
-				return Math.round(Engine.toPixelUnits(body.getPosition().y) - height/2);
+				return Math.round(Engine.toPixelUnits(body.getPosition().y) - cacheHeight/2);
 			}
 			
 			else if(!isLightweight)
 			{
-				return Math.round(body.getPosition().y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);
+				return Math.round(body.getPosition().y * Engine.physicsScale - Math.floor(cacheHeight / 2) - currOffset.y);
 			}
 		}
 		
@@ -1724,7 +1724,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			return x + width/2 - currOffset.x;
+			return x + cacheWidth/2 - currOffset.x;
 		}
 	}
 	
@@ -1738,7 +1738,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			return y + height/2 - currOffset.y;
+			return y + cacheHeight/2 - currOffset.y;
 		}
 	}
 	
@@ -1784,7 +1784,7 @@ class Actor extends Sprite
 				
 			else
 			{
-				dummy.x = Engine.toPhysicalUnits(x + Math.floor(width/2) + currOffset.x);
+				dummy.x = Engine.toPhysicalUnits(x + Math.floor(cacheWidth/2) + currOffset.x);
 			}			
 			
 			dummy.y = body.getPosition().y;
@@ -1814,7 +1814,7 @@ class Actor extends Sprite
 				
 			else
 			{
-				dummy.y = Engine.toPhysicalUnits(y + Math.floor(height/2) + currOffset.y);
+				dummy.y = Engine.toPhysicalUnits(y + Math.floor(cacheHeight/2) + currOffset.y);
 			}
 			
 			dummy.x = body.getPosition().x;
@@ -2218,24 +2218,14 @@ class Actor extends Sprite
 	//* Size
 	//*-----------------------------------------------
 	
-	public function getWidth():Float
-	{
-		return width;
-	}
-	
-	public function getHeight():Float
-	{
-		return height;
-	}
-	
 	public function getPhysicsWidth():Float
 	{
-		return width / Engine.physicsScale;
+		return cacheWidth / Engine.physicsScale;
 	}
 	
 	public function getPhysicsHeight():Float
 	{
-		return height / Engine.physicsScale;
+		return cacheHeight / Engine.physicsScale;
 	}
 	
 	//*-----------------------------------------------
@@ -2866,10 +2856,10 @@ class Actor extends Sprite
 			{
 				var e = actor;
 				
-				if (x - originX + width > e.x - e.originX
-				&& y - originY + height > e.y - e.originY
-				&& x - originX < e.x - e.originX + e.width
-				&& y - originY < e.y - e.originY + e.height
+				if (x - originX + cacheWidth > e.x - e.originX
+				&& y - originY + cacheHeight > e.y - e.originY
+				&& x - originX < e.x - e.originX + e.cacheWidth
+				&& y - originY < e.y - e.originY + e.cacheHeight
 				&& e.collidable && e != this)
 				{
 					if (e._mask == null || e._mask.collide(HITBOX))
@@ -2891,10 +2881,10 @@ class Actor extends Sprite
 		{
 			var e = actor;
 	
-			if (x - originX + width > e.x - e.originX
-			&& y - originY + height > e.y - e.originY
-			&& x - originX < e.x - e.originX + e.width
-			&& y - originY < e.y - e.originY + e.height
+			if (x - originX + cacheWidth > e.x - e.originX
+			&& y - originY + cacheHeight > e.y - e.originY
+			&& x - originX < e.x - e.originX + e.cacheWidth
+			&& y - originY < e.y - e.originY + e.cacheHeight
 			&& e.collidable && e != this)
 			{
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
@@ -2955,10 +2945,10 @@ class Actor extends Sprite
 		_x = this.x; _y = this.y;
 		this.x = x; this.y = y;
 
-		if (x - originX + width > e.x - e.originX
-		&& y - originY + height > e.y - e.originY
-		&& x - originX < e.x - e.originX + e.width
-		&& y - originY < e.y - e.originY + e.height
+		if (x - originX + cacheWidth > e.x - e.originX
+		&& y - originY + cacheHeight > e.y - e.originY
+		&& x - originX < e.x - e.originX + e.cacheWidth
+		&& y - originY < e.y - e.originY + e.cacheHeight
 		&& collidable && e.collidable)
 		{
 			if (_mask == null)
@@ -3004,10 +2994,10 @@ class Actor extends Sprite
 			{
 				var e = actor;
 				
-				if (x - originX + width > e.x - e.originX
-				&& y - originY + height > e.y - e.originY
-				&& x - originX < e.x - e.originX + e.width
-				&& y - originY < e.y - e.originY + e.height
+				if (x - originX + cacheWidth > e.x - e.originX
+				&& y - originY + cacheHeight > e.y - e.originY
+				&& x - originX < e.x - e.originX + e.cacheWidth
+				&& y - originY < e.y - e.originY + e.cacheHeight
 				&& e.collidable && e != this)
 				{
 					if (e._mask == null || e._mask.collide(HITBOX)) array[n++] = e;
@@ -3021,10 +3011,10 @@ class Actor extends Sprite
 		{
 			var e = actor;
 			
-			if (x - originX + width > e.x - e.originX
-			&& y - originY + height > e.y - e.originY
-			&& x - originX < e.x - e.originX + e.width
-			&& y - originY < e.y - e.originY + e.height
+			if (x - originX + cacheWidth > e.x - e.originX
+			&& y - originY + cacheHeight > e.y - e.originY
+			&& x - originX < e.x - e.originX + e.cacheWidth
+			&& y - originY < e.y - e.originY + e.cacheHeight
 			&& e.collidable && e != this)
 			{
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX)) array[n++] = e;
@@ -3104,6 +3094,7 @@ class Actor extends Sprite
 		}
 		else
 		{
+			//TODO: This is slow in Flash && Mobile
 			this.x += x;
 			this.y += y;
 		}

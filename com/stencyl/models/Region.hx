@@ -82,8 +82,8 @@ class Region extends Actor
 			upperXBound = simpleBounds.width;
 			upperYBound = simpleBounds.height;
 					
-			originalWidth = regionWidth = Math.round(Math.abs(lowerXBound - upperXBound));
-			originalHeight = regionHeight = Math.round(Math.abs(lowerYBound - upperYBound));
+			cacheWidth = originalWidth = regionWidth = Math.round(Math.abs(lowerXBound - upperXBound));
+			cacheHeight = originalHeight = regionHeight = Math.round(Math.abs(lowerYBound - upperYBound));
 		}
 		
 		else
@@ -123,16 +123,16 @@ class Region extends Actor
 					upperYBound = Math.max(upperYBound, aabb.upperBound.y);
 				}
 				
-				originalWidth = regionWidth = Math.round(Engine.toPixelUnits(Math.abs(lowerXBound - upperXBound)));
-				originalHeight = regionHeight = Math.round(Engine.toPixelUnits(Math.abs(lowerYBound - upperYBound)));
+				cacheWidth = originalWidth = regionWidth = Math.round(Engine.toPixelUnits(Math.abs(lowerXBound - upperXBound)));
+				cacheHeight = originalHeight = regionHeight = Math.round(Engine.toPixelUnits(Math.abs(lowerYBound - upperYBound)));
 			}
 				
 			else if(Std.is(shapes[0], B2CircleShape))
 			{
 				isCircle = true;
 				
-				originalWidth = regionWidth = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
-				originalHeight = regionHeight = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
+				cacheWidth = originalWidth = regionWidth = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
+				cacheHeight = originalHeight = regionHeight = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
 			}
 		}
 	}
@@ -196,8 +196,8 @@ class Region extends Actor
 	
 	override public function follow(actor:Actor)
 	{
-		var x = actor.getX() + actor.getWidth() / 2;
-		var y = actor.getY() + actor.getHeight() / 2;
+		var x = actor.cacheX + actor.cacheWidth / 2;
+		var y = actor.cacheY + actor.cacheHeight / 2;
 		
 		setX(x);
 		setY(y);
@@ -270,12 +270,12 @@ class Region extends Actor
 		setY(y + regionHeight / 2);
 	}
 	
-	override public function getWidth():Float
+	public function getWidth():Float
 	{
 		return regionWidth;
 	}
 	
-	override public function getHeight():Float
+	public function getHeight():Float
 	{
 		return regionHeight;
 	}
