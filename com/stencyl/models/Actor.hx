@@ -2218,6 +2218,16 @@ class Actor extends Sprite
 	//* Size
 	//*-----------------------------------------------
 	
+	public function getWidth():Float
+	{
+		return cacheWidth;
+	}
+	
+	public function getHeight():Float
+	{
+		return cacheHeight;
+	}
+	
 	public function getPhysicsWidth():Float
 	{
 		return cacheWidth / Engine.physicsScale;

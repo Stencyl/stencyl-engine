@@ -270,12 +270,12 @@ class Region extends Actor
 		setY(y + regionHeight / 2);
 	}
 	
-	public function getWidth():Float
+	override public function getWidth():Float
 	{
 		return regionWidth;
 	}
 	
-	public function getHeight():Float
+	override public function getHeight():Float
 	{
 		return regionHeight;
 	}

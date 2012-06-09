@@ -29,19 +29,25 @@ class Universal extends Sprite
 	
 	public function init()
 	{
-		com.stencyl.Engine.stage = stage;
-		stage.align = StageAlign.TOP_LEFT;
-		stage.scaleMode = StageScaleMode.NO_SCALE;
-
+		com.stencyl.Engine.stage = Lib.current.stage;
+		
 		mouseChildren = false;
 		mouseEnabled = false;
 		stage.mouseChildren = false;
-			
-		new com.stencyl.Engine(this);
+		
+		#if iphone
+		nmex.NativeUI.showAlert("nmex","Please try other APIs by yourself!");
+		#end
+		
+		//new com.stencyl.Engine(this);
 	}
 	
 	public static function main() 
 	{
+		var stage = Lib.current.stage;
+		stage.align = StageAlign.TOP_LEFT;
+		stage.scaleMode = StageScaleMode.NO_SCALE;
+		
 		Lib.current.addChild(new Universal());	
 	}	
 }
