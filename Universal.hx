@@ -35,11 +35,7 @@ class Universal extends Sprite
 		mouseEnabled = false;
 		stage.mouseChildren = false;
 		
-		#if iphone
-		nmex.NativeUI.showAlert("nmex","Please try other APIs by yourself!");
-		#end
-		
-		//new com.stencyl.Engine(this);
+		new com.stencyl.Engine(this);
 	}
 	
 	public static function main() 
