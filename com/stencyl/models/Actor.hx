@@ -2498,12 +2498,16 @@ class Actor extends Sprite
 
 	public function setFilter(filter:Array<Dynamic>)
 	{			
+		#if !(cpp || js)
 		filters = filter;
+		#end
 	}
 	
 	public function clearFilters()
 	{
+		#if !(cpp || js)
 		filters = [];
+		#end
 	}
 	
 	//*-----------------------------------------------

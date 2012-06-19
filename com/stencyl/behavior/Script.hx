@@ -876,6 +876,8 @@ class Script
 		var t:TimedTask = new TimedTask(toExecute, Std.int(delay), false, actor);
 		engine.addTask(t);
 
+		trace("make task - " + delay);
+		
 		return t;
 	}
 	
