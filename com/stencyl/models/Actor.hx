@@ -8,6 +8,7 @@ import nme.display.DisplayObject;
 import nme.display.DisplayObjectContainer;
 import nme.Assets;
 import nme.display.Graphics;
+import nme.geom.Matrix;
 import nme.geom.Point;
 import nme.geom.Rectangle;
 
@@ -52,6 +53,7 @@ import box2D.dynamics.B2FixtureDef;
 import box2D.dynamics.B2World;
 import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2PolygonShape;
+import box2D.collision.shapes.B2CircleShape;
 import box2D.collision.shapes.B2MassData;
 import box2D.dynamics.contacts.B2Contact;
 import box2D.dynamics.contacts.B2ContactEdge;
@@ -122,6 +124,7 @@ class Actor extends Sprite
 	public var ignoreGravity:Bool;
 	public var collidable:Bool;
 	public var solid:Bool; //for non Box2D collisions
+	public var resetOrigin:Bool; //fot HTML5 origin setting
 	
 
 	//*-----------------------------------------------
@@ -162,7 +165,7 @@ class Actor extends Sprite
 	public var sprite:com.stencyl.models.actor.Sprite;
 	
 	public var shapeMap:Hash<Dynamic>;
-	public var originMap:Hash<Dynamic>;
+	public var originMap:Hash<B2Vec2>;
 	public var defaultAnim:String;
 	
 	public var currOrigin:Point;
@@ -220,7 +223,6 @@ class Actor extends Sprite
 	private var dummy:B2Vec2;
 	private var zero:B2Vec2;
 	
-
 	//*-----------------------------------------------
 	//* Collisions
 	//*-----------------------------------------------
@@ -339,6 +341,7 @@ class Actor extends Sprite
 
 		fixedRotation = false;
 		ignoreGravity = false;
+		resetOrigin = true;
 		
 		//---
 		
@@ -374,7 +377,7 @@ class Actor extends Sprite
 		currAnimationName = "";
 		animationMap = new Hash<DisplayObject>();
 		shapeMap = new Hash<Dynamic>();
-		originMap = new Hash<Dynamic>();
+		originMap = new Hash<B2Vec2>();
 		
 		this.sprite = sprite;
 		
@@ -630,6 +633,8 @@ class Actor extends Sprite
 		var sprite = new BitmapAnimation(imgData, frameCount, durations);
 		animationMap.set(name, sprite);
 		#end	
+				
+		originMap.set(name, new B2Vec2(originX, originY));
 	}
 	
 	public function initScripts()
@@ -852,20 +857,20 @@ class Actor extends Sprite
 			currAnimation = newAnimation;
 			
 			currAnimationAsAnim = cast(currAnimation, AbstractAnimation);
-			
-			addChild(newAnimation);
+							
+			addChild(newAnimation);			
 			
 			//----------------
 			
-			//var animOrigin:V2 = originMap[name];		
+			var animOrigin:B2Vec2 = originMap.get(name);		
 			
 			if(!isLightweight)
 			{
 				updateTweenProperties();
 			}
 			
-			//var centerx = (currSprite.width / 2) - animOrigin.x;
-			//var centery = (currSprite.height / 2) - animOrigin.y;
+			var centerx = (currAnimation.width / 2) - animOrigin.x;
+			var centery = (currAnimation.height / 2) - animOrigin.y;
 			
 			if(body != null && !isLightweight)
 			{
@@ -925,6 +930,46 @@ class Actor extends Sprite
 					originFixDef.shape = f.shape;
 
 					//TODO: Origin point junk goes here
+					if (animOrigin != null)
+					{
+						if (Std.is(f.shape, B2PolygonShape))
+						{
+							var xf:B2Transform = new B2Transform();
+							var oldBox:B2PolygonShape = cast(f.shape, B2PolygonShape);
+							var newBox:B2PolygonShape = new B2PolygonShape();
+								
+							newBox.setAsArray(oldBox.m_vertices, oldBox.m_vertices.length);
+								
+							var vertices:Array<B2Vec2> = newBox.m_vertices;
+							var normals:Array<B2Vec2> = newBox.m_normals;										
+												
+							xf.position.set(Engine.toPhysicalUnits(centerx), Engine.toPhysicalUnits(centery));
+							xf.R.setAngle(0);
+							
+							for (i in 0...newBox.m_vertexCount) 
+							{								
+								vertices[i] = xf.multiply(vertices[i]);
+								normals[i] = xf.R.multiplyV(normals[i]);															
+							}
+							
+							newBox.setAsArray(vertices, vertices.length);							
+							newBox.m_normals = normals;
+							
+							originFixDef.shape = newBox;
+						}
+						
+						else if (Std.is(f.shape, B2CircleShape))
+						{
+							var oldCircle:B2CircleShape = cast(f.shape, B2CircleShape);
+							var newCircle:B2CircleShape = new B2CircleShape();
+								
+							newCircle.setRadius(oldCircle.getRadius());
+							newCircle.m_p.x = oldCircle.m_p.x + Engine.toPhysicalUnits(centerx);
+							newCircle.m_p.y = oldCircle.m_p.y + Engine.toPhysicalUnits(centery);
+							
+							originFixDef.shape = newCircle;
+						}
+					}
 					
 					var fix = body.createFixture(originFixDef);
 					fix.SetUserData(this);	
@@ -953,11 +998,15 @@ class Actor extends Sprite
 				}
 			}	
 			
-			//Origin setter
-			/*if(animOrigin != null)
+			cacheWidth = currAnimation.width;
+			cacheHeight = currAnimation.height;
+			cacheX = getX();
+			cacheY = getY();
+			
+			if(animOrigin != null)
 			{	
-				setOriginPoint(animOrigin.x, animOrigin.y);				
-			}*/
+				setOriginPoint(Std.int(animOrigin.x), Std.int(animOrigin.y));				
+			}
 			
 			//----------------
 			
@@ -973,12 +1022,7 @@ class Actor extends Sprite
 			//originY = Math.floor(newAnimation.height/2);
 			
 			//this.x = realX + Math.floor(newAnimation.width/2);
-			//this.y = realY + Math.floor(newAnimation.height/2);
-			
-			cacheWidth = width;
-			cacheHeight = height;
-			cacheX = getX();
-			cacheY = getY();
+			//this.y = realY + Math.floor(newAnimation.height/2);			
 		}
 	}
 	
@@ -1101,8 +1145,19 @@ class Actor extends Sprite
 			}
 			
 			if(rSpeed != 0)
-			{
-				this.rotation += elapsedTime * rSpeed;
+			{			
+				this.rotation += elapsedTime * rSpeed * 0.001;
+				
+				//Have to clone and set, can't edit directly for some reason.  Better in a draw method. 
+				var m:Matrix = transform.matrix.clone();						
+				var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
+
+				m.identity();
+				m.translate( -point.x, -point.y);
+				m.rotate(rotation * Utils.RAD);
+				m.translate(cacheX, cacheY);						
+				
+				this.transform.matrix = m;
 			}
 			
 			if(fixedRotation)
@@ -1121,17 +1176,35 @@ class Actor extends Sprite
 			
 			cacheX = x = Math.round(p.x * Engine.physicsScale);
 			cacheY = y = Math.round(p.y * Engine.physicsScale);		
-			
+						
 			#if js
 			//TODO: Flawed - it rotates by top left corner
-			currAnimation.rotation = body.getAngle() * Utils.DEG;
+			currAnimation.rotation = body.getAngle() * Utils.DEG;		
 			
+			//TODO: Figure why I have to removeChild/addChild for this to work
+			//var m:Matrix = currAnimation.transform.matrix.clone();						
+			//var point:Point=new Point(currOrigin.x, currOrigin.y);
+
+			//m.identity();
+			//m.translate( -point.x, -point.y);
+			//m.rotate(body.getAngle());
+			//
+			//currAnimation.transform.matrix = m;
+						
 			//Goes haywire with this :(
 			//rotation = body.getAngle() * Utils.DEG;
 			#end
 			
-			#if !js
-			rotation = body.getAngle() * Utils.DEG;
+			#if !js		
+			var m:Matrix = transform.matrix.clone();						
+			var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
+
+			m.identity();
+			m.translate( -point.x, -point.y);
+			m.rotate(body.getAngle());
+			m.translate(cacheX, cacheY);
+			
+			transform.matrix = m;
 			#end
 			
 			//TODO: Why isn't this above too?
@@ -1857,64 +1930,75 @@ class Actor extends Sprite
 	
 	public function setOriginPoint(x:Int, y:Int)
 	{
-		/*var resetPosition:V2;
+		var resetPosition:B2Vec2 = null;
 		
 		if (!isLightweight)
 		{
-			resetPosition = body.GetPosition();
+			resetPosition = body.getPosition();
 		}
 		
 		else
 		{
-			resetPosition = new V2(GameState.toPhysicalUnits(this.x), GameState.toPhysicalUnits(this.y));
+			resetPosition = new B2Vec2(Engine.toPhysicalUnits(cacheX), Engine.toPhysicalUnits(cacheY));
 		}
 		
-		var offsetDiff:V2 = new V2(currOffset.x, currOffset.y);
-		var radians:Number = getAngle();			
+		var offsetDiff:B2Vec2 = new B2Vec2(currOffset.x, currOffset.y);
+		var radians:Float = getAngle();			
 		
-		var newOffX:int = x - (currSprite.width / 2);
-		var newOffY:int = y - (currSprite.height / 2);
+		var newOffX:Int = Std.int(x - (currAnimation.width / 2));
+		var newOffY:Int = Std.int(y - (currAnimation.height / 2));
 		
-		if (currOrigin != null && (int(currOffset.x) != newOffX || int(currOffset.y) != newOffY) && angle != 0)
+		if (currOrigin != null && (Std.int(currOffset.x) != newOffX || Std.int(currOffset.y) != newOffY) && rotation != 0)
 		{
-			var oldAng:Number = radians + Math.atan2( -currOffset.y, -currOffset.x);
-			var newAng:Number = radians + Math.atan2( -newOffY, -newOffX);
-			var oldDist:Number = Math.sqrt(Math.pow(currOffset.x, 2) + Math.pow(currOffset.y, 2));
-			var newDist:Number = Math.sqrt(Math.pow(newOffX, 2) + Math.pow(newOffY, 2));
+			var oldAng:Float = radians + Math.atan2( -currOffset.y, -currOffset.x);
+			var newAng:Float = radians + Math.atan2( -newOffY, -newOffX);
+			
+			if (currOffset.y == 0 && currOffset.x == 0)
+			{
+				oldAng = radians - Math.PI;
+			}
+			
+			if (newOffY == 0 && newOffX == 0)
+			{
+				newAng = radians - Math.PI;
+			}
+			
+			var oldDist:Float = Math.sqrt(Math.pow(currOffset.x, 2) + Math.pow(currOffset.y, 2));
+			var newDist:Float = Math.sqrt(Math.pow(newOffX, 2) + Math.pow(newOffY, 2));
 							
-			var oldFixCenterX:int = Math.round(currOrigin.x + Math.cos(oldAng) * oldDist);
-			var oldFixCenterY:int = Math.round(currOrigin.y + Math.sin(oldAng) * oldDist);
-			var newFixCenterX:int = Math.round(x + Math.cos(newAng) * newDist);
-			var newFixCenterY:int = Math.round(y + Math.sin(newAng) * newDist);
-						
-			resetPosition.x += GameState.toPhysicalUnits(oldFixCenterX - newFixCenterX);
-			resetPosition.y += GameState.toPhysicalUnits(oldFixCenterY - newFixCenterY);
+			var oldFixCenterX:Int = Math.round(currOrigin.x + Math.cos(oldAng) * oldDist);
+			var oldFixCenterY:Int = Math.round(currOrigin.y + Math.sin(oldAng) * oldDist);
+			var newFixCenterX:Int = Math.round(x + Math.cos(newAng) * newDist);
+			var newFixCenterY:Int = Math.round(y + Math.sin(newAng) * newDist);
+					
+			resetPosition.x += Engine.toPhysicalUnits(oldFixCenterX - newFixCenterX);
+			resetPosition.y += Engine.toPhysicalUnits(oldFixCenterY - newFixCenterY);
 		}
 		
 		currOrigin.x = x;
 		currOrigin.y = y;
 		currOffset.x = newOffX;
-		currOffset.y = newOffY;		
-					
+		currOffset.y = newOffY;
+							
 		offsetDiff.x = currOffset.x - offsetDiff.x;
-		offsetDiff.y = currOffset.y - offsetDiff.y;
-		
-		currSprite.origin.x = x;
-		currSprite.origin.y = y;			
-			
-		resetPosition.x += GameState.toPhysicalUnits(offsetDiff.x);
-		resetPosition.y += GameState.toPhysicalUnits(offsetDiff.y);
+		offsetDiff.y = currOffset.y - offsetDiff.y;		
+					
+		resetPosition.x += Engine.toPhysicalUnits(offsetDiff.x);
+		resetPosition.y += Engine.toPhysicalUnits(offsetDiff.y);
 		
 		if (!isLightweight)
 		{
-			body.SetPosition(resetPosition);
+			body.setPosition(resetPosition);
 		}
 		
 		else
 		{
-			x = GameState.toPixelUnits(resetPosition.x);
-			y = GameState.toPixelUnits(resetPosition.y);
-		}*/
+			//TODO: Figure out how to do this for different origin points
+			x = Std.int(Engine.toPixelUnits(resetPosition.x));
+			y = Std.int(Engine.toPixelUnits(resetPosition.y));
+		}
+		
+		resetOrigin = true;
 	}
 	
 	//*-----------------------------------------------
