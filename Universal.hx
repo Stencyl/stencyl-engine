@@ -36,9 +36,9 @@ class Universal extends Sprite
 		stage.mouseChildren = false;
 		
 		//Preloader Hook
-		var loader = new scripts.Preloader();
-		loader.onUpdate(5, 15);
-		addChild(loader);
+		//var loader = new scripts.Preloader();
+		//loader.onUpdate(5, 15);
+		//addChild(loader);
 		//END
 		
 		new com.stencyl.Engine(this);
