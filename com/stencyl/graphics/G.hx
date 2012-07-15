@@ -12,6 +12,7 @@ import nme.geom.Point;
 
 import com.stencyl.models.Actor;
 import com.stencyl.models.Font;
+import com.stencyl.utils.Utils;
 
 class G 
 {
@@ -43,8 +44,12 @@ class G
 	private var firstX:Float;
 	private var firstY:Float;
 	
+	private var drawActor:Bool;
+	
 	public function new() 
 	{	
+		drawActor = false;
+	
 		x = y = 0;
 		scaleX = scaleY = 1;
 		alpha = 1;
@@ -75,11 +80,22 @@ class G
 	
 	public inline function startGraphics()
 	{
+		if(drawActor)
+		{
+			x += Engine.cameraX;
+			y += Engine.cameraY;
+		}
+	
 		graphics.lineStyle(strokeSize, strokeColor, alpha);
 	}
 	
 	public inline function endGraphics()
 	{
+		if(drawActor)
+		{
+			x -= Engine.cameraX;
+			y -= Engine.cameraY;
+		}
 	}
 	
 	public inline function translate(x:Float, y:Float)
@@ -96,12 +112,16 @@ class G
 	
 	public inline function translateToScreen()
 	{
+		drawActor = false;
+	
 		x = 0;
 		y = 0;
 	}
 	
 	public inline function translateToActor(a:Actor)
 	{
+		drawActor = true;
+	
 		if(Engine.NO_PHYSICS)
 		{
 			x = a.x;

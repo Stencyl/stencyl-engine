@@ -1062,7 +1062,7 @@ class Engine
 				this.layers.set(layerID, terrain);
 			}
 				
-			overlay.name = list.name = REGULAR_LAYER;
+			/*overlay.name =*/ list.name = REGULAR_LAYER;
 			master.addChild(list);
 			master.addChild(overlay);
 			master.addChild(bitmapOverlay);
