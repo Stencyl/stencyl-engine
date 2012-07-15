@@ -1,5 +1,6 @@
 package com.stencyl.models;
 
+import flash.geom.Transform;
 import nme.display.Sprite;
 import nme.display.Bitmap;
 import nme.display.BitmapData;
@@ -150,8 +151,7 @@ class Actor extends Sprite
 	public var cacheX:Float;
 	public var cacheY:Float;
 	public var cacheWidth:Float;
-	public var cacheHeight:Float;
-	
+	public var cacheHeight:Float;	
 	
 	//*-----------------------------------------------
 	//* Sprite-Based Animation
@@ -282,7 +282,7 @@ class Actor extends Sprite
 		
 		this.x = 0;
 		this.y = 0;
-		this.rotation = 0;
+		this.rotation = 0;		
 		
 		realX = 0;
 		realY = 0;
@@ -1013,7 +1013,7 @@ class Actor extends Sprite
 			if(Std.is(currAnimation, AbstractAnimation))
 			{
 				cast(currAnimation, AbstractAnimation).reset();
-			}
+			}			
 			
 			//----------------
 			
@@ -1145,7 +1145,8 @@ class Actor extends Sprite
 			}
 			
 			if(rSpeed != 0)
-			{			
+			{	
+				//TODO: Abstract rotation from sprite
 				this.rotation += elapsedTime * rSpeed * 0.001;
 				
 				//Have to clone and set, can't edit directly for some reason.  Better in a draw method. 
@@ -1157,7 +1158,19 @@ class Actor extends Sprite
 				m.rotate(rotation * Utils.RAD);
 				m.translate(cacheX, cacheY);						
 				
-				this.transform.matrix = m;
+				#if js
+				mMatrix = m;				
+				
+				if (resetOrigin)
+				{
+					BuildBounds();
+					resetOrigin = false;
+				}
+				#end
+				
+				#if !js
+				transform.matrix = m;
+				#end
 			}
 			
 			if(fixedRotation)
@@ -1173,29 +1186,30 @@ class Actor extends Sprite
 					
 			//x = Math.round(p.x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
 			//y = Math.round(p.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);	
-			
-			cacheX = x = Math.round(p.x * Engine.physicsScale);
-			cacheY = y = Math.round(p.y * Engine.physicsScale);		
-						
-			#if js
-			//TODO: Flawed - it rotates by top left corner
-			currAnimation.rotation = body.getAngle() * Utils.DEG;		
-			
-			//TODO: Figure why I have to removeChild/addChild for this to work
-			//var m:Matrix = currAnimation.transform.matrix.clone();						
-			//var point:Point=new Point(currOrigin.x, currOrigin.y);
 
-			//m.identity();
-			//m.translate( -point.x, -point.y);
-			//m.rotate(body.getAngle());
-			//
-			//currAnimation.transform.matrix = m;
-						
-			//Goes haywire with this :(
-			//rotation = body.getAngle() * Utils.DEG;
+			#if js			
+			cacheX = jeashX = Math.round(p.x * Engine.physicsScale);
+			cacheY = jeashY = Math.round(p.y * Engine.physicsScale);
+			
+			var m:Matrix = mMatrix;						
+			var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
+
+			m.identity();
+			m.translate( -point.x, -point.y);
+			m.rotate(body.getAngle());
+			m.translate(cacheX, cacheY);
+			
+			if (resetOrigin)
+			{
+				BuildBounds();
+				resetOrigin = false;
+			}
 			#end
 			
-			#if !js		
+			#if !js
+			cacheX = x = Math.round(p.x * Engine.physicsScale);
+			cacheY = y = Math.round(p.y * Engine.physicsScale);
+			
 			var m:Matrix = transform.matrix.clone();						
 			var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
 
@@ -1943,26 +1957,17 @@ class Actor extends Sprite
 		}
 		
 		var offsetDiff:B2Vec2 = new B2Vec2(currOffset.x, currOffset.y);
-		var radians:Float = getAngle();			
+		var radians:Float = getAngle();
+			
+		var rotated:Bool = Std.int(radians * Utils.DEG) != 0;	
 		
 		var newOffX:Int = Std.int(x - (currAnimation.width / 2));
 		var newOffY:Int = Std.int(y - (currAnimation.height / 2));
-		
-		if (currOrigin != null && (Std.int(currOffset.x) != newOffX || Std.int(currOffset.y) != newOffY) && rotation != 0)
+				
+		if (currOrigin != null && (Std.int(currOffset.x) != newOffX || Std.int(currOffset.y) != newOffY) && rotated)
 		{
 			var oldAng:Float = radians + Math.atan2( -currOffset.y, -currOffset.x);
-			var newAng:Float = radians + Math.atan2( -newOffY, -newOffX);
-			
-			if (currOffset.y == 0 && currOffset.x == 0)
-			{
-				oldAng = radians - Math.PI;
-			}
-			
-			if (newOffY == 0 && newOffX == 0)
-			{
-				newAng = radians - Math.PI;
-			}
-			
+			var newAng:Float = radians + Math.atan2( -newOffY, -newOffX);			
 			var oldDist:Float = Math.sqrt(Math.pow(currOffset.x, 2) + Math.pow(currOffset.y, 2));
 			var newDist:Float = Math.sqrt(Math.pow(newOffX, 2) + Math.pow(newOffY, 2));
 							
