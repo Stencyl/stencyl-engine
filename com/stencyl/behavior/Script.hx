@@ -1832,6 +1832,8 @@ class Script
 		{
 			trace("Error: Failed to save - " + fileName +  " - " + e);
 			//TODO: Event
+			onComplete(false);
+			return;
 		}
 		
 		if(flushStatus != null) 
@@ -1842,6 +1844,7 @@ class Script
 		            //trace('requesting permission to save');
 		        case SharedObjectFlushStatus.FLUSHED:
 		            trace("Saved Game: " + fileName);
+		            onComplete(true);
 		            //TODO: Event
 		    }
 		}
@@ -1864,6 +1867,8 @@ class Script
 		{
 			trace(key + Reflect.field(data.data, key));
 		}
+		
+		onComplete(true);
 		#end
 	}
 	
