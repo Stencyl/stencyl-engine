@@ -35,17 +35,10 @@ class Universal extends Sprite
 		mouseEnabled = false;
 		stage.mouseChildren = false;
 		
-		//Preloader Hook - When testing engine standalone, uncomment this
-		/*var loader = new scripts.Preloader();
-		loader.onUpdate(5, 15);
-		addChild(loader);*/
-		//END
-		
-		//Otherwise, use this instead.
+		//Preloader Hook - When force-testing preloader, uncomment this
 		//var loader = new scripts.StencylPreloader();
-		//loader.onUpdate(5, 15); //This line is only for testing. Comment out in production.
+		//loader.onUpdate(5, 15);
 		//addChild(loader);
-		//END
 		
 		new com.stencyl.Engine(this);
 	}
