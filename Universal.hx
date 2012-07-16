@@ -42,9 +42,9 @@ class Universal extends Sprite
 		//END
 		
 		//Otherwise, use this instead.
-		/*var loader = new scripts.StencylPreloader();
-		loader.onUpdate(5, 15); //This line is only for testing. Comment out in production.
-		addChild(loader);*/
+		//var loader = new scripts.StencylPreloader();
+		//loader.onUpdate(5, 15); //This line is only for testing. Comment out in production.
+		//addChild(loader);
 		//END
 		
 		new com.stencyl.Engine(this);
