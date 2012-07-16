@@ -137,6 +137,10 @@ class Actor extends Sprite
 	
 	public var realX:Float;
 	public var realY:Float;
+	public var realAngle:Float;
+	
+	public var colX:Float;
+	public var colY:Float;
 
 	public var xSpeed:Float;
 	public var ySpeed:Float;
@@ -148,8 +152,6 @@ class Actor extends Sprite
 	public var activePositionTweens:Int;
 	
 	//Cache values
-	public var cacheX:Float;
-	public var cacheY:Float;
 	public var cacheWidth:Float;
 	public var cacheHeight:Float;	
 	
@@ -286,6 +288,7 @@ class Actor extends Sprite
 		
 		realX = 0;
 		realY = 0;
+		realAngle = 0;
 		
 		originX = 0;
 		originY = 0;
@@ -304,8 +307,8 @@ class Actor extends Sprite
 			this.y = y;
 		}
 
-		realX = x;
-		realY = y;
+		realX = colX = x;
+		realY = colY = y;
 
 		activeAngleTweens = 0;
 		activePositionTweens = 0;
@@ -1000,8 +1003,8 @@ class Actor extends Sprite
 			
 			cacheWidth = currAnimation.width;
 			cacheHeight = currAnimation.height;
-			cacheX = getX();
-			cacheY = getY();
+			realX = getX();
+			realY = getY();
 			
 			if(animOrigin != null)
 			{	
@@ -1138,16 +1141,13 @@ class Actor extends Sprite
 		{		
 			if(xSpeed != 0 || ySpeed != 0)
 			{
-				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);
-				
-				cacheX = x;
-				cacheY = y;
+				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);				
 			}
 			
 			if(rSpeed != 0)
 			{	
 				//TODO: Abstract rotation from sprite
-				this.rotation += elapsedTime * rSpeed * 0.001;
+				realAngle += elapsedTime * rSpeed * 0.001;
 				
 				//Have to clone and set, can't edit directly for some reason.  Better in a draw method. 
 				var m:Matrix = transform.matrix.clone();						
@@ -1155,8 +1155,8 @@ class Actor extends Sprite
 
 				m.identity();
 				m.translate( -point.x, -point.y);
-				m.rotate(rotation * Utils.RAD);
-				m.translate(cacheX, cacheY);						
+				m.rotate(realAngle * Utils.RAD);
+				m.translate(realX, realY);						
 				
 				#if js
 				mMatrix = m;				
@@ -1175,7 +1175,7 @@ class Actor extends Sprite
 			
 			if(fixedRotation)
 			{
-				this.rotation = 0;
+				realAngle = 0;
 				this.rSpeed = 0;
 			}
 		}
@@ -1188,8 +1188,8 @@ class Actor extends Sprite
 			//y = Math.round(p.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);	
 
 			#if js			
-			cacheX = jeashX = Math.round(p.x * Engine.physicsScale);
-			cacheY = jeashY = Math.round(p.y * Engine.physicsScale);
+			realX = jeashX = Math.round(p.x * Engine.physicsScale);
+			realY = jeashY = Math.round(p.y * Engine.physicsScale);
 			
 			var m:Matrix = mMatrix;						
 			var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
@@ -1197,7 +1197,7 @@ class Actor extends Sprite
 			m.identity();
 			m.translate( -point.x, -point.y);
 			m.rotate(body.getAngle());
-			m.translate(cacheX, cacheY);
+			m.translate(realX, realY);
 			
 			if (resetOrigin)
 			{
@@ -1207,8 +1207,8 @@ class Actor extends Sprite
 			#end
 			
 			#if !js
-			cacheX = x = Math.round(p.x * Engine.physicsScale);
-			cacheY = y = Math.round(p.y * Engine.physicsScale);
+			realX = x = Math.round(p.x * Engine.physicsScale);
+			realY = y = Math.round(p.y * Engine.physicsScale);
 			
 			var m:Matrix = transform.matrix.clone();						
 			var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
@@ -1216,7 +1216,7 @@ class Actor extends Sprite
 			m.identity();
 			m.translate( -point.x, -point.y);
 			m.rotate(body.getAngle());
-			m.translate(cacheX, cacheY);
+			m.translate(realX, realY);
 			
 			transform.matrix = m;
 			#end
@@ -1274,7 +1274,7 @@ class Actor extends Sprite
 			body.setPositionAndAngle
 			(
 				dummy,
-				Utils.RAD * rotation
+				Utils.RAD * realAngle
 			);
 		}
 		
@@ -1780,7 +1780,7 @@ class Actor extends Sprite
 			}
 		}
 		
-		return x - currOffset.x;
+		return realX - currOffset.x;
 	}
 	
 	public function getY():Float
@@ -1798,7 +1798,7 @@ class Actor extends Sprite
 			}
 		}
 		
-		return y - currOffset.y;
+		return realY - currOffset.y;
 	}
 	
 	//TODO: Eliminate?
@@ -1811,7 +1811,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			return x + cacheWidth/2 - currOffset.x;
+			return realX + cacheWidth/2 - currOffset.x;
 		}
 	}
 	
@@ -1825,7 +1825,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			return y + cacheHeight/2 - currOffset.y;
+			return realY + cacheHeight/2 - currOffset.y;
 		}
 	}
 	
@@ -1859,7 +1859,7 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			moveActorTo(x, y);
+			moveActorTo(x + cacheWidth/2 + currOffset.x, realY);
 		}
 		
 		else
@@ -1889,7 +1889,7 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			moveActorTo(x, y);
+			moveActorTo(realX, y + cacheHeight/2 + currOffset.y);
 		}
 		
 		else
@@ -1953,7 +1953,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			resetPosition = new B2Vec2(Engine.toPhysicalUnits(cacheX), Engine.toPhysicalUnits(cacheY));
+			resetPosition = new B2Vec2(Engine.toPhysicalUnits(realX), Engine.toPhysicalUnits(realY));
 		}
 		
 		var offsetDiff:B2Vec2 = new B2Vec2(currOffset.x, currOffset.y);
@@ -1999,8 +1999,8 @@ class Actor extends Sprite
 		else
 		{
 			//TODO: Figure out how to do this for different origin points
-			x = Std.int(Engine.toPixelUnits(resetPosition.x));
-			y = Std.int(Engine.toPixelUnits(resetPosition.y));
+			realX = Std.int(Engine.toPixelUnits(resetPosition.x));
+			realY = Std.int(Engine.toPixelUnits(resetPosition.y));
 		}
 		
 		resetOrigin = true;
@@ -2088,7 +2088,7 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			return Utils.RAD * rotation;
+			return Utils.RAD * realAngle;
 		}
 		
 		return body.getAngle();
@@ -2098,7 +2098,7 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			return rotation;
+			return realAngle;
 		}
 		
 		return Utils.DEG * body.getAngle();
@@ -2110,7 +2110,7 @@ class Actor extends Sprite
 		{
 			if(isLightweight)
 			{
-				this.rotation = Utils.DEG * angle;
+				realAngle = Utils.DEG * angle;
 			}
 			
 			else
@@ -2123,7 +2123,7 @@ class Actor extends Sprite
 		{
 			if(isLightweight)
 			{
-				this.rotation = angle;
+				realAngle = angle;
 			}
 			
 			else
@@ -2139,7 +2139,7 @@ class Actor extends Sprite
 		{
 			if(isLightweight)
 			{
-				this.rotation += Utils.DEG * angle;
+				realAngle += Utils.DEG * angle;
 			}
 			
 			else
@@ -2152,7 +2152,7 @@ class Actor extends Sprite
 		{
 			if(isLightweight)
 			{
-				this.rotation += angle;
+				realAngle += angle;
 			}
 			
 			else
@@ -2408,8 +2408,8 @@ class Actor extends Sprite
 		var mx = Input.mouseX;
 		var my = Input.mouseY;
 		
-		var xPos = cacheX; //getX();
-		var yPos = cacheY; //getY();
+		var xPos = realX; //getX();
+		var yPos = realY; //getY();
 		
 		if(isHUD)
 		{
@@ -2417,8 +2417,8 @@ class Actor extends Sprite
 			//mx = Input.mouseX;
 			//my = Input.mouseY;
 			
-			xPos = cacheX + Engine.cameraX; //getScreenX();
-			yPos = cacheY + Engine.cameraY; //getScreenY();
+			xPos = realX + Engine.cameraX; //getScreenX();
+			yPos = realY + Engine.cameraY; //getScreenY();
 		}
 		
 		return (mx >= xPos && 
@@ -2479,7 +2479,7 @@ class Actor extends Sprite
 	//In degrees
 	public function spinTo(angle:Float, duration:Float = 1, easing:Dynamic = null)
 	{
-		tweenAngle.angle = this.rotation;
+		tweenAngle.angle = realAngle;
 
 		if(easing == null)
 		{
@@ -2490,7 +2490,7 @@ class Actor extends Sprite
 	
 		if(isLightweight)
 		{
-			Actuate.tween(this, duration, {rotation:angle}).ease(easing).onComplete(onTweenAngleComplete);
+			Actuate.tween(this, duration, {realAngle:angle}).ease(easing).onComplete(onTweenAngleComplete);
 		}
 		
 		else
@@ -2525,7 +2525,7 @@ class Actor extends Sprite
 	//In degrees
 	public function spinBy(angle:Float, duration:Float = 1, easing:Dynamic = null)
 	{
-		spinTo(this.rotation + angle, duration, easing);
+		spinTo(realAngle + angle, duration, easing);
 	}
 	
 	public function moveBy(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
@@ -2912,8 +2912,8 @@ class Actor extends Sprite
 	
 	public function setLocation(x:Float, y:Float)
 	{
-		this.x = x;
-		this.y = y;
+		realX = x;
+		realY = y;
 		
 		setX(x);
 		setY(y);
@@ -2950,8 +2950,8 @@ class Actor extends Sprite
 		//Grab all actors from a group. For us, that means grabbing the group! (instead of a string type)
 		var actorList = engine.getGroup(groupID);
 		
-		_x = this.x; _y = this.y;
-		this.x = x; this.y = y;
+		_x = realX; _y = realY;
+		realX = x; realY = y;
 
 		if (_mask == null)
 		{
@@ -2969,14 +2969,14 @@ class Actor extends Sprite
 					{
 						if(solid && e.solid)
 						{
-							this.x = _x; this.y = _y;
+							realX = _x; realY = _y;
 						}
 						
 						return e;
 					}
 				}
 			}
-			this.x = _x; this.y = _y;
+			realX = _x; realY = _y;
 			return null;
 		}
 
@@ -2994,14 +2994,14 @@ class Actor extends Sprite
 				{
 					if(solid && e.solid)
 					{
-						this.x = _x; this.y = _y;
+						realX = _x; realY = _y;
 					}
 					
 					return e;
 				}
 			}
 		}
-		this.x = _x; this.y = _y;
+		realX = _x; realY = _y;
 		return null;
 	}
 
@@ -3045,8 +3045,8 @@ class Actor extends Sprite
 	 */
 	public function collideWith(e:Actor, x:Float, y:Float):Actor
 	{
-		_x = this.x; _y = this.y;
-		this.x = x; this.y = y;
+		_x = realX; _y = realY;
+		realX = x; realY = y;
 
 		if (x - originX + cacheWidth > e.x - e.originX
 		&& y - originY + cacheHeight > e.y - e.originY
@@ -3058,19 +3058,19 @@ class Actor extends Sprite
 			{
 				if (e._mask == null || e._mask.collide(HITBOX))
 				{
-					this.x = _x; this.y = _y;
+					realX = _x; realY = _y;
 					return e;
 				}
-				this.x = _x; this.y = _y;
+				realX = _x; realY = _y;
 				return null;
 			}
 			if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
 			{
-				this.x = _x; this.y = _y;
+				realX = _x; realY = _y;
 				return e;
 			}
 		}
-		this.x = _x; this.y = _y;
+		realX = _x; realY = _y;
 		return null;
 	}
 
@@ -3087,8 +3087,8 @@ class Actor extends Sprite
 		//Grab all actors from a group. For us, that means grabbing the group! (instead of a string type)
 		var actorList = engine.getGroup(groupID);
 
-		_x = this.x; _y = this.y;
-		this.x = x; this.y = y;
+		_x = realX; _y = realY;
+		realX = x; realY = y;
 		var n:Int = array.length;
 
 		if (_mask == null)
@@ -3106,7 +3106,7 @@ class Actor extends Sprite
 					if (e._mask == null || e._mask.collide(HITBOX)) array[n++] = e;
 				}
 			}
-			this.x = _x; this.y = _y;
+			realX = _x; realY = _y;
 			return;
 		}
 
@@ -3123,7 +3123,7 @@ class Actor extends Sprite
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX)) array[n++] = e;
 			};
 		}
-		this.x = _x; this.y = _y;
+		realX = _x; realY = _y;
 		return;
 	}
 
@@ -3154,52 +3154,52 @@ class Actor extends Sprite
 			var sign:Int, e:Actor;
 			if (x != 0)
 			{
-				if (collidable && (sweep || collideTypes(solidType, this.x + x, this.y) != null))
+				if (collidable && (sweep || collideTypes(solidType, realX + x, realY) != null))
 				{
 					sign = x > 0 ? 1 : -1;
 					while (x != 0)
 					{
-						if ((e = collideTypes(solidType, this.x + sign, this.y)) != null)
+						if ((e = collideTypes(solidType, realX + sign, realY)) != null)
 						{
 							moveCollideX(e);
 							break;
 						}
 						else
 						{
-							this.x += sign;
+							realX += sign;
 							x -= sign;
 						}
 					}
 				}
-				else this.x += x;
+				else realX += x;
 			}
 			if (y != 0)
 			{
-				if (collidable && (sweep || collideTypes(solidType, this.x, this.y + y) != null))
+				if (collidable && (sweep || collideTypes(solidType, realX, realY + y) != null))
 				{
 					sign = y > 0 ? 1 : -1;
 					while (y != 0)
 					{
-						if ((e = collideTypes(solidType, this.x, this.y + sign)) != null)
+						if ((e = collideTypes(solidType, realX, realY + sign)) != null)
 						{
 							moveCollideY(e);
 							break;
 						}
 						else
 						{
-							this.y += sign;
+							realY += sign;
 							y -= sign;
 						}
 					}
 				}
-				else this.y += y;
+				else realY += y;
 			}
 		}
 		else
 		{
 			//TODO: This is slow in Flash && Mobile
-			this.x += x;
-			this.y += y;
+			realX += x;
+			realY += y;
 		}
 	}
 	
@@ -3212,7 +3212,7 @@ class Actor extends Sprite
 	 */
 	public inline function moveActorTo(x:Float, y:Float, solidType:Dynamic = null, sweep:Bool = false)
 	{
-		moveActorBy(x - this.x, y - this.y, solidType, sweep);
+		moveActorBy(x - realX, y - realY, solidType, sweep);
 	}
 
 	/**
@@ -3225,8 +3225,8 @@ class Actor extends Sprite
 	 */
 	public inline function moveActorTowards(x:Float, y:Float, amount:Float, solidType:Dynamic = null, sweep:Bool = false)
 	{
-		_point.x = x - this.x;
-		_point.y = y - this.y;
+		_point.x = x - realX;
+		_point.y = y - realY;
 		_point.normalize(amount);
 		moveActorBy(_point.x, _point.y, solidType, sweep);
 	}
@@ -3263,8 +3263,8 @@ class Actor extends Sprite
 		
 		if(fromX)
 		{
-			Utils.collision.thisFromLeft = a.x < this.x;
-			Utils.collision.thisFromRight = a.x > this.x;
+			Utils.collision.thisFromLeft = a.x < realX;
+			Utils.collision.thisFromRight = a.x > realX;
 			
 			Utils.collision.otherFromLeft = !Utils.collision.thisFromLeft;
 			Utils.collision.otherFromRight = !Utils.collision.thisFromRight;
@@ -3275,8 +3275,8 @@ class Actor extends Sprite
 		
 		if(fromY)
 		{
-			Utils.collision.thisFromTop = a.y < this.y;
-			Utils.collision.thisFromBottom = a.y > this.y;
+			Utils.collision.thisFromTop = a.y < realY;
+			Utils.collision.thisFromBottom = a.y > realY;
 		
 			Utils.collision.otherFromTop = !Utils.collision.thisFromTop;
 			Utils.collision.otherFromBottom = !Utils.collision.thisFromBottom;
