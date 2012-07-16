@@ -196,8 +196,8 @@ class Region extends Actor
 	
 	override public function follow(actor:Actor)
 	{
-		var x = actor.cacheX + actor.cacheWidth / 2;
-		var y = actor.cacheY + actor.cacheHeight / 2;
+		var x = actor.realX + actor.cacheWidth / 2;
+		var y = actor.realY + actor.cacheHeight / 2;
 		
 		setX(x);
 		setY(y);
