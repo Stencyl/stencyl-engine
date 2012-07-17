@@ -608,11 +608,20 @@ class Scene
 
 					var tile = tset.tiles[tileID];
 					
-					//TODO: If animated tile, add to update list
-					/*if (tile != null && tile.pixels != null && animatedTiles.indexOf(tile) == -1)
+					if (tile != null && tile.pixels != null)
 					{
-						animatedTiles.push(tile);
-					}*/
+						var inList:Bool = false;
+						
+						for (checkTile in animatedTiles)
+						{
+							if (inList = (checkTile == tile)) break;
+						}
+						
+						if (!inList)
+						{
+							animatedTiles.push(tile);
+						}
+					}
 				}
 				
 				col++;
@@ -709,11 +718,20 @@ class Scene
 
 					var tile = tset.tiles[tileID];
 					
-					//TODO: If animated tile, add to update list
-					//if (tile != null && tile.pixels != null && animatedTiles.indexOf(tile) == -1)
-					//{
-					//	animatedTiles.push(tile);
-					//}
+					if (tile != null && tile.pixels != null)
+					{
+						var inList:Bool = false;
+						
+						for (checkTile in animatedTiles)
+						{
+							if (inList = (checkTile == tile)) break;
+						}
+						
+						if (!inList)
+						{
+							animatedTiles.push(tile);
+						}
+					}
 				}
 				
 				col++;

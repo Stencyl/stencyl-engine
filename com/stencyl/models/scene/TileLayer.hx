@@ -179,7 +179,7 @@ class TileLayer extends Sprite
 					continue;
 				}
 													
-				if(cacheSource.get(t) == null)
+				if(cacheSource.get(t) == null || t.updateSource)
 				{
 					if(t.pixels == null)
 					{
@@ -187,8 +187,9 @@ class TileLayer extends Sprite
 					}
 					
 					else
-					{
+					{						
 						cacheSource.set(t, t.getSource(tw, th));
+						t.updateSource = false;
 					}						
 				}
 				

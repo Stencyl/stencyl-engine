@@ -243,7 +243,8 @@ class Engine
 	//value -> layerID
 	public var layersToDraw:SizedIntHash<Int>;
 	public var layerOrders:SizedIntHash<Int>;
-	
+		
+	public var tileUpdated:Bool;
 	public var cameraMoved:Bool;
 	public var cameraOldX:Float;
 	public var cameraOldY:Float;	
@@ -348,6 +349,7 @@ class Engine
 			
 		started = true;
 		cameraMoved = false;
+		tileUpdated = false;
 		
 		//---
 		
@@ -1853,6 +1855,7 @@ class Engine
 		for(tile in animatedTiles)
 		{
 			tile.update(elapsedTime);
+			tileUpdated = tileUpdated || tile.updateSource;
 		}
 		
 		if(leave != null && leave.isActive())
@@ -2346,13 +2349,15 @@ class Engine
 
      	//Walk through each of the drawing events
      	
-     	//Only if camera changed?
-     	if(cameraMoved)
+     	//Only if camera changed? Or tile updated
+     	if(cameraMoved || tileUpdated)
      	{
 	     	for(layer in tileLayers)
 	     	{
 	     		layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */); // FLASH MOUSE SLOWDOWN
 	     	}
+			
+			tileUpdated = false;
      	}
      	
      	//Scene Behavior/Event Drawing

@@ -17,6 +17,7 @@ class Tile
 	public var frames:Array<Int>;
 	public var currFrame:Int;
 	public var currTime:Int;
+	public var updateSource:Bool;
 	
 	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, imgData:BitmapData, parent:Tileset)
 	{
@@ -28,14 +29,20 @@ class Tile
 					
 		currFrame = 0;
 		currTime = 0;
+		updateSource = false;
 					
 		pixels = imgData;
 	}
 	
 	public function update(elapsedTime:Float)
 	{
-		currTime += Math.floor(elapsedTime * 1000);
-					
+		if (durations.length == 1)
+		{
+			return;
+		}
+		
+		currTime += Math.floor(elapsedTime);
+				
 		if (currTime > Std.int(durations[currFrame]))
 		{
 			currTime -= Std.int(durations[currFrame]);
@@ -49,6 +56,8 @@ class Tile
 			{
 				currFrame = 0;
 			}
+			
+			updateSource = true;
 		}
 	}
 	
