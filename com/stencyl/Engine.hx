@@ -106,6 +106,8 @@ class Engine
 	
 	public static var engine:Engine = null;
 	
+	public static var landscape:Bool = false; //Only applies to mobile
+	
 	public static var cameraX:Float;
 	public static var cameraY:Float;
 	
@@ -335,11 +337,31 @@ class Engine
 		Input.define(INTERNAL_SHIFT, [Key.SHIFT]);
 		Input.define(INTERNAL_CTRL, [Key.CONTROL]);
 		
-		Engine.screenWidth = Std.int(stage.stageWidth);
-		Engine.screenHeight = Std.int(stage.stageHeight);
-		Engine.screenWidthHalf = Std.int(stage.stageWidth/2);
-		Engine.screenHeightHalf = Std.int(stage.stageHeight/2);
+		Engine.landscape = scripts.MyAssets.landscape;
 		
+		#if (mobile)
+		if(Engine.landscape)
+		{
+			Engine.screenWidth = Std.int(stage.stageHeight);
+			Engine.screenHeight = Std.int(stage.stageWidth);
+			Engine.screenWidthHalf = Std.int(stage.stageHeight/2);
+			Engine.screenHeightHalf = Std.int(stage.stageWidth/2);
+			
+			/*Engine.screenWidth = 480;
+			Engine.screenHeight = 320;
+			Engine.screenWidthHalf = Std.int(240);
+			Engine.screenHeightHalf = Std.int(160);*/
+		}
+		
+		else
+		#end
+		{
+			Engine.screenWidth = Std.int(stage.stageWidth);
+			Engine.screenHeight = Std.int(stage.stageHeight);
+			Engine.screenWidthHalf = Std.int(stage.stageWidth/2);
+			Engine.screenHeightHalf = Std.int(stage.stageHeight/2);
+		}
+
 		Data.get();
 		GameModel.get();
 		

@@ -72,8 +72,6 @@ class Motion extends ActorScript
 				actor.y = Engine.stage.mouseY;
 			}
 		};
-		
-		addWhenUpdatedListener(actor, evt);
 	}		
 	
 	override public function init()

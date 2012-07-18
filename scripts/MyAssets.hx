@@ -6,6 +6,8 @@ import com.stencyl.AssetLoader;
 
 class MyAssets implements AssetLoader
 {
+	public static var landscape:Bool = false;
+	
 	public function new()
 	{
 	}
