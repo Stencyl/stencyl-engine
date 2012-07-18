@@ -357,6 +357,7 @@ class Engine
 			Engine.screenHeightHalf = Std.int(stage.stageHeight/2);
 		}
 		
+		#if (mobile)
 		if(scripts.MyAssets.autorotate)
 		{
 			Stage.shouldRotateInterface = function(inOrientation:Int):Bool 
@@ -382,6 +383,7 @@ class Engine
 				return false;
 			};
 		}
+		#end
 
 		Data.get();
 		GameModel.get();
