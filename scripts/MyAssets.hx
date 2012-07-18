@@ -7,6 +7,7 @@ import com.stencyl.AssetLoader;
 class MyAssets implements AssetLoader
 {
 	public static var landscape:Bool = false;
+	public static var autorotate:Bool = true;
 	
 	public function new()
 	{

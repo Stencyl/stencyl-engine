@@ -346,11 +346,6 @@ class Engine
 			Engine.screenHeight = Std.int(stage.stageWidth);
 			Engine.screenWidthHalf = Std.int(stage.stageHeight/2);
 			Engine.screenHeightHalf = Std.int(stage.stageWidth/2);
-			
-			/*Engine.screenWidth = 480;
-			Engine.screenHeight = 320;
-			Engine.screenWidthHalf = Std.int(240);
-			Engine.screenHeightHalf = Std.int(160);*/
 		}
 		
 		else
@@ -360,6 +355,32 @@ class Engine
 			Engine.screenHeight = Std.int(stage.stageHeight);
 			Engine.screenWidthHalf = Std.int(stage.stageWidth/2);
 			Engine.screenHeightHalf = Std.int(stage.stageHeight/2);
+		}
+		
+		if(scripts.MyAssets.autorotate)
+		{
+			Stage.shouldRotateInterface = function(inOrientation:Int):Bool 
+			{
+				switch(inOrientation) 
+				{
+					case Stage.OrientationLandscapeRight:
+					
+					if(Engine.landscape)
+					{
+						return true;
+					}
+					
+					case Stage.OrientationPortrait:
+				
+					return true;
+				
+					case Stage.OrientationLandscapeLeft:
+					case Stage.OrientationPortraitUpsideDown:
+					default:
+				}
+				
+				return false;
+			};
 		}
 
 		Data.get();
