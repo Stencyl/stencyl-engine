@@ -50,6 +50,11 @@ class Input
 	public static function define(name:String, keys:Array<Int>)
 	{
 		_control.set(name, keys);
+		
+		for(key in multiTouchPoints)
+		{
+			var evt:TouchEvent = multiTouchPoints.get(key);
+		}
 	}
 
 	/**
