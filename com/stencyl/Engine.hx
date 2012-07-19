@@ -358,30 +358,17 @@ class Engine
 		}
 		
 		#if (mobile)
-		if(scripts.MyAssets.autorotate)
+		if(!scripts.MyAssets.autorotate)
 		{
-			Stage.shouldRotateInterface = function(inOrientation:Int):Bool 
+			if(Engine.landscape)
 			{
-				switch(inOrientation) 
-				{
-					case Stage.OrientationLandscapeRight:
-					
-					if(Engine.landscape)
-					{
-						return true;
-					}
-					
-					case Stage.OrientationPortrait:
-				
-					return true;
-				
-					case Stage.OrientationLandscapeLeft:
-					case Stage.OrientationPortraitUpsideDown:
-					default:
-				}
-				
-				return false;
-			};
+				Stage.setFixedOrientation(Stage.OrientationLandscapeLeft);
+			}
+			
+			else
+			{
+				Stage.setFixedOrientation(Stage.OrientationPortrait);
+			}
 		}
 		#end
 
