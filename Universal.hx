@@ -44,8 +44,6 @@ class Universal extends Sprite
 		new com.stencyl.Engine(this);
 	}
 	
-	static var screenRotated = false;
-	
 	public static function main() 
 	{
 		var stage = Lib.current.stage;
