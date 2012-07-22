@@ -328,7 +328,7 @@ class Engine
 		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
 		stage.addEventListener(Event.DEACTIVATE, onFocusLost);
 		stage.addEventListener(Event.ACTIVATE, onFocus);
-		begin(0);
+		begin(scripts.MyAssets.initSceneID);
 	}
 	
 	public function begin(initSceneID:Int)
@@ -338,23 +338,30 @@ class Engine
 		Input.define(INTERNAL_CTRL, [Key.CONTROL]);
 		
 		Engine.landscape = scripts.MyAssets.landscape;
+		var stageWidth = scripts.MyAssets.stageWidth;
+		var stageHeight = scripts.MyAssets.stageHeight;
 		
 		#if (mobile)
 		if(Engine.landscape)
 		{
-			Engine.screenWidth = Std.int(stage.stageHeight);
-			Engine.screenHeight = Std.int(stage.stageWidth);
-			Engine.screenWidthHalf = Std.int(stage.stageHeight/2);
-			Engine.screenHeightHalf = Std.int(stage.stageWidth/2);
+			Engine.screenWidth = Std.int(stageHeight);
+			Engine.screenHeight = Std.int(stageWidth);
+			Engine.screenWidthHalf = Std.int(stageHeight/2);
+			Engine.screenHeightHalf = Std.int(stageWidth/2);
+			
+			Engine.screenWidth = Std.int(stageWidth);
+			Engine.screenHeight = Std.int(stageHeight);
+			Engine.screenWidthHalf = Std.int(stageWidth/2);
+			Engine.screenHeightHalf = Std.int(stageHeight/2);
 		}
 		
 		else
 		#end
 		{
-			Engine.screenWidth = Std.int(stage.stageWidth);
-			Engine.screenHeight = Std.int(stage.stageHeight);
-			Engine.screenWidthHalf = Std.int(stage.stageWidth/2);
-			Engine.screenHeightHalf = Std.int(stage.stageHeight/2);
+			Engine.screenWidth = Std.int(stageWidth);
+			Engine.screenHeight = Std.int(stageHeight);
+			Engine.screenWidthHalf = Std.int(stageWidth/2);
+			Engine.screenHeightHalf = Std.int(stageHeight/2);
 		}
 		
 		#if (mobile)
@@ -404,8 +411,8 @@ class Engine
 		lastTime = Lib.getTimer();
 
 		//Constants
-		Engine.sceneWidth = 640; //Overriden once scene loads
-		Engine.sceneHeight = 480; //Overriden once scene loads
+		Engine.sceneWidth = stageWidth; //Overriden once scene loads
+		Engine.sceneHeight = stageHeight; //Overriden once scene loads
 			
 		//Display List
 		master = new Sprite();
@@ -442,7 +449,7 @@ class Engine
 		#end
 		
 		#if js
-		var stats = new nme.display.FPS(stage.stageWidth - 50, 0);
+		var stats = new nme.display.FPS(stageWidth - 50, 0);
 		stats.backgroundColor = 0x444444;
 		stats.background = true;
 		stats.opaqueBackground = 0x444444;

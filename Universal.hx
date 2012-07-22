@@ -6,6 +6,7 @@ import nme.events.Event;
 import nme.display.StageAlign;
 import nme.display.StageScaleMode;
 import nme.display.Shape;
+import nme.system.Capabilities;
 
 class Universal extends Sprite 
 {
@@ -35,6 +36,28 @@ class Universal extends Sprite
 		mouseChildren = false;
 		mouseEnabled = false;
 		stage.mouseChildren = false;
+				
+		#if mobile
+		//if game width > screen width
+		//scaleX = 0.5;
+		//scaleY = scaleX;
+		
+		/*if(scripts.MyAssets.stageWidth > stage.stageWidth)
+		{
+			scaleX = stage.stageWidth / scripts.MyAssets.stageWidth;
+			scaleY = scaleX;
+		}
+		
+		scaleX = 0.66;
+		scaleY = scaleX;*/
+		
+		x += (stage.stageWidth - scripts.MyAssets.stageWidth)/2;
+		y += (stage.stageHeight - scripts.MyAssets.stageHeight)/2;
+		
+		//TODO: Add black bars instead. Can't figure out how to clip the view!
+		//Only ever need 2 so it's not too wasteful.
+		
+		#end
 		
 		//Preloader Hook - When force-testing preloader, uncomment this
 		//var loader = new scripts.StencylPreloader();
@@ -47,8 +70,13 @@ class Universal extends Sprite
 	public static function main() 
 	{
 		var stage = Lib.current.stage;
+		
 		stage.align = StageAlign.TOP_LEFT;
 		stage.scaleMode = StageScaleMode.NO_SCALE;
+		
+		#if mobile
+		stage.opaqueBackground = 0x000000;
+		#end
 
 		Lib.current.addChild(new Universal());	
 	}
