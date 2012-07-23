@@ -36,47 +36,92 @@ class Universal extends Sprite
 		mouseChildren = false;
 		mouseEnabled = false;
 		stage.mouseChildren = false;
-						
-		#if (mobile)
-		//Is the game width > device width? Adjust scaleX, then scaleY.
-		if(scripts.MyAssets.stageWidth > stage.stageWidth)
-		{
-			scaleX = stage.stageWidth / scripts.MyAssets.stageWidth;
-			scaleY = scaleX;
-		}
 		
-		//If the game height * scaleY > device height? Adjust scaleY, then scaleX.
-		if(scripts.MyAssets.stageHeight * scaleY > stage.stageHeight)
+		var usingFullScreen = false;
+		
+		//Full Screen Mode - Android
+		#if (mobile && android)
+		if(scripts.MyAssets.stageWidth == -1 || scripts.MyAssets.stageHeight == -1)
 		{
-			scaleY = stage.stageHeight / scripts.MyAssets.stageHeight;
-			scaleX = scaleY;
+			scripts.MyAssets.stageWidth = stage.stageWidth;
+			scripts.MyAssets.stageHeight = stage.stageHeight;
+			
+			usingFullScreen = true;
+		}
+		#end
+		
+		//Full Screen Mode - iOS
+		#if (mobile && !android)
+		if(scripts.MyAssets.stageWidth == -1 || scripts.MyAssets.stageHeight == -1)
+		{
+			if(scripts.MyAssets.landscape)
+			{
+				scripts.MyAssets.stageWidth = stage.stageHeight;
+				scripts.MyAssets.stageHeight = stage.stageWidth;
+			}
+			
+			else
+			{
+				scripts.MyAssets.stageWidth = stage.stageWidth;
+				scripts.MyAssets.stageHeight = stage.stageHeight;
+			}
+			
+			usingFullScreen = true;
+		}
+		#end
+			
+		#if (mobile && android)
+		if(!usingFullScreen)
+		{
+			//Is the game width > device width? Adjust scaleX, then scaleY.
+			if(scripts.MyAssets.stageWidth > stage.stageWidth)
+			{
+				scaleX = stage.stageWidth / scripts.MyAssets.stageWidth;
+				scaleY = scaleX;
+			}
+			
+			//If the game height * scaleY > device height? Adjust scaleY, then scaleX.
+			if(scripts.MyAssets.stageHeight * scaleY > stage.stageHeight)
+			{
+				scaleY = stage.stageHeight / scripts.MyAssets.stageHeight;
+				scaleX = scaleY;
+			}
 		}
 		#end
 		
 		//On iOS, these are swapped on landscape, so we have to correct that
 		#if (mobile && !android)
-		if(scripts.MyAssets.landscape)
+		if(!usingFullScreen)
 		{
-			x += (stage.stageHeight - scripts.MyAssets.stageWidth)/2;
-			y += (stage.stageWidth - scripts.MyAssets.stageHeight)/2;
-		}
-		
-		else
-		{
-			x += (stage.stageWidth - scripts.MyAssets.stageWidth)/2;
-			y += (stage.stageHeight - scripts.MyAssets.stageHeight)/2;
+			if(scripts.MyAssets.landscape)
+			{
+				x += (stage.stageHeight - scripts.MyAssets.stageWidth)/2;
+				y += (stage.stageWidth - scripts.MyAssets.stageHeight)/2;
+			}
+			
+			else
+			{
+				x += (stage.stageWidth - scripts.MyAssets.stageWidth)/2;
+				y += (stage.stageHeight - scripts.MyAssets.stageHeight)/2;
+			}
 		}
 		#end
 		
 		//But on Android, they are correct, so no swap needed
 		#if (mobile && android)
+		if(!usingFullScreen)
+		{
 			x += (stage.stageWidth - scripts.MyAssets.stageWidth * scaleX)/2;
 			y += (stage.stageHeight - scripts.MyAssets.stageHeight * scaleY)/2;
+		}
 		#end
 		
 		//Clip the view
 		#if (mobile)
-		scrollRect = new nme.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
+		if(!usingFullScreen)
+		{
+			scrollRect = new nme.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
+		}
 		#end
 		
 		//Preloader Hook - When force-testing preloader, uncomment this
