@@ -38,6 +38,27 @@ class Universal extends Sprite
 		stage.mouseChildren = false;
 		
 		var usingFullScreen = false;
+		var stretchToFit = false;
+		
+		//Stretch To Fit
+		#if (mobile)
+		if(scripts.MyAssets.stretchToFit)
+		{
+			stretchToFit = true;
+			
+			scaleX = stage.stageWidth / scripts.MyAssets.stageWidth;
+			scaleY = stage.stageHeight / scripts.MyAssets.stageHeight;
+		}
+		#end
+		
+		//Stretch to Fit - iOS (Landscape Workaround)
+		#if (mobile && !android)
+		if(stretchToFit && scripts.MyAssets.landscape)
+		{
+			scaleX = stage.stageHeight / scripts.MyAssets.stageWidth;
+			scaleY = stage.stageWidth / scripts.MyAssets.stageHeight;
+		}
+		#end
 		
 		//Full Screen Mode - Android
 		#if (mobile && android)
@@ -71,7 +92,7 @@ class Universal extends Sprite
 		#end
 			
 		#if (mobile && android)
-		if(!usingFullScreen)
+		if(!usingFullScreen && !stretchToFit)
 		{
 			//Is the game width > device width? Adjust scaleX, then scaleY.
 			if(scripts.MyAssets.stageWidth > stage.stageWidth)
@@ -91,7 +112,7 @@ class Universal extends Sprite
 		
 		//On iOS, these are swapped on landscape, so we have to correct that
 		#if (mobile && !android)
-		if(!usingFullScreen)
+		if(!usingFullScreen && !stretchToFit)
 		{
 			if(scripts.MyAssets.landscape)
 			{
@@ -109,7 +130,7 @@ class Universal extends Sprite
 		
 		//But on Android, they are correct, so no swap needed
 		#if (mobile && android)
-		if(!usingFullScreen)
+		if(!usingFullScreen && !stretchToFit)
 		{
 			x += (stage.stageWidth - scripts.MyAssets.stageWidth * scaleX)/2;
 			y += (stage.stageHeight - scripts.MyAssets.stageHeight * scaleY)/2;
@@ -118,7 +139,7 @@ class Universal extends Sprite
 		
 		//Clip the view
 		#if (mobile)
-		if(!usingFullScreen)
+		if(!usingFullScreen && !stretchToFit)
 		{
 			scrollRect = new nme.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
 		}

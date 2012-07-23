@@ -8,8 +8,9 @@ class MyAssets implements AssetLoader
 {
 	public static var landscape:Bool = true;
 	public static var autorotate:Bool = true;
-	public static var stageWidth:Int = -1;
-	public static var stageHeight:Int = -1;
+	public static var stretchToFit:Bool = false;
+	public static var stageWidth:Int = 480;
+	public static var stageHeight:Int = 320;
 	public static var initSceneID:Int = 0;
 	
 	public function new()
