@@ -50,13 +50,32 @@ class Universal extends Sprite
 		
 		scaleX = 0.66;
 		scaleY = scaleX;*/
+		#end
 		
-		x += (stage.stageWidth - scripts.MyAssets.stageWidth)/2;
-		y += (stage.stageHeight - scripts.MyAssets.stageHeight)/2;
+		//On iOS, these are swapped on landscape, so we have to correct that
+		#if (mobile && !android)
+		if(scripts.MyAssets.landscape)
+		{
+			x += (stage.stageHeight - scripts.MyAssets.stageWidth)/2;
+			y += (stage.stageWidth - scripts.MyAssets.stageHeight)/2;
+		}
 		
-		//TODO: Add black bars instead. Can't figure out how to clip the view!
-		//Only ever need 2 so it's not too wasteful.
+		else
+		{
+			x += (stage.stageWidth - scripts.MyAssets.stageWidth)/2;
+			y += (stage.stageHeight - scripts.MyAssets.stageHeight)/2;
+		}
+		#end
 		
+		//But on Android, they are correct, so no swap needed
+		#if (mobile && android)
+			x += (stage.stageWidth - scripts.MyAssets.stageWidth)/2;
+			y += (stage.stageHeight - scripts.MyAssets.stageHeight)/2;
+		#end
+		
+		//Clip the view
+		#if mobile
+		scrollRect = new nme.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
 		#end
 		
 		//Preloader Hook - When force-testing preloader, uncomment this

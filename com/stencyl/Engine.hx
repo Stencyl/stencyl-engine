@@ -325,6 +325,7 @@ class Engine
 	{		
 		Engine.engine = this;
 		this.root = root;
+		
 		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
 		stage.addEventListener(Event.DEACTIVATE, onFocusLost);
 		stage.addEventListener(Event.ACTIVATE, onFocus);
