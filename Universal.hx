@@ -36,20 +36,21 @@ class Universal extends Sprite
 		mouseChildren = false;
 		mouseEnabled = false;
 		stage.mouseChildren = false;
-				
-		#if mobile
-		//if game width > screen width
-		//scaleX = 0.5;
-		//scaleY = scaleX;
-		
-		/*if(scripts.MyAssets.stageWidth > stage.stageWidth)
+						
+		#if (mobile)
+		//Is the game width > device width? Adjust scaleX, then scaleY.
+		if(scripts.MyAssets.stageWidth > stage.stageWidth)
 		{
 			scaleX = stage.stageWidth / scripts.MyAssets.stageWidth;
 			scaleY = scaleX;
 		}
 		
-		scaleX = 0.66;
-		scaleY = scaleX;*/
+		//If the game height * scaleY > device height? Adjust scaleY, then scaleX.
+		if(scripts.MyAssets.stageHeight * scaleY > stage.stageHeight)
+		{
+			scaleY = stage.stageHeight / scripts.MyAssets.stageHeight;
+			scaleX = scaleY;
+		}
 		#end
 		
 		//On iOS, these are swapped on landscape, so we have to correct that
@@ -69,12 +70,12 @@ class Universal extends Sprite
 		
 		//But on Android, they are correct, so no swap needed
 		#if (mobile && android)
-			x += (stage.stageWidth - scripts.MyAssets.stageWidth)/2;
-			y += (stage.stageHeight - scripts.MyAssets.stageHeight)/2;
+			x += (stage.stageWidth - scripts.MyAssets.stageWidth * scaleX)/2;
+			y += (stage.stageHeight - scripts.MyAssets.stageHeight * scaleY)/2;
 		#end
 		
 		//Clip the view
-		#if mobile
+		#if (mobile)
 		scrollRect = new nme.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
 		#end
 		
