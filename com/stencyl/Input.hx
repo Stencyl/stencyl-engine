@@ -156,6 +156,10 @@ class Input
          		Engine.stage.addEventListener(TouchEvent.TOUCH_END, onTouchEnd);
 	        }
 	        #end
+	        
+	        accelX = 0;
+	        accelY = 0;
+	        accelZ = 0;
 		}
 	}
 
