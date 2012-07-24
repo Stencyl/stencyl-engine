@@ -43,8 +43,8 @@ class Preloader extends Sprite
 		background.graphics.drawRect(0, 0, getWidth(), getHeight());
 		addChild(background);
 	
-		var backgroundImage = new Bitmap(Assets.getBitmapData("assets/graphics/bg.png"));
-		addChild(backgroundImage);
+		//var backgroundImage = new Bitmap(Assets.getBitmapData("assets/graphics/bg.png"));
+		//addChild(backgroundImage);
 	
 		//Bar
 		var barBorderColor = 0x777777;
