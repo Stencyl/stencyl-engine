@@ -49,6 +49,7 @@ class Universal extends Sprite
 		trace("Screen DPI: " + Capabilities.screenDPI);
 		
 		//TODO: This is wrong for iPad since it's lower DPI but needs 4x graphics!
+		#if (mobile)
 		if(Capabilities.screenDPI < 300) 
 		{
 			Engine.SCALE = 1;
@@ -60,10 +61,13 @@ class Universal extends Sprite
 			Engine.SCALE = 2;
 			Engine.IMG_BASE = "2x";
 		}
+		#end
 		
 		//debug for flash
+		#if (!mobile)
 		//Engine.SCALE = 2;
 		//Engine.IMG_BASE = "2x";
+		#end
 		
 		scripts.MyAssets.stageWidth *= Engine.SCALE;
 		scripts.MyAssets.stageHeight *= Engine.SCALE;

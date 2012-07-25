@@ -13,7 +13,7 @@ class MyAssets implements AssetLoader
 	public static var stageWidth:Int = 480;
 	public static var stageHeight:Int = 320;
 	public static var initSceneID:Int = 0;
-	public static var physicsMode:Int = 1;
+	public static var physicsMode:Int = 0;
 	
 	public function new()
 	{
