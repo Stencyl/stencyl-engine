@@ -62,8 +62,8 @@ class Universal extends Sprite
 		}
 		
 		//debug for flash
-		Engine.SCALE = 2;
-		Engine.IMG_BASE = "2x";
+		//Engine.SCALE = 2;
+		//Engine.IMG_BASE = "2x";
 		
 		scripts.MyAssets.stageWidth *= Engine.SCALE;
 		scripts.MyAssets.stageHeight *= Engine.SCALE;
