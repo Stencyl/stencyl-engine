@@ -1151,30 +1151,7 @@ class Actor extends Sprite
 			if(rSpeed != 0)
 			{	
 				//TODO: Abstract rotation from sprite
-				realAngle += elapsedTime * rSpeed * 0.001;
-				
-				//Have to clone and set, can't edit directly for some reason.  Better in a draw method. 
-				var m:Matrix = transform.matrix.clone();						
-				var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
-
-				m.identity();
-				m.translate( -point.x, -point.y);
-				m.rotate(realAngle * Utils.RAD);
-				m.translate(realX, realY);						
-				
-				#if js
-				mMatrix = m;				
-				
-				if (resetOrigin)
-				{
-					BuildBounds();
-					resetOrigin = false;
-				}
-				#end
-				
-				#if !js
-				transform.matrix = m;
-				#end
+				realAngle += elapsedTime * rSpeed * 0.001;				
 			}
 			
 			if(fixedRotation)
@@ -1182,6 +1159,29 @@ class Actor extends Sprite
 				realAngle = 0;
 				this.rSpeed = 0;
 			}
+			
+			//Have to clone and set, can't edit directly for some reason.  Better in a draw method. 
+			var m:Matrix = transform.matrix;						
+			var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
+
+			m.identity();
+			m.translate( -point.x, -point.y);
+			m.rotate(realAngle * Utils.RAD);
+			m.translate(realX, realY);						
+				
+			#if js
+			mMatrix = m;				
+				
+			if (resetOrigin)
+			{
+				BuildBounds();
+				resetOrigin = false;
+			}
+			#end
+				
+			#if !js
+			transform.matrix = m;
+			#end
 		}
 		
 		else
@@ -1867,7 +1867,7 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			moveActorTo(x + cacheWidth/2 + currOffset.x, realY);
+			moveActorTo(x + currOffset.x, realY);
 		}
 		
 		else
@@ -1897,7 +1897,7 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			moveActorTo(realX, y + cacheHeight/2 + currOffset.y);
+			moveActorTo(realX, y + currOffset.y);
 		}
 		
 		else
@@ -2521,7 +2521,7 @@ class Actor extends Sprite
 		
 		if(isLightweight)
 		{
-			Actuate.tween(this, duration, {x:x, y:y}).ease(easing).onComplete(onTweenPositionComplete);
+			Actuate.tween(this, duration, {realX:x, realY:y}).ease(easing).onComplete(onTweenPositionComplete);
 		}
 		
 		else
