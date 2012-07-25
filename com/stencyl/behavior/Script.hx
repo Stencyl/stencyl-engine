@@ -1865,7 +1865,8 @@ class Script
 		
 		for(key in Reflect.fields(data.data))
 		{
-			trace(key + Reflect.field(data.data, key));
+			trace(key + " - " + Reflect.field(data.data, key));		
+			engine.gameAttributes.set(key, Reflect.field(data.data, key));
 		}
 		
 		onComplete(true);
