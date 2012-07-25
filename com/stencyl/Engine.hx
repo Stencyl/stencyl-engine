@@ -99,6 +99,9 @@ class Engine
 	public static var NO_PHYSICS:Bool = false;
 	public static var DEBUG_DRAW:Bool = false; //!NO_PHYSICS && true;
 	
+	public static var IMG_BASE = "";
+	public static var SCALE = 1;
+	
 	
 	//*-----------------------------------------------
 	//* Important Values

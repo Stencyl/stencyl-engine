@@ -7,6 +7,7 @@ import nme.display.StageAlign;
 import nme.display.StageScaleMode;
 import nme.display.Shape;
 import nme.system.Capabilities;
+import com.stencyl.Engine;
 
 class Universal extends Sprite 
 {
@@ -47,10 +48,17 @@ class Universal extends Sprite
 		trace("Screen Height: " + stage.stageHeight);
 		trace("Screen DPI: " + Capabilities.screenDPI);
 		
-		if(Capabilities.screenDPI > 300)
+		//TODO: This is wrong for iPad since it's lower DPI but needs 4x graphics!
+		if(Capabilities.screenDPI < 300) 
 		{
-			scaleX = 2;
-			scaleY = 2;
+			Engine.SCALE = 1;
+			Engine.IMG_BASE = "1x";
+		} 
+		
+		else 
+		{
+			Engine.SCALE = 2;
+			Engine.IMG_BASE = "2x";
 		}
 		
 		mouseChildren = false;
