@@ -21,7 +21,11 @@ class Universal extends Sprite
 		//MochiAd.showPreGameAd( { id:"60347b2977273733", res:"640x580", clip: root});
 		#end
 
+		#if (mobile && !android)
+		Lib.current.stage.addEventListener(Event.RESIZE, onAdded);
+		#else
 		addEventListener(Event.ADDED_TO_STAGE, onAdded);
+		#end
 	}
 	
 	private function onAdded(event:Event):Void 
@@ -31,7 +35,23 @@ class Universal extends Sprite
 	
 	public function init()
 	{
+		#if (mobile && !android)
+		Lib.current.stage.removeEventListener(Event.RESIZE, onAdded);
+		#else
+		removeEventListener(Event.ADDED_TO_STAGE, onAdded);
+		#end
+		
 		com.stencyl.Engine.stage = Lib.current.stage;
+		
+		trace("Screen Width: " + stage.stageWidth);
+		trace("Screen Height: " + stage.stageHeight);
+		trace("Screen DPI: " + Capabilities.screenDPI);
+		
+		if(Capabilities.screenDPI > 300)
+		{
+			scaleX = 2;
+			scaleY = 2;
+		}
 		
 		mouseChildren = false;
 		mouseEnabled = false;
@@ -46,22 +66,13 @@ class Universal extends Sprite
 		{
 			stretchToFit = true;
 			
-			scaleX = stage.stageWidth / scripts.MyAssets.stageWidth;
-			scaleY = stage.stageHeight / scripts.MyAssets.stageHeight;
+			scaleX *= stage.stageWidth / scripts.MyAssets.stageWidth;
+			scaleY *= stage.stageHeight / scripts.MyAssets.stageHeight;
 		}
 		#end
 		
-		//Stretch to Fit - iOS (Landscape Workaround)
-		#if (mobile && !android)
-		if(stretchToFit && scripts.MyAssets.landscape)
-		{
-			scaleX = stage.stageHeight / scripts.MyAssets.stageWidth;
-			scaleY = stage.stageWidth / scripts.MyAssets.stageHeight;
-		}
-		#end
-		
-		//Full Screen Mode - Android
-		#if (mobile && android)
+		//Full Screen Mode
+		#if (mobile)
 		if(scripts.MyAssets.stageWidth == -1 || scripts.MyAssets.stageHeight == -1)
 		{
 			scripts.MyAssets.stageWidth = stage.stageWidth;
@@ -70,68 +81,24 @@ class Universal extends Sprite
 			usingFullScreen = true;
 		}
 		#end
-		
-		//Full Screen Mode - iOS
-		#if (mobile && !android)
-		if(scripts.MyAssets.stageWidth == -1 || scripts.MyAssets.stageHeight == -1)
-		{
-			if(scripts.MyAssets.landscape)
-			{
-				scripts.MyAssets.stageWidth = stage.stageHeight;
-				scripts.MyAssets.stageHeight = stage.stageWidth;
-			}
 			
-			else
-			{
-				scripts.MyAssets.stageWidth = stage.stageWidth;
-				scripts.MyAssets.stageHeight = stage.stageHeight;
-			}
-			
-			usingFullScreen = true;
-		}
-		#end
-			
-		#if (mobile && android)
+		#if (mobile)
 		if(!usingFullScreen && !stretchToFit)
 		{
 			//Is the game width > device width? Adjust scaleX, then scaleY.
 			if(scripts.MyAssets.stageWidth > stage.stageWidth)
 			{
-				scaleX = stage.stageWidth / scripts.MyAssets.stageWidth;
+				scaleX *= stage.stageWidth / scripts.MyAssets.stageWidth;
 				scaleY = scaleX;
 			}
 			
 			//If the game height * scaleY > device height? Adjust scaleY, then scaleX.
 			if(scripts.MyAssets.stageHeight * scaleY > stage.stageHeight)
 			{
-				scaleY = stage.stageHeight / scripts.MyAssets.stageHeight;
+				scaleY *= stage.stageHeight / scripts.MyAssets.stageHeight;
 				scaleX = scaleY;
 			}
-		}
-		#end
-		
-		//On iOS, these are swapped on landscape, so we have to correct that
-		#if (mobile && !android)
-		if(!usingFullScreen && !stretchToFit)
-		{
-			if(scripts.MyAssets.landscape)
-			{
-				x += (stage.stageHeight - scripts.MyAssets.stageWidth)/2;
-				y += (stage.stageWidth - scripts.MyAssets.stageHeight)/2;
-			}
-			
-			else
-			{
-				x += (stage.stageWidth - scripts.MyAssets.stageWidth)/2;
-				y += (stage.stageHeight - scripts.MyAssets.stageHeight)/2;
-			}
-		}
-		#end
-		
-		//But on Android, they are correct, so no swap needed
-		#if (mobile && android)
-		if(!usingFullScreen && !stretchToFit)
-		{
+
 			x += (stage.stageWidth - scripts.MyAssets.stageWidth * scaleX)/2;
 			y += (stage.stageHeight - scripts.MyAssets.stageHeight * scaleY)/2;
 		}
