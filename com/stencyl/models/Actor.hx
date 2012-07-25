@@ -1141,7 +1141,11 @@ class Actor extends Sprite
 		{		
 			if(xSpeed != 0 || ySpeed != 0)
 			{
-				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);				
+				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);		
+				
+				//TODO: Temporary
+				colX = realX;
+				colY = realY;
 			}
 			
 			if(rSpeed != 0)
@@ -1190,6 +1194,8 @@ class Actor extends Sprite
 			#if js			
 			realX = jeashX = Math.round(p.x * Engine.physicsScale);
 			realY = jeashY = Math.round(p.y * Engine.physicsScale);
+			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
+			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
 			
 			var m:Matrix = mMatrix;						
 			var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
@@ -1209,6 +1215,8 @@ class Actor extends Sprite
 			#if !js
 			realX = x = Math.round(p.x * Engine.physicsScale);
 			realY = y = Math.round(p.y * Engine.physicsScale);
+			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
+			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
 			
 			var m:Matrix = transform.matrix.clone();						
 			var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
@@ -2408,8 +2416,8 @@ class Actor extends Sprite
 		var mx = Input.mouseX;
 		var my = Input.mouseY;
 		
-		var xPos = realX; //getX();
-		var yPos = realY; //getY();
+		var xPos = colX; //getX();
+		var yPos = colY; //getY();
 		
 		if(isHUD)
 		{
@@ -2417,8 +2425,8 @@ class Actor extends Sprite
 			//mx = Input.mouseX;
 			//my = Input.mouseY;
 			
-			xPos = realX + Engine.cameraX; //getScreenX();
-			yPos = realY + Engine.cameraY; //getScreenY();
+			xPos = colX + Engine.cameraX; //getScreenX();
+			yPos = colY + Engine.cameraY; //getScreenY();
 		}
 		
 		return (mx >= xPos && 
