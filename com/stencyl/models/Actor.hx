@@ -625,10 +625,10 @@ class Actor extends Sprite
 		
 		for(i in 0...frameCount)
 		{
-			tilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * i, 0, frameWidth, frameHeight)); 	
+			tilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * i * Engine.SCALE, 0, frameWidth * Engine.SCALE, frameHeight * Engine.SCALE)); 	
 		}
 		 	
-		var sprite = new SheetAnimation(tilesheet, durations, frameWidth, frameHeight);
+		var sprite = new SheetAnimation(tilesheet, durations, frameWidth * Engine.SCALE, frameHeight * Engine.SCALE);
 		animationMap.set(name, sprite);
 		#end
 		
@@ -1165,9 +1165,9 @@ class Actor extends Sprite
 			var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
 
 			m.identity();
-			m.translate( -point.x, -point.y);
+			m.translate( -point.x * Engine.SCALE, -point.y * Engine.SCALE);
 			m.rotate(realAngle * Utils.RAD);
-			m.translate(realX, realY);						
+			m.translate(realX * Engine.SCALE, realY * Engine.SCALE);						
 				
 			#if js
 			mMatrix = m;				
@@ -1188,9 +1188,6 @@ class Actor extends Sprite
 		{
 			var p = body.getPosition();
 					
-			//x = Math.round(p.x * Engine.physicsScale - Math.floor(width / 2) - currOffset.x);
-			//y = Math.round(p.y * Engine.physicsScale - Math.floor(height / 2) - currOffset.y);	
-
 			#if js			
 			realX = jeashX = Math.round(p.x * Engine.physicsScale);
 			realY = jeashY = Math.round(p.y * Engine.physicsScale);
@@ -1198,14 +1195,14 @@ class Actor extends Sprite
 			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
 			
 			var m:Matrix = mMatrix;						
-			var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
+			var point:Point = new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
 
 			m.identity();
-			m.translate( -point.x, -point.y);
+			m.translate(-point.x * Engine.SCALE, -point.y * Engine.SCALE);
 			m.rotate(body.getAngle());
-			m.translate(realX, realY);
+			m.translate(realX * Engine.SCALE, realY * Engine.SCALE);
 			
-			if (resetOrigin)
+			if(resetOrigin)
 			{
 				BuildBounds();
 				resetOrigin = false;
@@ -1219,12 +1216,12 @@ class Actor extends Sprite
 			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
 			
 			var m:Matrix = transform.matrix.clone();						
-			var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
+			var point:Point = new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
 
 			m.identity();
-			m.translate( -point.x, -point.y);
+			m.translate(-point.x * Engine.SCALE, -point.y * Engine.SCALE);
 			m.rotate(body.getAngle());
-			m.translate(realX, realY);
+			m.translate(realX * Engine.SCALE, realY * Engine.SCALE);
 			
 			transform.matrix = m;
 			#end
@@ -1305,6 +1302,7 @@ class Actor extends Sprite
 	//* Events - Other
 	//*-----------------------------------------------
 	
+	//TODO - Implement me!
 	public function scaleBody(width:Float, height:Float)
 	{
 		/*var fixtureList:Array = new Array;

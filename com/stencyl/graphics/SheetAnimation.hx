@@ -4,6 +4,7 @@ import nme.display.Sprite;
 import nme.display.BitmapData;
 
 import nme.display.Tilesheet;
+import com.stencyl.Engine;
 
 class SheetAnimation extends Sprite, implements AbstractAnimation
 {
@@ -27,8 +28,8 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		//TODO: Offset
 		if(!Engine.NO_PHYSICS)
 		{
-			this.x = -width/2;
-			this.y = -height/2;
+			this.x = -width/2 * Engine.SCALE;
+			this.y = -height/2 * Engine.SCALE;
 		}
 		
 		this.timer = 0;

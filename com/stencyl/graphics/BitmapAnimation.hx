@@ -4,6 +4,7 @@ import nme.display.Bitmap;
 import nme.display.BitmapData;
 import nme.geom.Rectangle;
 import nme.geom.Point;
+import com.stencyl.Engine;
 
 //TODO: It would be better to pass in the frames, broken up and swap between the frames.
 class BitmapAnimation extends Bitmap, implements AbstractAnimation
@@ -28,8 +29,8 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		//TODO: Offset
 		if(!Engine.NO_PHYSICS)
 		{
-			this.x = -sheet.width/(2 * numFrames);
-			this.y = -sheet.height/2;
+			this.x = -sheet.width/(2 * numFrames) * Engine.SCALE;
+			this.y = -sheet.height/2 * Engine.SCALE;
 		}
 		
 		this.timer = 0;

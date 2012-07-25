@@ -3,6 +3,7 @@ package scripts;
 import haxe.xml.Fast;
 import nme.Assets;
 import com.stencyl.AssetLoader;
+import com.stencyl.Engine;
 
 class MyAssets implements AssetLoader
 {
@@ -12,7 +13,7 @@ class MyAssets implements AssetLoader
 	public static var stageWidth:Int = 480;
 	public static var stageHeight:Int = 320;
 	public static var initSceneID:Int = 0;
-	public static var physicsMode:Int = 0;
+	public static var physicsMode:Int = 1;
 	
 	public function new()
 	{
@@ -20,8 +21,8 @@ class MyAssets implements AssetLoader
 	
 	public function loadResources(resourceMap:Hash<Dynamic>):Void
 	{
-		resourceMap.set("1-0.png", Assets.getBitmapData("assets/graphics/1-0.png"));
-		resourceMap.set("18-0.png", Assets.getBitmapData("assets/graphics/18-0.png"));
+		resourceMap.set("1-0.png", Assets.getBitmapData("assets/graphics/" + Engine.IMG_BASE + "/1-0.png"));
+		resourceMap.set("18-0.png", Assets.getBitmapData("assets/graphics/" + Engine.IMG_BASE + "/18-0.png"));
 	}
 	
 	public function loadScenes(scenesXML:IntHash<Fast>, scenesTerrain:IntHash<Dynamic>):Void
