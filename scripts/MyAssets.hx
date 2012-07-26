@@ -23,6 +23,7 @@ class MyAssets implements AssetLoader
 	{
 		resourceMap.set("1-0.png", Assets.getBitmapData("assets/graphics/" + Engine.IMG_BASE + "/1-0.png"));
 		resourceMap.set("18-0.png", Assets.getBitmapData("assets/graphics/" + Engine.IMG_BASE + "/18-0.png"));
+		resourceMap.set("19.png", Assets.getBitmapData("assets/graphics/" + Engine.IMG_BASE + "/19.png"));
 	}
 	
 	public function loadScenes(scenesXML:IntHash<Fast>, scenesTerrain:IntHash<Dynamic>):Void

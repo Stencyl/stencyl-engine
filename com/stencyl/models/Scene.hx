@@ -683,6 +683,12 @@ class Scene
 		//Grid for non-Box2D games - TODO: Don't make this for Box2D games?
 		var grid = new com.stencyl.models.collision.Grid(sceneWidth, sceneHeight, tileWidth, tileHeight);
 		layer.grid = grid;
+		
+		layer.setTileAt(0, 0, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);
+		layer.setTileAt(1, 1, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);
+		layer.setTileAt(2, 2, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);
+		layer.setTileAt(3, 3, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);
+		
 
 		for(i in 0...numChunks)
 		{

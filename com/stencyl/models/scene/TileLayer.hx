@@ -214,8 +214,8 @@ class TileLayer extends Sprite
 						pixels = t.pixels;
 					}
 					
-					flashPoint.x = x * tw - viewX;
-					flashPoint.y = y * th - viewY;
+					flashPoint.x = x * tw * Engine.SCALE - viewX;
+					flashPoint.y = y * th * Engine.SCALE - viewY;
 
 					if(source != null)
 					{

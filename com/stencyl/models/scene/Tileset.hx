@@ -58,7 +58,7 @@ class Tileset extends Resource
 				continue;
 			}
 			
-			var r = getImageSourceForTile(tile.tileID, tileWidth, tileHeight);
+			var r = getImageSourceForTile(tile.tileID, tileWidth * Engine.SCALE, tileHeight * Engine.SCALE);
 			tilesheet.addTileRect(r);
 			
 			sheetMap.set(tile.tileID, counter);
@@ -75,8 +75,8 @@ class Tileset extends Resource
 		{
 			temp.x = 0;
 			temp.y = 0;
-			temp.width = tileWidth;
-			temp.height = tileHeight;
+			temp.width = tileWidth * Engine.SCALE;
+			temp.height = tileHeight * Engine.SCALE;
 			
 			return temp.clone();
 		}	
@@ -86,10 +86,10 @@ class Tileset extends Resource
 			var row:Int = Math.floor(tile.frameIndex / framesAcross);
 			var col:Int = Math.floor(tile.frameIndex % framesAcross);
 			
-			temp.x = col * tileWidth;
-			temp.y = row * tileHeight;
-			temp.width = tileWidth;
-			temp.height = tileHeight;
+			temp.x = col * tileWidth * Engine.SCALE;
+			temp.y = row * tileHeight * Engine.SCALE;
+			temp.width = tileWidth * Engine.SCALE;
+			temp.height = tileHeight * Engine.SCALE;
 			
 			return temp.clone();
 		}
