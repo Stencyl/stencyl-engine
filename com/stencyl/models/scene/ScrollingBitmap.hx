@@ -2,6 +2,7 @@ package com.stencyl.models.scene;
 
 import nme.display.Sprite;
 import nme.display.Bitmap;
+import com.stencyl.Engine;
 
 class ScrollingBitmap extends Sprite
 {
@@ -95,8 +96,8 @@ class ScrollingBitmap extends Sprite
 			var width = image1.width;
 			var height = image1.height;
 			
-			xP += xVelocity / 10.0;
-			yP += yVelocity / 10.0;
+			xP += xVelocity / 10.0 * Engine.SCALE;
+			yP += yVelocity / 10.0 * Engine.SCALE;
 			
 			if(xP < -width || xP > width)
 	        {

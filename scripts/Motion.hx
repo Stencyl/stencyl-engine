@@ -27,7 +27,7 @@ class Motion extends ActorScript
 		{ 
 			//actor.ySpeed = 0.02;
 			
-			getCamera().x++;
+			//getCamera().x++;
 			
 			if(actor.y >= 1)
 			{
