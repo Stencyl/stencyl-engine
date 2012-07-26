@@ -22,12 +22,12 @@ class Motion extends ActorScript
 		n = 2;
 		
 		actor.setAngularVelocity(1);
-		
+
 		var evt = function(elapsedTime:Float, junk:Array<Dynamic>) 
 		{ 
 			//actor.ySpeed = 0.02;
 			
-			//getCamera().x++;
+			getCamera().x++;
 			
 			if(actor.y >= 1)
 			{
@@ -74,6 +74,8 @@ class Motion extends ActorScript
 				actor.y = Engine.stage.mouseY;
 			}
 		};
+		
+		addWhenUpdatedListener(null, evt);
 	}		
 	
 	override public function init()

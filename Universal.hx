@@ -63,14 +63,13 @@ class Universal extends Sprite
 		}
 		#end
 		
-		//debug for flash
+		//NOTICE FOR DEVELOPERS
 		#if (!mobile)
 		//Engine.SCALE = 2;
 		//Engine.IMG_BASE = "2x";
+		//Engine.SCALE = 1;
+		//Engine.IMG_BASE = "1x";
 		#end
-		
-		scripts.MyAssets.stageWidth *= Engine.SCALE;
-		scripts.MyAssets.stageHeight *= Engine.SCALE;
 		
 		mouseChildren = false;
 		mouseEnabled = false;

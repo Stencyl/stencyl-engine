@@ -347,28 +347,10 @@ class Engine
 		var stageWidth = scripts.MyAssets.stageWidth;
 		var stageHeight = scripts.MyAssets.stageHeight;
 		
-		#if (mobile)
-		if(Engine.landscape)
-		{
-			Engine.screenWidth = Std.int(stageHeight);
-			Engine.screenHeight = Std.int(stageWidth);
-			Engine.screenWidthHalf = Std.int(stageHeight/2);
-			Engine.screenHeightHalf = Std.int(stageWidth/2);
-			
-			Engine.screenWidth = Std.int(stageWidth);
-			Engine.screenHeight = Std.int(stageHeight);
-			Engine.screenWidthHalf = Std.int(stageWidth/2);
-			Engine.screenHeightHalf = Std.int(stageHeight/2);
-		}
-		
-		else
-		#end
-		{
-			Engine.screenWidth = Std.int(stageWidth);
-			Engine.screenHeight = Std.int(stageHeight);
-			Engine.screenWidthHalf = Std.int(stageWidth/2);
-			Engine.screenHeightHalf = Std.int(stageHeight/2);
-		}
+		Engine.screenWidth = Std.int(stageWidth);
+		Engine.screenHeight = Std.int(stageHeight);
+		Engine.screenWidthHalf = Std.int(stageWidth/2);
+		Engine.screenHeightHalf = Std.int(stageHeight/2);
 		
 		#if (mobile)
 		if(!scripts.MyAssets.autorotate)
@@ -579,7 +561,7 @@ class Engine
 	private function loadBackgrounds()
 	{
 		var bg = new Shape();
-		scene.colorBackground.draw(bg.graphics, 0, 0, screenWidth, screenHeight);
+		scene.colorBackground.draw(bg.graphics, 0, 0, screenWidth * Engine.SCALE, screenHeight * Engine.SCALE);
 		master.addChild(bg);
 		
 		for(backgroundID in scene.bgs)
@@ -1948,8 +1930,8 @@ class Engine
 				var endX = -Math.abs(child.width);
 				var endY = -Math.abs(child.height);
 					
-				child.x = endX * -(cameraX) / Engine.sceneWidth;
-				child.y = endY * -(cameraY) / Engine.sceneHeight;
+				child.x = endX * -(cameraX) / Engine.sceneWidth * Engine.SCALE;
+				child.y = endY * -(cameraY) / Engine.sceneHeight * Engine.SCALE;
 			}
 			
 			else if(child.name == SCROLLING_BACKGROUND)
@@ -1961,8 +1943,8 @@ class Engine
 			//Regular Layer
 			else if(child.name == REGULAR_LAYER)
 			{
-				child.x = cameraX;
-				child.y = cameraY;
+				child.x = cameraX * Engine.SCALE;
+				child.y = cameraY * Engine.SCALE;
 			}
 			
 			//Something that doesn't scroll - Do nothing
@@ -1970,8 +1952,8 @@ class Engine
 		
 		if(!NO_PHYSICS && DEBUG_DRAW)
 		{
-			debugLayer.x = cameraX;
-			debugLayer.y = cameraY;
+			debugLayer.x = cameraX * Engine.SCALE;
+			debugLayer.y = cameraY * Engine.SCALE;
 		}
 		
 		//Shaking
@@ -1988,8 +1970,8 @@ class Engine
 	        var randX = (-shakeIntensity * Engine.screenWidth + Math.random() * (2 * shakeIntensity * Engine.screenWidth));
 	        var randY = (-shakeIntensity * Engine.screenHeight + Math.random() * (2 * shakeIntensity * Engine.screenHeight));
 	        
-	        master.x = randX;
-	        master.y = randY;
+	        master.x = randX * Engine.SCALE;
+	        master.y = randY * Engine.SCALE;
 		}
 	}
 	
