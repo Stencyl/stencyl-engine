@@ -70,7 +70,7 @@ class Universal extends Sprite
 		//Engine.SCALE = 1;
 		//Engine.IMG_BASE = "1x";
 		#end
-		
+
 		mouseChildren = false;
 		mouseEnabled = false;
 		stage.mouseChildren = false;

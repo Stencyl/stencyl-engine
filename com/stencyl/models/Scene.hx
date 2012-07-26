@@ -684,11 +684,11 @@ class Scene
 		var grid = new com.stencyl.models.collision.Grid(sceneWidth, sceneHeight, tileWidth, tileHeight);
 		layer.grid = grid;
 		
-		layer.setTileAt(0, 0, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);
+		//Testing tiles in Universal test app
+		/*layer.setTileAt(0, 0, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);
 		layer.setTileAt(1, 1, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);
 		layer.setTileAt(2, 2, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);
-		layer.setTileAt(3, 3, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);
-		
+		layer.setTileAt(3, 3, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);*/		
 
 		for(i in 0...numChunks)
 		{
