@@ -10,6 +10,9 @@ import com.stencyl.Engine;
 import com.stencyl.Input;
 import com.stencyl.Key;
 
+import com.stencyl.graphics.G;
+
+
 class Motion extends ActorScript
 {	
 	private var event:Void->Void;
@@ -21,7 +24,7 @@ class Motion extends ActorScript
 		
 		n = 2;
 		
-		actor.setAngularVelocity(1);
+		//actor.setAngularVelocity(1);
 
 		var evt = function(elapsedTime:Float, junk:Array<Dynamic>) 
 		{ 
@@ -75,7 +78,14 @@ class Motion extends ActorScript
 			}
 		};
 		
-		addWhenUpdatedListener(null, evt);
+		addWhenDrawingListener(null, function(g:G, x:Float, y:Float, list:Array<Dynamic>):Void {
+		if(wrapper.enabled){
+		        g.drawString("" + getScreenWidth(), 0, 0);
+		        g.drawString("" + getScreenHeight(), 0, 50);
+		        g.fillRect(0, 0, 32, 32);
+		}
+		});
+
 	}		
 	
 	override public function init()

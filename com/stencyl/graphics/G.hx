@@ -51,7 +51,7 @@ class G
 		drawActor = false;
 	
 		x = y = 0;
-		scaleX = scaleY = 1;
+		scaleX = scaleY = Engine.SCALE;
 		alpha = 1;
 		blendMode = BlendMode.NORMAL;
 		
