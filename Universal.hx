@@ -44,19 +44,21 @@ class Universal extends Sprite
 		
 		com.stencyl.Engine.stage = Lib.current.stage;
 		
+		trace("Stage Width: " + scripts.MyAssets.stageWidth);
+		trace("Stage Height: " + scripts.MyAssets.stageHeight);
 		trace("Screen Width: " + stage.stageWidth);
 		trace("Screen Height: " + stage.stageHeight);
 		trace("Screen DPI: " + Capabilities.screenDPI);
 		
-		//TODO: This is wrong for iPad since it's lower DPI but needs 4x graphics!
-		#if (mobile)
-		if(Capabilities.screenDPI < 300) 
+		//Tablets and other high-res devices get to use 2x mode, (TODO: if it's not a tablet-only game.)
+		#if (mobile)		
+		if(stage.stageWidth >= 960 || stage.stageHeight >= 960)
 		{
-			Engine.SCALE = 1;
-			Engine.IMG_BASE = "1x";
-		} 
+			Engine.SCALE = 2;
+			Engine.IMG_BASE = "2x";
+		}
 		
-		else 
+		else
 		{
 			Engine.SCALE = 2;
 			Engine.IMG_BASE = "2x";
@@ -70,7 +72,13 @@ class Universal extends Sprite
 		//Engine.SCALE = 1;
 		//Engine.IMG_BASE = "1x";
 		#end
-
+		
+		var originalWidth = scripts.MyAssets.stageWidth;
+		var originalHeight = scripts.MyAssets.stageHeight;
+		
+		scripts.MyAssets.stageWidth *= Engine.SCALE;
+		scripts.MyAssets.stageHeight *= Engine.SCALE;
+		
 		mouseChildren = false;
 		mouseEnabled = false;
 		stage.mouseChildren = false;
@@ -113,7 +121,7 @@ class Universal extends Sprite
 			//If the game height * scaleY > device height? Adjust scaleY, then scaleX.
 			if(scripts.MyAssets.stageHeight * scaleY > stage.stageHeight)
 			{
-				scaleY *= stage.stageHeight / scripts.MyAssets.stageHeight;
+				scaleY = stage.stageHeight / scripts.MyAssets.stageHeight;
 				scaleX = scaleY;
 			}
 
@@ -129,6 +137,12 @@ class Universal extends Sprite
 			scrollRect = new nme.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
 		}
 		#end
+		
+		scripts.MyAssets.stageWidth = originalWidth;
+		scripts.MyAssets.stageHeight = originalHeight;
+		
+		trace("Scale X: " + scaleX);
+		trace("Scale Y: " + scaleY);
 		
 		//Preloader Hook - When force-testing preloader, uncomment this
 		//var loader = new scripts.StencylPreloader();
