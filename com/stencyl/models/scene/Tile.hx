@@ -2,6 +2,7 @@ package com.stencyl.models.scene;
 
 import nme.display.Bitmap;
 import nme.display.BitmapData;
+import nme.display.Tilesheet;
 import nme.geom.Rectangle;
 
 class Tile
@@ -18,6 +19,7 @@ class Tile
 	public var currFrame:Int;
 	public var currTime:Int;
 	public var updateSource:Bool;
+	public var data:Tilesheet;
 	
 	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, imgData:BitmapData, parent:Tileset)
 	{
@@ -25,13 +27,25 @@ class Tile
 		this.collisionID = collisionID;
 		this.frameIndex = frameIndex;
 		this.durations = durations;
-		this.parent = parent;
-					
+		this.parent = parent;		
+		pixels = imgData;
+		
+		#if cpp		
+		if (imgData != null)
+		{
+			data = new Tilesheet(imgData);
+		
+			for (i in 0 ... durations.length)
+			{
+				currFrame = i;
+				data.addTileRect( getSource(parent.tileWidth, parent.tileHeight) );
+			}
+		}
+		#end
+		
 		currFrame = 0;
 		currTime = 0;
 		updateSource = false;
-					
-		pixels = imgData;
 	}
 	
 	public function update(elapsedTime:Float)
@@ -61,6 +75,7 @@ class Tile
 		}
 	}
 	
+	//TODO: Don't return new Rectangle.  Prebuild for animated tiles since it isn't the same.
 	public function getSource(tileWidth:Int, tileHeight:Int):Rectangle
 	{			
 		return new Rectangle(currFrame * tileWidth, 0, tileWidth, tileHeight);

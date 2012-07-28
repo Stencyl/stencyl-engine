@@ -202,7 +202,7 @@ class TileLayer extends Sprite
 				}
 				
 				else
-				{
+				{					
 					//If animated, used animated tile pixels
 					if(t.pixels == null)
 					{
@@ -223,12 +223,21 @@ class TileLayer extends Sprite
 						bitmapData.copyPixels(pixels, source, flashPoint, null, null, true);
 						#end
 						
-						#if cpp
+						#if cpp						
 						t.parent.data[0] = flashPoint.x;
 						t.parent.data[1] = flashPoint.y;
-						t.parent.data[2] = t.parent.sheetMap.get(t.tileID);
-				
-				  		t.parent.tilesheet.drawTiles(graphics, t.parent.data, true);
+						
+						if (t.data == null)
+						{
+							t.parent.data[2] = t.parent.sheetMap.get(t.tileID);
+							t.parent.tilesheet.drawTiles(graphics, t.parent.data, true);
+						}
+						
+						else
+						{
+							t.parent.data[2] = t.currFrame;
+							t.data.drawTiles(graphics, t.parent.data, true);
+						}						
 				  		#end
 					}
 				}
