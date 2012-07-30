@@ -173,6 +173,8 @@ class Actor extends Sprite
 	public var currOrigin:Point;
 	public var currOffset:Point;
 	
+	public var transformPoint:Point;
+	public var transformMatrix:Matrix;
 	
 	//*-----------------------------------------------
 	//* Behaviors
@@ -317,6 +319,9 @@ class Actor extends Sprite
 		
 		tweenLoc = new Point(0, 0);
 		tweenAngle = new AngleHolder();
+		
+		transformPoint = new Point(0, 0);
+		transformMatrix = new Matrix();
 		
 		currOrigin = new Point(0, 0);
 		currOffset = new Point(0, 0);			
@@ -559,6 +564,9 @@ class Actor extends Sprite
 		sprite = null;
 		contacts = null;
 		regionContacts = null;
+		
+		transformPoint = null;
+		transformMatrix = null;
 		
 		whenCreatedListeners = null;
 		whenUpdatedListeners = null;
@@ -1007,7 +1015,7 @@ class Actor extends Sprite
 			realY = getY();
 			
 			if(animOrigin != null)
-			{	
+			{					
 				setOriginPoint(Std.int(animOrigin.x), Std.int(animOrigin.y));				
 			}
 			
@@ -1149,8 +1157,7 @@ class Actor extends Sprite
 			}
 			
 			if(rSpeed != 0)
-			{	
-				//TODO: Abstract rotation from sprite
+			{
 				realAngle += elapsedTime * rSpeed * 0.001;				
 			}
 			
@@ -1160,17 +1167,16 @@ class Actor extends Sprite
 				this.rSpeed = 0;
 			}
 			
-			//Have to clone and set, can't edit directly for some reason.  Better in a draw method. 
-			var m:Matrix = transform.matrix;						
-			var point:Point=new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
+			transformPoint.x = currOrigin.x - currAnimation.width / 2;
+			transformPoint.y = currOrigin.y - currAnimation.height / 2;
 
-			m.identity();
-			m.translate( -point.x * Engine.SCALE, -point.y * Engine.SCALE);
-			m.rotate(realAngle * Utils.RAD);
-			m.translate(realX * Engine.SCALE, realY * Engine.SCALE);						
+			transformMatrix.identity();
+			transformMatrix.translate( -transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
+			transformMatrix.rotate(realAngle * Utils.RAD);
+			transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
 				
 			#if js
-			mMatrix = m;				
+			mMatrix = transformMatrix;				
 				
 			if (resetOrigin)
 			{
@@ -1180,7 +1186,7 @@ class Actor extends Sprite
 			#end
 				
 			#if !js
-			transform.matrix = m;
+			transform.matrix = transformMatrix;
 			#end
 		}
 		
@@ -1193,14 +1199,14 @@ class Actor extends Sprite
 			realY = jeashY = Math.round(p.y * Engine.physicsScale);
 			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
 			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
-			
-			var m:Matrix = mMatrix;						
-			var point:Point = new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
+								
+			transformPoint.x = currOrigin.x - currAnimation.width / 2
+			transformPoint.y = currOrigin.y - currAnimation.height / 2;			
 
-			m.identity();
-			m.translate(-point.x * Engine.SCALE, -point.y * Engine.SCALE);
-			m.rotate(body.getAngle());
-			m.translate(realX * Engine.SCALE, realY * Engine.SCALE);
+			transformMatrix.identity();
+			transformMatrix.translate(-transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
+			transformMatrix.rotate(body.getAngle());
+			transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
 			
 			if(resetOrigin)
 			{
@@ -1214,16 +1220,16 @@ class Actor extends Sprite
 			realY = y = Math.round(p.y * Engine.physicsScale);
 			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
 			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
-			
-			var m:Matrix = transform.matrix.clone();						
-			var point:Point = new Point(currOrigin.x-currAnimation.width/2, currOrigin.y-currAnimation.height/2);
+							
+			transformPoint.x = currOrigin.x - currAnimation.width / 2;
+			transformPoint.y = currOrigin.y - currAnimation.height / 2;
 
-			m.identity();
-			m.translate(-point.x * Engine.SCALE, -point.y * Engine.SCALE);
-			m.rotate(body.getAngle());
-			m.translate(realX * Engine.SCALE, realY * Engine.SCALE);
+			transformMatrix.identity();
+			transformMatrix.translate(-transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
+			transformMatrix.rotate(body.getAngle());
+			transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
 			
-			transform.matrix = m;
+			transform.matrix = transformMatrix;
 			#end
 			
 			//TODO: Why isn't this above too?
@@ -1865,7 +1871,7 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			moveActorTo(x + currOffset.x, realY);
+			moveActorTo(x + cacheWidth/2 + currOffset.x, realY);
 		}
 		
 		else
@@ -1895,7 +1901,7 @@ class Actor extends Sprite
 	{
 		if(isLightweight)
 		{
-			moveActorTo(realX, y + currOffset.y);
+			moveActorTo(realX, y + cacheHeight/2 + currOffset.y);
 		}
 		
 		else

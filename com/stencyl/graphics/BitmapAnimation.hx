@@ -24,14 +24,10 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 	{
 		super(new BitmapData(Std.int(sheet.width/numFrames), sheet.height));
 		
-		this.frameWidth = Std.int(sheet.width/numFrames);
+		this.frameWidth = Std.int(sheet.width/numFrames);		
 		
-		//TODO: Offset
-		if(!Engine.NO_PHYSICS)
-		{
-			this.x = -sheet.width/(2 * numFrames) * Engine.SCALE;
-			this.y = -sheet.height/2 * Engine.SCALE;
-		}
+		this.x = -sheet.width/(2 * numFrames) * Engine.SCALE;
+		this.y = -sheet.height/2 * Engine.SCALE;		
 		
 		this.timer = 0;
 		this.frameIndex = 0;
