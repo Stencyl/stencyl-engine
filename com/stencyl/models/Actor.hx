@@ -2542,7 +2542,15 @@ class Actor extends Sprite
 	
 	public function moveBy(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
 	{
-		moveTo(getX() + x, getY() + y, duration, easing);
+		if (isLightweight)
+		{
+			moveTo(realX + x, realY + y, duration, easing);
+		}
+		
+		else
+		{
+			moveTo(getX() + x, getY() + y, duration, easing);
+		}
 	}
 	
 	public function onTweenAngleComplete()
