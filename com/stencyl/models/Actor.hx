@@ -1823,7 +1823,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			return realX + cacheWidth/2 - currOffset.x;
+			return realX - currOffset.x;
 		}
 	}
 	
@@ -1837,7 +1837,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			return realY + cacheHeight/2 - currOffset.y;
+			return realY - currOffset.y;
 		}
 	}
 	
