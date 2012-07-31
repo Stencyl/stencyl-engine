@@ -1167,8 +1167,8 @@ class Actor extends Sprite
 				this.rSpeed = 0;
 			}
 			
-			transformPoint.x = currOrigin.x - currAnimation.width / 2;
-			transformPoint.y = currOrigin.y - currAnimation.height / 2;
+			transformPoint.x = currOrigin.x - cacheWidth / 2;
+			transformPoint.y = currOrigin.y - cacheHeight / 2;
 
 			transformMatrix.identity();
 			transformMatrix.translate( -transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
@@ -1200,8 +1200,8 @@ class Actor extends Sprite
 			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
 			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
 								
-			transformPoint.x = currOrigin.x - currAnimation.width / 2;
-			transformPoint.y = currOrigin.y - currAnimation.height / 2;			
+			transformPoint.x = currOrigin.x - cacheWidth / 2;
+			transformPoint.y = currOrigin.y - cacheHeight / 2;			
 
 			transformMatrix.identity();
 			transformMatrix.translate(-transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
@@ -1221,8 +1221,8 @@ class Actor extends Sprite
 			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
 			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
 							
-			transformPoint.x = currOrigin.x - currAnimation.width / 2;
-			transformPoint.y = currOrigin.y - currAnimation.height / 2;
+			transformPoint.x = currOrigin.x - cacheWidth / 2;
+			transformPoint.y = currOrigin.y - cacheHeight / 2;
 
 			transformMatrix.identity();
 			transformMatrix.translate(-transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
@@ -1792,7 +1792,7 @@ class Actor extends Sprite
 			}
 		}
 		
-		return realX - currOffset.x;
+		return realX - cacheWidth/2 - currOffset.x;
 	}
 	
 	public function getY():Float
@@ -1810,7 +1810,7 @@ class Actor extends Sprite
 			}
 		}
 		
-		return realY - currOffset.y;
+		return realY - cacheHeight/2 - currOffset.y;
 	}
 	
 	//TODO: Eliminate?
