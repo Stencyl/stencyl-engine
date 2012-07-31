@@ -52,7 +52,7 @@ class Universal extends Sprite
 		
 		//Tablets and other high-res devices get to use 2x mode, (TODO: if it's not a tablet-only game.)
 		#if (mobile)		
-		if(stage.stageWidth >= 800 || stage.stageHeight >= 800)
+		/*if(stage.stageWidth >= 800 || stage.stageHeight >= 800)
 		{
 			Engine.SCALE = 2;
 			Engine.IMG_BASE = "2x";
@@ -62,7 +62,7 @@ class Universal extends Sprite
 		{
 			Engine.SCALE = 1;
 			Engine.IMG_BASE = "1x";
-		}
+		}*/
 		#end
 		
 		//NOTICE FOR DEVELOPERS

@@ -1200,7 +1200,7 @@ class Actor extends Sprite
 			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
 			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
 								
-			transformPoint.x = currOrigin.x - currAnimation.width / 2
+			transformPoint.x = currOrigin.x - currAnimation.width / 2;
 			transformPoint.y = currOrigin.y - currAnimation.height / 2;			
 
 			transformMatrix.identity();

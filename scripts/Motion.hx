@@ -24,7 +24,7 @@ class Motion extends ActorScript
 		
 		n = 2;
 		
-		//actor.setAngularVelocity(1);
+		actor.setAngularVelocity(1);
 
 		var evt = function(elapsedTime:Float, junk:Array<Dynamic>) 
 		{ 
