@@ -1208,6 +1208,8 @@ class Actor extends Sprite
 			transformMatrix.rotate(body.getAngle());
 			transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
 			
+			mMatrix = transformMatrix;
+			
 			if(resetOrigin)
 			{
 				BuildBounds();
