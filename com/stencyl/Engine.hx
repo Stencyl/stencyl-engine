@@ -1898,8 +1898,8 @@ class Engine
 		//---
 		
 		//Camera Control
-		cameraX = -Math.abs(camera.x) + screenWidthHalf;
-		cameraY = -Math.abs(camera.y) + screenHeightHalf;
+		cameraX = -Math.abs(camera.realX) + screenWidthHalf;
+		cameraY = -Math.abs(camera.realY) + screenHeightHalf;
 		
 		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
 		var maxCamX = -Engine.sceneWidth + screenWidth;
