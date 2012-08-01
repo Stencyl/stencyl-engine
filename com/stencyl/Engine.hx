@@ -32,6 +32,9 @@ import com.stencyl.graphics.transitions.CircleTransition;
 import com.stencyl.graphics.BitmapFont;
 import com.stencyl.graphics.G;
 
+import com.stencyl.models.scene.layers.BackgroundLayer;
+import com.stencyl.models.scene.layers.RegularLayer;
+
 import com.stencyl.models.Actor;
 import com.stencyl.models.scene.DeferredActor;
 import com.stencyl.models.actor.Group;
@@ -586,7 +589,7 @@ class Engine
 			{
 				if(background.repeats)
 				{
-					var img = new Bitmap();
+					var img = new BackgroundLayer();
 					background.drawRepeated(img, screenWidth, screenHeight);
 					
 					img.name = BACKGROUND;
@@ -595,7 +598,7 @@ class Engine
 				
 				else
 				{
-					var img = new Bitmap(background.img);
+					var img = new BackgroundLayer(background.img);
 					img.name = BACKGROUND;
 					master.addChild(img);
 				}
@@ -1045,7 +1048,7 @@ class Engine
 				continue;
 			}
 			
-			var list = new Sprite();
+			var list = new RegularLayer();
 			var terrain = null;
 			var overlay = new Sprite();
 			
@@ -1109,7 +1112,7 @@ class Engine
 		//For scenes with no scene data
 		if(defaultGroup == null)
 		{
-			defaultGroup = new Sprite();
+			defaultGroup = new RegularLayer();
 			defaultGroup.name = REGULAR_LAYER;
 			master.addChild(defaultGroup);
 		}
@@ -1924,9 +1927,9 @@ class Engine
 			var child = master.getChildAt(i);
 			
 			//Background
-			if(child.name == BACKGROUND)
+			if(Std.is(child, BackgroundLayer))
 			{
-				//TODO: Don't call width/height! It's expensive.
+				//TODO: Don't call width/height! It's expensive. Fetch from model.
 				var endX = -Math.abs(child.width);
 				var endY = -Math.abs(child.height);
 					
@@ -1934,14 +1937,14 @@ class Engine
 				child.y = endY * -(cameraY) / Engine.sceneHeight * Engine.SCALE;
 			}
 			
-			else if(child.name == SCROLLING_BACKGROUND)
+			else if(Std.is(child, ScrollingBitmap))
 			{
 				var bg = cast(child, ScrollingBitmap);
 				bg.update(elapsedTime);
 			}
 			
 			//Regular Layer
-			else if(child.name == REGULAR_LAYER)
+			else if(Std.is(child, RegularLayer))
 			{
 				child.x = cameraX * Engine.SCALE;
 				child.y = cameraY * Engine.SCALE;

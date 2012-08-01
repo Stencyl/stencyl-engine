@@ -6,7 +6,9 @@ import nme.geom.ColorTransform;
 import nme.display.Bitmap;
 import nme.display.BitmapData;
 
-class Layer extends Sprite
+import com.stencyl.models.scene.layers.RegularLayer;
+
+class Layer extends RegularLayer
 {
 	private var tiles:TileLayer;
 	
