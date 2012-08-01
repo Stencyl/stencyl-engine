@@ -139,6 +139,10 @@ class Actor extends Sprite
 	public var realY:Float;
 	public var realAngle:Float;
 	
+	var lastX:Float;
+	var lastY:Float;
+	var lastAngle:Float;
+	
 	public var colX:Float;
 	public var colY:Float;
 
@@ -173,8 +177,11 @@ class Actor extends Sprite
 	public var currOrigin:Point;
 	public var currOffset:Point;
 	
+	public var transformObj:Transform;
 	public var transformPoint:Point;
 	public var transformMatrix:Matrix;
+	public var updateMatrix:Bool;
+	
 	
 	//*-----------------------------------------------
 	//* Behaviors
@@ -296,6 +303,7 @@ class Actor extends Sprite
 		originY = 0;
 		collidable = true;
 		solid = true;
+		updateMatrix = true;
 		
 		if(isLightweight)
 		{
@@ -319,7 +327,7 @@ class Actor extends Sprite
 		
 		tweenLoc = new Point(0, 0);
 		tweenAngle = new AngleHolder();
-		
+				
 		transformPoint = new Point(0, 0);
 		transformMatrix = new Matrix();
 		
@@ -1019,6 +1027,8 @@ class Actor extends Sprite
 				setOriginPoint(Std.int(animOrigin.x), Std.int(animOrigin.y));				
 			}
 			
+			updateMatrix = true;
+			
 			//----------------
 			
 			if(Std.is(currAnimation, AbstractAnimation))
@@ -1145,6 +1155,10 @@ class Actor extends Sprite
 			return;
 		}
 		
+		lastX = realX;
+		lastY = realY;
+		lastAngle = realAngle;
+			
 		//TODO: Actor now off by half in no-physics mode :(	
 		if(isLightweight)
 		{		
@@ -1153,93 +1167,41 @@ class Actor extends Sprite
 				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);		
 				
 				//TODO: Temporary
-				colX = realX;
-				colY = realY;
+				colX = realX - cacheWidth/2 - currOffset.x;
+				colY = realY - cacheHeight/2 - currOffset.y;
 			}
 			
 			if(rSpeed != 0)
 			{
-				realAngle += elapsedTime * rSpeed * 0.001;				
+				realAngle += elapsedTime * rSpeed * 0.001;
 			}
 			
 			if(fixedRotation)
 			{
 				realAngle = 0;
 				this.rSpeed = 0;
-			}
-			
-			transformPoint.x = currOrigin.x - cacheWidth / 2;
-			transformPoint.y = currOrigin.y - cacheHeight / 2;
-
-			transformMatrix.identity();
-			transformMatrix.translate( -transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
-			transformMatrix.rotate(realAngle * Utils.RAD);
-			transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
-				
-			#if js
-			mMatrix = transformMatrix;				
-				
-			if (resetOrigin)
-			{
-				BuildBounds();
-				resetOrigin = false;
-			}
-			#end
-				
-			#if !js
-			transform.matrix = transformMatrix;
-			#end
+			}			
 		}
 		
 		else
 		{
-			var p = body.getPosition();
-					
+			var p = body.getPosition();		
+						
 			#if js			
 			realX = jeashX = Math.round(p.x * Engine.physicsScale);
-			realY = jeashY = Math.round(p.y * Engine.physicsScale);
-			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
-			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
-								
-			transformPoint.x = currOrigin.x - cacheWidth / 2;
-			transformPoint.y = currOrigin.y - cacheHeight / 2;			
-
-			transformMatrix.identity();
-			transformMatrix.translate(-transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
-			transformMatrix.rotate(body.getAngle());
-			transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
-			
-			mMatrix = transformMatrix;
-			
-			if(resetOrigin)
-			{
-				BuildBounds();
-				resetOrigin = false;
-			}
+			realY = jeashY = Math.round(p.y * Engine.physicsScale);				
 			#end
 			
-			#if !js
-			
-			//TODO: It's expensive to set x/y if it did not change. Can we make it only set x and y
-			//if the actor actually moved?
-			
-			realX = x = Math.round(p.x * Engine.physicsScale);
-			realY = y = Math.round(p.y * Engine.physicsScale);
-			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
-			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
-							
-			transformPoint.x = currOrigin.x - cacheWidth / 2;
-			transformPoint.y = currOrigin.y - cacheHeight / 2;
-
-			transformMatrix.identity();
-			transformMatrix.translate(-transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
-			transformMatrix.rotate(body.getAngle());
-			transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
-			
-			transform.matrix = transformMatrix;
+			#if !js							
+			realX = Math.round(p.x * Engine.physicsScale);
+			realY = Math.round(p.y * Engine.physicsScale);				
 			#end
 			
-			//TODO: Why isn't this above too?
+			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
+			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;	
+			realAngle = body.getAngle() * Utils.DEG;				
+			
+			//TODO: Move to updateDrawingMatrix method, adjust to not use getter.		
 			if(isHUD)
 			{
 				transform.matrix.identity();
@@ -1247,6 +1209,11 @@ class Actor extends Sprite
 			}
 		}
 		
+		if (lastX != realX || lastY != realY || lastAngle != realAngle)
+		{
+			updateMatrix = true;
+		}
+			
 		if(doAll)
 		{
    			//This may be a slowdown on iOS by 3-5 FPS due to clear and redraw?
@@ -1258,6 +1225,40 @@ class Actor extends Sprite
 			updateTweenProperties();
 		}
 	}	
+	
+	public function updateDrawingMatrix()
+	{
+		transformPoint.x = currOrigin.x - cacheWidth / 2;
+		transformPoint.y = currOrigin.y - cacheHeight / 2;
+
+		transformMatrix.identity();
+		transformMatrix.translate( -transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
+		
+		if (realAngle != 0)
+		{
+			transformMatrix.rotate(realAngle * Utils.RAD);
+		}
+		
+		transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
+		
+		#if !js		
+		if (transformObj == null)
+		{
+			transformObj = transform;
+		}
+		
+		transformObj.matrix = transformMatrix;
+		#else
+		mMatrix = transformMatrix;
+			
+		if(resetOrigin)
+		{
+			BuildBounds();
+			resetOrigin = false;
+		}
+		#end
+		
+	}
 	
 	private function updateTweenProperties()
 	{
@@ -1294,6 +1295,8 @@ class Actor extends Sprite
 				dummy,
 				Utils.RAD * realAngle
 			);
+			
+			updateMatrix = true;
 		}
 		
 		else
@@ -1902,6 +1905,8 @@ class Actor extends Sprite
 				body.setLinearVelocity(zero);
 			}
 		}
+		
+		updateMatrix = true;
 	}
 	
 	public function setY(y:Float, resetSpeed:Bool = false)
@@ -1932,6 +1937,8 @@ class Actor extends Sprite
 				body.setLinearVelocity(zero);
 			}
 		}
+		
+		updateMatrix = true;
 	}
 	
 	public function follow(a:Actor)
@@ -2150,6 +2157,8 @@ class Actor extends Sprite
 				body.setAngle(Utils.RAD * angle);		
 			}
 		}
+		
+		updateMatrix = true;
 	}
 	
 	public function rotate(angle:Float, inRadians:Bool = true)
@@ -2986,10 +2995,10 @@ class Actor extends Sprite
 			{
 				var e = actor;
 				
-				if (x - originX + cacheWidth > e.x - e.originX
-				&& y - originY + cacheHeight > e.y - e.originY
-				&& x - originX < e.x - e.originX + e.cacheWidth
-				&& y - originY < e.y - e.originY + e.cacheHeight
+				if (x - originX + cacheWidth > e.realX - e.originX
+				&& y - originY + cacheHeight > e.realY - e.originY
+				&& x - originX < e.realX - e.originX + e.cacheWidth
+				&& y - originY < e.realY - e.originY + e.cacheHeight
 				&& e.collidable && e != this)
 				{
 					if (e._mask == null || e._mask.collide(HITBOX))
@@ -3011,10 +3020,10 @@ class Actor extends Sprite
 		{
 			var e = actor;
 	
-			if (x - originX + cacheWidth > e.x - e.originX
-			&& y - originY + cacheHeight > e.y - e.originY
-			&& x - originX < e.x - e.originX + e.cacheWidth
-			&& y - originY < e.y - e.originY + e.cacheHeight
+			if (x - originX + cacheWidth > e.realX - e.originX
+			&& y - originY + cacheHeight > e.realY - e.originY
+			&& x - originX < e.realX - e.originX + e.cacheWidth
+			&& y - originY < e.realY - e.originY + e.cacheHeight
 			&& e.collidable && e != this)
 			{
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
@@ -3075,10 +3084,10 @@ class Actor extends Sprite
 		_x = realX; _y = realY;
 		realX = x; realY = y;
 
-		if (x - originX + cacheWidth > e.x - e.originX
-		&& y - originY + cacheHeight > e.y - e.originY
-		&& x - originX < e.x - e.originX + e.cacheWidth
-		&& y - originY < e.y - e.originY + e.cacheHeight
+		if (x - originX + cacheWidth > e.realX - e.originX
+		&& y - originY + cacheHeight > e.realY - e.originY
+		&& x - originX < e.realX - e.originX + e.cacheWidth
+		&& y - originY < e.realY - e.originY + e.cacheHeight
 		&& collidable && e.collidable)
 		{
 			if (_mask == null)
@@ -3124,10 +3133,10 @@ class Actor extends Sprite
 			{
 				var e = actor;
 				
-				if (x - originX + cacheWidth > e.x - e.originX
-				&& y - originY + cacheHeight > e.y - e.originY
-				&& x - originX < e.x - e.originX + e.cacheWidth
-				&& y - originY < e.y - e.originY + e.cacheHeight
+				if (x - originX + cacheWidth > e.realX - e.originX
+				&& y - originY + cacheHeight > e.realY - e.originY
+				&& x - originX < e.realX - e.originX + e.cacheWidth
+				&& y - originY < e.realY - e.originY + e.cacheHeight
 				&& e.collidable && e != this)
 				{
 					if (e._mask == null || e._mask.collide(HITBOX)) array[n++] = e;
@@ -3141,10 +3150,10 @@ class Actor extends Sprite
 		{
 			var e = actor;
 			
-			if (x - originX + cacheWidth > e.x - e.originX
-			&& y - originY + cacheHeight > e.y - e.originY
-			&& x - originX < e.x - e.originX + e.cacheWidth
-			&& y - originY < e.y - e.originY + e.cacheHeight
+			if (x - originX + cacheWidth > e.realX - e.originX
+			&& y - originY + cacheHeight > e.realY - e.originY
+			&& x - originX < e.realX - e.originX + e.cacheWidth
+			&& y - originY < e.realY - e.originY + e.cacheHeight
 			&& e.collidable && e != this)
 			{
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX)) array[n++] = e;
@@ -3290,8 +3299,8 @@ class Actor extends Sprite
 		
 		if(fromX)
 		{
-			Utils.collision.thisFromLeft = a.x < realX;
-			Utils.collision.thisFromRight = a.x > realX;
+			Utils.collision.thisFromLeft = a.realX < realX;
+			Utils.collision.thisFromRight = a.realX > realX;
 			
 			Utils.collision.otherFromLeft = !Utils.collision.thisFromLeft;
 			Utils.collision.otherFromRight = !Utils.collision.thisFromRight;
@@ -3302,8 +3311,8 @@ class Actor extends Sprite
 		
 		if(fromY)
 		{
-			Utils.collision.thisFromTop = a.y < realY;
-			Utils.collision.thisFromBottom = a.y > realY;
+			Utils.collision.thisFromTop = a.realY < realY;
+			Utils.collision.thisFromBottom = a.realY > realY;
 		
 			Utils.collision.otherFromTop = !Utils.collision.thisFromTop;
 			Utils.collision.otherFromBottom = !Utils.collision.thisFromBottom;

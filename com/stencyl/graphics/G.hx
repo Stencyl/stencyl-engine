@@ -124,14 +124,14 @@ class G
 	
 		if(Engine.NO_PHYSICS)
 		{
-			x = a.x;
-			y = a.y;
+			x = a.realX;
+			y = a.realY;
 		}
 		
 		else
 		{
-			x = a.x - a.width / 2;
-			y = a.y - a.height / 2;
+			x = a.realX - a.width / 2;
+			y = a.realY - a.height / 2;
 		}
 	}
 	

@@ -30,19 +30,19 @@ class Hitbox extends Mask
 	/** @private Collides against an Entity. */
 	override private function collideMask(other:Mask):Bool
 	{
-		return parent.x + _x + _width > other.parent.x - other.parent.originX
-			&& parent.y + _y + _height > other.parent.y - other.parent.originY
-			&& parent.x + _x < other.parent.x - other.parent.originX + other.parent.width
-			&& parent.y + _y < other.parent.y - other.parent.originY + other.parent.height;
+		return parent.realX + _x + _width > other.parent.realX - other.parent.originX
+			&& parent.realY + _y + _height > other.parent.realY - other.parent.originY
+			&& parent.realX + _x < other.parent.realX - other.parent.originX + other.parent.cacheWidth
+			&& parent.realY + _y < other.parent.y - other.parent.originY + other.parent.cacheHeight;
 	}
 
 	/** @private Collides against a Hitbox. */
 	private function collideHitbox(other:Hitbox):Bool
 	{
-		return parent.x + _x + _width > other.parent.x + other._x
-			&& parent.y + _y + _height > other.parent.y + other._y
-			&& parent.x + _x < other.parent.x + other._x + other._width
-			&& parent.y + _y < other.parent.y + other._y + other._height;
+		return parent.realX + _x + _width > other.parent.realX + other._x
+			&& parent.realY + _y + _height > other.parent.realY + other._y
+			&& parent.realX + _x < other.parent.realX + other._x + other._width
+			&& parent.realY + _y < other.parent.realY + other._y + other._height;
 	}
 
 	/**
@@ -109,8 +109,8 @@ class Hitbox extends Mask
 			// update entity bounds
 			parent.originX = -_x;
 			parent.originY = -_y;
-			parent.width = _width;
-			parent.height = _height;
+			parent.cacheWidth= _width;
+			parent.cacheHeight= _height;
 			// update parent list
 			if (list != null)
 				list.update();

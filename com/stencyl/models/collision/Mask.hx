@@ -56,10 +56,10 @@ class Mask
 	/** @private Collide against an Entity. */
 	private function collideMask(other:Mask):Bool
 	{
-		return parent.x - parent.originX + parent.width > other.parent.x - other.parent.originX
-			&& parent.y - parent.originY + parent.height > other.parent.y - other.parent.originY
-			&& parent.x - parent.originX < other.parent.x - other.parent.originX + other.parent.width
-			&& parent.y - parent.originY < other.parent.y - other.parent.originY + other.parent.height;
+		return parent.realX - parent.originX + parent.cacheWidth > other.parent.realX - other.parent.originX
+			&& parent.realY - parent.originY + parent.cacheHeight > other.parent.realY - other.parent.originY
+			&& parent.realX - parent.originX < other.parent.realX - other.parent.originX + other.parent.cacheWidth
+			&& parent.realY - parent.originY < other.parent.realY - other.parent.originY + other.parent.cacheHeight;
 	}
 
 	private function collideMasklist(other:Masklist):Bool
@@ -100,19 +100,19 @@ class Mask
 		if (cur > max)
 			max = cur;
 
-		cur = (-parent.originX + parent.width) * axis.x - parent.originY * axis.y;
+		cur = (-parent.originX + parent.cacheWidth) * axis.x - parent.originY * axis.y;
 		if (cur < min)
 			min = cur;
 		if (cur > max)
 			max = cur;
 
-		cur = -parent.originX * axis.x + (-parent.originY + parent.height) * axis.y;
+		cur = -parent.originX * axis.x + (-parent.originY + parent.cacheHeight) * axis.y;
 		if (cur < min)
 			min = cur;
 		if (cur > max)
 			max = cur;
 
-		cur = (-parent.originX + parent.width) * axis.x + (-parent.originY + parent.height)* axis.y;
+		cur = (-parent.originX + parent.cacheWidth) * axis.x + (-parent.originY + parent.cacheHeight)* axis.y;
 		if (cur < min)
 			min = cur;
 		if (cur > max)

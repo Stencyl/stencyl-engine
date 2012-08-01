@@ -2044,6 +2044,12 @@ class Engine
 				continue;
 			}
 			
+			else if (a.updateMatrix || a.resetOrigin)
+			{
+				a.updateDrawingMatrix();
+				a.updateMatrix = false;
+			}
+			
 			if(a.body == null)
 			{
 				continue;
