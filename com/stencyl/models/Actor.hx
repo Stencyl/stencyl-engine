@@ -1228,7 +1228,7 @@ class Actor extends Sprite
 			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
 			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
 							
-			/*transformPoint.x = currOrigin.x - cacheWidth / 2;
+			transformPoint.x = currOrigin.x - cacheWidth / 2;
 			transformPoint.y = currOrigin.y - cacheHeight / 2;
 
 			transformMatrix.identity();
@@ -1236,7 +1236,7 @@ class Actor extends Sprite
 			transformMatrix.rotate(body.getAngle());
 			transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
 			
-			transform.matrix = transformMatrix;*/
+			transform.matrix = transformMatrix;
 			#end
 			
 			//TODO: Why isn't this above too?
