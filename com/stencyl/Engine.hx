@@ -1829,10 +1829,10 @@ class Engine
 				//var isOnScreen = a.isOnScreen();
 				
 				var isOnScreen = (a.isLightweight || a.body.isActive()) && 
-			   	a.x >= -Engine.cameraX - Engine.paddingLeft && 
-			   	a.y >= -Engine.cameraY - Engine.paddingTop &&
-			   	a.x < -Engine.cameraX + Engine.screenWidth + Engine.paddingRight &&
-			   	a.y < -Engine.cameraY + Engine.screenHeight + Engine.paddingBottom;
+			   	a.realX >= -Engine.cameraX - Engine.paddingLeft && 
+			   	a.realY >= -Engine.cameraY - Engine.paddingTop &&
+			   	a.realX < -Engine.cameraX + Engine.screenWidth + Engine.paddingRight &&
+			   	a.realY < -Engine.cameraY + Engine.screenHeight + Engine.paddingBottom;
 				
 				//---
 			

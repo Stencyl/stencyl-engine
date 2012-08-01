@@ -1119,6 +1119,7 @@ class Actor extends Sprite
 			   ec.exists(checkType) || 
 			   ec.exists(groupType)) 
 			{
+				//TODO: This needs to be optimized a lot.
 				handleCollisions();		
 			}
 		}
@@ -1218,12 +1219,16 @@ class Actor extends Sprite
 			#end
 			
 			#if !js
+			
+			//TODO: It's expensive to set x/y if it did not change. Can we make it only set x and y
+			//if the actor actually moved?
+			
 			realX = x = Math.round(p.x * Engine.physicsScale);
 			realY = y = Math.round(p.y * Engine.physicsScale);
 			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
 			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
 							
-			transformPoint.x = currOrigin.x - cacheWidth / 2;
+			/*transformPoint.x = currOrigin.x - cacheWidth / 2;
 			transformPoint.y = currOrigin.y - cacheHeight / 2;
 
 			transformMatrix.identity();
@@ -1231,7 +1236,7 @@ class Actor extends Sprite
 			transformMatrix.rotate(body.getAngle());
 			transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
 			
-			transform.matrix = transformMatrix;
+			transform.matrix = transformMatrix;*/
 			#end
 			
 			//TODO: Why isn't this above too?
