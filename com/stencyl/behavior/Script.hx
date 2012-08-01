@@ -389,6 +389,7 @@ class Script
 		}
 		
 		a.positionListeners.push(func);
+		a.positionListenerCount++;
 								
 		if(Std.is(this, ActorScript))
 		{
@@ -578,6 +579,7 @@ class Script
 		}
 		
 		a.collisionListeners.push(func);
+		a.collisionListenerCount++;
 		
 		if(Std.is(this, ActorScript))
 		{

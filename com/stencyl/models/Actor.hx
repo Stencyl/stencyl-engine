@@ -212,6 +212,10 @@ class Actor extends Sprite
 	public var positionListeners:Array<Dynamic>;
 	public var collisionListeners:Array<Dynamic>;
 	
+	//Caching the array length since it was sapping 2-3 FPS a piece on iPod Touch 2 as a fn call
+	public var positionListenerCount:Int;
+	public var collisionListenerCount:Int;
+	
 	public var mouseState:Int;
 	public var lastScreenState:Bool;
 	public var lastSceneState:Bool;
@@ -582,6 +586,10 @@ class Actor extends Sprite
 		whenKilledListeners = null;
 		mouseOverListeners = null;
 		positionListeners = null;
+		collisionListeners = null;
+		
+		positionListenerCount = 0;
+		collisionListenerCount = 0;
 		
 		registry = null;
 		
@@ -602,6 +610,9 @@ class Actor extends Sprite
 		mouseOverListeners = new Array<Dynamic>();
 		positionListeners = new Array<Dynamic>();
 		collisionListeners = new Array<Dynamic>();
+		
+		positionListenerCount = 0;
+		collisionListenerCount = 0;
 	}
 	
 	public function addAnim
@@ -1124,10 +1135,9 @@ class Actor extends Sprite
 				
 		if(!isLightweight)
 		{
-			//TODO: .length is a function call, degrades performance on mobile by 2-3 FPS
-			if(collisionListeners.length > 0 || 
-			   ec.exists(checkType) || 
-			   ec.exists(groupType)) 
+			if(collisionListenerCount > 0 || 
+			   ec.get(checkType) != null || 
+			   ec.get(groupType) != null) 
 			{
 				//TODO: This needs to be optimized a lot.
 				handleCollisions();		
@@ -1137,10 +1147,9 @@ class Actor extends Sprite
 		internalUpdate(elapsedTime, true);
 		Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
 
-		//TODO: .length is a function call, degrades performance on mobile by 2-3 FPS
-		if(positionListeners.length > 0 || 
-		   ep.exists(checkType) || 
-		   ep.exists(groupType))
+		if(positionListenerCount > 0 || 
+		   ep.get(checkType) != null || 
+		   ep.get(groupType) != null)
 		{
 			checkScreenState();
 		}
