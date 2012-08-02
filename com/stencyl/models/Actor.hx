@@ -385,6 +385,8 @@ class Actor extends Sprite
 		collisions = new IntHash<Collision>();
 		contacts = new IntHash<B2Contact>();
 		regionContacts = new IntHash<B2Contact>();
+		contactCount = 0;
+		collisionsCount = 0;
 		
 		handlesCollisions = true;
 		
@@ -576,6 +578,8 @@ class Actor extends Sprite
 		sprite = null;
 		contacts = null;
 		regionContacts = null;
+		contactCount = 0;
+		collisionsCount = 0;
 		
 		transformPoint = null;
 		transformMatrix = null;
@@ -932,6 +936,9 @@ class Actor extends Sprite
 				collisions = new IntHash<Collision>();
 				contacts = new IntHash<B2Contact>();
 				regionContacts = new IntHash<B2Contact>();
+				contactCount = 0;
+				collisionsCount = 0;
+				
 				//END HACK
 
 				while(body.m_fixtureCount > 0)
@@ -1410,211 +1417,255 @@ class Actor extends Sprite
 	//* Collision
 	//*-----------------------------------------------
 	
-	private function handleCollisions()
+	private static var manifold = new B2WorldManifold();
+	private var contactCount:Int;
+	private var collisionsCount:Int;
+	
+	inline private function handleCollisions()
 	{		
 		var otherActor:Actor;
 		var otherShape:B2Fixture;
 		var thisShape:B2Fixture;
-		//var manifold = new B2WorldManifold();
+		
+		//Even iteration over blank maps can impact low-end devices. Guard against it.
+		if(contactCount > 0)
+		{
+			for(p in contacts)
+			{
+				var key = p.key;
 				
-		for(p in contacts)
-		{
-			var a1 = cast(p.getFixtureA().getUserData(), Actor);
-			var a2 = cast(p.getFixtureB().getUserData(), Actor);
-			var key = p.key;
+				if(collisions.get(key) != null)
+				{
+					continue;
+				}
+			
+				var a1 = cast(p.getFixtureA().getUserData(), Actor);
+				var a2 = cast(p.getFixtureB().getUserData(), Actor);
+					
+				if(a1 == this)
+				{
+					otherActor = a2;
+					otherShape = p.getFixtureB();
+					thisShape = p.getFixtureA();
+				}
 				
-			if(a1 == this)
-			{
-				otherActor = a2;
-				otherShape = p.getFixtureB();
-				thisShape = p.getFixtureA();
-			}
-			
-			else
-			{
-				otherActor = a1;
-				otherShape = p.getFixtureA();
-				thisShape = p.getFixtureB();
-			}
-							
-			if(collisions.exists(key))
-			{
-				continue;
-			}
-			
-			//TODO: roll this out and reuse instead
-			var d:Collision = new Collision();
-			d.otherActor = otherActor;
-			d.otherShape = otherShape;
-			d.thisActor = this;
-			d.thisShape = thisShape;
-			d.actorA = a1;
-			d.actorB = a2;
-			
-			//TODO: Don't remake this each loop! Is there a side-effect to that?
-			var manifold = new B2WorldManifold();
-			p.getWorldManifold(manifold);
-			
-			var cp = new CollisionPoint(manifold.getPoint(), manifold.m_normal);
-
-			collisions.set(key, d);
-			
-			if(cp.point != null)
-			{
-				d.points.push(cp);
+				else
+				{
+					otherActor = a1;
+					otherShape = p.getFixtureA();
+					thisShape = p.getFixtureB();
+				}
+	
+				//TODO: We can pool this if it helps.
+				var d:Collision = new Collision();
+				d.otherActor = otherActor;
+				d.otherShape = otherShape;
+				d.thisActor = this;
+				d.thisShape = thisShape;
+				d.actorA = a1;
+				d.actorB = a2;
 				
-				d.thisFromBottom = collidedFromBottom(p, cp.normal);					
-				d.thisFromTop = collidedFromTop(p, cp.normal);						
-				d.thisFromLeft = collidedFromLeft(p, cp.normal);					
-				d.thisFromRight = collidedFromRight(p, cp.normal);		
+				//TODO: No longer need to remake. Use a shared instance.
+				//var manifold = new B2WorldManifold();
 				
-				d.otherFromBottom = otherActor.collidedFromBottom(p, cp.normal);					
-				d.otherFromTop = otherActor.collidedFromTop(p, cp.normal);						
-				d.otherFromLeft = otherActor.collidedFromLeft(p, cp.normal);					
-				d.otherFromRight = otherActor.collidedFromRight(p, cp.normal);
+				p.getWorldManifold(manifold);
+				
+				var pt = manifold.getPoint();
+				var cp:CollisionPoint;
+				
+				if(pt == null)
+				{
+					cp = new CollisionPoint
+					(
+						-9999, 
+						-9999, 
+						manifold.m_normal.x,
+						manifold.m_normal.y
+					);
+				}
+				
+				else
+				{
+					cp = new CollisionPoint
+					(
+						manifold.getPoint().x, 
+						manifold.getPoint().y, 
+						manifold.m_normal.x,
+						manifold.m_normal.y
+					);
+				} 
+	
+				collisions.set(key, d);
+				collisionsCount++;
+				
+				if(cp.x == -9999 && cp.y == -9999)
+				{
+					d.points.push(cp);
+					
+					var thisActor:Actor = this;
+					var body = thisActor.getBody();	
+					var otherBody = otherActor.getBody();	
+					var body1 = p.getFixtureA().getBody();
+					var body2 = p.getFixtureB().getBody();
+			
+					d.thisFromBottom = false;
+					d.thisFromTop = false;
+					d.thisFromLeft = false;
+					d.thisFromRight = false;
+			
+					//collidedFromBottom
+					if(body1 == body)
+					{
+						d.thisFromBottom = cp.normalY > 0;
+					}
+					
+					else if(body2 == body)
+					{
+						d.thisFromBottom = cp.normalY < 0;
+					}
+			
+					//collidedFromTop
+					if(body1 == body)
+					{
+						d.thisFromTop = cp.normalY < 0;
+					}
+					
+					else if(body2 == body)
+					{
+						d.thisFromTop = cp.normalY > 0;
+					}
+					
+					//collidedFromLeft
+					if(body1 == body)
+					{
+						d.thisFromLeft = cp.normalX < 0;
+					}
+					
+					else if(body2 == body)
+					{
+						d.thisFromLeft = cp.normalX > 0;
+					}
+					
+					//collidedFromRight
+					if(body1 == body)
+					{
+						d.thisFromRight = cp.normalX > 0;
+					}
+					
+					else if(body2 == body)
+					{
+						d.thisFromRight = cp.normalX < 0;
+					}
+	
+					//---
+					
+					d.otherFromBottom = false;
+					d.otherFromTop = false;
+					d.otherFromLeft = false;
+					d.otherFromRight = false;
+					
+					//collidedFromBottom
+					if(body1 == otherBody)
+					{
+						d.otherFromBottom = cp.normalY > 0;
+					}
+					
+					else if(body2 == otherBody)
+					{
+						d.otherFromBottom = cp.normalY < 0;
+					}
+					
+					//collidedFromTop
+					if(body1 == otherBody)
+					{
+						d.otherFromTop = cp.normalY < 0;
+					}
+					
+					else if(body2 == otherBody)
+					{
+						d.otherFromTop = cp.normalY > 0;
+					}
+					
+					//collidedFromLeft
+					if(body1 == otherBody)
+					{
+						d.otherFromLeft = cp.normalX < 0;
+					}
+					
+					else if(body2 == otherBody)
+					{
+						d.otherFromLeft = cp.normalX > 0;
+					}
+					
+					//collidedFromRight
+					if(body1 == otherBody)
+					{
+						d.otherFromRight = cp.normalX > 0;
+					}
+					
+					else if(body2 == otherBody)
+					{
+						d.otherFromRight = cp.normalX < 0;
+					}
+				}
+			
+				//---
+				
+				d.thisCollidedWithActor = false;					
+				d.thisCollidedWithTerrain = false;			
+				d.thisCollidedWithTile = false;
+				d.thisCollidedWithSensor = false;
+				
+				d.otherCollidedWithActor = false;			
+				d.otherCollidedWithTerrain = false;	
+				d.otherCollidedWithTile = false;
+				d.otherCollidedWithSensor = false;
+				
+				//---
+				
+				if(otherActor != null)
+				{
+					d.thisCollidedWithActor = otherActor.groupID != 1 && otherActor.groupID != -2 && !otherActor.isTerrainRegion;					
+					d.thisCollidedWithTerrain = otherActor.isTerrainRegion;			
+					d.thisCollidedWithTile = otherActor.groupID == 1;
+				}
+				
+				otherShape.isSensor();
+				
+				//---
+				
+				d.otherCollidedWithActor = this.groupID != 1 && this.groupID != -2 && !this.isTerrainRegion;					
+				d.otherCollidedWithTerrain = this.isTerrainRegion;			
+				d.otherCollidedWithTile = this.groupID == 1;
+				d.otherCollidedWithSensor = thisShape.isSensor();		
 			}
-			
-			//Can use logical OR assignment shortcut if we switch back to multipoint collisions
-			d.thisCollidedWithActor = collidedWithActor(otherActor);						
-			d.thisCollidedWithTerrain = collidedWithTerrain(otherActor);				
-			d.thisCollidedWithTile = collidedWithTile(otherActor);
-			d.thisCollidedWithSensor = otherShape.isSensor();		
-			
-			d.otherCollidedWithActor = collidedWithActor(this);						
-			d.otherCollidedWithTerrain = collidedWithTerrain(this);				
-			d.otherCollidedWithTile = collidedWithTile(this);
-			d.otherCollidedWithSensor = thisShape.isSensor();		
 		}
 		
-		for(collision in collisions)
+		//Even iteration over blank maps can impact low-end devices. Guard against it.
+		if(collisionsCount > 0)
 		{
-			if
-			(
-			   collision == null || collision.thisActor == null || collision.otherActor == null ||
-			   !collision.thisActor.handlesCollisions || 
-			   !collision.otherActor.handlesCollisions)
+			for(collision in collisions)
 			{
-				continue;
+				if
+				(
+				   collision == null || collision.thisActor == null || collision.otherActor == null ||
+				   !collision.thisActor.handlesCollisions || 
+				   !collision.otherActor.handlesCollisions)
+				{
+					continue;
+				}
+				
+				lastCollided = collision.otherActor;
+				Engine.invokeListeners2(collisionListeners, collision);
+				
+				engine.handleCollision(this, collision);	
 			}
-			
-			lastCollided = collision.otherActor;
-			Engine.invokeListeners2(collisionListeners, collision);
-			
-			engine.handleCollision(this, collision);	
 		}
 		
-		//TODO: Can we avoid remaking this?
-		contacts = new IntHash<B2Contact>();
-	}
-	
-	public function collidedFromBottom(c:B2Contact, normal:B2Vec2):Bool
-	{
-		var thisActor:Actor = this;
-		var body = thisActor.getBody();	
-		var body1 = c.getFixtureA().getBody();
-		var body2 = c.getFixtureB().getBody();
-
-		if(body1 == body)
-		{
-			return normal.y > 0;
-		}
-		
-		if(body2 == body)
-		{
-			return normal.y < 0;
-		}
-
-		return false;
-	}
-	
-	public function collidedFromTop(c:B2Contact, normal:B2Vec2):Bool
-	{
-		var thisActor:Actor = this;
-		var body = thisActor.getBody();	
-		var body1 = c.getFixtureA().getBody();
-		var body2 = c.getFixtureB().getBody();
-		
-		if(body1 == body)
-		{
-			return normal.y < 0;
-		}
-		
-		if(body2 == body)
-		{
-			return normal.y > 0;
-		}
-		
-		return false;
-	}
-	
-	public function collidedFromLeft(c:B2Contact, normal:B2Vec2):Bool
-	{
-		var thisActor:Actor = this;
-		var body = thisActor.getBody();	
-		var body1 = c.getFixtureA().getBody();
-		var body2 = c.getFixtureB().getBody();
-		
-		if(body1 == body)
-		{
-			return normal.x < 0;
-		}
-		
-		if(body2 == body)
-		{
-			return normal.x > 0;
-		}
-		
-		return false;
-	}
-	
-	public function collidedFromRight(c:B2Contact, normal:B2Vec2):Bool
-	{
-		var thisActor:Actor = this;
-		var body = thisActor.getBody();	
-		var body1 = c.getFixtureA().getBody();
-		var body2 = c.getFixtureB().getBody();
-		
-		if(body1 == body)
-		{
-			return normal.x > 0;
-		}
-		
-		if(body2 == body)
-		{
-			return normal.x < 0;
-		}
-		
-		return false;
-	}
-	
-	private function collidedWithActor(a:Actor):Bool
-	{
-		if(a != null)
-		{
-			return a.groupID != 1 && a.groupID != -2 && !a.isTerrainRegion; //not tile, region, or terrain
-		}
-		
-		return false;
-	}
-	
-	private function collidedWithTerrain(a:Actor):Bool
-	{
-		if(a != null)
-		{
-			return a.isTerrainRegion;   //Terrain Region?
-		}
-		
-		return false;
-	}
-	
-	private function collidedWithTile(a:Actor):Bool
-	{
-		if(a != null)
-		{
-			return a.groupID == 1; //Game.TILE_GROUP_ID;
-		}
-		
-		return false;
+		//TODO: Can we avoid remaking this? Yes, just don't clear out and let system naturally
+		//remove contacts and ignore ones we've already processed.
+		//10 FPS drop
+		//contacts = new IntHash<B2Contact>();
 	}
 	
 	public inline function addContact(point:B2Contact)
@@ -1622,7 +1673,12 @@ class Actor extends Sprite
 		if(contacts != null)
 		{
 			contacts.set(point.key, point);
-			collisions.remove(point.key);
+			contactCount++;
+			
+			if(collisions.remove(point.key))
+			{
+				collisionsCount--;
+			}
 		}
 	}
 	
@@ -1631,11 +1687,19 @@ class Actor extends Sprite
 		if(collisions != null)
 		{
 			collisions.remove(point.key);
+			collisionsCount--;
 		}
 		
 		if(contacts != null)
 		{
 			contacts.remove(point.key);
+			contactCount--;
+			
+			if(collisionsCount < 0)
+			{
+				collisionsCount = 0;
+				trace("Something's wrong. Collision Count < 0");
+			}
 		}
 	}
 	
