@@ -40,6 +40,7 @@ class Input
 	public static var multiTouchEnabled:Bool;
 	public static var multiTouchPoints:Hash<TouchEvent>;
 	#end
+	public static var numTouches:Int;
 
 
 	/**
@@ -160,6 +161,7 @@ class Input
 	        accelX = 0;
 	        accelY = 0;
 	        accelZ = 0;
+	        numTouches = 0;
 		}
 	}
 
@@ -261,6 +263,7 @@ class Input
 	private static function onTouchBegin(e:TouchEvent)
 	{
 		multiTouchPoints.set(Std.string(e.touchPointID), e);
+		numTouches++;
 	}
 	
 	private static function onTouchMove(e:TouchEvent)
@@ -271,6 +274,7 @@ class Input
 	private static function onTouchEnd(e:TouchEvent)
 	{
 		multiTouchPoints.remove(Std.string(e.touchPointID));
+		numTouches--;
 	}
 	#end
 
