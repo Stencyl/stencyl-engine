@@ -7,6 +7,9 @@ import nme.display.PixelSnapping;
 
 class BackgroundLayer extends Bitmap 
 {	
+	public var cacheWidth:Float;
+	public var cacheHeight:Float;
+
 	public function new(?bitmapData:BitmapData) 
 	{
 		super(bitmapData, PixelSnapping.AUTO, true);

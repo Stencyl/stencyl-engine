@@ -591,6 +591,8 @@ class Engine
 				{
 					var img = new BackgroundLayer();
 					background.drawRepeated(img, screenWidth, screenHeight);
+					img.cacheWidth = img.width;
+					img.cacheHeight = img.height;
 					
 					img.name = BACKGROUND;
 					master.addChild(img);
@@ -599,6 +601,8 @@ class Engine
 				else
 				{
 					var img = new BackgroundLayer(background.img);
+					img.cacheWidth = img.width;
+					img.cacheHeight = img.height;
 					img.name = BACKGROUND;
 					master.addChild(img);
 				}
@@ -1930,8 +1934,8 @@ class Engine
 			if(Std.is(child, BackgroundLayer))
 			{
 				//TODO: Don't call width/height! It's expensive. Fetch from model.
-				var endX = -Math.abs(child.width);
-				var endY = -Math.abs(child.height);
+				var endX = -Math.abs(cast(child, BackgroundLayer).cacheWidth);
+				var endY = -Math.abs(cast(child, BackgroundLayer).cacheHeight);
 					
 				child.x = endX * -(cameraX) / Engine.sceneWidth * Engine.SCALE;
 				child.y = endY * -(cameraY) / Engine.sceneHeight * Engine.SCALE;
