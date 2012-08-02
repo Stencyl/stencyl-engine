@@ -1497,7 +1497,7 @@ class Actor extends Sprite
 				collisions.set(key, d);
 				collisionsCount++;
 				
-				if(cp.x == -9999 && cp.y == -9999)
+				if(cp.x != -9999 && cp.y != -9999)
 				{
 					d.points.push(cp);
 					
