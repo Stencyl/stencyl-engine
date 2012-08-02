@@ -1467,7 +1467,6 @@ class Actor extends Sprite
 				
 				//TODO: No longer need to remake. Use a shared instance.
 				//var manifold = new B2WorldManifold();
-				
 				p.getWorldManifold(manifold);
 				
 				var pt = manifold.getPoint();
