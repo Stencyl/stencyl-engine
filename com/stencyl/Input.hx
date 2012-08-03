@@ -158,6 +158,8 @@ class Input
 	        }
 	        #end
 	        
+	        mouseX = 0;
+	        mouseY = 0;
 	        accelX = 0;
 	        accelY = 0;
 	        accelZ = 0;
@@ -177,8 +179,9 @@ class Input
 		}
 		#end
 		
-		mouseX = Engine.stage.mouseX;
-		mouseY = Engine.stage.mouseY;
+		//Mouse is always in absolute coordinates, so adjust when screen size != game size
+		mouseX = (Engine.stage.mouseX - Engine.screenOffsetX) / Engine.screenScaleX;
+		mouseY = (Engine.stage.mouseY - Engine.screenOffsetY) / Engine.screenScaleY;
 	
 		while (_pressNum-- > -1) _press[_pressNum] = -1;
 		_pressNum = 0;
@@ -276,6 +279,14 @@ class Input
 		multiTouchPoints.remove(Std.string(e.touchPointID));
 		numTouches--;
 	}
+	
+	/*if(Input.multiTouchEnabled)
+	{
+		for(elem in Input.multiTouchPoints)
+		{
+			trace(elem.eventPhase + "," + elem.stageX + "," + elem.stageY);
+		}
+	}*/
 	#end
 
 	private static inline var kKeyStringMax = 100;

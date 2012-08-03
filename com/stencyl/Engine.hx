@@ -117,6 +117,11 @@ class Engine
 	public static var cameraX:Float;
 	public static var cameraY:Float;
 	
+	public static var screenScaleX:Float;
+	public static var screenScaleY:Float;
+	public static var screenOffsetX:Int;
+	public static var screenOffsetY:Int;
+	
 	public static var screenWidth:Int;
 	public static var screenHeight:Int;
 	
@@ -331,6 +336,11 @@ class Engine
 	{		
 		Engine.engine = this;
 		this.root = root;
+		
+		Engine.screenScaleX = root.scaleX;
+		Engine.screenScaleY = root.scaleY;
+		Engine.screenOffsetX = Std.int(root.x);
+		Engine.screenOffsetY = Std.int(root.y);
 		
 		NO_PHYSICS = scripts.MyAssets.physicsMode == 1;
 		
