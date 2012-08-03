@@ -16,7 +16,6 @@ import com.stencyl.utils.Utils;
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Linear;
 
-//TODO: Totally broken - get Justin to fix this instead. Basically, use Engine.engine.transitionLayer (a Sprite) to do what you need to do.
 class CircleTransition extends Transition
 {
 	public var color:Int;
@@ -25,11 +24,7 @@ class CircleTransition extends Transition
 	private var beginRadius:Int;
 	private var endRadius:Int;
 	private var circleImg:BitmapData;
-	private var circleImgRect:Rectangle;
 	private var s:Shape;
-	
-	private var buffer:BitmapData;
-	private var bitmap:Bitmap;
 	
 	public function new(direction:String, duration:Float, color:Int=0xff000000)
 	{
@@ -55,16 +50,10 @@ class CircleTransition extends Transition
 		active = true;
 			
 		s = new Shape();
-		//s.blendMode = BlendMode.LAYER;
-		circleImg = new BitmapData(Engine.screenWidth, Engine.screenHeight, true, color);
-		circleImgRect = new Rectangle(0, 0, circleImg.width, circleImg.height);
+		circleImg = new BitmapData(Engine.screenWidth, Engine.screenHeight);
 		radius = beginRadius;
 		
-		//---
-		
-		buffer = new BitmapData(Engine.screenWidth, Engine.screenHeight);
-		bitmap = new Bitmap(buffer);
-		Engine.engine.transitionLayer.addChild(bitmap);
+		Engine.engine.transitionLayer.addChild(s);
 		
 		//---
 
@@ -74,16 +63,23 @@ class CircleTransition extends Transition
 	override public function draw(g:Graphics)
 	{
 		s.graphics.clear();
-		s.graphics.beginBitmapFill(buffer);
-		s.graphics.drawCircle(Engine.screenWidthHalf, Engine.screenHeightHalf, radius);
+		
+		s.graphics.beginFill(color);
+		s.graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
 		s.graphics.endFill();
 		
-		circleImg.fillRect(circleImgRect, color);
-		circleImg.draw(s);
+		circleImg.draw(Engine.engine.master);
+		s.graphics.beginBitmapFill(circleImg);
+		s.graphics.drawCircle(Engine.screenWidthHalf, Engine.screenHeightHalf, radius);
+		s.graphics.endFill();		
 	}
 	
 	override public function cleanup()
 	{
-		Engine.engine.transitionLayer.removeChild(bitmap);
+		if(s != null)
+		{
+			Engine.engine.transitionLayer.removeChild(s);
+			s = null;
+		}
 	}
 }

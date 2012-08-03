@@ -1,0 +1,119 @@
+package com.stencyl.graphics.transitions;
+
+import nme.geom.Matrix;
+import nme.geom.Point;
+import nme.display.Sprite;
+import nme.display.Graphics;
+import nme.display.BitmapData;
+import nme.display.Shape;
+
+import com.stencyl.Engine;
+
+import com.eclecticdesignstudio.motion.Actuate;
+import com.eclecticdesignstudio.motion.easing.Linear;
+
+class SlideTransition extends Transition
+{
+	private var sceneSpr:Sprite;
+	private var oldBitmap:BitmapData;
+	private var newBitmap:BitmapData;
+	private var drawBitmap:BitmapData;
+	private var graphics:Graphics;
+	
+	public var oldSceneMatrix:Matrix;
+	public var newSceneMatrix:Matrix;
+	private var tx:Float;
+	private var ty:Float;
+	
+	public static var SLIDE_UP:String = "up";
+	public static var SLIDE_DOWN:String = "down";
+	public static var SLIDE_LEFT:String = "left";
+	public static var SLIDE_RIGHT:String = "right";
+	
+	public var rect:Shape;
+	
+	public function new(sceneSpr:Sprite, duration:Float, slideDirection:String) 
+	{
+		super(duration);
+		
+		this.sceneSpr = sceneSpr;
+		
+		oldSceneMatrix = new Matrix();
+		newSceneMatrix = new Matrix();
+		tx = 0;
+		ty = 0;
+			
+		if(slideDirection == SLIDE_UP)
+		{
+			newSceneMatrix.ty = -Engine.screenHeight;
+			ty = Engine.screenHeight;
+		}
+		else if(slideDirection == SLIDE_DOWN)
+		{
+			newSceneMatrix.ty = Engine.screenHeight;
+			ty = -Engine.screenHeight;
+		}
+		else if(slideDirection == SLIDE_LEFT)
+		{
+			newSceneMatrix.tx = -Engine.screenWidth;
+			tx = Engine.screenWidth;
+		}
+		else if(slideDirection == SLIDE_RIGHT)
+		{
+			newSceneMatrix.tx = Engine.screenWidth;
+			tx = -Engine.screenWidth;
+		}
+		else
+		{
+			trace("Invalid slide direction: " + slideDirection);
+			complete = true;
+		}		
+	}
+	
+	override public function start()
+	{
+		active = true;
+		
+		oldBitmap = new BitmapData(Engine.screenWidth, Engine.screenHeight);
+		oldBitmap.draw(sceneSpr);
+		
+		newBitmap = new BitmapData(Engine.screenWidth, Engine.screenHeight);
+		drawBitmap = new BitmapData(Engine.screenWidth, Engine.screenHeight);
+		
+		rect = new Shape();
+		graphics = rect.graphics;		
+		graphics.beginBitmapFill(oldBitmap);
+		graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+		graphics.endFill();
+				
+		Engine.engine.transitionLayer.addChild(rect);
+		
+		Actuate.tween(oldSceneMatrix, duration, { tx:tx, ty:ty } ).ease(Linear.easeNone).onComplete(stop);
+		Actuate.tween(newSceneMatrix, duration, { tx:0, ty:0 } ).ease(Linear.easeNone).onComplete(stop);
+	}
+	
+	override public function draw(g:Graphics)	
+	{
+		graphics.clear();			
+		
+		newBitmap.draw(sceneSpr);		
+		drawBitmap.draw(newBitmap, newSceneMatrix);
+		drawBitmap.draw(oldBitmap, oldSceneMatrix);
+		
+		graphics.beginBitmapFill(drawBitmap);
+		graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+		graphics.endFill();
+	}
+	
+	override public function cleanup()
+	{
+		sceneSpr = null;
+		
+		if(rect != null)
+		{
+			Engine.engine.transitionLayer.removeChild(rect);
+			rect = null;
+		}
+	}
+	
+}

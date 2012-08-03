@@ -1019,6 +1019,149 @@ class Script
 		engine.switchScene(sceneID, leave, enter);
 	}
 	
+	/**
+	 * Create a pixelize out transition for use in scene switching.
+	 *
+	 * @param	duration	how long the transition lasts (in milliseconds)
+	 * @param	pixelSize	size that pixels grow to
+	 *
+	 * @return Pixelize out transition that you pass into reloadScene and switchScene
+	 */
+	public function createPixelizeOut(duration:Float, pixelSize:Int = 15):Transition
+	{
+		return new com.stencyl.graphics.transitions.PixelizeTransition(duration, 1, pixelSize);
+	}
+		
+	/**
+	 * Create a pixelize in transition for use in scene switching.
+	 *
+	 * @param	duration	how long the transition lasts (in milliseconds)
+	 * @param	pixelSize	size that pixels shrink from
+	 *
+	 * @return Pixelize in transition that you pass into reloadScene and switchScene
+	 */
+	public function createPixelizeIn(duration:Float, pixelSize:Int = 15):Transition
+	{
+		return new com.stencyl.graphics.transitions.PixelizeTransition(duration, pixelSize, 1);
+	}
+	
+	/**
+	 * Create a bubbles out transition for use in scene switching.
+	 *
+	 * @param	duration	how long the transition lasts (in milliseconds)
+	 * @param	color		color to bubble out to. Default is black.
+	 *
+	 * @return Bubbles out transition that you pass into reloadScene and switchScene
+	 */
+	public function createBubblesOut(duration:Float, color:Int=0xff000000):Transition
+	{
+		return new com.stencyl.graphics.transitions.BubblesTransition(Transition.OUT, duration, 50, color);
+	}
+		
+	/**
+	 * Create a bubbles in transition for use in scene switching.
+	 *
+	 * @param	duration	how long the transition lasts (in milliseconds)
+	 * @param	color		color to bubble in from. Default is black.
+	 *
+	 * @return Bubble in transition that you pass into reloadScene and switchScene
+	 */
+	public function createBubblesIn(duration:Float, color:Int=0xff000000):Transition
+	{
+		return new com.stencyl.graphics.transitions.BubblesTransition(Transition.IN, duration, 50, color);
+	}
+	
+	/**
+	 * Create a blinds out transition for use in scene switching.
+	 *
+	 * @param	duration	how long the transition lasts (in milliseconds)
+	 * @param	color		color to blind out to. Default is black.
+	 *
+	 * @return Blinds out transition that you pass into reloadScene and switchScene
+	 */
+	public function createBlindsOut(duration:Float, color:Int=0xff000000):Transition
+	{
+		return new com.stencyl.graphics.transitions.BlindsTransition(Transition.OUT, duration, 10, color);
+	}
+		
+	/**
+	 * Create a blinds in transition for use in scene switching.
+	 *
+	 * @param	duration	how long the transition lasts (in milliseconds)
+	 * @param	color		color to blind in from. Default is black.
+	 *
+	 * @return Blinds in transition that you pass into reloadScene and switchScene
+	 */
+	public function createBlindsIn(duration:Float, color:Int=0xff000000):Transition
+	{
+		return new com.stencyl.graphics.transitions.BlindsTransition(Transition.IN, duration, 10, color);
+	}
+		
+	/**
+	 * Create a rectangle out transition for use in scene switching.
+	 *
+	 * @param	duration	how long the transition lasts (in milliseconds)
+	 * @param	color		color to fade out to. Default is black.
+	 *
+	 * @return Rectangle out transition that you pass into reloadScene and switchScene
+	 */
+	public function createRectangleOut(duration:Float, color:Int=0xff000000):Transition
+	{
+		return new com.stencyl.graphics.transitions.RectangleTransition(Transition.OUT, duration, color);
+	}
+		
+	/**
+	 * Create a rectangle in transition for use in scene switching.
+	 *
+	 * @param	duration	how long the transition lasts (in milliseconds)
+	 * @param	color		color to fade in from. Default is black.
+	 *
+	 * @return Rectangle in transition that you pass into reloadScene and switchScene
+	 */
+	public function createRectangleIn(duration:Float, color:Int=0xff000000):Transition
+	{
+		return new com.stencyl.graphics.transitions.RectangleTransition(Transition.IN, duration, color);
+	}
+	
+	/**
+	 * Create a slide transition for use in scene switching.
+	 *
+	 * @param	duration	how long the transition lasts (in milliseconds)
+	 * @param	direction	direction to slide the camera. Use direction constants from SlideTransition
+	 *
+	 * @return Slide transition that you pass into reloadScene and switchScene
+	 */
+	public function createSlideTransition(duration:Float, direction:String):Transition
+	{
+		return new com.stencyl.graphics.transitions.SlideTransition(engine.master, duration, direction);
+	}
+		
+	//These are for SW's convenience.		
+	public function createSlideUpTransition(duration:Float):Transition
+	{
+		return createSlideTransition(duration, com.stencyl.graphics.transitions.SlideTransition.SLIDE_UP);
+	}
+		
+	public function createSlideDownTransition(duration:Float):Transition
+	{
+		return createSlideTransition(duration, com.stencyl.graphics.transitions.SlideTransition.SLIDE_DOWN);
+	}
+		
+	public function createSlideLeftTransition(duration:Float):Transition
+	{
+		return createSlideTransition(duration, com.stencyl.graphics.transitions.SlideTransition.SLIDE_LEFT);
+	}
+		
+	public function createSlideRightTransition(duration:Float):Transition
+	{
+		return createSlideTransition(duration, com.stencyl.graphics.transitions.SlideTransition.SLIDE_RIGHT);
+	}
+		
+	public function createCrossfadeTransition(duration:Float):Transition
+	{
+		return new com.stencyl.graphics.transitions.CrossfadeTransition(engine.root, duration);
+	}
+	
 	public function createFadeOut(duration:Float, color:Int=0xff000000):Transition
 	{
 		return new com.stencyl.graphics.transitions.FadeOutTransition(duration, color);
