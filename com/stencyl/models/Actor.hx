@@ -1266,6 +1266,7 @@ class Actor extends Sprite
 		transformObj.matrix = transformMatrix;
 		#else
 		mMatrix = transformMatrix;
+		mMtxDirty = false;
 			
 		if(resetOrigin)
 		{
