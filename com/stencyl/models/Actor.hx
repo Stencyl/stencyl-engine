@@ -1638,13 +1638,11 @@ class Actor extends Sprite
 					d.thisCollidedWithTile = otherActor.groupID == 1;
 				}
 				
-				otherShape.isSensor();
-				
-				//---
-				
 				d.otherCollidedWithActor = this.groupID != 1 && this.groupID != -2 && !this.isTerrainRegion;					
 				d.otherCollidedWithTerrain = this.isTerrainRegion;			
 				d.otherCollidedWithTile = this.groupID == 1;
+				
+				d.thisCollidedWithSensor = otherShape.isSensor();
 				d.otherCollidedWithSensor = thisShape.isSensor();		
 			}
 		}
@@ -1694,19 +1692,17 @@ class Actor extends Sprite
 	{
 		if(collisions != null)
 		{
-			collisions.remove(point.key);
-			collisionsCount--;
+			if(collisions.remove(point.key))
+			{
+				collisionsCount--;
+			}
 		}
 		
 		if(contacts != null)
 		{
-			contacts.remove(point.key);
-			contactCount--;
-			
-			if(collisionsCount < 0)
+			if(contacts.remove(point.key))
 			{
-				collisionsCount = 0;
-				trace("Something's wrong. Collision Count < 0");
+				contactCount--;
 			}
 		}
 	}
