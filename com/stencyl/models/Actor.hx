@@ -1244,6 +1244,14 @@ class Actor extends Sprite
 	
 	public function updateDrawingMatrix()
 	{
+		if (!isLightweight)
+		{
+			var p = body.getPosition();
+			
+			realX = Math.round(p.x * Engine.physicsScale);
+			realY = Math.round(p.y * Engine.physicsScale);
+		}
+		
 		transformPoint.x = currOrigin.x - cacheWidth / 2;
 		transformPoint.y = currOrigin.y - cacheHeight / 2;
 
