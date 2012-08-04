@@ -2424,6 +2424,18 @@ class Engine
      	#end
      	
      	Engine.invokeListeners4(whenDrawingListeners, g, 0, 0);
+		
+		//Draw Transitions
+		if(leave != null && leave.isActive())
+		{
+			//TODO: What is the graphics object supposed to be?
+			leave.draw(null);
+		}
+			
+		else if(enter != null && enter.isActive())
+		{
+			enter.draw(null);
+		} 
      }
 	
 	//*-----------------------------------------------
