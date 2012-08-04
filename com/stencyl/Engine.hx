@@ -1726,15 +1726,7 @@ class Engine
 	//*-----------------------------------------------
 	//* Update Loop
 	//*-----------------------------------------------
-				
-	/*if(Input.multiTouchEnabled)
-	{
-		for(elem in Input.multiTouchPoints)
-		{
-			trace(elem.eventPhase + "," + elem.stageX + "," + elem.stageY);
-		}
-	}*/
-	
+					
 	public function update(elapsedTime:Float)
 	{
 		if(scene == null)
@@ -2038,7 +2030,6 @@ class Engine
 		{
 			update(STEP_SIZE);
 			acc -= STEP_SIZE;
-
 			Input.update();
 		}
 		

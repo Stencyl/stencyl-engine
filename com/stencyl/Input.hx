@@ -241,6 +241,13 @@ class Input
 
 	private static function onMouseDown(e:MouseEvent)
 	{
+		//On mobile, mouse position isn't always updated till you touch, so we need to update immediately
+		//so that events are properly notified
+		#if mobile
+		mouseX = (Engine.stage.mouseX - Engine.screenOffsetX) / Engine.screenScaleX;
+		mouseY = (Engine.stage.mouseY - Engine.screenOffsetY) / Engine.screenScaleY;
+		#end
+		
 		if (!mouseDown)
 		{
 			mouseDown = true;
@@ -251,6 +258,13 @@ class Input
 
 	private static function onMouseUp(e:MouseEvent)
 	{
+		//On mobile, mouse position isn't always updated till you touch, so we need to update immediately
+		//so that events are properly notified
+		#if mobile
+		mouseX = (Engine.stage.mouseX - Engine.screenOffsetX) / Engine.screenScaleX;
+		mouseY = (Engine.stage.mouseY - Engine.screenOffsetY) / Engine.screenScaleY;
+		#end
+		
 		mouseDown = false;
 		mouseUp = true;
 		mouseReleased = true;
