@@ -150,6 +150,22 @@ class Universal extends Sprite
 		//addChild(loader);
 		
 		new com.stencyl.Engine(this);
+		
+		//Text Testing
+		/*var textBytes = nme.Assets.getText("assets/graphics/NavTitle.fnt");
+		var XMLData = Xml.parse(textBytes);
+		var font = new com.stencyl.graphics.fonts.BitmapFont().loadAngelCode(nme.Assets.getBitmapData("assets/graphics/NavTitle.png"), XMLData);
+		var label = new com.stencyl.graphics.fonts.Label();
+		label.text = "Long ago, the War of the Magi reduced the world to a scorched wasteland, and Magic simply ceased to exist. 1000 years have passed... Iron, gunpowder and steam engines have been rediscovered, and high technology reigns. But there are those who would enslave the world by reviving the dread destructive power known as 'Magic'. Can it be that those in power are on the verge of repeating a senseless and deadly mistake?";
+		label.shadow = true;
+		label.multiLine = true;
+		label.x = 10;
+		label.y = 10;
+		label.color = 0xff6600;
+		label.fontScale = 2;
+		label.setWidth(640);
+		label.autoUpperCase = true;
+		addChild(label);*/
 	}
 	
 	public static function main() 

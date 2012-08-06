@@ -10,9 +10,14 @@ import nme.display.Tilesheet;
 import nme.geom.Rectangle;
 import nme.geom.Point;
 
+import com.stencyl.Engine;
 import com.stencyl.models.Actor;
 import com.stencyl.models.Font;
 import com.stencyl.utils.Utils;
+
+import com.stencyl.graphics.fonts.Label;
+import com.stencyl.graphics.fonts.BitmapFont;
+import com.stencyl.graphics.fonts.DefaultFontGenerator;
 
 class G 
 {
@@ -32,6 +37,8 @@ class G
 	public var strokeColor:Int;
 	public var font:Font;
 	
+	private var fontData:Array<BitmapData>;
+
 	//Temp to avoid creating objects
 	private var rect:Rectangle;
 	private var point:Point;
@@ -74,8 +81,15 @@ class G
 		firstX = 0;
 		firstY = 0;
 		
-		font = defaultFont = new Font(0, "", "", null, 0, 0, null); 
-		defaultFont.font = new BitmapFont("assets/graphics/default-font.png", 16, 16, BitmapFont.TEXT_SET25, 55, 0, 0);
+		font = defaultFont = new Font(-1, "", true); 
+		
+		drawData = [];
+		
+		#if (flash || js)
+		fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, false);
+		#end
+
+		//defaultFont.font = new BitmapFont("assets/graphics/default-font.png", 16, 16, BitmapFont.TEXT_SET25, 55, 0, 0);
 	}
 	
 	public inline function startGraphics()
@@ -135,15 +149,28 @@ class G
 		}
 	}
 	
+	private var drawData:Array<Float>;
+	
 	public inline function drawString(s:String, x:Float, y:Float)
 	{
 		if(font == null)
 		{
 			resetFont();
 		}
-	
-		font.font.text = s;
-		drawImage(font.font.bitmapData, x, y); // this is kinda slow unless we only update when a repaint in requested?
+
+		#if(cpp)
+		var drawX = this.x + x * scaleX + Engine.cameraX;
+		var drawY = this.y + y * scaleY + Engine.cameraY;
+		drawData.splice(0, drawData.length);
+		font.font.render(drawData, s, 0x000000, alpha, Std.int(drawX), Std.int(drawY), 0, font.fontScale, 0, false);
+		font.font.drawText(graphics, drawData);
+		#end
+		
+		#if(flash || js)
+		var bitmapData = new BitmapData(font.font.getTextWidth(s, 0, font.fontScale), Std.int(font.font.getFontHeight() * font.fontScale), true, 0);
+		font.font.render(bitmapData, fontData, s, 0x000000, 0, 0, 0, 0);
+		drawImage(bitmapData, x, y); 
+		#end
 	}
 	
 	public inline function drawLine(x1:Float, y1:Float, x2:Float, y2:Float)
@@ -334,6 +361,7 @@ class G
 		canvas.copyPixels(img, rect, point);
 		#end
 		
+		//TODO: Very wasteful!
 		#if (cpp || flash)
 		var sheet = new Tilesheet(img);
 		sheet.addTileRect(rect, point2);

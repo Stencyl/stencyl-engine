@@ -1,23 +1,42 @@
 package com.stencyl.models;
 
-import com.stencyl.graphics.BitmapFont;
+import com.stencyl.graphics.fonts.BitmapFont;
+
+import com.stencyl.graphics.fonts.Label;
+import com.stencyl.graphics.fonts.BitmapFont;
+import com.stencyl.graphics.fonts.DefaultFontGenerator;
 
 class Font extends Resource
 {	
-	//TODO:The actual font
 	public var font:BitmapFont;
+	public var fontScale:Float;
 
-	public function new(ID:Int, name:String, alphabet:String, offsets:Array<Int>, height:Int, rowHeight:Int, imgData:Dynamic) 
+	public function new(ID:Int, name:String, isDefault:Bool)
 	{	
 		super(ID, name);
 		
-		//TODO: Make the font.
+		if(isDefault)
+		{
+			if(BitmapFont.fetch("default") == null)
+			{
+				DefaultFontGenerator.generateAndStoreDefaultFont();
+			}
+			
+			font = BitmapFont.fetch("default");
+			fontScale = 3;
+		}
 		
-		//master.addChild(font);
+		else
+		{
+			var textBytes = Data.get().resourceAssets.get(ID + ".fnt");
+			var xml = Xml.parse(textBytes);
+			font = new BitmapFont().loadAngelCode(Data.get().resourceAssets.get(ID + ".png"), xml);
+			fontScale = 1;
+		}
 	}		
 	
 	public function getHeight():Int
 	{
-		return 0;
+		return font.getFontHeight();
 	}
 }

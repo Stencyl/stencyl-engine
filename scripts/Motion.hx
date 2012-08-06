@@ -24,7 +24,7 @@ class Motion extends ActorScript
 		
 		n = 2;
 		
-		actor.setAngularVelocity(1);
+		//actor.setAngularVelocity(1);
 
 		var evt = function(elapsedTime:Float, junk:Array<Dynamic>) 
 		{ 
@@ -78,12 +78,14 @@ class Motion extends ActorScript
 			}
 		};
 		
-		addWhenDrawingListener(null, function(g:G, x:Float, y:Float, list:Array<Dynamic>):Void {
-		if(wrapper.enabled){
-		        g.drawString("" + getScreenWidth(), 0, 0);
-		        g.drawString("" + getScreenHeight(), 0, 50);
+		addWhenDrawingListener(null, function(g:G, x:Float, y:Float, list:Array<Dynamic>):Void 
+		{
+			if(wrapper.enabled)
+			{
+		        g.drawString("X =" + getScreenWidth(), 0, 0);
+		        g.drawString("Y =" + getScreenHeight(), 0, 50);
 		        g.fillRect(0, 0, 32, 32);
-		}
+			}
 		});
 
 	}		

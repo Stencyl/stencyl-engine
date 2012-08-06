@@ -1,6 +1,7 @@
 package com.stencyl.io;
 
 import haxe.xml.Fast;
+import com.stencyl.models.Font;
 import com.stencyl.models.Resource;
 
 class FontReader implements AbstractReader
@@ -18,13 +19,6 @@ class FontReader implements AbstractReader
 	{
 		//trace("Reading Font (" + ID + ") - " + name);
 		
-		var height:Int = Std.parseInt(xml.att.height);
-		var rowHeight:Int = Std.parseInt(xml.att.rowHeight);
-		var alphabet:String = xml.att.alphabet;
-		var xs:String = xml.att.offsets;
-		var xOffsets:Array<String> = xs.split(",");
-		
-		return null;
-		//return new Font(ID, name, alphabet, xOffsets, height, rowHeight, Assets.get().resourceAssets[ID + ".png"]);
+		return new Font(ID, name, false);
 	}
 }
