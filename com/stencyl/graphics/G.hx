@@ -97,7 +97,7 @@ class G
 	
 	public inline function setFont(newFont:Font)
 	{
-		if(newFont != null)
+		if(newFont != null && newFont != font)
 		{
 			font = newFont;
 		
