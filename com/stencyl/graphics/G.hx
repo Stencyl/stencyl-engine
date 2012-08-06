@@ -9,6 +9,7 @@ import nme.display.Tilesheet;
 
 import nme.geom.Rectangle;
 import nme.geom.Point;
+import nme.geom.Matrix;
 
 import com.stencyl.Engine;
 import com.stencyl.models.Actor;
@@ -38,6 +39,7 @@ class G
 	public var font:Font;
 	
 	private var fontData:Array<BitmapData>;
+	private var mtx:Matrix;
 
 	//Temp to avoid creating objects
 	private var rect:Rectangle;
@@ -86,6 +88,7 @@ class G
 		drawData = [];
 		
 		#if (flash || js)
+		mtx = new Matrix();
 		fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, false);
 		#end
 
@@ -170,18 +173,28 @@ class G
 			resetFont();
 		}
 
-		#if(cpp)
 		var drawX = this.x + x * scaleX + Engine.cameraX;
 		var drawY = this.y + y * scaleY + Engine.cameraY;
+		
+		#if(cpp)
 		drawData.splice(0, drawData.length);
 		font.font.render(drawData, s, 0x000000, alpha, Std.int(drawX), Std.int(drawY), 0, font.fontScale, 0, false);
 		font.font.drawText(graphics, drawData);
 		#end
 		
 		#if(flash || js)
-		var bitmapData = new BitmapData(font.font.getTextWidth(s, 0, font.fontScale), Std.int(font.font.getFontHeight() * font.fontScale), true, 0);
+		mtx.identity();
+ 	 	mtx.translate(drawX, drawY);
+ 	 	
+ 	 	var w = font.font.getTextWidth(s, 0, font.fontScale);
+ 	 	var h = Std.int(font.font.getFontHeight() * font.fontScale);
+ 	 	
+		var bitmapData = new BitmapData(w, h, true, 0);
 		font.font.render(bitmapData, fontData, s, 0x000000, 0, 0, 0, 0);
-		drawImage(bitmapData, x, y); 
+		
+		graphics.beginBitmapFill(bitmapData, mtx);
+		graphics.drawRect(drawX, drawY, w, h);
+ 	 	graphics.endFill();
 		#end
 	}
 	
