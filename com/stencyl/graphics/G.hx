@@ -92,6 +92,18 @@ class G
 		//defaultFont.font = new BitmapFont("assets/graphics/default-font.png", 16, 16, BitmapFont.TEXT_SET25, 55, 0, 0);
 	}
 	
+	public inline function setFont(newFont:Font)
+	{
+		if(newFont != null)
+		{
+			font = newFont;
+		
+			#if (flash || js)
+			fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, false);
+			#end	
+		}
+	}
+	
 	public inline function startGraphics()
 	{
 		if(drawActor)
