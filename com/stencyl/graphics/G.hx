@@ -204,10 +204,16 @@ class G
  	 	
 		var bitmapData = new BitmapData(w, h, true, 0);
 		font.font.render(bitmapData, fontData, s, 0x000000, 0, 0, 0, 0);
+		#end
 		
+		#if (flash)
 		graphics.beginBitmapFill(bitmapData, mtx);
 		graphics.drawRect(drawX, drawY, w, h);
  	 	graphics.endFill();
+		#end
+		
+		#if (js)
+		drawImage(bitmapData, x, y);
 		#end
 		
 		endGraphics();
