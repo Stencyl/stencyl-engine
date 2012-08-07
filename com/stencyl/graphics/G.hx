@@ -89,7 +89,7 @@ class G
 		
 		#if (flash || js)
 		mtx = new Matrix();
-		fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, false);
+		fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, true);
 		#end
 
 		//defaultFont.font = new BitmapFont("assets/graphics/default-font.png", 16, 16, BitmapFont.TEXT_SET25, 55, 0, 0);
@@ -102,7 +102,15 @@ class G
 			font = newFont;
 		
 			#if (flash || js)
-			fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, false);
+			if(font == defaultFont)
+			{
+				fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, true);
+			}
+			
+			else
+			{
+				fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, false);
+			}
 			#end	
 		}
 	}
