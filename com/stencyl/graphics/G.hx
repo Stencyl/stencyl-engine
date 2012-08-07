@@ -133,6 +133,8 @@ class G
 			x -= Engine.cameraX;
 			y -= Engine.cameraY;
 		}
+		
+		graphics.lineStyle(0);
 	}
 	
 	public inline function translate(x:Float, y:Float)
@@ -180,6 +182,9 @@ class G
 		{
 			resetFont();
 		}
+		
+		startGraphics();
+		graphics.lineStyle();
 
 		var drawX = this.x + x * scaleX + Engine.cameraX;
 		var drawY = this.y + y * scaleY + Engine.cameraY;
@@ -204,6 +209,8 @@ class G
 		graphics.drawRect(drawX, drawY, w, h);
  	 	graphics.endFill();
 		#end
+		
+		endGraphics();
 	}
 	
 	public inline function drawLine(x1:Float, y1:Float, x2:Float, y2:Float)
