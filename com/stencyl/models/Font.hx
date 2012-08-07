@@ -1,5 +1,6 @@
 package com.stencyl.models;
 
+import nme.Assets;
 import com.stencyl.graphics.fonts.BitmapFont;
 
 import com.stencyl.graphics.fonts.Label;
@@ -17,13 +18,10 @@ class Font extends Resource
 		
 		if(isDefault)
 		{
-			if(BitmapFont.fetch("default") == null)
-			{
-				DefaultFontGenerator.generateAndStoreDefaultFont();
-			}
-			
-			font = BitmapFont.fetch("default");
-			fontScale = 3;
+			var textBytes = Assets.getText("assets/graphics/default-font.fnt");
+			var xml = Xml.parse(textBytes);
+			font = new BitmapFont().loadAngelCode(Assets.getBitmapData("assets/graphics/default-font.png"), xml);
+			fontScale = 1;
 		}
 		
 		else
