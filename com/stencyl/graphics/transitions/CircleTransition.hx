@@ -31,6 +31,7 @@ class CircleTransition extends Transition
 		super(duration);
 		
 		this.color = color;
+		this.direction = direction;
 		
 		if(direction == Transition.IN)
 		{
@@ -52,6 +53,14 @@ class CircleTransition extends Transition
 		s = new Shape();
 		circleImg = new BitmapData(Engine.screenWidth, Engine.screenHeight);
 		radius = beginRadius;
+		
+		if (direction == Transition.IN)
+		{
+			var graphics:Graphics  = s.graphics;
+			graphics.beginFill(color);
+			graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+			graphics.endFill();
+		}
 		
 		Engine.engine.transitionLayer.addChild(s);
 		

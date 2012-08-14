@@ -62,6 +62,13 @@ class BlindsTransition extends Transition
 		rect = new Shape();
 		graphics = rect.graphics;
 		
+		if (direction == Transition.IN)
+		{
+			graphics.beginFill(color);
+			graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+			graphics.endFill();
+		}		
+		
 		Engine.engine.transitionLayer.addChild(rect);
 		
 		Actuate.tween(this, duration, { blindWidth:endBlindWidth} ).ease(Linear.easeNone).onComplete(stop);

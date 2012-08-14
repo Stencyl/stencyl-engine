@@ -46,6 +46,13 @@ class BubblesTransition extends Transition
 		rect = new Shape();
 		graphics = rect.graphics;
 		
+		if (direction == Transition.IN)
+		{
+			graphics.beginFill(color);
+			graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+			graphics.endFill();
+		}		
+		
 		drawBitmap = new BitmapData(Engine.screenWidth, Engine.screenHeight);		
 		
 		var screenRatio:Float = Engine.screenWidth / Engine.screenHeight;
