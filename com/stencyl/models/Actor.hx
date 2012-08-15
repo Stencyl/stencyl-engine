@@ -659,7 +659,7 @@ class Actor extends Sprite
 			tilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * i * Engine.SCALE, 0, frameWidth * Engine.SCALE, frameHeight * Engine.SCALE)); 	
 		}
 		 	
-		var sprite = new SheetAnimation(tilesheet, durations, frameWidth * Engine.SCALE, frameHeight * Engine.SCALE);
+		var sprite = new SheetAnimation(tilesheet, durations, Std.int(frameWidth * Engine.SCALE), Std.int(frameHeight * Engine.SCALE));
 		animationMap.set(name, sprite);
 		#end
 		
@@ -1035,8 +1035,13 @@ class Actor extends Sprite
 				}
 			}	
 			
+			//TODO: Since this is pixel units, need to translate back to get logical units
+			//But this makes things buggy...
+			//cacheWidth = currAnimation.width / Engine.SCALE;
+			//cacheHeight = currAnimation.height / Engine.SCALE;
 			cacheWidth = currAnimation.width;
 			cacheHeight = currAnimation.height;
+			
 			realX = getX();
 			realY = getY();
 			

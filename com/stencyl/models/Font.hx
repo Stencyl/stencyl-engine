@@ -18,6 +18,7 @@ class Font extends Resource
 		
 		if(isDefault)
 		{
+			//TODO: Make a 1.5, 2 and 4 version of this
 			var textBytes = Assets.getText("assets/graphics/default-font.fnt");
 			var xml = Xml.parse(textBytes);
 			font = new BitmapFont().loadAngelCode(Assets.getBitmapData("assets/graphics/default-font.png"), xml);

@@ -119,8 +119,8 @@ class G
 	{
 		if(drawActor)
 		{
-			x += Engine.cameraX;
-			y += Engine.cameraY;
+			x += Engine.cameraX * scaleX;
+			y += Engine.cameraY * scaleY;
 		}
 	
 		graphics.lineStyle(strokeSize, strokeColor, alpha);
@@ -130,8 +130,8 @@ class G
 	{
 		if(drawActor)
 		{
-			x -= Engine.cameraX;
-			y -= Engine.cameraY;
+			x -= Engine.cameraX * scaleX;
+			y -= Engine.cameraY * scaleY;
 		}
 		
 		graphics.lineStyle(0);
@@ -145,8 +145,8 @@ class G
 	
 	public inline function moveTo(x:Float, y:Float)
 	{
-		this.x = x;
-		this.y = y;
+		this.x = x * scaleX;
+		this.y = y * scaleY;
 	}
 	
 	public inline function translateToScreen()
@@ -163,14 +163,16 @@ class G
 	
 		if(Engine.NO_PHYSICS)
 		{
-			x = a.realX;
-			y = a.realY;
+			x = a.realX * scaleX;
+			y = a.realY * scaleY;
 		}
 		
 		else
 		{
-			x = a.realX - a.width / 2;
-			y = a.realY - a.height / 2;
+			//XXX: Seems like the width/height are in "actual" units - this may throw things off!
+			//Fixing it breaks things. Leaving for Mike to wrap up.
+			x = (a.realX * scaleX - a.cacheWidth / 2) ;
+			y = (a.realY * scaleY - a.cacheHeight / 2);
 		}
 	}
 	
@@ -186,8 +188,8 @@ class G
 		startGraphics();
 		graphics.lineStyle();
 
-		var drawX = this.x + x * scaleX + Engine.cameraX;
-		var drawY = this.y + y * scaleY + Engine.cameraY;
+		var drawX = this.x + x * scaleX + Engine.cameraX * scaleX;
+		var drawY = this.y + y * scaleY + Engine.cameraY * scaleY;
 		
 		#if(cpp)
 		drawData.splice(0, drawData.length);
@@ -202,18 +204,24 @@ class G
  	 	var w = font.font.getTextWidth(s, 0, font.fontScale);
  	 	var h = Std.int(font.font.getFontHeight() * font.fontScale);
  	 	
-		var bitmapData = new BitmapData(w, h, true, 0);
-		font.font.render(bitmapData, fontData, s, 0x000000, 0, 0, 0, 0);
+ 	 	if(w > 0 && h > 0)
+ 	 	{
+ 	 		var bitmapData = new BitmapData(w, h, true, 0);
+			font.font.render(bitmapData, fontData, s, 0x000000, 0, 0, 0, 0);
 		#end
 		
-		#if (flash)
-		graphics.beginBitmapFill(bitmapData, mtx);
-		graphics.drawRect(drawX, drawY, w, h);
- 	 	graphics.endFill();
-		#end
+			#if (flash)
+			graphics.beginBitmapFill(bitmapData, mtx);
+			graphics.drawRect(drawX, drawY, w, h);
+	 	 	graphics.endFill();
+			#end
+			
+			#if (js)
+			drawImage(bitmapData, x, y);
+			#end
 		
-		#if (js)
-		drawImage(bitmapData, x, y);
+		#if(flash || js)
+		}
 		#end
 		
 		endGraphics();
@@ -400,8 +408,8 @@ class G
 		rect.height = img.height;
 		
 		//Why this has to be treated differently (add camera coords), I don't know...
-		point.x = this.x + x + Engine.cameraX;
-		point.y = this.y + y + Engine.cameraY;	
+		point.x = this.x + x + Engine.cameraX * scaleX;
+		point.y = this.y + y + Engine.cameraY * scaleY;	
 		
 		#if (js)
 		canvas.copyPixels(img, rect, point);

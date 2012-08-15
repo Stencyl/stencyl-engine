@@ -49,10 +49,10 @@ class Universal extends Sprite
 		trace("Screen Width: " + stage.stageWidth);
 		trace("Screen Height: " + stage.stageHeight);
 		trace("Screen DPI: " + Capabilities.screenDPI);
-		
+
 		//Tablets and other high-res devices get to use 2x mode, (TODO: if it's not a tablet-only game.)
 		#if (mobile)		
-		/*if(stage.stageWidth >= 800 || stage.stageHeight >= 800)
+		if(stage.stageWidth >= 800 || stage.stageHeight >= 800)
 		{
 			Engine.SCALE = 2;
 			Engine.IMG_BASE = "2x";
@@ -62,22 +62,19 @@ class Universal extends Sprite
 		{
 			Engine.SCALE = 1;
 			Engine.IMG_BASE = "1x";
-		}*/
+		}
 		#end
 		
-		//NOTICE FOR DEVELOPERS
 		#if (!mobile)
-		//Engine.SCALE = 2;
-		//Engine.IMG_BASE = "2x";
-		//Engine.SCALE = 1;
-		//Engine.IMG_BASE = "1x";
+		Engine.SCALE = scripts.MyAssets.gameScale;
+		Engine.IMG_BASE = scripts.MyAssets.gameImageBase;
 		#end
 		
 		var originalWidth = scripts.MyAssets.stageWidth;
 		var originalHeight = scripts.MyAssets.stageHeight;
 		
-		scripts.MyAssets.stageWidth *= Engine.SCALE;
-		scripts.MyAssets.stageHeight *= Engine.SCALE;
+		scripts.MyAssets.stageWidth = Std.int(scripts.MyAssets.stageWidth * Engine.SCALE);
+		scripts.MyAssets.stageHeight = Std.int(scripts.MyAssets.stageHeight * Engine.SCALE);
 		
 		mouseChildren = false;
 		mouseEnabled = false;
@@ -143,11 +140,6 @@ class Universal extends Sprite
 		
 		trace("Scale X: " + scaleX);
 		trace("Scale Y: " + scaleY);
-		
-		//Preloader Hook - When force-testing preloader, uncomment this
-		//var loader = new scripts.StencylPreloader();
-		//loader.onUpdate(5, 15);
-		//addChild(loader);
 		
 		new com.stencyl.Engine(this);
 	}

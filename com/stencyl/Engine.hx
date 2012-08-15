@@ -102,8 +102,8 @@ class Engine
 	public static var NO_PHYSICS:Bool = false;
 	public static var DEBUG_DRAW:Bool = false; //!NO_PHYSICS && true;
 	
-	public static var IMG_BASE = "";
-	public static var SCALE = 1;
+	public static var IMG_BASE:String = "";
+	public static var SCALE:Float = 1;
 	
 	
 	//*-----------------------------------------------
@@ -574,7 +574,7 @@ class Engine
 	private function loadBackgrounds()
 	{
 		var bg = new Shape();
-		scene.colorBackground.draw(bg.graphics, 0, 0, screenWidth * Engine.SCALE, screenHeight * Engine.SCALE);
+		scene.colorBackground.draw(bg.graphics, 0, 0, Std.int(screenWidth * Engine.SCALE), Std.int(screenHeight * Engine.SCALE));
 		master.addChild(bg);
 		
 		for(backgroundID in scene.bgs)

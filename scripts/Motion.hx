@@ -82,9 +82,9 @@ class Motion extends ActorScript
 		{
 			if(wrapper.enabled)
 			{
-		        g.drawString("X =" + getScreenWidth(), 0, 0);
-		        g.drawString("Y =" + getScreenHeight(), 0, 50);
-		        g.fillRect(0, 0, 32, 32);
+		        //g.drawString("éaé", 0, 0);
+		        //g.drawString("\\u00e9", 0, 50);
+		        //g.fillRect(0, 0, 32, 32);
 			}
 		});
 
