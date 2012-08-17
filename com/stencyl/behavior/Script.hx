@@ -415,7 +415,7 @@ class Script
 	
 	public function addKeyStateListener(key:String, func:Dynamic->Dynamic->Array<Dynamic>->Void)
 	{			
-		if(!engine.whenKeyPressedListeners.exists(key))
+		if(engine.whenKeyPressedListeners.get(key) == null)
 		{
 			engine.whenKeyPressedListeners.set(key, new Array<Dynamic>());
 		}

@@ -310,7 +310,7 @@ class Engine
 	
 	private var collisionPairs:HashMap<Dynamic, HashMap<Dynamic, Bool>>;
 	
-	public var whenKeyPressedListeners:HashMap<Dynamic, Dynamic>;
+	public var whenKeyPressedListeners:Hash<Dynamic>;
 	public var whenTypeGroupCreatedListeners:HashMap<Dynamic, Dynamic>;
 	public var whenTypeGroupDiesListeners:HashMap<Dynamic, Dynamic>;
 	public var typeGroupPositionListeners:IntHash<Dynamic>;
@@ -537,7 +537,7 @@ class Engine
 		nextID = 0;
 		
 		//Events
-		whenKeyPressedListeners = new HashMap<Dynamic, Dynamic>();
+		whenKeyPressedListeners = new Hash<Dynamic>();
 		whenTypeGroupCreatedListeners = new HashMap<Dynamic, Dynamic>();
 		whenTypeGroupDiesListeners = new HashMap<Dynamic, Dynamic>();
 		typeGroupPositionListeners = new IntHash<Dynamic>();
