@@ -68,7 +68,10 @@ class HashMap<Key, Val>
 	private #if (cpp || php || java || cs) inline #end function getObjectId(obj:Dynamic):#if !php Int #else String #end untyped
 	{
 #if cpp
+		if (Std.is(obj, Class))
 		return __global__.__hxcpp_obj_id(obj);
+		else
+		return obj; //works around the fact that primitives should compare on value
 #elseif (neko || js || flash)
 		if (Std.is(obj, Class))
 		{

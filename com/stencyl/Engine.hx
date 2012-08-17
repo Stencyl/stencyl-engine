@@ -23,6 +23,7 @@ import nme.events.KeyboardEvent;
 import nme.events.MouseEvent;
 import nme.Assets;
 import nme.Lib;
+import nme.ObjectHash;
 import nme.ui.Keyboard;
 
 import com.stencyl.graphics.transitions.Transition;
@@ -2204,6 +2205,9 @@ class Engine
 		
 		var channelListeners = soundListeners.get(channelNum);
 		var clipListeners = soundListeners.get(sc.currentClip);
+		
+		//trace(soundListeners.keys);
+		//trace(channelListeners);
 		
 		if(channelListeners != null)
 		{
