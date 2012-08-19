@@ -903,8 +903,8 @@ class Actor extends Sprite
 				updateTweenProperties();
 			}
 			
-			var centerx = (currAnimation.width / 2) - animOrigin.x;
-			var centery = (currAnimation.height / 2) - animOrigin.y;
+			var centerx = (currAnimation.width / Engine.SCALE / 2) - animOrigin.x;
+			var centery = (currAnimation.height / Engine.SCALE / 2) - animOrigin.y;
 			
 			if(body != null && !isLightweight)
 			{
@@ -1975,7 +1975,7 @@ class Actor extends Sprite
 				
 			else
 			{
-				dummy.x = Engine.toPhysicalUnits(x + Math.floor(cacheWidth/2) + currOffset.x);
+				dummy.x = Engine.toPhysicalUnits(x + Math.floor(cacheWidth/Engine.SCALE/2) + (currOffset.x*Engine.SCALE));
 			}			
 			
 			dummy.y = body.getPosition().y;
@@ -2007,7 +2007,7 @@ class Actor extends Sprite
 				
 			else
 			{
-				dummy.y = Engine.toPhysicalUnits(y + Math.floor(cacheHeight/2) + currOffset.y);
+				dummy.y = Engine.toPhysicalUnits(y + Math.floor(cacheHeight/Engine.SCALE/2) + (currOffset.y*Engine.SCALE));
 			}
 			
 			dummy.x = body.getPosition().x;
@@ -2069,8 +2069,11 @@ class Actor extends Sprite
 			
 		var rotated:Bool = Std.int(radians * Utils.DEG) != 0;	
 		
-		var newOffX:Int = Std.int(x - (currAnimation.width / 2));
-		var newOffY:Int = Std.int(y - (currAnimation.height / 2));
+		var w:Float = cacheWidth / Engine.SCALE;
+		var h:Float = cacheHeight / Engine.SCALE;
+		
+		var newOffX:Int = Std.int(x - (w / 2));
+		var newOffY:Int = Std.int(y - (h / 2));
 				
 		if (currOrigin != null && (Std.int(currOffset.x) != newOffX || Std.int(currOffset.y) != newOffY) && rotated)
 		{
