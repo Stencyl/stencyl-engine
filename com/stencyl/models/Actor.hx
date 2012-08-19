@@ -1880,7 +1880,7 @@ class Actor extends Sprite
 			
 			else if(!isLightweight)
 			{
-				return Math.round(body.getPosition().x * Engine.physicsScale - Math.floor(cacheWidth / 2) - currOffset.x);
+				return Math.round(body.getPosition().x * Engine.physicsScale - Math.floor(cacheWidth / Engine.SCALE / 2) - currOffset.x);
 			}
 		}
 		
@@ -1898,7 +1898,7 @@ class Actor extends Sprite
 			
 			else if(!isLightweight)
 			{
-				return Math.round(body.getPosition().y * Engine.physicsScale - Math.floor(cacheHeight / 2) - currOffset.y);
+				return Math.round(body.getPosition().y * Engine.physicsScale - Math.floor(cacheHeight / Engine.SCALE / 2) - currOffset.y);
 			}
 		}
 		
