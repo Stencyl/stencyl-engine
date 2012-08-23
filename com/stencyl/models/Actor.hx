@@ -1035,12 +1035,8 @@ class Actor extends Sprite
 				}
 			}	
 			
-			//TODO: Since this is pixel units, need to translate back to get logical units
-			//But this makes things buggy...
-			//cacheWidth = currAnimation.width / Engine.SCALE;
-			//cacheHeight = currAnimation.height / Engine.SCALE;
-			cacheWidth = currAnimation.width;
-			cacheHeight = currAnimation.height;
+			cacheWidth = currAnimation.width / Engine.SCALE;
+			cacheHeight = currAnimation.height / Engine.SCALE;			
 			
 			realX = getX();
 			realY = getY();
@@ -1257,8 +1253,8 @@ class Actor extends Sprite
 			realY = Math.round(p.y * Engine.physicsScale);
 		}
 		
-		transformPoint.x = currOrigin.x - cacheWidth / 2;
-		transformPoint.y = currOrigin.y - cacheHeight / 2;
+		transformPoint.x = currOrigin.x - (cacheWidth*Engine.SCALE) / 2;
+		transformPoint.y = currOrigin.y - (cacheHeight*Engine.SCALE) / 2;
 
 		transformMatrix.identity();
 		transformMatrix.translate( -transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
@@ -1880,7 +1876,7 @@ class Actor extends Sprite
 			
 			else if(!isLightweight)
 			{
-				return Math.round(body.getPosition().x * Engine.physicsScale - Math.floor(cacheWidth / Engine.SCALE / 2) - currOffset.x);
+				return Math.round(body.getPosition().x * Engine.physicsScale - Math.floor(cacheWidth / 2) - currOffset.x);
 			}
 		}
 		
@@ -1898,7 +1894,7 @@ class Actor extends Sprite
 			
 			else if(!isLightweight)
 			{
-				return Math.round(body.getPosition().y * Engine.physicsScale - Math.floor(cacheHeight / Engine.SCALE / 2) - currOffset.y);
+				return Math.round(body.getPosition().y * Engine.physicsScale - Math.floor(cacheHeight / 2) - currOffset.y);
 			}
 		}
 		
@@ -1975,7 +1971,7 @@ class Actor extends Sprite
 				
 			else
 			{
-				dummy.x = Engine.toPhysicalUnits(x + Math.floor(cacheWidth/Engine.SCALE/2) + (currOffset.x*Engine.SCALE));
+				dummy.x = Engine.toPhysicalUnits(x + Math.floor(cacheWidth/2) + currOffset.x);
 			}			
 			
 			dummy.y = body.getPosition().y;
@@ -2007,7 +2003,7 @@ class Actor extends Sprite
 				
 			else
 			{
-				dummy.y = Engine.toPhysicalUnits(y + Math.floor(cacheHeight/Engine.SCALE/2) + (currOffset.y*Engine.SCALE));
+				dummy.y = Engine.toPhysicalUnits(y + Math.floor(cacheHeight/2) + currOffset.y);
 			}
 			
 			dummy.x = body.getPosition().x;
@@ -2069,8 +2065,8 @@ class Actor extends Sprite
 			
 		var rotated:Bool = Std.int(radians * Utils.DEG) != 0;	
 		
-		var w:Float = cacheWidth / Engine.SCALE;
-		var h:Float = cacheHeight / Engine.SCALE;
+		var w:Float = cacheWidth;
+		var h:Float = cacheHeight;
 		
 		var newOffX:Int = Std.int(x - (w / 2));
 		var newOffY:Int = Std.int(y - (h / 2));
