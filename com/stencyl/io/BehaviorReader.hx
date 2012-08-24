@@ -19,7 +19,7 @@ class BehaviorReader
 		
 		try
 		{
-			classname = xml.att.classname;
+			classname = xml.att.resolve("class");
 		}
 		
 		catch(e:String)
