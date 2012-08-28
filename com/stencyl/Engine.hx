@@ -1166,16 +1166,16 @@ class Engine
 			var worldbody = world.getBodyList();
 			var j = world.getJointList();
 			
+			while(j != null)
+			{
+				world.destroyJoint(j);
+				j = j.getNext();
+			}
+			
 			while(worldbody != null)
 			{
 				world.destroyBody(worldbody);
 				worldbody = worldbody.getNext();
-			}
-			
-			while(j != null)
-			{
-				world.destroyJoint(j);
-				j.getNext();
 			}
 		}
 		
@@ -1233,11 +1233,11 @@ class Engine
 	
 	public function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)
 	{
-		//trace("Request to switch to Scene " + sceneID);
+		trace("Request to switch to Scene " + sceneID);
 
 		if(isTransitioning())
 		{
-			//trace("Warning: Switching Scene while already switching. Ignoring.");
+			trace("Warning: Switching Scene while already switching. Ignoring.");
 			return;
 		}
 		
