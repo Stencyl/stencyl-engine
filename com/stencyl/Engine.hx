@@ -1747,22 +1747,22 @@ class Engine
 				
 		if(Input.mousePressed)
 		{
-			Script.mpx = Input.mouseX;
-			Script.mpy = Input.mouseY;
+			Script.mpx = Input.mouseX / SCALE;
+			Script.mpy = Input.mouseY / SCALE;
 			invokeListeners(whenMousePressedListeners);
 		}
 		
 		if(Input.mouseReleased)
 		{
-			Script.mrx = Input.mouseX;
-			Script.mry = Input.mouseY;
+			Script.mrx = Input.mouseX / SCALE;
+			Script.mry = Input.mouseY / SCALE;
 			invokeListeners(whenMouseReleasedListeners);
 		}
 		
 		if(mx != Input.mouseX || my != Input.mouseY)
 		{
-			mx = Input.mouseX;
-			my = Input.mouseY;
+			mx = Input.mouseX / SCALE;
+			my = Input.mouseY / SCALE;
 			
 			invokeListeners(whenMouseMovedListeners);
 			

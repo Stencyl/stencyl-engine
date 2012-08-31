@@ -2514,8 +2514,8 @@ class Actor extends Sprite
 	public function isMouseOver():Bool
 	{
 		//This may need to be in global x/y???
-		var mx = Input.mouseX;
-		var my = Input.mouseY;
+		var mx = Input.mouseX / Engine.SCALE;
+		var my = Input.mouseY / Engine.SCALE;
 		
 		var xPos = colX; //getX();
 		var yPos = colY; //getY();

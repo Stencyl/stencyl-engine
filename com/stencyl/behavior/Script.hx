@@ -1330,22 +1330,22 @@ class Script
 	
 	public function getMouseX():Float
 	{
-		return Input.mouseX;
+		return Input.mouseX / Engine.SCALE;
 	}
 
 	public function getMouseY():Float
 	{
-		return Input.mouseY;
+		return Input.mouseY / Engine.SCALE;
 	}
 	
 	public function getMouseWorldX():Float
 	{
-		return Input.mouseX + Engine.cameraY;
+		return Input.mouseX / Engine.SCALE + Engine.cameraY;
 	}
 	
 	public function getMouseWorldY():Float
 	{
-		return Input.mouseY + Engine.cameraX;
+		return Input.mouseY / Engine.SCALE + Engine.cameraX;
 	}
 	
 	public function getMousePressedX():Float
