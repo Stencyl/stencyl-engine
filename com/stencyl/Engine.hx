@@ -454,7 +454,7 @@ class Engine
 		var stats = new nme.display.FPS(stageWidth - 50, 0);
 		stats.backgroundColor = 0x444444;
 		stats.background = true;
-		stats.opaqueBackground = 0x444444;
+		//stats.opaqueBackground = 0x444444;
 		stats.textColor = 0xffffff;
 		stats.height = 20;
 		stats.width = 50;
@@ -1508,7 +1508,7 @@ class Engine
 		a.setX(1000000);
 		a.setY(1000000);
 		a.recycled = true;
-		a.setFilter(null);
+		//a.setFilter(null);
 		a.disableActorDrawing();
 		a.cancelTweens();
 		a.moveTo(1000000, 1000000, 0);
@@ -1576,7 +1576,7 @@ class Engine
 					actor.alpha = 1;
 					actor.scaleX = 1;
 					actor.scaleY = 1;
-					actor.setFilter(null);
+					//actor.setFilter(null);
 					actor.initScripts();
 					
 					//move to specified layer

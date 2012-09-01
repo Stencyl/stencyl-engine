@@ -2,7 +2,9 @@ package com.stencyl.models.scene;
 
 import nme.display.Bitmap;
 import nme.display.BitmapData;
+#if !js
 import nme.display.Tilesheet;
+#end
 import nme.geom.Rectangle;
 
 class Tile
@@ -19,9 +21,17 @@ class Tile
 	public var currFrame:Int;
 	public var currTime:Int;
 	public var updateSource:Bool;
-	public var data:Tilesheet;
 	
+	#if !js
+	public var data:Tilesheet;
+	#end
+	
+	#if !js
 	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, imgData:BitmapData, parent:Tileset)
+	#end
+	#if js
+	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, imgData:BitmapData, parent:Dynamic)
+	#end
 	{
 		this.tileID = tileID;
 		this.collisionID = collisionID;

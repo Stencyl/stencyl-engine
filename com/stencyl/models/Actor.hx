@@ -2690,7 +2690,7 @@ class Actor extends Sprite
 	//* Filters
 	//*-----------------------------------------------
 
-	public function setFilter(filter:Array<Dynamic>)
+	/*public function setFilter(filter:Array<Dynamic>)
 	{			
 		#if !(cpp || js)
 		filters = filter;
@@ -2702,7 +2702,7 @@ class Actor extends Sprite
 		#if !(cpp || js)
 		filters = [];
 		#end
-	}
+	}*/
 	
 	//*-----------------------------------------------
 	//* Behaviors

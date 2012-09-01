@@ -3,7 +3,10 @@ package com.stencyl.graphics;
 import nme.display.Sprite;
 import nme.display.BitmapData;
 
+#if !js
 import nme.display.Tilesheet;
+#end
+
 import com.stencyl.Engine;
 
 class SheetAnimation extends Sprite, implements AbstractAnimation
@@ -21,7 +24,12 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 	
 	private var data:Array<Float>;
 	
+	#if !js
 	public function new(tilesheet:Tilesheet, durations:Array<Int>, width:Int, height:Int) 
+	#end
+	#if js
+	public function new(tilesheet:Dynamic, durations:Array<Int>, width:Int, height:Int) 
+	#end
 	{
 		super();
 		
