@@ -1265,25 +1265,13 @@ class Actor extends Sprite
 		}
 		
 		transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
-		
-		#if !js		
+					
 		if (transformObj == null)
 		{
 			transformObj = transform;
 		}
 		
-		transformObj.matrix = transformMatrix;
-		#else
-		mMatrix = transformMatrix;
-		mMtxDirty = false;
-			
-		if(resetOrigin)
-		{
-			BuildBounds();
-			resetOrigin = false;
-		}
-		#end
-		
+		transformObj.matrix = transformMatrix;		
 	}
 	
 	private function updateTweenProperties()
