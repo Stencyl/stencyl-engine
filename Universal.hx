@@ -9,6 +9,8 @@ import nme.display.Shape;
 import nme.system.Capabilities;
 import com.stencyl.Engine;
 
+import mochi.as3.MochiServices;
+
 class Universal extends Sprite 
 {
 	public function new() 
@@ -36,6 +38,27 @@ class Universal extends Sprite
 	
 	public function init()
 	{
+		//Mochi, Newgrounds and other APIs
+		
+		#if flash
+		var mochiID = scripts.MyAssets.mochiID;
+		var newgroundsID = scripts.MyAssets.newgroundsID;
+		var newgroundsKey = scripts.MyAssets.newgroundsKey;
+		
+		if(newgroundsID != "")
+        {
+        	//Newgrounds.connect(root, GameState.ngID, GameState.ngKey);
+        }
+        
+        if(mochiID != "")
+        {
+            MochiServices.connect(mochiID, Lib.current.stage);
+        }
+        #end
+            
+		//---
+	
+	
 		#if (mobile && !android)
 		Lib.current.stage.removeEventListener(Event.RESIZE, onAdded);
 		#else

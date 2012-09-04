@@ -7,6 +7,7 @@ import com.stencyl.Engine;
 
 class MyAssets implements AssetLoader
 {
+	//Game
 	public static var landscape:Bool = true;
 	public static var autorotate:Bool = true;
 	public static var stretchToFit:Bool = false;
@@ -16,6 +17,11 @@ class MyAssets implements AssetLoader
 	public static var physicsMode:Int = 0;
 	public static var gameScale:Float = 2;
 	public static var gameImageBase:String = "2x";
+	
+	//APIs
+	public static var mochiID:String = "";
+	public static var newgroundsID:String = "";
+	public static var newgroundsKey:String = "";
 	
 	public function new()
 	{
