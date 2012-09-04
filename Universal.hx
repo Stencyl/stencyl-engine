@@ -163,7 +163,7 @@ class Universal extends Sprite
 		trace("Scale X: " + scaleX);
 		trace("Scale Y: " + scaleY);
 		
-		 new com.stencyl.Engine(this);
+		new com.stencyl.Engine(this);
 	}
 	
 	public static function main() 
