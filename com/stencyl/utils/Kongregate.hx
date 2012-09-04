@@ -46,7 +46,7 @@ class Kongregate
 		}
 	} 
 
-	public static function submitScore(score:Float, mode:String) 
+	/*public static function submitScore(score:Float, mode:String) 
 	{
 		if(Kongregate.kongregate != null)
 		{
@@ -55,9 +55,9 @@ class Kongregate
 		
 		else
 		{
-			trace("Kongregate API is not ready yet. Call initAPI() first.");
+			error();
 		}
-	}
+	}*/
 	
 	public static function submitStat(name:String, stat:Float) 
 	{
@@ -68,8 +68,58 @@ class Kongregate
 		
 		else
 		{
-			trace("Kongregate API is not ready yet. Call initAPI() first.");
+			error();
 		}
+	}
+	
+	public static function isGuest():Bool
+	{
+		if(Kongregate.kongregate != null)
+		{
+			return Kongregate.kongregate.services.isGuest(); 
+		}
+		
+		else
+		{
+			error();
+		}
+	
+		return false;
+	}
+	
+	public static function getUsername():String
+	{
+		if(Kongregate.kongregate != null)
+		{
+			return Kongregate.kongregate.services.getUsername(); 
+		}
+		
+		else
+		{
+			error();
+		}
+	
+		return "Guest";
+	}
+	
+	public static function getUserID():Int
+	{
+		if(Kongregate.kongregate != null)
+		{
+			return Kongregate.kongregate.services.getUserId(); 
+		}
+		
+		else
+		{
+			error();
+		}
+	
+		return 0;
+	}
+	
+	public static function error()
+	{
+		trace("Kongregate API is not ready yet. Call initAPI() first.");
 	}
 } 
 #end

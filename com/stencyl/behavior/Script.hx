@@ -2107,30 +2107,71 @@ class Script
 	//* Newgrounds
 	//*-----------------------------------------------
 	
+	//TODO
+	
 	//*-----------------------------------------------
 	//* Kongregate
 	//*-----------------------------------------------
 	
-	#if flash
-	public function initKongregateAPI()
+	public function kongregateInitAPI()
 	{
+		#if flash
 		Kongregate.initAPI();
+		#end
 	}
 	
-	public function submitScore(score:Float, mode:String) 
+	/*public function kongregateSubmitScore(score:Float, mode:String) 
 	{
+		#if flash
 		Kongregate.submitScore(score, mode);
+		#end
+	}*/
+	
+	public function kongregateSubmitStat(name:String, stat:Float) 
+	{
+		#if flash
+		Kongregate.submitStat(name, stat);
+		#end
 	}
 	
-	public function submitStat(name:String, stat:Float) 
+	public function kongregateIsGuest():Bool
 	{
-		Kongregate.submitStat(name, stat);
+		#if flash
+		return Kongregate.isGuest();
+		#end
+		
+		#if !flash
+		return true;
+		#end
 	}
-	#end
+	
+	public function kongregateGetUsername():String
+	{
+		#if flash
+		return Kongregate.getUsername();
+		#end
+		
+		#if !flash
+		return "Guest";
+		#end
+	}
+	
+	public function kongregateGetUserID():Int
+	{
+		#if flash
+		return Kongregate.getUserID();
+		#end
+		
+		#if !flash
+		return 0;
+		#end
+	}
 	
 	//*-----------------------------------------------
 	//* Mochi
 	//*-----------------------------------------------
+	
+	//TODO
 	
 	//*-----------------------------------------------
 	//* Debug
