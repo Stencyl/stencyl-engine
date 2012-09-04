@@ -19,9 +19,6 @@ class Universal extends Sprite
 
 		#if flash
 		com.nmefermmmtools.debug.Console.create(true, 192, false);
-		
-		//MochiServices.connect("60347b2977273733", root);
-		//MochiAd.showPreGameAd( { id:"60347b2977273733", res:"640x580", clip: root});
 		#end
 
 		#if (mobile && !android)
@@ -52,12 +49,14 @@ class Universal extends Sprite
         
         if(mochiID != "")
         {
-            MochiServices.connect(mochiID, Lib.current.stage);
+            MochiServices.connect(mochiID, root);
+            
+            //MochiServices.connect("60347b2977273733", root);
+			//MochiAd.showPreGameAd( { id:"60347b2977273733", res:"640x580", clip: root});
         }
         #end
             
 		//---
-	
 	
 		#if (mobile && !android)
 		Lib.current.stage.removeEventListener(Event.RESIZE, onAdded);
