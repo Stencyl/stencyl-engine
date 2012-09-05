@@ -10,6 +10,7 @@ import nme.system.Capabilities;
 import com.stencyl.Engine;
 
 import mochi.as3.MochiServices;
+import cpmstar.AdLoader;
 
 class Universal extends Sprite 
 {
@@ -50,10 +51,8 @@ class Universal extends Sprite
         if(mochiID != "")
         {
             MochiServices.connect(mochiID, root);
-            
-            //MochiServices.connect("60347b2977273733", root);
-			//MochiAd.showPreGameAd( { id:"60347b2977273733", res:"640x580", clip: root});
         }
+        
         #end
             
 		//---
