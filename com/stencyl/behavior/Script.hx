@@ -49,6 +49,7 @@ import box2D.dynamics.B2Fixture;
 import com.stencyl.utils.Kongregate;
 import mochi.as3.MochiAd;
 import mochi.as3.MochiScores;
+import com.newgrounds.API.API;
 #end
 
 #if flash

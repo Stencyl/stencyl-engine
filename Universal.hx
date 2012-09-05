@@ -9,8 +9,10 @@ import nme.display.Shape;
 import nme.system.Capabilities;
 import com.stencyl.Engine;
 
+#if flash
 import mochi.as3.MochiServices;
-import cpmstar.AdLoader;
+import com.newgrounds.API.API;
+#end
 
 class Universal extends Sprite 
 {
@@ -45,7 +47,7 @@ class Universal extends Sprite
 		
 		if(newgroundsID != "")
         {
-        	//Newgrounds.connect(root, GameState.ngID, GameState.ngKey);
+        	API.connect(root, newgroundsID, newgroundsKey);
         }
         
         if(mochiID != "")
