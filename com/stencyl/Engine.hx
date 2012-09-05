@@ -16,6 +16,7 @@ import nme.display.Sprite;
 import nme.display.Stage;
 import nme.display.Shape;
 import nme.display.Graphics;
+import nme.display.MovieClip;
 import nme.text.TextField;
 import nme.display.DisplayObjectContainer;
 import nme.events.Event;
@@ -197,6 +198,7 @@ class Engine
 	public var terrainRegions:IntHash<Terrain>;
 	public var joints:IntHash<B2Joint>;
 	
+	public static var movieClip:MovieClip;
 	public static var stage:Stage;
 	public var defaultGroup:Sprite; //The default layer (bottom-most)
 	public var root:Sprite; //The absolute root
@@ -438,7 +440,7 @@ class Engine
 		
 		debugLayer = new Sprite();
 		root.addChild(debugLayer);
-		
+				
 		//Initialize things	
 		actorsToCreateInNextScene = new Array();			
 		gameAttributes = new Hash<Dynamic>();
@@ -448,6 +450,13 @@ class Engine
 		var stats = new com.nmefermmmtools.debug.Stats();
 		stage.addChild(stats);
 		//stats.visible = false;
+		#end
+		
+		#if (flash)
+		movieClip = new MovieClip();
+		movieClip.mouseChildren = false;
+		movieClip.mouseEnabled = false;
+		root.addChild(movieClip);
 		#end
 		
 		#if js

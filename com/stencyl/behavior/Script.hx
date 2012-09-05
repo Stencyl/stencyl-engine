@@ -47,12 +47,16 @@ import box2D.dynamics.B2Fixture;
 
 #if flash
 import com.stencyl.utils.Kongregate;
+import mochi.as3.MochiAd;
+import mochi.as3.MochiScores;
 #end
 
 #if flash
 import flash.filters.ColorMatrixFilter;
 import com.stencyl.utils.ColorMatrix;
 #end
+
+import scripts.MyAssets;
 
 //Actual scripts extend from this
 class Script 
@@ -2171,7 +2175,68 @@ class Script
 	//* Mochi
 	//*-----------------------------------------------
 	
-	//TODO
+	public function mochiShowAd(width:Int, height:Int)
+	{
+		#if flash
+		MochiAd.showInterLevelAd
+		(
+			{
+				clip:Engine.movieClip, 
+				id:MyAssets.mochiID, 
+				res: width + "x" + height, 
+				ad_started:function():Void
+				{
+					trace("Ad Started");
+				}, 
+				ad_finished:function():Void
+				{
+					trace("Ad Ended");
+				}
+			}
+		);
+		#end
+	}
+	
+	public function mochiShowScores(boardID:String)
+	{
+		#if flash
+		MochiScores.showLeaderboard
+		(
+			{
+				boardID:boardID, 
+				onDisplay:function():Void
+				{
+					trace("Board Shown");
+				}, 
+				onClose:function():Void
+				{
+					trace("Board Closed");
+				}
+			}
+		);
+		#end
+	}
+	
+	public function mochiSubmitScore(boardID:String, score:Float)
+	{
+		#if flash
+		MochiScores.showLeaderboard
+		(
+			{
+				boardID:boardID, 
+				score:score, 
+				onDisplay:function():Void
+				{
+					trace("Board Shown");
+				}, 
+				onClose:function():Void
+				{
+					trace("Board Closed");
+				}
+			}
+		);
+		#end
+	}
 	
 	//*-----------------------------------------------
 	//* Debug
