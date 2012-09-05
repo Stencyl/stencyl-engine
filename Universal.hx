@@ -9,11 +9,6 @@ import nme.display.Shape;
 import nme.system.Capabilities;
 import com.stencyl.Engine;
 
-#if flash
-import mochi.as3.MochiServices;
-import com.newgrounds.API.API;
-#end
-
 class Universal extends Sprite 
 {
 	public function new() 
@@ -47,14 +42,14 @@ class Universal extends Sprite
 		
 		if(newgroundsID != "")
         {
-        	API.connect(root, newgroundsID, newgroundsKey);
+        	//Newgrounds breaks build. Hiding for now.
+        	//com.newgrounds.API.API.connect(root, newgroundsID, newgroundsKey);
         }
         
         if(mochiID != "")
         {
-            MochiServices.connect(mochiID, root);
+            mochi.as3.MochiServices.connect(mochiID, root);
         }
-        
         #end
             
 		//---

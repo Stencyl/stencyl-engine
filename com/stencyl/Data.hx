@@ -84,7 +84,6 @@ class Data
 	
 	public function new()
 	{
-		//This happens in the MyScripts.hx class later on
 		gameXML = new Fast(Xml.parse(Assets.getText("assets/data/game.xml")).firstElement());
 		resourceListXML = new Fast(Xml.parse(Assets.getText("assets/data/resources.xml")).firstElement());
 		sceneListXML = new Fast(Xml.parse(Assets.getText("assets/data/scenes.xml")).firstElement());

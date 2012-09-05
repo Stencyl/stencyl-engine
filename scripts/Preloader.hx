@@ -18,7 +18,7 @@ TODO
 
 */
 
-class Preloader extends Sprite
+class Preloader extends NMEPreloader
 {
 	private var barBorder:Sprite;
 	private var bar:Sprite;
@@ -93,35 +93,35 @@ class Preloader extends Sprite
 	
 	public function onMouseDown(e:MouseEvent)
 	{
-		trace("bonco!");
+		trace("Visiting URL!");
 		nme.Lib.getURL(new nme.net.URLRequest("http://www.google.com"));
 	}
 	
-	public function getBackgroundColor():Int
+	override public function getBackgroundColor():Int
 	{
 		return 0x336699;
 	}
 	
-	public function getHeight():Float
+	override public function getHeight():Float
 	{
 		return 480;
 	}
 	
-	public function getWidth():Float
+	override public function getWidth():Float
 	{
 		return 320;
 	}
 	
-	public function onInit()
+	override public function onInit()
 	{
 	}
 	
-	public function onLoaded()
+	override public function onLoaded()
 	{
 		dispatchEvent (new Event (Event.COMPLETE));
 	}
 	
-	public function onUpdate(bytesLoaded:Int, bytesTotal:Int)
+	override public function onUpdate(bytesLoaded:Int, bytesTotal:Int)
 	{
 		var percentLoaded = bytesLoaded / bytesTotal;
 	

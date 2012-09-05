@@ -46,13 +46,6 @@ import box2D.dynamics.B2World;
 import box2D.dynamics.B2Fixture;
 
 #if flash
-import com.stencyl.utils.Kongregate;
-import mochi.as3.MochiAd;
-import mochi.as3.MochiScores;
-import com.newgrounds.API.API;
-#end
-
-#if flash
 import flash.filters.ColorMatrixFilter;
 import com.stencyl.utils.ColorMatrix;
 #end
@@ -2117,11 +2110,11 @@ class Script
 	//*-----------------------------------------------
 	//* Kongregate
 	//*-----------------------------------------------
-	
+
 	public function kongregateInitAPI()
 	{
 		#if flash
-		Kongregate.initAPI();
+		com.stencyl.utils.Kongregate.initAPI();
 		#end
 	}
 	
@@ -2135,14 +2128,14 @@ class Script
 	public function kongregateSubmitStat(name:String, stat:Float) 
 	{
 		#if flash
-		Kongregate.submitStat(name, stat);
+		com.stencyl.utils.Kongregate.submitStat(name, stat);
 		#end
 	}
 	
 	public function kongregateIsGuest():Bool
 	{
 		#if flash
-		return Kongregate.isGuest();
+		return com.stencyl.utils.Kongregate.isGuest();
 		#end
 		
 		#if !flash
@@ -2153,7 +2146,7 @@ class Script
 	public function kongregateGetUsername():String
 	{
 		#if flash
-		return Kongregate.getUsername();
+		return com.stencyl.utils.Kongregate.getUsername();
 		#end
 		
 		#if !flash
@@ -2164,7 +2157,7 @@ class Script
 	public function kongregateGetUserID():Int
 	{
 		#if flash
-		return Kongregate.getUserID();
+		return com.stencyl.utils.Kongregate.getUserID();
 		#end
 		
 		#if !flash
@@ -2179,7 +2172,7 @@ class Script
 	public function mochiShowAd(width:Int, height:Int)
 	{
 		#if flash
-		MochiAd.showInterLevelAd
+		mochi.as3.MochiAd.showInterLevelAd
 		(
 			{
 				clip:Engine.movieClip, 
@@ -2201,7 +2194,7 @@ class Script
 	public function mochiShowScores(boardID:String)
 	{
 		#if flash
-		MochiScores.showLeaderboard
+		mochi.as3.MochiScores.showLeaderboard
 		(
 			{
 				boardID:boardID, 
@@ -2221,7 +2214,7 @@ class Script
 	public function mochiSubmitScore(boardID:String, score:Float)
 	{
 		#if flash
-		MochiScores.showLeaderboard
+		mochi.as3.MochiScores.showLeaderboard
 		(
 			{
 				boardID:boardID, 
