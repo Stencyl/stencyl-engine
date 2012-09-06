@@ -1350,7 +1350,7 @@ class Engine
 
 		if(ai.angle != 0)
 		{
-			a.setAngle(ai.angle + 180, false);
+			a.setAngle(ai.angle, false);
 		}	
 		
 		if(ai.scaleX != 1 || ai.scaleY != 1)
