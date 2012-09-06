@@ -70,10 +70,24 @@ class Universal extends Sprite
 
 		//Tablets and other high-res devices get to use 2x mode, (TODO: if it's not a tablet-only game.)
 		#if (mobile)		
-		if(stage.stageWidth >= 800 || stage.stageHeight >= 800)
+		var larger = Math.max(stage.stageWidth, stage.stageHeight);
+		
+		if(larger >= 1920)
+		{
+			Engine.SCALE = 4;
+			Engine.IMG_BASE = "4x";
+		}
+		
+		else if(larger >= 960)
 		{
 			Engine.SCALE = 2;
 			Engine.IMG_BASE = "2x";
+		}
+		
+		else if(larger >= 720)
+		{
+			Engine.SCALE = 1.5;
+			Engine.IMG_BASE = "1.5x";
 		}
 		
 		else
@@ -81,6 +95,8 @@ class Universal extends Sprite
 			Engine.SCALE = 1;
 			Engine.IMG_BASE = "1x";
 		}
+		
+		trace("Engine Scale: " + Engine.IMG_BASE);
 		#end
 		
 		#if (!mobile)
