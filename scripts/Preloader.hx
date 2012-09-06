@@ -91,7 +91,7 @@ class Preloader extends NMEPreloader
 		bar.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 2);
 		
 		#if js
-		var data = haxe.Resource.getBytes("preloader-bg");
+		/*var data = haxe.Resource.getBytes("preloader-bg");
 		var imgLoader = new nme.display.Loader();
 		
         var arr = data.getData();
@@ -106,7 +106,7 @@ class Preloader extends NMEPreloader
         {
 			var bitmap = new Bitmap(bitmapData);
 			addChild(bitmap);
-		});
+		});*/
         #end
 	}
 	
@@ -137,18 +137,7 @@ class Preloader extends NMEPreloader
 	
 	override public function onLoaded()
 	{
-		var data = haxe.Resource.getBytes("preloader-bg");
-		var imgLoader = new nme.display.Loader();
-		
-		#if !js
-		var arr = data.getData();
-		imgLoader.loadBytes(arr);
-        addChild(imgLoader);
-		#end
-        
-        
-
-		//dispatchEvent (new Event (Event.COMPLETE));
+		dispatchEvent (new Event (Event.COMPLETE));
 	}
 	
 	override public function onUpdate(bytesLoaded:Int, bytesTotal:Int)
