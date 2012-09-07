@@ -29,7 +29,7 @@ class FadeInTransition extends Transition
 		rect = new Shape();
 		var g = rect.graphics;
 		g.beginFill(color);
-		g.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+		g.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 		g.endFill();
 		Engine.engine.transitionLayer.addChild(rect);
 		
