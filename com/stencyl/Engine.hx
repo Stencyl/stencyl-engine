@@ -2269,15 +2269,11 @@ class Engine
 	
 	public function cameraFollow(actor:Actor, lockX:Bool=true, lockY:Bool=true)
 	{	
-		if(lockX)
-		{
-			camera.x = Math.round(actor.x + actor.width / 2);
-		}
-		
-		if(lockY)
-		{
-			camera.y = Math.round(actor.y + actor.height / 2);
-		}
+		camera.setLocation
+		(
+			Math.round(actor.realX + actor.cacheWidth / 2),
+			Math.round(actor.realY + actor.cacheHeight / 2)
+		);
 	}
 	
 	//*-----------------------------------------------
