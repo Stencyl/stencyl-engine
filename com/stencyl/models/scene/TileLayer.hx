@@ -227,7 +227,7 @@ class TileLayer extends Sprite
 						t.parent.data[0] = flashPoint.x;
 						t.parent.data[1] = flashPoint.y;
 						
-						if (t.data == null)
+						if(t.data == null)
 						{
 							t.parent.data[2] = t.parent.sheetMap.get(t.tileID);
 							t.parent.tilesheet.drawTiles(graphics, t.parent.data, true);

@@ -58,7 +58,7 @@ class Tileset extends Resource
 				continue;
 			}
 			
-			var r = getImageSourceForTile(tile.tileID, Std.int(tileWidth * Engine.SCALE), Std.int(tileHeight * Engine.SCALE));
+			var r = getImageSourceForTile(tile.tileID, Std.int(tileWidth), Std.int(tileHeight));
 			tilesheet.addTileRect(r);
 			
 			sheetMap.set(tile.tileID, counter);
