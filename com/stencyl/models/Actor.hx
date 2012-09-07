@@ -2513,7 +2513,8 @@ class Actor extends Sprite
 		var xPos = colX; //getX();
 		var yPos = colY; //getY();
 		
-		if(isHUD)
+		//Not needed - colX/Y already accounts for the camera!
+		/*if(isHUD)
 		{
 			//This said screen x/y???
 			//mx = Input.mouseX;
@@ -2521,7 +2522,7 @@ class Actor extends Sprite
 			
 			xPos = colX + Engine.cameraX; //getScreenX();
 			yPos = colY + Engine.cameraY; //getScreenY();
-		}
+		}*/
 		
 		return (mx >= xPos && 
 		   		my >= yPos && 
