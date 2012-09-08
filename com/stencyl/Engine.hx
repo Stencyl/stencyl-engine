@@ -1948,7 +1948,6 @@ class Engine
 			//Background
 			if(Std.is(child, BackgroundLayer))
 			{
-				//TODO: Don't call width/height! It's expensive. Fetch from model.
 				var endX = -Math.abs(cast(child, BackgroundLayer).cacheWidth);
 				var endY = -Math.abs(cast(child, BackgroundLayer).cacheHeight);
 					
