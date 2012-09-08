@@ -1096,8 +1096,15 @@ class Actor extends Sprite
 				//Just Entered
 				mouseState = 1;
 			}
-					
+			
+			#if !mobile	
 			else if(mouseState >= 1 && mouseOver)
+			#end
+			
+			//in the context of single touches, this does not exist on mobile
+			#if mobile
+			if(mouseState >= 1 && mouseOver)
+			#end
 			{
 				//Over
 				mouseState = 2;
@@ -1120,12 +1127,15 @@ class Actor extends Sprite
 					mouseState = 5;
 				}
 			}
-					
+				
+			//in the context of single touches, this does not exist on mobile
+			#if !mobile		
 			else if(mouseState > 0 && !mouseOver)
 			{
 				//Just Exited
 				mouseState = -1;
 			}
+			#end
 				
 			else if(mouseState == -1 && !mouseOver)
 			{

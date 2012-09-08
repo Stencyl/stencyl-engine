@@ -195,6 +195,13 @@ class Input
 	{
 		var v:Int = _control.get(key)[0];
 		
+		#if (neko || cpp) 
+		if(v >= 65 && v <= 122) 
+		{
+			v = v + 32;
+		}
+		#end
+		
 		Input.onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, v, v));
 	}
 	
@@ -202,13 +209,20 @@ class Input
 	{
 		var v:Int = _control.get(key)[0];
 		
+		#if (neko || cpp) 
+		if(v >= 65 && v <= 122) 
+		{
+			v = v + 32;
+		}
+		#end
+		
 		Input.onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, v, v));
 	}
 
 	private static function onKeyDown(e:KeyboardEvent = null)
 	{
 		var code:Int = lastKey = e.keyCode;
-
+		
 		#if (neko || cpp) 
 		if(code >= 65 && code <= 122) 
 		{
@@ -239,6 +253,8 @@ class Input
 	private static function onKeyUp(e:KeyboardEvent = null)
 	{
 		var code:Int = e.keyCode;
+		
+		trace("release: " + code);
 		
 		#if (neko || cpp) 
 		if(code >= 65 && code <= 122) 
