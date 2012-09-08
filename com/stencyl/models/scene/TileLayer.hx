@@ -141,8 +141,8 @@ class TileLayer extends Sprite
 		
 		this.alpha = alpha;
 	
-		viewX = Math.round(Math.abs(viewX));
-		viewY = Math.round(Math.abs(viewY));
+		viewX = Math.floor(Math.abs(viewX));
+		viewY = Math.floor(Math.abs(viewY));
 		
 		var width:Int = numCols;
 		var height:Int = numRows;
@@ -150,8 +150,8 @@ class TileLayer extends Sprite
 		var tw:Int = scene.tileWidth;
 		var th:Int = scene.tileHeight;
 		
-		var startX:Int = Std.int(viewX / tw);
-		var startY:Int = Std.int(viewY / th);
+		var startX:Int = Std.int(viewX/Engine.SCALE / tw);
+		var startY:Int = Std.int(viewY/Engine.SCALE / th);
 		var endX:Int = 2 + startX + Std.int(Engine.screenWidth / tw);
 		var endY:Int = 2 + startY + Std.int(Engine.screenHeight / th);
 		

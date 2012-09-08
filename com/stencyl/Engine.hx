@@ -1919,7 +1919,7 @@ class Engine
 		//Camera Control
 		cameraX = -Math.abs(camera.realX) + screenWidthHalf;
 		cameraY = -Math.abs(camera.realY) + screenHeightHalf;
-		
+
 		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
 		var maxCamX = -Engine.sceneWidth + screenWidth;
 		var maxCamY = -Engine.sceneHeight + screenHeight;
@@ -1933,6 +1933,9 @@ class Engine
 		{
 			cameraY = maxCamY;
 		}
+		
+		cameraX *= Engine.SCALE;
+		cameraY *= Engine.SCALE;
 		
 		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
 		cameraX = Math.min(0, cameraX);
@@ -1949,8 +1952,8 @@ class Engine
 				var endX = -Math.abs(cast(child, BackgroundLayer).cacheWidth);
 				var endY = -Math.abs(cast(child, BackgroundLayer).cacheHeight);
 					
-				child.x = endX * -(cameraX) / Engine.sceneWidth * Engine.SCALE;
-				child.y = endY * -(cameraY) / Engine.sceneHeight * Engine.SCALE;
+				child.x = endX * -(cameraX) / Engine.sceneWidth;
+				child.y = endY * -(cameraY) / Engine.sceneHeight;
 			}
 			
 			else if(Std.is(child, ScrollingBitmap))
@@ -1962,8 +1965,8 @@ class Engine
 			//Regular Layer
 			else if(Std.is(child, RegularLayer))
 			{
-				child.x = cameraX * Engine.SCALE;
-				child.y = cameraY * Engine.SCALE;
+				child.x = cameraX;
+				child.y = cameraY;
 			}
 			
 			//Something that doesn't scroll - Do nothing
@@ -1971,8 +1974,8 @@ class Engine
 		
 		if(!NO_PHYSICS && DEBUG_DRAW)
 		{
-			debugLayer.x = cameraX * Engine.SCALE;
-			debugLayer.y = cameraY * Engine.SCALE;
+			debugLayer.x = cameraX;
+			debugLayer.y = cameraY;
 		}
 		
 		//Shaking
