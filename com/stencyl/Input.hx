@@ -194,19 +194,27 @@ class Input
 	public static function simulateKeyPress(key:String)
 	{
 		var v:Int = _control.get(key)[0];
-		trace(v);
+		
 		Input.onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, v, v));
 	}
 	
 	public static function simulateKeyRelease(key:String)
 	{
 		var v:Int = _control.get(key)[0];
+		
 		Input.onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, v, v));
 	}
 
 	private static function onKeyDown(e:KeyboardEvent = null)
 	{
 		var code:Int = lastKey = e.keyCode;
+
+		#if (neko || cpp) 
+		if(code >= 65 && code <= 122) 
+		{
+			code = code - 32;
+		}
+		#end
 
 		if (code == Key.BACKSPACE) keyString = keyString.substr(0, keyString.length - 1);
 		else if ((code > 47 && code < 58) || (code > 64 && code < 91) || code == 32)
@@ -231,6 +239,14 @@ class Input
 	private static function onKeyUp(e:KeyboardEvent = null)
 	{
 		var code:Int = e.keyCode;
+		
+		#if (neko || cpp) 
+		if(code >= 65 && code <= 122) 
+		{
+			code = code - 32;
+		}
+		#end
+		
 		if (_key[code])
 		{
 			_key[code] = false;
