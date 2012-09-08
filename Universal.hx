@@ -72,7 +72,8 @@ class Universal extends Sprite
 		#if (mobile)		
 		var larger = Math.max(stage.stageWidth, stage.stageHeight);
 		
-		if(larger >= 1920)
+		//4 scale sceheme
+		/*if(larger >= 1920)
 		{
 			Engine.SCALE = 4;
 			Engine.IMG_BASE = "4x";
@@ -88,6 +89,19 @@ class Universal extends Sprite
 		{
 			Engine.SCALE = 1.5;
 			Engine.IMG_BASE = "1.5x";
+		}
+		
+		else
+		{
+			Engine.SCALE = 1;
+			Engine.IMG_BASE = "1x";
+		}*/
+		
+		//2 scale scheme
+		if(larger >= 720)
+		{
+			Engine.SCALE = 2;
+			Engine.IMG_BASE = "2x";
 		}
 		
 		else
