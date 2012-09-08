@@ -254,8 +254,6 @@ class Input
 	{
 		var code:Int = e.keyCode;
 		
-		trace("release: " + code);
-		
 		#if (neko || cpp) 
 		if(code >= 65 && code <= 122) 
 		{
