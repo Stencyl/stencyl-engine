@@ -2484,7 +2484,17 @@ class Engine
 	
 	public function getActorsOfType(type:ActorType):Array<Actor>
 	{
-		return actorsOfType.get(type.ID);
+		var result = actorsOfType.get(type.ID);
+	
+		if(result != null)
+		{
+			return actorsOfType.get(type.ID);
+		}
+		
+		else
+		{
+			return [];
+		}
 	}
 	
 	public function getRecycledActorsOfType(type:ActorType):Array<Actor>
