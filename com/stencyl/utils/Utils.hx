@@ -13,7 +13,6 @@ import flash.media.SoundMixer;
 #end
 import nme.media.SoundTransform;
 import nme.system.System;
-import nme.utils.ByteArray;
 import haxe.Timer;
 import nme.display.DisplayObjectContainer;
 import com.stencyl.models.Actor;

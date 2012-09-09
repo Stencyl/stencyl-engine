@@ -1993,9 +1993,9 @@ class Script
 		    	#end
 		    	
 		    	#if !js
-		        case SharedObjectFlushStatus.PENDING:
+		        case nme.net.SharedObjectFlushStatus.PENDING:
 		            //trace('requesting permission to save');
-		        case SharedObjectFlushStatus.FLUSHED:
+		        case nme.net.SharedObjectFlushStatus.FLUSHED:
 		            trace("Saved Game: " + fileName);
 		            onComplete(true);
 		            //TODO: Event

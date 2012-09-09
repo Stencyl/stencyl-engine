@@ -608,16 +608,21 @@ class Scene
 
 					var tile = tset.tiles[tileID];
 					
-					if (tile != null && tile.pixels != null)
+					if(tile != null && tile.pixels != null)
 					{
 						var inList:Bool = false;
 						
-						for (checkTile in animatedTiles)
+						for(checkTile in animatedTiles)
 						{
-							if (inList = (checkTile == tile)) break;
+							inList = (checkTile == tile);
+						
+							if(inList) 
+							{
+								break;
+							}
 						}
 						
-						if (!inList)
+						if(!inList)
 						{
 							animatedTiles.push(tile);
 						}
