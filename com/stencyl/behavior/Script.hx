@@ -1959,7 +1959,7 @@ class Script
 		}	
 
 		#if (cpp || neko)
-		var flushStatus:SharedObjectFlushStatus = null;
+		var flushStatus:nme.net.SharedObjectFlushStatus = null;
 		#else
 		var flushStatus:String = null;
 		#end
