@@ -1,9 +1,6 @@
 package com.stencyl.behavior;
 
-#if !js
 import nme.net.SharedObject;
-import nme.net.SharedObjectFlushStatus;
-#end
 
 import nme.ui.Mouse;
 import nme.events.Event;
@@ -52,6 +49,11 @@ import com.stencyl.utils.ColorMatrix;
 #end
 
 import scripts.MyAssets;
+
+//XXX: For some reason, it wasn't working by importing nme.net.SharedObjectFlushedStatus
+#if js
+typedef JeashSharedObjectFlushStatus = jeash.net.SharedObjectFlushedStatus;
+#end
 
 //Actual scripts extend from this
 class Script 
@@ -1949,22 +1951,19 @@ class Script
 	 */
 	public function saveGame(fileName:String, onComplete:Bool->Void=null)
 	{
-		#if !js
 		var so = SharedObject.getLocal(fileName);
 		
 		for(key in engine.gameAttributes.keys())
 		{
 			Reflect.setField(so.data, key, engine.gameAttributes.get(key));
 		}	
-		#end
-		
-		#if ( cpp || neko )
+
+		#if (cpp || neko)
 		var flushStatus:SharedObjectFlushStatus = null;
 		#else
 		var flushStatus:String = null;
 		#end
 		
-		#if !js
 		try 
 		{
 		    flushStatus = so.flush();
@@ -1978,19 +1977,31 @@ class Script
 			return;
 		}
 		
+		trace(flushStatus);
+		
 		if(flushStatus != null) 
 		{
 		    switch(flushStatus) 
 		    {
+		    	#if js
+		    	case JeashSharedObjectFlushStatus.PENDING:
+		            //trace('requesting permission to save');
+		        case JeashSharedObjectFlushStatus.FLUSHED:
+		            trace("Saved Game: " + fileName);
+		            onComplete(true);
+		            //TODO: Event
+		    	#end
+		    	
+		    	#if !js
 		        case SharedObjectFlushStatus.PENDING:
 		            //trace('requesting permission to save');
 		        case SharedObjectFlushStatus.FLUSHED:
 		            trace("Saved Game: " + fileName);
 		            onComplete(true);
 		            //TODO: Event
+		        #end
 		    }
 		}
-		#end
 	}
 	
 	/**
@@ -2000,7 +2011,6 @@ class Script
 	 */
 	public function loadGame(fileName:String, onComplete:Bool->Void=null)
 	{
-		#if !js
 		var data = SharedObject.getLocal(fileName);
 		
 		trace("Loaded Save: " + fileName);
@@ -2012,7 +2022,6 @@ class Script
 		}
 		
 		onComplete(true);
-		#end
 	}
 	
 	//*-----------------------------------------------
