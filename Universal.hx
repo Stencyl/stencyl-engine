@@ -16,12 +16,7 @@ class Universal extends Sprite
 		super();
 
 		#if flash
-		//com.nmefermmmtools.debug.Console.create(true, 192, false);
-		
-		haxe.Log.trace = function(s: String, ?pi: haxe.PosInfos)
-		{
-		    untyped __global__["trace"]("Stencyl:" + s);
-		};
+		com.nmefermmmtools.debug.Console.create(true, 192, false);
 		#end
 
 		#if (mobile && !android)
