@@ -63,7 +63,7 @@ class Kongregate
 	{
 		if(Kongregate.kongregate != null) 
 		{
-			Kongregate.kongregate.stats.submit(name, stat);
+			Kongregate.kongregate.stats.submit(name, Std.int(stat));
 		}
 		
 		else
