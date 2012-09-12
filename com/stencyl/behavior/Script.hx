@@ -2321,6 +2321,25 @@ class Script
 	}
 	
 	//*-----------------------------------------------
+	//* Mobile
+	//*-----------------------------------------------
+	
+	public function showMobileAd(position:Int = 0)
+	{
+		#if mobile
+		Ads.showAd(position);
+		#end
+	}
+	
+	public function hideMobileAd()
+	{
+		#if mobile
+		Ads.hideAd();
+		#end
+	}
+	
+	
+	//*-----------------------------------------------
 	//* Debug
 	//*-----------------------------------------------
 	
