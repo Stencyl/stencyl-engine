@@ -29,6 +29,9 @@ class BubblesTransition extends Transition
 	
 	private var bubblePositions:Array<Point>;
 	private var bubbleRect:Rectangle;
+	
+	private var screenWidth:Int;
+	private var screenHeight:Int;
 		
 	public function new(direction:String, duration:Float, numBubbles:Int = 50, color:Int = 0xff000000) 
 	{
@@ -45,26 +48,29 @@ class BubblesTransition extends Transition
 		
 		rect = new Shape();
 		graphics = rect.graphics;
+	
+		screenWidth = Std.int(Engine.screenWidth * Engine.SCALE);
+		screenHeight = Std.int(Engine.screenHeight * Engine.SCALE);
 		
 		if (direction == Transition.IN)
 		{
 			graphics.beginFill(color);
-			graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+			graphics.drawRect(0, 0, screenWidth, screenHeight);
 			graphics.endFill();
 		}		
 		
-		drawBitmap = new BitmapData(Engine.screenWidth, Engine.screenHeight);		
+		drawBitmap = new BitmapData(screenWidth, screenHeight);		
 		
-		var screenRatio:Float = Engine.screenWidth / Engine.screenHeight;
+		var screenRatio:Float = screenWidth / screenHeight;
 		var vertBubbles:Int = Std.int(Math.sqrt(numBubbles / screenRatio));
 		var horzBubbles:Int = Std.int(vertBubbles * screenRatio);
-		var bubbleSize:Float = Engine.screenHeight / vertBubbles;
+		var bubbleSize:Float = screenHeight / vertBubbles;
 			
 		var c:Int = Math.ceil(horzBubbles);
 		var r:Int = Math.ceil(vertBubbles);
 			
-		var xOverflow:Int = Std.int(c * bubbleSize - Engine.screenWidth);
-		var yOverflow:Int = Std.int(r * bubbleSize - Engine.screenHeight);
+		var xOverflow:Int = Std.int(c * bubbleSize - screenWidth);
+		var yOverflow:Int = Std.int(r * bubbleSize - screenHeight);
 			
 		var bubbleRect:Rectangle = new Rectangle(-xOverflow / 2, -yOverflow / 2, bubbleSize, bubbleSize);
 			
@@ -102,7 +108,7 @@ class BubblesTransition extends Transition
 			drawBitmap.draw(Engine.engine.master);
 			
 			graphics.beginFill(color);
-			graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+			graphics.drawRect(0, 0, screenWidth, screenHeight);
 			graphics.endFill();
 			
 			for (p in bubblePositions)

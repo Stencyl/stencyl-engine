@@ -36,12 +36,12 @@ class CircleTransition extends Transition
 		if(direction == Transition.IN)
 		{
 			beginRadius = 0; 
-			endRadius = Std.int(Math.ceil(Point.distance(new Point(0, 0), new Point(Engine.screenWidthHalf, Engine.screenHeightHalf))));
+			endRadius = Std.int(Math.ceil(Point.distance(new Point(0, 0), new Point(Engine.screenWidthHalf * Engine.SCALE, Engine.screenHeightHalf * Engine.SCALE))));
 		}
 		
 		else if(direction == Transition.OUT)
 		{
-			beginRadius = Std.int(Math.ceil(Point.distance(new Point(0, 0), new Point(Engine.screenWidthHalf, Engine.screenHeightHalf))));
+			beginRadius = Std.int(Math.ceil(Point.distance(new Point(0, 0), new Point(Engine.screenWidthHalf * Engine.SCALE, Engine.screenHeightHalf * Engine.SCALE))));
 			endRadius = 0;
 		}
 	}
@@ -51,14 +51,14 @@ class CircleTransition extends Transition
 		active = true;
 			
 		s = new Shape();
-		circleImg = new BitmapData(Engine.screenWidth, Engine.screenHeight);
+		circleImg = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
 		radius = beginRadius;
 		
 		if (direction == Transition.IN)
 		{
 			var graphics:Graphics  = s.graphics;
 			graphics.beginFill(color);
-			graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+			graphics.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 			graphics.endFill();
 		}
 		
@@ -74,12 +74,12 @@ class CircleTransition extends Transition
 		s.graphics.clear();
 		
 		s.graphics.beginFill(color);
-		s.graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+		s.graphics.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 		s.graphics.endFill();
 		
 		circleImg.draw(Engine.engine.master);
 		s.graphics.beginBitmapFill(circleImg);
-		s.graphics.drawCircle(Engine.screenWidthHalf, Engine.screenHeightHalf, radius);
+		s.graphics.drawCircle(Engine.screenWidthHalf * Engine.SCALE, Engine.screenHeightHalf * Engine.SCALE, radius);
 		s.graphics.endFill();		
 	}
 	

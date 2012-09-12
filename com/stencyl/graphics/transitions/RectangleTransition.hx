@@ -40,13 +40,13 @@ class RectangleTransition extends Transition
 		{
 			beginWidth = 0;
 			beginHeight = 0;
-			endWidth = Engine.screenWidth;
-			endHeight = Engine.screenHeight;
+			endWidth = Std.int(Engine.screenWidth * Engine.SCALE);
+			endHeight = Std.int(Engine.screenHeight * Engine.SCALE);
 		}
 		else if(direction == Transition.OUT)
 		{
-			beginWidth = Engine.screenWidth;
-			beginHeight = Engine.screenHeight;
+			beginWidth = Std.int(Engine.screenWidth * Engine.SCALE);
+			beginHeight = Std.int(Engine.screenHeight * Engine.SCALE);
 			endWidth = 0;
 			endHeight = 0;
 		}
@@ -63,7 +63,7 @@ class RectangleTransition extends Transition
 		width = beginWidth;
 		height = beginHeight;
 			
-		rectangleImg = new BitmapData(Engine.screenWidth, Engine.screenHeight);
+		rectangleImg = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
 		
 		rect = new Shape();
 		graphics = rect.graphics;
@@ -71,7 +71,7 @@ class RectangleTransition extends Transition
 		if (direction == Transition.IN)
 		{
 			graphics.beginFill(color);
-			graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+			graphics.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 			graphics.endFill();
 		}		
 		
@@ -85,12 +85,12 @@ class RectangleTransition extends Transition
 		graphics.clear();
 		
 		graphics.beginFill(color);
-		graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+		graphics.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 		graphics.endFill();
 		
 		rectangleImg.draw(Engine.engine.master);
 		graphics.beginBitmapFill(rectangleImg);
-		graphics.drawRect((Engine.screenWidth - width) / 2, (Engine.screenHeight - height) / 2, width, height);
+		graphics.drawRect((Engine.screenWidth * Engine.SCALE - width) / 2, (Engine.screenHeight * Engine.SCALE - height) / 2, width, height);
 		graphics.endFill();		
 	}
 	

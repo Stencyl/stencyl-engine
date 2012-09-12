@@ -47,7 +47,7 @@ class PixelizeTransition extends Transition
 		
 		rect = new Shape();
 		graphics = rect.graphics;
-		srcImg = new BitmapData(Engine.screenWidth, Engine.screenHeight);
+		srcImg = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
 		pixelRect = new Rectangle(0, 0, 0, 0);		
 		
 		Engine.engine.transitionLayer.addChild(rect);
@@ -65,11 +65,11 @@ class PixelizeTransition extends Transition
 		graphics.clear();
 		srcImg.draw(Engine.engine.master);
 		
-		c = Math.ceil(Engine.screenWidth / pixelSize);
-		r = Math.ceil(Engine.screenHeight / pixelSize);
+		c = Math.ceil((Engine.screenWidth * Engine.SCALE) / pixelSize);
+		r = Math.ceil((Engine.screenHeight * Engine.SCALE) / pixelSize);
 			
-		xOverflow = Std.int(c * pixelSize - Engine.screenWidth);
-		yOverflow = Std.int(r * pixelSize - Engine.screenHeight);
+		xOverflow = Std.int(c * pixelSize - (Engine.screenWidth * Engine.SCALE));
+		yOverflow = Std.int(r * pixelSize - (Engine.screenHeight * Engine.SCALE));
 			
 		pixelRect.x = -xOverflow / 2;
 		pixelRect.y = -yOverflow / 2;

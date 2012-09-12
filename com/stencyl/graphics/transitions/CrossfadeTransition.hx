@@ -30,13 +30,13 @@ class CrossfadeTransition extends Transition
 	{
 		active = true;
 				
-		bitmap = new BitmapData(Engine.screenWidth, Engine.screenHeight);
+		bitmap = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
 		bitmap.draw(oldImg);
 
 		rect = new Shape();
 		var g = rect.graphics;
 		g.beginBitmapFill(bitmap);
-		g.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+		g.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 		g.endFill(); 
 				
 		Engine.engine.transitionLayer.addChild(rect);					

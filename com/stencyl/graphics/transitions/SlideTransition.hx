@@ -24,7 +24,7 @@ class SlideTransition extends Transition
 	public var newSceneMatrix:Matrix;
 	private var tx:Float;
 	private var ty:Float;
-	
+			
 	public static var SLIDE_UP:String = "up";
 	public static var SLIDE_DOWN:String = "down";
 	public static var SLIDE_LEFT:String = "left";
@@ -45,23 +45,23 @@ class SlideTransition extends Transition
 			
 		if(slideDirection == SLIDE_UP)
 		{
-			newSceneMatrix.ty = -Engine.screenHeight;
-			ty = Engine.screenHeight;
+			newSceneMatrix.ty = -Engine.screenHeight * Engine.SCALE;
+			ty = Engine.screenHeight * Engine.SCALE;
 		}
 		else if(slideDirection == SLIDE_DOWN)
 		{
-			newSceneMatrix.ty = Engine.screenHeight;
-			ty = -Engine.screenHeight;
+			newSceneMatrix.ty = Engine.screenHeight * Engine.SCALE;
+			ty = -Engine.screenHeight * Engine.SCALE;
 		}
 		else if(slideDirection == SLIDE_LEFT)
 		{
-			newSceneMatrix.tx = -Engine.screenWidth;
-			tx = Engine.screenWidth;
+			newSceneMatrix.tx = -Engine.screenWidth * Engine.SCALE;
+			tx = Engine.screenWidth * Engine.SCALE;
 		}
 		else if(slideDirection == SLIDE_RIGHT)
 		{
-			newSceneMatrix.tx = Engine.screenWidth;
-			tx = -Engine.screenWidth;
+			newSceneMatrix.tx = Engine.screenWidth * Engine.SCALE;
+			tx = -Engine.screenWidth * Engine.SCALE;
 		}
 		else
 		{
@@ -74,16 +74,16 @@ class SlideTransition extends Transition
 	{
 		active = true;
 		
-		oldBitmap = new BitmapData(Engine.screenWidth, Engine.screenHeight);
+		oldBitmap = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
 		oldBitmap.draw(sceneSpr);
 		
-		newBitmap = new BitmapData(Engine.screenWidth, Engine.screenHeight);
-		drawBitmap = new BitmapData(Engine.screenWidth, Engine.screenHeight);
+		newBitmap = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
+		drawBitmap = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
 		
 		rect = new Shape();
 		graphics = rect.graphics;		
 		graphics.beginBitmapFill(oldBitmap);
-		graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+		graphics.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 		graphics.endFill();
 				
 		Engine.engine.transitionLayer.addChild(rect);
@@ -101,7 +101,7 @@ class SlideTransition extends Transition
 		drawBitmap.draw(oldBitmap, oldSceneMatrix);
 		
 		graphics.beginBitmapFill(drawBitmap);
-		graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+		graphics.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 		graphics.endFill();
 	}
 	

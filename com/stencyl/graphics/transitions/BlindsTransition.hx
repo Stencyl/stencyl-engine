@@ -37,13 +37,13 @@ class BlindsTransition extends Transition
 		
 		if(direction == Transition.IN)
 		{
-			beginBlindWidth = Engine.screenWidth / numBlinds; 
+			beginBlindWidth = (Engine.screenWidth * Engine.SCALE) / numBlinds; 
 			endBlindWidth = 0;
 		}
 		else if(direction == Transition.OUT)
 		{
 			beginBlindWidth = 0;
-			endBlindWidth = Engine.screenWidth / numBlinds;
+			endBlindWidth = (Engine.screenWidth * Engine.SCALE) / numBlinds;
 		}
 		else
 		{
@@ -56,7 +56,7 @@ class BlindsTransition extends Transition
 	{
 		active = true;
 		
-		blindRect = new Rectangle(0, 0, beginBlindWidth, Engine.screenHeight);
+		blindRect = new Rectangle(0, 0, beginBlindWidth, Engine.screenHeight * Engine.SCALE);
 		blindWidth = beginBlindWidth;
 		
 		rect = new Shape();
@@ -65,7 +65,7 @@ class BlindsTransition extends Transition
 		if (direction == Transition.IN)
 		{
 			graphics.beginFill(color);
-			graphics.drawRect(0, 0, Engine.screenWidth, Engine.screenHeight);
+			graphics.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 			graphics.endFill();
 		}		
 		
@@ -84,14 +84,14 @@ class BlindsTransition extends Transition
 		
 		if(direction == Transition.IN)
 		{
-			blindRect.x += (Engine.screenWidth / numBlinds - blindWidth);
+			blindRect.x += ((Engine.screenWidth * Engine.SCALE) / numBlinds - blindWidth);
 		}			
 		
 		for(i in 0...numBlinds)
 		{
 			
 			graphics.drawRect(blindRect.x, blindRect.y, blindRect.width, blindRect.height);
-			blindRect.x += Engine.screenWidth / numBlinds;
+			blindRect.x += (Engine.screenWidth * Engine.SCALE) / numBlinds;
 		}
 		
 		graphics.endFill();
