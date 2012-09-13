@@ -337,6 +337,10 @@ class Engine
 
 	public function new(root:Sprite) 
 	{		
+		root.mouseChildren = false;
+		root.mouseEnabled = false;
+		//root.stage.mouseChildren = false;
+		
 		Engine.engine = this;
 		this.root = root;
 		
@@ -454,9 +458,9 @@ class Engine
 		
 		#if (flash)
 		movieClip = new MovieClip();
-		movieClip.mouseChildren = false;
 		movieClip.mouseEnabled = false;
-		root.addChild(movieClip);
+		movieClip.mouseChildren = false;
+		root.parent.addChild(movieClip);
 		#end
 		
 		#if js

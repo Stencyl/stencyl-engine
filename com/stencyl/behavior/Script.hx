@@ -2115,40 +2115,55 @@ class Script
 	//* Newgrounds
 	//*-----------------------------------------------
 	
-	private static var medalPopupX:Int = 0;
-	private static var medalPopupY:Int = 0;
-	private static var clickArea:TextField;
-	//private static var scoreBrowser:com.newgrounds.components.ScoreBrowser;
-		
+	#if flash
+	private static var medalPopup:com.newgrounds.components.MedalPopup = null;
+	private static var clickArea:TextField = null;
+	private static var scoreBrowser:com.newgrounds.components.ScoreBrowser = null;
+	#end
+	
 	public function newgroundsShowAd()
 	{
 		#if flash
-		/*var flashAd = new com.newgrounds.components.FlashAd();
+		var flashAd = new com.newgrounds.components.FlashAd();
 		flashAd.fullScreen = true;
 		flashAd.showPlayButton = true;
-		Engine.engine.root.addChild(flashAd);*/
+		flashAd.mouseChildren = true;
+		flashAd.mouseEnabled = true;
+		Engine.engine.root.parent.addChild(flashAd);
 		#end
 	}
 	
 	public function newgroundsSetMedalPosition(x:Int, y:Int)
 	{
 		#if flash
-		medalPopupX = x;
-		medalPopupY = y;
+		if(medalPopup == null)
+		{
+			medalPopup = new com.newgrounds.components.MedalPopup();
+			Engine.engine.root.parent.addChild(medalPopup);
+		}
+		
+		medalPopup.x = x;
+		medalPopup.y = y;
 		#end
 	}
 	
 	public function newgroundsUnlockMedal(medalName:String)
 	{
 		#if flash
-		//com.newgrounds.API.API.unlockMedal(medalName);
+		if(medalPopup == null)
+		{
+			medalPopup = new com.newgrounds.components.MedalPopup();
+			Engine.engine.root.parent.addChild(medalPopup);
+		}
+		
+		com.newgrounds.API.API.unlockMedal(medalName);
 		#end
 	}
 	
 	public function newgroundsSubmitScore(boardName:String, value:Float)
 	{
 		#if flash
-		//com.newgrounds.API.API.postScore(boardName, value);
+		com.newgrounds.API.API.postScore(boardName, value);
 		#end
 	}
 	
@@ -2269,10 +2284,14 @@ class Script
 				ad_started:function():Void
 				{
 					trace("Ad Started");
+					Engine.movieClip.mouseEnabled = true;
+					Engine.movieClip.mouseChildren = true;
 				}, 
 				ad_finished:function():Void
 				{
 					trace("Ad Ended");
+					Engine.movieClip.mouseEnabled = false;
+					Engine.movieClip.mouseChildren = false;
 				}
 			}
 		);

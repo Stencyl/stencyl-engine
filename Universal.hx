@@ -42,8 +42,7 @@ class Universal extends Sprite
 		
 		if(newgroundsID != "")
         {
-        	//Newgrounds breaks build. Hiding for now.
-        	//com.newgrounds.API.API.connect(root, newgroundsID, newgroundsKey);
+        	com.newgrounds.API.API.connect(root, newgroundsID, newgroundsKey);
         }
         
         if(mochiID != "")
@@ -123,11 +122,7 @@ class Universal extends Sprite
 		
 		scripts.MyAssets.stageWidth = Std.int(scripts.MyAssets.stageWidth * Engine.SCALE);
 		scripts.MyAssets.stageHeight = Std.int(scripts.MyAssets.stageHeight * Engine.SCALE);
-		
-		mouseChildren = false;
-		mouseEnabled = false;
-		stage.mouseChildren = false;
-		
+
 		var usingFullScreen = false;
 		var stretchToFit = false;
 		
