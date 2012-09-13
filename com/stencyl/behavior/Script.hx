@@ -2423,7 +2423,7 @@ class Script
 		#end	
 	}
 	
-	public function gameCenterSubmitScore(categoryID:String, score:Int):Void 
+	public function gameCenterSubmitScore(score:Int, categoryID:String):Void 
 	{
 		#if (mobile && !android)
 			GameCenter.reportScore(categoryID, score);
