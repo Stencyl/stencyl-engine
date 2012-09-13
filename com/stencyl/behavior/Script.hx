@@ -2357,14 +2357,14 @@ class Script
 	
 	public function showMobileAd(position:Int = 0)
 	{
-		#if mobile
+		#if (mobile && !android)
 		Ads.showAd(position);
 		#end
 	}
 	
 	public function hideMobileAd()
 	{
-		#if mobile
+		#if (mobile && !android)
 		Ads.hideAd();
 		#end
 	}
