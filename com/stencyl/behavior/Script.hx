@@ -2402,11 +2402,15 @@ class Script
 		#end
 	}
 	
-	public function gameCenterGetPlayerID():Void 
+	public function gameCenterGetPlayerID():String 
 	{
 		#if (mobile && !android)
-			GameCenter.getPlayerID();
+			return GameCenter.getPlayerID();
 		#end	
+		
+		#if !(mobile && !android)
+			return "None";
+		#end
 	}
 	
 	public function gameCenterShowLeaderboard(categoryID:String):Void 
