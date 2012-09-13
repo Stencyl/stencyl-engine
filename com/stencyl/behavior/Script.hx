@@ -2218,7 +2218,6 @@ class Script
 	private function newgroundsHelper(event:nme.events.MouseEvent)
 	{
 		#if flash
-		clickArea.removeEventListener(nme.events.MouseEvent.CLICK, newgroundsHelper);
 		Engine.engine.root.parent.removeChild(scoreBrowser);
 		#end
 	}
