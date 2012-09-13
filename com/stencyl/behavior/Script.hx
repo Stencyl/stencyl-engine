@@ -2355,6 +2355,8 @@ class Script
 	//* Mobile
 	//*-----------------------------------------------
 	
+	//Ads
+	
 	public function showMobileAd(position:Int = 0)
 	{
 		#if (mobile && !android)
@@ -2368,6 +2370,83 @@ class Script
 		Ads.hideAd();
 		#end
 	}
+	
+	//Game Center
+	
+	public function gameCenterInitialize():Void 
+	{
+		#if (mobile && !android)
+			GameCenter.initialize();
+		#end	
+	}
+	
+	public function gameCenterIsAuthenticated():Bool 
+	{
+		#if cpp
+			return GameCenter.isAuthenticated();
+		#end
+		
+		#if !(mobile && !android)
+			return false;
+		#end
+	}
+	
+	public function gameCenterGetPlayerName():String 
+	{
+		#if (mobile && !android)
+			return GameCenter.getPlayerName();
+		#end
+		
+		#if !(mobile && !android)
+			return "None";
+		#end
+	}
+	
+	public function gameCenterGetPlayerID():Void 
+	{
+		#if (mobile && !android)
+			GameCenter.getPlayerID();
+		#end	
+	}
+	
+	public function gameCenterShowLeaderboard(categoryID:String):Void 
+	{
+		#if (mobile && !android)
+			GameCenter.showLeaderboard(categoryID);
+		#end	
+	}
+	
+	public function gameCenterShowAchievements():Void 
+	{
+		#if (mobile && !android)
+			GameCenter.showAchievements();
+		#end	
+	}
+	
+	public function gameCenterSubmitScore(categoryID:String, score:Int):Void 
+	{
+		#if (mobile && !android)
+			GameCenter.reportScore(categoryID, score);
+		#end	
+	}
+	
+	public function gameCenterSubmitAchievement(achievementID:String, percent:Float):Void 
+	{
+		#if (mobile && !android)
+			GameCenter.reportAchievement(achievementID, percent);
+		#end	
+	}
+	
+	public function gameCenterResetAchievements():Void 
+	{
+		#if (mobile && !android)
+			GameCenter.resetAchievements();
+		#end	
+	}
+	
+	//Purchases
+	
+	//TODO
 	
 	
 	//*-----------------------------------------------

@@ -92,7 +92,7 @@ class Motion extends ActorScript
 	
 	override public function init()
 	{
-		Ads.showAd();
+		showMobileAd();
 	
 		Input.define("left", [Key.A, Key.LEFT]);
 		Input.define("right", [Key.D, Key.RIGHT]);
