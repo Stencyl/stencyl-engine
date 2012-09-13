@@ -2170,45 +2170,58 @@ class Script
 	public function newgroundsShowScore(boardName:String)
 	{
 		#if flash
-		/*scoreBrowser = new com.newgrounds.components.ScoreBrowser();
-		scoreBrowser.scoreBoardName = boardName;
-		scoreBrowser.period = com.newgrounds.ScoreBoard.ALL_TIME;
-		scoreBrowser.loadScores();
+		if(scoreBrowser == null)
+		{
+			scoreBrowser = new com.newgrounds.components.ScoreBrowser();
+			scoreBrowser.scoreBoardName = boardName;
+			scoreBrowser.period = com.newgrounds.ScoreBoard.ALL_TIME;
+			scoreBrowser.loadScores();
+			
+			scoreBrowser.x = Engine.screenWidth/2*Engine.SCALE - scoreBrowser.width/2;
+			scoreBrowser.y = Engine.screenHeight/2*Engine.SCALE - scoreBrowser.height/2;
+			
+			var button = new nme.display.Sprite();
+			button.x = 8;
+			button.y = scoreBrowser.height - 31;
+			
+			button.graphics.beginFill(0x0aaaaaa);
+     		button.graphics.drawRoundRect(0, 0, 50, 20, 8, 8);
+     		button.graphics.endFill();
+			
+			button.graphics.beginFill(0x713912);
+     		button.graphics.drawRoundRect(1, 1, 50 - 2, 20 - 2, 8, 8);
+     		button.graphics.endFill();
+     		
+			clickArea = new TextField();
+			clickArea.selectable = false;
+			clickArea.x = button.x + 9;
+			clickArea.y = button.y + 3;
+			clickArea.width = 50;
+			clickArea.height = 20;
+			clickArea.textColor = 0xffffff;
+			clickArea.text = "Close";	
+			
+			scoreBrowser.addChild(button);
+			scoreBrowser.addChild(clickArea);
+			
+			clickArea.addEventListener
+			(
+				nme.events.MouseEvent.CLICK,
+				newgroundsHelper
+			);
+		}
 		
-		scoreBrowser.x = Engine.screenWidth/2*Engine.SCALE - scoreBrowser.width/2;
-		scoreBrowser.y = Engine.screenHeight/2*Engine.SCALE - scoreBrowser.height/2;
-		
-		Engine.engine.root.addChild(scoreBrowser);*/
-		
-		//TODO: Not Done
-		/*FlxPreloader._closeButton.x = 5;
-		FlxPreloader._closeButton.y = scoreBrowser.height - FlxPreloader._closeButton.height - 5;
-		
-		clickArea = new TextField();
-		clickArea.selectable = false;
-		clickArea.x = 5;
-		clickArea.y = FlxPreloader._closeButton.y;
-		clickArea.width = FlxPreloader._closeButton.width;
-		clickArea.height = FlxPreloader._closeButton.height;
-	
-		scoreBrowser.addChild(FlxPreloader._closeButton);
-		scoreBrowser.addChild(clickArea);
-		
-		clickArea.addEventListener
-		(
-			MouseEvent.CLICK,
-			newgroundsHelper
-		);*/
+		Engine.engine.root.parent.addChild(scoreBrowser);
 		#end
 	}
 		
-	/*private function newgroundsHelper(event:nme.events.MouseEvent)
+	private function newgroundsHelper(event:nme.events.MouseEvent)
 	{
 		#if flash
-		clickArea.removeEventListener(MouseEvent.CLICK, newgroundsHelper);
-		Engine.engine.root.removeChild(scoreBrowser);
+		clickArea.removeEventListener(nme.events.MouseEvent.CLICK, newgroundsHelper);
+		Engine.engine.root.parent.removeChild(scoreBrowser);
 		#end
-	}*/
+	}
 	
 	//*-----------------------------------------------
 	//* Kongregate
