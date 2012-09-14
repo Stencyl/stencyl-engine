@@ -2468,7 +2468,7 @@ class Script
 		#end	
 	}
 	
-	public static function purchasesBuy(productID:String):Void 
+	public function purchasesBuy(productID:String):Void 
 	{
 		#if (mobile && !android)
 			Purchases.buy(productID);
