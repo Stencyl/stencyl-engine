@@ -489,6 +489,11 @@ class Engine
 			channels.push(new SoundChannel(this, index)); 				
 		}
 		
+		//Purchases
+		#if (mobile && !android)
+		Purchases.initialize();
+		#end	
+		
 		//Now, let's start
 		enter = new FadeInTransition(0.5);
 		enter.start();
