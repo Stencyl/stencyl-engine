@@ -2382,7 +2382,7 @@ class Script
 	
 	public function gameCenterIsAuthenticated():Bool 
 	{
-		#if cpp
+		#if (mobile && !android)
 			return GameCenter.isAuthenticated();
 		#end
 		
@@ -2450,8 +2450,61 @@ class Script
 	
 	//Purchases
 	
-	//TODO
+	public function purchasesAreInitialized():Bool 
+	{
+		#if (mobile && !android)
+			return Purchases.canBuy();
+		#end	
+		
+		#if !(mobile && !android)
+			return false;
+		#end
+	}
 	
+	public function purchasesRestore():Void 
+	{
+		#if (mobile && !android)
+			Purchases.restorePurchases();
+		#end	
+	}
+	
+	public static function purchasesBuy(productID:String):Void 
+	{
+		#if (mobile && !android)
+			Purchases.buy(productID);
+		#end	
+	}
+	
+	public function purchasesHasBought(productID:String):Bool 
+	{
+		#if (mobile && !android)
+			return Purchases.hasBought(productID);
+		#end	
+		
+		#if !(mobile && !android)
+			return false;
+		#end
+	}
+	
+	//Consumables
+	
+	public function purchasesUse(productID:String):Void 
+	{
+		#if (mobile && !android)
+			Purchases.use(productID);
+		#end	
+	}
+	
+	public function purchasesGetQuantity(productID:String):Int 
+	{
+		#if (mobile && !android)
+			return Purchases.getQuantity(productID);
+		#end	
+		
+		#if !(mobile && !android)
+			return 0;
+		#end
+	}
 	
 	//*-----------------------------------------------
 	//* Debug
@@ -2472,7 +2525,6 @@ class Script
 	//*-----------------------------------------------
 	//* Utilities
 	//*-----------------------------------------------
-	
 	
 	//Flash only till NME supports ColorMatrixFilter!
 	
