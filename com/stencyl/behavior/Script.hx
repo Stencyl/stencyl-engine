@@ -2360,6 +2360,7 @@ class Script
 	public function showMobileAd(position:Int = 0)
 	{
 		#if (mobile && !android)
+		Ads.initialize();
 		Ads.showAd(position);
 		#end
 	}
@@ -2367,6 +2368,7 @@ class Script
 	public function hideMobileAd()
 	{
 		#if (mobile && !android)
+		Ads.initialize();
 		Ads.hideAd();
 		#end
 	}
