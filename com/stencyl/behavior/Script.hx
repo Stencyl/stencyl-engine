@@ -262,7 +262,7 @@ class Script
 		engine.nativeListeners.push(new NativeListener(EventMaster.TYPE_GAMECENTER, type, func));
 	}
 	
-	public function addPurchasesListener(type:Int, func:String->Void)
+	public function addPurchaseListener(type:Int, func:String->Void)
 	{
 		engine.nativeListeners.push(new NativeListener(EventMaster.TYPE_PURCHASES, type, func));
 	}
