@@ -34,6 +34,9 @@ import com.stencyl.models.SoundChannel;
 
 import com.stencyl.utils.HashMap;
 
+import com.stencyl.event.EventMaster;
+import com.stencyl.event.NativeListener;
+
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Linear;
 
@@ -248,6 +251,21 @@ class Script
 	//*-----------------------------------------------
 	
 	//Intended for auto code generation. Programmers should use init/update/draw instead.
+	
+	public function addMobileAdListener(type:Int, func:Void->Void)
+	{
+		engine.nativeListeners.push(new NativeListener(EventMaster.TYPE_ADS, type, func));
+	}
+	
+	public function addGameCenterListener(type:Int, func:String->Void)
+	{
+		engine.nativeListeners.push(new NativeListener(EventMaster.TYPE_GAMECENTER, type, func));
+	}
+	
+	public function addPurchasesListener(type:Int, func:String->Void)
+	{
+		engine.nativeListeners.push(new NativeListener(EventMaster.TYPE_PURCHASES, type, func));
+	}
 	
 	public function addWhenCreatedListener(a:Actor, func:Dynamic->Void)
 	{			

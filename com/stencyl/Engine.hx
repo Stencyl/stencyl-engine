@@ -65,6 +65,9 @@ import com.stencyl.utils.Utils;
 import com.stencyl.utils.HashMap;
 import com.stencyl.utils.SizedIntHash;
 
+import com.stencyl.event.EventMaster;
+import com.stencyl.event.NativeListener;
+
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Elastic;
 
@@ -135,7 +138,9 @@ class Engine
 	
 	public static var paused:Bool = false;
 	public static var started:Bool = false;
-
+	
+	public static var events:EventMaster = new EventMaster();
+	
 
 	//*-----------------------------------------------
 	//* Physics
@@ -329,6 +334,7 @@ class Engine
 	public var whenPausedListeners:Array<Dynamic>;
 	
 	public var whenFocusChangedListeners:Array<Dynamic>;
+	public var nativeListeners:Array<NativeListener>;
 	
 	
 	//*-----------------------------------------------
@@ -562,6 +568,7 @@ class Engine
 		typeGroupPositionListeners = new IntHash<Dynamic>();
 		collisionListeners = new IntHash<Dynamic>();
 		soundListeners = new HashMap<Dynamic, Dynamic>();
+		nativeListeners = new Array<NativeListener>();
 		
 		whenUpdatedListeners = new Array<Dynamic>();
 		whenDrawingListeners = new Array<Dynamic>();
@@ -1232,6 +1239,7 @@ class Engine
 		typeGroupPositionListeners = null;
 		collisionListeners = null;
 		soundListeners = null;
+		nativeListeners = null;
 					
 		whenUpdatedListeners = null;
 		whenDrawingListeners = null;
@@ -1820,6 +1828,16 @@ class Engine
 				invokeListeners3(listeners, pressed, released);
 			}				
 		}
+		
+		//Native
+		#if mobile
+		for(listener in nativeListeners)
+		{
+			listener.checkEvents(Engine.events);
+		}
+		
+		Engine.events.clear();
+		#end
 		
 		invokeListeners2(whenUpdatedListeners, elapsedTime);
 		
