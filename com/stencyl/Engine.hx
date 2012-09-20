@@ -1170,7 +1170,8 @@ class Engine
 		}
 		
 		Utils.removeAllChildren(master);
-		
+		Utils.removeAllChildren(hudLayer);
+			
 		behaviors.destroy();
 	
 		for(group in actorsPerLayer)
