@@ -457,9 +457,11 @@ class Engine
 		
 		//Profiler
 		#if !js
-		var stats = new com.nmefermmmtools.debug.Stats();
-		stage.addChild(stats);
-		//stats.visible = false;
+		if(!scripts.MyAssets.releaseMode)
+		{
+			var stats = new com.nmefermmmtools.debug.Stats();
+			stage.addChild(stats);
+		}
 		#end
 		
 		#if (flash)
@@ -470,15 +472,18 @@ class Engine
 		#end
 		
 		#if js
-		var stats = new nme.display.FPS(stageWidth - 50, 0);
-		stats.backgroundColor = 0x444444;
-		stats.background = true;
-		//stats.opaqueBackground = 0x444444;
-		stats.textColor = 0xffffff;
-		stats.height = 20;
-		stats.width = 50;
-		//stage.addChild(stats); // NO MATTER WHAT THIS DOES NOT SHOW UP. WHY?!?!?!
-		//stats.visible = false;
+		if(!scripts.MyAssets.releaseMode)
+		{
+			var stats = new nme.display.FPS(stageWidth - 50, 0);
+			stats.backgroundColor = 0x444444;
+			stats.background = true;
+			//stats.opaqueBackground = 0x444444;
+			stats.textColor = 0xffffff;
+			stats.height = 20;
+			stats.width = 50;
+			//stage.addChild(stats); // NO MATTER WHAT THIS DOES NOT SHOW UP. WHY?!?!?!
+			//stats.visible = false;
+		}
 		#end
 		
 		//GA's

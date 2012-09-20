@@ -25,6 +25,9 @@ class MyAssets implements AssetLoader
 	public static var newgroundsID:String = "";
 	public static var newgroundsKey:String = "";
 	
+	//Other
+	public static var releaseMode:Bool = false;
+	
 	public function new()
 	{
 	}
