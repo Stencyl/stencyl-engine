@@ -35,6 +35,10 @@ class Universal extends Sprite
 	{
 		//Mochi, Newgrounds and other APIs
 		
+		#if mobile
+		Ads.initialize(scripts.MyAssets.whirlID);
+		#end
+		
 		#if flash
 		var mochiID = scripts.MyAssets.mochiID;
 		var newgroundsID = scripts.MyAssets.newgroundsID;

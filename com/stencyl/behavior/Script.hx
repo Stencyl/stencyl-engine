@@ -4,6 +4,7 @@ import nme.net.SharedObject;
 
 import nme.ui.Mouse;
 import nme.events.Event;
+import nme.events.IOErrorEvent;
 import nme.net.URLLoader;
 import nme.net.URLRequest;
 import nme.net.URLRequestMethod;
@@ -2052,6 +2053,13 @@ class Script
 		trace("Visited URL: " + loader.data);
 	}
 	
+	#if flash
+	private function defaultURLError(event:IOErrorEvent)
+	{
+		trace("Could not visit URL");
+	}
+	#end
+	
 	public function openURLInBrowser(URL:String)
 	{
 		Lib.getURL(new URLRequest(URL));
@@ -2067,14 +2075,18 @@ class Script
 			fn = defaultURLHandler;
 		}
 		
-		var loader:URLLoader = new URLLoader();
-		loader.addEventListener(Event.COMPLETE, fn);
-		
-		var request:URLRequest = new URLRequest(URL);
-		
 		try 
 		{
-			loader.load(request);
+			var request = new URLRequest(URL);
+			request.method = URLRequestMethod.GET;
+			
+			var loader = new URLLoader(request);
+			loader.addEventListener(Event.COMPLETE, fn);
+			
+			#if flash
+			loader.addEventListener(IOErrorEvent.NETWORK_ERROR, defaultURLError);
+			loader.addEventListener(IOErrorEvent.IO_ERROR, defaultURLError);
+			#end
 		} 
 		
 		catch(error:String) 
@@ -2088,14 +2100,10 @@ class Script
 	*/
 	public function postToURL(URL:String, data:String = null, fn:Event->Void = null)
 	{
-		#if !js
 		if(fn == null)
 		{
 			fn = defaultURLHandler;
 		}
-		
-		var loader:URLLoader = new URLLoader();
-		loader.addEventListener(Event.COMPLETE, fn);
 		
 		var request:URLRequest = new URLRequest(URL);
 		request.method = URLRequestMethod.POST;
@@ -2107,14 +2115,19 @@ class Script
 		
 		try 
 		{
-			loader.load(request);
+			var loader = new URLLoader(request);
+			loader.addEventListener(Event.COMPLETE, fn);
+			
+			#if flash
+			loader.addEventListener(IOErrorEvent.NETWORK_ERROR, defaultURLError);
+			loader.addEventListener(IOErrorEvent.IO_ERROR, defaultURLError);
+			#end
 		} 
 		
 		catch(error:String) 
 		{
 			trace("Cannot open URL.");
-		}
-		#end
+		}		
 	}
 	
 	//*-----------------------------------------------
@@ -2381,12 +2394,20 @@ class Script
 		Ads.initialize();
 		Ads.showAd(position);
 		#end
+		
+		#if android
+		Ads.showAd(position);
+		#end
 	}
 	
 	public function hideMobileAd()
 	{
 		#if (mobile && !android)
 		Ads.initialize();
+		Ads.hideAd();
+		#end
+		
+		#if android
 		Ads.hideAd();
 		#end
 	}

@@ -19,6 +19,7 @@ class MyAssets implements AssetLoader
 	public static var gameImageBase:String = "2x";
 	
 	//APIs
+	public static var whirlID:String = "";
 	public static var mochiID:String = "";
 	public static var cpmstarID:String = "";
 	public static var newgroundsID:String = "";
