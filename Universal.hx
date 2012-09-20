@@ -21,11 +21,6 @@ class Universal extends Sprite
 			com.nmefermmmtools.debug.Console.create(true, 192, false);
 		}
 		#end
-		
-		if(scripts.MyAssets.releaseMode)
-		{
-			haxe.Log.trace = nullTraceHandler;
-		}
 
 		#if (mobile && !android)
 		Lib.current.stage.addEventListener(Event.RESIZE, onAdded);
@@ -33,11 +28,7 @@ class Universal extends Sprite
 		addEventListener(Event.ADDED_TO_STAGE, onAdded);
 		#end
 	}
-	
-	private function nullTraceHandler(value:Dynamic, ?positionInformation:haxe.PosInfos)
-	{
-	}
-	
+
 	private function onAdded(event:Event):Void 
 	{
 		init();	
