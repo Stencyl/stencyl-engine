@@ -36,9 +36,16 @@ class BackgroundReader implements AbstractReader
 			blue = Std.parseInt(xml.att.blue);
 			alpha = 255;
 			
-			var color:Int = (alpha << 24) | (red << 16) | (green << 8) | blue;
+			if(red == -1 || green == -1 || blue == -1)
+			{
+				return new ColorBackground(ColorBackground.TRANSPARENT);
+			}
 			
-			return new ColorBackground(color);
+			else
+			{
+				var color:Int = (alpha << 24) | (red << 16) | (green << 8) | blue;
+				return new ColorBackground(color);
+			}	
 		}
 		
 		else if(type == "grad-bg")
