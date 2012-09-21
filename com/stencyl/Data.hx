@@ -84,11 +84,16 @@ class Data
 	
 	public function new()
 	{
+		if(Assets.getText("assets/data/game.xml") == "")
+		{
+			throw "Data.hx - Could not load game. Check your logs for a possible cause (likely a bad MP3 file).";
+		}
+		
 		gameXML = new Fast(Xml.parse(Assets.getText("assets/data/game.xml")).firstElement());
 		resourceListXML = new Fast(Xml.parse(Assets.getText("assets/data/resources.xml")).firstElement());
 		sceneListXML = new Fast(Xml.parse(Assets.getText("assets/data/scenes.xml")).firstElement());
 		behaviorListXML = new Fast(Xml.parse(Assets.getText("assets/data/behaviors.xml")).firstElement());
-	
+
 		loadReaders();
 	}
 	
