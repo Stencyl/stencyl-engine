@@ -11,6 +11,13 @@ class ColorBackground extends Resource, implements Background
 		super(0, "Color Background");
 		
 		this.bgColor = bgColor;
+		
+		//XXX: White gets turned into transparent?!
+		//Ref: http://community.stencyl.com/index.php/topic,14480.0.html
+		if(bgColor == -1)
+		{
+			this.bgColor = 0xffffff;
+		}
 	}		
 	
 	public function update()
