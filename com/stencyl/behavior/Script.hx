@@ -2527,6 +2527,39 @@ class Script
 		#end
 	}
 	
+	public function purchasesGetTitle(productID:String):String 
+	{
+		#if (mobile && !android)
+			return Purchases.getTitle(productID);
+		#end	
+		
+		#if !(mobile && !android)
+			return "";
+		#end
+	}
+	
+	public function purchasesGetDescription(productID:String):String 
+	{
+		#if (mobile && !android)
+			return Purchases.getDescription(productID);
+		#end	
+		
+		#if !(mobile && !android)
+			return "";
+		#end
+	}
+	
+	public function purchasesGetPrice(productID:String):String 
+	{
+		#if (mobile && !android)
+			return Purchases.getPrice(productID);
+		#end	
+		
+		#if !(mobile && !android)
+			return "";
+		#end
+	}
+	
 	//Consumables
 	
 	public function purchasesUse(productID:String):Void 
