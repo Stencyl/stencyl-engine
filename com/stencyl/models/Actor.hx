@@ -138,6 +138,8 @@ class Actor extends Sprite
 	public var realX:Float;
 	public var realY:Float;
 	public var realAngle:Float;
+	public var realScaleX:Float;
+	public var realScaleY:Float;
 	
 	var lastX:Float;
 	var lastY:Float;
@@ -302,6 +304,8 @@ class Actor extends Sprite
 		realX = 0;
 		realY = 0;
 		realAngle = 0;
+		realScaleX = 1;
+		realScaleY = 1;
 		
 		originX = 0;
 		originY = 0;
@@ -1260,11 +1264,15 @@ class Actor extends Sprite
 			realY = Math.round(p.y * Engine.physicsScale);
 		}
 		
+		var trueScaleX:Float = Engine.SCALE * realScaleX;
+		var trueScaleY:Float = Engine.SCALE * realScaleY;
+		
 		transformPoint.x = currOrigin.x - (cacheWidth*Engine.SCALE) / 2;
 		transformPoint.y = currOrigin.y - (cacheHeight*Engine.SCALE) / 2;
 
 		transformMatrix.identity();
 		transformMatrix.translate( -transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
+		transformMatrix.scale(realScaleX, realScaleY);
 		
 		if (realAngle != 0)
 		{
@@ -2583,7 +2591,7 @@ class Actor extends Sprite
 			easing = Linear.easeNone;
 		}
 	
-		Actuate.tween(this, duration, {scaleX:scaleX, scaleY:scaleY}).ease(easing);
+		Actuate.tween(this, duration, {realScaleX:scaleX, realScaleY:scaleY}).ease(easing);
 	}
 	
 	//In degrees
