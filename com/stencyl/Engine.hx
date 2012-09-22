@@ -1606,8 +1606,8 @@ class Engine
 					actor.setY(y);
 					actor.setAngle(0, false);
 					actor.alpha = 1;
-					actor.scaleX = 1;
-					actor.scaleY = 1;
+					actor.realScaleX = 1;
+					actor.realScaleY = 1;
 					//actor.setFilter(null);
 					actor.initScripts();
 					
