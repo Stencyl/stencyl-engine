@@ -119,9 +119,15 @@ class Universal extends Sprite
 		trace("Engine Scale: " + Engine.IMG_BASE);
 		#end
 		
-		#if(!mobile || air)
+		#if(!mobile)
 		Engine.SCALE = scripts.MyAssets.gameScale;
 		Engine.IMG_BASE = scripts.MyAssets.gameImageBase;
+		#end
+		
+		//Purely for testing
+		#if(air && mobile)
+		Engine.SCALE = 1;
+		Engine.IMG_BASE = "1x";
 		#end
 		
 		var originalWidth = scripts.MyAssets.stageWidth;
