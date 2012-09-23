@@ -2146,7 +2146,7 @@ class Script
 	//* Newgrounds
 	//*-----------------------------------------------
 	
-	#if flash
+	#if(flash && !air)
 	private static var medalPopup:com.newgrounds.components.MedalPopup = null;
 	private static var clickArea:TextField = null;
 	private static var scoreBrowser:com.newgrounds.components.ScoreBrowser = null;
@@ -2154,7 +2154,7 @@ class Script
 	
 	public function newgroundsShowAd()
 	{
-		#if flash
+		#if(flash && !air)
 		var flashAd = new com.newgrounds.components.FlashAd();
 		flashAd.fullScreen = true;
 		flashAd.showPlayButton = true;
@@ -2166,7 +2166,7 @@ class Script
 	
 	public function newgroundsSetMedalPosition(x:Int, y:Int)
 	{
-		#if flash
+		#if(flash && !air)
 		if(medalPopup == null)
 		{
 			medalPopup = new com.newgrounds.components.MedalPopup();
@@ -2180,7 +2180,7 @@ class Script
 	
 	public function newgroundsUnlockMedal(medalName:String)
 	{
-		#if flash
+		#if(flash && !air)
 		if(medalPopup == null)
 		{
 			medalPopup = new com.newgrounds.components.MedalPopup();
@@ -2193,14 +2193,14 @@ class Script
 	
 	public function newgroundsSubmitScore(boardName:String, value:Float)
 	{
-		#if flash
+		#if(flash && !air)
 		com.newgrounds.API.API.postScore(boardName, value);
 		#end
 	}
 	
 	public function newgroundsShowScore(boardName:String)
 	{
-		#if flash
+		#if(flash && !air)
 		if(scoreBrowser == null)
 		{
 			scoreBrowser = new com.newgrounds.components.ScoreBrowser();
@@ -2248,7 +2248,7 @@ class Script
 		
 	private function newgroundsHelper(event:nme.events.MouseEvent)
 	{
-		#if flash
+		#if(flash && !air)
 		Engine.engine.root.parent.removeChild(scoreBrowser);
 		#end
 	}
@@ -2259,54 +2259,41 @@ class Script
 
 	public function kongregateInitAPI()
 	{
-		#if flash
+		#if(flash && !air)
 		com.stencyl.utils.Kongregate.initAPI();
 		#end
 	}
 	
-	/*public function kongregateSubmitScore(score:Float, mode:String) 
-	{
-		#if flash
-		Kongregate.submitScore(score, mode);
-		#end
-	}*/
-	
 	public function kongregateSubmitStat(name:String, stat:Float) 
 	{
-		#if flash
+		#if(flash && !air)
 		com.stencyl.utils.Kongregate.submitStat(name, stat);
 		#end
 	}
 	
 	public function kongregateIsGuest():Bool
 	{
-		#if flash
+		#if(flash && !air)
 		return com.stencyl.utils.Kongregate.isGuest();
-		#end
-		
-		#if !flash
+		#else
 		return true;
 		#end
 	}
 	
 	public function kongregateGetUsername():String
 	{
-		#if flash
+		#if(flash && !air)
 		return com.stencyl.utils.Kongregate.getUsername();
-		#end
-		
-		#if !flash
+		#else
 		return "Guest";
 		#end
 	}
 	
 	public function kongregateGetUserID():Int
 	{
-		#if flash
+		#if(flash && !air)
 		return com.stencyl.utils.Kongregate.getUserID();
-		#end
-		
-		#if !flash
+		#else
 		return 0;
 		#end
 	}
@@ -2317,7 +2304,7 @@ class Script
 	
 	public function mochiShowAd(width:Int, height:Int)
 	{
-		#if flash
+		#if(flash && !air)
 		mochi.as3.MochiAd.showInterLevelAd
 		(
 			{
@@ -2343,7 +2330,7 @@ class Script
 	
 	public function mochiShowScores(boardID:String)
 	{
-		#if flash
+		#if(flash && !air)
 		mochi.as3.MochiScores.showLeaderboard
 		(
 			{
@@ -2363,7 +2350,7 @@ class Script
 	
 	public function mochiSubmitScore(boardID:String, score:Float)
 	{
-		#if flash
+		#if(flash && !air)
 		mochi.as3.MochiScores.showLeaderboard
 		(
 			{
@@ -2390,7 +2377,7 @@ class Script
 	
 	public function showMobileAd(position:Int = 0)
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 		Ads.initialize();
 		Ads.showAd(position);
 		#end
@@ -2402,7 +2389,7 @@ class Script
 	
 	public function hideMobileAd()
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 		Ads.initialize();
 		Ads.hideAd();
 		#end
@@ -2416,75 +2403,69 @@ class Script
 	
 	public function gameCenterInitialize():Void 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			GameCenter.initialize();
 		#end	
 	}
 	
 	public function gameCenterIsAuthenticated():Bool 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			return GameCenter.isAuthenticated();
-		#end
-		
-		#if !(mobile && !android)
+		#else
 			return false;
 		#end
 	}
 	
 	public function gameCenterGetPlayerName():String 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			return GameCenter.getPlayerName();
-		#end
-		
-		#if !(mobile && !android)
+		#else
 			return "None";
 		#end
 	}
 	
 	public function gameCenterGetPlayerID():String 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			return GameCenter.getPlayerID();
-		#end	
-		
-		#if !(mobile && !android)
+		#else
 			return "None";
 		#end
 	}
 	
 	public function gameCenterShowLeaderboard(categoryID:String):Void 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			GameCenter.showLeaderboard(categoryID);
 		#end	
 	}
 	
 	public function gameCenterShowAchievements():Void 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			GameCenter.showAchievements();
 		#end	
 	}
 	
 	public function gameCenterSubmitScore(score:Int, categoryID:String):Void 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			GameCenter.reportScore(categoryID, score);
 		#end	
 	}
 	
 	public function gameCenterSubmitAchievement(achievementID:String, percent:Float):Void 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			GameCenter.reportAchievement(achievementID, percent);
 		#end	
 	}
 	
 	public function gameCenterResetAchievements():Void 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			GameCenter.resetAchievements();
 		#end	
 	}
@@ -2493,18 +2474,16 @@ class Script
 	
 	public function purchasesAreInitialized():Bool 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			return Purchases.canBuy();
-		#end	
-		
-		#if !(mobile && !android)
+		#else
 			return false;
 		#end
 	}
 	
 	public function purchasesRestore():Void 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			Purchases.restorePurchases();
 		#end	
 	}
@@ -2518,44 +2497,36 @@ class Script
 	
 	public function purchasesHasBought(productID:String):Bool 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			return Purchases.hasBought(productID);
-		#end	
-		
-		#if !(mobile && !android)
+		#else
 			return false;
 		#end
 	}
 	
 	public function purchasesGetTitle(productID:String):String 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			return Purchases.getTitle(productID);
-		#end	
-		
-		#if !(mobile && !android)
+		#else
 			return "";
 		#end
 	}
 	
 	public function purchasesGetDescription(productID:String):String 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			return Purchases.getDescription(productID);
-		#end	
-		
-		#if !(mobile && !android)
+		#else
 			return "";
 		#end
 	}
 	
 	public function purchasesGetPrice(productID:String):String 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			return Purchases.getPrice(productID);
-		#end	
-		
-		#if !(mobile && !android)
+		#else
 			return "";
 		#end
 	}
@@ -2564,18 +2535,16 @@ class Script
 	
 	public function purchasesUse(productID:String):Void 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			Purchases.use(productID);
 		#end	
 	}
 	
 	public function purchasesGetQuantity(productID:String):Int 
 	{
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 			return Purchases.getQuantity(productID);
-		#end	
-		
-		#if !(mobile && !android)
+		#else
 			return 0;
 		#end
 	}

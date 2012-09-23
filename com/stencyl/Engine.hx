@@ -378,7 +378,7 @@ class Engine
 		Engine.screenWidthHalf = Std.int(stageWidth/2);
 		Engine.screenHeightHalf = Std.int(stageHeight/2);
 		
-		#if (mobile)
+		#if (mobile && !air)
 		if(!scripts.MyAssets.autorotate)
 		{
 			if(Engine.landscape)

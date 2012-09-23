@@ -137,7 +137,7 @@ class Input
 
 	public static function enable()
 	{
-		if (!_enabled && Engine.stage != null)
+		if(!_enabled && Engine.stage != null)
 		{
 			Engine.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
 			Engine.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp, false,  2);
@@ -164,6 +164,7 @@ class Input
 	        accelY = 0;
 	        accelZ = 0;
 	        numTouches = 0;
+	        _enabled = true;
 		}
 	}
 

@@ -651,7 +651,11 @@ class Actor extends Sprite
 	
 		if(imgData == null)
 		{
-			animationMap.set(name, new Sprite());
+			//animationMap.set(name, new Sprite());
+			
+			//XXX: Did some work on cases where image dta is missing. It's still an error but won't crash anymore.
+			animationMap.set(name, new BitmapAnimation(new BitmapData(16, 16), 1, [1000000]));
+			originMap.set(name, new B2Vec2(originX, originY));
 			return;
 		}
 	

@@ -22,7 +22,7 @@ class Universal extends Sprite
 		}
 		#end
 
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 		Lib.current.stage.addEventListener(Event.RESIZE, onAdded);
 		#else
 		addEventListener(Event.ADDED_TO_STAGE, onAdded);
@@ -38,11 +38,11 @@ class Universal extends Sprite
 	{
 		//Mochi, Newgrounds and other APIs
 		
-		#if mobile
+		#if(mobile && !air)
 		Ads.initialize(scripts.MyAssets.whirlID);
 		#end
 		
-		#if flash
+		#if(flash && !air)
 		var mochiID = scripts.MyAssets.mochiID;
 		var newgroundsID = scripts.MyAssets.newgroundsID;
 		var newgroundsKey = scripts.MyAssets.newgroundsKey;
@@ -60,7 +60,7 @@ class Universal extends Sprite
             
 		//---
 	
-		#if (mobile && !android)
+		#if (mobile && !android && !air)
 		Lib.current.stage.removeEventListener(Event.RESIZE, onAdded);
 		#else
 		removeEventListener(Event.ADDED_TO_STAGE, onAdded);
@@ -75,7 +75,7 @@ class Universal extends Sprite
 		trace("Screen DPI: " + Capabilities.screenDPI);
 
 		//Tablets and other high-res devices get to use 2x mode, (TODO: if it's not a tablet-only game.)
-		#if (mobile)		
+		#if(mobile && !air)		
 		var larger = Math.max(stage.stageWidth, stage.stageHeight);
 		
 		//4 scale sceheme
@@ -119,7 +119,7 @@ class Universal extends Sprite
 		trace("Engine Scale: " + Engine.IMG_BASE);
 		#end
 		
-		#if (!mobile)
+		#if(!mobile || air)
 		Engine.SCALE = scripts.MyAssets.gameScale;
 		Engine.IMG_BASE = scripts.MyAssets.gameImageBase;
 		#end
@@ -134,7 +134,7 @@ class Universal extends Sprite
 		var stretchToFit = false;
 		
 		//Stretch To Fit
-		#if (mobile)
+		#if(mobile && !air)
 		if(scripts.MyAssets.stretchToFit)
 		{
 			stretchToFit = true;
@@ -145,7 +145,7 @@ class Universal extends Sprite
 		#end
 		
 		//Full Screen Mode
-		#if (mobile)
+		#if(mobile && !air)
 		if(scripts.MyAssets.stageWidth == -1 || scripts.MyAssets.stageHeight == -1)
 		{
 			scripts.MyAssets.stageWidth = stage.stageWidth;
@@ -155,7 +155,7 @@ class Universal extends Sprite
 		}
 		#end
 			
-		#if (mobile)
+		#if(mobile && !air)
 		if(!usingFullScreen && !stretchToFit)
 		{
 			//Is the game width > device width? Adjust scaleX, then scaleY.
@@ -178,7 +178,7 @@ class Universal extends Sprite
 		#end
 		
 		//Clip the view
-		#if (mobile)
+		#if(mobile && !air)
 		if(!usingFullScreen && !stretchToFit)
 		{
 			scrollRect = new nme.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
@@ -201,7 +201,7 @@ class Universal extends Sprite
 		stage.align = StageAlign.TOP_LEFT;
 		stage.scaleMode = StageScaleMode.NO_SCALE;
 		
-		#if mobile
+		#if(mobile && !air)
 		stage.opaqueBackground = 0x000000;
 		#end
 
