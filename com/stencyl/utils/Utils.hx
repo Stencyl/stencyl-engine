@@ -114,7 +114,7 @@ class Utils
 		}				
 	}
 	
-	public static inline function contains(arr:Array<Dynamic>, value:Dynamic):Bool
+	public static function contains(arr:Array<Dynamic>, value:Dynamic):Bool
 	{
 		var len:Int = arr.length;
 		
