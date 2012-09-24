@@ -2609,7 +2609,6 @@ class Script
 	#end
 	
 	#if flash
-	
 	public function createGrayscaleFilter():ColorMatrixFilter
 	{
 		var matrix:Array<Dynamic> = new Array<Dynamic>();

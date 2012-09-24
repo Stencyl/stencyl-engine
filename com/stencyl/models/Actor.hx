@@ -72,6 +72,10 @@ import flash.filters.ColorMatrixFilter;
 import com.stencyl.utils.ColorMatrix;
 #end
 
+#if js
+import jeash.filters.ColorMatrixFilter;
+#end
+
 
 class Actor extends Sprite 
 {	
@@ -2715,19 +2719,15 @@ class Actor extends Sprite
 	//* Filters
 	//*-----------------------------------------------
 
-	/*public function setFilter(filter:Array<Dynamic>)
+	public function setFilter(filter:Array<BitmapFilter>)
 	{			
-		#if !(cpp || js)
 		filters = filter;
-		#end
 	}
 	
 	public function clearFilters()
 	{
-		#if !(cpp || js)
 		filters = [];
-		#end
-	}*/
+	}
 	
 	//*-----------------------------------------------
 	//* Behaviors
