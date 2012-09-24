@@ -1950,7 +1950,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			return getX() + Engine.cameraX;
+			return getX() + Engine.cameraX / Engine.SCALE;
 		}
 	}
 	
@@ -1963,7 +1963,7 @@ class Actor extends Sprite
 			
 		else
 		{
-			return getY() + Engine.cameraY;
+			return getY() + Engine.cameraY / Engine.SCALE;
 		}
 	}
 	
@@ -2990,8 +2990,8 @@ class Actor extends Sprite
 	//hand-inlined to engine to avoid overhead
 	public function isOnScreen():Bool
 	{
-		var cameraX = Engine.cameraX;
-		var cameraY = Engine.cameraY;
+		var cameraX = Engine.cameraX / Engine.SCALE;
+		var cameraY = Engine.cameraY / Engine.SCALE;
 		
 		var left = Engine.paddingLeft;
 		var top = Engine.paddingTop;

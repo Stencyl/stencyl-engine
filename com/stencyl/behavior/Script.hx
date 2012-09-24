@@ -1268,7 +1268,7 @@ class Script
 	 */
 	public function getScreenX():Float
 	{
-		return Math.abs(Engine.cameraX);
+		return Math.abs(Engine.cameraX / Engine.SCALE);
 	}
 	
 	/**
@@ -1278,7 +1278,7 @@ class Script
 	 */
 	public function getScreenY():Float
 	{
-		return Math.abs(Engine.cameraY);
+		return Math.abs(Engine.cameraY / Engine.SCALE);
 	}
 	
 	/**
