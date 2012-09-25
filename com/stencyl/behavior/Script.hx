@@ -2550,6 +2550,45 @@ class Script
 	}
 	
 	//*-----------------------------------------------
+	//* Native
+	//*-----------------------------------------------
+	
+	public function showAlert(title:String, msg:String)
+	{
+		#if cpp
+		Native.showAlert(title, msg);
+		#end
+	}
+	
+	public function vibrate(time:Float)
+	{
+		#if cpp
+		Native.vibrate(time);
+		#end
+	}
+	
+	public function showLoadingSpinner()
+	{
+		#if cpp
+		Native.showLoadingScreen();
+		#end
+	}
+	
+	public function hideLoadingSpinner()
+	{
+		#if cpp
+		Native.showLoadingScreen();
+		#end
+	}
+	
+	public function setIconBadgeNumber(n:Int)
+	{
+		#if cpp
+		//Native.setIconBadgeNumber(n);
+		#end
+	}
+	
+	//*-----------------------------------------------
 	//* Debug
 	//*-----------------------------------------------
 	
