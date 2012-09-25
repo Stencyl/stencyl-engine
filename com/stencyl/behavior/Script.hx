@@ -253,6 +253,9 @@ class Script
 	
 	//Intended for auto code generation. Programmers should use init/update/draw instead.
 	
+	//Native Listeners poll on a special place where events are infrequent. Do NOT attempt to use
+	//for anything normal in the engine!
+	
 	public function addMobileAdListener(type:Int, func:Void->Void)
 	{
 		engine.nativeListeners.push(new NativeListener(EventMaster.TYPE_ADS, type, func));
@@ -431,6 +434,18 @@ class Script
 		{
 			cast(this, ActorScript).actor.registerListener(listeners, func);
 		}
+	}
+	
+	public function addSwipeListener(func:Array<Dynamic>->Void)
+	{
+		#if(mobile && !air)
+		engine.whenSwipedListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenSwipedListeners, func);
+		}
+		#end
 	}
 	
 	public function addKeyStateListener(key:String, func:Dynamic->Dynamic->Array<Dynamic>->Void)

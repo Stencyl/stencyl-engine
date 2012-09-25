@@ -332,6 +332,7 @@ class Engine
 	public var whenMouseMovedListeners:Array<Dynamic>;
 	public var whenMouseDraggedListeners:Array<Dynamic>;	
 	public var whenPausedListeners:Array<Dynamic>;
+	public var whenSwipedListeners:Array<Dynamic>;
 	
 	public var whenFocusChangedListeners:Array<Dynamic>;
 	public var nativeListeners:Array<NativeListener>;
@@ -582,6 +583,7 @@ class Engine
 		whenMouseMovedListeners = new Array<Dynamic>();
 		whenMouseDraggedListeners = new Array<Dynamic>();
 		whenPausedListeners = new Array<Dynamic>();
+		whenSwipedListeners = new Array<Dynamic>();
 		whenFocusChangedListeners = new Array();
 		
 		if(!NO_PHYSICS)
@@ -1254,6 +1256,7 @@ class Engine
 		whenMouseMovedListeners = null;
 		whenMouseDraggedListeners = null;		
 		whenPausedListeners = null;
+		whenSwipedListeners = null;
 		
 		whenFocusChangedListeners = null;
 		

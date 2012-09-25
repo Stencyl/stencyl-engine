@@ -173,7 +173,7 @@ class Input
 	        }
 	        #end
 	        
-	        #if mobile
+	        #if(mobile && !air)
 			var gestures = HyperTouch.getInstance();
 			gestures.addEventListener(GestureSwipeEvent.SWIPE, onSwipe, false);
 			#end
@@ -201,26 +201,29 @@ class Input
 
 	public static function update()
 	{
-		#if mobile
+		#if(mobile && !air)
 		swipedLeft = false;
 		swipedRight = false;
 		swipedUp = false;
 		swipedDown = false;
 		
-		//TODO: Use to report events.
-		switch(swipeDirection)
+		if(swipeDirection > -1)
 		{
-			case GestureSwipeEvent.DIRECTION_LEFT:
-				swipedLeft = true;
-			case GestureSwipeEvent.DIRECTION_RIGHT:
-				swipedRight = true;
-			case GestureSwipeEvent.DIRECTION_UP:
-				swipedUp = true;
-			case GestureSwipeEvent.DIRECTION_DOWN:
-				swipedDown = true;
+			switch(swipeDirection)
+			{
+				case GestureSwipeEvent.DIRECTION_LEFT:
+					swipedLeft = true;
+				case GestureSwipeEvent.DIRECTION_RIGHT:
+					swipedRight = true;
+				case GestureSwipeEvent.DIRECTION_UP:
+					swipedUp = true;
+				case GestureSwipeEvent.DIRECTION_DOWN:
+					swipedDown = true;
+			}
+			
+			Engine.invokeListeners(Engine.engine.whenSwipedListeners);
+			swipeDirection = -1;
 		}
-		
-		swipeDirection = -1;
 		#end
 		
 		#if cpp
