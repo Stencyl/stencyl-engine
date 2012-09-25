@@ -12,6 +12,15 @@ import nme.ui.Multitouch;
 import nme.ui.Accelerometer;
 #end
 
+#if mobile
+import fr.hyperfiction.HyperTouch;
+import fr.hyperfiction.events.GesturePanEvent;
+import fr.hyperfiction.events.GesturePinchEvent;
+import fr.hyperfiction.events.GestureRotationEvent;
+import fr.hyperfiction.events.GestureSwipeEvent;
+import fr.hyperfiction.events.GestureTapEvent;
+#end
+
 import nme.ui.Keyboard;
 import nme.Lib;
 
@@ -40,8 +49,14 @@ class Input
 	public static var multiTouchEnabled:Bool;
 	public static var multiTouchPoints:Hash<TouchEvent>;
 	#end
+	
 	public static var numTouches:Int;
 
+	private static var swipeDirection:Int;
+	public static var swipedUp:Bool;
+	public static var swipedDown:Bool;
+	public static var swipedLeft:Bool;
+	public static var swipedRight:Bool;
 
 	/**
 	 * Defines a new input.
@@ -158,6 +173,17 @@ class Input
 	        }
 	        #end
 	        
+	        #if mobile
+			var gestures = HyperTouch.getInstance();
+			gestures.addEventListener(GestureSwipeEvent.SWIPE, onSwipe, false);
+			#end
+			
+			swipeDirection = -1;
+			swipedLeft = false;
+			swipedRight = false;
+			swipedUp = false;
+			swipedDown = false;
+	        
 	        mouseX = 0;
 	        mouseY = 0;
 	        accelX = 0;
@@ -167,9 +193,36 @@ class Input
 	        _enabled = true;
 		}
 	}
+	
+	private static function onSwipe(e:GestureSwipeEvent):Void
+	{
+		swipeDirection = e.direction;
+	}
 
 	public static function update()
 	{
+		#if mobile
+		swipedLeft = false;
+		swipedRight = false;
+		swipedUp = false;
+		swipedDown = false;
+		
+		//TODO: Use to report events.
+		switch(swipeDirection)
+		{
+			case GestureSwipeEvent.DIRECTION_LEFT:
+				swipedLeft = true;
+			case GestureSwipeEvent.DIRECTION_RIGHT:
+				swipedRight = true;
+			case GestureSwipeEvent.DIRECTION_UP:
+				swipedUp = true;
+			case GestureSwipeEvent.DIRECTION_DOWN:
+				swipedDown = true;
+		}
+		
+		swipeDirection = -1;
+		#end
+		
 		#if cpp
 		if(nme.sensors.Accelerometer.isSupported)
 		{
