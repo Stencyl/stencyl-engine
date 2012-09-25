@@ -2570,35 +2570,35 @@ class Script
 	
 	public function showAlert(title:String, msg:String)
 	{
-		#if cpp
+		#if(mobile && !air)
 		Native.showAlert(title, msg);
 		#end
 	}
 	
 	public function vibrate(time:Float)
 	{
-		#if cpp
+		#if(mobile && !air)
 		Native.vibrate(time);
 		#end
 	}
 	
-	public function showLoadingSpinner()
+	/*public function showLoadingSpinner()
 	{
-		#if cpp
+		#if(mobile && !air)
 		Native.showLoadingScreen();
 		#end
 	}
 	
 	public function hideLoadingSpinner()
 	{
-		#if cpp
+		#if(mobile && !air)
 		Native.showLoadingScreen();
 		#end
-	}
+	}*/
 	
 	public function setIconBadgeNumber(n:Int)
 	{
-		#if cpp
+		#if(mobile && !air)
 		Native.setIconBadgeNumber(n);
 		#end
 	}
