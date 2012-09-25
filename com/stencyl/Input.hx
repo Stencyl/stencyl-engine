@@ -278,7 +278,7 @@ class Input
 		Input.onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, v, v));
 	}
 
-	private static function onKeyDown(e:KeyboardEvent = null)
+	public static function onKeyDown(e:KeyboardEvent = null)
 	{
 		var code:Int = lastKey = e.keyCode;
 		
@@ -309,7 +309,7 @@ class Input
 		}
 	}
 
-	private static function onKeyUp(e:KeyboardEvent = null)
+	public static function onKeyUp(e:KeyboardEvent = null)
 	{
 		var code:Int = e.keyCode;
 		
