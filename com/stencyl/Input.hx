@@ -194,10 +194,12 @@ class Input
 		}
 	}
 	
+	#if(mobile && !air)
 	private static function onSwipe(e:GestureSwipeEvent):Void
 	{
 		swipeDirection = e.direction;
 	}
+	#end
 
 	public static function update()
 	{

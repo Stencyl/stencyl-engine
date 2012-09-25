@@ -2582,19 +2582,19 @@ class Script
 		#end
 	}
 	
-	/*public function showLoadingSpinner()
+	public function showKeyboard()
 	{
 		#if(mobile && !air)
-		Native.showLoadingScreen();
+		Native.showKeyboard();
 		#end
 	}
 	
-	public function hideLoadingSpinner()
+	public function hideKeyboard()
 	{
 		#if(mobile && !air)
-		Native.showLoadingScreen();
+		Native.hideKeyboard();
 		#end
-	}*/
+	}
 	
 	public function setIconBadgeNumber(n:Int)
 	{
