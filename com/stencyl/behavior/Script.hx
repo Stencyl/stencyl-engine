@@ -2584,7 +2584,7 @@ class Script
 	public function setIconBadgeNumber(n:Int)
 	{
 		#if cpp
-		//Native.setIconBadgeNumber(n);
+		Native.setIconBadgeNumber(n);
 		#end
 	}
 	
