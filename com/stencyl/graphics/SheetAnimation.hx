@@ -88,6 +88,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		}
 		
 		frameIndex = frame;
+		updateBitmap();
 	}
 	
 	public function isFinished():Bool

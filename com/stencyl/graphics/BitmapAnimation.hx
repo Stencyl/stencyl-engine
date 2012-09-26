@@ -80,6 +80,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		}
 		
 		frameIndex = frame;
+		updateBitmap();
 	}
 	
 	public function isFinished():Bool
