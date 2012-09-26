@@ -20,7 +20,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 	private var region:Rectangle;
 	private var pt:Point;
 	
-	public function new(sheet:BitmapData, numFrames:Int, durations:Array<Int>) 
+	public function new(sheet:BitmapData, numFrames:Int, durations:Array<Int>, looping:Bool) 
 	{
 		super(new BitmapData(Std.int(sheet.width/numFrames), sheet.height));
 		
@@ -31,7 +31,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		
 		this.timer = 0;
 		this.frameIndex = 0;
-		this.looping = true;
+		this.looping = looping;
 		this.sheet = sheet;
 		this.durations = durations;
 		this.numFrames = numFrames;
@@ -49,16 +49,29 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		
 		if(numFrames > 1 && timer > durations[frameIndex])
 		{
+			var old = frameIndex;
+		
 			timer -= durations[frameIndex];
 			
 			frameIndex++;
 			
 			if(frameIndex >= numFrames)
 			{
-				frameIndex = 0;
+				if(looping)
+				{
+					frameIndex = 0;
+				}
+				
+				else
+				{	
+					frameIndex--;
+				}
 			}
 			
-			updateBitmap();
+			if(old != frameIndex)
+			{
+				updateBitmap();
+			}
 		}
 	}
 	

@@ -25,10 +25,10 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 	private var data:Array<Float>;
 	
 	#if !js
-	public function new(tilesheet:Tilesheet, durations:Array<Int>, width:Int, height:Int) 
+	public function new(tilesheet:Tilesheet, durations:Array<Int>, width:Int, height:Int, looping:Bool) 
 	#end
 	#if js
-	public function new(tilesheet:Dynamic, durations:Array<Int>, width:Int, height:Int) 
+	public function new(tilesheet:Dynamic, durations:Array<Int>, width:Int, height:Int, looping:Bool) 
 	#end
 	{
 		super();
@@ -38,7 +38,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		
 		this.timer = 0;
 		this.frameIndex = 0;
-		this.looping = true;
+		this.looping = looping;
 		#if !js
 		this.tilesheet = tilesheet;
 		#end
@@ -57,16 +57,29 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		
 		if(numFrames > 1 && timer > durations[frameIndex])
 		{
+			var old = frameIndex;
+		
 			timer -= durations[frameIndex];
 			
 			frameIndex++;
 			
 			if(frameIndex >= numFrames)
 			{
-				frameIndex = 0;
+				if(looping)
+				{
+					frameIndex = 0;
+				}
+				
+				else
+				{	
+					frameIndex--;
+				}
 			}
 			
-			updateBitmap();
+			if(old != frameIndex)
+			{
+				updateBitmap();
+			}
 		}
 	}
 	

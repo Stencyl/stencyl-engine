@@ -658,7 +658,7 @@ class Actor extends Sprite
 			//animationMap.set(name, new Sprite());
 			
 			//XXX: Did some work on cases where image dta is missing. It's still an error but won't crash anymore.
-			animationMap.set(name, new BitmapAnimation(new BitmapData(16, 16), 1, [1000000]));
+			animationMap.set(name, new BitmapAnimation(new BitmapData(16, 16), 1, [1000000], false));
 			originMap.set(name, new B2Vec2(originX, originY));
 			return;
 		}
@@ -671,12 +671,20 @@ class Actor extends Sprite
 			tilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * i * Engine.SCALE, 0, frameWidth * Engine.SCALE, frameHeight * Engine.SCALE)); 	
 		}
 		 	
-		var sprite = new SheetAnimation(tilesheet, durations, Std.int(frameWidth * Engine.SCALE), Std.int(frameHeight * Engine.SCALE));
+		var sprite = new SheetAnimation
+		(
+			tilesheet, 
+			durations, 
+			Std.int(frameWidth * Engine.SCALE), 
+			Std.int(frameHeight * Engine.SCALE),
+			looping
+		);
+		
 		animationMap.set(name, sprite);
 		#end
 		
 		#if (flash || js)
-		var sprite = new BitmapAnimation(imgData, frameCount, durations);
+		var sprite = new BitmapAnimation(imgData, frameCount, durations, looping);
 		animationMap.set(name, sprite);
 		#end	
 				
