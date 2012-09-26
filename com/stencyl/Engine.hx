@@ -17,6 +17,7 @@ import nme.display.Stage;
 import nme.display.Shape;
 import nme.display.Graphics;
 import nme.display.MovieClip;
+import nme.display.StageDisplayState;
 import nme.text.TextField;
 import nme.display.DisplayObjectContainer;
 import nme.events.Event;
@@ -339,6 +340,89 @@ class Engine
 	
 	
 	//*-----------------------------------------------
+	//* Full Screen
+	//*-----------------------------------------------
+	
+	private var isFullScreen:Bool = false;
+	private var stats:com.nmefermmmtools.debug.Stats;
+	
+	#if(!js && !mobile)
+	private function onKeyDown(e:KeyboardEvent = null)
+	{
+		if(e.keyCode == Key.ESCAPE)
+		{
+			toggleFullscreen(true);
+		}
+	}
+	
+	public function toggleFullscreen(forceOff:Bool = false):Void
+	{
+		if(forceOff)
+		{
+			isFullScreen = true;
+		}
+	
+		if(isFullScreen)
+		{
+			isFullScreen = false;
+			Lib.current.stage.displayState = StageDisplayState.NORMAL;
+			
+			root.scaleX = 1.0;
+			root.scaleY = 1.0;
+			root.x = 0.0;
+			root.y = 0.0;
+			
+			
+			if(stats != null)
+			{
+				stats.x = Lib.current.stage.stageWidth - stats.width;
+				stats.y = 0;
+			}
+			
+			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+		} 
+		
+		else 
+		{
+			isFullScreen = true;
+			Lib.current.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+			
+			var xScaleFresh:Int = Math.floor(cast(Lib.current.stage.stageWidth, Float) / cast(scripts.MyAssets.stageWidth, Float));
+			var yScaleFresh:Int = Math.floor(cast(Lib.current.stage.stageHeight, Float) / cast(scripts.MyAssets.stageHeight, Float));
+			
+			if(xScaleFresh < yScaleFresh)
+			{
+				root.scaleX = cast(xScaleFresh, Float);
+				root.scaleY = cast(xScaleFresh, Float);
+			}
+			
+			else if(yScaleFresh < xScaleFresh)
+			{
+				root.scaleX = cast(yScaleFresh, Float);
+				root.scaleY = cast(yScaleFresh, Float);
+			} 
+			
+			else
+			{
+				root.scaleX = cast(xScaleFresh, Float);
+				root.scaleY = cast(yScaleFresh, Float);
+			}
+			
+			root.x = (cast(Lib.current.stage.stageWidth, Float) / 2.0) - (root.width / 2.0);
+			root.y = (cast(Lib.current.stage.stageHeight, Float) / 2.0) - (root.height / 2.0);
+			
+			if(stats != null)
+			{
+				stats.x = Lib.current.stage.stageWidth - stats.width;
+				stats.y = 0;
+			}
+			
+			Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
+		}
+	}
+	#end
+	
+	//*-----------------------------------------------
 	//* Init
 	//*-----------------------------------------------
 
@@ -460,7 +544,7 @@ class Engine
 		#if !js
 		if(!scripts.MyAssets.releaseMode)
 		{
-			var stats = new com.nmefermmmtools.debug.Stats();
+			stats = new com.nmefermmmtools.debug.Stats();
 			stage.addChild(stats);
 		}
 		#end
@@ -470,21 +554,6 @@ class Engine
 		movieClip.mouseEnabled = false;
 		movieClip.mouseChildren = false;
 		root.parent.addChild(movieClip);
-		#end
-		
-		#if js
-		if(!scripts.MyAssets.releaseMode)
-		{
-			var stats = new nme.display.FPS(stageWidth - 50, 0);
-			stats.backgroundColor = 0x444444;
-			stats.background = true;
-			//stats.opaqueBackground = 0x444444;
-			stats.textColor = 0xffffff;
-			stats.height = 20;
-			stats.width = 50;
-			//stage.addChild(stats); // NO MATTER WHAT THIS DOES NOT SHOW UP. WHY?!?!?!
-			//stats.visible = false;
-		}
 		#end
 		
 		//GA's

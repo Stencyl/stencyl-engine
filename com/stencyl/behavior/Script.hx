@@ -1873,14 +1873,11 @@ class Script
 		engine.unpause();
 	}
 	
-	public function enableFullScreen()
+	public function toggleFullScreen()
 	{
-		Engine.stage.displayState = nme.display.StageDisplayState.FULL_SCREEN;
-	}
-	
-	public function disableFullScreen()
-	{
-		Engine.stage.displayState = nme.display.StageDisplayState.NORMAL;
+		#if(flash || (cpp && !mobile))
+		Engine.engine.toggleFullscreen();
+		#end
 	}
 		
 	/**
