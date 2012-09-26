@@ -408,8 +408,11 @@ class Engine
 				root.scaleY = cast(yScaleFresh, Float);
 			}
 			
-			root.x = (cast(Lib.current.stage.stageWidth, Float) / 2.0) - (root.width / 2.0);
-			root.y = (cast(Lib.current.stage.stageHeight, Float) / 2.0) - (root.height / 2.0);
+			root.x = (cast(Lib.current.stage.stageWidth, Float) / 2.0) - (scripts.MyAssets.stageWidth*root.scaleX / 2.0);
+			root.y = (cast(Lib.current.stage.stageHeight, Float) / 2.0) - (scripts.MyAssets.stageHeight*root.scaleY / 2.0);
+			
+			var r = new nme.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
+			root.scrollRect = r;
 			
 			if(stats != null)
 			{
