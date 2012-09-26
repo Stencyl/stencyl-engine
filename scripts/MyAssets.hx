@@ -27,6 +27,7 @@ class MyAssets implements AssetLoader
 	
 	//Other
 	public static var releaseMode:Bool = false;
+	public static var showConsole:Bool = true;
 	
 	public function new()
 	{

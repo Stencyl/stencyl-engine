@@ -544,8 +544,11 @@ class Engine
 		#if !js
 		if(!scripts.MyAssets.releaseMode)
 		{
-			stats = new com.nmefermmmtools.debug.Stats();
-			stage.addChild(stats);
+			if(scripts.MyAssets.showConsole)
+			{
+				stats = new com.nmefermmmtools.debug.Stats();
+				stage.addChild(stats);
+			}
 		}
 		#end
 		
