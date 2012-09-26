@@ -97,7 +97,10 @@ class BehaviorManager
 
 			if(field == null)
 			{
-				trace("Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
+				if(!Reflect.hasField(b.script, attributeName))
+				{
+					trace("Get Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
+				}
 			}
 			
 			return field;
@@ -119,14 +122,15 @@ class BehaviorManager
 		{
 			var field = Reflect.field(b.script, attributeName);
 			
-			if(field != null)
+			if(field != null || Reflect.hasField(b.script, attributeName))
 			{
+				//trace("Set Attribute " + attributeName + " for " + behaviorName + " to " + value);
 				Reflect.setField(b.script, attributeName, value);
 			}
 			
 			else
 			{
-				trace("Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
+				trace("Set Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
 			}
 		}
 		
