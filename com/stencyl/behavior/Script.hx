@@ -1230,6 +1230,12 @@ class Script
     {
     	return engine.layers.get(layerID);
     }
+    
+    public function setBlendModeForLayer(layerID:Int, mode:nme.display.BlendMode)
+    {
+    	engine.layers.get(layerID).blendMode = mode;
+		engine.actorsPerLayer.get(layerID).blendMode = mode;
+    }
 	
 	/**
 	 * Force the given layer to show.
