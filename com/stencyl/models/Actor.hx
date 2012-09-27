@@ -2537,24 +2537,24 @@ class Actor extends Sprite
 	
 	public function isMouseOver():Bool
 	{
-		//This may need to be in global x/y???
-		var mx = Input.mouseX / Engine.SCALE;
-		var my = Input.mouseY / Engine.SCALE;
+		var mx:Float;
+		var my:Float;
 		
-		var xPos = colX; //getX();
-		var yPos = colY; //getY();
-		
-		//Not needed - colX/Y already accounts for the camera!
-		/*if(isHUD)
+		if(isHUD)
 		{
-			//This said screen x/y???
-			//mx = Input.mouseX;
-			//my = Input.mouseY;
-			
-			xPos = colX + Engine.cameraX; //getScreenX();
-			yPos = colY + Engine.cameraY; //getScreenY();
-		}*/
+			mx = (Input.mouseX) / Engine.SCALE;
+		 	my = (Input.mouseY) / Engine.SCALE;
+		}
 		
+		else
+		{
+			mx = (Input.mouseX - Engine.cameraX) / Engine.SCALE;
+		 	my = (Input.mouseY - Engine.cameraY) / Engine.SCALE;
+		}
+		
+		var xPos = colX;
+		var yPos = colY;
+
 		return (mx >= xPos && 
 		   		my >= yPos && 
 		   		mx < xPos + cacheWidth && 
