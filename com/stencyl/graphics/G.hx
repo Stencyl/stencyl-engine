@@ -163,17 +163,37 @@ class G
 	
 		if(Engine.NO_PHYSICS)
 		{
-			x = a.realX * scaleX;
-			y = a.realY * scaleY;
+			x = a.colX * scaleX * Engine.SCALE;
+			y = a.colY * scaleY * Engine.SCALE;
 		}
 		
 		else
 		{
 			//XXX: Seems like the width/height are in "actual" units - this may throw things off!
 			//Fixing it breaks things. Leaving for Mike to wrap up.
-			x = (a.realX * scaleX - a.cacheWidth / 2) ;
-			y = (a.realY * scaleY - a.cacheHeight / 2);
+			x = (a.colX * scaleX * Engine.SCALE);
+			y = (a.colY * scaleY * Engine.SCALE);
 		}
+		
+		/*
+		
+		drawActor = true;
+	
+		if(Engine.NO_PHYSICS)
+		{
+			x = a.colX * scaleX * Engine.SCALE;
+			y = a.colY * scaleY * Engine.SCALE;
+		}
+		
+		else
+		{
+			//XXX: Seems like the width/height are in "actual" units - this may throw things off!
+			//Fixing it breaks things. Leaving for Mike to wrap up.
+			x = (a.colX * scaleX * Engine.SCALE - a.cacheWidth / 2) ;
+			y = (a.colY * scaleY * Engine.SCALE - a.cacheHeight / 2);
+		}
+		
+		*/
 	}
 	
 	private var drawData:Array<Float>;

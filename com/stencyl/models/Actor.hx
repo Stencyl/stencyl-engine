@@ -1858,9 +1858,9 @@ class Actor extends Sprite
 	//* Layering
 	//*-----------------------------------------------
 	
-	public function moveToLayer(layerID:Int)
+	public function moveToLayer(layerID:Float)
 	{
-		engine.moveToLayer(this, layerID);
+		engine.moveToLayer(this, Std.int(layerID));
 	}
 	
 	public function bringToFront()
