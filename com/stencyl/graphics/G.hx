@@ -54,6 +54,7 @@ class G
 	private var firstY:Float;
 	
 	private var drawActor:Bool;
+	private var actor:Actor;
 	
 	public function new() 
 	{	
@@ -145,13 +146,28 @@ class G
 	
 	public inline function moveTo(x:Float, y:Float)
 	{
-		this.x = x * scaleX;
-		this.y = y * scaleY;
+		if(drawActor)
+		{
+			if(actor != null)
+			{
+				translateToActor(actor);
+			}
+			
+			this.x += x * scaleX;
+			this.y += y * scaleY;
+		}
+		
+		else
+		{
+			this.x = x * scaleX;
+			this.y = y * scaleY;
+		}
 	}
 	
 	public inline function translateToScreen()
 	{
 		drawActor = false;
+		actor = null;
 	
 		x = 0;
 		y = 0;
@@ -160,6 +176,7 @@ class G
 	public inline function translateToActor(a:Actor)
 	{
 		drawActor = true;
+		actor = a;
 	
 		if(Engine.NO_PHYSICS)
 		{
@@ -169,31 +186,10 @@ class G
 		
 		else
 		{
-			//XXX: Seems like the width/height are in "actual" units - this may throw things off!
-			//Fixing it breaks things. Leaving for Mike to wrap up.
+			//XXX: Mike, doesn't this need to account for the origin point?
 			x = (a.colX * scaleX * Engine.SCALE);
 			y = (a.colY * scaleY * Engine.SCALE);
 		}
-		
-		/*
-		
-		drawActor = true;
-	
-		if(Engine.NO_PHYSICS)
-		{
-			x = a.colX * scaleX * Engine.SCALE;
-			y = a.colY * scaleY * Engine.SCALE;
-		}
-		
-		else
-		{
-			//XXX: Seems like the width/height are in "actual" units - this may throw things off!
-			//Fixing it breaks things. Leaving for Mike to wrap up.
-			x = (a.colX * scaleX * Engine.SCALE - a.cacheWidth / 2) ;
-			y = (a.colY * scaleY * Engine.SCALE - a.cacheHeight / 2);
-		}
-		
-		*/
 	}
 	
 	private var drawData:Array<Float>;
@@ -205,11 +201,17 @@ class G
 			resetFont();
 		}
 		
-		startGraphics();
-		graphics.lineStyle();
+		//startGraphics();
+		//graphics.lineStyle();
 
 		var drawX = this.x + x * scaleX + Engine.cameraX * scaleX;
 		var drawY = this.y + y * scaleY + Engine.cameraY * scaleY;
+		
+		if(!drawActor)
+		{
+			drawX = this.x + x * scaleX;
+			drawY = this.y + y * scaleY;
+		}
 		
 		#if(cpp)
 		drawData.splice(0, drawData.length);
@@ -244,7 +246,7 @@ class G
 		}
 		#end
 		
-		endGraphics();
+		//endGraphics();
 	}
 	
 	public inline function drawLine(x1:Float, y1:Float, x2:Float, y2:Float)
@@ -428,8 +430,17 @@ class G
 		rect.height = img.height;
 		
 		//Why this has to be treated differently (add camera coords), I don't know...
-		point.x = this.x + x + Engine.cameraX * scaleX;
-		point.y = this.y + y + Engine.cameraY * scaleY;	
+		if(drawActor)
+		{
+			point.x = this.x + x + Engine.cameraX * scaleX;
+			point.y = this.y + y + Engine.cameraY * scaleY;	
+		}
+		
+		else
+		{
+			point.x = this.x + x;
+			point.y = this.y + y;	
+		}
 		
 		#if (js)
 		canvas.copyPixels(img, rect, point);
