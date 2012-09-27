@@ -2694,7 +2694,24 @@ class Actor extends Sprite
 	{
 		if(currAnimation != null)
 		{
-			cast(currAnimation, AbstractAnimation).draw(g, 0, 0);
+			var x:Float = 0;
+			var y:Float = 0;
+			
+			#if cpp
+			if(g.drawActor)
+			{
+				x = g.x + Engine.cameraX;
+				y = g.y + Engine.cameraY;
+			}
+			
+			else
+			{
+				x = g.x;
+				y = g.y;
+			}
+			#end
+		
+			cast(currAnimation, AbstractAnimation).draw(g, x, y);
 		}
 	}
 	

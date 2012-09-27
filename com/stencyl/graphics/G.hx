@@ -53,7 +53,7 @@ class G
 	private var firstX:Float;
 	private var firstY:Float;
 	
-	private var drawActor:Bool;
+	public var drawActor:Bool;
 	private var actor:Actor;
 	
 	public function new() 
@@ -206,12 +206,6 @@ class G
 
 		var drawX = this.x + x * scaleX + Engine.cameraX * scaleX;
 		var drawY = this.y + y * scaleY + Engine.cameraY * scaleY;
-		
-		if(!drawActor)
-		{
-			drawX = this.x + x * scaleX;
-			drawY = this.y + y * scaleY;
-		}
 		
 		#if(cpp)
 		drawData.splice(0, drawData.length);
