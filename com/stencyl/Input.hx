@@ -75,21 +75,39 @@ class Input
 	 */
 	public static function check(input:Dynamic):Bool
 	{
-		if (Std.is(input, String))
+		if(Std.is(input, String))
 		{
-			var v:Array<Int> = _control.get(input),
-				i:Int = v.length;
-			while (i-- > 0)
+			var v:Array<Int> = _control.get(input);
+			
+			if(v == null)
 			{
-				if (v[i] < 0)
+				//trace("No control selected for a control attribute");
+				return false;
+			}
+			
+			var i:Int = v.length;
+			
+			while(i-- > 0)
+			{
+				if(v[i] < 0)
 				{
-					if (_keyNum > 0) return true;
+					if(_keyNum > 0) 
+					{
+						return true;
+					}
+					
 					continue;
 				}
-				if (_key[v[i]]) return true;
+				
+				if(_key[v[i]]) 
+				{
+					return true;
+				}
 			}
+			
 			return false;
 		}
+		
 		return input < 0 ? _keyNum > 0 : _key[input];
 	}
 
@@ -100,16 +118,29 @@ class Input
 	 */
 	public static function pressed(input:Dynamic):Bool
 	{
-		if (Std.is(input, String))
+		if(Std.is(input, String))
 		{
-			var v:Array<Int> = _control.get(input),
-				i:Int = v.length;
-			while (i-- > 0)
+			var v:Array<Int> = _control.get(input);
+			
+			if(v == null)
 			{
-				if ((v[i] < 0) ? _pressNum != 0 : indexOf(_press, v[i]) >= 0) return true;
+				//trace("No control selected for a control attribute");
+				return false;
 			}
+			
+			var i:Int = v.length;
+			
+			while(i-- > 0)
+			{
+				if((v[i] < 0) ? _pressNum != 0 : indexOf(_press, v[i]) >= 0) 
+				{
+					return true;
+				}
+			}
+			
 			return false;
 		}
+		
 		return (input < 0) ? _pressNum != 0 : indexOf(_press, input) >= 0;
 	}
 
@@ -120,16 +151,29 @@ class Input
 	 */
 	public static function released(input:Dynamic):Bool
 	{
-		if (Std.is(input, String))
+		if(Std.is(input, String))
 		{
-			var v:Array<Int> = _control.get(input),
-				i:Int = v.length;
-			while (i-- > 0)
+			var v:Array<Int> = _control.get(input);
+			
+			if(v == null)
 			{
-				if ((v[i] < 0) ? _releaseNum != 0 : indexOf(_release, v[i]) >= 0) return true;
+				//trace("No control selected for a control attribute");
+				return false;
 			}
+			
+			var i:Int = v.length;
+			
+			while(i-- > 0)
+			{
+				if((v[i] < 0) ? _releaseNum != 0 : indexOf(_release, v[i]) >= 0) 
+				{
+					return true;
+				}
+			}
+			
 			return false;
 		}
+		
 		return (input < 0) ? _releaseNum != 0 : indexOf(_release, input) >= 0;
 	}
 
@@ -142,11 +186,17 @@ class Input
 	private static function indexOf(a:Array<Int>, v:Int):Int
 	{
 		var i = 0;
-		for( v2 in a ) {
-			if( v == v2 )
+		
+		for(v2 in a) 
+		{
+			if(v == v2)
+			{
 				return i;
+			}
+			
 			i++;
 		}
+		
 		return -1;
 	}
 
@@ -289,7 +339,11 @@ class Input
 		}
 		#end
 
-		if (code == Key.BACKSPACE) keyString = keyString.substr(0, keyString.length - 1);
+		if(code == Key.BACKSPACE) 
+		{
+			keyString = keyString.substr(0, keyString.length - 1);
+		}
+		
 		else if ((code > 47 && code < 58) || (code > 64 && code < 91) || code == 32)
 		{
 			if (keyString.length > kKeyStringMax) keyString = keyString.substr(1);
@@ -301,7 +355,7 @@ class Input
 			keyString += char;
 		}
 
-		if (!_key[code])
+		if(!_key[code])
 		{
 			_key[code] = true;
 			_keyNum++;
@@ -320,7 +374,7 @@ class Input
 		}
 		#end
 		
-		if (_key[code])
+		if(_key[code])
 		{
 			_key[code] = false;
 			_keyNum--;
@@ -337,7 +391,7 @@ class Input
 		mouseY = (Engine.stage.mouseY - Engine.screenOffsetY) / Engine.screenScaleY;
 		#end
 		
-		if (!mouseDown)
+		if(!mouseDown)
 		{
 			mouseDown = true;
 			mouseUp = false;
@@ -382,14 +436,6 @@ class Input
 		multiTouchPoints.remove(Std.string(e.touchPointID));
 		numTouches--;
 	}
-	
-	/*if(Input.multiTouchEnabled)
-	{
-		for(elem in Input.multiTouchPoints)
-		{
-			trace(elem.eventPhase + "," + elem.stageX + "," + elem.stageY);
-		}
-	}*/
 	#end
 
 	private static inline var kKeyStringMax = 100;
