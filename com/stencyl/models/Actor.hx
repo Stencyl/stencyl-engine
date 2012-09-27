@@ -1860,27 +1860,42 @@ class Actor extends Sprite
 	
 	public function moveToLayer(layerID:Float)
 	{
-		engine.moveToLayer(this, Std.int(layerID));
+		if(!isHUD)
+		{
+			engine.moveToLayer(this, Std.int(layerID));
+		}
 	}
 	
 	public function bringToFront()
 	{
-		engine.bringToFront(this);
+		if(!isHUD)
+		{
+			engine.bringToFront(this);
+		}
 	}
 	
 	public function bringForward()
 	{
-		engine.bringForward(this);
+		if(!isHUD)
+		{
+			engine.bringForward(this);
+		}
 	}
 	
 	public function sendToBack()
 	{
-		engine.sendToBack(this);
+		if(!isHUD)
+		{
+			engine.sendToBack(this);
+		}
 	}
 	
 	public function sendBackward()
 	{
-		engine.sendBackward(this);
+		if(!isHUD)
+		{
+			engine.sendBackward(this);
+		}
 	}
 	
 	//*-----------------------------------------------
