@@ -2647,7 +2647,7 @@ class Engine
 			return;
 		}
 
-		lID = layersToDraw.get(lID);
+		//lID = layersToDraw.get(lID);
 
 		removeActorFromLayer(a, a.layerID);
 		a.layerID = lID;
