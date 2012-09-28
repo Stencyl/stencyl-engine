@@ -1615,10 +1615,11 @@ class Engine
 			Engine.invokeListeners2(l2, a);
 		}
 		
-		if(a.isHUD)
+		//Causes strange double-removal error - taking out for now.
+		/*if(a.isHUD)
 		{
 			a.unanchorFromScreen();
-		}
+		}*/
 		
 		if(a.alwaysSimulate)
 		{
