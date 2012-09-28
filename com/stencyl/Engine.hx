@@ -1614,6 +1614,16 @@ class Engine
 		{
 			Engine.invokeListeners2(l2, a);
 		}
+		
+		if(a.isHUD)
+		{
+			a.unanchorFromScreen();
+		}
+		
+		if(a.alwaysSimulate)
+		{
+			a.makeSometimesSimulate(false);
+		}
 	
 		a.setX(1000000);
 		a.setY(1000000);
@@ -1688,7 +1698,7 @@ class Engine
 					actor.realScaleY = 1;
 					//actor.setFilter(null);
 					actor.initScripts();
-					
+
 					//move to specified layer
 					var layerID = 0;
 					
@@ -2611,11 +2621,6 @@ class Engine
 	public function getRecycledActorsOfType(type:ActorType):Array<Actor>
 	{
 		return recycledActorsOfType.get(type.ID);
-	}
-	
-	public function addAlwaysOnActor(a:Actor)
-	{
-		addHUDActor(a);
 	}
 	
 	public function addHUDActor(a:Actor)

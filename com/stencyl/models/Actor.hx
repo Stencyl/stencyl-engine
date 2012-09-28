@@ -2968,20 +2968,20 @@ class Actor extends Sprite
 		return isHUD;
 	}
 	
-	public function makeAlwaysSimulate()
+	public function makeAlwaysSimulate(alterBody:Bool = true)
 	{
-		if(!isLightweight)
+		if(!isLightweight && alterBody)
 		{
 			body.setAlwaysActive(true);
 		}
 		
 		alwaysSimulate = true;			
-		engine.addAlwaysOnActor(this);
+		engine.addHUDActor(this);
 	}
 	
-	public function makeSometimesSimulate()
+	public function makeSometimesSimulate(alterBody:Bool = true)
 	{
-		if(!isLightweight)
+		if(!isLightweight && alterBody)
 		{
 			body.setAlwaysActive(false);
 		}
