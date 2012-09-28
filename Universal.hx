@@ -196,8 +196,16 @@ class Universal extends Sprite
 		
 		trace("Scale X: " + scaleX);
 		trace("Scale Y: " + scaleY);
-		
+				
 		new com.stencyl.Engine(this);
+		
+		/*JoystickController.createJoystick
+		(
+			this,
+			new nme.display.Bitmap(nme.Assets.getBitmapData("assets/graphics/outer-joystick.png")),
+			new nme.display.Bitmap(nme.Assets.getBitmapData("assets/graphics/inner-joystick.png")),
+			Joystick.JoystickStatic
+		);*/
 	}
 	
 	public static function main() 
