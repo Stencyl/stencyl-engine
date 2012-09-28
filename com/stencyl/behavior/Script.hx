@@ -1875,7 +1875,7 @@ class Script
 	
 	public function toggleFullScreen()
 	{
-		#if(flash || (cpp && !mobile))
+		#if((flash && !air) || (cpp && !mobile))
 		Engine.engine.toggleFullscreen();
 		#end
 	}
