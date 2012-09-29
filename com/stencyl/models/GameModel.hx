@@ -180,7 +180,7 @@ class GameModel
 				vertices.push(new B2Vec2(px * 3.1, py * 3.1));
 			}
 			
-			//trace("Was in correct direction? " + SpriteReader.EnsureCorrectVertexDirection(vertices));
+			SpriteReader.EnsureCorrectVertexDirection(vertices);
 			
 			var p = new B2PolygonShape();
 			p.setAsArray(vertices, vertices.length);
