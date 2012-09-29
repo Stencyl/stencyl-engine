@@ -1333,12 +1333,12 @@ class Actor extends Sprite
 		
 		if(a && b)
 		{
-			//x = tweenLoc.x;
-			//y = tweenLoc.y;
-			//rotation = tweenAngle.angle;
+			realX = tweenLoc.x;
+			realY = tweenLoc.y;
+			realAngle = tweenAngle.angle;
 			
-			dummy.x = Engine.toPhysicalUnits(x);
-			dummy.y = Engine.toPhysicalUnits(y);
+			dummy.x = Engine.toPhysicalUnits(realX + Math.floor(cacheWidth/2) + currOffset.x);
+			dummy.y = Engine.toPhysicalUnits(realY + Math.floor(cacheHeight/2) + currOffset.y);
 			
 			body.setPositionAndAngle
 			(
