@@ -29,9 +29,11 @@ import com.stencyl.models.Terrain;
 import com.stencyl.graphics.transitions.Transition;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.Font;
-
 import com.stencyl.models.Sound;
 import com.stencyl.models.SoundChannel;
+
+import com.stencyl.models.scene.Tile;
+import com.stencyl.models.scene.Tileset;
 
 import com.stencyl.utils.HashMap;
 
@@ -1848,6 +1850,87 @@ class Script
 	public function getMiddleLayer():Int
 	{
 		return engine.getMiddleLayer();
+	}
+	
+	public function setTileAt(row:Int, col:Int, layerID:Int, tilesetID:Int, tileID:Int)
+	{
+		var tlayer = engine.tileLayers.get(layerID);
+		
+		if(tlayer == null)
+		{
+			return;
+		}
+		
+		var tset = cast(Data.get().resources.get(tilesetID), Tileset);
+		var tile:Tile = tset.tiles[tileID];
+		
+		//add the Tile to the TileLayer
+		tlayer.setTileAt(row, col, tile);    
+		
+		//If animated tile, add to update list
+		if(tile != null && tile.pixels != null && com.stencyl.utils.Utils.contains(engine.animatedTiles, tile))
+		{
+			engine.animatedTiles.push(tile);
+		}
+		
+		//Now add the shape as a body
+		
+		//TODO: Looks like we don't have the shapes portion read in yet or the actor-shape stuff in yet.
+		/*if(tile != null && tile.collisionID != -1)
+		{
+			var tileShape = Game.get().shapes[tile.collisionID];
+			
+			var x = col * getTileWidth();
+			var y = row * getTileHeight();
+			//engine.createDynamicTile(tileShape, toPhysicalUnits(x), toPhysicalUnits(y), layerID, getTileWidth(), getTileHeight());
+		}*/
+	}
+	
+	public function getTileAt(row:Int, col:Int, layerID:Int):Tile
+	{
+		var tlayer = engine.tileLayers.get(layerID);
+		
+		if(tlayer == null)
+		{
+			return null;
+		}
+		
+		return tlayer.getTileAt(row, col);
+	}
+	
+	public function removeTileAt(row:Int, col:Int, layerID:Int)
+	{
+		var tlayer = engine.tileLayers.get(layerID);
+		
+		if(tlayer == null)
+		{
+			return;
+		}
+		
+		//grab the tile to get the shape
+		var tile:Tile = getTileAt(row, col, layerID);
+		
+		//If we find a tile in this location
+		if(tile != null)
+		{
+			//Remove the collision box
+			if(tile.collisionID != -1)
+			{
+				var x = col * getTileWidth();
+				var y = row * getTileHeight();
+				var key = "ID" + "-" + x + "-" + y + "-" + layerID;
+				var a = engine.dynamicTiles.get(key);
+				
+				if(a != null)
+				{
+					engine.removeActor(a);
+					engine.dynamicTiles.remove(key);
+				}
+			}
+			
+			//Remove the tile image
+			tlayer.setTileAt(row, col, null);
+		}
 	}
 	
 	//*-----------------------------------------------

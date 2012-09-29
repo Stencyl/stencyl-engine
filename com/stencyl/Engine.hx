@@ -1795,8 +1795,37 @@ class Engine
 	//* Terrain Creation
 	//*-----------------------------------------------
 	
+	//TODO: For simple physics, we stick in either a box or nothing at all
 	public function createDynamicTile(shape:B2Shape, x:Float, y:Float, layerID:Int, width:Float, height:Float)
 	{
+		/*
+		//the real code
+		var a:Actor = new Actor
+		(
+			this, 
+			ai.elementID,
+			ai.groupID,
+			ai.x / physicsScale, 
+			ai.y / physicsScale, 
+			ai.layerID,
+			s.width, 
+			s.height, 
+			s,
+			ai.behaviorValues,
+			ai.actorType,
+			NO_PHYSICS ? null : ai.actorType.bodyDef,
+			false,
+			false,
+			false,
+			false,
+			null,
+			ai.actorType.ID,
+			ai.actorType.isLightweight || NO_PHYSICS,
+			ai.actorType.autoScale
+		);
+		*/
+	
+		//the old code
 		/*var a:Actor = new Actor
 		(
 			this, 
@@ -1821,12 +1850,12 @@ class Engine
 		
 		a.name = "Terrain";
 		a.visible = false;
-		add(a);
-		;
-		var key:String = "ID"
-		key = key.concat("-",toPixelUnits(x).toString(),"-",toPixelUnits(y),"-", layerID.toString());
+		add(a);*/
+		
+		var key = "ID" + "-" + toPixelUnits(x) + "-" + toPixelUnits(y) + "-" + layerID;
 
-		dynamicTiles[key] = a;     //keep reference to Tile actor based on position and layer*/
+		//keep reference to Tile actor based on position and layer
+		//dynamicTiles.set(key, a);     
 	}
 		
 	public function getTopLayer():Int

@@ -296,8 +296,16 @@ class Input
 		_pressNum = 0;
 		while (_releaseNum-- > -1) _release[_releaseNum] = -1;
 		_releaseNum = 0;
-		if (mousePressed) mousePressed = false;
-		if (mouseReleased) mouseReleased = false;
+
+		if(mousePressed) 
+		{
+			mousePressed = false;
+		}
+		
+		if(mouseReleased) 
+		{
+			mouseReleased = false;
+		}
 	}
 	
 	public static function simulateKeyPress(key:String)
