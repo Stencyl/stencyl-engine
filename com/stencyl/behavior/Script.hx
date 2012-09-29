@@ -1874,16 +1874,17 @@ class Script
 		}
 		
 		//Now add the shape as a body
-		
-		//TODO: Looks like we don't have the shapes portion read in yet or the actor-shape stuff in yet.
-		/*if(tile != null && tile.collisionID != -1)
+		if(tile != null && tile.collisionID != -1)
 		{
-			var tileShape = Game.get().shapes[tile.collisionID];
-			
+			var tileShape = GameModel.get().shapes.get(tile.collisionID);
 			var x = col * getTileWidth();
 			var y = row * getTileHeight();
-			//engine.createDynamicTile(tileShape, toPhysicalUnits(x), toPhysicalUnits(y), layerID, getTileWidth(), getTileHeight());
-		}*/
+			
+			if(tileShape != null)
+			{
+				engine.createDynamicTile(tileShape, toPhysicalUnits(x), toPhysicalUnits(y), layerID, getTileWidth(), getTileHeight());
+			}
+		}
 	}
 	
 	public function getTileAt(row:Int, col:Int, layerID:Int):Tile

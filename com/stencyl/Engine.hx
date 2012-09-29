@@ -1795,67 +1795,43 @@ class Engine
 	//* Terrain Creation
 	//*-----------------------------------------------
 	
-	//TODO: For simple physics, we stick in either a box or nothing at all
+	//TODO: For simple physics, we stick in either a box or nothing at all - maybe it autohandles this?
 	public function createDynamicTile(shape:B2Shape, x:Float, y:Float, layerID:Int, width:Float, height:Float)
 	{
-		/*
-		//the real code
 		var a:Actor = new Actor
 		(
 			this, 
-			ai.elementID,
-			ai.groupID,
-			ai.x / physicsScale, 
-			ai.y / physicsScale, 
-			ai.layerID,
-			s.width, 
-			s.height, 
-			s,
-			ai.behaviorValues,
-			ai.actorType,
-			NO_PHYSICS ? null : ai.actorType.bodyDef,
-			false,
-			false,
-			false,
-			false,
-			null,
-			ai.actorType.ID,
-			ai.actorType.isLightweight || NO_PHYSICS,
-			ai.actorType.autoScale
-		);
-		*/
-	
-		//the old code
-		/*var a:Actor = new Actor
-		(
-			this, 
-			int.MAX_VALUE,
-			Game.TERRAIN_ID,
+			Utils.INT_MAX,
+			GameModel.TERRAIN_ID,
 			x, 
 			y, 
 			layerID,
-			width,
+			width, 
 			height, 
-			null, 
-			new Array(),
-			null,
-			null, 
-			false, 
-			true, 
-			false,
-			false, 
-			shape, 
-			true
+			null, //sprite
+			null, //behavior values
+			null, //actor type
+			null, //body def
+			false, //sensor?
+			true, //stationary?
+			false, //kinematic?
+			false, //rotates?
+			shape, //terrain shape
+			-1, //typeID?
+			false, //is lightweight?
+			false //autoscale?
 		);
 		
 		a.name = "Terrain";
 		a.visible = false;
-		add(a);*/
+		
+		moveActorToLayer(a, layerID);
+		//add(a);
 		
 		var key = "ID" + "-" + toPixelUnits(x) + "-" + toPixelUnits(y) + "-" + layerID;
 
 		//keep reference to Tile actor based on position and layer
-		//dynamicTiles.set(key, a);     
+		dynamicTiles.set(key, a);     
 	}
 		
 	public function getTopLayer():Int

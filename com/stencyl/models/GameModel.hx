@@ -1,7 +1,14 @@
 package com.stencyl.models;
 
 import haxe.xml.Fast;
+
+import com.stencyl.io.SpriteReader;
 import com.stencyl.utils.Utils;
+
+import box2D.common.math.B2Vec2;
+import box2D.collision.shapes.B2Shape;
+import box2D.collision.shapes.B2PolygonShape;
+import box2D.collision.shapes.B2CircleShape;
 
 class GameModel
 {
@@ -21,6 +28,7 @@ class GameModel
 	
 	public var collisionGroups:Array<CollisionGroupDef>;
 	public var gameAttributes:Hash<Dynamic>;
+	public var shapes:IntHash<B2PolygonShape>;
 	public var scenes:IntHash<Scene>;
 	
 	public static var REGION_ID:Int = -2;
@@ -58,6 +66,8 @@ class GameModel
 		}
 		
 		//---
+		
+		shapes = readShapes(xml.node.collisions.elements);
 		
 		groups = readGroups(xml.node.groups.elements);
 		groups.push(new GroupDef(REGION_ID, "Regions"));
@@ -147,6 +157,34 @@ class GameModel
 			var data = Data.get().scenesXML.get(Std.parseInt(e.att.id));
 			
 			map.set(Std.parseInt(e.att.id), new Scene(sceneID, e.att.name, data));
+		}
+		
+		return map;
+	}
+	
+	public function readShapes(list:Iterator<Fast>):IntHash<B2PolygonShape>
+	{
+		var map:IntHash<B2PolygonShape> = new IntHash<B2PolygonShape>();
+		
+		for(e in list)
+		{
+			var s:String = e.att.pts;
+			var pts = s.split("#");
+			var vertices = new Array<B2Vec2>();
+			
+			for(pt in pts)
+			{
+				var ptArray = pt.split(",");
+				var px = Std.parseFloat(ptArray[0]);
+				var py = Std.parseFloat(ptArray[1]);
+				vertices.push(new B2Vec2(px * 3.1, py * 3.1));
+			}
+			
+			trace("Was in correct direction? " + SpriteReader.EnsureCorrectVertexDirection(vertices));
+			
+			var p = new B2PolygonShape();
+			p.setAsArray(vertices, vertices.length);
+			map.set(Std.parseInt(e.att.id), p);
 		}
 		
 		return map;
