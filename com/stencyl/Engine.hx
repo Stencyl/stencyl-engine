@@ -434,6 +434,11 @@ class Engine
 		root.mouseChildren = false;
 		root.mouseEnabled = false;
 		//root.stage.mouseChildren = false;
+
+		if(!scripts.MyAssets.releaseMode && scripts.MyAssets.debugDraw)
+		{
+			DEBUG_DRAW = true;
+		}
 		
 		Engine.engine = this;
 		this.root = root;
