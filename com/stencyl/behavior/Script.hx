@@ -1887,6 +1887,11 @@ class Script
 		}
 	}
 	
+	public function tileExistsAt(row:Int, col:Int, layerID:Int):Bool
+	{
+		return getTileAt(row, col, layerID) != null;
+	}
+	
 	public function getTileAt(row:Int, col:Int, layerID:Int):Tile
 	{
 		var tlayer = engine.tileLayers.get(layerID);
