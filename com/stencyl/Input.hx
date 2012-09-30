@@ -430,17 +430,23 @@ class Input
 	#if !js
 	private static function onTouchBegin(e:TouchEvent)
 	{
+		Engine.invokeListeners2(Engine.engine.whenMTStartListeners, e);
+	
 		multiTouchPoints.set(Std.string(e.touchPointID), e);
 		numTouches++;
 	}
 	
 	private static function onTouchMove(e:TouchEvent)
 	{
+		Engine.invokeListeners2(Engine.engine.whenMTDragListeners, e);
+	
 		multiTouchPoints.set(Std.string(e.touchPointID), e);
 	}
 	
 	private static function onTouchEnd(e:TouchEvent)
 	{
+		Engine.invokeListeners2(Engine.engine.whenMTEndListeners, e);
+		
 		multiTouchPoints.remove(Std.string(e.touchPointID));
 		numTouches--;
 	}

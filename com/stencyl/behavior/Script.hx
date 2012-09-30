@@ -450,6 +450,42 @@ class Script
 		#end
 	}
 	
+	public function addMultiTouchStartListener(func:Dynamic->Array<Dynamic>->Void)
+	{
+		#if(mobile && !air)
+		engine.whenMTStartListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenMTStartListeners, func);
+		}
+		#end
+	}
+	
+	public function addMultiTouchMoveListener(func:Dynamic->Array<Dynamic>->Void)
+	{
+		#if(mobile && !air)
+		engine.whenMTDragListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenMTDragListeners, func);
+		}
+		#end
+	}
+	
+	public function addMultiTouchEndListener(func:Dynamic->Array<Dynamic>->Void)
+	{
+		#if(mobile && !air)
+		engine.whenMTEndListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenMTEndListeners, func);
+		}
+		#end
+	}
+	
 	public function addKeyStateListener(key:String, func:Dynamic->Dynamic->Array<Dynamic>->Void)
 	{			
 		if(engine.whenKeyPressedListeners.get(key) == null)
