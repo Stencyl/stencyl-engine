@@ -1888,7 +1888,8 @@ class Script
 		return engine.getMiddleLayer();
 	}
 	
-	public function setTileAt(row:Int, col:Int, layerID:Int, tilesetID:Int, tileID:Int)
+	//The Tile API now exists as an extension (+ blocks). Remove in the future.
+	/*public function setTileAt(row:Int, col:Int, layerID:Int, tilesetID:Int, tileID:Int)
 	{
 		var tlayer = engine.tileLayers.get(layerID);
 		
@@ -1973,7 +1974,7 @@ class Script
 			//Remove the tile image
 			tlayer.setTileAt(row, col, null);
 		}
-	}
+	}*/
 	
 	//*-----------------------------------------------
 	//* Fonts
