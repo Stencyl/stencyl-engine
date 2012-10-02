@@ -1810,45 +1810,6 @@ class Engine
 	//*-----------------------------------------------
 	//* Terrain Creation
 	//*-----------------------------------------------
-	
-	//TODO: For simple physics, we stick in either a box or nothing at all - maybe it autohandles this?
-	public function createDynamicTile(shape:B2Shape, x:Float, y:Float, layerID:Int, width:Float, height:Float)
-	{
-		var a:Actor = new Actor
-		(
-			this, 
-			Utils.INT_MAX,
-			GameModel.TERRAIN_ID,
-			x, 
-			y, 
-			layerID,
-			width, 
-			height, 
-			null, //sprite
-			null, //behavior values
-			null, //actor type
-			null, //body def
-			false, //sensor?
-			true, //stationary?
-			false, //kinematic?
-			false, //rotates?
-			shape, //terrain shape
-			-1, //typeID?
-			false, //is lightweight?
-			false //autoscale?
-		);
-		
-		a.name = "Terrain";
-		a.visible = false;
-		
-		moveActorToLayer(a, layerID);
-		//add(a);
-		
-		var key = "ID" + "-" + toPixelUnits(x) + "-" + toPixelUnits(y) + "-" + layerID;
-
-		//keep reference to Tile actor based on position and layer
-		dynamicTiles.set(key, a);     
-	}
 		
 	public function getTopLayer():Int
 	{
