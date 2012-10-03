@@ -111,6 +111,10 @@ class Engine
 	public static var IMG_BASE:String = "";
 	public static var SCALE:Float = 1;
 	
+	public static var isStandardIOS:Bool = false;
+	public static var isExtendedIOS:Bool = false;
+	public static var isTabletIOS:Bool = false;
+	
 	
 	//*-----------------------------------------------
 	//* Important Values

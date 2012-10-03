@@ -75,8 +75,35 @@ class Universal extends Sprite
 		trace("Screen DPI: " + Capabilities.screenDPI);
 
 		//Tablets and other high-res devices get to use 2x mode, (TODO: if it's not a tablet-only game.)
-		#if(mobile && !air)		
+		#if(mobile && !air)	
+		
 		var larger = Math.max(stage.stageWidth, stage.stageHeight);
+		var smaller = Math.min(stage.stageWidth, stage.stageHeight);
+		
+		if(smaller == 320 && larger == 480)
+		{
+			Engine.isStandardIOS = true;
+		}
+		
+		else if(smaller == 640 && larger == 960)
+		{
+			Engine.isStandardIOS = true;
+		}
+		
+		else if(smaller == 640 && larger == 1136)
+		{
+			Engine.isExtendedIOS = true;
+		}	
+		
+		else if(smaller == 768 && larger == 1024)
+		{
+			Engine.isTabletIOS = true;
+		}	
+		
+		else if(smaller == 1536 && larger == 2048)
+		{
+			Engine.isTabletIOS = true;
+		}		
 		
 		//4 scale sceheme
 		/*if(larger >= 1920)
