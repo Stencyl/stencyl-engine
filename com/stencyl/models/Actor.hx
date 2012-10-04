@@ -251,7 +251,6 @@ class Actor extends Sprite
 	public static var lastCollided:Actor;
 
 	
-	
 	//*-----------------------------------------------
 	//* Init
 	//*-----------------------------------------------
