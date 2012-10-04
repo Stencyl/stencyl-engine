@@ -238,6 +238,6 @@ class Universal extends Sprite
 		stage.opaqueBackground = 0x000000;
 		#end
 
-		Lib.current.addChild(new Universal());	
+		Lib.current.addChild(new Universal());
 	}
 }

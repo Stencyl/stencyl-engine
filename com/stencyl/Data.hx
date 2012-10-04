@@ -10,12 +10,14 @@ import com.stencyl.io.SpriteReader;
 import com.stencyl.io.TilesetReader;
 
 import nme.Assets;
+import nme.Lib;
 import haxe.xml.Fast;
 
 import com.stencyl.behavior.Behavior;
 import com.stencyl.models.Scene;
 import com.stencyl.models.Resource;
 import com.stencyl.models.actor.ActorType;
+import nme.display.Sprite;
 
 
 class Data
@@ -27,13 +29,19 @@ class Data
 	public static var instance:Data;
 	private var loader:AssetLoader;
 	public static var theLoader:AssetLoader;
-	
+	private var preloader:Sprite;
+
 	public static function get():Data
 	{
 		if(instance == null)
 		{
 			instance = new Data();			
 			instance.loader = theLoader = Type.createInstance(Type.resolveClass("scripts.MyAssets"), []);
+			
+			#if mobile
+			instance.preloader = Type.createInstance(Type.resolveClass("scripts.StencylPreloader"), []);
+			#end
+			
 			instance.loadAll();
 		}
 		
@@ -88,24 +96,50 @@ class Data
 		{
 			throw "Data.hx - Could not load game. Check your logs for a possible cause (likely a bad MP3 file).";
 		}
+	}
+	
+	public function updatePreloader(pct:Int)
+	{
+		//trace(pct);
+		
+		#if(mobile && !air)
+		Reflect.callMethod(preloader, Reflect.field(preloader, "onUpdate"), [pct, 100]);
+		#end
+	}
+	
+	public function loadAll()
+	{
+		#if(mobile && !air)
+		Lib.current.addChild(preloader);
+		updatePreloader(0);
+		#end
 		
 		gameXML = new Fast(Xml.parse(Assets.getText("assets/data/game.xml")).firstElement());
 		resourceListXML = new Fast(Xml.parse(Assets.getText("assets/data/resources.xml")).firstElement());
 		sceneListXML = new Fast(Xml.parse(Assets.getText("assets/data/scenes.xml")).firstElement());
 		behaviorListXML = new Fast(Xml.parse(Assets.getText("assets/data/behaviors.xml")).firstElement());
 
+		updatePreloader(5);
+
 		loadReaders();
-	}
-	
-	public function loadAll()
-	{
 		loadBehaviors();
+		
+		updatePreloader(15);
+		
 		loadResources();
+		
+		updatePreloader(90);
 		
 		scenesXML = new IntHash<Fast>();
 		scenesTerrain = new IntHash<Dynamic>();
 		
 		loader.loadScenes(scenesXML, scenesTerrain);
+		
+		updatePreloader(100);
+		
+		#if(mobile && !air)
+		Lib.current.removeChild(instance.preloader);
+		#end
 	}
 	
 	private function loadReaders()
@@ -123,17 +157,39 @@ class Data
 	{
 		behaviors = new IntHash<Behavior>();
 		
+		#if(mobile && !air)
+		var numParts = 0;
+		
+		for(e in behaviorListXML.elements)
+		{
+			numParts++;
+		}
+		
+		var i = 0;
+		var increment = 10.0 / numParts;
+		#end
+		
 		for(e in behaviorListXML.elements)
 		{
 			//trace("Reading Behavior: " + e.att.name);
+			
+			#if(mobile && !air)
+			updatePreloader(5 + Std.int(increment * i));
+			#end
+			
 			behaviors.set(Std.parseInt(e.att.id), BehaviorReader.readBehavior(e));
+			
+			#if(mobile && !air)
+			i++;
+			#end
 		}
 	}
 	
 	private function loadResources()
 	{
 		resourceAssets = new Hash<Dynamic>();	
-		loader.loadResources(resourceAssets);	
+		loader.loadResources(resourceAssets);
+		updatePreloader(65);	
 		readResourceXML(resourceListXML);
 	}
 	
@@ -141,10 +197,31 @@ class Data
 	{
 		resources = new IntHash<Resource>();
 		
+		#if(mobile && !air)
+		var numParts = 0;
+		
+		for(e in list.elements)
+		{
+			numParts++;
+		}
+		
+		var i = 0;
+		var increment = 10.0 / numParts;
+		#end
+		
 		for(e in list.elements)
 		{
 			//trace("Reading: " + e.att.name);
+			
+			#if(mobile && !air)
+			updatePreloader(65 + Std.int(increment * i));
+			#end
+			
 			resources.set(Std.parseInt(e.att.id), readResource(Std.parseInt(e.att.id), e.name, e.att.name, e));
+			
+			#if(mobile && !air)
+			i++;
+			#end
 		}
 	}
 	
