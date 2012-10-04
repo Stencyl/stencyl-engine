@@ -453,9 +453,28 @@ class BitmapFont
 		var glyphWidth:Int;
 		#end
 		
+		var realCount = 0;
+		
 		for (i in 0...(pText.length)) 
 		{
+			if(i < realCount)
+			{
+				continue;
+			}
+		
 			var charCode:Int = pText.charCodeAt(i);
+			
+			//Pseudo Unicode
+			if(charCode == 126)
+			{
+				if(pText.charAt(i + 1) == 'x')
+				{
+					var unicodeChar = pText.substring(i + 2, i + 6);
+					charCode = Std.parseInt("0x" + unicodeChar);
+					realCount += 5;
+				}
+			}
+			
 			#if (flash || js)
 			glyph = pFontData[charCode];
 			if (glyph != null) 
@@ -494,6 +513,8 @@ class BitmapFont
 				_point.x += glyphWidth * pScale + pLetterSpacing;
 				#end
 			}
+			
+			realCount++;
 		}
 	}
 	
@@ -519,11 +540,28 @@ class BitmapFont
 	public function getTextWidth(pText:String, ?pLetterSpacing:Int = 0, ?pFontScale:Float = 1.0):Int 
 	{
 		var w:Int = 0;
-		
+		var realCount = 0;
 		var textLength:Int = pText.length;
 		for (i in 0...(textLength)) 
 		{
+			if(i < realCount)
+			{
+				continue;
+			}
+			
 			var charCode:Int = pText.charCodeAt(i);
+			
+			//Pseudo Unicode
+			if(charCode == 126)
+			{
+				if(pText.charAt(i + 1) == 'x')
+				{
+					var unicodeChar = pText.substring(i + 2, i + 6);
+					charCode = Std.parseInt("0x" + unicodeChar);
+					realCount += 5;
+				}
+			}
+			
 			#if (flash || js)
 			var glyph:BitmapData = _glyphs[charCode];
 			if (glyph != null) 
@@ -538,6 +576,8 @@ class BitmapFont
 				w += _glyphs.get(charCode).xadvance;
 			}
 			#end
+			
+			realCount++;
 		}
 		
 		w = Math.round(w * pFontScale);
