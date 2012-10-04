@@ -38,7 +38,7 @@ class Data
 			instance = new Data();			
 			instance.loader = theLoader = Type.createInstance(Type.resolveClass("scripts.MyAssets"), []);
 			
-			#if mobile
+			#if(mobile && !air)
 			instance.preloader = Type.createInstance(Type.resolveClass("scripts.StencylPreloader"), []);
 			#end
 			
