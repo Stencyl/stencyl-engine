@@ -11,7 +11,7 @@ class ColorBackground extends Resource, implements Background
 
 	public function new(bgColor:Int) 
 	{	
-		super(0, "Color Background");
+		super(0, "Color Background", -1);
 		
 		this.bgColor = bgColor;
 		

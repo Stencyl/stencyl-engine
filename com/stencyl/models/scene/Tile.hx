@@ -27,32 +27,25 @@ class Tile
 	#end
 	
 	#if !js
-	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, imgData:BitmapData, parent:Tileset)
+	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, parent:Tileset)
 	#end
 	#if js
-	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, imgData:BitmapData, parent:Dynamic)
+	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, parent:Dynamic)
 	#end
 	{
 		this.tileID = tileID;
 		this.collisionID = collisionID;
 		this.frameIndex = frameIndex;
 		this.durations = durations;
-		this.parent = parent;		
-		pixels = imgData;
+		this.parent = parent;	
 		
-		#if cpp		
-		if (imgData != null)
+		var atlas = GameModel.get().atlases.get(parent.atlasID);
+		
+		if(atlas != null && atlas.active)
 		{
-			data = new Tilesheet(imgData);
-		
-			for (i in 0 ... durations.length)
-			{
-				currFrame = i;
-				data.addTileRect( getSource(parent.tileWidth, parent.tileHeight) );
-			}
+			loadGraphics();
 		}
-		#end
-		
+	
 		currFrame = 0;
 		currTime = 0;
 		updateSource = false;
@@ -60,18 +53,18 @@ class Tile
 	
 	public function update(elapsedTime:Float)
 	{
-		if (durations.length == 1)
+		if(durations.length == 1)
 		{
 			return;
 		}
 		
 		currTime += Math.floor(elapsedTime);
 				
-		if (currTime > Std.int(durations[currFrame]))
+		if(currTime > Std.int(durations[currFrame]))
 		{
 			currTime -= Std.int(durations[currFrame]);
 			
-			if (currFrame + 1 < durations.length)
+			if(currFrame + 1 < durations.length)
 			{
 				currFrame++;					
 			}
@@ -89,5 +82,41 @@ class Tile
 	public function getSource(tileWidth:Int, tileHeight:Int):Rectangle
 	{			
 		return new Rectangle(currFrame * tileWidth, 0, tileWidth, tileHeight);
+	}
+	
+	//For Atlases
+	
+	public function loadGraphics()
+	{
+		var imgData:BitmapData = null;
+		
+		if(durations.length > 1)
+		{
+			imgData = Data.get().resourceAssets.get(parent.ID + "-" + tileID + ".png");				
+		}
+		
+		pixels = imgData;
+		
+		#if cpp		
+		if(imgData != null)
+		{
+			data = new Tilesheet(imgData);
+		
+			for(i in 0 ... durations.length)
+			{
+				currFrame = i;
+				data.addTileRect(getSource(parent.tileWidth, parent.tileHeight));
+			}
+		}
+		#end
+	}
+	
+	public function unloadGraphics()
+	{
+		pixels = null;
+	
+		#if !js
+		data = null;
+		#end
 	}
 }

@@ -95,7 +95,7 @@ class Scene
 		{
 			if(e.name == "color-bg" || e.name == "grad-bg")
 			{
-				colorBackground = cast(new BackgroundReader().read(0, e.name, "", e), Background);
+				colorBackground = cast(new BackgroundReader().read(0, 0, e.name, "", e), Background);
 				break;
 			}
 		}

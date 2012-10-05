@@ -15,10 +15,10 @@ class FontReader implements AbstractReader
 		return type == "font";
 	}
 	
-	public function read(ID:Int, type:String, name:String, xml:Fast):Resource
+	public function read(ID:Int, atlasID:Int, type:String, name:String, xml:Fast):Resource
 	{
 		//trace("Reading Font (" + ID + ") - " + name);
 		
-		return new Font(ID, name, false);
+		return new Font(ID, atlasID, name, false);
 	}
 }

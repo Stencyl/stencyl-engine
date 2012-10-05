@@ -2429,6 +2429,24 @@ class Script
 	//* Mobile
 	//*-----------------------------------------------
 	
+	//Atlases
+	
+	//Like the prior implementation, this is a HINT to the engine to load a new atlas UPON CHANGING SCENES
+	//Does not happen immediately.
+	public function loadAtlas(atlasID:Int)
+	{
+		//#if mobile
+		engine.atlasesToLoad.set(atlasID, atlasID);
+		//#end
+	}
+	
+	public function unloadAtlas(atlasID:Int)
+	{
+		//#if mobile
+		engine.atlasesToUnload.set(atlasID, atlasID);
+		//#end
+	}
+	
 	//Ads
 	
 	public function showMobileAd(position:Int = 0)

@@ -12,7 +12,7 @@ class GradientBackground extends Resource, implements Background
 
 	public function new(topColor:Int, bottomColor:Int) 
 	{	
-		super(0, "Gradient Background");
+		super(0, "Gradient Background", -1);
 		
 		this.topColor = topColor;
 		this.bottomColor = bottomColor;

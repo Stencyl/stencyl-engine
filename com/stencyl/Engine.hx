@@ -275,6 +275,9 @@ class Engine
 	public var cameraOldX:Float;
 	public var cameraOldY:Float;	
 	
+	public var atlasesToLoad:IntHash<Int>;
+	public var atlasesToUnload:IntHash<Int>;
+	
 	
 	//*-----------------------------------------------
 	//* Model - ?????
@@ -466,6 +469,9 @@ class Engine
 	
 	public function begin(initSceneID:Int)
 	{		
+		atlasesToLoad = new IntHash<Int>();
+		atlasesToUnload = new IntHash<Int>();
+	
 		Input.enable();
 		Input.define(INTERNAL_SHIFT, [Key.SHIFT]);
 		Input.define(INTERNAL_CTRL, [Key.CONTROL]);
@@ -495,7 +501,7 @@ class Engine
 		#end
 
 		Data.get();
-		GameModel.get();
+		GameModel.get().loadScenes();
 		
 		g = new G();
 		
@@ -604,6 +610,21 @@ class Engine
 	
 	public function loadScene(sceneID:Int)
 	{
+		for(atlas in atlasesToUnload)
+		{
+			Data.get().unloadAtlas(atlas);
+		}
+		
+		for(atlas in atlasesToLoad)
+		{
+			Data.get().loadAtlas(atlas);
+		}
+		
+		atlasesToLoad = new IntHash<Int>();
+		atlasesToUnload = new IntHash<Int>();
+	
+		//---
+	
 		setOffscreenTolerance(0, 0, 0, 0);
 		
 		tasks = new Array<TimedTask>();

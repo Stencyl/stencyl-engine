@@ -27,7 +27,7 @@ class SpriteReader implements AbstractReader
 		return type == "sprite";
 	}
 	
-	public function read(ID:Int, type:String, name:String, xml:Fast):Resource
+	public function read(ID:Int, atlasID:Int, type:String, name:String, xml:Fast):Resource
 	{
 		//trace("Reading Sprite (" + ID + ") - " + name);
 		
@@ -45,7 +45,7 @@ class SpriteReader implements AbstractReader
 		}
 		
 		var animations:Array<Animation> = new Array<Animation>();
-		var sprite:Sprite = new Sprite(ID, name, width, height, defaultAnimation);
+		var sprite:Sprite = new Sprite(ID, atlasID, name, width, height, defaultAnimation);
 		
 		for(e in xml.elements)
 		{
@@ -72,7 +72,6 @@ class SpriteReader implements AbstractReader
 		var parentID:Int = parent.ID;
 		var shapes = readShapes(xml, imgWidth/framesAcross, imgHeight/framesDown);
 		var looping:Bool = Utils.toBoolean(xml.att.loop);
-		var imgData:Dynamic = Data.get().resourceAssets.get(parentID + "-" + animID + ".png");
 		var durations:Array<Int> = new Array<Int>();
 		var counter:Int = 0;
 		
@@ -97,14 +96,14 @@ class SpriteReader implements AbstractReader
 			parentID, 
 			shapes, 
 			looping, 
-			imgData,
 			imgWidth,
 			imgHeight,
 			originX,
 			originY,
 			durations, 
 			framesAcross, 
-			framesDown
+			framesDown,
+			parent.atlasID
 		);
 	}
 	

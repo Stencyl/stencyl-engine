@@ -17,6 +17,7 @@ class ActorType extends Resource
 	public function new
 	(
 		ID:Int, 
+		atlasID:Int,
 		name:String, 
 		groupID:Int, 
 		spriteID:Int, 
@@ -27,7 +28,7 @@ class ActorType extends Resource
 		pausable:Bool
 	)
 	{
-		super(ID, name);
+		super(ID, name, atlasID);
 		
 		this.groupID = groupID;
 		this.spriteID = spriteID;
@@ -36,5 +37,17 @@ class ActorType extends Resource
 		this.isLightweight = isLightweight;
 		this.autoScale = autoScale;
 		this.pausable = pausable;
+	}
+	
+	//For Atlases
+	
+	override public function loadGraphics()
+	{
+		com.stencyl.Data.get().resources.get(spriteID).loadGraphics();
+	}
+	
+	override public function unloadGraphics()
+	{
+		com.stencyl.Data.get().resources.get(spriteID).unloadGraphics();
 	}
 }

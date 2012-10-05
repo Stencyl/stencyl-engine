@@ -29,6 +29,7 @@ class GameModel
 	public var collisionGroups:Array<CollisionGroupDef>;
 	public var gameAttributes:Hash<Dynamic>;
 	public var shapes:IntHash<B2PolygonShape>;
+	public var atlases:IntHash<Atlas>;
 	public var scenes:IntHash<Scene>;
 	
 	public static var REGION_ID:Int = -2;
@@ -68,6 +69,7 @@ class GameModel
 		//---
 		
 		shapes = readShapes(xml.node.collisions.elements);
+		atlases = readAtlases(xml.node.atlases.elements);
 		
 		groups = readGroups(xml.node.groups.elements);
 		groups.push(new GroupDef(REGION_ID, "Regions"));
@@ -144,7 +146,11 @@ class GameModel
 		//readInput(xml.node.input.elements);
 		
 		gameAttributes = readGameAttributes(xml.node.attributes.elements);
-		scenes = readScenes(Data.get().sceneListXML);	
+	}
+	
+	public function loadScenes()
+	{
+		scenes = readScenes(Data.get().sceneListXML);
 	}
 	
 	public function readScenes(list:Fast):IntHash<Scene>
@@ -185,6 +191,29 @@ class GameModel
 			var p = new B2PolygonShape();
 			p.setAsArray(vertices, vertices.length);
 			map.set(Std.parseInt(e.att.id), p);
+		}
+		
+		return map;
+	}
+	
+	public function readAtlases(list:Iterator<Fast>):IntHash<Atlas>
+	{
+		var map:IntHash<Atlas> = new IntHash<Atlas>();
+		
+		for(e in list)
+		{
+			var ID = Std.parseInt(e.att.id);
+			var name = e.att.name;
+			var mems = e.att.members.split(",");
+			var active = e.att.start == "true";
+			var members = new Array<Int>();
+			
+			for(n in mems)
+			{
+				members.push(Std.parseInt(n));
+			}
+
+			map.set(ID, new Atlas(ID, name, members, active));
 		}
 		
 		return map;

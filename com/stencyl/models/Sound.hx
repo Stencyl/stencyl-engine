@@ -18,7 +18,7 @@ class Sound extends Resource
 		
 	public function new(ID:Int, name:String, streaming:Bool, looping:Bool, panning:Float, volume:Float, ext:String) 
 	{
-		super(ID, name);
+		super(ID, name, -1);
 		
 		this.streaming = streaming;
 		this.looping = looping;

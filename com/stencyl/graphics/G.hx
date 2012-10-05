@@ -84,7 +84,7 @@ class G
 		firstX = 0;
 		firstY = 0;
 		
-		font = defaultFont = new Font(-1, "", true); 
+		font = defaultFont = new Font(-1, 0, "", true); 
 		
 		drawData = [];
 		

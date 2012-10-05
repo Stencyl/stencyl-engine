@@ -17,7 +17,7 @@ class SoundReader implements AbstractReader
 		return type == "sound" || type == "music";
 	}
 	
-	public function read(ID:Int, type:String, name:String, xml:Fast):Resource
+	public function read(ID:Int, atlasID:Int, type:String, name:String, xml:Fast):Resource
 	{
 		//trace("Reading Sound (" + ID + ") - " + name);
 

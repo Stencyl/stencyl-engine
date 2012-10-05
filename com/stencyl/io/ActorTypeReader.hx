@@ -21,7 +21,7 @@ class ActorTypeReader implements AbstractReader
 		return type == "actor";
 	}
 	
-	public function read(ID:Int, type:String, name:String, xml:Fast):Resource
+	public function read(ID:Int, atlasID:Int, type:String, name:String, xml:Fast):Resource
 	{
 		//trace("Reading ActorType (" + ID + ") - " + name);
 		
@@ -79,7 +79,7 @@ class ActorTypeReader implements AbstractReader
 			}
 		}
 			
-		return new ActorType(ID, name, groupID, spriteID, behaviorValues, bodyDef, isLightweight, autoScale, pausable);
+		return new ActorType(ID, atlasID, name, groupID, spriteID, behaviorValues, bodyDef, isLightweight, autoScale, pausable);
 	}
 	
 	public static function readBehaviors(xml:Fast):Hash<BehaviorInstance>

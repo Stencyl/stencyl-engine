@@ -12,6 +12,7 @@ class ImageBackground extends Resource, implements Background
 {
 	public var currFrame:Int;
 	public var currTime:Float;
+	
 	public var img:BitmapData;
 	public var frames:Array<Dynamic>;
 	public var durations:Array<Int>;
@@ -24,15 +25,15 @@ class ImageBackground extends Resource, implements Background
 	public function new
 	(
 		ID:Int,
+		atlasID:Int,
 		name:String,
-		frameData:Array<Dynamic>,
 		durations:Array<Int>,
 		parallaxX:Float,
 		parallaxY:Float,
 		repeats:Bool
 	)
 	{	
-		super(ID, name);
+		super(ID, name, atlasID);
 		
 		this.parallaxX = parallaxX;
 		this.parallaxY = parallaxY;
@@ -42,14 +43,10 @@ class ImageBackground extends Resource, implements Background
 		this.currTime = 0;
 		this.currFrame = 0;
 		
-		this.frames = new Array<Dynamic>();
-		
-		for(i in 0...frameData.length)
+		if(isAtlasActive())
 		{
-			frames.push(frameData[i]);				
+			loadGraphics();		
 		}
-		
-		this.img = frames[0];			
 	}	
 	
 	public function update()
@@ -77,5 +74,51 @@ class ImageBackground extends Resource, implements Background
 		}
 		
 		bitmap.bitmapData = texture;
+	}
+	
+	//For Atlases
+	
+	override public function loadGraphics()
+	{
+		var frameData = new Array<Dynamic>();
+		var numFrames = durations.length;
+		
+		if(numFrames > 0)
+		{
+			for(i in 0...numFrames)
+			{
+				frameData.push(Data.get().resourceAssets.get(ID + "-" + i + ".png"));
+			}
+		}
+		
+		else
+		{
+			frameData.push(Data.get().resourceAssets.get(ID + "-0.png"));
+		}
+		
+		//---
+	
+		this.frames = new Array<Dynamic>();
+		
+		for(i in 0...frameData.length)
+		{
+			this.frames.push(frameData[i]);				
+		}
+		
+		this.img = frames[0];
+	}
+	
+	override public function unloadGraphics()
+	{
+		//Replace with a 1x1 px blank - graceful fallback
+		img = new BitmapData(1, 1);
+		currFrame = 0;
+		
+		frames = [];
+		
+		for(d in durations)
+		{
+			frames.push(img);
+		}
 	}
 }

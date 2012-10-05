@@ -20,7 +20,7 @@ class BackgroundReader implements AbstractReader
 		return type == "background";
 	}
 	
-	public function read(ID:Int, type:String, name:String, xml:Fast):Resource
+	public function read(ID:Int, atlasID:Int, type:String, name:String, xml:Fast):Resource
 	{
 		//trace("Reading Background (" + ID + ") - " + name);
 
@@ -85,29 +85,18 @@ class BackgroundReader implements AbstractReader
 				durations[counter] = Std.parseInt(f);
 				counter++;
 			}
-			
-			for(i in 0...numFrames)
-			{
-				frameData.push(Data.get().resourceAssets.get(ID + "-" + i + ".png"));
-			}
-		}
-		
-		else
-		{
-			frameData.push(Data.get().resourceAssets.get(ID + "-0.png"));
 		}
 
 		var repeats:Bool = Utils.toBoolean(xml.att.repeats);						
 		
 		if(scrollX != 0 || scrollY != 0)
 		{
-			return new ScrollingBackground(ID, name, frameData, durations, parallaxX, parallaxY, repeats, scrollX, scrollY);
+			return new ScrollingBackground(ID, atlasID, name, durations, parallaxX, parallaxY, repeats, scrollX, scrollY);
 		}
 		
 		else
 		{
-			//return new ScrollingBackground(ID, name, frameData, durations, parallaxX, parallaxY, repeats, 10, 10);
-			return new ImageBackground(ID, name, frameData, durations, parallaxX, parallaxY, repeats);
+			return new ImageBackground(ID, atlasID, name, durations, parallaxX, parallaxY, repeats);
 		}
 	}
 }

@@ -28,9 +28,9 @@ class Tileset extends Resource
 	public var sheetMap:IntHash<Int>;
 	#end
 	
-	public function new(ID:Int, name:String, framesAcross:Int, framesDown:Int, tileWidth:Int, tileHeight:Int, tiles:Array<Tile>, imgData:BitmapData)
+	public function new(ID:Int, atlasID:Int, name:String, framesAcross:Int, framesDown:Int, tileWidth:Int, tileHeight:Int, tiles:Array<Tile>)
 	{
-		super(ID, name);
+		super(ID, name, atlasID);
 		
 		this.framesAcross = framesAcross;
 		this.framesDown = framesDown;
@@ -38,7 +38,11 @@ class Tileset extends Resource
 		this.tileHeight = tileHeight;
 		this.tiles = tiles;
 
-		pixels = imgData;
+		if(isAtlasActive())
+		{
+			loadGraphics();
+		}
+		
 		temp = new Rectangle();
 	}
 	
@@ -93,5 +97,27 @@ class Tileset extends Resource
 			
 			return temp.clone();
 		}
+	}
+	
+	//For Atlases
+	
+	override public function loadGraphics()
+	{
+		pixels = Data.get().resourceAssets.get(ID + ".png");
+		
+		//On a first read, this won't be ready to do, and we'll load when we're OK
+		if(tiles.length > 0)
+		{
+			setupTilesheet();
+		}
+	}
+	
+	override public function unloadGraphics()
+	{
+		pixels = null;
+	
+		#if cpp
+		tilesheet = null;
+		#end
 	}
 }

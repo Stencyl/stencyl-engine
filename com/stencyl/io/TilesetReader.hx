@@ -18,7 +18,7 @@ class TilesetReader implements AbstractReader
 		return type == "tileset";
 	}
 	
-	public function read(ID:Int, type:String, name:String, xml:Fast):Resource
+	public function read(ID:Int, atlasID:Int, type:String, name:String, xml:Fast):Resource
 	{
 		//trace("Reading Tileset (" + ID + ") - " + name);
 
@@ -28,7 +28,7 @@ class TilesetReader implements AbstractReader
 		var tileHeight:Int = Std.parseInt(xml.att.th);
 		var tiles:Array<Tile> = new Array<Tile>();
 
-		var tset:Tileset = new Tileset(ID, name, framesAcross, framesDown, tileWidth, tileHeight, tiles, Data.get().resourceAssets.get(ID + ".png"));
+		var tset:Tileset = new Tileset(ID, atlasID, name, framesAcross, framesDown, tileWidth, tileHeight, tiles);
 		
 		for(e in xml.elements)
 		{
@@ -66,12 +66,7 @@ class TilesetReader implements AbstractReader
 			
 			counter++;
 		}
-		
-		if(durations.length > 1)
-		{
-			imgData = Data.get().resourceAssets.get(parent.ID + "-" + tileID + ".png");				
-		}
-		
-		return new Tile(tileID, collisionID, frameID, durations, imgData, parent);
+
+		return new Tile(tileID, collisionID, frameID, durations, parent);
 	}
 }

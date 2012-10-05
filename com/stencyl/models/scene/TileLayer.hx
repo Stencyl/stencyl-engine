@@ -220,7 +220,10 @@ class TileLayer extends Sprite
 					if(source != null)
 					{
 						#if (flash || js)
-						bitmapData.copyPixels(pixels, source, flashPoint, null, null, true);
+						if(pixels != null)
+						{
+							bitmapData.copyPixels(pixels, source, flashPoint, null, null, true);
+						}
 						#end
 						
 						#if cpp						
@@ -230,7 +233,11 @@ class TileLayer extends Sprite
 						if(t.data == null)
 						{
 							t.parent.data[2] = t.parent.sheetMap.get(t.tileID);
-							t.parent.tilesheet.drawTiles(graphics, t.parent.data, true);
+							
+							if(t.parent.tilesheet != null)
+							{
+								t.parent.tilesheet.drawTiles(graphics, t.parent.data, true);
+							}
 						}
 						
 						else

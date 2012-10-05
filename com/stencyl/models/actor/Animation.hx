@@ -30,14 +30,14 @@ class Animation
 		parentID:Int, 
 		shapes:IntHash<B2FixtureDef>, 
 		looping:Bool, 
-		imgData:Dynamic,
 		imgWidth:Int,
 		imgHeight:Int,
 		originX:Float,
 		originY:Float,
 		durations:Array<Int>, 
 		framesAcross:Int, 
-		framesDown:Int
+		framesDown:Int,
+		atlasID:Int
 	)
 	{
 		this.animID = animID;
@@ -47,8 +47,7 @@ class Animation
 		this.shapes = shapes;
 		this.looping = looping;
 		this.durations = durations;
-		
-		this.imgData = imgData;
+
 		this.imgWidth = imgWidth;
 		this.imgHeight = imgHeight;
 		
@@ -57,5 +56,25 @@ class Animation
 		
 		this.originX = originX;
 		this.originY = originY;
+		
+		var atlas = GameModel.get().atlases.get(atlasID);
+			
+		if(atlas != null && atlas.active)
+		{
+			loadGraphics();
+		}
+	}
+	
+	//For Atlases
+	
+	public function loadGraphics()
+	{
+		imgData = Data.get().resourceAssets.get(parentID + "-" + animID + ".png");
+	}
+	
+	public function unloadGraphics()
+	{
+		//Graceful fallback - just a blank image that is numFrames across in px
+		imgData = new BitmapData(framesAcross, 1);
 	}
 }

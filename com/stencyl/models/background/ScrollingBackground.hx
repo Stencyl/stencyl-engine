@@ -11,8 +11,8 @@ class ScrollingBackground extends ImageBackground, implements Background
 	public function new
 	(
 		ID:Int,
+		atlasID:Int,
 		name:String,
-		frameData:Array<Dynamic>,
 		durations:Array<Int>,
 		parallaxX:Float,
 		parallaxY:Float,
@@ -21,7 +21,7 @@ class ScrollingBackground extends ImageBackground, implements Background
 		yVelocity:Float
 	)
 	{	
-		super(ID, name, frameData, durations, parallaxX, parallaxY, repeats);
+		super(ID, atlasID, name, durations, parallaxX, parallaxY, repeats);
 		
 		this.xVelocity = xVelocity;
 		this.yVelocity = yVelocity;		
@@ -33,5 +33,5 @@ class ScrollingBackground extends ImageBackground, implements Background
 	
 	override public function draw(g:Graphics, cameraX:Int, cameraY:Int, screenWidth:Int, screenHeight:Int)
 	{
-	}	
+	}
 }

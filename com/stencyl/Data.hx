@@ -17,6 +17,8 @@ import com.stencyl.behavior.Behavior;
 import com.stencyl.models.Scene;
 import com.stencyl.models.Resource;
 import com.stencyl.models.actor.ActorType;
+import com.stencyl.models.GameModel;
+import com.stencyl.models.Atlas;
 import nme.display.Sprite;
 
 
@@ -217,7 +219,14 @@ class Data
 			updatePreloader(65 + Std.int(increment * i));
 			#end
 			
-			resources.set(Std.parseInt(e.att.id), readResource(Std.parseInt(e.att.id), e.name, e.att.name, e));
+			var atlasID = 0;
+			
+			if(e.has.atlasID)
+			{
+				atlasID = Std.parseInt(e.att.atlasID);
+			}
+			
+			resources.set(Std.parseInt(e.att.id), readResource(Std.parseInt(e.att.id), atlasID, e.name, e.att.name, e));
 			
 			#if(mobile && !air)
 			i++;
@@ -225,13 +234,13 @@ class Data
 		}
 	}
 	
-	private function readResource(ID:Int, type:String, name:String, xml:Fast):Resource
+	private function readResource(ID:Int, atlasID:Int, type:String, name:String, xml:Fast):Resource
 	{
 		for(reader in readers)
 		{
 			if(reader.accepts(type))
 			{
-				return reader.read(ID, type, name, xml);
+				return reader.read(ID, atlasID, type, name, xml);
 			}
 		}
 		
@@ -266,5 +275,45 @@ class Data
 		}
 		
 		return a;
+	}
+	
+	public function loadAtlas(atlasID:Int)
+	{
+		var atlas = GameModel.get().atlases.get(atlasID);
+		
+		if(atlas != null && !atlas.active)
+		{
+			atlas.active = true;
+			
+			for(resourceID in atlas.members)
+			{
+				var resource = resources.get(resourceID);
+				
+				if(resource != null)
+				{
+					resource.loadGraphics();
+				}
+			}
+		}
+	}
+	
+	public function unloadAtlas(atlasID:Int)
+	{
+		var atlas = GameModel.get().atlases.get(atlasID);
+		
+		if(atlas != null && atlas.active)
+		{
+			atlas.active = false;
+		
+			for(resourceID in atlas.members)
+			{
+				var resource = resources.get(resourceID);
+				
+				if(resource != null)
+				{
+					resource.unloadGraphics();
+				}
+			}
+		}
 	}
 }

@@ -9,19 +9,43 @@ import com.stencyl.graphics.fonts.DefaultFontGenerator;
 
 class Font extends Resource
 {	
+	public static var defaultFont:BitmapFont = null;
+	
 	public var font:BitmapFont;
 	public var fontScale:Float;
+	public var isDefault:Bool;
 
-	public function new(ID:Int, name:String, isDefault:Bool)
+	public function new(ID:Int, atlasID:Int, name:String, isDefault:Bool)
 	{	
-		super(ID, name);
+		super(ID, name, atlasID);
 		
+		this.isDefault = isDefault;
+		loadGraphics();
+	}		
+	
+	public function getHeight():Int
+	{
+		if(font != null)
+		{
+			return font.getFontHeight();
+		}
+		
+		else
+		{
+			return 0;
+		}
+	}
+	
+	//For Atlases
+	
+	override public function loadGraphics()
+	{
 		if(isDefault)
 		{
 			//TODO: Make a 1.5, 2 and 4 version of this
 			var textBytes = Assets.getText("assets/graphics/default-font.fnt");
 			var xml = Xml.parse(textBytes);
-			font = new BitmapFont().loadAngelCode(Assets.getBitmapData("assets/graphics/default-font.png"), xml);
+			defaultFont = font = new BitmapFont().loadAngelCode(Assets.getBitmapData("assets/graphics/default-font.png"), xml);
 			fontScale = 1;
 		}
 		
@@ -32,10 +56,12 @@ class Font extends Resource
 			font = new BitmapFont().loadAngelCode(Data.get().resourceAssets.get(ID + ".png"), xml);
 			fontScale = 1;
 		}
-	}		
+	}
 	
-	public function getHeight():Int
+	override public function unloadGraphics()
 	{
-		return font.getFontHeight();
+		//Use the default font - no extra memory, graceful fallback.
+		font = defaultFont;
+		fontScale = 1;
 	}
 }
