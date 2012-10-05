@@ -51,22 +51,26 @@ class Tileset extends Resource
 		#if cpp
 		sheetMap = new IntHash<Int>();
 		data = [0.0,0.0,0];
-		tilesheet = new Tilesheet(pixels);
 		
-		var counter = 0;
-		
-		for(tile in tiles)
+		if(pixels != null)
 		{
-			if(tile == null)
+			tilesheet = new Tilesheet(pixels);
+			
+			var counter = 0;
+			
+			for(tile in tiles)
 			{
-				continue;
+				if(tile == null)
+				{
+					continue;
+				}
+				
+				var r = getImageSourceForTile(tile.tileID, Std.int(tileWidth), Std.int(tileHeight));
+				tilesheet.addTileRect(r);
+				
+				sheetMap.set(tile.tileID, counter);
+				counter++;
 			}
-			
-			var r = getImageSourceForTile(tile.tileID, Std.int(tileWidth), Std.int(tileHeight));
-			tilesheet.addTileRect(r);
-			
-			sheetMap.set(tile.tileID, counter);
-			counter++;
 		}
 		#end
 	}

@@ -279,7 +279,7 @@ class Data
 	
 	public function getGraphicAsset(url:String, diskURL:String):Dynamic
 	{
-		if(!resourceAssets.exists(url))
+		if(resourceAssets.get(url) == null)
 		{
 			resourceAssets.set(url, Assets.getBitmapData(diskURL, false));
 		}
