@@ -2651,13 +2651,21 @@ class Script
 	public function enableDebugDrawing()
 	{
 		Engine.DEBUG_DRAW = true;
-		Engine.debugDrawer.m_sprite.graphics.clear();
+		
+		if (!Engine.NO_PHYSICS)
+		{
+			Engine.debugDrawer.m_sprite.graphics.clear();
+		}
 	}
 
 	public function disableDebugDrawing()
 	{
 		Engine.DEBUG_DRAW = false;
-		Engine.debugDrawer.m_sprite.graphics.clear();
+		
+		if (!Engine.NO_PHYSICS)
+		{
+			Engine.debugDrawer.m_sprite.graphics.clear();
+		}
 	}
 	
 	//*-----------------------------------------------

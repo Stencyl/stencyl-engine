@@ -1322,13 +1322,13 @@ class Actor extends Sprite
 		var a:Bool = activePositionTweens > 0;
 		var b:Bool = activeAngleTweens > 0;
 				
-		/*if(autoScale && !isLightweight && body != null && bodyDef.type != b2Body.b2_staticBody && (bodyScale.x != currSprite.scale.x || bodyScale.y != currSprite.scale.y))
+		if(autoScale && !isLightweight && body != null && bodyDef.type != B2Body.b2_staticBody && (bodyScale.x != realScaleX || bodyScale.y != realScaleY))
 		{
-			if(currSprite.scale.x > 0 && currSprite.scale.y > 0)
+			if(realScaleX > 0 && realScaleY > 0)
 			{
-				scaleBody(currSprite.scale.x, currSprite.scale.y);
+				scaleBody(realScaleX, realScaleY);
 			}
-		}*/
+		}
 		
 		if(a && b)
 		{
@@ -1367,54 +1367,59 @@ class Actor extends Sprite
 	//* Events - Other
 	//*-----------------------------------------------
 	
-	//TODO - Implement me!
+	//Make more efficient?
 	public function scaleBody(width:Float, height:Float)
 	{
-		/*var fixtureList:Array = new Array;
+		var fixtureList:Array<B2Fixture> = new Array<B2Fixture>();
+		var fixture:B2Fixture = body.getFixtureList();
 
-		for(var fixture:b2Fixture = getBody().GetFixtureList(); fixture; fixture = fixture.GetNext())
+		while (fixture != null)
 		{
 			fixtureList.push(fixture);
-		}
+			fixture = fixture.getNext();
+		}		
 			
-		for each(var f:b2Fixture in fixtureList)
+		for (f in fixtureList)
 		{ 
-			var poly:b2Shape = f.GetShape();
-			var center:V2 = getBody().GetLocalCenter();
-			if(poly instanceof b2CircleShape)
+			var poly:B2Shape = f.getShape();
+			var center:B2Vec2 = body.getLocalCenter();
+			if(Std.is(poly, B2CircleShape))
 			{
-				var factor:Number = (1 / bodyScale.x) * width;					
+				var factor:Float = (1 / bodyScale.x) * width;					
 				
-				var p:V2 = (poly as b2CircleShape).m_p.v2;
-				var positionVector:V2 = V2.subtract(p, center);
-				positionVector.x = positionVector.x * factor;
-				positionVector.y = positionVector.y * factor;	
-				
-				(poly as b2CircleShape).m_p.v2 = V2.add(center, positionVector);
+				var p:B2Vec2 = cast(poly, B2CircleShape).m_p;
+				p.subtract(center);
+				p.x = p.x * factor;
+				p.y = p.y * factor;	
+								
+				cast(poly, B2CircleShape).m_p = center.copy();
+				cast(poly, B2CircleShape).m_p.add(p);
 				poly.m_radius = poly.m_radius * factor;								
 			}
 
-			if(poly instanceof b2PolygonShape)
+			else if(Std.is(poly, B2PolygonShape))
 			{
-  				var verts:Vector.<V2> = (poly as b2PolygonShape).m_vertices;
-				var newVerts:Vector.<V2> = new Vector.<V2>();
+  				var verts:Array<B2Vec2> = cast(poly, B2PolygonShape).m_vertices;
+				var newVerts:Array<B2Vec2> = new Array<B2Vec2>();
 
-				for each(var v:V2 in verts)
+				for (v in verts)
 				{
-					var positionVector:V2 = V2.subtract(v,center);
-					positionVector.x = positionVector.x * (1 / bodyScale.x) * width;
-					positionVector.y = positionVector.y * (1 / bodyScale.y) * height;	
-					var newV2:V2 = V2.add(center, positionVector);
+					v.subtract(center);
+					v.x = v.x * (1 / bodyScale.x) * width;
+					v.y = v.y * (1 / bodyScale.y) * height;	
+					
+					var newVert:B2Vec2 = center.copy();
+					newVert.add(v);
 
-					newVerts.push(newV2);
+					newVerts.push(newVert);
 				}
 
-				(poly as b2PolygonShape).Set(newVerts);   					
+				cast(poly, B2PolygonShape).setAsArray(newVerts, newVerts.length);   					
 			}
 		}	
 		
 		bodyScale.x = width;
-		bodyScale.y = height;*/
+		bodyScale.y = height;
 	}
 	
 	private function checkScreenState()
