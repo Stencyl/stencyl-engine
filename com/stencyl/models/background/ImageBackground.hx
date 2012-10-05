@@ -87,13 +87,27 @@ class ImageBackground extends Resource, implements Background
 		{
 			for(i in 0...numFrames)
 			{
-				frameData.push(Data.get().resourceAssets.get(ID + "-" + i + ".png"));
+				frameData.push
+				(
+					Data.get().getGraphicAsset
+					(
+						ID + "-" + i + ".png",
+						"assets/graphics/" + Engine.IMG_BASE + "/background-" + ID + "-" + i + ".png"
+					)
+				);
 			}
 		}
 		
 		else
 		{
-			frameData.push(Data.get().resourceAssets.get(ID + "-0.png"));
+			frameData.push
+			(
+				Data.get().getGraphicAsset
+				(
+					ID + "-0.png",
+					"assets/graphics/" + Engine.IMG_BASE + "/background-" + ID + "-0.png"
+				)
+			);
 		}
 		
 		//---
@@ -119,6 +133,23 @@ class ImageBackground extends Resource, implements Background
 		for(d in durations)
 		{
 			frames.push(img);
+		}
+		
+		//---
+		
+		var numFrames = durations.length;
+		
+		if(numFrames > 0)
+		{
+			for(i in 0...numFrames)
+			{
+				Data.get().resourceAssets.remove(ID + "-" + i + ".png");
+			}
+		}
+		
+		else
+		{
+			Data.get().resourceAssets.remove(ID + "-0.png");
 		}
 	}
 }

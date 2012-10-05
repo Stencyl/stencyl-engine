@@ -277,6 +277,16 @@ class Data
 		return a;
 	}
 	
+	public function getGraphicAsset(url:String, diskURL:String):Dynamic
+	{
+		if(!resourceAssets.exists(url))
+		{
+			resourceAssets.set(url, Assets.getBitmapData(diskURL, false));
+		}
+		
+		return resourceAssets.get(url);
+	}
+	
 	public function loadAtlas(atlasID:Int)
 	{
 		var atlas = GameModel.get().atlases.get(atlasID);

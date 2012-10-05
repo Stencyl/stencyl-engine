@@ -103,7 +103,11 @@ class Tileset extends Resource
 	
 	override public function loadGraphics()
 	{
-		pixels = Data.get().resourceAssets.get(ID + ".png");
+		pixels = Data.get().getGraphicAsset
+		(
+			ID + ".png",
+			"assets/graphics/" + Engine.IMG_BASE + "/tileset-" + ID + ".png"
+		);
 		
 		//On a first read, this won't be ready to do, and we'll load when we're OK
 		if(tiles.length > 0)
@@ -119,5 +123,7 @@ class Tileset extends Resource
 		#if cpp
 		tilesheet = null;
 		#end
+		
+		Data.get().resourceAssets.remove(ID + ".png");
 	}
 }

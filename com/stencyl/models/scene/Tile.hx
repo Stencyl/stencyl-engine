@@ -92,7 +92,11 @@ class Tile
 		
 		if(durations.length > 1)
 		{
-			imgData = Data.get().resourceAssets.get(parent.ID + "-" + tileID + ".png");				
+			imgData = Data.get().getGraphicAsset
+			(
+				parent.ID + "-" + tileID + ".png",
+				"assets/graphics/" + Engine.IMG_BASE + "/tileset-" + parent.ID + "-" + tileID + ".png"
+			);				
 		}
 		
 		pixels = imgData;
@@ -118,5 +122,10 @@ class Tile
 		#if !js
 		data = null;
 		#end
+		
+		if(durations.length > 1)
+		{
+			Data.get().resourceAssets.remove(parent.ID + "-" + tileID + ".png");				
+		}
 	}
 }

@@ -53,7 +53,13 @@ class Font extends Resource
 		{
 			var textBytes = Data.get().resourceAssets.get(ID + ".fnt");
 			var xml = Xml.parse(textBytes);
-			font = new BitmapFont().loadAngelCode(Data.get().resourceAssets.get(ID + ".png"), xml);
+			var img = Data.get().getGraphicAsset
+			(
+				ID + ".png",
+				"assets/graphics/" + Engine.IMG_BASE + "/font-" + ID + ".png"
+			);
+			
+			font = new BitmapFont().loadAngelCode(img, xml);
 			fontScale = 1;
 		}
 	}
@@ -63,5 +69,7 @@ class Font extends Resource
 		//Use the default font - no extra memory, graceful fallback.
 		font = defaultFont;
 		fontScale = 1;
+		
+		Data.get().resourceAssets.remove(ID + ".png");
 	}
 }

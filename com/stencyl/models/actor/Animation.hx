@@ -69,12 +69,17 @@ class Animation
 	
 	public function loadGraphics()
 	{
-		imgData = Data.get().resourceAssets.get(parentID + "-" + animID + ".png");
+		imgData = Data.get().getGraphicAsset
+		(
+			parentID + "-" + animID + ".png",
+			"assets/graphics/" + Engine.IMG_BASE + "/sprite-" + parentID + "-" + animID + ".png"
+		);
 	}
 	
 	public function unloadGraphics()
 	{
 		//Graceful fallback - just a blank image that is numFrames across in px
 		imgData = new BitmapData(framesAcross, 1);
+		Data.get().resourceAssets.remove(parentID + "-" + animID + ".png");
 	}
 }
