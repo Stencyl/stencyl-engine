@@ -17,6 +17,7 @@ class MyAssets implements AssetLoader
 	public static var physicsMode:Int = 0;
 	public static var gameScale:Float = 2;
 	public static var gameImageBase:String = "2x";
+	public static var antialias:Bool = true;
 	
 	//APIs
 	public static var whirlID:String = "";

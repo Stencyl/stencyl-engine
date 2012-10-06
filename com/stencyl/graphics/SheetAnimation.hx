@@ -45,7 +45,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		this.durations = durations;
 		
 		numFrames = durations.length;
-		
+
 		data = [0.0, 0.0, 0];
 		
 		updateBitmap();
@@ -124,7 +124,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		data[2] = frameIndex;
 
   		graphics.clear();
-  		tilesheet.drawTiles(graphics, data, true);
+  		tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias);
   		#end
 	}
 	
@@ -135,7 +135,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		data[1] = y;
 		data[2] = frameIndex;
 
-  		tilesheet.drawTiles(g.graphics, data, true);
+  		tilesheet.drawTiles(g.graphics, data, scripts.MyAssets.antialias);
   		#end
 	}
 }
