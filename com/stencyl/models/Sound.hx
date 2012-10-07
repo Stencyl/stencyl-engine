@@ -14,8 +14,7 @@ class Sound extends Resource
 	public var ext:String;
 	
 	public var src:nme.media.Sound;
-	public var lastInstance:SoundChannel;
-		
+
 	public function new(ID:Int, name:String, streaming:Bool, looping:Bool, panning:Float, volume:Float, ext:String) 
 	{
 		super(ID, name, -1);
@@ -31,7 +30,7 @@ class Sound extends Resource
 		
 		if(!streaming)
 		{
-			Assets.getSound("assets/sfx/sound-" + ID + "." + ext);
+			src = Assets.getSound("assets/sfx/sound-" + ID + "." + ext);
 		}
 	}		
 	
@@ -39,33 +38,19 @@ class Sound extends Resource
 	{
 		if(streaming)
 		{
-			var sound = Assets.getSound("assets/music/sound-" + ID + "." + ext);
-			src = sound;
-			return sound.play(position);
+			src = Assets.getSound("assets/music/sound-" + ID + "." + ext);
 		}
 		
-		else
-		{
-			var sound = Assets.getSound("assets/sfx/sound-" + ID + "." + ext);
-			src = sound;
-			return sound.play(position);
-		}	
+		return src.play(position);	
 	}
 	
 	public function loop(channelNum:Int = 1, position:Float = 0):SoundChannel
 	{
 		if(streaming)
 		{
-			var sound = Assets.getSound("assets/music/sound-" + ID + "." + ext);
-			src = sound;
-			return sound.play(position, com.stencyl.utils.Utils.INT_MAX);
+			src = Assets.getSound("assets/music/sound-" + ID + "." + ext);
 		}
 		
-		else
-		{
-			var sound = Assets.getSound("assets/sfx/sound-" + ID + "." + ext);
-			src = sound;
-			return sound.play(position, com.stencyl.utils.Utils.INT_MAX);
-		}
+		return src.play(position, com.stencyl.utils.Utils.INT_MAX);
 	}
 }
