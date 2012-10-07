@@ -1639,7 +1639,7 @@ class Script
 				
 				if(sc.currentSound == null)
 				{
-					trace("Play sound on channel: " + i);
+					//trace("Play sound on channel: " + i);
 					sc.playSound(clip);
 					return;
 				}
@@ -1662,7 +1662,7 @@ class Script
 				
 				if(sc.currentSound == null)
 				{
-					trace("Loop sound on channel: " + i);
+					//trace("Loop sound on channel: " + i);
 					sc.loopSound(clip);
 					return;
 				}

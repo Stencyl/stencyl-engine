@@ -91,7 +91,7 @@ class SoundChannel
 		{
 			if(pause)
 			{
-				currentSound.removeEventListener(Event.SOUND_COMPLETE,looped);
+				currentSound.removeEventListener(Event.SOUND_COMPLETE, looped);
 			
 				position = currentSound.position;
 				currentSound.stop();	
@@ -113,13 +113,13 @@ class SoundChannel
 		}
 	}
 	
-	private function looped(event:Event=null)
+	private function looped(event:Event = null)
 	{
         currentSound.removeEventListener(Event.SOUND_COMPLETE, looped);
 		loopSound(currentClip);
 	}
 	
-	private function stopped(event:Event=null)
+	private function stopped(event:Event = null)
 	{
         currentSound.removeEventListener(Event.SOUND_COMPLETE, stopped);
 		Engine.engine.soundFinished(channelNum);
