@@ -2358,6 +2358,8 @@ class Engine
 		{
 			invokeListeners(clipListeners);
 		}
+		
+		sc.currentSound = null;
 	}
 	
 	//*-----------------------------------------------

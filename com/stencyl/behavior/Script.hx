@@ -1643,6 +1643,8 @@ class Script
 					return;
 				}
 			}
+			
+			trace("No channels available to play sound");
 		}			
 	}
 	
@@ -1663,6 +1665,8 @@ class Script
 					return;
 				}
 			}
+			
+			trace("No channels available to loop sound");
 		}			
 	}
 	
