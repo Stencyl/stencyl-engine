@@ -1,5 +1,9 @@
 package com.stencyl;
 
+#if cpp
+import cpp.vm.Gc;
+#end
+
 import com.stencyl.behavior.Attribute;
 import com.stencyl.behavior.Behavior;
 import com.stencyl.behavior.TimedTask;
@@ -614,6 +618,10 @@ class Engine
 		{
 			Data.get().unloadAtlas(atlas);
 		}
+		
+		#if cpp
+		Gc.run(true);
+		#end
 		
 		for(atlas in atlasesToLoad)
 		{

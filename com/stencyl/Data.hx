@@ -21,7 +21,6 @@ import com.stencyl.models.GameModel;
 import com.stencyl.models.Atlas;
 import nme.display.Sprite;
 
-
 class Data
 {
 	//*-----------------------------------------------
