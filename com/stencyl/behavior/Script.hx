@@ -2640,7 +2640,7 @@ class Script
 		#end
 	}
 	
-	public function vibrate(time:Float)
+	public function vibrate(time:Float = 1)
 	{
 		#if(mobile && !air)
 		Native.vibrate(time);
