@@ -115,13 +115,21 @@ class SoundChannel
 	
 	private function looped(event:Event = null)
 	{
-        currentSound.removeEventListener(Event.SOUND_COMPLETE, looped);
+		if(currentSound != null)
+		{
+        	currentSound.removeEventListener(Event.SOUND_COMPLETE, looped);
+        }
+        
 		loopSound(currentClip);
 	}
 	
 	private function stopped(event:Event = null)
 	{
-        currentSound.removeEventListener(Event.SOUND_COMPLETE, stopped);
+		if(currentSound != null)
+		{
+        	currentSound.removeEventListener(Event.SOUND_COMPLETE, stopped);
+        }
+        
 		Engine.engine.soundFinished(channelNum);
 	}
 	
@@ -152,8 +160,11 @@ class SoundChannel
 	}
 	
 	public function onUpdate()
-	{
-		currentSound.soundTransform = transform;
+	{	
+		if(currentSound != null)
+		{
+			currentSound.soundTransform = transform;
+		}
 	}
 	
 	public function setVolume(volume:Float)
