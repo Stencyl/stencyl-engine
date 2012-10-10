@@ -1809,14 +1809,11 @@ class Script
 			var child = Engine.engine.master.getChildAt(i);
 			
 			//Background
-			if(child.name == Engine.BACKGROUND)
+			if(Std.is(child, ScrollingBitmap))
 			{
-				if(Std.is(child, ScrollingBitmap))
-				{
-					var bg = cast(child, ScrollingBitmap);
-					bg.xVelocity = xSpeed;
-					bg.yVelocity = ySpeed;
-				}
+				var bg = cast(child, ScrollingBitmap);
+				bg.xVelocity = xSpeed;
+				bg.yVelocity = ySpeed;
 			}
 		}
 	}
