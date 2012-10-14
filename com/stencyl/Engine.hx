@@ -722,6 +722,8 @@ class Engine
 		loadDeferredActors();		
 		initBehaviors(behaviors, scene.behaviorValues, this, this, true);			
 		initActorScripts();
+		
+		loadForegrounds();
 	}
 		
 	private function loadBackgrounds()
@@ -732,43 +734,56 @@ class Engine
 		
 		for(backgroundID in scene.bgs)
 		{
-			var background = cast(Data.get().resources.get(backgroundID), ImageBackground);
+			loadBackground(backgroundID);
+		}
+	}
+	
+	private function loadForegrounds()
+	{
+		for(backgroundID in scene.fgs)
+		{
+			loadBackground(backgroundID, true);
+		}
+	}
+	
+	private function loadBackground(backgroundID:Int, isForeground:Bool = false)
+	{
+		var background = cast(Data.get().resources.get(backgroundID), ImageBackground);
 			
-			if(background == null || background.img == null)
+		if(background == null || background.img == null)
+		{
+			trace("Warning: Could not load a background. Ignoring...");
+            return;
+		}
+		
+		if(Std.is(background, ScrollingBackground))
+		{
+			var scroller = cast(background, ScrollingBackground);
+			var img = new ScrollingBitmap(background.img, scroller.xVelocity, scroller.yVelocity);
+			img.name = SCROLLING_BACKGROUND;
+			master.addChild(img);
+		}
+		
+		else
+		{
+			if(background.repeats)
 			{
-				trace("Warning: Could not load a background. Ignoring...");
-	            continue;
-			}
-			
-			if(Std.is(background, ScrollingBackground))
-			{
-				var scroller = cast(background, ScrollingBackground);
-				var img = new ScrollingBitmap(background.img, scroller.xVelocity, scroller.yVelocity);
-				img.name = SCROLLING_BACKGROUND;
+				var img = new BackgroundLayer();
+				background.drawRepeated(img, screenWidth, screenHeight);
+				img.cacheWidth = img.width;
+				img.cacheHeight = img.height;
+				
+				img.name = BACKGROUND;
 				master.addChild(img);
 			}
 			
 			else
 			{
-				if(background.repeats)
-				{
-					var img = new BackgroundLayer();
-					background.drawRepeated(img, screenWidth, screenHeight);
-					img.cacheWidth = img.width;
-					img.cacheHeight = img.height;
-					
-					img.name = BACKGROUND;
-					master.addChild(img);
-				}
-				
-				else
-				{
-					var img = new BackgroundLayer(background.img);
-					img.cacheWidth = img.width;
-					img.cacheHeight = img.height;
-					img.name = BACKGROUND;
-					master.addChild(img);
-				}
+				var img = new BackgroundLayer(background.img);
+				img.cacheWidth = img.width;
+				img.cacheHeight = img.height;
+				img.name = BACKGROUND;
+				master.addChild(img);
 			}
 		}
 	}
