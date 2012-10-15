@@ -1057,8 +1057,11 @@ class Actor extends Sprite
 			cacheWidth = currAnimation.width / Engine.SCALE;
 			cacheHeight = currAnimation.height / Engine.SCALE;			
 			
-			realX = getX();
-			realY = getY();
+			if (!isLightweight)
+			{
+				realX = getX();
+				realY = getY();
+			}
 			
 			if(animOrigin != null)
 			{					
@@ -1202,14 +1205,20 @@ class Actor extends Sprite
 		lastY = realY;
 		lastAngle = realAngle;
 			
-		//TODO: Actor now off by half in no-physics mode :(	
 		if(isLightweight)
 		{		
+			if (!ignoreGravity)
+			{
+				//TODO: Adjust?
+				xSpeed += elapsedTime * engine.scene.gravityX * 0.001;
+				ySpeed += elapsedTime * engine.scene.gravityY * 0.001;
+			}
+			
 			if(xSpeed != 0 || ySpeed != 0)
 			{
 				//TODO: Temporary
 				colX = realX - cacheWidth/2 - currOffset.x;
-				colY = realY - cacheHeight/2 - currOffset.y;
+				colY = realY - cacheHeight / 2 - currOffset.y;				
 				
 				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);						
 			}
@@ -2363,8 +2372,8 @@ class Actor extends Sprite
 			dummy.y = dirY;
 			dummy.normalize();
 		
-			accelerateX(dummy.x * magnitude);
-			accelerateY(dummy.y * magnitude);
+			accelerateX(dummy.x * magnitude * 0.01);
+			accelerateY(dummy.y * magnitude * 0.01);
 			return;
 		}
 		
@@ -2404,8 +2413,11 @@ class Actor extends Sprite
 			dummy.y = dirY;
 			dummy.normalize();
 		
-			accelerateX(dummy.x * magnitude * 8);
-			accelerateY(dummy.y * magnitude * 8);
+			//TODO: Figure out how to match Box2D
+			accelerateX(dummy.x * magnitude);
+			accelerateY(dummy.y * magnitude);
+			//accelerateX(dummy.x * magnitude * 8);
+			//accelerateY(dummy.y * magnitude * 8);
 			return;
 		}
 		
@@ -3361,7 +3373,8 @@ class Actor extends Sprite
 					{
 						if ((e = collideTypes(solidType, realX + sign, realY)) != null)
 						{
-							moveCollideX(e);
+							xSpeed = 0;
+							moveCollideX(e, sign);
 							break;
 						}
 						else
@@ -3382,7 +3395,8 @@ class Actor extends Sprite
 					{
 						if ((e = collideTypes(solidType, realX, realY + sign)) != null)
 						{
-							moveCollideY(e);
+							ySpeed = 0;							
+							moveCollideY(e, sign);
 							break;
 						}
 						else
@@ -3437,21 +3451,21 @@ class Actor extends Sprite
 	 * When you collide with an Entity on the x-axis with moveTo() or moveBy().
 	 * @param	e		The Entity you collided with.
 	 */
-	public function moveCollideX(a:Actor)
+	public function moveCollideX(a:Actor, sign:Int)
 	{
-		handleCollisionsSimple(a, true, false);
+		handleCollisionsSimple(a, true, false, sign);
 	}
 
 	/**
 	 * When you collide with an Entity on the y-axis with moveTo() or moveBy().
 	 * @param	e		The Entity you collided with.
 	 */
-	public function moveCollideY(a:Actor)
+	public function moveCollideY(a:Actor, sign:Int)
 	{
-		handleCollisionsSimple(a, false, true);
+		handleCollisionsSimple(a, false, true, sign);
 	}
 	
-	private function handleCollisionsSimple(a:Actor, fromX:Bool, fromY:Bool)
+	private function handleCollisionsSimple(a:Actor, fromX:Bool, fromY:Bool, sign:Int)
 	{
 		if(Std.is(a, Region))
 		{
@@ -3465,8 +3479,17 @@ class Actor extends Sprite
 		
 		if(fromX)
 		{
-			Utils.collision.thisFromLeft = a.colX < colX;
-			Utils.collision.thisFromRight = a.colX > colX;
+			//If tile, have to use travel direction
+			if (a.ID == Utils.INT_MAX)
+			{
+				Utils.collision.thisFromLeft = sign < 0;
+				Utils.collision.thisFromRight = sign > 0;
+			}
+			else
+			{			
+				Utils.collision.thisFromLeft = a.colX < colX;
+				Utils.collision.thisFromRight = a.colX > colX;
+			}
 			
 			Utils.collision.otherFromLeft = !Utils.collision.thisFromLeft;
 			Utils.collision.otherFromRight = !Utils.collision.thisFromRight;
@@ -3477,8 +3500,17 @@ class Actor extends Sprite
 		
 		if(fromY)
 		{
-			Utils.collision.thisFromTop = a.colY < colY;
-			Utils.collision.thisFromBottom = a.colY > colY;
+			//If tile, have to use travel direction
+			if (a.ID == Utils.INT_MAX)
+			{
+				Utils.collision.thisFromTop = sign < 0;
+				Utils.collision.thisFromBottom = sign > 0;
+			}
+			else
+			{			
+				Utils.collision.thisFromTop = a.colX < colX;
+				Utils.collision.thisFromBottom = a.colX > colX;
+			}
 		
 			Utils.collision.otherFromTop = !Utils.collision.thisFromTop;
 			Utils.collision.otherFromBottom = !Utils.collision.thisFromBottom;
@@ -3489,12 +3521,12 @@ class Actor extends Sprite
 		
 		//TODO
 		Utils.collision.thisCollidedWithActor = true;
-		Utils.collision.thisCollidedWithTile = false;
+		Utils.collision.thisCollidedWithTile = a.ID == Utils.INT_MAX;
 		Utils.collision.thisCollidedWithSensor = false;
 		Utils.collision.thisCollidedWithTerrain = false;
 		
 		Utils.collision.otherCollidedWithActor = true;
-		Utils.collision.otherCollidedWithTile = false;
+		Utils.collision.otherCollidedWithTile = a.ID == Utils.INT_MAX;
 		Utils.collision.otherCollidedWithSensor = false;
 		Utils.collision.otherCollidedWithTerrain = false;
 

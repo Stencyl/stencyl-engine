@@ -198,8 +198,8 @@ class Grid extends Hitbox
 		var rectX:Int, rectY:Int, pointX:Int, pointY:Int;
 		_rect.x = other.parent.colX - parent.colX;
 		_rect.y = other.parent.colY - parent.colY;
-		pointX  = Std.int((_rect.x + other.parent.cacheWidth - 1) / _tile.width);
-		pointY  = Std.int((_rect.y + other.parent.cacheHeight -1) / _tile.height);
+		pointX  = Std.int((_rect.x + other.parent.cacheWidth - 1) / _tile.width) + 1;
+		pointY  = Std.int((_rect.y + other.parent.cacheHeight -1) / _tile.height) + 1;
 		rectX   = Std.int(_rect.x / _tile.width);
 		rectY   = Std.int(_rect.y / _tile.height);
 
