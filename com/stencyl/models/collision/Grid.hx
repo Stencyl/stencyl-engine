@@ -194,12 +194,12 @@ class Grid extends Hitbox
 
 	/** @private Collides against an Entity. */
 	override private function collideMask(other:Mask):Bool
-	{
+	{		
 		var rectX:Int, rectY:Int, pointX:Int, pointY:Int;
-		_rect.x = other.parent.x - other.parent.originX - parent.x + parent.originX;
-		_rect.y = other.parent.y - other.parent.originY - parent.y + parent.originY;
-		pointX  = Std.int((_rect.x + other.parent.width - 1) / _tile.width) + 1;
-		pointY  = Std.int((_rect.y + other.parent.height -1) / _tile.height) + 1;
+		_rect.x = other.parent.colX - parent.colX;
+		_rect.y = other.parent.colY - parent.colY;
+		pointX  = Std.int((_rect.x + other.parent.cacheWidth - 1) / _tile.width);
+		pointY  = Std.int((_rect.y + other.parent.cacheHeight -1) / _tile.height);
 		rectX   = Std.int(_rect.x / _tile.width);
 		rectY   = Std.int(_rect.y / _tile.height);
 
@@ -219,9 +219,10 @@ class Grid extends Hitbox
 	/** @private Collides against a Hitbox. */
 	override private function collideHitbox(other:Hitbox):Bool
 	{
+		
 		var rectX:Int, rectY:Int, pointX:Int, pointY:Int;
-		_rect.x = other.parent.x - other._x - parent.x + _x;
-		_rect.y = other.parent.y - other._y - parent.y + _y;
+		_rect.x = other.parent.realX - other._x - parent.colX + _x;
+		_rect.y = other.parent.realY - other._y - parent.colY + _y;
 		pointX = Std.int((_rect.x + other._width  - 1) / _tile.width) + 1;
 		pointY = Std.int((_rect.y + other._height - 1) / _tile.height) + 1;
 		rectX  = Std.int(_rect.x / _tile.width);
@@ -244,8 +245,8 @@ class Grid extends Hitbox
 	private function collidePixelmask(other:Pixelmask):Bool
 	{
 #if flash
-		var x1:Int = Std.int(other.parent.x + other.x - parent.x - _x),
-			y1:Int = Std.int(other.parent.y + other.y - parent.y - _y),
+		var x1:Int = Std.int(other.parent.colX + other.x - parent.colX - _x),
+			y1:Int = Std.int(other.parent.colY + other.y - parent.colY - _y),
 			x2:Int = Std.int((x1 + other.width - 1) / _tile.width),
 			y2:Int = Std.int((y1 + other.height - 1) / _tile.height);
 		_point.x = x1;

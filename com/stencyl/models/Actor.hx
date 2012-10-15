@@ -1207,11 +1207,11 @@ class Actor extends Sprite
 		{		
 			if(xSpeed != 0 || ySpeed != 0)
 			{
-				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);		
-				
 				//TODO: Temporary
 				colX = realX - cacheWidth/2 - currOffset.x;
 				colY = realY - cacheHeight/2 - currOffset.y;
+				
+				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);						
 			}
 			
 			if(rSpeed != 0)
@@ -2132,8 +2132,8 @@ class Actor extends Sprite
 		
 		currOrigin.x = x;
 		currOrigin.y = y;
-		currOffset.x = newOffX;
-		currOffset.y = newOffY;
+		originX = currOffset.x = newOffX;
+		originY = currOffset.y = newOffY;
 							
 		offsetDiff.x = currOffset.x - offsetDiff.x;
 		offsetDiff.y = currOffset.y - offsetDiff.y;		
@@ -2148,7 +2148,6 @@ class Actor extends Sprite
 		
 		else
 		{
-			//TODO: Figure out how to do this for different origin points
 			realX = Std.int(Engine.toPixelUnits(resetPosition.x));
 			realY = Std.int(Engine.toPixelUnits(resetPosition.y));
 		}
@@ -3126,6 +3125,8 @@ class Actor extends Sprite
 		
 		_x = realX; _y = realY;
 		realX = x; realY = y;
+		colX = realX - cacheWidth/2 - currOffset.x;
+		colY = realY - cacheHeight/2 - currOffset.y;
 
 		if (_mask == null)
 		{
@@ -3133,10 +3134,10 @@ class Actor extends Sprite
 			{
 				var e = actor;
 				
-				if (x - originX + cacheWidth > e.realX - e.originX
-				&& y - originY + cacheHeight > e.realY - e.originY
-				&& x - originX < e.realX - e.originX + e.cacheWidth
-				&& y - originY < e.realY - e.originY + e.cacheHeight
+				if (colX + cacheWidth > e.colX
+				&& colY + cacheHeight > e.colY
+				&& colX < e.colX + e.cacheWidth
+				&& colY < e.colY + e.cacheHeight
 				&& e.collidable && e != this)
 				{
 					if (e._mask == null || e._mask.collide(HITBOX))
@@ -3144,6 +3145,8 @@ class Actor extends Sprite
 						if(solid && e.solid)
 						{
 							realX = _x; realY = _y;
+							colX = realX - cacheWidth/2 - currOffset.x;
+							colY = realY - cacheHeight/2 - currOffset.y;
 						}
 						
 						return e;
@@ -3151,6 +3154,9 @@ class Actor extends Sprite
 				}
 			}
 			realX = _x; realY = _y;
+			colX = realX - cacheWidth/2 - currOffset.x;
+			colY = realY - cacheHeight/2 - currOffset.y;
+			
 			return null;
 		}
 
@@ -3158,10 +3164,10 @@ class Actor extends Sprite
 		{
 			var e = actor;
 	
-			if (x - originX + cacheWidth > e.realX - e.originX
-			&& y - originY + cacheHeight > e.realY - e.originY
-			&& x - originX < e.realX - e.originX + e.cacheWidth
-			&& y - originY < e.realY - e.originY + e.cacheHeight
+			if (colX + cacheWidth > e.colX
+			&& colY + cacheHeight > e.colY
+			&& colX < e.colX + e.cacheWidth
+			&& colY < e.colY + e.cacheHeight
 			&& e.collidable && e != this)
 			{
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
@@ -3169,6 +3175,8 @@ class Actor extends Sprite
 					if(solid && e.solid)
 					{
 						realX = _x; realY = _y;
+						colX = realX - cacheWidth/2 - currOffset.x;
+						colY = realY - cacheHeight/2 - currOffset.y;
 					}
 					
 					return e;
@@ -3176,6 +3184,8 @@ class Actor extends Sprite
 			}
 		}
 		realX = _x; realY = _y;
+		colX = realX - cacheWidth/2 - currOffset.x;
+		colY = realY - cacheHeight/2 - currOffset.y;
 		return null;
 	}
 
@@ -3221,11 +3231,13 @@ class Actor extends Sprite
 	{
 		_x = realX; _y = realY;
 		realX = x; realY = y;
+		colX = realX - cacheWidth/2 - currOffset.x;
+		colY = realY - cacheHeight/2 - currOffset.y;
 
-		if (x - originX + cacheWidth > e.realX - e.originX
-		&& y - originY + cacheHeight > e.realY - e.originY
-		&& x - originX < e.realX - e.originX + e.cacheWidth
-		&& y - originY < e.realY - e.originY + e.cacheHeight
+		if (colX + cacheWidth > e.colX
+		&& colY + cacheHeight > e.colY
+		&& colX < e.colX + e.cacheWidth
+		&& colY < e.colY + e.cacheHeight
 		&& collidable && e.collidable)
 		{
 			if (_mask == null)
@@ -3233,18 +3245,26 @@ class Actor extends Sprite
 				if (e._mask == null || e._mask.collide(HITBOX))
 				{
 					realX = _x; realY = _y;
+					colX = realX - cacheWidth/2 - currOffset.x;
+					colY = realY - cacheHeight/2 - currOffset.y;
 					return e;
 				}
 				realX = _x; realY = _y;
+				colX = realX - cacheWidth/2 - currOffset.x;
+				colY = realY - cacheHeight/2 - currOffset.y;
 				return null;
 			}
 			if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
 			{
 				realX = _x; realY = _y;
+				colX = realX - cacheWidth/2 - currOffset.x;
+				colY = realY - cacheHeight/2 - currOffset.y;
 				return e;
 			}
 		}
 		realX = _x; realY = _y;
+		colX = realX - cacheWidth/2 - currOffset.x;
+		colY = realY - cacheHeight/2 - currOffset.y;
 		return null;
 	}
 
@@ -3263,6 +3283,8 @@ class Actor extends Sprite
 
 		_x = realX; _y = realY;
 		realX = x; realY = y;
+		colX = realX - cacheWidth/2 - currOffset.x;
+		colY = realY - cacheHeight/2 - currOffset.y;
 		var n:Int = array.length;
 
 		if (_mask == null)
@@ -3271,16 +3293,18 @@ class Actor extends Sprite
 			{
 				var e = actor;
 				
-				if (x - originX + cacheWidth > e.realX - e.originX
-				&& y - originY + cacheHeight > e.realY - e.originY
-				&& x - originX < e.realX - e.originX + e.cacheWidth
-				&& y - originY < e.realY - e.originY + e.cacheHeight
+				if (colX + cacheWidth > e.colX
+				&& colY + cacheHeight > e.colY
+				&& colX < e.colX + e.cacheWidth
+				&& colY < e.colY + e.cacheHeight
 				&& e.collidable && e != this)
 				{
 					if (e._mask == null || e._mask.collide(HITBOX)) array[n++] = e;
 				}
 			}
 			realX = _x; realY = _y;
+			colX = realX - cacheWidth/2 - currOffset.x;
+			colY = realY - cacheHeight/2 - currOffset.y;
 			return;
 		}
 
@@ -3288,16 +3312,18 @@ class Actor extends Sprite
 		{
 			var e = actor;
 			
-			if (x - originX + cacheWidth > e.realX - e.originX
-			&& y - originY + cacheHeight > e.realY - e.originY
-			&& x - originX < e.realX - e.originX + e.cacheWidth
-			&& y - originY < e.realY - e.originY + e.cacheHeight
-			&& e.collidable && e != this)
+			if (colX + cacheWidth > e.colX
+			&& colY + cacheHeight > e.colY
+			&& colX < e.colX + e.cacheWidth
+			&& colY < e.colY + e.cacheHeight
+			&& e.collidable && e != this)			
 			{
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX)) array[n++] = e;
 			};
 		}
 		realX = _x; realY = _y;
+		colX = realX - cacheWidth/2 - currOffset.x;
+		colY = realY - cacheHeight/2 - currOffset.y;
 		return;
 	}
 
@@ -3371,10 +3397,12 @@ class Actor extends Sprite
 		}
 		else
 		{
-			//TODO: This is slow in Flash && Mobile
 			realX += x;
 			realY += y;
 		}
+		
+		colX = realX - cacheWidth/2 - currOffset.x;
+		colY = realY - cacheHeight/2 - currOffset.y;
 	}
 	
 	/**
@@ -3437,8 +3465,8 @@ class Actor extends Sprite
 		
 		if(fromX)
 		{
-			Utils.collision.thisFromLeft = a.realX < realX;
-			Utils.collision.thisFromRight = a.realX > realX;
+			Utils.collision.thisFromLeft = a.colX < colX;
+			Utils.collision.thisFromRight = a.colX > colX;
 			
 			Utils.collision.otherFromLeft = !Utils.collision.thisFromLeft;
 			Utils.collision.otherFromRight = !Utils.collision.thisFromRight;
@@ -3449,8 +3477,8 @@ class Actor extends Sprite
 		
 		if(fromY)
 		{
-			Utils.collision.thisFromTop = a.realY < realY;
-			Utils.collision.thisFromBottom = a.realY > realY;
+			Utils.collision.thisFromTop = a.colY < colY;
+			Utils.collision.thisFromBottom = a.colY > colY;
 		
 			Utils.collision.otherFromTop = !Utils.collision.thisFromTop;
 			Utils.collision.otherFromBottom = !Utils.collision.thisFromBottom;

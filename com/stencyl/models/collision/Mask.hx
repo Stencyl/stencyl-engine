@@ -56,10 +56,10 @@ class Mask
 	/** @private Collide against an Entity. */
 	private function collideMask(other:Mask):Bool
 	{
-		return parent.realX - parent.originX + parent.cacheWidth > other.parent.realX - other.parent.originX
-			&& parent.realY - parent.originY + parent.cacheHeight > other.parent.realY - other.parent.originY
-			&& parent.realX - parent.originX < other.parent.realX - other.parent.originX + other.parent.cacheWidth
-			&& parent.realY - parent.originY < other.parent.realY - other.parent.originY + other.parent.cacheHeight;
+		return parent.colX + parent.cacheWidth > other.parent.colX
+			&& parent.colY + parent.cacheHeight > other.parent.colY
+			&& parent.colX < other.parent.colX + other.parent.cacheWidth
+			&& parent.colY < other.parent.colY + other.parent.cacheHeight;
 	}
 
 	private function collideMasklist(other:Masklist):Bool

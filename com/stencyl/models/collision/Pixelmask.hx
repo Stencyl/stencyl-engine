@@ -53,12 +53,12 @@ class Pixelmask extends Hitbox
 	/** @private Collide against an Entity. */
 	override private function collideMask(other:Mask):Bool
 	{
-		_point.x = parent.x + _x;
-		_point.y = parent.y + _y;
-		_rect.x = other.parent.x - other.parent.originX;
-		_rect.y = other.parent.y - other.parent.originY;
-		_rect.width = other.parent.width;
-		_rect.height = other.parent.height;
+		_point.x = parent.colX + _x;
+		_point.y = parent.colY + _y;
+		_rect.x = other.parent.colX;
+		_rect.y = other.parent.colY;
+		_rect.width = other.parent.cacheWidth;
+		_rect.height = other.parent.cacheHeight;
 		#if flash
 		return _data.hitTest(_point, threshold, _rect);
 		#else
@@ -69,10 +69,10 @@ class Pixelmask extends Hitbox
 	/** @private Collide against a Hitbox. */
 	override private function collideHitbox(other:Hitbox):Bool
 	{
-		_point.x = parent.x + _x;
-		_point.y = parent.y + _y;
-		_rect.x = other.parent.x + other._x;
-		_rect.y = other.parent.y + other._y;
+		_point.x = parent.colX + _x;
+		_point.y = parent.colY + _y;
+		_rect.x = other.parent.colX + other._x;
+		_rect.y = other.parent.colY + other._y;
 		_rect.width = other._width;
 		_rect.height = other._height;
 		#if flash
@@ -85,10 +85,10 @@ class Pixelmask extends Hitbox
 	/** @private Collide against a Pixelmask. */
 	private function collidePixelmask(other:Pixelmask):Bool
 	{
-		_point.x = parent.x + _x;
-		_point.y = parent.y + _y;
-		_point2.x = other.parent.x + other._x;
-		_point2.y = other.parent.y + other._y;
+		_point.x = parent.colX + _x;
+		_point.y = parent.colY + _y;
+		_point2.x = other.parent.colX + other._x;
+		_point2.y = other.parent.colY + other._y;
 		#if flash
 		return _data.hitTest(_point, threshold, other._data, _point2, other.threshold);
 		#else
