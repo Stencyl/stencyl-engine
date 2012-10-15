@@ -125,6 +125,8 @@ class SoundChannel
 	
 	private function stopped(event:Event = null)
 	{
+		//trace("Sound stopped: " + channelNum);
+	
 		if(currentSound != null)
 		{
         	currentSound.removeEventListener(Event.SOUND_COMPLETE, stopped);
