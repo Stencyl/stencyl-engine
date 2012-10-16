@@ -25,12 +25,15 @@ class Sound extends Resource
 		this.volume = volume;
 		this.ext = ext;
 		
-		//TODO: For now, it's always...
+		#if(cpp && !mobile)
+		this.ext = "ogg";
+		#else
 		this.ext = "mp3";
+		#end
 		
 		if(!streaming)
 		{
-			src = Assets.getSound("assets/sfx/sound-" + ID + "." + ext);
+			src = Assets.getSound("assets/sfx/sound-" + ID + "." + this.ext);
 		}
 	}		
 	
