@@ -159,7 +159,6 @@ class Scene
 		var type = e.att.type;
 		var elementID = Std.parseInt(e.att.id);
 		var name = e.att.name;
-		var pts = e.att.pts;
 		var region:RegionDef;
 		
 		var x:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.x));
@@ -197,6 +196,12 @@ class Scene
 		{
 			var w = Std.parseFloat(e.att.w);
 			var h = Std.parseFloat(e.att.h);
+			var pts = null;
+			
+			if(e.has.pts)
+			{
+				pts = e.att.pts;
+			}
 			
 			var shapeType:String = "polyregion";
 			
@@ -222,7 +227,7 @@ class Scene
 				
 				return region;
 			}
-			
+
 			var shapeParams = pts.split(",");
 			
 			//TODO: Hard to port this over - figure out a different way
