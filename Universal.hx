@@ -193,8 +193,8 @@ class Universal extends Sprite
 		#if(mobile && !air)
 		if(originalWidth == -1 || originalHeight == -1)
 		{
-			scripts.MyAssets.stageWidth = stageWidth;
-			scripts.MyAssets.stageHeight = stageHeight;
+			originalWidth = scripts.MyAssets.stageWidth = stageWidth;
+			originalHeight = scripts.MyAssets.stageHeight = stageHeight;
 			
 			usingFullScreen = true;
 		}
