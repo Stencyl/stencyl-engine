@@ -2275,8 +2275,25 @@ class Engine
 		
 		else
 		{
-			group1 = Actor.GROUP_OFFSET + event.thisShape.groupID;
-			group2 = Actor.GROUP_OFFSET + event.otherShape.groupID;
+			if(event.thisShape != null)
+			{
+				group1 = Actor.GROUP_OFFSET + event.thisShape.groupID;
+			}
+			
+			else
+			{
+				group1 = Actor.GROUP_OFFSET + event.thisActor.groupID;
+			}
+			
+			if(event.otherShape != null)
+			{
+				group2 = Actor.GROUP_OFFSET + event.otherShape.groupID;
+			}
+			
+			else
+			{
+				group2 = Actor.GROUP_OFFSET + event.otherActor.groupID;
+			}
 		}
 		
 		//Check if collision between actors has already happened
