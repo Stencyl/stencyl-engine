@@ -1442,9 +1442,9 @@ class Actor extends Sprite
 		var exitedScene:Bool = lastSceneState && !inScene;
 		
 		Engine.invokeListeners5(positionListeners, enteredScreen, exitedScreen, enteredScene, exitedScene);
-		
-		var typeListeners = cast(engine.typeGroupPositionListeners.get(groupID + Actor.GROUP_OFFSET), Array<Dynamic>);
-		var groupListeners = cast(engine.typeGroupPositionListeners.get(typeID), Array<Dynamic>);
+			
+		var typeListeners = engine.typeGroupPositionListeners.get(groupID + Actor.GROUP_OFFSET);
+		var groupListeners = engine.typeGroupPositionListeners.get(typeID);
 		
 		if(typeListeners != null)
 		{
