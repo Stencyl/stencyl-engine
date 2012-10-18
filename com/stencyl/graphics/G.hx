@@ -205,8 +205,20 @@ class G
 		//startGraphics();
 		//graphics.lineStyle();
 
-		var drawX = this.x + x * scaleX;// + Engine.cameraX * scaleX;
-		var drawY = this.y + y * scaleY;// + Engine.cameraY * scaleY;
+		var drawX:Float;
+		var drawY:Float;
+		
+		if(drawActor)
+		{
+			drawX = this.x + x * scaleX + Engine.cameraX * scaleX;
+			drawY = this.y + y * scaleY + Engine.cameraY * scaleY;
+		}
+		
+		else
+		{
+			drawX = this.x + x * scaleX;
+			drawY = this.y + y * scaleY;
+		}
 		
 		#if(cpp)
 		drawData.splice(0, drawData.length);
