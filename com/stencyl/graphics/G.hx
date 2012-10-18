@@ -1,6 +1,7 @@
 package com.stencyl.graphics;
 
 import nme.display.BitmapData;
+import nme.display.BitmapDataChannel;
 import nme.display.Graphics;
 import nme.display.Shape;
 import nme.display.BlendMode;
@@ -437,17 +438,29 @@ class G
 		}
 		
 		#if (js)
-		canvas.copyPixels(img, rect, point);
+		if(alpha != 1)
+		{
+			//TODO: How to do you do this???
+			canvas.copyPixels(img, rect, point);
+		}
+		
+		else
+		{
+			canvas.copyPixels(img, rect, point);
+		}
 		#end
 		
-		//TODO: Very wasteful!
+		//TODO: Very wasteful to make a new tilesheet each time!
 		#if (cpp || flash)
 		var sheet = new Tilesheet(img);
 		sheet.addTileRect(rect, point2);
 		data[0] = point.x;
 		data[1] = point.y;
 		data[2] = 0;
-  		sheet.drawTiles(canvas.graphics, data, true);
+		data[3] = scaleX;
+		data[4] = alpha;
+  		sheet.drawTiles(canvas.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_SCALE | Tilesheet.TILE_ALPHA);
+  		//TODO: Can't get alpha to work in this setup.
 		#end
 	}
 	
