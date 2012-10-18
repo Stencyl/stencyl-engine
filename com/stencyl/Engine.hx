@@ -567,7 +567,7 @@ class Engine
 		gameAttributes = new Hash<Dynamic>();
 		
 		//Profiler
-		#if !js
+		//#if !js
 		if(!scripts.MyAssets.releaseMode)
 		{
 			if(scripts.MyAssets.showConsole)
@@ -576,7 +576,7 @@ class Engine
 				stage.addChild(stats);
 			}
 		}
-		#end
+		//#end
 		
 		#if (flash)
 		movieClip = new MovieClip();
