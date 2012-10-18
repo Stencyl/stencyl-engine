@@ -1280,6 +1280,11 @@ class Actor extends Sprite
 	
 	public function updateDrawingMatrix()
 	{
+		if(paused)
+		{
+			return;
+		}
+		
 		if (!isLightweight)
 		{
 			var p = body.getPosition();
