@@ -234,7 +234,11 @@ class G
 			#end
 			
 			#if (js)
-			drawImage(bitmapData, x, y);
+			//drawImage(bitmapData, x, y);
+			
+			graphics.beginBitmapFill(bitmapData, mtx);
+			graphics.drawRect(drawX, drawY, w, h);
+	 	 	graphics.endFill();
 			#end
 		
 		#if(flash || js)
