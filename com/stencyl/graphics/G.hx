@@ -121,8 +121,8 @@ class G
 	{
 		if(drawActor)
 		{
-			x += Engine.cameraX * scaleX;
-			y += Engine.cameraY * scaleY;
+			x += Engine.cameraX;
+			y += Engine.cameraY;
 		}
 	
 		graphics.lineStyle(strokeSize, strokeColor, alpha);
@@ -132,8 +132,8 @@ class G
 	{
 		if(drawActor)
 		{
-			x -= Engine.cameraX * scaleX;
-			y -= Engine.cameraY * scaleY;
+			x -= Engine.cameraX;
+			y -= Engine.cameraY;
 		}
 		
 		graphics.lineStyle(0);
@@ -181,15 +181,15 @@ class G
 	
 		if(Engine.NO_PHYSICS)
 		{
-			x = a.colX * scaleX * Engine.SCALE;
-			y = a.colY * scaleY * Engine.SCALE;
+			x = a.colX * scaleX;
+			y = a.colY * scaleY;
 		}
 		
 		else
 		{
 			//XXX: Mike, doesn't this need to account for the origin point?
-			x = (a.colX * scaleX * Engine.SCALE);
-			y = (a.colY * scaleY * Engine.SCALE);
+			x = a.colX * scaleX;
+			y = a.colY * scaleY;
 		}
 	}
 	
@@ -210,8 +210,8 @@ class G
 		
 		if(drawActor)
 		{
-			drawX = this.x + x * scaleX + Engine.cameraX * scaleX;
-			drawY = this.y + y * scaleY + Engine.cameraY * scaleY;
+			drawX = this.x + x * scaleX + Engine.cameraX;
+			drawY = this.y + y * scaleY + Engine.cameraY;
 		}
 		
 		else
@@ -443,8 +443,8 @@ class G
 		//Why this has to be treated differently (add camera coords), I don't know...
 		if(drawActor)
 		{
-			point.x = this.x + x + Engine.cameraX * scaleX;
-			point.y = this.y + y + Engine.cameraY * scaleY;	
+			point.x = this.x + x + Engine.cameraX;
+			point.y = this.y + y + Engine.cameraY;	
 		}
 		
 		else
@@ -473,9 +473,8 @@ class G
 		data[0] = point.x;
 		data[1] = point.y;
 		data[2] = 0;
-		data[3] = scaleX;
-		data[4] = alpha;
-  		sheet.drawTiles(canvas.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_SCALE | Tilesheet.TILE_ALPHA);
+		data[3] = alpha;
+  		sheet.drawTiles(canvas.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_ALPHA);
   		//TODO: Can't get alpha to work in this setup.
 		#end
 	}
