@@ -566,7 +566,6 @@ class BitmapFont
 			var glyph:BitmapData = _glyphs[charCode];
 			if (glyph != null) 
 			{
-				
 				w += glyph.width;
 			}
 			#else
