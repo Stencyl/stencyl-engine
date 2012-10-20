@@ -1263,6 +1263,13 @@ class Engine
 			if(terrain != null)
 			{
 				var tileLayer = scene.terrain.get(layerID);
+				
+				if(tileLayer == null)
+				{
+					trace("LayerID does not exist: " + layerID);
+					continue;
+				}
+				
 				tileLayer.reset();
 			
 				terrain.name = REGULAR_LAYER;

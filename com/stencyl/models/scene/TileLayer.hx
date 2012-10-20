@@ -136,6 +136,11 @@ class TileLayer extends Sprite
 		#end
 		
 		#if !cpp
+		if(bitmapData == null)
+		{
+			return;
+		}
+		
 		bitmapData.fillRect(bitmapData.rect, 0);
 		#end
 		
