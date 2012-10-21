@@ -112,7 +112,7 @@ class Region extends Actor
 					fixture.friction = 1.0;
 					fixture.density = 0.1;
 					fixture.restitution = 0;
-					fixture.groupID = -1000;
+					fixture.groupID = GameModel.INHERIT_ID;
 	
 					body.createFixture(fixture);
 					

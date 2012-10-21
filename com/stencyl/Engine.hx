@@ -2288,7 +2288,14 @@ class Engine
 		{
 			if(event.thisShape != null)
 			{
-				group1 = Actor.GROUP_OFFSET + event.thisShape.groupID;
+				var value = event.thisShape.groupID;
+
+				if(value == GameModel.INHERIT_ID)
+				{
+					value = cast(event.thisShape.getBody().getUserData()).groupID;
+				}
+				
+				group1 = Actor.GROUP_OFFSET + value;
 			}
 			
 			else
@@ -2298,7 +2305,14 @@ class Engine
 			
 			if(event.otherShape != null)
 			{
-				group2 = Actor.GROUP_OFFSET + event.otherShape.groupID;
+				var value = event.otherShape.groupID;
+			
+				if(value == GameModel.INHERIT_ID)
+				{
+					value = cast(event.otherShape.getBody().getUserData()).groupID;
+				}
+				
+				group2 = Actor.GROUP_OFFSET + value;
 			}
 			
 			else

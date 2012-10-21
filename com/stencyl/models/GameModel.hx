@@ -32,6 +32,7 @@ class GameModel
 	public var atlases:IntHash<Atlas>;
 	public var scenes:IntHash<Scene>;
 	
+	public static var INHERIT_ID:Int = -1000;
 	public static var REGION_ID:Int = -2;
 	public static var PLAYER_ID:Int = 0;
 	public static var TERRAIN_ID:Int = 1;

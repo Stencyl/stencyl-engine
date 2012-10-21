@@ -791,7 +791,7 @@ class Actor extends Sprite
 			fixtureDef.density = 0.1;
 			fixtureDef.restitution = 0;
 			fixtureDef.isSensor = isSensor;
-			fixtureDef.groupID = -1000;
+			fixtureDef.groupID = GameModel.INHERIT_ID;
 			fixtureDef.userData = this;
 						
 			bodyDef.userData = this;
