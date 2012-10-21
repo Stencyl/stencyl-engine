@@ -1170,6 +1170,7 @@ class Engine
 		var layers = new SizedIntHash<Int>();
 		var orders = new SizedIntHash<Int>();
 		var exists = new SizedIntHash<Int>();
+		var highestLayerOrder = 0;
 		
 		tileLayers = scene.terrain;
 		animatedTiles = scene.animatedTiles;
@@ -1187,13 +1188,15 @@ class Engine
 		{
 			for(l in scene.terrain)
 			{
+				highestLayerOrder = Std.int(Math.max(highestLayerOrder, l.zOrder));
+				
 				layers.set(l.zOrder, l.layerID);
 				orders.set(l.layerID, l.zOrder);
 				exists.set(l.zOrder, l.zOrder);
 			}
 		}
 		
-		for(i in 0...layers.size)
+		for(i in 0...highestLayerOrder)
 		{
 			if(!exists.exists(i))
 			{
@@ -1209,7 +1212,7 @@ class Engine
 		var realNumLayers:Int = 0;
 		
 		//Figure out how many there actually are
-		for(i in 0...layers.size)
+		for(i in 0...highestLayerOrder)
 		{
 			var layerID:Int = layersToDraw.get(i);
 			
@@ -1221,13 +1224,14 @@ class Engine
 		
 		var numLayersProcessed:Int = 0;
 		
-		for(i in 0...layers.size)
+		for(i in 0...highestLayerOrder)
 		{
-			var j = layers.size - i - 1;
+			var j = highestLayerOrder - i;
 			var layerID:Int = layersToDraw.get(j);
 			
-			if(layerID == -1)
+			if(layerID == -1 || !layersToDraw.exists(j))
 			{
+				trace("No layer exists for drawing order: " + j);
 				continue;
 			}
 			
@@ -1654,6 +1658,7 @@ class Engine
 		{
 			trace("Layer ID: " + layerID + " does not exist");
 			trace("Putting actor inside default group");
+			trace(actorsPerLayer);
 			layer = defaultGroup;
 		}
 		
