@@ -1732,6 +1732,7 @@ class Engine
 		
 		if(!a.isLightweight)
 		{
+			a.body.setActive(false);
 			a.body.setAwake(false);
 		}
 	}
@@ -1762,6 +1763,7 @@ class Engine
 					
 					if(!actor.isLightweight)
 					{
+						actor.body.setActive(true);
 						actor.body.setAwake(true);
 					}
 					
