@@ -1903,8 +1903,8 @@ class Engine
 		if(!NO_PHYSICS)
 		{
 			var aabb = world.getScreenBounds();
-			aabb.lowerBound.x = (Math.abs(cameraX) - paddingLeft) / physicsScale;
-			aabb.lowerBound.y = (Math.abs(cameraY) - paddingTop) / physicsScale;
+			aabb.lowerBound.x = (Math.abs(cameraX / Engine.SCALE) - paddingLeft) / physicsScale;
+			aabb.lowerBound.y = (Math.abs(cameraY / Engine.SCALE) - paddingTop) / physicsScale;
 			aabb.upperBound.x = aabb.lowerBound.x + ((Engine.screenWidth + paddingRight + paddingLeft) / physicsScale);
 			aabb.upperBound.y = aabb.lowerBound.y + ((Engine.screenHeight + paddingBottom + paddingTop) / physicsScale);
 		}
@@ -2009,14 +2009,11 @@ class Engine
 			if(a != null && !a.dead && !a.recycled) 
 			{
 				//--- HAND INLINED THIS SINCE ITS CALLED SO MUCH
-				
-				//var isOnScreen = a.isOnScreen();
-				
 				var isOnScreen = (a.isLightweight || a.body.isActive()) && 
-			   	a.realX >= -Engine.cameraX - Engine.paddingLeft && 
-			   	a.realY >= -Engine.cameraY - Engine.paddingTop &&
-			   	a.realX < -Engine.cameraX + Engine.screenWidth + Engine.paddingRight &&
-			   	a.realY < -Engine.cameraY + Engine.screenHeight + Engine.paddingBottom;
+			   	a.realX >= -Engine.cameraX / Engine.SCALE - Engine.paddingLeft && 
+			   	a.realY >= -Engine.cameraY / Engine.SCALE - Engine.paddingTop &&
+			   	a.realX < -Engine.cameraX / Engine.SCALE + Engine.screenWidth + Engine.paddingRight &&
+			   	a.realY < -Engine.cameraY / Engine.SCALE + Engine.screenHeight + Engine.paddingBottom;
 				
 				//---
 			
@@ -2025,7 +2022,6 @@ class Engine
 					if(a.killLeaveScreen && !isOnScreen)
 					{		
 						recycleActor(a);
-						//a.die();
 					}
 					
 					else if(a.body.isActive() || a.alwaysSimulate || a.isHUD)
@@ -2039,7 +2035,6 @@ class Engine
 					if(a.killLeaveScreen && !isOnScreen)
 					{
 						recycleActor(a);
-						//a.die();
 					}
 					
 					else if(isOnScreen || a.alwaysSimulate || a.isHUD)
@@ -2116,8 +2111,8 @@ class Engine
 				var endX = -Math.abs(cast(child, BackgroundLayer).cacheWidth);
 				var endY = -Math.abs(cast(child, BackgroundLayer).cacheHeight);
 					
-				child.x = endX * -(cameraX) / Engine.sceneWidth;
-				child.y = endY * -(cameraY) / Engine.sceneHeight;
+				child.x = endX * -(cameraX / Engine.SCALE) / Engine.sceneWidth;
+				child.y = endY * -(cameraY / Engine.SCALE) / Engine.sceneHeight;
 			}
 			
 			else if(Std.is(child, ScrollingBitmap))
