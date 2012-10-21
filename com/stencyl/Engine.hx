@@ -1196,7 +1196,7 @@ class Engine
 			}
 		}
 		
-		for(i in 0...highestLayerOrder)
+		for(i in 0...highestLayerOrder + 1)
 		{
 			if(!exists.exists(i))
 			{
@@ -1212,7 +1212,7 @@ class Engine
 		var realNumLayers:Int = 0;
 		
 		//Figure out how many there actually are
-		for(i in 0...highestLayerOrder)
+		for(i in 0...highestLayerOrder + 1)
 		{
 			var layerID:Int = layersToDraw.get(i);
 			
@@ -1224,7 +1224,7 @@ class Engine
 		
 		var numLayersProcessed:Int = 0;
 		
-		for(i in 0...highestLayerOrder)
+		for(i in 0...highestLayerOrder + 1)
 		{
 			var j = highestLayerOrder - i;
 			var layerID:Int = layersToDraw.get(j);
@@ -1658,7 +1658,6 @@ class Engine
 		{
 			trace("Layer ID: " + layerID + " does not exist");
 			trace("Putting actor inside default group");
-			trace(actorsPerLayer);
 			layer = defaultGroup;
 		}
 		
