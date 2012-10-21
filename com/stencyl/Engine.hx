@@ -1706,10 +1706,11 @@ class Engine
 		a.recycled = true;
 		//a.setFilter(null);
 		a.cancelTweens();
-		a.moveTo(1000000, 1000000, 0);
-		a.growTo(1, 1, 0);
-		a.spinTo(0, 0);
-		a.fadeTo(1, 0);
+		//Only the fading is necessary. Don't fully understand why...
+		//a.moveTo(1000000, 1000000, 0.01);
+		//a.growTo(1, 1, 0.01);
+		//a.spinTo(0, 0.01);
+		a.fadeTo(1, 0.01);
 		a.switchToDefaultAnimation();
 		a.disableActorDrawing();
 		
