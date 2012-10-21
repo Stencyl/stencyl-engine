@@ -2587,13 +2587,19 @@ class Actor extends Sprite
 		 	my = (Input.mouseY - Engine.cameraY) / Engine.SCALE;
 		}
 		
-		var xPos = colX;
-		var yPos = colY;
+		//TODO: Mike - Make this work with arbitrary origin points
+		//The problem was that mouse detect was off for higher scales
+		//and would only work within the centered, original bounds.
+		var offsetX = (scaleX - 1) * cacheWidth/2;
+		var offsetY = (scaleY - 1) * cacheHeight/2;
+		
+		var xPos = colX - offsetX;
+		var yPos = colY - offsetY;
 
 		return (mx >= xPos && 
 		   		my >= yPos && 
-		   		mx < xPos + cacheWidth && 
-		   		my < yPos + cacheHeight);
+		   		mx < xPos + cacheWidth + offsetX * 2 && 
+		   		my < yPos + cacheHeight + offsetY * 2);
 	}
 	
 	public function isMouseHover():Bool
