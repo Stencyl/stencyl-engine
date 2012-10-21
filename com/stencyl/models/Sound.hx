@@ -25,7 +25,6 @@ class Sound extends Resource
 		this.volume = volume;
 		this.ext = ext;
 		
-		//todo - check in simulator
 		#if(cpp && desktop)
 		this.ext = "ogg";
 		#else
