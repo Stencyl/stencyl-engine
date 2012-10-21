@@ -2709,12 +2709,10 @@ class Engine
 			return;
 		}
 			
-		if(a.layerID == layersToDraw.get(lID)) 
+		if(a.layerID == layerID) 
 		{
 			return;
 		}
-
-		//lID = layersToDraw.get(lID);
 
 		removeActorFromLayer(a, a.layerID);
 		a.layerID = lID;
