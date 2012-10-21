@@ -1705,13 +1705,13 @@ class Engine
 		a.setY(1000000);
 		a.recycled = true;
 		//a.setFilter(null);
-		a.disableActorDrawing();
 		a.cancelTweens();
 		a.moveTo(1000000, 1000000, 0);
 		a.growTo(1, 1, 0);
 		a.spinTo(0, 0);
 		a.fadeTo(1, 0);
 		a.switchToDefaultAnimation();
+		a.disableActorDrawing();
 		
 		//Kill previous contacts
 		if(!a.isLightweight && a.body != null)
