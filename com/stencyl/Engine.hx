@@ -1231,7 +1231,7 @@ class Engine
 			
 			if(layerID == -1 || !layersToDraw.exists(j))
 			{
-				trace("No layer exists for drawing order: " + j);
+				//trace("No layer exists for drawing order: " + j);
 				continue;
 			}
 			
