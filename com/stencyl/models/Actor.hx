@@ -2082,6 +2082,11 @@ class Actor extends Sprite
 	
 	public function follow(a:Actor)
 	{
+		if(a == null)
+		{
+			return;
+		}
+	
 		if(isLightweight)
 		{
 			moveActorTo(a.getXCenter(), a.getYCenter());	

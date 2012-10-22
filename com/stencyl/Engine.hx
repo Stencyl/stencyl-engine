@@ -2708,6 +2708,12 @@ class Engine
 	
 	public function getActorsOfType(type:ActorType):Array<Actor>
 	{
+		if(type == null)
+		{
+			trace("Error: getActorsOfType was passed a null type");
+			return [];
+		}
+	
 		var result = actorsOfType.get(type.ID);
 	
 		if(result != null)
