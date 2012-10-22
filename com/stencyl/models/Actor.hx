@@ -2014,6 +2014,8 @@ class Actor extends Sprite
 	
 	public function setX(x:Float, resetSpeed:Bool = false)
 	{
+		x = Math.floor(x);
+	
 		if(isLightweight)
 		{
 			moveActorTo(x + cacheWidth/2 + currOffset.x, realY);
@@ -2046,6 +2048,8 @@ class Actor extends Sprite
 	
 	public function setY(y:Float, resetSpeed:Bool = false)
 	{
+		y = Math.floor(y);
+		
 		if(isLightweight)
 		{
 			moveActorTo(realX, y + cacheHeight/2 + currOffset.y);
