@@ -2111,13 +2111,29 @@ class Engine
 			{
 				var endX = Math.abs(cast(child, BackgroundLayer).cacheWidth - screenWidth * Engine.SCALE);
 				var endY = Math.abs(cast(child, BackgroundLayer).cacheHeight - screenHeight * Engine.SCALE);
-								
+
 				//child.x = endX * ( - (cameraX / Engine.SCALE) / Engine.sceneWidth);
 				//child.y = endY * ( - (cameraY / Engine.SCALE) / Engine.sceneHeight);
 				
-				child.x = -endX * Math.abs(cameraX/(maxCamX * Engine.SCALE));
-				child.y = -endY * Math.abs(cameraY/(maxCamY * Engine.SCALE));
+				if(maxCamX != 0)
+				{
+					child.x = -endX * Math.abs(cameraX/(maxCamX * Engine.SCALE));
+				}
 				
+				else
+				{
+					child.x = 0;
+				}
+				
+				if(maxCamY != 0)
+				{
+					child.y = -endY * Math.abs(cameraY/(maxCamY * Engine.SCALE));
+				}
+				
+				else
+				{
+					child.y = 0;
+				}
 			}
 			
 			else if(Std.is(child, ScrollingBitmap))
