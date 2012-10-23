@@ -1,5 +1,6 @@
 package com.stencyl.io;
 
+import com.stencyl.models.collision.Hitbox;
 import haxe.xml.Fast;
 import com.stencyl.utils.Utils;
 
@@ -107,17 +108,13 @@ class SpriteReader implements AbstractReader
 		);
 	}
 	
-	public function readShapes(xml:Fast, imgWidth:Float, imgHeight:Float):IntHash<B2FixtureDef>
+	public function readShapes(xml:Fast, imgWidth:Float, imgHeight:Float):IntHash<Dynamic>
 	{
+		var shapes = new IntHash<Dynamic>();
+		
 		//TODO - We should load a custom hitbox instead based on the AABB of the actual shape
 		//so that smaller boxes are supported!
-		if(Engine.NO_PHYSICS)
-		{
-			return null;
-		}
-		
-		var shapes = new IntHash<B2FixtureDef>();
-		
+						
 		for(e in xml.elements)
 		{
 			var shapeID = Std.parseInt(e.att.id);
@@ -125,6 +122,41 @@ class SpriteReader implements AbstractReader
 			
 			var shapeType:String = e.name;
 			var shapeParams:Array<String> = e.att.data.split(",");
+			
+			if (Engine.NO_PHYSICS)
+			{
+				var numVertices:Int = Std.parseInt(shapeParams[0]);
+				
+				if (shapeType == "poly" && numVertices == 4)
+				{
+					var vIndex:Int = 0;
+					var i:Int = 1;					
+					var x0:Int = 10000000;
+					var y0:Int = 10000000;
+					var x1:Int = 0;
+					var y1:Int = 0;					
+					var x:Int = Std.parseInt(shapeParams[1]);
+					var y:Int = Std.parseInt(shapeParams[2]);
+					
+					while(vIndex < numVertices)
+					{				
+						x0 = Std.int(Math.min(x0, Std.parseInt(shapeParams[i])));
+						y0 = Std.int(Math.min(y0, Std.parseInt(shapeParams[i + 1])));
+						x1 = Std.int(Math.max(x1, Std.parseInt(shapeParams[i])));
+						y1 = Std.int(Math.max(y1, Std.parseInt(shapeParams[i + 1])));
+				
+						vIndex++;
+						i += 2;
+					}
+							
+					var w:Int = x1 - x0;
+					var h:Int = y1 - y0;
+					
+					shapes.set(shapeID, new Hitbox(w, h, x, y));
+				}
+				
+				continue;
+			}
 			var shape = createShape(shapeType, shapeParams, 0, 0, imgWidth, imgHeight);
 			
 			var fixtureDef = new B2FixtureDef();

@@ -146,7 +146,7 @@ class Masklist extends Hitbox
 	override public function update() 
 	{
 		// find bounds of the contained masks
-		var t:Int = 0, l:Int = 0, r:Int = 0, b:Int = 0, h:Hitbox, i:Int = _count;
+		var t:Int = 100000, l:Int = 100000, r:Int = 0, b:Int = 0, h:Hitbox, i:Int = _count;
 		while (i-- > 0)
 		{
 			if ((h = cast(_masks[i], Hitbox)) != null)
@@ -163,6 +163,7 @@ class Masklist extends Hitbox
 		_y = t;
 		_width = r - l;
 		_height = b - t;
+		
 		super.update();
 	}
 	

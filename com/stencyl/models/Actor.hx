@@ -1,5 +1,6 @@
 package com.stencyl.models;
 
+import com.stencyl.models.collision.Masklist;
 import flash.geom.Transform;
 import nme.display.Sprite;
 import nme.display.Bitmap;
@@ -479,7 +480,7 @@ class Actor extends Sprite
 		else
 		{
 			if(shape == null)
-			{
+			{				
 				shape = createBox(width, height);
 			}
 			
@@ -637,19 +638,33 @@ class Actor extends Sprite
 		originY:Float = 0,
 		durations:Array<Int>=null, 
 		looping:Bool=true, 
-		shapes:IntHash<B2FixtureDef>=null
+		shapes:IntHash<Dynamic>=null
 	)
 	{
 		if(shapes != null)
 		{
-			var arr = new Array<B2FixtureDef>();
+			var arr = new Array<Dynamic>();
 			
 			for(s in shapes)
-			{
+			{				
+				if (Std.is(s, Hitbox))
+				{		
+					s = cast(s, Hitbox).clone();
+					s.assignTo(this);
+				}
+				
 				arr.push(s);
 			}
 			
-			shapeMap.set(name, arr);
+			if (isLightweight || Engine.NO_PHYSICS)
+			{
+				shapeMap.set(name, new Masklist(arr));
+			}
+			
+			else
+			{
+				shapeMap.set(name, arr);
+			}
 		}
 	
 		if(imgData == null)
@@ -1052,7 +1067,13 @@ class Actor extends Sprite
 				{
 					body.setMassData(md);
 				}
-			}	
+			}				
+			else if (shapeMap.get(name) != null)
+			{
+				//Get hitbox list for Simple Physics
+				setShape(shapeMap.get(name));
+				HITBOX = _mask;
+			}
 			
 			cacheWidth = currAnimation.width / Engine.SCALE;
 			cacheHeight = currAnimation.height / Engine.SCALE;			
@@ -3251,7 +3272,7 @@ class Actor extends Sprite
 
 		return null;
 	}
-
+	
 	/**
 	 * Checks if this Entity collides with a specific Entity.
 	 * @param	e		The Entity to collide against.

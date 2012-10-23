@@ -9,7 +9,7 @@ class Animation
 	public var animName:String;
 	
 	public var parentID:Int;
-	public var shapes:IntHash<B2FixtureDef>;
+	public var shapes:IntHash<Dynamic>;
 	public var looping:Bool;
 	public var durations:Array<Int>;
 	
@@ -28,7 +28,7 @@ class Animation
 		animID:Int,
 		animName:String,
 		parentID:Int, 
-		shapes:IntHash<B2FixtureDef>, 
+		shapes:IntHash<Dynamic>, 
 		looping:Bool, 
 		imgWidth:Int,
 		imgHeight:Int,

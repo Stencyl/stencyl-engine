@@ -26,6 +26,11 @@ class Hitbox extends Mask
 		_y = y;
 		_check.set(Type.getClassName(Hitbox), collideHitbox);
 	}
+	
+	public function clone():Hitbox
+	{
+		return new Hitbox(_width, _height, _x, _y);
+	}
 
 	/** @private Collides against an Entity. */
 	override private function collideMask(other:Mask):Bool
