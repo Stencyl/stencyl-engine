@@ -68,7 +68,9 @@ class TileLayer extends Sprite
 	{
 		#if !cpp
 		bitmapData = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE), true, 0);
-		addChild(new Bitmap(bitmapData));
+		var bmp = new Bitmap(bitmapData);
+		bmp.smoothing = scripts.MyAssets.antialias;
+		addChild(bmp);
 		#end
 	}
 	
@@ -241,14 +243,14 @@ class TileLayer extends Sprite
 							
 							if(t.parent.tilesheet != null)
 							{
-								t.parent.tilesheet.drawTiles(graphics, t.parent.data, true);
+								t.parent.tilesheet.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias);
 							}
 						}
 						
 						else
 						{
 							t.parent.data[2] = t.currFrame;
-							t.data.drawTiles(graphics, t.parent.data, true);
+							t.data.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias);
 						}						
 				  		#end
 					}

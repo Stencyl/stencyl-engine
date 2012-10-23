@@ -30,6 +30,7 @@ class MyAssets implements AssetLoader
 	public static var releaseMode:Bool = false;
 	public static var showConsole:Bool = true;
 	public static var debugDraw:Bool = true;
+	public static var always1x:Bool = false;
 	
 	public function new()
 	{

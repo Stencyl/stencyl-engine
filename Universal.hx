@@ -70,7 +70,7 @@ class Universal extends Sprite
 		
 		var stageWidth = stage.stageWidth;
 		var stageHeight = stage.stageHeight;
-		
+
 		//NME Bug: If waking from sleep, the dimensions can be flipped on Android.
 		#if android
 		if(stageWidth < stageHeight && scripts.MyAssets.landscape)
@@ -141,9 +141,9 @@ class Universal extends Sprite
 			Engine.SCALE = 1;
 			Engine.IMG_BASE = "1x";
 		}*/
-		
+
 		//2 scale scheme
-		if(larger >= 720)
+		if(larger >= 720 && !scripts.MyAssets.always1x)
 		{
 			Engine.SCALE = 2;
 			Engine.IMG_BASE = "2x";
@@ -154,8 +154,6 @@ class Universal extends Sprite
 			Engine.SCALE = 1;
 			Engine.IMG_BASE = "1x";
 		}
-		
-		trace("Engine Scale: " + Engine.IMG_BASE);
 		#end
 		
 		#if(!mobile)
@@ -168,6 +166,8 @@ class Universal extends Sprite
 		Engine.SCALE = 1;
 		Engine.IMG_BASE = "1x";
 		#end
+		
+		trace("Engine Scale: " + Engine.IMG_BASE);
 		
 		var originalWidth = scripts.MyAssets.stageWidth;
 		var originalHeight = scripts.MyAssets.stageHeight;
@@ -203,20 +203,38 @@ class Universal extends Sprite
 		#if(mobile && !air)
 		if(!usingFullScreen && !stretchToFit)
 		{
-			//Is the game width > device width? Adjust scaleX, then scaleY.
-			if(scripts.MyAssets.stageWidth > stageWidth)
+			if(scripts.MyAssets.always1x)
 			{
-				scaleX *= stageWidth / scripts.MyAssets.stageWidth;
-				scaleY = scaleX;
+				if(scripts.MyAssets.landscape)
+				{
+					scaleX *= stageWidth / scripts.MyAssets.stageWidth;
+					scaleY = scaleX;
+				}
+				
+				else
+				{
+					scaleY = stageHeight / scripts.MyAssets.stageHeight;
+					scaleX = scaleY;
+				}
 			}
 			
-			//If the game height * scaleY > device height? Adjust scaleY, then scaleX.
-			if(scripts.MyAssets.stageHeight * scaleY > stageHeight)
+			else
 			{
-				scaleY = stageHeight / scripts.MyAssets.stageHeight;
-				scaleX = scaleY;
+				//Is the game width > device width? Adjust scaleX, then scaleY.
+				if(scripts.MyAssets.stageWidth > stageWidth)
+				{
+					scaleX *= stageWidth / scripts.MyAssets.stageWidth;
+					scaleY = scaleX;
+				}
+				
+				//If the game height * scaleY > device height? Adjust scaleY, then scaleX.
+				if(scripts.MyAssets.stageHeight * scaleY > stageHeight)
+				{
+					scaleY = stageHeight / scripts.MyAssets.stageHeight;
+					scaleX = scaleY;
+				}
 			}
-
+			
 			x += (stageWidth - scripts.MyAssets.stageWidth * scaleX)/2;
 			y += (stageHeight - scripts.MyAssets.stageHeight * scaleY)/2;
 		}
