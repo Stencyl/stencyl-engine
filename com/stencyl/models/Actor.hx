@@ -645,18 +645,30 @@ class Actor extends Sprite
 		{
 			var arr = new Array<Dynamic>();
 			
-			for(s in shapes)
-			{				
-				if (Std.is(s, Hitbox))
-				{		
-					s = cast(s, Hitbox).clone();
-					s.assignTo(this);
-				}
+			if (Engine.NO_PHYSICS)
+			{
+				for(s in shapes)
+				{				
+					if (Std.is(s, Hitbox) && Engine.NO_PHYSICS)
+					{		
+						s = cast(s, Hitbox).clone();
+						s.assignTo(this);
+					}
 				
-				arr.push(s);
+					arr.push(s);
+				}
 			}
 			
-			if (isLightweight || Engine.NO_PHYSICS)
+			else
+			{
+				for(s in shapes)
+				{				
+					arr.push(s);
+				}
+			}
+			
+			//TODO: Readd lightweight
+			if (Engine.NO_PHYSICS)
 			{
 				shapeMap.set(name, new Masklist(arr));
 			}
@@ -1068,7 +1080,7 @@ class Actor extends Sprite
 					body.setMassData(md);
 				}
 			}				
-			else if (shapeMap.get(name) != null)
+			else if (shapeMap.get(name) != null && Engine.NO_PHYSICS)
 			{
 				//Get hitbox list for Simple Physics
 				setShape(shapeMap.get(name));
