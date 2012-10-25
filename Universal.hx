@@ -22,11 +22,7 @@ class Universal extends Sprite
 		}
 		#end
 
-		#if (mobile && !android && !air)
-		Lib.current.stage.addEventListener(Event.RESIZE, onAdded);
-		#else
 		addEventListener(Event.ADDED_TO_STAGE, onAdded);
-		#end
 	}
 
 	private function onAdded(event:Event):Void 
@@ -60,11 +56,7 @@ class Universal extends Sprite
             
 		//---
 	
-		#if (mobile && !android && !air)
-		Lib.current.stage.removeEventListener(Event.RESIZE, onAdded);
-		#else
 		removeEventListener(Event.ADDED_TO_STAGE, onAdded);
-		#end
 		
 		com.stencyl.Engine.stage = Lib.current.stage;
 		
@@ -73,6 +65,14 @@ class Universal extends Sprite
 
 		//NME Bug: If waking from sleep, the dimensions can be flipped on Android.
 		#if android
+		if(stageWidth < stageHeight && scripts.MyAssets.landscape)
+		{
+			stageHeight = stage.stageWidth;
+			stageWidth = stage.stageHeight;
+		}
+		#end
+		
+		#if (mobile && !android && !air)
 		if(stageWidth < stageHeight && scripts.MyAssets.landscape)
 		{
 			stageHeight = stage.stageWidth;
