@@ -64,6 +64,7 @@ class ActorTypeReader implements AbstractReader
 		var isLightweight:Bool = Utils.toBoolean(xml.att.lw);
 		var autoScale:Bool = Utils.toBoolean(xml.att.ascale);
 		var pausable:Bool = Utils.toBoolean(xml.att.pausable);
+		var ignoreGravity:Bool = bodyDef.ignoreGravity || bodyDef.type == B2Body.b2_staticBody || bodyDef.type == B2Body.b2_kinematicBody;
 		
 		//These are more like behavior instances
 		//They reference the Behavior + Map of instance values
@@ -79,7 +80,7 @@ class ActorTypeReader implements AbstractReader
 			}
 		}
 			
-		return new ActorType(ID, atlasID, name, groupID, spriteID, behaviorValues, bodyDef, isLightweight, autoScale, pausable);
+		return new ActorType(ID, atlasID, name, groupID, spriteID, behaviorValues, bodyDef, isLightweight, autoScale, pausable, ignoreGravity);
 	}
 	
 	public static function readBehaviors(xml:Fast):Hash<BehaviorInstance>

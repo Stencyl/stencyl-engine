@@ -1521,7 +1521,8 @@ class Engine
 			null,
 			ai.actorType.ID,
 			ai.actorType.isLightweight || NO_PHYSICS,
-			ai.actorType.autoScale
+			ai.actorType.autoScale,
+			ai.actorType.ignoreGravity
 		);
 
 		if(ai.angle != 0)

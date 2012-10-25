@@ -13,6 +13,7 @@ class ActorType extends Resource
 	public var isLightweight:Bool;
 	public var autoScale:Bool;
 	public var pausable:Bool;
+	public var ignoreGravity:Bool;
 	
 	public function new
 	(
@@ -25,7 +26,8 @@ class ActorType extends Resource
 		bodyDef:B2BodyDef, 
 		isLightweight:Bool, 
 		autoScale:Bool,
-		pausable:Bool
+		pausable:Bool,
+		ignoreGravity:Bool
 	)
 	{
 		super(ID, name, atlasID);
@@ -37,6 +39,7 @@ class ActorType extends Resource
 		this.isLightweight = isLightweight;
 		this.autoScale = autoScale;
 		this.pausable = pausable;
+		this.ignoreGravity = ignoreGravity;
 	}
 	
 	//For Atlases

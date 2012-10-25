@@ -277,7 +277,8 @@ class Actor extends Sprite
 		shape:Dynamic=null, //B2Shape or Mask - Used only for terrain.
 		typeID:Int = 0,
 		isLightweight:Bool=false,
-		autoScale:Bool=true
+		autoScale:Bool = true,
+		ignoreGravity:Bool = false		
 	)
 	{
 		super();
@@ -368,7 +369,7 @@ class Actor extends Sprite
 		isHUD = false;
 
 		fixedRotation = false;
-		ignoreGravity = false;
+		this.ignoreGravity = ignoreGravity;
 		resetOrigin = true;
 		
 		//---
@@ -1240,7 +1241,7 @@ class Actor extends Sprite
 			
 		if(isLightweight)
 		{		
-			if (!ignoreGravity)
+			if (!ignoreGravity && !isHUD)
 			{
 				//TODO: Adjust?
 				xSpeed += elapsedTime * engine.scene.gravityX * 0.001;
@@ -1249,7 +1250,7 @@ class Actor extends Sprite
 			
 			if(xSpeed != 0 || ySpeed != 0)
 			{
-				//TODO: Temporary
+				//TODO: Temporary?
 				colX = realX - cacheWidth/2 - currOffset.x;
 				colY = realY - cacheHeight / 2 - currOffset.y;				
 				
@@ -1970,7 +1971,7 @@ class Actor extends Sprite
 			}
 		}
 		
-		return realX - cacheWidth/2 - currOffset.x;
+		return realX - Math.floor(cacheWidth/2) - currOffset.x;
 	}
 	
 	public function getY():Float
@@ -1988,7 +1989,7 @@ class Actor extends Sprite
 			}
 		}
 		
-		return realY - cacheHeight/2 - currOffset.y;
+		return Math.floor(realY - Math.floor(cacheHeight/2) - currOffset.y);
 	}
 	
 	//TODO: Eliminate?
@@ -2051,7 +2052,7 @@ class Actor extends Sprite
 	
 		if(isLightweight)
 		{
-			moveActorTo(x + cacheWidth/2 + currOffset.x, realY);
+			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY);
 		}
 		
 		else
@@ -2085,7 +2086,7 @@ class Actor extends Sprite
 		
 		if(isLightweight)
 		{
-			moveActorTo(realX, y + cacheHeight/2 + currOffset.y);
+			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y);
 		}
 		
 		else
