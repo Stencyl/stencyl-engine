@@ -248,6 +248,10 @@ class Universal extends Sprite
 		}
 		#end
 		
+		#if(flash || js || (cpp && !mobile))
+		scrollRect = new nme.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
+		#end
+		
 		scripts.MyAssets.stageWidth = originalWidth;
 		scripts.MyAssets.stageHeight = originalHeight;
 		
