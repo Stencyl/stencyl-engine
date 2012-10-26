@@ -194,6 +194,75 @@ class Script
 			return 0;
 		}
 	}
+	
+	public inline function hasValue(o:Dynamic):Bool
+	{
+		if(Std.is(o, Bool))
+		{
+			return true;
+		}
+		
+		else if(Std.is(o, String))
+		{
+			return true;
+		}
+		
+		else if(Std.is(o, Float) || Std.is(o, Int))
+		{
+			return true;
+		}
+		
+		else
+		{
+			return o != null;
+		}
+	}
+	
+	public inline function isPrimitive(o:Dynamic):Bool
+	{
+		if(Std.is(o, Bool))
+		{
+			return true;
+		}
+		
+		else if(Std.is(o, String))
+		{
+			return true;
+		}
+		
+		else if(Std.is(o, Float) || Std.is(o, Int))
+		{
+			return true;
+		}
+		
+		else
+		{
+			return false;
+		}
+	}
+	
+	public inline function getDefaultValue(o:Dynamic):Dynamic
+	{
+		if(Std.is(o, Bool))
+		{
+			return false;
+		}
+		
+		else if(Std.is(o, String))
+		{
+			return "";
+		}
+		
+		else if(Std.is(o, Float) || Std.is(o, Int))
+		{
+			return 0;
+		}
+		
+		else
+		{
+			return null;
+		}
+	}
 		
 	public function toInternalName(displayName:String)
 	{

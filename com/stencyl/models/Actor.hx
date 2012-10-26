@@ -2807,6 +2807,14 @@ class Actor extends Sprite
 		{
 			currAnimation.visible = true;
 		}
+		
+		for(anim in animationMap)
+		{
+			if(anim != null)
+			{
+				anim.visible = true;
+			}
+		}
 	}
 	
 	public function disableActorDrawing()
@@ -2816,6 +2824,14 @@ class Actor extends Sprite
 		if(currAnimation != null)
 		{
 			currAnimation.visible = false;
+		}
+		
+		for(anim in animationMap)
+		{
+			if(anim != null)
+			{
+				anim.visible = false;
+			}
 		}
 	}
 	
