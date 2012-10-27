@@ -2879,7 +2879,7 @@ class Engine
 	
 	public function getGroup(ID:Int, a:Actor = null):Group
 	{
-		if(ID == -1000 && a != null)
+		if(ID == GameModel.INHERIT_ID && a != null)
 		{
 			return groups.get(a.getGroupID());
 		}

@@ -130,7 +130,8 @@ class TileLayer extends Sprite
 		return rows[row][col];
 	}
 	
-	//We're directly drawing since pre-rendering the layer might not be so memory friendly on large levels and I don't know if it clips.
+	//We're directly drawing since pre-rendering the layer might not be so memory friendly on large levels 
+	//and I don't know if it clips.
 	public function draw(viewX:Int, viewY:Int, alpha:Float)
 	{
 		#if cpp

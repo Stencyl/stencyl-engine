@@ -306,7 +306,31 @@ class Script
 		else
 		{
 			var fixture = cast(arg2, B2Fixture);
-			return engine.getGroup(fixture.groupID, cast(fixture.getBody().getUserData(), Actor));
+			
+			if(fixture == null)
+			{
+				trace("internalGetGroup - Warning - null shape passed in");
+				return cast(arg, Actor).getGroup();
+			}
+			
+			else
+			{
+				var value = fixture.groupID;
+
+				if(value == GameModel.INHERIT_ID)
+				{
+					var body = fixture.getBody();
+					
+					if(body != null)
+					{
+						return engine.getGroup(cast(body.getUserData()).groupID);
+					}
+					
+					trace("internalGetGroup - Warning - shape inherits groupID from actor but is not attached to a body");
+				}
+				
+				return engine.getGroup(value);
+			}
 		}
 	}
 	
