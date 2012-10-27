@@ -62,7 +62,7 @@ class Universal extends Sprite
 		
 		var stageWidth = stage.stageWidth;
 		var stageHeight = stage.stageHeight;
-
+		
 		//NME Bug: If waking from sleep, the dimensions can be flipped on Android.
 		#if android
 		if(stageWidth < stageHeight && scripts.MyAssets.landscape)
@@ -73,10 +73,15 @@ class Universal extends Sprite
 		#end
 		
 		#if (mobile && !android && !air)
+		stageWidth = Std.int(nme.system.Capabilities.screenResolutionX);
+		stageHeight = Std.int(nme.system.Capabilities.screenResolutionY);
+		
 		if(stageWidth < stageHeight && scripts.MyAssets.landscape)
 		{
-			stageHeight = stage.stageWidth;
-			stageWidth = stage.stageHeight;
+			var temp = stageHeight;
+		
+			stageHeight = stageWidth;
+			stageWidth = temp;
 		}
 		#end
 		
