@@ -2256,10 +2256,14 @@ class Engine
 		}
 		
 		//Drawing
-		cameraMoved = !(cameraOldX == cameraX && cameraOldY == cameraY);
 		
-		cameraOldX = cameraX;
-		cameraOldY = cameraY;
+		var tempX = Std.int(cameraX / scene.tileWidth);
+		var tempY = Std.int(cameraY / scene.tileHeight);
+		
+		cameraMoved = !(cameraOldX == tempX && cameraOldY == tempY);
+		
+		cameraOldX = tempX;
+		cameraOldY = tempY;
 		
 		draw();
 	}
@@ -2627,15 +2631,19 @@ class Engine
      	//Walk through each of the drawing events
      	
      	//Only if camera changed? Or tile updated
-     	if(cameraMoved || tileUpdated)
-     	{
-	     	for(layer in tileLayers)
-	     	{
+     	for(layer in tileLayers)
+	    {
+	    	if(cameraMoved || tileUpdated)
+     		{
 	     		layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */); // FLASH MOUSE SLOWDOWN
 	     	}
-			
-			tileUpdated = false;
-     	}
+	     	
+	     	layer.x = cameraX;
+	     	layer.y = cameraY;
+	    }
+     	
+     	tileUpdated = false;
+     	
      	
      	//Scene Behavior/Event Drawing
      	g.graphics = transitionLayer.graphics;

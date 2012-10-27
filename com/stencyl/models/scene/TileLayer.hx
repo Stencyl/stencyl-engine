@@ -67,7 +67,14 @@ class TileLayer extends Sprite
 	public function reset()
 	{
 		#if !cpp
-		bitmapData = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE), true, 0);
+		bitmapData = new BitmapData
+		(
+			Std.int(Engine.sceneWidth * Engine.SCALE), 
+			Std.int(Engine.sceneHeight * Engine.SCALE), 
+			true, 
+			0
+		);
+		
 		var bmp = new Bitmap(bitmapData);
 		bmp.smoothing = scripts.MyAssets.antialias;
 		addChild(bmp);
@@ -222,8 +229,8 @@ class TileLayer extends Sprite
 						pixels = t.pixels;
 					}
 					
-					flashPoint.x = x * tw * Engine.SCALE - viewX;
-					flashPoint.y = y * th * Engine.SCALE - viewY;
+					flashPoint.x = x * tw * Engine.SCALE;// - viewX;
+					flashPoint.y = y * th * Engine.SCALE;// - viewY;
 
 					if(source != null)
 					{
