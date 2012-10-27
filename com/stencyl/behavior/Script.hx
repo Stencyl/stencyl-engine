@@ -1338,12 +1338,12 @@ class Script
 		return new com.stencyl.graphics.transitions.FadeInTransition(duration, color);
 	}
 	
-	public function createCircleOut(duration:Int, color:Int=0xff000000):Transition
+	public function createCircleOut(duration:Float, color:Int=0xff000000):Transition
 	{
 		return new com.stencyl.graphics.transitions.CircleTransition(Transition.OUT, duration, color);
 	}
 		
-	public function createCircleIn(duration:Int, color:Int=0xff000000):Transition
+	public function createCircleIn(duration:Float, color:Int=0xff000000):Transition
 	{
 		return new com.stencyl.graphics.transitions.CircleTransition(Transition.IN, duration, color);
 	}
