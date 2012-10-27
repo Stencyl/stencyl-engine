@@ -130,7 +130,12 @@ class BehaviorManager
 			
 			else
 			{
+				//Just insist on doing it
+				#if cpp
+				Reflect.setField(b.script, attributeName, value);
+				#else
 				trace("Set Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
+				#end
 			}
 		}
 		
