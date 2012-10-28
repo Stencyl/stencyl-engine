@@ -74,7 +74,7 @@ class Script
 	public var scene:Engine; //for compatibility - we'll remove it later
 	
 	public var propertyChangeListeners:Hash<Dynamic>;
-	public var equalityPairs:HashMap<Dynamic, Dynamic>;
+	public var equalityPairs:HashMap<Dynamic, Dynamic>; //hashmap does badly on some platforms when checking key equality (for primitives) - beware
 		
 		
 	//*-----------------------------------------------
@@ -758,17 +758,17 @@ class Script
 	{
 		if(!engine.collisionListeners.exists(obj))
 		{
-			engine.collisionListeners.set(obj, new HashMap<Dynamic, Dynamic>());									
+			engine.collisionListeners.set(obj, new IntHash<Dynamic>());									
 		}
 		
 		if(!engine.collisionListeners.exists(obj2))
 		{
-			engine.collisionListeners.set(obj2, new HashMap<Dynamic, Dynamic>());
+			engine.collisionListeners.set(obj2, new IntHash<Dynamic>());
 		}	
 		
 		if(!engine.collisionListeners.get(obj).exists(obj2))
 		{				
-			engine.collisionListeners.get(obj).set(obj2, new Array<Dynamic>());			
+			engine.collisionListeners.get(obj).set(obj2, new Array<Dynamic>());		
 		}
 		
 		var listeners = cast(engine.collisionListeners.get(obj).get(obj2), Array<Dynamic>);

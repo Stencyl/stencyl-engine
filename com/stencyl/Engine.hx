@@ -2272,12 +2272,12 @@ class Engine
 	//* Events Finished
 	//*-----------------------------------------------
 	
-	public function onFocus(event:Event=null)
+	public function onFocus(event:Event)
 	{
 		focusChanged(false);
 	}
 	
-	public function onFocusLost(event:Event=null)
+	public function onFocusLost(event:Event)
 	{
 		focusChanged(true);
 	}

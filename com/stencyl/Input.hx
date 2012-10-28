@@ -1,5 +1,6 @@
 package com.stencyl;
 
+import nme.events.Event;
 import nme.events.KeyboardEvent;
 import nme.events.MouseEvent;
 
