@@ -23,6 +23,11 @@ class Animation
 	public var originX:Float;
 	public var originY:Float;
 	
+	public var sharedTimer:Float = 0;
+	public var sharedFrameIndex:Int = 0;
+	
+	public static var allAnimations:Array<Animation> = new Array<Animation>();
+	
 	public function new
 	(
 		animID:Int,
@@ -63,6 +68,11 @@ class Animation
 		{
 			loadGraphics();
 		}
+		
+		if(framesAcross > 1)
+		{
+			allAnimations.push(this);
+		}
 	}
 	
 	//For Atlases
@@ -81,5 +91,40 @@ class Animation
 		//Graceful fallback - just a blank image that is numFrames across in px
 		imgData = new BitmapData(framesAcross, 1);
 		Data.get().resourceAssets.remove(parentID + "-" + animID + ".png");
+	}
+	
+	public static function updateAll(elapsedTime:Float)
+	{
+		for(a in allAnimations)
+		{
+			a.update(elapsedTime);
+		}
+	}
+	
+	public inline function update(elapsedTime:Float)
+	{
+		sharedTimer += elapsedTime;
+		
+		if(framesAcross > 1 && sharedTimer > durations[sharedFrameIndex])
+		{
+			var old = sharedFrameIndex;
+		
+			sharedTimer -= durations[sharedFrameIndex];
+			
+			sharedFrameIndex++;
+			
+			if(sharedFrameIndex >= framesAcross)
+			{
+				if(looping)
+				{
+					sharedFrameIndex = 0;
+				}
+				
+				else
+				{	
+					sharedFrameIndex--;
+				}
+			}
+		}
 	}
 }

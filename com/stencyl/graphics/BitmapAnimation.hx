@@ -1,5 +1,6 @@
 package com.stencyl.graphics;
 
+import com.stencyl.models.actor.Animation;
 import nme.display.Bitmap;
 import nme.display.BitmapData;
 import nme.geom.Rectangle;
@@ -9,6 +10,8 @@ import com.stencyl.Engine;
 //TODO: It would be better to pass in the frames, broken up and swap between the frames.
 class BitmapAnimation extends Bitmap, implements AbstractAnimation
 {
+	private var model:Animation;
+
 	private var frameIndex:Int;
 	private var looping:Bool;
 	private var timer:Float;
@@ -20,9 +23,11 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 	private var region:Rectangle;
 	private var pt:Point;
 	
-	public function new(sheet:BitmapData, numFrames:Int, durations:Array<Int>, looping:Bool) 
+	public function new(sheet:BitmapData, numFrames:Int, durations:Array<Int>, looping:Bool, model:Animation) 
 	{
 		super(new BitmapData(Std.int(sheet.width/numFrames), sheet.height));
+		
+		this.model = model;
 		
 		this.frameWidth = Std.int(sheet.width/numFrames);		
 		
@@ -45,33 +50,49 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 
 	public inline function update(elapsedTime:Float)
 	{
-		timer += elapsedTime;
-		
-		if(numFrames > 1 && timer > durations[frameIndex])
+		//Non-synced animations
+		if(model == null)
 		{
-			var old = frameIndex;
+			timer += elapsedTime;
 		
-			timer -= durations[frameIndex];
-			
-			frameIndex++;
-			
-			if(frameIndex >= numFrames)
+			if(numFrames > 1 && timer > durations[frameIndex])
 			{
-				if(looping)
+				var old = frameIndex;
+			
+				timer -= durations[frameIndex];
+				
+				frameIndex++;
+				
+				if(frameIndex >= numFrames)
 				{
-					frameIndex = 0;
+					if(looping)
+					{
+						frameIndex = 0;
+					}
+					
+					else
+					{	
+						frameIndex--;
+					}
 				}
 				
-				else
-				{	
-					frameIndex--;
+				if(old != frameIndex)
+				{
+					updateBitmap();
 				}
 			}
-			
-			if(old != frameIndex)
-			{
-				updateBitmap();
-			}
+		
+			return;
+		}
+	
+		var old = frameIndex;
+	
+		timer = model.sharedTimer;
+		frameIndex = model.sharedFrameIndex;
+		
+		if(old != frameIndex)
+		{
+			updateBitmap();
 		}
 	}
 	
@@ -94,6 +115,12 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		
 		frameIndex = frame;
 		updateBitmap();
+		
+		//Q: should we be altering the shared instance?
+		if(model != null)
+		{
+			model.sharedFrameIndex = frame;
+		}
 	}
 	
 	public function isFinished():Bool

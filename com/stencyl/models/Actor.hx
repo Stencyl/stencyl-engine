@@ -428,6 +428,7 @@ class Actor extends Sprite
 				{
 					addAnim
 					(
+						a.animID,
 						a.animName, 
 						a.imgData, 
 						a.framesAcross, 
@@ -450,7 +451,7 @@ class Actor extends Sprite
 		
 		//--
 		
-		addAnim("recyclingDefault", null, 1, 1, 1, 1, 1, [1000], false, null);
+		addAnim(-1, "recyclingDefault", null, 1, 1, 1, 1, 1, [1000], false, null);
 
 		if(bodyDef != null && !isLightweight)
 		{
@@ -630,6 +631,7 @@ class Actor extends Sprite
 	
 	public function addAnim
 	(
+		animID:Int,
 		name:String, 
 		imgData:BitmapData, 
 		frameCount:Int=1, 
@@ -685,7 +687,7 @@ class Actor extends Sprite
 			//animationMap.set(name, new Sprite());
 			
 			//XXX: Did some work on cases where image dta is missing. It's still an error but won't crash anymore.
-			animationMap.set(name, new BitmapAnimation(new BitmapData(16, 16), 1, [1000000], false));
+			animationMap.set(name, new BitmapAnimation(new BitmapData(16, 16), 1, [1000000], false, null));
 			originMap.set(name, new B2Vec2(originX, originY));
 			return;
 		}
@@ -704,14 +706,15 @@ class Actor extends Sprite
 			durations, 
 			Std.int(frameWidth * Engine.SCALE), 
 			Std.int(frameHeight * Engine.SCALE),
-			looping
+			looping,
+			this.sprite.animations.get(animID)
 		);
 		
 		animationMap.set(name, sprite);
 		#end
 		
 		#if (flash || js)
-		var sprite = new BitmapAnimation(imgData, frameCount, durations, looping);
+		var sprite = new BitmapAnimation(imgData, frameCount, durations, looping, this.sprite.animations.get(animID));
 		animationMap.set(name, sprite);
 		#end	
 				

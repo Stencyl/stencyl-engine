@@ -1,5 +1,6 @@
 package com.stencyl.graphics;
 
+import com.stencyl.models.actor.Animation;
 import nme.display.Sprite;
 import nme.display.BitmapData;
 
@@ -24,14 +25,18 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 	
 	private var data:Array<Float>;
 	
+	private var model:Animation;
+	
 	#if !js
-	public function new(tilesheet:Tilesheet, durations:Array<Int>, width:Int, height:Int, looping:Bool) 
+	public function new(tilesheet:Tilesheet, durations:Array<Int>, width:Int, height:Int, looping:Bool, model:Animation) 
 	#end
 	#if js
-	public function new(tilesheet:Dynamic, durations:Array<Int>, width:Int, height:Int, looping:Bool) 
+	public function new(tilesheet:Dynamic, durations:Array<Int>, width:Int, height:Int, looping:Bool, model:Animation) 
 	#end
 	{
 		super();
+		
+		this.model = model;
 		
 		this.x = -width/2 * Engine.SCALE;
 		this.y = -height/2 * Engine.SCALE;
@@ -53,33 +58,49 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 
 	public inline function update(elapsedTime:Float)
 	{
-		timer += elapsedTime;
-		
-		if(numFrames > 1 && timer > durations[frameIndex])
+		//Non-synced animations
+		if(model == null)
 		{
-			var old = frameIndex;
+			timer += elapsedTime;
 		
-			timer -= durations[frameIndex];
-			
-			frameIndex++;
-			
-			if(frameIndex >= numFrames)
+			if(numFrames > 1 && timer > durations[frameIndex])
 			{
-				if(looping)
+				var old = frameIndex;
+			
+				timer -= durations[frameIndex];
+				
+				frameIndex++;
+				
+				if(frameIndex >= numFrames)
 				{
-					frameIndex = 0;
+					if(looping)
+					{
+						frameIndex = 0;
+					}
+					
+					else
+					{	
+						frameIndex--;
+					}
 				}
 				
-				else
-				{	
-					frameIndex--;
+				if(old != frameIndex)
+				{
+					updateBitmap();
 				}
 			}
-			
-			if(old != frameIndex)
-			{
-				updateBitmap();
-			}
+		
+			return;
+		}
+	
+		var old = frameIndex;
+	
+		timer = model.sharedTimer;
+		frameIndex = model.sharedFrameIndex;
+		
+		if(old != frameIndex)
+		{
+			updateBitmap();
 		}
 	}
 	
@@ -102,6 +123,12 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		
 		frameIndex = frame;
 		updateBitmap();
+		
+		//Q: should we be altering the shared instance?
+		if(model != null)
+		{
+			model.sharedFrameIndex = frame;
+		}
 	}
 	
 	public function isFinished():Bool

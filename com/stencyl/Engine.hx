@@ -2006,6 +2006,8 @@ class Engine
 			collisionPairs = new HashMap<Actor, HashMap<Actor, Bool>>();	
 		}
 		
+		com.stencyl.models.actor.Animation.updateAll(elapsedTime);
+		
 		for(a in allActors)
 		{		
 			if(a != null && !a.dead && !a.recycled) 
