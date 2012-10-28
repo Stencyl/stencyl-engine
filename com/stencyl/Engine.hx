@@ -2373,9 +2373,7 @@ class Engine
 			}
 		}
 		
-		//
-		
-		if(type1 > 0 && type2 > 0)
+		if(type1 > -1 || type2 > -1)
 		{
 			if(!event.otherCollidedWithTerrain && collisionListeners.exists(type1) && collisionListeners.get(type1).exists(type2))
 			{
