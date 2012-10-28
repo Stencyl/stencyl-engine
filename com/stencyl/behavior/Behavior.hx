@@ -149,11 +149,23 @@ class Behavior
 					var realValue:Dynamic = a.getRealValue();
 					
 					//trace("Set att(" + a.fieldName + ") to " + realValue);
-					
-					//TODO???
+
 					if(a.type == "list")
 					{
-						Reflect.setField(script, attributeName, realValue);
+						var list:Array<Dynamic> = null;
+						
+						if(realValue != null)
+						{
+							list = cast(realValue, Array<Dynamic>);
+							list = list.copy();
+						}
+						
+						else
+						{
+							list = [];
+						}
+		
+						Reflect.setField(script, attributeName, list);
 					}
 					
 					else
