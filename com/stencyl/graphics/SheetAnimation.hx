@@ -59,7 +59,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 	public inline function update(elapsedTime:Float)
 	{
 		//Non-synced animations
-		if(model == null)
+		if(model == null || !looping)
 		{
 			timer += elapsedTime;
 		

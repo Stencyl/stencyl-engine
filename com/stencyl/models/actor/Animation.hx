@@ -69,7 +69,7 @@ class Animation
 			loadGraphics();
 		}
 		
-		if(framesAcross > 1)
+		if(framesAcross > 1 && looping)
 		{
 			allAnimations.push(this);
 		}
