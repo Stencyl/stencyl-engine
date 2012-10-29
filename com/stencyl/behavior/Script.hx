@@ -223,50 +223,29 @@ class Script
 		}
 	}
 	
-	public inline function isPrimitive(o:Dynamic):Bool
+	public function isPrimitive(o:Dynamic):Bool
 	{
 		if(Std.is(o, Bool))
 		{
 			return true;
 		}
 		
-		else if(Std.is(o, String))
+		else if(Std.is(o, Float))
 		{
 			return true;
 		}
 		
-		else if(Std.is(o, Float) || Std.is(o, Int))
+		else if(Std.is(o, Int))
 		{
 			return true;
 		}
 		
-		else
-		{
-			return false;
-		}
+		return false;
 	}
-	
+
 	public inline function getDefaultValue(o:Dynamic):Dynamic
 	{
-		if(Std.is(o, Bool))
-		{
-			return false;
-		}
-		
-		else if(Std.is(o, String))
-		{
-			return "";
-		}
-		
-		else if(Std.is(o, Float) || Std.is(o, Int))
-		{
-			return 0;
-		}
-		
-		else
-		{
-			return null;
-		}
+		return null;
 	}
 		
 	public function toInternalName(displayName:String)
