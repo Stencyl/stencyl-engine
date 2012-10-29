@@ -172,6 +172,16 @@ class Script
 			return 0;
 		}
 		
+		else if(Std.is(o, Float))
+		{
+			return o;
+		}
+		
+		else if(Std.is(o, Int))
+		{
+			return o;
+		}
+		
 		else if(Std.is(o, Bool))
 		{
 			return cast(o, Bool) ? 1 : 0;
@@ -180,11 +190,6 @@ class Script
 		else if(Std.is(o, String))
 		{
 			return Std.parseFloat(o);
-		}
-		
-		else if(Std.is(o, Float) || Std.is(o, Int))
-		{
-			return o;
 		}
 		
 		//Can't do it - return junk
