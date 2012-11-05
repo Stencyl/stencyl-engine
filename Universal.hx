@@ -148,7 +148,14 @@ class Universal extends Sprite
 		}*/
 
 		//2 scale scheme
-		if(larger >= 720 && !scripts.MyAssets.always1x)
+		
+		if(larger >= 1920 && !scripts.MyAssets.always1x)
+		{
+			Engine.SCALE = 4;
+			Engine.IMG_BASE = "4x";
+		}
+		
+		else if(larger >= 720 && !scripts.MyAssets.always1x)
 		{
 			Engine.SCALE = 2;
 			Engine.IMG_BASE = "2x";

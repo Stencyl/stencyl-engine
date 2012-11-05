@@ -212,7 +212,12 @@ class Script
 			return true;
 		}
 		
-		else if(Std.is(o, Float) || Std.is(o, Int))
+		else if(Std.is(o, Float))
+		{
+			return true;
+		}
+		
+		else if(Std.is(o, Int))
 		{
 			return true;
 		}
