@@ -749,6 +749,7 @@ class Engine
 	private function loadBackground(backgroundID:Int, isForeground:Bool = false)
 	{
 		var background = cast(Data.get().resources.get(backgroundID), ImageBackground);
+		var backImg:BackgroundLayer = new BackgroundLayer(background.img);	
 			
 		if(background == null || background.img == null)
 		{
@@ -756,35 +757,32 @@ class Engine
             return;
 		}
 		
+		if(background.repeats)
+		{
+			background.drawRepeated(backImg, screenWidth, screenHeight);
+		}
+			
 		if(Std.is(background, ScrollingBackground))
 		{
 			var scroller = cast(background, ScrollingBackground);
-			var img = new ScrollingBitmap(background.img, scroller.xVelocity, scroller.yVelocity);
+			var img = new ScrollingBitmap(backImg.bitmapData, scroller.xVelocity, scroller.yVelocity);
+			img.name = SCROLLING_BACKGROUND;
+			master.addChild(img);
+		}
+		
+		else if (background.repeats)
+		{
+			var img = new ScrollingBitmap(backImg.bitmapData, 0, 0, background.parallaxX, background.parallaxY);
 			img.name = SCROLLING_BACKGROUND;
 			master.addChild(img);
 		}
 		
 		else
 		{
-			if(background.repeats)
-			{
-				var img = new BackgroundLayer();
-				background.drawRepeated(img, screenWidth, screenHeight);
-				img.cacheWidth = img.width;
-				img.cacheHeight = img.height;
-				
-				img.name = BACKGROUND;
-				master.addChild(img);
-			}
-			
-			else
-			{
-				var img = new BackgroundLayer(background.img);
-				img.cacheWidth = img.width;
-				img.cacheHeight = img.height;
-				img.name = BACKGROUND;
-				master.addChild(img);
-			}
+			backImg.cacheWidth = backImg.width;
+			backImg.cacheHeight = backImg.height;
+			backImg.name = BACKGROUND;
+			master.addChild(backImg);
 		}
 	}
 	
@@ -2014,10 +2012,10 @@ class Engine
 			{
 				//--- HAND INLINED THIS SINCE ITS CALLED SO MUCH
 				var isOnScreen = (a.isLightweight || a.body.isActive()) && 
-			   	a.realX >= -Engine.cameraX / Engine.SCALE - Engine.paddingLeft && 
-			   	a.realY >= -Engine.cameraY / Engine.SCALE - Engine.paddingTop &&
-			   	a.realX < -Engine.cameraX / Engine.SCALE + Engine.screenWidth + Engine.paddingRight &&
-			   	a.realY < -Engine.cameraY / Engine.SCALE + Engine.screenHeight + Engine.paddingBottom;
+			   	a.colX >= -Engine.cameraX / Engine.SCALE - Engine.paddingLeft && 
+			   	a.colY >= -Engine.cameraY / Engine.SCALE - Engine.paddingTop &&
+			   	a.colX < -Engine.cameraX / Engine.SCALE + Engine.screenWidth + Engine.paddingRight &&
+			   	a.colY < -Engine.cameraY / Engine.SCALE + Engine.screenHeight + Engine.paddingBottom;
 				
 				//---
 			
@@ -2142,7 +2140,16 @@ class Engine
 			else if(Std.is(child, ScrollingBitmap))
 			{
 				var bg = cast(child, ScrollingBitmap);
-				bg.update(elapsedTime);
+				
+				if (bg.parallax)
+				{
+					bg.updateParallax();
+				}
+				
+				else
+				{
+					bg.updateAuto(elapsedTime);
+				}
 			}
 			
 			//Regular Layer
@@ -2502,8 +2509,8 @@ class Engine
 	{	
 		camera.setLocation
 		(
-			Math.round(actor.realX + actor.cacheWidth / 2),
-			Math.round(actor.realY + actor.cacheHeight / 2)
+			Math.round(actor.colX + actor.cacheWidth / 2),
+			Math.round(actor.colY + actor.cacheHeight / 2)
 		);
 	}
 	

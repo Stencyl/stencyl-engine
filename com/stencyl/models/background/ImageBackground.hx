@@ -59,11 +59,23 @@ class ImageBackground extends Resource, implements Background
 	
 	//TODO: drawTiles on CPP
 	public function drawRepeated(bitmap:Bitmap, screenWidth:Int, screenHeight:Int)
-	{
-		var texture = new BitmapData(screenWidth, screenHeight);	
+	{			
 		var tw:Float = img.width;
 		var th:Float = img.height;
 		var rect = new Rectangle(0, 0, tw, th);
+		
+		//So it doesn't cutoff, extend width/height
+		if (tw < screenWidth)
+		{
+			screenWidth += screenWidth % Std.int(tw);
+		}
+		
+		if (th < screenHeight)
+		{
+			screenHeight += screenHeight % Std.int(th);
+		}
+		
+		var texture = new BitmapData(screenWidth, screenHeight);
 		
 		for(yPos in 0...Std.int(screenHeight / th) + 1)
 		{
