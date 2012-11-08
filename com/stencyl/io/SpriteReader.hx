@@ -119,6 +119,7 @@ class SpriteReader implements AbstractReader
 		{
 			var shapeID = Std.parseInt(e.att.id);
 			var groupID = Std.parseInt(e.att.gid);
+			var sensor:Bool = Utils.toBoolean(e.att.sensor);
 			
 			var shapeType:String = e.name;
 			var shapeParams:Array<String> = e.att.data.split(",");
@@ -152,7 +153,7 @@ class SpriteReader implements AbstractReader
 					var w:Int = x1 - x0;
 					var h:Int = y1 - y0;
 					
-					shapes.set(shapeID, new Hitbox(w, h, x, y));
+					shapes.set(shapeID, new Hitbox(w, h, x, y, !sensor));
 				}
 				
 				continue;
@@ -168,7 +169,7 @@ class SpriteReader implements AbstractReader
 			fixtureDef.friction = Std.parseFloat(e.att.fric);
 			fixtureDef.restitution = Std.parseFloat(e.att.rest);
 			
-			fixtureDef.isSensor = Utils.toBoolean(e.att.sensor);
+			fixtureDef.isSensor = sensor;
 			fixtureDef.groupID = Std.parseInt(e.att.gid);
 			
 			shapes.set(shapeID, fixtureDef);

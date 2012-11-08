@@ -234,6 +234,13 @@ class Grid extends Hitbox
 			{
 				if (getTile(dx, dy))
 				{
+					var info:CollisionInfo = new CollisionInfo();
+			
+					info.solidCollision = solid && other.solid;
+					info.maskA = other;
+					info.maskB = this;			
+			
+					other.parent.addCollision(info);
 					return true;
 				}
 			}

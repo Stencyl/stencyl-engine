@@ -17,19 +17,20 @@ class Hitbox extends Mask
 	 * @param	x			X offset of the hitbox.
 	 * @param	y			Y offset of the hitbox.
 	 */
-	public function new(width:Int = 1, height:Int = 1, x:Int = 0, y:Int = 0)
+	public function new(width:Int = 1, height:Int = 1, x:Int = 0, y:Int = 0, solid:Bool=true)
 	{
 		super();
 		_width = width;
 		_height = height;
 		_x = x;
 		_y = y;
+		this.solid = solid;
 		_check.set(Type.getClassName(Hitbox), collideHitbox);
 	}
 	
 	public function clone():Hitbox
 	{
-		return new Hitbox(_width, _height, _x, _y);
+		return new Hitbox(_width, _height, _x, _y, solid);
 	}
 
 	/** @private Collides against an Entity. */
@@ -44,10 +45,28 @@ class Hitbox extends Mask
 	/** @private Collides against a Hitbox. */
 	private function collideHitbox(other:Hitbox):Bool
 	{
-		return parent.colX + _x + _width > other.parent.colX + other._x
+		if (other.parent.alreadyCollided(this, other))
+		{
+			return false;
+		}
+		
+		if (parent.colX + _x + _width > other.parent.colX + other._x
 			&& parent.colY + _y + _height > other.parent.colY + other._y
 			&& parent.colX + _x < other.parent.colX + other._x + other._width
-			&& parent.colY + _y < other.parent.colY + other._y + other._height;
+			&& parent.colY + _y < other.parent.colY + other._y + other._height)
+		{
+			var info:CollisionInfo = new CollisionInfo();
+			
+			info.solidCollision = solid && other.solid;
+			info.maskA = this;
+			info.maskB = other;			
+			
+			other.parent.addCollision(info);
+						
+			return true;
+		}
+		
+		return false;
 	}
 
 	/**
@@ -111,13 +130,6 @@ class Hitbox extends Mask
 	{
 		if (parent != null)
 		{
-			// update entity bounds
-			// TODO: Mike - I'm not sure this should alter the actor's sprite properties.
-			//parent.originX = -_x;
-			//parent.originY = -_y;
-			//parent.cacheWidth= _width;
-			//parent.cacheHeight= _height;
-			// update parent list
 			if (list != null)
 				list.update();
 		}
@@ -127,5 +139,5 @@ class Hitbox extends Mask
 	private var _width:Int;
 	private var _height:Int;
 	private var _x:Int;
-	private var _y:Int;
+	private var _y:Int;	
 }

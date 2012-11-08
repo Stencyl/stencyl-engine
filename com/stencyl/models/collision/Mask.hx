@@ -20,12 +20,15 @@ class Mask
 	 * The parent Masklist of the mask.
 	 */
 	public var list:Masklist;
+	
+	public var solid:Bool;
 
 	/**
 	 * Constructor.
 	 */
 	public function new()
 	{
+		solid = true;
 		_class = Type.getClassName(Type.getClass(this));
 		_check = new Hash<MaskCallback>();
 		_check.set(Type.getClassName(Mask), collideMask);

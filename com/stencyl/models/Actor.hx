@@ -1,5 +1,6 @@
 package com.stencyl.models;
 
+import com.stencyl.models.collision.CollisionInfo;
 import com.stencyl.models.collision.Masklist;
 import flash.geom.Transform;
 import nme.display.Sprite;
@@ -392,6 +393,7 @@ class Actor extends Sprite
 		groupsToCollideWith = GameModel.get().groupsCollidesWith.get(groupID);
 		
 		collisions = new IntHash<Collision>();
+		simpleCollisions = new IntHash<CollisionInfo>();
 		contacts = new IntHash<B2Contact>();
 		regionContacts = new IntHash<B2Contact>();
 		contactCount = 0;
@@ -526,8 +528,8 @@ class Actor extends Sprite
 				dummy.x = width;
 				dummy.y = height;
 				addChild(dummy);
-				cacheWidth = this.width = width;
-				cacheHeight = this.height = height;
+				cacheWidth = (this.width = width) / 2;
+				cacheHeight = (this.height = height) / 2;
 			}
 			
 			else if(!isLightweight)
@@ -608,6 +610,7 @@ class Actor extends Sprite
 		registry = null;
 		
 		collisions = null;
+		simpleCollisions = null;
 		
 		behaviors.destroy();
 	}
@@ -984,6 +987,7 @@ class Actor extends Sprite
 				}
 				
 				collisions = new IntHash<Collision>();
+				simpleCollisions = new IntHash<CollisionInfo>();
 				contacts = new IntHash<B2Contact>();
 				regionContacts = new IntHash<B2Contact>();
 				contactCount = 0;
@@ -3227,7 +3231,9 @@ class Actor extends Sprite
 				{
 					if (e._mask == null || e._mask.collide(HITBOX))
 					{
-						if(solid && e.solid)
+						if ((e._mask == null && solid && e.solid)
+						|| !allowAdd
+						|| (allowAdd && simpleCollisions.get(collisionsCount -1).solidCollision))
 						{
 							realX = _x; realY = _y;
 							colX = realX - cacheWidth/2 - currOffset.x;
@@ -3257,7 +3263,9 @@ class Actor extends Sprite
 			{
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
 				{
-					if(solid && e.solid)
+					if ((e._mask == null && solid && e.solid)
+						|| !allowAdd
+						|| (allowAdd && simpleCollisions.get(collisionsCount -1).solidCollision))
 					{
 						realX = _x; realY = _y;
 						colX = realX - cacheWidth/2 - currOffset.x;
@@ -3425,9 +3433,42 @@ class Actor extends Sprite
 		var type:String;
 		for (type in types) collideInto(type, x, y, array);
 	}
+	
+	public function clearCollisionList()
+	{
+		for(k in simpleCollisions.keys()) 
+		{
+			simpleCollisions.remove(k);
+		}
+		
+		collisionsCount = 0;
+	}
+	
+	public function addCollision(info:CollisionInfo)
+	{
+		if (!allowAdd) return;
+		
+		simpleCollisions.set(collisionsCount, info);
+		collisionsCount++;
+	}
+	
+	public function alreadyCollided(maskA:Mask, maskB:Mask):Bool
+	{
+		for (info in simpleCollisions)
+		{
+			if (info.maskA == maskA && info.maskB == maskB)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
 
 	public function moveActorBy(x:Float, y:Float, solidType:Dynamic = null, sweep:Bool = false)
 	{
+		clearCollisionList();
+		
 		_moveX += x;
 		_moveY += y;
 		x = Math.round(_moveX);
@@ -3439,16 +3480,28 @@ class Actor extends Sprite
 			var sign:Int, e:Actor;
 			if (x != 0)
 			{
+				allowAdd = false;
+				
 				if (collidable && (sweep || collideTypes(solidType, realX + x, realY) != null))
 				{
+					allowAdd = true;
 					sign = x > 0 ? 1 : -1;
 					while (x != 0)
 					{
 						if ((e = collideTypes(solidType, realX + sign, realY)) != null)
-						{
-							xSpeed = 0;
+						{							
 							moveCollideX(e, sign);
-							break;
+							
+							if (simpleCollisions.get(collisionsCount -1).solidCollision)
+							{
+								xSpeed = 0;
+								break;
+							}
+							else
+							{
+								realX += sign;
+								x -= sign;
+							}
 						}
 						else
 						{
@@ -3461,16 +3514,28 @@ class Actor extends Sprite
 			}
 			if (y != 0)
 			{
+				allowAdd = false;
+				
 				if (collidable && (sweep || collideTypes(solidType, realX, realY + y) != null))
 				{
+					allowAdd = true;
 					sign = y > 0 ? 1 : -1;
 					while (y != 0)
 					{
 						if ((e = collideTypes(solidType, realX, realY + sign)) != null)
-						{
-							ySpeed = 0;							
+						{						
 							moveCollideY(e, sign);
-							break;
+							
+							if (simpleCollisions.get(collisionsCount -1).solidCollision)
+							{
+								ySpeed = 0;
+								break;
+							}
+							else
+							{
+								realY += sign;
+								y -= sign;
+							}
 						}
 						else
 						{
@@ -3546,6 +3611,8 @@ class Actor extends Sprite
 			region.addActor(this);
 			return;
 		}
+		
+		var info:CollisionInfo = simpleCollisions.get(collisionsCount -1);
 	
 		Utils.collision.thisActor = Utils.collision.actorA = this;
 		Utils.collision.otherActor = Utils.collision.actorB = a;
@@ -3595,12 +3662,12 @@ class Actor extends Sprite
 		//TODO
 		Utils.collision.thisCollidedWithActor = true;
 		Utils.collision.thisCollidedWithTile = a.ID == Utils.INT_MAX;
-		Utils.collision.thisCollidedWithSensor = false;
+		Utils.collision.thisCollidedWithSensor = !info.maskB.solid;
 		Utils.collision.thisCollidedWithTerrain = false;
 		
 		Utils.collision.otherCollidedWithActor = true;
 		Utils.collision.otherCollidedWithTile = a.ID == Utils.INT_MAX;
-		Utils.collision.otherCollidedWithSensor = false;
+		Utils.collision.otherCollidedWithSensor = !info.maskA.solid;
 		Utils.collision.otherCollidedWithTerrain = false;
 
 		lastCollided = a;
@@ -3618,4 +3685,6 @@ class Actor extends Sprite
 	private var _moveX:Float;
 	private var _moveY:Float;
 	private var _point:Point;
+	private var simpleCollisions:IntHash<CollisionInfo>;
+	private var allowAdd:Bool;
 }
