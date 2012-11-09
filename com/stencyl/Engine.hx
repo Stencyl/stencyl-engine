@@ -2192,6 +2192,14 @@ class Engine
 	{
 		var currTime:Float = Lib.getTimer();
 		var elapsedTime:Float = (currTime - lastTime);
+		
+		//Max Frame Duration = 5 FPS
+		//Prevents spikes and prevents mobile backgrounding from going haywire.
+		if(elapsedTime >= 200)
+		{
+			elapsedTime = 200;
+		}
+		
 		acc += elapsedTime;
 		
 		Engine.elapsedTime = elapsedTime;
