@@ -2012,8 +2012,8 @@ class Engine
 			{
 				//--- HAND INLINED THIS SINCE ITS CALLED SO MUCH
 				var isOnScreen = (a.isLightweight || a.body.isActive()) && 
-			   	a.colX >= -Engine.cameraX / Engine.SCALE - Engine.paddingLeft && 
-			   	a.colY >= -Engine.cameraY / Engine.SCALE - Engine.paddingTop &&
+			   	a.colX + a.cacheWidth >= -Engine.cameraX / Engine.SCALE - Engine.paddingLeft && 
+			   	a.colY + a.cacheHeight >= -Engine.cameraY / Engine.SCALE - Engine.paddingTop &&
 			   	a.colX < -Engine.cameraX / Engine.SCALE + Engine.screenWidth + Engine.paddingRight &&
 			   	a.colY < -Engine.cameraY / Engine.SCALE + Engine.screenHeight + Engine.paddingBottom;
 				

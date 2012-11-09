@@ -1257,9 +1257,8 @@ class Actor extends Sprite
 			
 			if(xSpeed != 0 || ySpeed != 0)
 			{
-				//TODO: Temporary?
-				colX = realX - cacheWidth/2 - currOffset.x;
-				colY = realY - cacheHeight / 2 - currOffset.y;				
+				colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
+				colY = realY - Math.floor(cacheHeight/2) - currOffset.y;				
 				
 				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);						
 			}
@@ -2656,8 +2655,8 @@ class Actor extends Sprite
 		//TODO: Mike - Make this work with arbitrary origin points
 		//The problem was that mouse detect was off for higher scales
 		//and would only work within the centered, original bounds.
-		var offsetX = (scaleX - 1) * cacheWidth/2;
-		var offsetY = (scaleY - 1) * cacheHeight/2;
+		var offsetX = (scaleX - 1) * Math.floor(cacheWidth/2);
+		var offsetY = (scaleY - 1) * Math.floor(cacheHeight/2);
 		
 		var xPos = colX - offsetX;
 		var yPos = colY - offsetY;
@@ -3235,9 +3234,7 @@ class Actor extends Sprite
 		var actorList = engine.getGroup(groupID);
 		
 		_x = realX; _y = realY;
-		realX = x; realY = y;
-		colX = realX - cacheWidth/2 - currOffset.x;
-		colY = realY - cacheHeight/2 - currOffset.y;
+		resetReal(x, y);
 
 		if (_mask == null)
 		{
@@ -3257,19 +3254,15 @@ class Actor extends Sprite
 						|| !allowAdd
 						|| (allowAdd && simpleCollisions.get(collisionsCount -1).solidCollision))
 						{
-							realX = _x; realY = _y;
-							colX = realX - cacheWidth/2 - currOffset.x;
-							colY = realY - cacheHeight/2 - currOffset.y;
+							resetReal(_x, _y);
 						}
 						
 						return e;
 					}
 				}
 			}
-			realX = _x; realY = _y;
-			colX = realX - cacheWidth/2 - currOffset.x;
-			colY = realY - cacheHeight/2 - currOffset.y;
 			
+			resetReal(_x, _y);			
 			return null;
 		}
 
@@ -3289,18 +3282,14 @@ class Actor extends Sprite
 						|| !allowAdd
 						|| (allowAdd && simpleCollisions.get(collisionsCount -1).solidCollision))
 					{
-						realX = _x; realY = _y;
-						colX = realX - cacheWidth/2 - currOffset.x;
-						colY = realY - cacheHeight/2 - currOffset.y;
+						resetReal(_x, _y);
 					}
 					
 					return e;
 				}
 			}
 		}
-		realX = _x; realY = _y;
-		colX = realX - cacheWidth/2 - currOffset.x;
-		colY = realY - cacheHeight/2 - currOffset.y;
+		resetReal(_x, _y);
 		return null;
 	}
 
@@ -3345,9 +3334,7 @@ class Actor extends Sprite
 	public function collideWith(e:Actor, x:Float, y:Float):Actor
 	{
 		_x = realX; _y = realY;
-		realX = x; realY = y;
-		colX = realX - cacheWidth/2 - currOffset.x;
-		colY = realY - cacheHeight/2 - currOffset.y;
+		resetReal(x, y);
 
 		if (colX + cacheWidth > e.colX
 		&& colY + cacheHeight > e.colY
@@ -3359,27 +3346,19 @@ class Actor extends Sprite
 			{
 				if (e._mask == null || e._mask.collide(HITBOX))
 				{
-					realX = _x; realY = _y;
-					colX = realX - cacheWidth/2 - currOffset.x;
-					colY = realY - cacheHeight/2 - currOffset.y;
+					resetReal(_x, _y);
 					return e;
 				}
-				realX = _x; realY = _y;
-				colX = realX - cacheWidth/2 - currOffset.x;
-				colY = realY - cacheHeight/2 - currOffset.y;
+				resetReal(_x, _y);
 				return null;
 			}
 			if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
 			{
-				realX = _x; realY = _y;
-				colX = realX - cacheWidth/2 - currOffset.x;
-				colY = realY - cacheHeight/2 - currOffset.y;
+				resetReal(_x, _y);
 				return e;
 			}
 		}
-		realX = _x; realY = _y;
-		colX = realX - cacheWidth/2 - currOffset.x;
-		colY = realY - cacheHeight/2 - currOffset.y;
+		resetReal(_x, _y);
 		return null;
 	}
 
@@ -3397,9 +3376,7 @@ class Actor extends Sprite
 		var actorList = engine.getGroup(groupID);
 
 		_x = realX; _y = realY;
-		realX = x; realY = y;
-		colX = realX - cacheWidth/2 - currOffset.x;
-		colY = realY - cacheHeight/2 - currOffset.y;
+		resetReal(x, y);
 		var n:Int = array.length;
 
 		if (_mask == null)
@@ -3417,9 +3394,7 @@ class Actor extends Sprite
 					if (e._mask == null || e._mask.collide(HITBOX)) array[n++] = e;
 				}
 			}
-			realX = _x; realY = _y;
-			colX = realX - cacheWidth/2 - currOffset.x;
-			colY = realY - cacheHeight/2 - currOffset.y;
+			resetReal(_x, _y);
 			return;
 		}
 
@@ -3436,9 +3411,7 @@ class Actor extends Sprite
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX)) array[n++] = e;
 			};
 		}
-		realX = _x; realY = _y;
-		colX = realX - cacheWidth/2 - currOffset.x;
-		colY = realY - cacheHeight/2 - currOffset.y;
+		resetReal(_x, _y);
 		return;
 	}
 
@@ -3486,6 +3459,13 @@ class Actor extends Sprite
 		
 		return false;
 	}
+	
+	public function resetReal(x:Float, y:Float)
+	{
+		realX = x; realY = y;
+		colX = realX - cacheWidth/2 - currOffset.x;
+		colY = realY - cacheHeight/2 - currOffset.y;
+	}
 
 	public function moveActorBy(x:Float, y:Float, solidType:Dynamic = null, sweep:Bool = false)
 	{
@@ -3518,18 +3498,11 @@ class Actor extends Sprite
 							{
 								xSpeed = 0;
 								break;
-							}
-							else
-							{
-								realX += sign;
-								x -= sign;
-							}
+							}							
 						}
-						else
-						{
-							realX += sign;
-							x -= sign;
-						}
+						
+						realX += sign;
+						x -= sign;						
 					}
 				}
 				else realX += x;
@@ -3575,8 +3548,8 @@ class Actor extends Sprite
 			realY += y;
 		}
 		
-		colX = realX - cacheWidth/2 - currOffset.x;
-		colY = realY - cacheHeight/2 - currOffset.y;
+		colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
+		colY = realY - Math.floor(cacheHeight/2) - currOffset.y;
 	}
 	
 	/**
