@@ -3190,6 +3190,12 @@ class Actor extends Sprite
 	
 	public function setLocation(x:Float, y:Float)
 	{
+		if(isCamera)
+		{
+			x = Std.int(x);
+			y = Std.int(y);
+		}
+	
 		realX = x;
 		realY = y;
 		
