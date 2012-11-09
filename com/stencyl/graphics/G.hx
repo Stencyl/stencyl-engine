@@ -125,7 +125,15 @@ class G
 			y += Engine.cameraY;
 		}
 	
-		graphics.lineStyle(strokeSize, strokeColor, alpha);
+		if(strokeSize == 0)
+		{
+			graphics.lineStyle();
+		}
+		
+		else
+		{
+			graphics.lineStyle(strokeSize, strokeColor, alpha);
+		}
 	}
 	
 	public inline function endGraphics()
@@ -136,7 +144,7 @@ class G
 			y -= Engine.cameraY;
 		}
 		
-		graphics.lineStyle(0);
+		graphics.lineStyle();
 	}
 	
 	public inline function translate(x:Float, y:Float)
@@ -277,7 +285,20 @@ class G
 	
 	public inline function fillPixel(x:Float, y:Float)
 	{
-		fillRect(x, y, 1, 1);
+		startGraphics();
+		
+		graphics.lineStyle();
+		graphics.beginFill(fillColor, alpha);
+		graphics.drawRect
+		(
+			this.x + Std.int(x * Engine.SCALE), 
+			this.y + Std.int(y * Engine.SCALE), 
+			Std.int(Engine.SCALE), 
+			Std.int(Engine.SCALE)
+		);
+		graphics.endFill();
+		
+		endGraphics();
 	}
 	
 	public inline function drawRect(x:Float, y:Float, w:Float, h:Float)
