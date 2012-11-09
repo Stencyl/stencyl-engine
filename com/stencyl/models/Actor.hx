@@ -1578,13 +1578,29 @@ class Actor extends Sprite
 				
 				else
 				{
-					cp = new CollisionPoint
-					(
-						manifold.getPoint().x, 
-						manifold.getPoint().y, 
-						manifold.m_normal.x,
-						manifold.m_normal.y
-					);
+					//XXX: Workaround for this bug
+					//http://community.stencyl.com/index.php/topic,14925.0.html
+					if(Std.is(thisShape.getShape(), B2CircleShape))
+					{
+						cp = new CollisionPoint
+						(
+							manifold.getPoint().x * 2, 
+							manifold.getPoint().y * 2, 
+							manifold.m_normal.x,
+							manifold.m_normal.y
+						);
+					}
+				
+					else
+					{
+						cp = new CollisionPoint
+						(
+							manifold.getPoint().x, 
+							manifold.getPoint().y, 
+							manifold.m_normal.x,
+							manifold.m_normal.y
+						);
+					}				
 				} 
 	
 				collisions.set(key, d);
