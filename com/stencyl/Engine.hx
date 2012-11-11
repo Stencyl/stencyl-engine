@@ -450,7 +450,7 @@ class Engine
 		root.mouseEnabled = false;
 		//root.stage.mouseChildren = false;
 
-		if(!scripts.MyAssets.releaseMode && scripts.MyAssets.debugDraw)
+		if(/*!scripts.MyAssets.releaseMode &&*/ scripts.MyAssets.debugDraw)
 		{
 			DEBUG_DRAW = true;
 		}
@@ -568,7 +568,7 @@ class Engine
 		
 		//Profiler
 		//#if !js
-		if(!scripts.MyAssets.releaseMode)
+		//if(!scripts.MyAssets.releaseMode)
 		{
 			if(scripts.MyAssets.showConsole)
 			{

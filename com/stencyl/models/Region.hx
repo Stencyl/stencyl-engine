@@ -285,8 +285,8 @@ class Region extends Actor
 		var mx = (Input.mouseX - Engine.cameraX) / Engine.SCALE;
 		var my = (Input.mouseY - Engine.cameraY) / Engine.SCALE;
 		
-		var xPos:Float = getX() - regionWidth/2;
-		var yPos:Float = getY() - regionHeight/2;
+		var xPos:Float = getX();
+		var yPos:Float = getY();
 		
 		//var xPos = colX;
 		//var yPos = colY;
