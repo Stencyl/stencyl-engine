@@ -113,6 +113,7 @@ class TileLayer extends Sprite
 		a.name = "Terrain";
 		a.typeID = -1;
 		a.visible = false;
+		a.ignoreGravity = true;
 		
 		Engine.engine.getGroup(GameModel.TERRAIN_ID).list.set(a, a);
 	}

@@ -528,8 +528,8 @@ class Actor extends Sprite
 				dummy.x = width;
 				dummy.y = height;
 				addChild(dummy);
-				cacheWidth = (this.width = width) / 2;
-				cacheHeight = (this.height = height) / 2;
+				cacheWidth = this.width = width;
+				cacheHeight = this.height = height;
 			}
 			
 			else if(!isLightweight)
@@ -3275,7 +3275,7 @@ class Actor extends Sprite
 			&& colX < e.colX + e.cacheWidth
 			&& colY < e.colY + e.cacheHeight
 			&& e.collidable && e != this)
-			{
+			{				
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
 				{
 					if ((e._mask == null && solid && e.solid)
@@ -3469,7 +3469,7 @@ class Actor extends Sprite
 
 	public function moveActorBy(x:Float, y:Float, solidType:Dynamic = null, sweep:Bool = false)
 	{
-		clearCollisionList();
+		clearCollisionList();		
 		
 		_moveX += x;
 		_moveY += y;
@@ -3526,17 +3526,11 @@ class Actor extends Sprite
 								ySpeed = 0;
 								break;
 							}
-							else
-							{
-								realY += sign;
-								y -= sign;
-							}
 						}
-						else
-						{
-							realY += sign;
-							y -= sign;
-						}
+						
+						realY += sign;
+						y -= sign;
+						
 					}
 				}
 				else realY += y;
