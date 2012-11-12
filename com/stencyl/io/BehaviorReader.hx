@@ -16,10 +16,20 @@ class BehaviorReader
 		var elementID:Int = Std.parseInt(xml.att.id);
 		var name:String = xml.att.name;
 		var classname:String = "";
+		var isEvent:Bool = false;
 		
 		try
 		{
 			classname = xml.att.resolve("class");
+		}
+		
+		catch(e:String)
+		{
+		}
+		
+		try
+		{
+			isEvent = xml.att.attachedevent == "true";
 		}
 		
 		catch(e:String)
@@ -65,7 +75,8 @@ class BehaviorReader
 			true,
 			true,
 			attributes,
-			type
+			type,
+			isEvent
 		);
 
 		return b;

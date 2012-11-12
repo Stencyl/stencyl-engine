@@ -139,6 +139,8 @@ class SoundChannel
 	
 	public function stopSound()
 	{
+		trace("STOP SOUND: " + currentSound +  " - " + channelNum);
+	
 		if(currentSound != null)
 		{
 			currentSound.stop();

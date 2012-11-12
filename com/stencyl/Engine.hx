@@ -812,6 +812,35 @@ class Engine
 			var template:Behavior = Data.get().behaviors.get(bi.behaviorID);
 			var attributes:Hash<Attribute> = new Hash<Attribute>();
 			
+			//Start honoring default values for events.
+			if(template.isEvent)
+			{
+				for(key in template.attributes.keys())
+				{
+					var att = template.attributes.get(key);
+					
+					if(att == null)
+					{
+						continue;
+					}
+					
+					var attribute:Attribute = cast(att, Attribute);
+	
+					if(attribute == null)
+					{
+						continue;
+					}
+					
+					var type:String = attribute.type;
+					var ID:Int = attribute.ID;
+					
+					if(type == "list")
+					{
+						attributes.set(key, new Attribute(ID, attribute.fieldName, attribute.fullName, [], type, null));
+					}
+				}
+			}
+
 			for(key in bi.values.keys())
 			{
 				var value:Dynamic = bi.values.get(key);
@@ -823,7 +852,7 @@ class Engine
 				}
 				
 				var att = template.attributes.get(key);
-				
+
 				if(att == null)
 				{
 					continue;
@@ -858,7 +887,8 @@ class Engine
 				true, 
 				false,  
 				attributes,
-				template.type
+				template.type,
+				template.isEvent
 			);
 			
 			manager.add(b);

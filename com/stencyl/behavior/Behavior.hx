@@ -9,6 +9,7 @@ class Behavior
 	
 	public var enabled:Bool;
 	public var drawable:Bool;
+	public var isEvent:Bool;
 	
 	public var ID:Int;
 	public var name:String;
@@ -30,9 +31,11 @@ class Behavior
 		enabled:Bool, 
 		drawable:Bool,
 		attributes:Hash<Attribute>,
-		type:String
+		type:String,
+		isEvent:Bool
 	)
 	{
+		this.isEvent = isEvent;
 		this.parent = parent;
 		this.engine = engine;
 		this.classname = classname;
