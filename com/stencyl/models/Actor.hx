@@ -243,8 +243,8 @@ class Actor extends Sprite
 	public var regionContacts:IntHash<B2Contact>;
 	public var collisions:IntHash<Collision>;
 	
-	private var dummy:B2Vec2;
-	private var zero:B2Vec2;
+	public var dummy:B2Vec2;
+	public var zero:B2Vec2;
 	
 	//*-----------------------------------------------
 	//* Collisions

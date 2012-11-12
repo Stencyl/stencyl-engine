@@ -1765,6 +1765,10 @@ class Engine
 			a.body.setActive(false);
 			a.body.setAwake(false);
 		}
+		
+		a.xSpeed = 0;
+		a.ySpeed = 0;
+		a.rSpeed = 0;
 	}
 	
 	public function getRecycledActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
@@ -1797,6 +1801,7 @@ class Engine
 						actor.body.setAwake(true);
 					}
 					
+					actor.registry = new Hash<Dynamic>();
 					actor.enableActorDrawing();
 					actor.setX(x);
 					actor.setY(y);
