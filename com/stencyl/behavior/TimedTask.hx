@@ -36,7 +36,7 @@ class TimedTask
 			return;
 		}
 		
-		if(Engine.engine.isPaused() || (actor != null && actor.isPaused()))
+		if((actor == null && Engine.engine.isPaused()) || (actor != null && actor.isPaused()))
 		{
 			return;
 		}		
