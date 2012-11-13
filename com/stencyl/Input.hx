@@ -328,6 +328,16 @@ class Input
 		#end
 		
 		Input.onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, v, v));
+		
+		//Due to order of execution, events will never get thrown since the
+		//pressed/released flag is reset before the event checker sees it. So
+		//throw the event immediately.
+		var listeners = Engine.engine.whenKeyPressedListeners.get(key);
+		
+		if(listeners != null)
+		{
+			Engine.invokeListeners3(listeners, true, false);
+		}
 	}
 	
 	public static function simulateKeyRelease(key:String)
@@ -342,6 +352,16 @@ class Input
 		#end
 		
 		Input.onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, v, v));
+		
+		//Due to order of execution, events will never get thrown since the
+		//pressed/released flag is reset before the event checker sees it. So
+		//throw the event immediately.
+		var listeners = Engine.engine.whenKeyPressedListeners.get(key);
+		
+		if(listeners != null)
+		{
+			Engine.invokeListeners3(listeners, false, true);
+		}
 	}
 
 	public static function onKeyDown(e:KeyboardEvent = null)
