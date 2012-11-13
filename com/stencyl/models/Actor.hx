@@ -92,6 +92,9 @@ class Actor extends Sprite
 	//* Properties
 	//*-----------------------------------------------
 	
+	//Used for recycled actors to tell them apart
+	public var createTime:Float;
+	
 	public var ID:Int;
 	public var groupID:Int;
 	public var layerID:Int;

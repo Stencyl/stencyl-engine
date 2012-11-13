@@ -1791,6 +1791,8 @@ class Engine
 			{
 				if(actor != null && actor.recycled)
 				{
+					actor.createTime = Lib.getTimer();
+				
 					actor.recycled = false;
 					actor.switchToDefaultAnimation();						
 					actor.enableAllBehaviors();
@@ -1978,7 +1980,10 @@ class Engine
 		{
 			var t:TimedTask = tasks[i];
 			
-			t.update(STEP_SIZE);
+			if(!t.done)
+			{
+				t.update(STEP_SIZE);
+			}
 			
 			if(t.done)
 			{

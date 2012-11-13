@@ -13,6 +13,9 @@ class TimedTask
 	
 	public var done:Bool;
 	
+	//Used as an efficient way to tell different "incarnations" of recycled actors apart.
+	public var actorCreateTime:Float;
+	
 	public function new(toExecute:TimedTask->Void, interval:Int, repeats:Bool, actor:Actor = null)
 	{
 		this.toExecute = toExecute;
