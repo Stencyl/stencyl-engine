@@ -1466,7 +1466,7 @@ class Engine
 		
 		if(enter == null || enter.duration == 0)
 		{
-			enter = new Transition(0);
+			enter = new Transition(1);
 		}
 		
 		this.leave = leave;

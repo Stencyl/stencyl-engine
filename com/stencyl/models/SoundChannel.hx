@@ -139,7 +139,7 @@ class SoundChannel
 	
 	public function stopSound()
 	{
-		trace("STOP SOUND: " + currentSound +  " - " + channelNum);
+		//trace("STOP SOUND: " + currentSound +  " - " + channelNum);
 	
 		if(currentSound != null)
 		{
