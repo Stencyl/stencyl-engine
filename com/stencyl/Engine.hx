@@ -1459,7 +1459,7 @@ class Engine
 			leave.reset();
 		}
 		
-		if(leave == null)
+		if(leave == null || leave.duration == 0)
 		{
 			leave = new Transition(0);
 		}
