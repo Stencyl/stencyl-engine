@@ -604,6 +604,10 @@ class Engine
 		Purchases.initialize();
 		#end	
 		
+		#if (mobile && android)
+		Purchases.initialize(scripts.MyAssets.androidPublicKey);
+		#end	
+		
 		//Now, let's start
 		enter = new FadeInTransition(0.5);
 		enter.start();
