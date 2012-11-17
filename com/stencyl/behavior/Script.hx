@@ -2534,15 +2534,15 @@ class Script
 	
 	//Ads
 	
-	public function showMobileAd(position:Int = 0)
+	public function showMobileAd()
 	{
 		#if (mobile && !android && !air)
 		Ads.initialize();
-		Ads.showAd(position);
+		Ads.showAd(scripts.MyAssets.adPositionBottom);
 		#end
 		
 		#if android
-		Ads.showAd(position);
+		Ads.showAd(scripts.MyAssets.adPositionBottom);
 		#end
 	}
 	

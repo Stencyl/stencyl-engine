@@ -20,6 +20,7 @@ class MyAssets implements AssetLoader
 	public static var antialias:Bool = true;
 	
 	//APIs
+	public static var adPositionBottom:Bool = true;
 	public static var whirlID:String = "";
 	public static var mochiID:String = "";
 	public static var cpmstarID:String = "";
