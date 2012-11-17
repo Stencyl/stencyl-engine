@@ -2633,7 +2633,7 @@ class Script
 	
 	public function purchasesAreInitialized():Bool 
 	{
-		#if (mobile && !android && !air)
+		#if (mobile && cpp && !air)
 			return Purchases.canBuy();
 		#else
 			return false;
@@ -2642,21 +2642,21 @@ class Script
 	
 	public function purchasesRestore():Void 
 	{
-		#if (mobile && !android && !air)
+		#if (mobile && cpp && !air)
 			Purchases.restorePurchases();
 		#end	
 	}
 	
 	public function purchasesBuy(productID:String):Void 
 	{
-		#if (mobile && !android)
+		#if (mobile && cpp)
 			Purchases.buy(productID);
 		#end	
 	}
 	
 	public function purchasesHasBought(productID:String):Bool 
 	{
-		#if (mobile && !android && !air)
+		#if (mobile && cpp && !air)
 			return Purchases.hasBought(productID);
 		#else
 			return false;
@@ -2665,7 +2665,7 @@ class Script
 	
 	public function purchasesGetTitle(productID:String):String 
 	{
-		#if (mobile && !android && !air)
+		#if (mobile && cpp && !air)
 			return Purchases.getTitle(productID);
 		#else
 			return "";
@@ -2674,7 +2674,7 @@ class Script
 	
 	public function purchasesGetDescription(productID:String):String 
 	{
-		#if (mobile && !android && !air)
+		#if (mobile && cpp && !air)
 			return Purchases.getDescription(productID);
 		#else
 			return "";
@@ -2683,7 +2683,7 @@ class Script
 	
 	public function purchasesGetPrice(productID:String):String 
 	{
-		#if (mobile && !android && !air)
+		#if (mobile && cpp && !air)
 			return Purchases.getPrice(productID);
 		#else
 			return "";
@@ -2694,14 +2694,14 @@ class Script
 	
 	public function purchasesUse(productID:String):Void 
 	{
-		#if (mobile && !android && !air)
+		#if (mobile && cpp && !air)
 			Purchases.use(productID);
 		#end	
 	}
 	
 	public function purchasesGetQuantity(productID:String):Int 
 	{
-		#if (mobile && !android && !air)
+		#if (mobile && cpp && !air)
 			return Purchases.getQuantity(productID);
 		#else
 			return 0;
