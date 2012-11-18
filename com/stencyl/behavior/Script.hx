@@ -2038,12 +2038,12 @@ class Script
 	/**
 	* Sets the distance an actor can travel offscreen before being deleted.
 	*/
-	public function setOffscreenTolerance(top:Int, left:Int, bottom:Int, right:Int)
+	public function setOffscreenTolerance(top:Float, left:Float, bottom:Float, right:Float)
 	{
-		Engine.paddingTop = top;
-		Engine.paddingLeft = left;
-		Engine.paddingRight = right;
-		Engine.paddingBottom = bottom;
+		Engine.paddingTop = Std.int(top);
+		Engine.paddingLeft = Std.int(left);
+		Engine.paddingRight = Std.int(right);
+		Engine.paddingBottom = Std.int(bottom);
 	}
 	
 	/**
