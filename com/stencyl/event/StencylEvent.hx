@@ -29,7 +29,11 @@ class StencylEvent
 	public static var GAME_CENTER_ACHIEVEMENT_FAIL:Int = 306;
 	public static var GAME_CENTER_ACHIEVEMENT_RESET_FAIL:Int = 307;
 	
-	//Open Feint
+	//Other
+	public static var KEYBOARD_EVENT = 400;
+	public static var KEYBOARD_DONE = 401;
+	public static var KEYBOARD_SHOW = 402;
+	public static var KEYBOARD_HIDE = 403;
 	
 	public function new(type:Int, data1:String = "") 
 	{		

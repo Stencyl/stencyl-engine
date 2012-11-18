@@ -340,6 +340,11 @@ class Script
 	//Native Listeners poll on a special place where events are infrequent. Do NOT attempt to use
 	//for anything normal in the engine!
 	
+	public function addMobileKeyboardListener(type:Int, func:String->Void)
+	{
+		engine.nativeListeners.push(new NativeListener(EventMaster.TYPE_KEYBOARD, type, func));
+	}
+	
 	public function addMobileAdListener(type:Int, func:Void->Void)
 	{
 		engine.nativeListeners.push(new NativeListener(EventMaster.TYPE_ADS, type, func));

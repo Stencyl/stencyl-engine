@@ -38,6 +38,11 @@ class NativeListener
 					{
 						fn(event.data1);
 					}
+					
+					else if(metaType == EventMaster.TYPE_KEYBOARD)
+					{
+						fn(event.data1);
+					}
 				}
 			}
 		}
