@@ -3654,12 +3654,32 @@ class Actor extends Sprite
 		//TODO
 		Utils.collision.thisCollidedWithActor = true;
 		Utils.collision.thisCollidedWithTile = a.ID == Utils.INT_MAX;
-		Utils.collision.thisCollidedWithSensor = !info.maskB.solid;
+		
+		if(info != null)
+		{
+			Utils.collision.thisCollidedWithSensor = !info.maskB.solid;
+		}
+		
+		else
+		{
+			Utils.collision.thisCollidedWithSensor = false;
+		}
+		
 		Utils.collision.thisCollidedWithTerrain = false;
 		
 		Utils.collision.otherCollidedWithActor = true;
 		Utils.collision.otherCollidedWithTile = a.ID == Utils.INT_MAX;
-		Utils.collision.otherCollidedWithSensor = !info.maskA.solid;
+		
+		if(info != null)
+		{
+			Utils.collision.otherCollidedWithSensor = !info.maskA.solid;
+		}
+		
+		else
+		{
+			Utils.collision.otherCollidedWithSensor = false;
+		}
+		
 		Utils.collision.otherCollidedWithTerrain = false;
 
 		lastCollided = a;
