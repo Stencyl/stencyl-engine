@@ -1610,6 +1610,7 @@ class Engine
 		}
 
 		a.internalUpdate(0, false);
+		a.updateDrawingMatrix();
 		
 		//---
 			

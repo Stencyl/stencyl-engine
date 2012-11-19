@@ -135,7 +135,6 @@ class Actor extends Sprite
 	public var collidable:Bool;
 	public var solid:Bool; //for non Box2D collisions
 	public var resetOrigin:Bool; //fot HTML5 origin setting
-	
 
 	//*-----------------------------------------------
 	//* Position / Motion
@@ -1026,6 +1025,9 @@ class Actor extends Sprite
 					//TODO: Origin point junk goes here
 					if (animOrigin != null)
 					{
+						body.origin.x = Engine.toPhysicalUnits(-animOrigin.x);
+						body.origin.y = Engine.toPhysicalUnits(-animOrigin.y);
+						
 						if (Std.is(f.shape, B2PolygonShape))
 						{
 							var xf:B2Transform = new B2Transform();
@@ -1101,6 +1103,12 @@ class Actor extends Sprite
 			cacheWidth = currAnimation.width / Engine.SCALE;
 			cacheHeight = currAnimation.height / Engine.SCALE;			
 			
+			if (body != null)
+			{
+				body.size.x = Engine.toPhysicalUnits(cacheWidth);
+				body.size.y = Engine.toPhysicalUnits(cacheHeight);
+			}
+			
 			if (!isLightweight)
 			{
 				realX = getX();
@@ -1119,16 +1127,7 @@ class Actor extends Sprite
 			if(Std.is(currAnimation, AbstractAnimation))
 			{
 				cast(currAnimation, AbstractAnimation).reset();
-			}			
-			
-			//----------------
-			
-			//TEMP: Origin = Center
-			//originX = Math.floor(newAnimation.width/2);
-			//originY = Math.floor(newAnimation.height/2);
-			
-			//this.x = realX + Math.floor(newAnimation.width/2);
-			//this.y = realY + Math.floor(newAnimation.height/2);			
+			}				
 		}
 	}
 	
@@ -1279,7 +1278,7 @@ class Actor extends Sprite
 		}
 		
 		else
-		{
+		{			
 			var p = body.getPosition();		
 						
 			#if js			
