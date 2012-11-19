@@ -57,6 +57,9 @@ class G
 	public var drawActor:Bool;
 	private var actor:Actor;
 	
+	//Cache for speed
+	private static var fontCache:IntHash<Array<BitmapData>> = null;
+	
 	public function new() 
 	{	
 		drawActor = false;
@@ -90,10 +93,24 @@ class G
 		drawData = [];
 		
 		#if (flash || js)
+		if(fontCache == null)
+		{
+			fontCache = new IntHash<Array<BitmapData>>();
+		}
+		
 		mtx = new Matrix();
-		fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, true);
+		
+		var temp = fontCache.get(-1);
+		
+		if(temp == null)
+		{
+			temp = font.font.getPreparedGlyphs(font.fontScale, 0x000000, true);
+			fontCache.set(-1, temp);
+		}
+		
+		fontData = temp;
 		#end
-
+		
 		//defaultFont.font = new BitmapFont("assets/graphics/default-font.png", 16, 16, BitmapFont.TEXT_SET25, 55, 0, 0);
 	}
 	
@@ -106,12 +123,24 @@ class G
 			#if (flash || js)
 			if(font == defaultFont)
 			{
-				fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, true);
+				fontData = fontCache.get(-1);
+			
+				if(fontData == null)
+				{
+					fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, true);
+					fontCache.set(-1, fontData);
+				}
 			}
 			
 			else
 			{
-				fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, false);
+				fontData = fontCache.get(font.ID);
+				
+				if(fontData == null)
+				{
+					fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, false);
+					fontCache.set(font.ID, fontData);
+				}
 			}
 			#end	
 		}
