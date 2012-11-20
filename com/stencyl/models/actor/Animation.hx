@@ -11,6 +11,7 @@ class Animation
 	public var parentID:Int;
 	public var shapes:IntHash<Dynamic>;
 	public var looping:Bool;
+	public var sync:Bool;
 	public var durations:Array<Int>;
 	
 	public var imgData:Dynamic;
@@ -35,6 +36,7 @@ class Animation
 		parentID:Int, 
 		shapes:IntHash<Dynamic>, 
 		looping:Bool, 
+		sync:Bool,
 		imgWidth:Int,
 		imgHeight:Int,
 		originX:Float,
@@ -51,6 +53,7 @@ class Animation
 		this.parentID = parentID;
 		this.shapes = shapes;
 		this.looping = looping;
+		this.sync = sync;
 		this.durations = durations;
 
 		this.imgWidth = imgWidth;
