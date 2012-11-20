@@ -1532,7 +1532,7 @@ class Actor extends Sprite
 				{
 					continue;
 				}
-			
+				
 				var a1 = cast(p.getFixtureA().getUserData(), Actor);
 				var a2 = cast(p.getFixtureB().getUserData(), Actor);
 					
@@ -1665,7 +1665,7 @@ class Actor extends Sprite
 					{
 						d.thisFromRight = cp.normalX < 0;
 					}
-	
+					
 					//---
 					
 					d.otherFromBottom = false;
@@ -1753,6 +1753,8 @@ class Actor extends Sprite
 		{
 			for(collision in collisions)
 			{
+				//trace("handle: " + this.currAnimationName + " - " + collision.thisFromBottom);
+				
 				if
 				(
 				   collision == null || collision.thisActor == null || collision.otherActor == null ||

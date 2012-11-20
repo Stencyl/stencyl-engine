@@ -763,7 +763,7 @@ class Engine
 		
 		if(background.repeats)
 		{
-			background.drawRepeated(backImg, screenWidth, screenHeight);
+			background.drawRepeated(backImg, Std.int(screenWidth * Engine.SCALE), Std.int(screenHeight * Engine.SCALE));
 		}
 			
 		if(Std.is(background, ScrollingBackground))
