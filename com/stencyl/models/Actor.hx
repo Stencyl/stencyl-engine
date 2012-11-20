@@ -712,14 +712,14 @@ class Actor extends Sprite
 			Std.int(frameWidth * Engine.SCALE), 
 			Std.int(frameHeight * Engine.SCALE),
 			looping,
-			this.sprite.animations.get(animID)
+			null//this.sprite.animations.get(animID)
 		);
 		
 		animationMap.set(name, sprite);
 		#end
 		
 		#if (flash || js)
-		var sprite = new BitmapAnimation(imgData, frameCount, durations, looping, this.sprite.animations.get(animID));
+		var sprite = new BitmapAnimation(imgData, frameCount, durations, looping, null /*this.sprite.animations.get(animID)*/);
 		animationMap.set(name, sprite);
 		#end	
 				
