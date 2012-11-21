@@ -903,6 +903,11 @@ class Scene
 			behaviors = null;
 		}
 		
+		if(Data.get().resources.get(actorID) == null)
+		{
+			return null;
+		}
+		
 		var ai:ActorInstance = new ActorInstance
 		(
 			elementID,
