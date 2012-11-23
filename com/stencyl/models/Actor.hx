@@ -980,7 +980,17 @@ class Actor extends Sprite
 						var oldShape = oldDef.shape;
 						var newShape = newDef.shape;
 						
-						if(Type.getClass(oldShape) == Type.getClass(newShape))
+						if(oldDef.isSensor != newDef.isSensor)
+						{
+							isDifferentShape = true;
+						}
+						
+						else if(oldDef.groupID != newDef.groupID)
+						{
+							isDifferentShape = true;
+						}
+						
+						else if(Type.getClass(oldShape) == Type.getClass(newShape))
 						{
 							if(Type.getClass(oldShape) == B2PolygonShape)
 							{
