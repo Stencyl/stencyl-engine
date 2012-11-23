@@ -949,6 +949,92 @@ class Actor extends Sprite
 				removeChild(currAnimation);
 			}
 			
+			//---
+			
+			var isDifferentShape = false;
+			
+			//XXX: Only switch the animation shape if it's different from before.
+			//http://community.stencyl.com/index.php/topic,16464.0.html
+			if(body != null && !isLightweight)
+			{
+				var arrOld = cast(shapeMap.get(currAnimationName), Array<Dynamic>);
+				var arrNew = cast(shapeMap.get(name), Array<Dynamic>);
+				
+				if(arrOld == null || arrNew == null)
+				{
+					isDifferentShape = true;
+				}
+			
+				else
+				{
+					if(arrOld.length != arrNew.length || arrOld.length > 1)
+					{
+						isDifferentShape = true;
+					}
+					
+					else
+					{
+						var oldDef:B2FixtureDef = arrOld[0];
+						var newDef:B2FixtureDef = arrNew[0];
+					
+						var oldShape = oldDef.shape;
+						var newShape = newDef.shape;
+						
+						if(Type.getClass(oldShape) == Type.getClass(newShape))
+						{
+							if(Type.getClass(oldShape) == B2PolygonShape)
+							{
+								var polyOld = cast(oldShape, B2PolygonShape);
+								var polyNew = cast(newShape, B2PolygonShape);
+								
+								if(polyOld.m_vertexCount != polyNew.m_vertexCount)
+								{
+									isDifferentShape = true;
+								}
+								
+								else
+								{
+									for(i in 0...polyOld.m_vertexCount)
+									{
+										if(polyOld.m_vertices[i].x != polyNew.m_vertices[i].x)
+										{
+											isDifferentShape = true;
+											break;
+										}
+										
+										else if(polyOld.m_vertices[i].y != polyNew.m_vertices[i].y)
+										{
+											isDifferentShape = true;
+											break;
+										}
+									}
+								}
+							}
+							
+							else if(Type.getClass(oldShape) == B2CircleShape)
+							{
+								var circleOld = cast(oldShape, B2CircleShape);
+								var circleNew = cast(newShape, B2CircleShape);
+								
+								if(circleOld.m_radius != circleNew.m_radius || 
+								   circleOld.m_p.x != circleNew.m_p.x || 
+								   circleOld.m_p.y != circleNew.m_p.y)
+								{
+									isDifferentShape = true;
+								}
+							}
+						}
+						
+						else
+						{
+							isDifferentShape = true;
+						}
+					}
+				}
+			}
+			
+			//---
+			
 			currAnimationName = name;
 			currAnimation = newAnimation;
 			
@@ -964,11 +1050,11 @@ class Actor extends Sprite
 			{
 				updateTweenProperties();
 			}
-			
+						
 			var centerx = (currAnimation.width / Engine.SCALE / 2) - animOrigin.x;
 			var centery = (currAnimation.height / Engine.SCALE / 2) - animOrigin.y;
 			
-			if(body != null && !isLightweight)
+			if(body != null && isDifferentShape && !isLightweight)
 			{
 				//Remember regions
 				var regions = new Array<Region>();
@@ -1099,8 +1185,9 @@ class Actor extends Sprite
 				{
 					body.setMassData(md);
 				}
-			}				
-			else if (shapeMap.get(name) != null && Engine.NO_PHYSICS)
+			}	
+						
+			else if(shapeMap.get(name) != null && Engine.NO_PHYSICS)
 			{
 				//Get hitbox list for Simple Physics
 				setShape(shapeMap.get(name));
@@ -1110,13 +1197,13 @@ class Actor extends Sprite
 			cacheWidth = currAnimation.width / Engine.SCALE;
 			cacheHeight = currAnimation.height / Engine.SCALE;			
 			
-			if (body != null)
+			if(body != null)
 			{
 				body.size.x = Engine.toPhysicalUnits(cacheWidth);
 				body.size.y = Engine.toPhysicalUnits(cacheHeight);
 			}
 			
-			if (!isLightweight)
+			if(!isLightweight)
 			{
 				realX = getX();
 				realY = getY();
