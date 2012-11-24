@@ -957,8 +957,8 @@ class Actor extends Sprite
 			//http://community.stencyl.com/index.php/topic,16464.0.html
 			if(body != null && !isLightweight)
 			{
-				var arrOld = cast(shapeMap.get(currAnimationName), Array<Dynamic>);
-				var arrNew = cast(shapeMap.get(name), Array<Dynamic>);
+				var arrOld = shapeMap.get(currAnimationName);
+				var arrNew = shapeMap.get(name);
 				
 				if(arrOld == null || arrNew == null)
 				{
