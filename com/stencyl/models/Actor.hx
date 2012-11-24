@@ -976,68 +976,76 @@ class Actor extends Sprite
 					{
 						var oldDef:B2FixtureDef = arrOld[0];
 						var newDef:B2FixtureDef = arrNew[0];
+						
+						if(oldDef == null || newDef == null)
+						{
+							isDifferentShape = true;
+						}
 					
-						var oldShape = oldDef.shape;
-						var newShape = newDef.shape;
-						
-						if(oldDef.isSensor != newDef.isSensor)
+						else
 						{
-							isDifferentShape = true;
-						}
-						
-						else if(oldDef.groupID != newDef.groupID)
-						{
-							isDifferentShape = true;
-						}
-						
-						else if(Type.getClass(oldShape) == Type.getClass(newShape))
-						{
-							if(Type.getClass(oldShape) == B2PolygonShape)
+							var oldShape = oldDef.shape;
+							var newShape = newDef.shape;
+							
+							if(oldDef.isSensor != newDef.isSensor)
 							{
-								var polyOld = cast(oldShape, B2PolygonShape);
-								var polyNew = cast(newShape, B2PolygonShape);
-								
-								if(polyOld.m_vertexCount != polyNew.m_vertexCount)
+								isDifferentShape = true;
+							}
+							
+							else if(oldDef.groupID != newDef.groupID)
+							{
+								isDifferentShape = true;
+							}
+							
+							else if(Type.getClass(oldShape) == Type.getClass(newShape))
+							{
+								if(Type.getClass(oldShape) == B2PolygonShape)
 								{
-									isDifferentShape = true;
+									var polyOld = cast(oldShape, B2PolygonShape);
+									var polyNew = cast(newShape, B2PolygonShape);
+									
+									if(polyOld.m_vertexCount != polyNew.m_vertexCount)
+									{
+										isDifferentShape = true;
+									}
+									
+									else
+									{
+										for(i in 0...polyOld.m_vertexCount)
+										{
+											if(polyOld.m_vertices[i].x != polyNew.m_vertices[i].x)
+											{
+												isDifferentShape = true;
+												break;
+											}
+											
+											else if(polyOld.m_vertices[i].y != polyNew.m_vertices[i].y)
+											{
+												isDifferentShape = true;
+												break;
+											}
+										}
+									}
 								}
 								
-								else
+								else if(Type.getClass(oldShape) == B2CircleShape)
 								{
-									for(i in 0...polyOld.m_vertexCount)
+									var circleOld = cast(oldShape, B2CircleShape);
+									var circleNew = cast(newShape, B2CircleShape);
+									
+									if(circleOld.m_radius != circleNew.m_radius || 
+									   circleOld.m_p.x != circleNew.m_p.x || 
+									   circleOld.m_p.y != circleNew.m_p.y)
 									{
-										if(polyOld.m_vertices[i].x != polyNew.m_vertices[i].x)
-										{
-											isDifferentShape = true;
-											break;
-										}
-										
-										else if(polyOld.m_vertices[i].y != polyNew.m_vertices[i].y)
-										{
-											isDifferentShape = true;
-											break;
-										}
+										isDifferentShape = true;
 									}
 								}
 							}
 							
-							else if(Type.getClass(oldShape) == B2CircleShape)
+							else
 							{
-								var circleOld = cast(oldShape, B2CircleShape);
-								var circleNew = cast(newShape, B2CircleShape);
-								
-								if(circleOld.m_radius != circleNew.m_radius || 
-								   circleOld.m_p.x != circleNew.m_p.x || 
-								   circleOld.m_p.y != circleNew.m_p.y)
-								{
-									isDifferentShape = true;
-								}
+								isDifferentShape = true;
 							}
-						}
-						
-						else
-						{
-							isDifferentShape = true;
 						}
 					}
 				}
