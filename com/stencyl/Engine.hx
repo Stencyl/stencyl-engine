@@ -1704,7 +1704,7 @@ class Engine
 	{
 		//trace("recycle " + a);
 		
-		if(a == null)
+		if(a == null || a.recycled)
 		{
 			return;
 		}
@@ -1737,7 +1737,10 @@ class Engine
 	
 		a.setX(1000000);
 		a.setY(1000000);
+		a.colX = cameraX;
+		a.colY = cameraY;
 		a.recycled = true;
+		a.killLeaveScreen = false;
 		//a.setFilter(null);
 		a.cancelTweens();
 		//Only the fading is necessary. Don't fully understand why...
@@ -1799,6 +1802,7 @@ class Engine
 					actor.createTime = Lib.getTimer();
 				
 					actor.recycled = false;
+					actor.killLeaveScreen = false;
 					actor.switchToDefaultAnimation();						
 					actor.enableAllBehaviors();
 					
