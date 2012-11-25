@@ -150,8 +150,15 @@ class G
 	{
 		if(drawActor)
 		{
-			x += Engine.cameraX;
-			y += Engine.cameraY;
+			if(actor != null && actor.isHUD)
+			{
+			}
+			
+			else
+			{
+				x += Engine.cameraX;
+				y += Engine.cameraY;
+			}
 		}
 	
 		if(strokeSize == 0)
