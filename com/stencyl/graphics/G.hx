@@ -436,23 +436,21 @@ class G
 	
 	public inline function endDrawingPolygon()
 	{
-		if(pointCounter < 2)
+		if(pointCounter >= 2)
 		{
-			return;	
-		}
-		
-		if(drawPoly)
-		{
-			graphics.lineTo(this.x + firstX, this.y + firstY);
-		}
+			if(drawPoly)
+			{
+				graphics.lineTo(this.x + firstX, this.y + firstY);
+			}
+				
+			else
+			{
+				graphics.lineTo(this.x + firstX, this.y + firstY);
+				graphics.endFill();
+			}
 			
-		else
-		{
-			graphics.lineTo(this.x + firstX, this.y + firstY);
-			graphics.endFill();
-		}
-		
-		endGraphics();
+			endGraphics();
+		}	
 	}
 	
 	public inline function beginDrawPolygon()
