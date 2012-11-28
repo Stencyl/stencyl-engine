@@ -42,6 +42,11 @@ class ActorType extends Resource
 		this.ignoreGravity = ignoreGravity;
 	}
 	
+	override public function toString():String
+	{
+		return name;
+	}	
+	
 	//For Atlases
 	
 	override public function loadGraphics()
