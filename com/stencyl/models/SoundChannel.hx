@@ -81,7 +81,12 @@ class SoundChannel
 		}
 
 		position = 0;
-		currentSource = clip.src;
+		
+		if(clip != null)
+		{
+			currentSource = clip.src;
+		}
+		
 		looping = true;
 		
 		return currentSound;

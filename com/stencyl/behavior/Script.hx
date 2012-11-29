@@ -1710,7 +1710,14 @@ class Script
 	*/
 	public function getSound(soundID:Int):Sound
 	{
-		return cast(Data.get().resources.get(soundID), Sound);
+		var temp = Data.get().resources.get(soundID);
+		
+		if(temp == null)
+		{
+			return null;
+		}
+	
+		return cast(temp, Sound);
 	}
 	
 	/**
