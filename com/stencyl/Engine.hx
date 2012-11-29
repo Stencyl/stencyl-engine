@@ -1816,6 +1816,8 @@ class Engine
 					actor.enableActorDrawing();
 					actor.setX(x);
 					actor.setY(y);
+					actor.colX = x;
+					actor.colY = y;
 					actor.setAngle(0, false);
 					actor.alpha = 1;
 					actor.realScaleX = 1;
