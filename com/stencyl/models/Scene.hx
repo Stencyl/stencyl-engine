@@ -713,7 +713,12 @@ class Scene
 			
 			if(tilesetID != -1)
 			{
-				tset = cast(Data.get().resources.get(tilesetID), Tileset);
+				var temp = Data.get().resources.get(tilesetID);
+				
+				if(temp != null)
+				{
+					tset = cast(Data.get().resources.get(tilesetID), Tileset);
+				}
 			}
 			
 			for(runIndex in 0...runLength)
