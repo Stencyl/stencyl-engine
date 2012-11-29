@@ -2190,7 +2190,7 @@ class Actor extends Sprite
 	
 		if(isLightweight)
 		{
-			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY);
+			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY, groupsToCollideWith);
 		}
 		
 		else
@@ -2224,7 +2224,7 @@ class Actor extends Sprite
 		
 		if(isLightweight)
 		{
-			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y);
+			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y, groupsToCollideWith);
 		}
 		
 		else
