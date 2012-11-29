@@ -687,7 +687,7 @@ class Actor extends Sprite
 			}
 		}
 	
-		if(imgData == null)
+		if(imgData == null || imgData.width <= 0 || imgData.height <= 0)
 		{
 			//animationMap.set(name, new Sprite());
 			
