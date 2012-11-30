@@ -1635,7 +1635,7 @@ class Actor extends Sprite
 		
 		//Even iteration over blank maps can impact low-end devices. Guard against it.
 		if(contactCount > 0)
-		{
+		{		
 			for(p in contacts)
 			{
 				var key = p.key;
@@ -1865,7 +1865,7 @@ class Actor extends Sprite
 		{
 			for(collision in collisions)
 			{
-				//trace("handle: " + this.currAnimationName + " - " + collision.thisFromBottom);
+				//trace(this + " vs " + collision.otherActor);
 				
 				if
 				(

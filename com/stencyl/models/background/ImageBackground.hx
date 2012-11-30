@@ -1,5 +1,6 @@
 package com.stencyl.models.background;
 
+import nme.display.DisplayObject;
 import nme.display.Graphics;
 import nme.display.Bitmap;
 import nme.display.BitmapData;

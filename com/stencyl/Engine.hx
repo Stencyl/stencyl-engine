@@ -753,7 +753,7 @@ class Engine
 	private function loadBackground(backgroundID:Int, isForeground:Bool = false)
 	{
 		var background = cast(Data.get().resources.get(backgroundID), ImageBackground);
-		var backImg:BackgroundLayer = new BackgroundLayer(background.img);	
+		var backImg:BackgroundLayer = new BackgroundLayer(background.img, background);	
 			
 		if(background == null || background.img == null)
 		{
@@ -2161,8 +2161,10 @@ class Engine
 			//Background
 			if(Std.is(child, BackgroundLayer))
 			{
-				var endX = Math.abs(cast(child, BackgroundLayer).cacheWidth - screenWidth * Engine.SCALE);
-				var endY = Math.abs(cast(child, BackgroundLayer).cacheHeight - screenHeight * Engine.SCALE);
+				var bgLayer = cast(child, BackgroundLayer);
+			
+				var endX = Math.abs(bgLayer.cacheWidth - screenWidth * Engine.SCALE);
+				var endY = Math.abs(bgLayer.cacheHeight - screenHeight * Engine.SCALE);
 
 				//child.x = endX * ( - (cameraX / Engine.SCALE) / Engine.sceneWidth);
 				//child.y = endY * ( - (cameraY / Engine.SCALE) / Engine.sceneHeight);
@@ -2185,6 +2187,11 @@ class Engine
 				else
 				{
 					child.y = 0;
+				}
+				
+				if(bgLayer.isAnimated)
+				{
+					bgLayer.updateAnimation(elapsedTime);
 				}
 			}
 			
