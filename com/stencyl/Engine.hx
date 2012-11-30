@@ -1813,9 +1813,9 @@ class Engine
 					}
 					
 					actor.registry = new Hash<Dynamic>();
-					actor.enableActorDrawing();
-					actor.setX(x);
-					actor.setY(y);
+					actor.enableActorDrawing();					
+					actor.setX(x, false, true);
+					actor.setY(y, false, true);
 					actor.colX = x;
 					actor.colY = y;
 					actor.setAngle(0, false);

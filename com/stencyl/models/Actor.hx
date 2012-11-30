@@ -294,8 +294,8 @@ class Actor extends Sprite
 		_point = Utils.point;
 		_moveX = _moveY = 0;
 		
-		HITBOX = new Mask();
-		HITBOX.assignTo(this);
+		HITBOX = new Mask();		
+		setShape(HITBOX);
 		
 		if(Std.is(this, Region) && Engine.NO_PHYSICS)
 		{
@@ -2184,13 +2184,13 @@ class Actor extends Sprite
 		}
 	}
 	
-	public function setX(x:Float, resetSpeed:Bool = false)
+	public function setX(x:Float, resetSpeed:Bool = false, noCollision:Bool = false)
 	{
 		x = Math.floor(x);
 	
 		if(isLightweight)
 		{
-			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY, groupsToCollideWith);
+			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY, noCollision ? null : groupsToCollideWith);
 		}
 		
 		else
@@ -2218,13 +2218,13 @@ class Actor extends Sprite
 		updateMatrix = true;
 	}
 	
-	public function setY(y:Float, resetSpeed:Bool = false)
+	public function setY(y:Float, resetSpeed:Bool = false, noCollision:Bool = false)
 	{
 		y = Math.floor(y);
 		
 		if(isLightweight)
 		{
-			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y, groupsToCollideWith);
+			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y, noCollision ? null : groupsToCollideWith);
 		}
 		
 		else
@@ -3399,7 +3399,7 @@ class Actor extends Sprite
 						|| (allowAdd && simpleCollisions.get(collisionsCount -1).solidCollision))
 					{
 						resetReal(_x, _y);
-					}
+					}					
 					
 					return e;
 				}
@@ -3721,6 +3721,8 @@ class Actor extends Sprite
 	
 		Utils.collision.thisActor = Utils.collision.actorA = this;
 		Utils.collision.otherActor = Utils.collision.actorB = a;
+		
+		a.clearCollisionList();
 		
 		if(fromX)
 		{

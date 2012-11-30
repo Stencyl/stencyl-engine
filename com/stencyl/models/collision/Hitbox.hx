@@ -36,10 +36,24 @@ class Hitbox extends Mask
 	/** @private Collides against an Entity. */
 	override private function collideMask(other:Mask):Bool
 	{
-		return parent.colX + _x + _width > other.parent.colX
+		if (parent.colX + _x + _width > other.parent.colX
 			&& parent.colY + _y + _height > other.parent.colY
 			&& parent.colX + _x < other.parent.colX + other.parent.cacheWidth
-			&& parent.colY + _y < other.parent.colY + other.parent.cacheHeight;
+			&& parent.colY + _y < other.parent.colY + other.parent.cacheHeight)
+		{
+			var info:CollisionInfo = new CollisionInfo();
+			
+			info.solidCollision = solid && other.solid;
+			info.maskA = this;
+			info.maskB = other;			
+			
+			parent.addCollision(info);
+			other.parent.addCollision(info);
+			
+			return true;	
+		}
+		
+		return false;
 	}
 
 	/** @private Collides against a Hitbox. */
@@ -61,6 +75,7 @@ class Hitbox extends Mask
 			info.maskA = this;
 			info.maskB = other;			
 			
+			parent.addCollision(info);
 			other.parent.addCollision(info);
 						
 			return true;
