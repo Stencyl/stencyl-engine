@@ -131,8 +131,8 @@ class Region extends Actor
 			{
 				isCircle = true;
 				
-				cacheWidth = originalWidth = regionWidth = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
-				cacheHeight = originalHeight = regionHeight = Engine.toPixelUnits(cast(shape, B2CircleShape).m_radius * 2);
+				cacheWidth = originalWidth = regionWidth = Engine.toPixelUnits(cast(shapes[0], B2CircleShape).m_radius * 2);
+				cacheHeight = originalHeight = regionHeight = Engine.toPixelUnits(cast(shapes[0], B2CircleShape).m_radius * 2);
 			}
 		}
 	}
