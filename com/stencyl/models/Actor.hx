@@ -3722,7 +3722,10 @@ class Actor extends Sprite
 		Utils.collision.thisActor = Utils.collision.actorA = this;
 		Utils.collision.otherActor = Utils.collision.actorB = a;
 		
-		a.clearCollisionList();
+		if (a.isLightweight)
+		{
+			a.clearCollisionList();
+		}
 		
 		if(fromX)
 		{

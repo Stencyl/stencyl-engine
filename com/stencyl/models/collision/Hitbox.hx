@@ -47,8 +47,15 @@ class Hitbox extends Mask
 			info.maskA = this;
 			info.maskB = other;			
 			
-			parent.addCollision(info);
-			other.parent.addCollision(info);
+			if (parent.isLightweight)
+			{
+				parent.addCollision(info);
+			}
+			
+			if (other.parent.isLightweight)
+			{
+				other.parent.addCollision(info);
+			}
 			
 			return true;	
 		}
@@ -75,8 +82,15 @@ class Hitbox extends Mask
 			info.maskA = this;
 			info.maskB = other;			
 			
-			parent.addCollision(info);
-			other.parent.addCollision(info);
+			if (parent.isLightweight)
+			{
+				parent.addCollision(info);
+			}
+			
+			if (other.parent.isLightweight)
+			{
+				other.parent.addCollision(info);
+			}
 						
 			return true;
 		}
