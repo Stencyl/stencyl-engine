@@ -354,36 +354,49 @@ class SpriteReader implements AbstractReader
 	}*/
 	
 	/// Check the orientation of vertices. If they are in the wrong direction, flip them. Returns true if the vertecies need to be flipped.
-	public static function CheckVertexDirection(v:Array<B2Vec2>):Bool {
-		if(v.length > 2) {
+	public static function CheckVertexDirection(v:Array<B2Vec2>):Bool 
+	{
+		if(v.length > 2) 
+		{
 			var wind:Float = 0;
 			var i:Int = 0;
-			while(wind == 0 && i < (v.length - 2)) {
+			
+			while(wind == 0 && i < (v.length - 2)) 
+			{
 				wind = v[i].winding(v[i + 1], v[i + 2]);
 				++i;
 			}
-			if(wind < 0) {
+			
+			if(wind < 0) 
+			{
 				return false;
 			}
 		}
+		
 		return true;
 	}
 	
 	/// If the vertices are in the wrong direction, flips them. Returns true if they were ok to start with, false if they were flipped.
-	public static function EnsureCorrectVertexDirection(v:Array<B2Vec2>):Bool {
-		if(!CheckVertexDirection(v)) {
+	public static function EnsureCorrectVertexDirection(v:Array<B2Vec2>):Bool 
+	{
+		if(!CheckVertexDirection(v))
+		{
 			ReverseVertices(v);
 			return false;
 		}
+		
 		return true;
 	}
 	
 	/// Reverses the direction of a V2 vector.
-	public static function ReverseVertices(v:Array<B2Vec2>) {
+	public static function ReverseVertices(v:Array<B2Vec2>) 
+	{
 		var low:Int = 0;
 		var high:Int = v.length - 1;
 		var tmp:Float;
-		while(high > low) {
+		
+		while(high > low) 
+		{
 			tmp = v[low].x;
 			v[low].x = v[high].x;
 			v[high].x = tmp;

@@ -27,6 +27,7 @@ import box2D.dynamics.joints.B2DistanceJointDef;
 import box2D.dynamics.joints.B2RevoluteJointDef;
 import box2D.dynamics.joints.B2LineJointDef;
 import box2D.common.math.B2Vec2;
+import box2D.common.math.B2Math;
 
 import haxe.xml.Fast;
 import com.stencyl.Engine;
@@ -34,6 +35,7 @@ import com.stencyl.utils.Utils;
 
 import nme.geom.Rectangle;
 import nme.utils.ByteArray;
+import com.stencyl.utils.PolyDecompBayazit;
 
 class Scene
 {
@@ -166,7 +168,7 @@ class Scene
 		
 		var shape:B2Shape = null;
 		var ps = new Array<B2PolygonShape>();
-		var shapeList = new Array<B2Shape>();
+		shapeList = new Array<B2Shape>();
 		var decompParams:Array<String>;
 		
 		if(type == "box")
@@ -228,53 +230,28 @@ class Scene
 				return region;
 			}
 
+			//Polygon Decomposition
+			currX = x;
+			currY = y;
+			currW = w;
+			currH = h;
+			
 			var shapeParams = pts.split(",");
 			
-			//TODO: Hard to port this over - figure out a different way
-			//ps = SpriteReader.decomposeShape(shapeParams);
-			
-			/*for(i in 0...ps.length)
-			{
-				var loX:Float = Utils.NUMBER_MAX_VALUE;
-				var loY:Float = Utils.NUMBER_MAX_VALUE;
-				var hiX:Float = 0;
-				var hiY:Float = 0;
-
-				decompParams = new Array<String>();
-				decompParams[0] = "" + ps[i].getVertexCount();
-
-				for(j in 0...ps[i].m_vertices.length)
-				{
-					loX = Math.min(loX, ps[i].m_vertices[j].x);
-					loY = Math.min(loY, ps[i].m_vertices[j].y);
-					hiX = Math.min(hiX, ps[i].m_vertices[j].x);
-					hiY = Math.min(hiY, ps[i].m_vertices[j].y);
-					decompParams.push("" + ps[i].m_vertices[j].x);
-					decompParams.push("" + ps[i].m_vertices[j].y);
-				}
+			var points = new Array<Point>();
+			var numVertices = Std.parseFloat(shapeParams[0]);
+			var vIndex:Int = 0;
+			var i:Int = 0;
 				
-				var localWidth:Float;
-				var localHeight:Float;
-				
-				localWidth = hiX - loX;
-				localHeight = hiY - loY;
-				loX = Engine.toPhysicalUnits(loX);
-				loY = Engine.toPhysicalUnits(loY);
-				
-				var polyShape = cast(SpriteReader.createShape(shapeType, decompParams, x, y, w, h), B2PolygonShape);
-				shapeList[i] = polyShape;
-			}*/
-			
-			var vertices = new Array<Dynamic>();
-
-			for(i in 1...shapeParams.length)
-			{
-				var pt = new B2Vec2(Std.parseFloat(shapeParams[i%vertices.length]), Std.parseFloat(shapeParams[(i+1)%vertices.length]));
-				vertices.push(pt);
+			while(vIndex < numVertices)
+			{	
+				points.push(new Point(Std.parseFloat(shapeParams[i+1]), Std.parseFloat(shapeParams[i + 2])));
+				vIndex++;
+				i += 2;
 			}
 			
-			shapeList.push(B2PolygonShape.asArray(vertices, vertices.length));
-			
+			var decomp = new PolyDecompBayazit(points);
+			decomp.decompose(addPolygonRegion);
 			region = new RegionDef(shapeList, elementID, name, x, y);
 		}
 			
@@ -299,6 +276,80 @@ class Scene
 		}
 		
 		return region;
+	}
+	
+	var shapeList:Array<B2Shape>;
+	var currX:Float;
+	var currY:Float;
+	var currW:Float;
+	var currH:Float;
+	
+	function addPolygonRegion(p:PolyDecompBayazit)
+	{
+   		//trace("THE POLY: " + p.points);
+   		
+   		var loX:Float = B2Math.MAX_VALUE;
+		var loY:Float = B2Math.MAX_VALUE;
+		var hiX:Float = 0;
+		var hiY:Float = 0;
+
+		var decompParams:Array<String> = new Array();
+		decompParams[0] = "" + p.points.length;
+
+		for(j in 0...p.points.length)
+		{
+			loX = Math.min(loX, p.points[j].x);
+			loY = Math.min(loY, p.points[j].y);
+			hiX = Math.min(hiX, p.points[j].x);
+			hiY = Math.min(hiY, p.points[j].y);
+			decompParams.push("" + p.points[j].x);
+			decompParams.push("" + p.points[j].y);
+		}
+		
+		var localWidth:Float;
+		var localHeight:Float;
+		
+		localWidth = hiX - loX;
+		localHeight = hiY - loY;
+		loX = Engine.toPhysicalUnits(loX);
+		loY = Engine.toPhysicalUnits(loY);
+		
+		var polyShape = cast(SpriteReader.createShape("polyregion", decompParams, currX, currY, currW, currH), B2PolygonShape);
+		shapeList.push(polyShape);
+	}
+	
+	function addPolygonTerrain(p:PolyDecompBayazit)
+	{
+		//trace("THE POLY: " + p.points);
+		
+		var loX:Float = B2Math.MAX_VALUE;
+		var loY:Float = B2Math.MAX_VALUE;
+		var hiX:Float = 0;
+		var hiY:Float = 0;
+
+		var decompParams:Array<String> = new Array();
+		decompParams[0] = "" + p.points.length;
+
+		for(j in 0...p.points.length)
+		{
+			loX = Math.min(loX, p.points[j].x);
+			loY = Math.min(loY, p.points[j].y);
+			hiX = Math.min(hiX, p.points[j].x);
+			hiY = Math.min(hiY, p.points[j].y);
+			decompParams.push("" + p.points[j].x);
+			decompParams.push("" + p.points[j].y);
+		}
+		
+		var localWidth:Float;
+		var localHeight:Float;
+		
+		localWidth = hiX - loX;
+		localHeight = hiY - loY;
+		loX = Engine.toPhysicalUnits(loX);
+		loY = Engine.toPhysicalUnits(loY);
+		
+		var polyShape = cast(SpriteReader.createShape("polyregion", decompParams, currX, currY, currW, currH), B2PolygonShape);
+		shapeList.push(polyShape);
 	}
 	
 	public function readTerrainRegions(list:Iterator<Fast>):IntHash<TerrainDef>
@@ -331,7 +382,7 @@ class Scene
 		
 		var shape:B2Shape = null;
 		var ps = new Array<B2PolygonShape>();
-		var shapeList = new Array<B2Shape>();
+		shapeList = new Array<B2Shape>();
 		var decompParams:Array<String>;
 		
 		if(type == "box")
@@ -353,52 +404,26 @@ class Scene
 			var shapeType:String = "polyregion";
 			var shapeParams = e.att.pts.split(",");
 
-			//TODO: Hard to port this over - figure out a different way
-			/*ps = SpriteReader.decomposeShape(shapeParams);
+			//Polygon Decomposition
+			currX = x;
+			currY = y;
+			currW = w;
+			currH = h;
 			
-			for (var i:int = 0; i < ps.length; i++)
-			{
-				var loX:Number = int.MAX_VALUE;
-				var loY:Number = int.MAX_VALUE;
-				var hiX:Number = 0;
-				var hiY:Number = 0;
-				var j:Number = 0;
-				decompParams = new Array();
-				decompParams[0] = ps[i].GetVertexCount();
-
-				for (j= 0; j < ps[i].m_vertices.length; j++)
-				{
-					loX = Math.min(loX, ps[i].m_vertices[j].x);
-					loY = Math.min(loY, ps[i].m_vertices[j].y);
-					hiX = Math.min(hiX, ps[i].m_vertices[j].x);
-					hiY = Math.min(hiY, ps[i].m_vertices[j].y);
-					decompParams.push(ps[i].m_vertices[j].x);
-					decompParams.push(ps[i].m_vertices[j].y);
-				}
+			var points = new Array<Point>();
+			var numVertices = Std.parseFloat(shapeParams[0]);
+			var vIndex:Int = 0;
+			var i:Int = 0;
 				
-				var localWidth:Number;
-				var localHeight:Number;
-				
-				localWidth = hiX - loX;
-				localHeight = hiY - loY;
-				loX = GameState.toPhysicalUnits(loX);
-				loY = GameState.toPhysicalUnits(loY);
-				
-				var polyShape:b2PolygonShape = SpriteReader.createShape(shapeType, decompParams, x, y, w, h) as b2PolygonShape;
-				shapeList[i] = polyShape;
-			}*/
-			
-			var vertices = new Array<Dynamic>();
-			var arr = shapeParams.slice(1);
-			
-			for(i in 0...Std.int(arr.length/2))
-			{
-				var pt = new B2Vec2(Std.parseFloat(arr[(i*2)%arr.length]), Std.parseFloat(arr[(i*2 + 1)%arr.length]));
-				vertices.push(pt);
+			while(vIndex < numVertices)
+			{	
+				points.push(new Point(Std.parseFloat(shapeParams[i+1]), Std.parseFloat(shapeParams[i + 2])));
+				vIndex++;
+				i += 2;
 			}
 			
-			shapeList.push(B2PolygonShape.asArray(vertices, vertices.length));
-			
+			var decomp = new PolyDecompBayazit(points);
+			decomp.decompose(addPolygonTerrain);
 			terrainRegion = new TerrainDef(shapeList, elementID, name, x, y, group, fillColor);
 		}
 		
