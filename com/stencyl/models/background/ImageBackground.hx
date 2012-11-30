@@ -8,6 +8,7 @@ import nme.geom.Rectangle;
 import nme.geom.Point;
 
 import com.stencyl.Engine;
+import com.stencyl.models.scene.layers.BackgroundLayer;
 
 class ImageBackground extends Resource, implements Background 
 {
@@ -59,7 +60,7 @@ class ImageBackground extends Resource, implements Background
 	}		
 	
 	//TODO: drawTiles on CPP
-	public function drawRepeated(bitmap:Bitmap, screenWidth:Int, screenHeight:Int)
+	public function drawRepeated(bitmap:BackgroundLayer, screenWidth:Int, screenHeight:Int)
 	{			
 		var tw:Float = img.width;
 		var th:Float = img.height;
@@ -86,7 +87,7 @@ class ImageBackground extends Resource, implements Background
 			}
 		}
 		
-		bitmap.bitmapData = texture;
+		bitmap.setImage(texture);
 	}
 	
 	//For Atlases

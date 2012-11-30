@@ -769,14 +769,14 @@ class Engine
 		if(Std.is(background, ScrollingBackground))
 		{
 			var scroller = cast(background, ScrollingBackground);
-			var img = new ScrollingBitmap(backImg.bitmapData, scroller.xVelocity, scroller.yVelocity);
+			var img = new ScrollingBitmap(background.img, scroller.xVelocity, scroller.yVelocity);
 			img.name = SCROLLING_BACKGROUND;
 			master.addChild(img);
 		}
 		
 		else if (background.repeats)
 		{
-			var img = new ScrollingBitmap(backImg.bitmapData, 0, 0, background.parallaxX, background.parallaxY);
+			var img = new ScrollingBitmap(background.img, 0, 0, background.parallaxX, background.parallaxY);
 			img.name = SCROLLING_BACKGROUND;
 			master.addChild(img);
 		}
