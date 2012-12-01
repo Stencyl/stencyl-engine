@@ -88,6 +88,7 @@ class ImageBackground extends Resource, implements Background
 		}
 		
 		bitmap.setImage(texture);
+		this.img = texture;
 	}
 	
 	//For Atlases
