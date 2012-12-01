@@ -13,5 +13,11 @@ class Atlas
 		this.name = name;
 		this.members = members;
 		this.active = active;
+		
+		#if(mobile && !air)
+		
+		#else
+		this.active = true;
+		#end
 	}		
 }

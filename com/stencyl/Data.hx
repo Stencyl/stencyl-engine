@@ -308,6 +308,7 @@ class Data
 	
 	public function unloadAtlas(atlasID:Int)
 	{
+		#if(mobile && !air)
 		var atlas = GameModel.get().atlases.get(atlasID);
 		
 		if(atlas != null && atlas.active)
@@ -324,5 +325,6 @@ class Data
 				}
 			}
 		}
+		#end
 	}
 }
