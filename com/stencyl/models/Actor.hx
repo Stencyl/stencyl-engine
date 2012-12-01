@@ -3396,7 +3396,7 @@ class Actor extends Sprite
 				{
 					if ((e._mask == null && solid && e.solid)
 						|| !allowAdd
-						|| (allowAdd && simpleCollisions.get(collisionsCount -1).solidCollision))
+						|| (allowAdd && simpleCollisions.get(collisionsCount -1) != null && simpleCollisions.get(collisionsCount -1).solidCollision))
 					{
 						resetReal(_x, _y);
 					}					
@@ -3610,7 +3610,7 @@ class Actor extends Sprite
 						{							
 							moveCollideX(e, sign);
 							
-							if (simpleCollisions.get(collisionsCount -1).solidCollision)
+							if (simpleCollisions.get(collisionsCount -1) != null && simpleCollisions.get(collisionsCount -1).solidCollision)
 							{
 								xSpeed = 0;
 								break;
@@ -3637,7 +3637,7 @@ class Actor extends Sprite
 						{						
 							moveCollideY(e, sign);
 							
-							if (simpleCollisions.get(collisionsCount -1).solidCollision)
+							if (simpleCollisions.get(collisionsCount -1) != null && simpleCollisions.get(collisionsCount -1).solidCollision)
 							{
 								ySpeed = 0;
 								break;
