@@ -158,16 +158,25 @@ class BitmapFont
 						charString = String.fromCharCode(charCode);
 						_glyphString += charString;
 						
+						var xadvance:Int = Std.parseInt(node.get("xadvance"));
+						var charWidth:Int = xadvance;
+
+						if(rect.width > xadvance)
+						{
+							charWidth = Std.int(rect.width);
+							point.x = 0;
+						}
+						
 						// create glyph
 						#if (flash || js)
 						bd = null;
 						if (charString != " " && charString != "")
 						{
-							bd = new BitmapData(Std.parseInt(node.get("xadvance")), Std.parseInt(node.get("height")) + Std.parseInt(node.get("yoffset")), true, 0x0);
+							bd = new BitmapData(charWidth, Std.parseInt(node.get("height")) + Std.parseInt(node.get("yoffset")), true, 0x0);
 						}
 						else
 						{
-							bd = new BitmapData(Std.parseInt(node.get("xadvance")), 1, true, 0x0);
+							bd = new BitmapData(charWidth, 1, true, 0x0);
 						}
 						bd.copyPixels(pBitmapData, rect, point, null, null, true);
 						
@@ -176,11 +185,11 @@ class BitmapFont
 						#else
 						if (charString != " " && charString != "")
 						{
-							setGlyph(charCode, rect, letterID, Math.floor(point.x), Math.floor(point.y), Std.parseInt(node.get("xadvance")));
+							setGlyph(charCode, rect, letterID, Math.floor(point.x), Math.floor(point.y), charWidth);
 						}
 						else
 						{
-							setGlyph(charCode, rect, letterID, Math.floor(point.x), 1, Std.parseInt(node.get("xadvance")));
+							setGlyph(charCode, rect, letterID, Math.floor(point.x), 1, charWidth);
 						}
 						#end
 						

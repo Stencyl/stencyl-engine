@@ -2093,7 +2093,7 @@ class Script
 	/**
 	* Change a Number to another specific Number over time  
 	*/
-	public function tweenNumber(attributeName:String, toValue:Float, duration:Float, easing:Dynamic) 
+	public function tweenNumber(attributeName:String, value:Float, duration:Float = 1, easing:Dynamic = null) 
 	{
 		/*var params:Object = { time: duration / 1000, transition: easing };
 		attributeName = toInternalName(attributeName);
@@ -2102,6 +2102,7 @@ class Script
 		return Tweener.addTween(this, params);*/
 		
 		//TODO
+		Actuate.tween(this, duration, {alpha:value}).ease(easing == null ? Linear.easeNone : easing);
 	}
 	
 	/**
