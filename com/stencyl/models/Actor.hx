@@ -3314,8 +3314,8 @@ class Actor extends Sprite
 		realX = x;
 		realY = y;
 		
-		setX(x);
-		setY(y);
+		setX(x, false, true);
+		setY(y, false, true);
 	}
 	
 	//*-----------------------------------------------
