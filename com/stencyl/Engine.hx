@@ -2221,8 +2221,8 @@ class Engine
 			//Regular Layer
 			else if(Std.is(child, RegularLayer))
 			{
-				//child.x = cameraX;
-				//child.y = cameraY;
+				child.x = cameraX;
+				child.y = cameraY;
 			}
 			
 			//Something that doesn't scroll - Do nothing
