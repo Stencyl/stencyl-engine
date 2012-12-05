@@ -728,6 +728,14 @@ class Engine
 		initActorScripts();
 		
 		loadForegrounds();
+		
+		for(layer in tileLayers)
+	    {	     	
+			layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */); // FLASH MOUSE SLOWDOWN
+			
+	     	layer.x = cameraX;
+	     	layer.y = cameraY;
+	    }
 	}
 		
 	private function loadBackgrounds()
@@ -2213,8 +2221,8 @@ class Engine
 			//Regular Layer
 			else if(Std.is(child, RegularLayer))
 			{
-				child.x = cameraX;
-				child.y = cameraY;
+				//child.x = cameraX;
+				//child.y = cameraY;
 			}
 			
 			//Something that doesn't scroll - Do nothing
@@ -2322,6 +2330,7 @@ class Engine
 			{
 				a.updateDrawingMatrix();
 				a.updateMatrix = false;
+				a.resetOrigin = false;
 			}
 			
 			if(a.body == null)

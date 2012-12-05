@@ -3758,8 +3758,8 @@ class Actor extends Sprite
 			}
 			else
 			{			
-				Utils.collision.thisFromTop = a.colX < colX;
-				Utils.collision.thisFromBottom = a.colX > colX;
+				Utils.collision.thisFromTop = a.colY < colY;
+				Utils.collision.thisFromBottom = a.colY > colY;
 			}
 		
 			Utils.collision.otherFromTop = !Utils.collision.thisFromTop;
