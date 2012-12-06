@@ -342,7 +342,10 @@ class Actor extends Sprite
 		
 		//---
 		
-		lastScale = new flash.geom.Point(0, 0);
+		lastScale = new flash.geom.Point(1, 1);
+		lastX = -1000;
+		lastY = -1000;
+		lastAngle = 0;		
 		
 		tweenLoc = new Point(0, 0);
 		tweenAngle = new AngleHolder();
