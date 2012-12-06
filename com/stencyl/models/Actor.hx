@@ -152,6 +152,7 @@ class Actor extends Sprite
 	var lastX:Float;
 	var lastY:Float;
 	var lastAngle:Float;
+	var lastScale:flash.geom.Point;
 	
 	public var colX:Float;
 	public var colY:Float;
@@ -340,6 +341,8 @@ class Actor extends Sprite
 		activePositionTweens = 0;
 		
 		//---
+		
+		lastScale = new flash.geom.Point(0, 0);
 		
 		tweenLoc = new Point(0, 0);
 		tweenAngle = new AngleHolder();
@@ -1355,11 +1358,7 @@ class Actor extends Sprite
 		{
 			return;
 		}
-		
-		lastX = realX;
-		lastY = realY;
-		lastAngle = realAngle;
-			
+					
 		if(isLightweight)
 		{		
 			if (!ignoreGravity && !isHUD)
@@ -1379,7 +1378,7 @@ class Actor extends Sprite
 			
 			if(rSpeed != 0)
 			{
-				realAngle += elapsedTime * rSpeed * 0.001;
+				realAngle += elapsedTime * rSpeed * 0.001;				
 			}
 			
 			if(fixedRotation)
@@ -1415,10 +1414,16 @@ class Actor extends Sprite
 			}
 		}
 		
-		if (lastX != realX || lastY != realY || lastAngle != realAngle)
+		if (lastX != realX || lastY != realY || lastAngle != realAngle || lastScale.x != realScaleX || lastScale.y != realScaleY)
 		{
 			updateMatrix = true;
 		}
+		
+		lastX = realX;
+		lastY = realY;
+		lastAngle = realAngle;
+		lastScale.x = realScaleX;
+		lastScale.y = realScaleY;
 			
 		if(doAll)
 		{
