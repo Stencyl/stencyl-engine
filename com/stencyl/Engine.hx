@@ -1785,6 +1785,7 @@ class Engine
 		a.xSpeed = 0;
 		a.ySpeed = 0;
 		a.rSpeed = 0;
+		a.continuosCollision = false;
 	}
 	
 	public function getRecycledActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor

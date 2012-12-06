@@ -1683,6 +1683,15 @@ class Script
 	
 	public function makeActorNotPassThroughTerrain(actor:Actor)
 	{
+		if (Engine.NO_PHYSICS)
+		{
+			if (actor != null && actor.isLightweight)
+			{
+				actor.continuosCollision = true;
+			}
+			return;
+		}
+		
 		B2World.m_continuousPhysics = true;
 		
 		if(actor != null && !actor.isLightweight)

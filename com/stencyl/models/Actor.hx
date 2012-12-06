@@ -152,7 +152,7 @@ class Actor extends Sprite
 	var lastX:Float;
 	var lastY:Float;
 	var lastAngle:Float;
-	var lastScale:flash.geom.Point;
+	var lastScale:Point;
 	
 	public var colX:Float;
 	public var colY:Float;
@@ -160,6 +160,8 @@ class Actor extends Sprite
 	public var xSpeed:Float;
 	public var ySpeed:Float;
 	public var rSpeed:Float;
+	
+	public var continuosCollision:Bool;
 	
 	public var tweenLoc:Point;
 	public var tweenAngle:AngleHolder;
@@ -376,6 +378,7 @@ class Actor extends Sprite
 		killLeaveScreen = false;
 		alwaysSimulate = false;
 		isHUD = false;
+		continuosCollision = false;
 
 		fixedRotation = false;
 		this.ignoreGravity = ignoreGravity;
@@ -2198,7 +2201,7 @@ class Actor extends Sprite
 	
 		if(isLightweight)
 		{
-			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY, noCollision ? null : groupsToCollideWith);
+			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY, !noCollision && continuosCollision ? groupsToCollideWith: null);
 		}
 		
 		else
@@ -2232,7 +2235,7 @@ class Actor extends Sprite
 		
 		if(isLightweight)
 		{
-			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y, noCollision ? null : groupsToCollideWith);
+			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y, !noCollision && continuosCollision ? groupsToCollideWith : null);
 		}
 		
 		else
