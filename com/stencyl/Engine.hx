@@ -87,8 +87,11 @@ import box2D.dynamics.joints.B2LineJoint;
 import box2D.dynamics.joints.B2LineJointDef;
 import box2D.dynamics.B2DebugDraw;
 import box2D.dynamics.B2Body;
+import box2D.dynamics.B2BodyDef;
+import box2D.dynamics.B2FixtureDef;
 import box2D.collision.B2AABB;
 import box2D.collision.shapes.B2Shape;
+import box2D.collision.shapes.B2EdgeShape;
 import box2D.collision.shapes.B2PolygonShape;
 import box2D.collision.shapes.B2CircleShape;
 import box2D.dynamics.contacts.B2Contact;
@@ -938,6 +941,35 @@ class Engine
 		debugDrawer.setFillAlpha(0);
 		debugDrawer.setFlags(B2DebugDraw.e_shapeBit);
 		world.setDebugDraw(debugDrawer);
+		
+		//---
+		
+		//TODO: Developers - uncomment this block out to turn on the edge shapes test case.
+		//Run on any blank game, blank scene - doesn't matter what it is.
+		/*var bodyDef:B2BodyDef = new B2BodyDef();
+		bodyDef.position.set(100/physicsScale, 100/physicsScale);
+		bodyDef.groupID = GameModel.TERRAIN_ID;
+		bodyDef.type = B2Body.b2_staticBody;
+		
+		var edge:B2EdgeShape = new B2EdgeShape(new B2Vec2(0, 0), new B2Vec2(130/physicsScale, 30/physicsScale));
+		
+		var fixtureDef:B2FixtureDef = new B2FixtureDef();
+		fixtureDef.shape = edge;
+		fixtureDef.density = 1;
+		fixtureDef.groupID = GameModel.TERRAIN_ID;
+		
+		var body:B2Body = world.createBody(bodyDef);
+		body.createFixture(fixtureDef);
+		
+		bodyDef.position.set(120/physicsScale, 10/physicsScale);
+		fixtureDef.shape = B2PolygonShape.asBox(1, 1);
+		//fixtureDef.shape = new B2CircleShape(1);
+		bodyDef.ignoreGravity = false;
+		bodyDef.groupID = 3;
+		fixtureDef.groupID = 3;
+		bodyDef.type = B2Body.b2_dynamicBody;
+		body = world.createBody(bodyDef);
+		body.createFixture(fixtureDef);*/
 	}
 	
 	//*-----------------------------------------------
