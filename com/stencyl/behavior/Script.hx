@@ -1687,7 +1687,7 @@ class Script
 		{
 			if (actor != null && actor.isLightweight)
 			{
-				actor.continuosCollision = true;
+				actor.continuousCollision = true;
 			}
 			return;
 		}

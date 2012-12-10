@@ -231,7 +231,6 @@ class G
 		
 		else
 		{
-			//XXX: Mike, doesn't this need to account for the origin point?
 			x = a.colX * scaleX;
 			y = a.colY * scaleY;
 		}
@@ -484,8 +483,8 @@ class G
 		
 		graphics.lineTo(this.x + x, this.y + y);
 	}
-	
-	public inline function drawImage(img:BitmapData, x:Float, y:Float)
+		
+	public inline function drawImage(img:BitmapData, x:Float, y:Float, angle:Float=0)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -528,8 +527,21 @@ class G
 		data[0] = point.x;
 		data[1] = point.y;
 		data[2] = 0;
-		data[3] = alpha;
-  		sheet.drawTiles(canvas.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_ALPHA);
+		
+		//TODO: Dynamic scaling, Origin Point?
+		if (angle != 0)
+		{
+			data[3] = angle;
+			data[4] = alpha;
+			sheet.drawTiles(canvas.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_ROTATION | Tilesheet.TILE_ALPHA);
+		}
+		
+		else
+		{
+			data[3] = alpha;
+			sheet.drawTiles(canvas.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_ALPHA);
+		}
+  		
   		//TODO: Can't get alpha to work in this setup.
 		#end
 	}

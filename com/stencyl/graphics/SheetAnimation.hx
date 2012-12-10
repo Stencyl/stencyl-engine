@@ -155,7 +155,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
   		#end
 	}
 	
-	public inline function draw(g:G, x:Float, y:Float)
+	public inline function draw(g:G, x:Float, y:Float, angle:Float)
 	{
 		#if !js
 		data[0] = x;

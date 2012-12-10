@@ -161,7 +161,7 @@ class Actor extends Sprite
 	public var ySpeed:Float;
 	public var rSpeed:Float;
 	
-	public var continuosCollision:Bool;
+	public var continuousCollision:Bool;
 	
 	public var tweenLoc:Point;
 	public var tweenAngle:AngleHolder;
@@ -194,6 +194,7 @@ class Actor extends Sprite
 	public var transformPoint:Point;
 	public var transformMatrix:Matrix;
 	public var updateMatrix:Bool;
+	public var drawMatrix:Matrix; //For use when drawing actor image
 	
 	
 	//*-----------------------------------------------
@@ -354,6 +355,7 @@ class Actor extends Sprite
 				
 		transformPoint = new Point(0, 0);
 		transformMatrix = new Matrix();
+		drawMatrix = new Matrix();
 		
 		currOrigin = new Point(0, 0);
 		currOffset = new Point(0, 0);			
@@ -378,7 +380,7 @@ class Actor extends Sprite
 		killLeaveScreen = false;
 		alwaysSimulate = false;
 		isHUD = false;
-		continuosCollision = false;
+		continuousCollision = false;
 
 		fixedRotation = false;
 		this.ignoreGravity = ignoreGravity;
@@ -2201,7 +2203,7 @@ class Actor extends Sprite
 	
 		if(isLightweight)
 		{
-			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY, !noCollision && continuosCollision ? groupsToCollideWith: null);
+			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY, !noCollision && continuousCollision ? groupsToCollideWith: null);
 		}
 		
 		else
@@ -2235,7 +2237,7 @@ class Actor extends Sprite
 		
 		if(isLightweight)
 		{
-			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y, !noCollision && continuosCollision ? groupsToCollideWith : null);
+			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y, !noCollision && continuousCollision ? groupsToCollideWith : null);
 		}
 		
 		else
@@ -2942,9 +2944,26 @@ class Actor extends Sprite
 				x = g.x;
 				y = g.y;
 			}
-			#end
+			#end		
+			
+			//TODO: See if I can make more efficient
+			if (realAngle > 0)
+			{
+				drawMatrix.identity();
+				transformPoint.x = 0 - (cacheWidth*Engine.SCALE) / 2;
+				transformPoint.y = 0 - (cacheHeight*Engine.SCALE) / 2;
+
+				drawMatrix.translate( -transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
+				drawMatrix.scale(realScaleX, realScaleY);		
+				drawMatrix.rotate(realAngle * Utils.RAD);		
 		
-			cast(currAnimation, AbstractAnimation).draw(g, x, y);
+				drawMatrix.translate(colX * Engine.SCALE, colY * Engine.SCALE);
+				
+				x += transformMatrix.tx - drawMatrix.tx;
+				y += transformMatrix.ty - drawMatrix.ty;
+			}
+			
+			cast(currAnimation, AbstractAnimation).draw(g, x, y, -realAngle * Utils.RAD);
 		}
 	}
 	
