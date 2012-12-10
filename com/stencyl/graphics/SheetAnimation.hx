@@ -165,4 +165,20 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
   		tilesheet.drawTiles(g.graphics, data, scripts.MyAssets.antialias);
   		#end
 	}
+	
+	public function getFrameDurations():Array<Int>
+	{
+		return durations;
+	}
+	
+	public function setFrameDurations(time:Int)
+	{
+		if(durations != null)
+		{
+			for(i in 0...durations.length)
+			{
+				durations[i] = time;
+			}
+		}
+	}
 }

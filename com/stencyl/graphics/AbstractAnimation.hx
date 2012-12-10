@@ -9,4 +9,6 @@ interface AbstractAnimation
 	public function isFinished():Bool;
 	public function reset():Void;
 	public function draw(g:G, x:Float, y:Float):Void;
+	public function getFrameDurations():Array<Int>;
+	public function setFrameDurations(time:Int):Void;
 }

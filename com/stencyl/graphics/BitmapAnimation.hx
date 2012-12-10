@@ -147,4 +147,20 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 	{
 		g.drawImage(bitmapData, x, y);
 	}
+	
+	public function getFrameDurations():Array<Int>
+	{
+		return durations;
+	}
+	
+	public function setFrameDurations(time:Int)
+	{
+		if(durations != null)
+		{
+			for(i in 0...durations.length)
+			{
+				durations[i] = time;
+			}
+		}
+	}
 }
