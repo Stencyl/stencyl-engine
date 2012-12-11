@@ -189,8 +189,13 @@ class Region extends Actor
 		
 		if(actor.ID != -1)
 		{
-			containedActors.remove(actor.ID);
-			justRemoved.push(actor);				
+			var index = Utils.indexOf(justRemoved, actor);
+			
+			if(index == -1)
+			{
+				containedActors.remove(actor.ID);
+				justRemoved.push(actor);
+			}
 		}
 	}
 	
