@@ -161,8 +161,9 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		data[0] = x;
 		data[1] = y;
 		data[2] = frameIndex;
+		data[3] = angle;
 
-  		tilesheet.drawTiles(g.graphics, data, scripts.MyAssets.antialias);
+  		tilesheet.drawTiles(g.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_ROTATION);
   		#end
 	}
 	

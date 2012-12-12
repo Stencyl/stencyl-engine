@@ -484,7 +484,7 @@ class G
 		graphics.lineTo(this.x + x, this.y + y);
 	}
 		
-	public inline function drawImage(img:BitmapData, x:Float, y:Float, angle:Float=0)
+	public inline function drawImage(img:BitmapData, x:Float, y:Float, angle:Float=0, matrix:Matrix = null)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -510,13 +510,35 @@ class G
 		#if (js)
 		if(alpha != 1)
 		{
-			//TODO: How to do you do this???
-			canvas.copyPixels(img, rect, point);
+			//TODO: How to do you do this??? (Combine when we figure this out)
+			if (angle != 0)
+			{
+				mtx.identity();
+				mtx.rotate(-angle);
+				mtx.translate(point.x,point.y);
+				
+				canvas.draw(img, mtx);
+			}
+			else
+			{			
+				canvas.copyPixels(img, rect, point);
+			}			
 		}
 		
 		else
 		{
-			canvas.copyPixels(img, rect, point);
+			if (angle != 0)
+			{
+				mtx.identity();
+				mtx.rotate(-angle);
+				mtx.translate(point.x,point.y);
+				
+				canvas.draw(img, mtx);
+			}
+			else
+			{			
+				canvas.copyPixels(img, rect, point);
+			}
 		}
 		#end
 		
@@ -528,7 +550,7 @@ class G
 		data[1] = point.y;
 		data[2] = 0;
 		
-		//TODO: Dynamic scaling, Origin Point?
+		//TODO: Dynamic scaling?
 		if (angle != 0)
 		{
 			data[3] = angle;
