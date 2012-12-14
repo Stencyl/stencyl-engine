@@ -182,6 +182,24 @@ class Universal extends Sprite
 		#if(air && mobile)
 		Engine.SCALE = 1;
 		Engine.IMG_BASE = "1x";
+		
+		if(scripts.MyAssets.stageWidth == -1 || scripts.MyAssets.stageHeight == -1)
+		{
+			var larger = Math.max(stageWidth, stageHeight);
+			var smaller = Math.min(stageWidth, stageHeight);
+			
+			if(larger >= 1920 && !scripts.MyAssets.always1x)
+			{
+				Engine.SCALE = 4;
+				Engine.IMG_BASE = "4x";
+			}
+			
+			else if(larger >= 720 && !scripts.MyAssets.always1x)
+			{
+				Engine.SCALE = 2;
+				Engine.IMG_BASE = "2x";
+			}
+		}
 		#end
 		
 		trace("Engine Scale: " + Engine.IMG_BASE);
@@ -218,6 +236,19 @@ class Universal extends Sprite
 		
 		//Full Screen Mode
 		#if(mobile && !air)
+		if(originalWidth == -1 || originalHeight == -1)
+		{
+			scripts.MyAssets.stageWidth = stageWidth;
+			scripts.MyAssets.stageHeight = stageHeight;
+			
+			originalWidth = Std.int(stageWidth / Engine.SCALE);
+			originalHeight = Std.int(stageHeight / Engine.SCALE);
+			
+			usingFullScreen = true;
+		}
+		#end
+			
+		#if(mobile && air)
 		if(originalWidth == -1 || originalHeight == -1)
 		{
 			scripts.MyAssets.stageWidth = stageWidth;
