@@ -85,6 +85,11 @@ class Universal extends Sprite
 		}
 		#end
 		
+		#if (air)
+		stageWidth = Std.int(nme.system.Capabilities.screenResolutionX);
+		stageHeight = Std.int(nme.system.Capabilities.screenResolutionY);
+		#end
+		
 		trace("Stage Width: " + scripts.MyAssets.stageWidth);
 		trace("Stage Height: " + scripts.MyAssets.stageHeight);
 		trace("Screen Width: " + stageWidth);
@@ -201,6 +206,16 @@ class Universal extends Sprite
 		}
 		#end
 		
+		#if(air)
+		if(scripts.MyAssets.stretchToFit)
+		{
+			stretchToFit = true;
+			
+			scaleX *= stageWidth / scripts.MyAssets.stageWidth;
+			scaleY *= stageHeight / scripts.MyAssets.stageHeight;
+		}
+		#end
+		
 		//Full Screen Mode
 		#if(mobile && !air)
 		if(originalWidth == -1 || originalHeight == -1)
@@ -263,7 +278,7 @@ class Universal extends Sprite
 		}
 		#end
 		
-		#if(flash || js || (cpp && !mobile))
+		#if(!air && (flash || js || (cpp && !mobile)))
 		scrollRect = new nme.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
 		#end
 		
