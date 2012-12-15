@@ -2011,15 +2011,15 @@ class Engine
 			Script.mry = Input.mouseY / SCALE;
 			invokeListeners(whenMouseReleasedListeners);
 		}
-		
-		if(mx != Input.mouseX || my != Input.mouseY)
+
+		if(mx != Input.mouseX / SCALE || my != Input.mouseY / SCALE)
 		{
 			mx = Input.mouseX / SCALE;
 			my = Input.mouseY / SCALE;
 			
 			invokeListeners(whenMouseMovedListeners);
 			
-			if(Input.mouseDown)
+			if(Input.mouseDown && !Input.mousePressed)
 			{
 				invokeListeners(whenMouseDraggedListeners);
 			}
