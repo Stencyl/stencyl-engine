@@ -233,6 +233,8 @@ class Engine
 	//*-----------------------------------------------
 	
 	public var groups:IntHash<Group>;
+	public var reverseGroups:Hash<Group>;
+	
 	public var allActors:IntHash<Actor>;
 	public var nextID:Int;
 	
@@ -665,16 +667,20 @@ class Engine
 		behaviors = new BehaviorManager();
 		
 		groups = new IntHash<Group>();
+		reverseGroups = new Hash<Group>();
 		
 		for(grp in GameModel.get().groups)
 		{
 			var g = new Group(grp.ID, grp.name);
 			groups.set(grp.ID, g);
+			reverseGroups.set(grp.name, g);
 			g.name = grp.name;
 		}
 		
 		//force regions in here
-		groups.set(GameModel.REGION_ID, new Group(GameModel.REGION_ID, "Regions"));
+		var regionGroup = new Group(GameModel.REGION_ID, "Regions");
+		groups.set(GameModel.REGION_ID, regionGroup);
+		reverseGroups.set("Regions", regionGroup);
 		
 		actorsOfType = new IntHash<Array<Actor>>();
 		recycledActorsOfType = new IntHash<Array<Actor>>();
@@ -1456,6 +1462,7 @@ class Engine
 		terrainRegions = null;
 		joints = null;
 		groups = null;
+		reverseGroups = null;
 		allActors = null;
 		scene = null;
 		tasks = null;
@@ -3008,6 +3015,18 @@ class Engine
 		}
 		
 		return groups.get(ID);
+	}
+	
+	public function getGroupByName(groupName:String):Group
+	{
+		var group = reverseGroups.get(groupName);
+		
+		if(group == null)
+		{
+			return groups.get(GameModel.ACTOR_ID);
+		}
+		
+		return group;
 	}
 	
 	//*-----------------------------------------------

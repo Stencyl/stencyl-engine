@@ -323,6 +323,11 @@ class Script
 		}
 	}
 	
+	public function getGroupByName(groupName:String):Group
+	{
+		return engine.getGroupByName(groupName);
+	}
+	
 	//*-----------------------------------------------
 	//* Basics
 	//*-----------------------------------------------
