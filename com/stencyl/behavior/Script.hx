@@ -2762,6 +2762,13 @@ class Script
 		#end
 	}
 	
+	public function setKeyboardText(text:String)
+	{
+		#if(mobile && !air)
+		Native.setKeyboardText(text);
+		#end
+	}
+	
 	public function setIconBadgeNumber(n:Int)
 	{
 		#if(mobile && !air)
