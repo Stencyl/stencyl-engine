@@ -2116,6 +2116,8 @@ class Engine
 			   	a.colX < -Engine.cameraX / Engine.SCALE + Engine.screenWidth + Engine.paddingRight &&
 			   	a.colY < -Engine.cameraY / Engine.SCALE + Engine.screenHeight + Engine.paddingBottom;
 				
+				a.isOnScreenCache = isOnScreen;
+				
 				//---
 			
 				if(!a.isLightweight && a.body != null)

@@ -234,6 +234,9 @@ class Actor extends Sprite
 	public var lastScreenState:Bool;
 	public var lastSceneState:Bool;
 	
+	//Purely used by Engine.hx for caching. Don't rely on or use internally!
+	public var isOnScreenCache:Bool;
+	
 	
 	//*-----------------------------------------------
 	//* Physics (Box2D)
@@ -370,7 +373,8 @@ class Actor extends Sprite
 		mouseState = 0;
 		
 		lastScreenState = false;
-		lastSceneState = false;			
+		lastSceneState = false;	
+		isOnScreenCache = false;		
 		
 		isCamera = false;
 		isRegion = false;
