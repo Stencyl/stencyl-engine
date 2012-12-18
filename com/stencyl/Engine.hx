@@ -2737,18 +2737,22 @@ class Engine
 			if(a.whenDrawingListeners.length > 0)
 			{
 				var layer = layers.get(a.layerID);
-				g.graphics = layer.overlay.graphics;
 				
-				#if (js)
-				g.canvas = layer.bitmapOverlay.bitmapData;
-     			#end
-     			
-     			#if (cpp || flash)
-				g.canvas = layer.bitmapOverlay;
-				#end		
-     			
-				g.translateToActor(a);			
-				Engine.invokeListeners4(a.whenDrawingListeners, g, 0, 0);
+				if(layer != null)
+				{
+					g.graphics = layer.overlay.graphics;
+					
+					#if (js)
+					g.canvas = layer.bitmapOverlay.bitmapData;
+	     			#end
+	     			
+	     			#if (cpp || flash)
+					g.canvas = layer.bitmapOverlay;
+					#end		
+	     			
+					g.translateToActor(a);			
+					Engine.invokeListeners4(a.whenDrawingListeners, g, 0, 0);
+				}
 			}
 		}
 
