@@ -237,7 +237,7 @@ class G
 	}
 	
 	private var drawData:Array<Float>;
-	
+		
 	public inline function drawString(s:String, x:Float, y:Float)
 	{
 		if(font == null)
@@ -279,7 +279,7 @@ class G
  	 	if(w > 0 && h > 0)
  	 	{
  	 		var bitmapData = new BitmapData(w, h, true, 0);
-			font.font.render(bitmapData, fontData, s, 0x000000, 0, 0, 0, 0);
+			font.font.render(bitmapData, fontData, s, 0x000000, alpha, 0, 0, 0, 0);
 		#end
 		
 			#if (flash)

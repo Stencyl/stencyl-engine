@@ -446,9 +446,9 @@ class BitmapFont
 	 * @param	pOffsetY	Y position of thext output.
 	 */
 	#if flash 
-	public function render(pBitmapData:BitmapData, pFontData:Array<BitmapData>, pText:String, pColor:UInt, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, ?pAngle:Float = 0):Void 
+	public function render(pBitmapData:BitmapData, pFontData:Array<BitmapData>, pText:String, pColor:UInt, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, ?pAngle:Float = 0):Void 
 	#elseif js
-	public function render(pBitmapData:BitmapData, pFontData:Array<BitmapData>, pText:String, pColor:Int, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, ?pAngle:Float = 0):Void 
+	public function render(pBitmapData:BitmapData, pFontData:Array<BitmapData>, pText:String, pColor:Int, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, ?pAngle:Float = 0):Void 
 	#else
 	public function render(drawData:Array<Float>, pText:String, pColor:Int, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0, ?pUseColorTransform:Bool = true):Void 
 	#end
@@ -493,7 +493,18 @@ class BitmapFont
 			#end
 			{
 				#if (flash || js)
-				pBitmapData.copyPixels(glyph, glyph.rect, _point, null, null, true);
+				if(pAlpha == 1)
+				{
+					pBitmapData.copyPixels(glyph, glyph.rect, _point, null, null, true);
+				}
+				
+				else
+				{
+					//TODO: This doesn't work on HTML5.
+					var temp = new BitmapData(pBitmapData.width, pBitmapData.height, true, toARGB(0x000000, Std.int(pAlpha * 255)));
+					pBitmapData.copyPixels(glyph, glyph.rect, _point, temp, null, true);
+				}
+				
 				_point.x += glyph.width + pLetterSpacing;
 				#else
 				glyphWidth = glyph.xadvance;
@@ -525,6 +536,15 @@ class BitmapFont
 			
 			realCount++;
 		}
+	}
+	
+	private function toARGB(rgb:Int, newAlpha:Int):Int
+	{
+		var argb = 0; 
+		argb = (rgb); 
+		argb += (newAlpha << 24); 
+		
+		return argb; 
 	}
 	
 	#if (cpp || neko)
