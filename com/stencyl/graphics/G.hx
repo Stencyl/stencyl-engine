@@ -44,6 +44,7 @@ class G
 
 	//Temp to avoid creating objects
 	private var rect:Rectangle;
+	private var rect2:Rectangle;
 	private var point:Point;
 	private var point2:Point;
 	private var data:Array<Float>;
@@ -77,6 +78,7 @@ class G
 		//
 		
 		rect = new Rectangle();
+		rect2 = new Rectangle();
 		point = new Point();
 		point2 = new Point();
 		data = [0.0, 0.0, 0];
@@ -542,8 +544,33 @@ class G
 		}
 		#end
 		
+		#if (flash)
+  		mtx.identity();
+ 	 	mtx.translate(point.x, point.y);
+ 	 	
+ 	 	if(alpha != 1)
+ 	 	{
+ 	 		point2.x = 0;
+ 	 		point2.y = 0;
+ 	 		
+ 	 		rect2.width = img.width;
+ 	 		rect2.height = img.height;
+ 	 	
+ 	 		//TODO: Can we avoid making a new one each time?
+ 	 		var temp = new BitmapData(img.width, img.height, true, toARGB(0x000000, Std.int(alpha * 255)));
+ 	 		var temp2 = new BitmapData(img.width, img.height, true, 0);
+ 	 		
+			temp2.copyPixels(img, rect2, point2, temp, null, true);
+			img = temp2;
+ 	 	}
+  		
+  		graphics.beginBitmapFill(img, mtx);
+		graphics.drawRect(point.x, point.y, img.width, img.height);
+	 	graphics.endFill();		
+		#end
+		
 		//TODO: Very wasteful to make a new tilesheet each time!
-		#if (cpp || flash)
+		#if (cpp)
 		var sheet = new Tilesheet(img);
 		sheet.addTileRect(rect, point2);
 		data[0] = point.x;
@@ -566,6 +593,15 @@ class G
   		
   		//TODO: Can't get alpha to work in this setup.
 		#end
+	}
+	
+	private function toARGB(rgb:Int, newAlpha:Int):Int
+	{
+		var argb = 0; 
+		argb = (rgb); 
+		argb += (newAlpha << 24); 
+		
+		return argb; 
 	}
 	
 	public inline function resetFont()
