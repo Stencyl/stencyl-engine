@@ -738,6 +738,7 @@ class Engine
 		
 		loadForegrounds();
 		
+		//Remove because post update added now after scene load?
 		for(layer in tileLayers)
 	    {	     	
 			layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */); // FLASH MOUSE SLOWDOWN
@@ -2320,10 +2321,7 @@ class Engine
 				enterScene();
 			}
 			
-			else
-			{
-				postUpdate(currTime);
-			}
+			postUpdate(currTime);			
 			
 			return;
 		}

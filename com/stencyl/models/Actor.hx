@@ -311,7 +311,6 @@ class Actor extends Sprite
 		}
 		
 		//---
-		
 		this.x = 0;
 		this.y = 0;
 		this.rotation = 0;		
@@ -1388,6 +1387,12 @@ class Actor extends Sprite
 				colY = realY - Math.floor(cacheHeight/2) - currOffset.y;				
 				
 				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);						
+			}
+			
+			else if (activePositionTweens > 0)
+			{
+				colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
+				colY = realY - Math.floor(cacheHeight/2) - currOffset.y;
 			}
 			
 			if(rSpeed != 0)
@@ -2924,6 +2929,9 @@ class Actor extends Sprite
 	public function onTweenPositionComplete()
 	{
 		activePositionTweens--;
+		
+		colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
+		colY = realY - Math.floor(cacheHeight/2) - currOffset.y;
 	}
 	
 	
