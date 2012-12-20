@@ -580,11 +580,19 @@ class G
  	 		
 			temp2.copyPixels(img, rect2, point2, temp, null, true);
 			img = temp2;
+			
+			graphics.beginBitmapFill(img, mtx);
+ 	 	}
+ 	 	
+ 	 	//TODO: This is pretty wasteful but some weird caching bug if we don't do it.
+ 	 	//http://community.stencyl.com/index.php/topic,13870.new.html#new
+ 	 	else
+ 	 	{
+ 	 		graphics.beginBitmapFill(img.clone(), mtx);
  	 	}
   		
-  		graphics.beginBitmapFill(img, mtx);
 		graphics.drawRect(point.x, point.y, img.width, img.height);
-	 	graphics.endFill();		
+	 	graphics.endFill();
 		#end
 		
 		//TODO: Can't get alpha to work in this setup.
