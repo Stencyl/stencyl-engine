@@ -569,7 +569,12 @@ class G
 	 	graphics.endFill();		
 		#end
 		
+		//TODO: Can't get alpha to work in this setup.
+		//USe some print statements to probe if the tilesheet is actually picking up the alpha values.
+		//also check on what a valid alpha value would be
+		
 		//TODO: Very wasteful to make a new tilesheet each time!
+		//Actually, this isn't used as much as we think. For actor drawing, it's done in SheetAnimation.
 		#if (cpp)
 		var sheet = new Tilesheet(img);
 		sheet.addTileRect(rect, point2);
@@ -581,17 +586,15 @@ class G
 		if (angle != 0)
 		{
 			data[3] = angle;
-			data[4] = alpha;
+			data[4] = toARGB(0x000000, Std.int(alpha * 255));
 			sheet.drawTiles(canvas.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_ROTATION | Tilesheet.TILE_ALPHA);
 		}
 		
 		else
 		{
-			data[3] = alpha;
+			data[3] = toARGB(0x000000, Std.int(alpha * 255));
 			sheet.drawTiles(canvas.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_ALPHA);
 		}
-  		
-  		//TODO: Can't get alpha to work in this setup.
 		#end
 	}
 	

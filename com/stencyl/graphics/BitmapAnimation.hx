@@ -143,7 +143,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		bitmapData.copyPixels(sheet, region, pt);
 	}
 	
-	public inline function draw(g:G, x:Float, y:Float, angle:Float)
+	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
 		g.drawImage(bitmapData, x, y, angle);
 	}

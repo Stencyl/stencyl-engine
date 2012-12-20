@@ -155,15 +155,16 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
   		#end
 	}
 	
-	public inline function draw(g:G, x:Float, y:Float, angle:Float)
+	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
 		#if !js
 		data[0] = x;
 		data[1] = y;
 		data[2] = frameIndex;
 		data[3] = angle;
-
-  		tilesheet.drawTiles(g.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_ROTATION);
+		data[4] = alpha;
+		
+  		tilesheet.drawTiles(g.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_ROTATION | Tilesheet.TILE_ALPHA);
   		#end
 	}
 	
