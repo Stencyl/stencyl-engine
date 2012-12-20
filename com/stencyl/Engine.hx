@@ -2748,7 +2748,8 @@ class Engine
 					g.canvas = layer.bitmapOverlay;
 					#end		
 	     			
-					g.translateToActor(a);			
+					g.translateToActor(a);
+					g.resetGraphicsSettings();		
 					Engine.invokeListeners4(a.whenDrawingListeners, g, 0, 0);
 				}
 			}
@@ -2793,6 +2794,7 @@ class Engine
      	g.canvas.graphics.clear();
      	#end
      	
+     	g.resetGraphicsSettings();
      	Engine.invokeListeners4(whenDrawingListeners, g, 0, 0);
 		
 		//Draw Transitions

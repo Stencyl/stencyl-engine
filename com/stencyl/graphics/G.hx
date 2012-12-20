@@ -116,6 +116,15 @@ class G
 		//defaultFont.font = new BitmapFont("assets/graphics/default-font.png", 16, 16, BitmapFont.TEXT_SET25, 55, 0, 0);
 	}
 	
+	 public inline function resetGraphicsSettings():Void
+     {
+     	alpha = 1;
+     	strokeSize = 0;
+		fillColor = 0x000000;
+		strokeColor = 0x000000;
+		font = defaultFont;
+     }
+	
 	public inline function setFont(newFont:Font)
 	{
 		if(newFont != null && newFont != font)
