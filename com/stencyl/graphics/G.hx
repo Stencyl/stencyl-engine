@@ -255,8 +255,17 @@ class G
 		
 		if(drawActor)
 		{
-			drawX = this.x + x * scaleX + Engine.cameraX;
-			drawY = this.y + y * scaleY + Engine.cameraY;
+			if(actor != null && actor.isHUD)
+			{
+				drawX = this.x + x * scaleX;
+				drawY = this.y + y * scaleY;
+			}
+			
+			else
+			{
+				drawX = this.x + x * scaleX + Engine.cameraX;
+				drawY = this.y + y * scaleY + Engine.cameraY;
+			}
 		}
 		
 		else
@@ -499,8 +508,17 @@ class G
 		//Why this has to be treated differently (add camera coords), I don't know...
 		if(drawActor)
 		{
-			point.x = this.x + x + Engine.cameraX;
-			point.y = this.y + y + Engine.cameraY;	
+			if(actor != null && actor.isHUD)
+			{
+				point.x = this.x + x;
+				point.y = this.y + y;	
+			}
+			
+			else
+			{
+				point.x = this.x + x + Engine.cameraX;
+				point.y = this.y + y + Engine.cameraY;	
+			}
 		}
 		
 		else
