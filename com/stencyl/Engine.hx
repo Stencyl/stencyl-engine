@@ -1997,6 +1997,9 @@ class Engine
 			return;
 		}
 		
+		//Update Tweens - Synced to engine
+		com.eclecticdesignstudio.motion.actuators.SimpleActuator.shape_onEnterFrame(null);
+		
 		if(!NO_PHYSICS)
 		{
 			var aabb = world.getScreenBounds();
