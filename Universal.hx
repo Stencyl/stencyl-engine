@@ -18,7 +18,11 @@ class Universal extends Sprite
 		#if flash
 		if(!scripts.MyAssets.releaseMode)
 		{
-			com.nmefermmmtools.debug.Console.create(true, 192, false);
+			#if (flash9 || flash10)
+        	haxe.Log.trace = function(v,?pos) { untyped __global__["trace"]("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"):",v); }
+        	#else
+       		haxe.Log.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
+        	#end
 		}
 		#end
 
