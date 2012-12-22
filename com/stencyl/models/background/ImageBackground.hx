@@ -69,6 +69,11 @@ class ImageBackground extends Resource, implements Background
 		var th:Float = img.height;
 		var rect = new Rectangle(0, 0, tw, th);
 		
+		if (tw >= screenWidth && th >= screenHeight)
+		{
+			repeated = true;
+			return;
+		}
 		
 		//So it doesn't cutoff, extend width/height
 		if (tw < screenWidth)
