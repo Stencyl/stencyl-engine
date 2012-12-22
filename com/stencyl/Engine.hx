@@ -1500,7 +1500,7 @@ class Engine
 	{
 		trace("Request to switch to Scene " + sceneID);
 
-		if(isTransitioning())
+		if(isTransitioningOut())
 		{
 			trace("Warning: Switching Scene while already switching. Ignoring.");
 			return;
@@ -1560,6 +1560,16 @@ class Engine
 		}
 			
 		else if(leave != null && leave.isActive())
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public function isTransitioningOut():Bool
+	{			
+		if(leave != null && leave.isActive())
 		{
 			return true;
 		}
@@ -1850,6 +1860,8 @@ class Engine
 				{
 					actor.createTime = Lib.getTimer();
 				
+					actor.dead = false;
+					actor.dying = false;
 					actor.recycled = false;
 					actor.killLeaveScreen = false;
 					actor.switchToDefaultAnimation();						
@@ -2318,6 +2330,9 @@ class Engine
 
 		if(leave != null)
 		{
+			//Update here, or you can have a transition that fails to finish
+			com.eclecticdesignstudio.motion.actuators.SimpleActuator.shape_onEnterFrame(null);
+		
 			if(leave.isComplete())
 			{
 				leave.stop();
