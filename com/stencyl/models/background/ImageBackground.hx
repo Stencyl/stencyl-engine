@@ -23,6 +23,7 @@ class ImageBackground extends Resource, implements Background
 	public var parallaxY:Float;
 	
 	public var repeats:Bool;
+	public var repeated:Bool;
 		
 	public function new
 	(
@@ -49,6 +50,8 @@ class ImageBackground extends Resource, implements Background
 		{
 			loadGraphics();		
 		}
+		
+		repeated = false;
 	}	
 	
 	public function update()
@@ -66,15 +69,16 @@ class ImageBackground extends Resource, implements Background
 		var th:Float = img.height;
 		var rect = new Rectangle(0, 0, tw, th);
 		
+		
 		//So it doesn't cutoff, extend width/height
 		if (tw < screenWidth)
 		{
-			screenWidth += screenWidth % Std.int(tw);
+			screenWidth += Std.int(tw) - (screenWidth % Std.int(tw));
 		}
 		
 		if (th < screenHeight)
 		{
-			screenHeight += screenHeight % Std.int(th);
+			screenHeight += Std.int(th) - (screenHeight % Std.int(th));
 		}
 		
 		var texture = new BitmapData(screenWidth, screenHeight);
@@ -89,6 +93,8 @@ class ImageBackground extends Resource, implements Background
 		
 		bitmap.setImage(texture);
 		this.img = texture;
+		
+		repeated = true;
 	}
 	
 	//For Atlases

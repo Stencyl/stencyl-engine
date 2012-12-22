@@ -779,7 +779,7 @@ class Engine
             return;
 		}
 		
-		if(background.repeats)
+		if(background.repeats && !background.repeated)
 		{
 			background.drawRepeated(backImg, Std.int(screenWidth * Engine.SCALE), Std.int(screenHeight * Engine.SCALE));
 		}
