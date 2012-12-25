@@ -1,5 +1,7 @@
 package com.stencyl.models;
 
+import com.stencyl.behavior.TimedTask;
+
 import com.stencyl.models.collision.CollisionInfo;
 import com.stencyl.models.collision.Masklist;
 import flash.geom.Transform;
@@ -48,6 +50,7 @@ import com.eclecticdesignstudio.motion.easing.Quad;
 import com.eclecticdesignstudio.motion.easing.Quart;
 import com.eclecticdesignstudio.motion.easing.Quint;
 import com.eclecticdesignstudio.motion.easing.Sine;
+import com.eclecticdesignstudio.motion.actuators.GenericActuator;
 
 import box2D.dynamics.B2Body;
 import box2D.dynamics.B2BodyDef;
@@ -2867,7 +2870,7 @@ class Actor extends Sprite
 		}
 		
 		activeAngleTweens++;
-	
+		
 		if(isLightweight)
 		{
 			Actuate.tween(this, duration, {realAngle:angle}).ease(easing).onComplete(onTweenAngleComplete);
@@ -2877,6 +2880,25 @@ class Actor extends Sprite
 		{
 			Actuate.tween(tweenAngle, duration, {angle:angle}).ease(easing).onComplete(onTweenAngleComplete);
 		}
+		
+		//Lock to final value to make up for lack of full syncing
+		var toExecute = function(timeTask:TimedTask):Void
+		{
+			if(isLightweight)
+			{
+				Actuate.stop(this, "realAngle", true, true);
+			}
+			
+			else
+			{
+				Actuate.stop(tweenAngle, "angle", true, true);
+			}
+			
+			setAngle(Utils.RAD * angle);
+		};
+		
+		var t:TimedTask = new TimedTask(toExecute, Std.int(duration * 1000) - 1, false, this);
+		engine.addTask(t);
 	}
 	
 	public function moveTo(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
@@ -2900,6 +2922,29 @@ class Actor extends Sprite
 		{
 			Actuate.tween(tweenLoc, duration, {x:x, y:y}).ease(easing).onComplete(onTweenPositionComplete);
 		}
+		
+		//Lock to final value to make up for lack of full syncing
+		var toExecute = function(timeTask:TimedTask):Void
+		{
+			if(isLightweight)
+			{
+				Actuate.stop(this, ["realX", "realY"], true, true);
+			}
+			
+			else
+			{
+				Actuate.stop(tweenLoc, ["x", "y"], true, true);
+			}
+			
+			setX(x);
+			setY(y);
+			
+			colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
+			colY = realY - Math.floor(cacheHeight/2) - currOffset.y;
+		};
+		
+		var t:TimedTask = new TimedTask(toExecute, Std.int(duration * 1000) - 1, false, this);
+		engine.addTask(t);
 	}
 	
 	//In degrees
