@@ -107,7 +107,9 @@ class TileLayer extends Sprite
 			true, 
 			false,
 			false, 
-			grid
+			grid,
+			-1,
+			Engine.NO_PHYSICS
 		);
 		
 		a.name = "Terrain";
