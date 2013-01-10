@@ -2836,7 +2836,30 @@ class Actor extends Sprite
 	
 	public function cancelTweens()
 	{
-		Actuate.stop(this);
+		/*trace("Before");
+		for(item in Actuate.getLibrary(this))
+		{
+			trace(item.duration);
+		}*/
+		
+		Actuate.stop(this, ["alpha", "realScaleX", "realScaleY"]);
+		
+		if(isLightweight)
+		{
+			Actuate.stop(this, ["realAngle", "realX", "realY"]);
+		}
+		
+		else
+		{
+			Actuate.stop(tweenAngle);
+			Actuate.stop(tweenLoc);
+		}
+		
+		/*trace("After");
+		for(item in Actuate.getLibrary(this))
+		{
+			trace(item.duration);
+		}*/
 	}
 	
 	public function fadeTo(value:Float, duration:Float = 1, easing:Dynamic = null)
@@ -2881,8 +2904,9 @@ class Actor extends Sprite
 			Actuate.tween(tweenAngle, duration, {angle:angle}).ease(easing).onComplete(onTweenAngleComplete);
 		}
 		
+		//Taken out because people said it's buggy.
 		//Lock to final value to make up for lack of full syncing
-		var toExecute = function(timeTask:TimedTask):Void
+		/*var toExecute = function(timeTask:TimedTask):Void
 		{
 			if(isLightweight)
 			{
@@ -2898,7 +2922,7 @@ class Actor extends Sprite
 		};
 		
 		var t:TimedTask = new TimedTask(toExecute, Std.int(duration * 1000) - 1, false, this);
-		engine.addTask(t);
+		engine.addTask(t);*/
 	}
 	
 	public function moveTo(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
@@ -2923,8 +2947,9 @@ class Actor extends Sprite
 			Actuate.tween(tweenLoc, duration, {x:x, y:y}).ease(easing).onComplete(onTweenPositionComplete);
 		}
 		
+		//Taken out because people said it's buggy.
 		//Lock to final value to make up for lack of full syncing
-		var toExecute = function(timeTask:TimedTask):Void
+		/*var toExecute = function(timeTask:TimedTask):Void
 		{
 			if(isLightweight)
 			{
@@ -2944,7 +2969,7 @@ class Actor extends Sprite
 		};
 		
 		var t:TimedTask = new TimedTask(toExecute, Std.int(duration * 1000) - 1, false, this);
-		engine.addTask(t);
+		engine.addTask(t);*/
 	}
 	
 	//In degrees
