@@ -1518,8 +1518,8 @@ class Actor extends Sprite
 		var b:Bool = activeAngleTweens > 0;
 				
 		if(autoScale && !isLightweight && body != null && bodyDef.type != B2Body.b2_staticBody && (bodyScale.x != realScaleX || bodyScale.y != realScaleY))
-		{
-			if(realScaleX > 0 && realScaleY > 0)
+		{			
+			if (realScaleX != 0 && realScaleY != 0)
 			{
 				scaleBody(realScaleX, realScaleY);
 			}
@@ -1580,16 +1580,17 @@ class Actor extends Sprite
 			var center:B2Vec2 = body.getLocalCenter();
 			if(Std.is(poly, B2CircleShape))
 			{
-				var factor:Float = (1 / bodyScale.x) * width;					
+				var factorX:Float = (1 / bodyScale.x) * width;					
+				var factorY:Float = (1 / bodyScale.y) * height;
 				
 				var p:B2Vec2 = cast(poly, B2CircleShape).m_p;
 				p.subtract(center);
-				p.x = p.x * factor;
-				p.y = p.y * factor;	
+				p.x = p.x * factorX;
+				p.y = p.y * factorY;	
 								
 				cast(poly, B2CircleShape).m_p = center.copy();
 				cast(poly, B2CircleShape).m_p.add(p);
-				poly.m_radius = poly.m_radius * factor;								
+				poly.m_radius = poly.m_radius * factorX;								
 			}
 
 			else if(Std.is(poly, B2PolygonShape))
@@ -1608,8 +1609,14 @@ class Actor extends Sprite
 
 					newVerts.push(newVert);
 				}
+				
+				//Even necessary?
+				if (width < 0 || height < 0)
+				{
+					newVerts.reverse();
+				}
 
-				cast(poly, B2PolygonShape).setAsArray(newVerts, newVerts.length);   					
+				cast(poly, B2PolygonShape).setAsArray(newVerts, newVerts.length);   				
 			}
 		}	
 		
