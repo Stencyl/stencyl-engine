@@ -1590,7 +1590,7 @@ class Actor extends Sprite
 								
 				cast(poly, B2CircleShape).m_p = center.copy();
 				cast(poly, B2CircleShape).m_p.add(p);
-				poly.m_radius = poly.m_radius * factorX;								
+				poly.m_radius = poly.m_radius * Math.abs(factorX);								
 			}
 
 			else if(Std.is(poly, B2PolygonShape))
@@ -1601,8 +1601,18 @@ class Actor extends Sprite
 				for (v in verts)
 				{
 					v.subtract(center);
-					v.x = v.x * (1 / bodyScale.x) * width;
-					v.y = v.y * (1 / bodyScale.y) * height;	
+					v.x = v.x * (1 / Math.abs(bodyScale.x)) * Math.abs(width);
+					v.y = v.y * (1 / Math.abs(bodyScale.y)) * Math.abs(height);	
+					
+					if ((bodyScale.x > 0 && width < 0) || (bodyScale.x < 0 && width > 0))
+					{
+						v.x = -v.x;
+					}
+					
+					if ((bodyScale.y > 0 && height < 0) || (bodyScale.y < 0 && height > 0))
+					{
+						v.y = -v.y;
+					}
 					
 					var newVert:B2Vec2 = center.copy();
 					newVert.add(v);
@@ -1610,8 +1620,7 @@ class Actor extends Sprite
 					newVerts.push(newVert);
 				}
 				
-				//Even necessary?
-				if (width < 0 || height < 0)
+				if ((bodyScale.x > 0 && width < 0) || (bodyScale.x < 0 && width > 0) || (bodyScale.y > 0 && height < 0) || (bodyScale.y < 0 && height > 0))
 				{
 					newVerts.reverse();
 				}
