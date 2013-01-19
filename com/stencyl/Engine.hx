@@ -1616,8 +1616,21 @@ class Engine
 		);
 
 		if(ai.angle != 0)
-		{
-			a.setAngle(ai.angle, false);
+		{								
+			if (a.currOffset.x != 0 || a.currOffset.y != 0)
+			{
+				var resetOrigX:Int = Std.int(a.currOrigin.x);
+				var resetOrigY:Int = Std.int(a.currOrigin.y);
+				
+				a.setOriginPoint(Std.int(a.cacheWidth / 2), Std.int(a.cacheHeight / 2));
+				a.setAngle(ai.angle, false);
+				a.setOriginPoint(resetOrigX, resetOrigY);
+			}
+			
+			else
+			{
+				a.setAngle(ai.angle, false);
+			}
 		}	
 		
 		if(ai.scaleX != 1 || ai.scaleY != 1)
