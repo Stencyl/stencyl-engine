@@ -1380,8 +1380,8 @@ class Actor extends Sprite
 			if (!ignoreGravity && !isHUD)
 			{
 				//TODO: Adjust?
-				xSpeed += elapsedTime * engine.scene.gravityX * 0.001;
-				ySpeed += elapsedTime * engine.scene.gravityY * 0.001;
+				xSpeed += elapsedTime * engine.gravityX * 0.001;
+				ySpeed += elapsedTime * engine.gravityY * 0.001;
 			}
 			
 			if(xSpeed != 0 || ySpeed != 0)
@@ -1713,13 +1713,15 @@ class Actor extends Sprite
 				d.thisShape = thisShape;
 				d.actorA = a1;
 				d.actorB = a2;
-				
+
 				//TODO: No longer need to remake. Use a shared instance.
 				//var manifold = new B2WorldManifold();
 				p.getWorldManifold(manifold);
 				
 				var pt = manifold.getPoint();
 				var cp:CollisionPoint;
+				
+				trace(manifold.getPoint().x + " - " + manifold.getPoint().y);
 				
 				if(pt == null)
 				{

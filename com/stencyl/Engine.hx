@@ -159,6 +159,8 @@ class Engine
 	//*-----------------------------------------------
 	
 	public var world:B2World;
+	public var gravityX:Float;
+	public var gravityY:Float;
 	
 	private var physicalWidth:Float;
 	private var physicalHeight:Float;
@@ -722,6 +724,12 @@ class Engine
 		if(!NO_PHYSICS)
 		{									
 			initPhysics();
+		}
+		
+		else
+		{
+			gravityX = scene.gravityX;
+			gravityY = scene.gravityY;
 		}
 		
 		loadBackgrounds();
@@ -1813,12 +1821,18 @@ class Engine
 		a.recycled = true;
 		a.killLeaveScreen = false;
 		//a.setFilter(null);
+		
 		a.cancelTweens();
+		
 		//Only the fading is necessary. Don't fully understand why...
 		//a.moveTo(1000000, 1000000, 0.01);
-		//a.growTo(1, 1, 0.01);
+		//a.growTo(1, 1, 0.02);
 		//a.spinTo(0, 0.01);
 		a.fadeTo(1, 0.01);
+		
+		a.realScaleX = 1;
+		a.realScaleY = 1;
+		
 		a.switchToDefaultAnimation();
 		a.disableActorDrawing();
 		

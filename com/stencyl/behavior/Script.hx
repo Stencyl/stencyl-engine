@@ -101,6 +101,8 @@ class Script
 	public static var mpy:Float = 0;
 	public static var mrx:Float = 0;
 	public static var mry:Float = 0;
+	
+	public static var dummyVec:B2Vec2 = new B2Vec2();
 		
 		
 	//*-----------------------------------------------
@@ -1663,12 +1665,32 @@ class Script
 	
 	public function setGravity(x:Float, y:Float)
 	{
-		engine.world.setGravity(new B2Vec2(x, y));
+		if(engine.world == null)
+		{
+			engine.gravityX = x;
+			engine.gravityY = y;
+		}
+		
+		else
+		{
+			engine.world.setGravity(new B2Vec2(x, y));
+		}
 	}
 
 	public function getGravity():B2Vec2
 	{
-		return engine.world.getGravity();
+		if(engine.world == null)
+		{
+			dummyVec.x = engine.gravityX;
+			dummyVec.y = engine.gravityY;
+			
+			return dummyVec;
+		}
+		
+		else
+		{
+			return engine.world.getGravity();
+		}
 	}
 
 	public function enableContinuousCollisions()
