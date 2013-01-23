@@ -755,29 +755,38 @@ class Scene
 				
 				else
 				{
-					layer.setTileAt(row, col, tset.tiles[tileID]);
-					
-					if(tset.tiles[tileID].collisionID > 0)
-					{
-						grid.setTile(col, row, true);
-					}
-
 					var tile = tset.tiles[tileID];
 					
-					if (tile != null && tile.pixels != null)
+					if(tile == null)
 					{
-						var inList:Bool = false;
-						
-						for (checkTile in animatedTiles)
-						{
-							if (inList = (checkTile == tile)) break;
-						}
-						
-						if (!inList)
-						{
-							animatedTiles.push(tile);
-						}
+						layer.setTileAt(row, col, null);
 					}
+					
+					else
+					{
+						layer.setTileAt(row, col, tile);
+
+						if(tile.collisionID > 0)
+						{
+							grid.setTile(col, row, true);
+						}
+						
+						if(tile.pixels != null)
+						{
+							var inList:Bool = false;
+							
+							for(checkTile in animatedTiles)
+							{
+								if(inList = (checkTile == tile)) 
+									break;
+							}
+							
+							if(!inList)
+							{
+								animatedTiles.push(tile);
+							}
+						}
+					}	
 				}
 				
 				col++;
