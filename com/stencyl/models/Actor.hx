@@ -1721,7 +1721,7 @@ class Actor extends Sprite
 				var pt = manifold.getPoint();
 				var cp:CollisionPoint;
 				
-				trace(manifold.getPoint().x + " - " + manifold.getPoint().y);
+				//trace(manifold.getPoint().x + " - " + manifold.getPoint().y);
 				
 				if(pt == null)
 				{
