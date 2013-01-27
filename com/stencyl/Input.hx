@@ -225,8 +225,8 @@ class Input
 	        #end
 	        
 	        #if(mobile && !air)
-			var gestures = HyperTouch.getInstance();
-			gestures.addEventListener(GestureSwipeEvent.SWIPE, onSwipe, false);
+			//var gestures = HyperTouch.getInstance();
+			//gestures.addEventListener(GestureSwipeEvent.SWIPE, onSwipe, false);
 			#end
 			
 			swipeDirection = -1;
