@@ -2803,14 +2803,14 @@ class Actor extends Sprite
 		
 		if(isHUD)
 		{
-			mx = (Input.mouseX) / Engine.SCALE;
-		 	my = (Input.mouseY) / Engine.SCALE;
+			mx = (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX;
+		 	my = (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY;
 		}
 		
 		else
 		{
-			mx = (Input.mouseX - Engine.cameraX) / Engine.SCALE;
-		 	my = (Input.mouseY - Engine.cameraY) / Engine.SCALE;
+			mx = (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX - Engine.cameraX / Engine.SCALE;
+		 	my = (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY - Engine.cameraY / Engine.SCALE;
 		}
 		
 		//TODO: Mike - Make this work with arbitrary origin points

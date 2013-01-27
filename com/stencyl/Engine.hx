@@ -2048,24 +2048,27 @@ class Engine
 			aabb.upperBound.y = aabb.lowerBound.y + ((Engine.screenHeight + paddingBottom + paddingTop) / physicsScale);
 		}
 				
+		var inputx = (Input.mouseX / Engine.SCALE - root.x) * root.scaleX;
+		var inputy = (Input.mouseY / Engine.SCALE - root.y) * root.scaleY;
+				
 		if(Input.mousePressed)
 		{
-			Script.mpx = Input.mouseX / SCALE;
-			Script.mpy = Input.mouseY / SCALE;
+			Script.mpx = inputx;
+			Script.mpy = inputy;
 			invokeListeners(whenMousePressedListeners);
 		}
 		
 		if(Input.mouseReleased)
 		{
-			Script.mrx = Input.mouseX / SCALE;
-			Script.mry = Input.mouseY / SCALE;
+			Script.mrx = inputx;
+			Script.mry = inputy;
 			invokeListeners(whenMouseReleasedListeners);
 		}
 
-		if(mx != Input.mouseX / SCALE || my != Input.mouseY / SCALE)
+		if(mx != inputx || my != inputy)
 		{
-			mx = Input.mouseX / SCALE;
-			my = Input.mouseY / SCALE;
+			mx = inputx;
+			my = inputy;
 			
 			invokeListeners(whenMouseMovedListeners);
 			
