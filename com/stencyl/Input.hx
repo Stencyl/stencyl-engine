@@ -200,6 +200,22 @@ class Input
 		
 		return -1;
 	}
+	
+	public static function enableSwipeDetection()
+	{
+		#if(mobile && !air)
+		var gestures = HyperTouch.getInstance();
+		gestures.addEventListener(GestureSwipeEvent.SWIPE, onSwipe, false);
+		#end
+	}
+	
+	public static function disableSwipeDetection()
+	{
+		#if(mobile && !air)
+		var gestures = HyperTouch.getInstance();
+		gestures.removeEventListener(GestureSwipeEvent.SWIPE, onSwipe, false);
+		#end
+	}
 
 	public static function enable()
 	{
