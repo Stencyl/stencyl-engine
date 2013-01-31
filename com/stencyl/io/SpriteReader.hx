@@ -325,8 +325,22 @@ class SpriteReader implements AbstractReader
 				
 				edge.m_hasVertex0 = true;
 				edge.m_hasVertex3 = true;
-				edge.m_v0 = vertices[(i-1)%vertices.length];
-				edge.m_v3 = vertices[(i+2)%vertices.length];
+				
+				var v0 = vertices[(i-1)%vertices.length];
+				var v3 = vertices[(i+2)%vertices.length];
+				
+				if(v0 == null)
+				{
+					v0 = vertices[vertices.length - 1];
+				}
+				
+				if(v3 == null)
+				{
+					v3 = vertices[0];
+				}
+				
+				edge.m_v0 = v0;
+				edge.m_v3 = v3;
 			}
 
 			/*for(i in 0...vertices.length + 1)
