@@ -320,6 +320,11 @@ class SpriteReader implements AbstractReader
 
 			for(i in 0...vertices.length + 1)
 			{
+				//Uncomment this to enable edge shapes
+				//var edge:B2EdgeShape = new B2EdgeShape(vertices[i%vertices.length], vertices[(i+1)%vertices.length]);
+				//arr.push(edge);
+				
+				//Comment this out when enabling edge shapes
 				var poly = B2PolygonShape.asEdge(vertices[i%vertices.length], vertices[(i+1)%vertices.length]);
 				arr.push(poly);
 			}
