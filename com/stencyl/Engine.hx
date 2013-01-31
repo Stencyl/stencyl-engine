@@ -866,7 +866,7 @@ class Engine
 					
 					if(type == "list")
 					{
-						attributes.set(key, new Attribute(ID, attribute.fieldName, attribute.fullName, [], type, null));
+						attributes.set(key, new Attribute(ID, attribute.fieldName, attribute.fullName, [], type, null, attribute.hidden));
 					}
 				}
 			}
@@ -898,7 +898,7 @@ class Engine
 				var type:String = attribute.type;
 				var ID:Int = attribute.ID;
 				
-				attributes.set(key, new Attribute(ID, attribute.fieldName, attribute.fullName, value, type, null));
+				attributes.set(key, new Attribute(ID, attribute.fieldName, attribute.fullName, value, type, null, attribute.hidden));
 			}
 			
 			if(template == null)

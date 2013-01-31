@@ -107,6 +107,12 @@ class Behavior
 		{
 			try
 			{
+				//don't init hidden attributes, they are initialized with the default value in the constructor		
+				if (a.hidden)
+				{
+					continue;
+				}
+				
 				if(a.type == "actor" && a.fieldName == "actor" && Std.is(script, ActorScript))
 				{
 					continue;

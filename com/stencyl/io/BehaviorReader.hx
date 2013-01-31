@@ -87,6 +87,7 @@ class BehaviorReader
 		var ID:Int = Std.parseInt(xml.att.id);
 		var fieldName:String = xml.att.name;
 		var fullName:String = xml.att.fullname;
+		var hidden:Bool = xml.att.hidden == "true";
 		var defaultValue:String = "";
 		
 		try
@@ -100,6 +101,6 @@ class BehaviorReader
 		
 		var type:String = xml.name;
 		
-		return new Attribute(ID, fieldName, fullName, defaultValue, type, null);
+		return new Attribute(ID, fieldName, fullName, defaultValue, type, null, hidden);
 	}
 }

@@ -14,8 +14,10 @@ class Attribute
 	
 	public var realValue:Dynamic;
 	public var parent:Dynamic;
+
+	public var hidden:Bool;
 	
-	public function new(ID:Int, fieldName:String, fullName:String, value:Dynamic, type:String, parent:Dynamic)
+	public function new(ID:Int, fieldName:String, fullName:String, value:Dynamic, type:String, parent:Dynamic, hidden:Bool)
 	{
 		this.ID = ID;
 		this.fieldName = fieldName;
@@ -24,6 +26,8 @@ class Attribute
 
 		this.value = value;
 		realValue = null;
+		
+		this.hidden = hidden;
 	}
 	
 	public function getRealValue():Dynamic
