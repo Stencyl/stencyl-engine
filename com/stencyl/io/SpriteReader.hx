@@ -317,8 +317,19 @@ class SpriteReader implements AbstractReader
 			h = getHeight(vertices);
 			
 			var arr = new Array<Dynamic>();
-
+			
 			for(i in 0...vertices.length + 1)
+			{
+				var edge:B2EdgeShape = new B2EdgeShape(vertices[i%vertices.length], vertices[(i+1)%vertices.length]);
+				arr.push(edge);
+				
+				edge.m_hasVertex0 = true;
+				edge.m_hasVertex3 = true;
+				edge.m_v0 = vertices[(i-1)%vertices.length];
+				edge.m_v3 = vertices[(i+2)%vertices.length];
+			}
+
+			/*for(i in 0...vertices.length + 1)
 			{
 				//Uncomment this to enable edge shapes
 				var edge:B2EdgeShape = new B2EdgeShape(vertices[i%vertices.length], vertices[(i+1)%vertices.length]);
@@ -327,7 +338,7 @@ class SpriteReader implements AbstractReader
 				//Comment this out when enabling edge shapes
 				//var poly = B2PolygonShape.asEdge(vertices[i%vertices.length], vertices[(i+1)%vertices.length]);
 				//arr.push(poly);
-			}
+			}*/
 			
 			var toReturn = new IntHash<Dynamic>();
 			toReturn.set(0, arr);
