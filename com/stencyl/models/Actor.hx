@@ -2803,14 +2803,26 @@ class Actor extends Sprite
 		
 		if(isHUD)
 		{
+			//on flash/desktop adjust for full screen mode
+			#if(!js && !mobile)
 			mx = (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX;
 		 	my = (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY;
+		 	#else
+		 	mx = Input.mouseX / Engine.SCALE;
+		 	my = Input.mouseY / Engine.SCALE;
+		 	#end
 		}
 		
 		else
 		{
+			//on flash/desktop adjust for full screen mode
+			#if(!js && !mobile)
 			mx = (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX - Engine.cameraX / Engine.SCALE;
 		 	my = (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY - Engine.cameraY / Engine.SCALE;
+		 	#else
+		 	mx = (Input.mouseX - Engine.cameraX) / Engine.SCALE;
+		 	my = (Input.mouseY - Engine.cameraY) / Engine.SCALE;
+		 	#end
 		}
 		
 		//TODO: Mike - Make this work with arbitrary origin points

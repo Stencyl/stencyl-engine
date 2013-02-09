@@ -1503,22 +1503,42 @@ class Script
 	
 	public function getMouseX():Float
 	{
+		//on flash/desktop adjust for full screen mode
+		#if(!js && !mobile)
 		return (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX;
+		#else
+		return Input.mouseX / Engine.SCALE;
+		#end
 	}
 
 	public function getMouseY():Float
 	{
+		//on flash/desktop adjust for full screen mode
+		#if(!js && !mobile)
 		return (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY;
+		#else
+		return Input.mouseY / Engine.SCALE;
+		#end
 	}
 	
 	public function getMouseWorldX():Float
 	{
+		//on flash/desktop adjust for full screen mode
+		#if(!js && !mobile)
 		return (Input.mouseX / Engine.SCALE + Engine.cameraX - Engine.engine.root.x) / Engine.engine.root.scaleX;
+		#else
+		return Input.mouseX / Engine.SCALE + Engine.cameraX;
+		#end
 	}
 	
 	public function getMouseWorldY():Float
 	{
+		//on flash/desktop adjust for full screen mode
+		#if(!js && !mobile)
 		return (Input.mouseY / Engine.SCALE + Engine.cameraY - Engine.engine.root.y) / Engine.engine.root.scaleY;
+		#else
+		return Input.mouseY / Engine.SCALE + Engine.cameraY;
+		#end
 	}
 	
 	public function getMousePressedX():Float

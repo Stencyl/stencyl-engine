@@ -2047,10 +2047,16 @@ class Engine
 			aabb.upperBound.x = aabb.lowerBound.x + ((Engine.screenWidth + paddingRight + paddingLeft) / physicsScale);
 			aabb.upperBound.y = aabb.lowerBound.y + ((Engine.screenHeight + paddingBottom + paddingTop) / physicsScale);
 		}
-				
+		
+		//on flash/desktop adjust for full screen mode		
+		#if(!js && !mobile)
 		var inputx = (Input.mouseX / Engine.SCALE - root.x) * root.scaleX;
 		var inputy = (Input.mouseY / Engine.SCALE - root.y) * root.scaleY;
-				
+		#else
+		var inputx = Input.mouseX / Engine.SCALE;
+		var inputy = Input.mouseY / Engine.SCALE;
+		#end
+						
 		if(Input.mousePressed)
 		{
 			Script.mpx = inputx;
