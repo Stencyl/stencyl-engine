@@ -327,7 +327,7 @@ class Actor extends Sprite
 		originX = 0;
 		originY = 0;
 		collidable = true;
-		solid = true;
+		solid = !isSensor;
 		updateMatrix = true;
 		
 		if(isLightweight)
@@ -459,7 +459,7 @@ class Actor extends Sprite
 						a.originY,
 						a.durations, 
 						a.looping,
-						a.shapes
+						isLightweight?a.simpleShapes:a.physicsShapes
 					);
 					
 					if(a.animID == s.defaultAnimation)
@@ -670,11 +670,11 @@ class Actor extends Sprite
 		{
 			var arr = new Array<Dynamic>();
 			
-			if (Engine.NO_PHYSICS)
+			if (isLightweight)
 			{
 				for(s in shapes)
 				{				
-					if (Std.is(s, Hitbox) && Engine.NO_PHYSICS)
+					if (Std.is(s, Hitbox) && isLightweight)
 					{		
 						s = cast(s, Hitbox).clone();
 						s.assignTo(this);
@@ -692,8 +692,7 @@ class Actor extends Sprite
 				}
 			}
 			
-			//TODO: Readd lightweight
-			if (Engine.NO_PHYSICS)
+			if (isLightweight)
 			{
 				shapeMap.set(name, new Masklist(arr));
 			}
@@ -1224,7 +1223,7 @@ class Actor extends Sprite
 				}
 			}	
 						
-			else if(shapeMap.get(name) != null && Engine.NO_PHYSICS)
+			else if(shapeMap.get(name) != null && isLightweight)
 			{
 				//Get hitbox list for Simple Physics
 				setShape(shapeMap.get(name));

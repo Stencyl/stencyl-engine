@@ -9,7 +9,8 @@ class Animation
 	public var animName:String;
 	
 	public var parentID:Int;
-	public var shapes:IntHash<Dynamic>;
+	public var simpleShapes:IntHash<Dynamic>;
+	public var physicsShapes:IntHash<Dynamic>;
 	public var looping:Bool;
 	public var sync:Bool;
 	public var durations:Array<Int>;
@@ -34,7 +35,8 @@ class Animation
 		animID:Int,
 		animName:String,
 		parentID:Int, 
-		shapes:IntHash<Dynamic>, 
+		simpleShapes:IntHash<Dynamic>, 
+		physicsShapes:IntHash<Dynamic>, 
 		looping:Bool, 
 		sync:Bool,
 		imgWidth:Int,
@@ -51,7 +53,8 @@ class Animation
 		this.animName = animName;
 		
 		this.parentID = parentID;
-		this.shapes = shapes;
+		this.simpleShapes = simpleShapes;
+		this.physicsShapes = physicsShapes;
 		this.looping = looping;
 		this.sync = sync;
 		this.durations = durations;
