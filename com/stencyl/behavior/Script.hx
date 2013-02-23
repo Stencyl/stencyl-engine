@@ -2143,7 +2143,14 @@ class Script
 	 */
 	public function randomInt(low:Float, high:Float):Int
 	{
-		return Std.int(low) + Math.floor(randomFloat() * (Std.int(high) - Std.int(low) + 1));
+		if (low <= high)
+		{
+			return Std.int(low) + Math.floor(randomFloat() * (Std.int(high) - Std.int(low) + 1));
+		}
+		else
+		{
+			return Std.int(high) + Math.floor(randomFloat() * (Std.int(low) - Std.int(high) + 1));
+		}
 	}
 	
 	/**
