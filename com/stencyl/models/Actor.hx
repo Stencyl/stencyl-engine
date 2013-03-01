@@ -3508,13 +3508,8 @@ class Actor extends Sprite
 				&& e.collidable && e != this)
 				{
 					if (e._mask == null || e._mask.collide(HITBOX))
-					{
-						if ((e._mask == null && solid && e.solid)
-						|| !allowAdd
-						|| (allowAdd && simpleCollisions.get(collisionsCount -1).solidCollision))
-						{
-							resetReal(_x, _y);
-						}
+					{						
+						resetReal(_x, _y);						
 						
 						return e;
 					}
@@ -3536,13 +3531,8 @@ class Actor extends Sprite
 			&& e.collidable && e != this)
 			{				
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
-				{
-					if ((e._mask == null && solid && e.solid)
-						|| !allowAdd
-						|| (allowAdd && simpleCollisions.get(collisionsCount -1) != null && simpleCollisions.get(collisionsCount -1).solidCollision))
-					{
-						resetReal(_x, _y);
-					}					
+				{					
+					resetReal(_x, _y);										
 					
 					return e;
 				}
