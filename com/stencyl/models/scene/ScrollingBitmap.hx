@@ -34,7 +34,9 @@ class ScrollingBitmap extends Sprite
 	public var parallaxX:Float;
 	public var parallaxY:Float;
 	
-	public function new(img:Dynamic, dx:Float, dy:Float, px:Float=0, py:Float=0) 
+	public var backgroundID:Int;
+	
+	public function new(img:Dynamic, dx:Float, dy:Float, px:Float=0, py:Float=0, ID:Int=0) 
 	{
 		super();
 		
@@ -105,6 +107,8 @@ class ScrollingBitmap extends Sprite
 		{
 			parallax = true;
 		}
+		
+		backgroundID = ID;
 	}
 	
 	public function updateAuto(elapsedTime:Float)

@@ -1952,7 +1952,7 @@ class Script
 	/**
 	* Set the speed of all scrolling backgrounds (Backgrounds must already be set to scrolling)
 	*/
-	public function setScrollSpeedForBackground(xSpeed:Float, ySpeed:Float)
+	public function setScrollSpeedForBackground(xSpeed:Float, ySpeed:Float, backgroundID:Int = -1)
 	{
 		for(i in 0...Engine.engine.master.numChildren)
 		{
@@ -1962,8 +1962,12 @@ class Script
 			if(Std.is(child, ScrollingBitmap))
 			{
 				var bg = cast(child, ScrollingBitmap);
-				bg.xVelocity = xSpeed;
-				bg.yVelocity = ySpeed;
+				
+				if(backgroundID == -1 || backgroundID == bg.backgroundID)
+				{
+					bg.xVelocity = xSpeed;
+					bg.yVelocity = ySpeed;
+				}
 			}
 		}
 	}
