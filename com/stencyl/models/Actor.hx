@@ -309,7 +309,7 @@ class Actor extends Sprite
 		
 		if(Std.is(this, Region) && Engine.NO_PHYSICS)
 		{
-			shape = new Hitbox(Std.int(width), Std.int(height));
+			shape = HITBOX = new Hitbox(Std.int(width), Std.int(height), 0, 0, false);
 			setShape(shape);
 		}
 		
@@ -1224,10 +1224,13 @@ class Actor extends Sprite
 			}	
 						
 			else if(shapeMap.get(name) != null && isLightweight)
-			{
+			{				
 				//Get hitbox list for Simple Physics
 				setShape(shapeMap.get(name));
 				HITBOX = _mask;
+				
+				//TODO: Compare hitboxes
+				isDifferentShape = true;
 			}
 			
 			cacheWidth = currAnimation.width / Engine.SCALE;
@@ -1248,6 +1251,11 @@ class Actor extends Sprite
 			if(animOrigin != null)
 			{					
 				setOriginPoint(Std.int(animOrigin.x), Std.int(animOrigin.y));				
+			}
+			
+			if (isLightweight)
+			{
+				
 			}
 			
 			updateMatrix = true;
@@ -3501,10 +3509,10 @@ class Actor extends Sprite
 			{
 				var e = actor;
 				
-				if (colX + cacheWidth > e.colX
-				&& colY + cacheHeight > e.colY
-				&& colX < e.colX + e.cacheWidth
-				&& colY < e.colY + e.cacheHeight
+				if (colX + cacheWidth >= e.colX
+				&& colY + cacheHeight >= e.colY
+				&& colX <= e.colX + e.cacheWidth
+				&& colY <= e.colY + e.cacheHeight
 				&& e.collidable && e != this)
 				{
 					if (e._mask == null || e._mask.collide(HITBOX))
@@ -3524,10 +3532,10 @@ class Actor extends Sprite
 		{
 			var e = actor;
 	
-			if (colX + cacheWidth > e.colX
-			&& colY + cacheHeight > e.colY
-			&& colX < e.colX + e.cacheWidth
-			&& colY < e.colY + e.cacheHeight
+			if (colX + cacheWidth >= e.colX
+			&& colY + cacheHeight >= e.colY
+			&& colX <= e.colX + e.cacheWidth
+			&& colY <= e.colY + e.cacheHeight
 			&& e.collidable && e != this)
 			{				
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
@@ -3564,6 +3572,8 @@ class Actor extends Sprite
 				var type:Int;
 				for (type in a)
 				{
+					if (type == GameModel.REGION_ID) continue;
+					
 					e = collide(type, x, y);
 					if (e != null) return e;
 				}
@@ -3585,10 +3595,10 @@ class Actor extends Sprite
 		_x = realX; _y = realY;
 		resetReal(x, y);
 
-		if (colX + cacheWidth > e.colX
-		&& colY + cacheHeight > e.colY
-		&& colX < e.colX + e.cacheWidth
-		&& colY < e.colY + e.cacheHeight
+		if (colX + cacheWidth >= e.colX
+		&& colY + cacheHeight >= e.colY
+		&& colX <= e.colX + e.cacheWidth
+		&& colY <= e.colY + e.cacheHeight
 		&& collidable && e.collidable)
 		{
 			if (_mask == null)
@@ -3634,10 +3644,10 @@ class Actor extends Sprite
 			{
 				var e = actor;
 				
-				if (colX + cacheWidth > e.colX
-				&& colY + cacheHeight > e.colY
-				&& colX < e.colX + e.cacheWidth
-				&& colY < e.colY + e.cacheHeight
+				if (colX + cacheWidth >= e.colX
+				&& colY + cacheHeight >= e.colY
+				&& colX <= e.colX + e.cacheWidth
+				&& colY <= e.colY + e.cacheHeight
 				&& e.collidable && e != this)
 				{
 					if (e._mask == null || e._mask.collide(HITBOX)) array[n++] = e;
@@ -3651,10 +3661,10 @@ class Actor extends Sprite
 		{
 			var e = actor;
 			
-			if (colX + cacheWidth > e.colX
-			&& colY + cacheHeight > e.colY
-			&& colX < e.colX + e.cacheWidth
-			&& colY < e.colY + e.cacheHeight
+			if (colX + cacheWidth >= e.colX
+			&& colY + cacheHeight >= e.colY
+			&& colX <= e.colX + e.cacheWidth
+			&& colY <= e.colY + e.cacheHeight
 			&& e.collidable && e != this)			
 			{
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX)) array[n++] = e;
@@ -3712,8 +3722,8 @@ class Actor extends Sprite
 	public function resetReal(x:Float, y:Float)
 	{
 		realX = x; realY = y;
-		colX = realX - cacheWidth/2 - currOffset.x;
-		colY = realY - cacheHeight/2 - currOffset.y;
+		colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
+		colY = realY - Math.floor(cacheHeight/2) - currOffset.y;
 	}
 
 	public function moveActorBy(x:Float, y:Float, solidType:Dynamic = null, sweep:Bool = false)
@@ -3739,6 +3749,12 @@ class Actor extends Sprite
 					sign = x > 0 ? 1 : -1;
 					while (x != 0)
 					{
+						//Check regions first
+						if ((e = collide(GameModel.REGION_ID, realX + sign, realY)) != null)
+						{
+							cast(e, Region).addActor(this);
+						}
+						
 						if ((e = collideTypes(solidType, realX + sign, realY)) != null)
 						{							
 							moveCollideX(e, sign);
@@ -3747,6 +3763,7 @@ class Actor extends Sprite
 							{
 								xSpeed = 0;
 								break;
+								trace("Broken!");
 							}							
 						}
 						
@@ -3766,6 +3783,12 @@ class Actor extends Sprite
 					sign = y > 0 ? 1 : -1;
 					while (y != 0)
 					{
+						//Check regions first
+						if ((e = collide(GameModel.REGION_ID, realX, realY + sign)) != null)
+						{
+							cast(e, Region).addActor(this);
+						}
+						
 						if ((e = collideTypes(solidType, realX, realY + sign)) != null)
 						{						
 							moveCollideY(e, sign);

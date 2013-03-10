@@ -59,10 +59,10 @@ class Mask
 	/** @private Collide against an Entity. */
 	private function collideMask(other:Mask):Bool
 	{
-		if (parent.colX + parent.cacheWidth > other.parent.colX
-			&& parent.colY + parent.cacheHeight > other.parent.colY
-			&& parent.colX < other.parent.colX + other.parent.cacheWidth
-			&& parent.colY < other.parent.colY + other.parent.cacheHeight)
+		if (parent.colX + parent.cacheWidth >= other.parent.colX
+			&& parent.colY + parent.cacheHeight >= other.parent.colY
+			&& parent.colX <= other.parent.colX + other.parent.cacheWidth
+			&& parent.colY <= other.parent.colY + other.parent.cacheHeight)
 		{
 			var info:CollisionInfo = new CollisionInfo();
 			
