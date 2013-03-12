@@ -81,6 +81,20 @@ class TileLayer extends Sprite
 		#end
 	}
 	
+	public function clearBitmap()
+	{
+		#if !cpp		
+		while (numChildren > 0)
+		{
+			removeChildAt(0);
+		}
+		
+		bitmapData.dispose();
+		bitmapData = null;
+		
+		#end
+	}
+	
 	//TODO: It makes more sense to mount it to this, than make a new actor for it
 	public function mountGrid()
 	{

@@ -3763,7 +3763,6 @@ class Actor extends Sprite
 							{
 								xSpeed = 0;
 								break;
-								trace("Broken!");
 							}							
 						}
 						

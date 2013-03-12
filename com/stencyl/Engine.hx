@@ -624,7 +624,7 @@ class Engine
 	}	
 	
 	public function loadScene(sceneID:Int)
-	{
+	{				
 		for(atlas in atlasesToUnload)
 		{
 			Data.get().unloadAtlas(atlas);
@@ -1454,6 +1454,15 @@ class Engine
 		for(set in recycledActorsOfType)
 		{
 			Utils.clear(set);
+		}
+		
+		//Clear old TileLayer data
+		if (scene != null && scene.terrain != null)
+		{			
+			for (tl in scene.terrain)
+			{
+				tl.clearBitmap();
+			}
 		}
 		
 		actorsOfType = null;
