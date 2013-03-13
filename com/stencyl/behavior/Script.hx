@@ -2523,7 +2523,7 @@ class Script
 	//* Mochi
 	//*-----------------------------------------------
 	
-	public function mochiShowAd(width:Int, height:Int)
+	public function mochiShowAd(width:Int, height:Int, startFunc:Void->Void = null, endFunc:Void->Void = null)
 	{
 		#if(flash && !air)
 		mochi.as3.MochiAd.showInterLevelAd
@@ -2537,19 +2537,29 @@ class Script
 					trace("Ad Started");
 					Engine.movieClip.mouseEnabled = true;
 					Engine.movieClip.mouseChildren = true;
+					
+					if(startFunc != null)
+					{
+						startFunc();
+					}
 				}, 
 				ad_finished:function():Void
 				{
 					trace("Ad Ended");
 					Engine.movieClip.mouseEnabled = false;
 					Engine.movieClip.mouseChildren = false;
+					
+					if(endFunc != null)
+					{
+						endFunc();
+					}
 				}
 			}
 		);
 		#end
 	}
 	
-	public function mochiShowScores(boardID:String)
+	public function mochiShowScores(boardID:String, startFunc:Void->Void = null, endFunc:Void->Void = null)
 	{
 		#if(flash && !air)
 		mochi.as3.MochiScores.showLeaderboard
@@ -2559,17 +2569,27 @@ class Script
 				onDisplay:function():Void
 				{
 					trace("Board Shown");
+					
+					if(startFunc != null)
+					{
+						startFunc();
+					}
 				}, 
 				onClose:function():Void
 				{
 					trace("Board Closed");
+					
+					if(endFunc != null)
+					{
+						endFunc();
+					}
 				}
 			}
 		);
 		#end
 	}
 	
-	public function mochiSubmitScore(boardID:String, score:Float)
+	public function mochiSubmitScore(boardID:String, score:Float, startFunc:Void->Void = null, endFunc:Void->Void = null)
 	{
 		#if(flash && !air)
 		mochi.as3.MochiScores.showLeaderboard
@@ -2580,10 +2600,20 @@ class Script
 				onDisplay:function():Void
 				{
 					trace("Board Shown");
+					
+					if(startFunc != null)
+					{
+						startFunc();
+					}
 				}, 
 				onClose:function():Void
 				{
 					trace("Board Closed");
+					
+					if(endFunc != null)
+					{
+						endFunc();
+					}
 				}
 			}
 		);
