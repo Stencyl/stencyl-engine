@@ -81,7 +81,7 @@ class Tile
 	//TODO: Don't return new Rectangle.  Prebuild for animated tiles since it isn't the same.
 	public function getSource(tileWidth:Int, tileHeight:Int):Rectangle
 	{			
-		return new Rectangle(currFrame * tileWidth, 0, tileWidth, tileHeight);
+		return new Rectangle(currFrame * tileWidth * Engine.SCALE, 0, tileWidth * Engine.SCALE, tileHeight * Engine.SCALE);
 	}
 	
 	//For Atlases
