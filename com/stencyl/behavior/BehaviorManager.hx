@@ -46,7 +46,24 @@ class BehaviorManager
 	{
 		if(hasBehavior(b))
 		{
-			cache.get(b).enabled = true;
+			var bObj:Behavior = cache.get(b);
+			
+			if(bObj.script != null && !bObj.script.scriptInit)
+			{
+				try
+				{
+					bObj.script.init();
+					bObj.script.scriptInit = true;
+				}
+			
+				catch(e:String)
+				{
+					trace("Error in when created for behavior: " + bObj.name);
+					trace(e);
+				}
+			}
+			
+			bObj.enabled = true;
 		}
 	}
 	

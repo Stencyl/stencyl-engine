@@ -91,6 +91,7 @@ class Behavior
 			try
 			{
 				script.init();
+				script.scriptInit = true;
 			}
 			
 			catch(e:String)

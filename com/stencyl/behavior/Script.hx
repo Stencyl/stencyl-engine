@@ -115,11 +115,13 @@ class Script
 	//*-----------------------------------------------
 	//* Init
 	//*-----------------------------------------------
+	public var scriptInit:Bool;
 	
 	public function new(engine:Engine) 
 	{
 		this.engine = this.scene = engine;
 		
+		scriptInit = false;
 		nameMap = new Hash<Dynamic>();	
 		propertyChangeListeners = new Hash<Dynamic>();
 		equalityPairs = new HashMap<Dynamic, Dynamic>();
