@@ -2774,7 +2774,12 @@ class Engine
 			l.overlay.graphics.clear();
 			
 			#if (js)
-			l.bitmapOverlay.bitmapData.fillRect(l.bitmapOverlay.bitmapData.rect, 0);
+			if (l.drawnOn)
+			{
+				l.overlay.graphics.jeashInvalidate();
+				l.bitmapOverlay.bitmapData.fillRect(l.bitmapOverlay.bitmapData.rect, 0);
+				l.drawnOn = false;
+			}
 			#end
 			
 			#if (cpp || flash)
@@ -2801,6 +2806,8 @@ class Engine
 				
 				if(layer != null)
 				{
+					layer.drawnOn = true;
+					
 					g.graphics = layer.overlay.graphics;
 					
 					#if (js)

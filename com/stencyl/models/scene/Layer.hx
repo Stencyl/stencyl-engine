@@ -18,6 +18,7 @@ class Layer extends RegularLayer
 	
 	public var overlay:Sprite;
 	public var bitmapOverlay:Dynamic;
+	public var drawnOn:Bool;
 	
 	public function new(ID:Int, order:Int, tiles:TileLayer, overlay:Sprite, bitmapOverlay:Dynamic)
 	{
@@ -32,5 +33,7 @@ class Layer extends RegularLayer
 
 		//scrollFactor.x = 0;
 		//scrollFactor.y = 0;
+		
+		drawnOn = true;
 	}
 }
