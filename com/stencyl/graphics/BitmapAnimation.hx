@@ -23,6 +23,8 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 	private var region:Rectangle;
 	private var pt:Point;
 	
+	private var finished:Bool;
+	
 	public function new(sheet:BitmapData, numFrames:Int, durations:Array<Int>, looping:Bool, model:Animation) 
 	{
 		super(new BitmapData(Std.int(sheet.width/numFrames), sheet.height));
@@ -44,6 +46,8 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		
 		region = new Rectangle(0, 0, frameWidth, sheet.height);
 		pt = new Point(0, 0);
+		
+		finished = (numFrames <= 1);
 		
 		updateBitmap();
 	}		
@@ -72,6 +76,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 					
 					else
 					{	
+						finished = true;
 						frameIndex--;
 					}
 				}
@@ -114,6 +119,8 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		}
 		
 		frameIndex = frame;
+		timer = 0;
+		finished = false;
 		updateBitmap();
 		
 		//Q: should we be altering the shared instance?
@@ -125,13 +132,14 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 	
 	public function isFinished():Bool
 	{
-		return !looping && frameIndex >= numFrames -1;
+		return finished;
 	}
 	
 	public inline function reset()
 	{
 		timer = 0;
 		frameIndex = 0;
+		finished = false;
 		updateBitmap();
 	}
 	
