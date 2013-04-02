@@ -3135,7 +3135,9 @@ class Actor extends Sprite
 
 	public function setFilter(filter:Array<BitmapFilter>)
 	{			
+		#if !cpp
 		filters = filter;
+		#end
 	}
 	
 	public function clearFilters()
