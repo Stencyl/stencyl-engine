@@ -1434,13 +1434,6 @@ class Actor extends Sprite
 			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
 			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;	
 			realAngle = body.getAngle() * Utils.DEG;				
-			
-			//TODO: Move to updateDrawingMatrix method, adjust to not use getter.		
-			if(isHUD)
-			{
-				transform.matrix.identity();
-				transform.matrix.translate(Engine.cameraX, Engine.cameraY);
-			}
 		}
 		
 		if (lastX != realX || lastY != realY || lastAngle != realAngle || lastScale.x != realScaleX || lastScale.y != realScaleY)
@@ -1497,7 +1490,7 @@ class Actor extends Sprite
 		}
 		
 		transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
-					
+		
 		if (transformObj == null)
 		{
 			transformObj = transform;
@@ -3324,6 +3317,8 @@ class Actor extends Sprite
 		engine.addHUDActor(this);
 		engine.removeActorFromLayer(this, layerID);
 		engine.hudLayer.addChild(this);
+		
+		updateMatrix = true;
 	}
 	
 	public function unanchorFromScreen()
@@ -3337,6 +3332,8 @@ class Actor extends Sprite
 		engine.removeHUDActor(this);
 		engine.moveActorToLayer(this, layerID);
 		engine.hudLayer.removeChild(this);
+		
+		updateMatrix = true;
 	}
 	
 	public function isAnchoredToScreen():Bool

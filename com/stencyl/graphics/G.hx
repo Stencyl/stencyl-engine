@@ -185,7 +185,7 @@ class G
 	
 	public inline function endGraphics()
 	{
-		if(drawActor)
+		if(drawActor && !actor.isHUD)
 		{
 			x -= Engine.cameraX;
 			y -= Engine.cameraY;
