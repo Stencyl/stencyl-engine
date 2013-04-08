@@ -1829,6 +1829,8 @@ class Engine
 		a.colY = cameraY;
 		a.recycled = true;
 		a.killLeaveScreen = false;
+		a.lastScreenState = false;
+		a.lastSceneState = false;
 		//a.setFilter(null);
 		
 		a.cancelTweens();
