@@ -724,6 +724,9 @@ class Engine
 		if(!NO_PHYSICS)
 		{									
 			initPhysics();
+			
+			gravityX = scene.gravityX;
+			gravityY = scene.gravityY;
 		}
 		
 		else
@@ -1823,10 +1826,10 @@ class Engine
 			a.makeSometimesSimulate(false);
 		}
 	
-		a.setX(1000000);
-		a.setY(1000000);
-		a.colX = cameraX;
-		a.colY = cameraY;
+		a.setX(1000000, false, true);
+		a.setY(1000000, false, true);
+		a.colX = 1000000;
+		a.colY = 1000000;
 		a.recycled = true;
 		a.killLeaveScreen = false;
 		a.lastScreenState = false;
@@ -1915,12 +1918,23 @@ class Engine
 					actor.enableActorDrawing();					
 					actor.setX(x, false, true);
 					actor.setY(y, false, true);
-					actor.colX = x;
-					actor.colY = y;
+					
+					if (!actor.isLightweight)
+					{
+						actor.colX = x;
+						actor.colY = y;
+					}
+					
 					actor.setAngle(0, false);
 					actor.alpha = 1;
 					actor.realScaleX = 1;
 					actor.realScaleY = 1;
+					
+					if (actor.bodyDef != null)
+					{
+						actor.continuousCollision = actor.bodyDef.bullet;
+					}
+					
 					//actor.setFilter(null);
 					actor.initScripts();
 

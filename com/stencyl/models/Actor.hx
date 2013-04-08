@@ -507,6 +507,11 @@ class Actor extends Sprite
 				shape = createBox(width, height);
 			}
 			
+			if (bodyDef != null)
+			{
+				continuousCollision = bodyDef.bullet;
+			}
+			
 			if(Std.is(this, Region))
 			{
 				isSensor = true;
@@ -1490,7 +1495,7 @@ class Actor extends Sprite
 		}
 		
 		transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
-		
+						
 		if (transformObj == null)
 		{
 			transformObj = transform;
