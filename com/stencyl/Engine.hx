@@ -1814,12 +1814,11 @@ class Engine
 		{
 			Engine.invokeListeners2(l2, a);
 		}
-		
-		//Causes strange double-removal error - taking out for now.
-		/*if(a.isHUD)
+				
+		if(a.isHUD)
 		{
 			a.unanchorFromScreen();
-		}*/
+		}
 		
 		if(a.alwaysSimulate)
 		{
@@ -1935,8 +1934,7 @@ class Engine
 						actor.continuousCollision = actor.bodyDef.bullet;
 					}
 					
-					//actor.setFilter(null);
-					actor.initScripts();
+					//actor.setFilter(null);					
 
 					//move to specified layer
 					var layerID = 0;
@@ -1957,6 +1955,8 @@ class Engine
 					}
 					
 					moveActorToLayer(actor, layerID);
+					
+					actor.initScripts();
 
 					return actor;
 				}

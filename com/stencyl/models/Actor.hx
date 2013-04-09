@@ -3318,9 +3318,9 @@ class Actor extends Sprite
 			body.setAlwaysActive(true);
 		}
 		
-		isHUD = true;			
-		engine.addHUDActor(this);
+		isHUD = true;	
 		engine.removeActorFromLayer(this, layerID);
+		engine.addHUDActor(this);		
 		engine.hudLayer.addChild(this);
 		
 		updateMatrix = true;
@@ -3335,8 +3335,8 @@ class Actor extends Sprite
 		
 		isHUD = false;			
 		engine.removeHUDActor(this);
-		engine.moveActorToLayer(this, layerID);
 		engine.hudLayer.removeChild(this);
+		engine.moveActorToLayer(this, layerID);		
 		
 		updateMatrix = true;
 	}
