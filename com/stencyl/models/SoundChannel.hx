@@ -51,7 +51,7 @@ class SoundChannel
 			clip.volume = volume * masterVolume;
 			currentClip = clip;
 			currentSound = clip.play(channelNum);	
-			setVolume(clip.volume);
+			setVolume(volume);
 			
 			currentSound.addEventListener(Event.SOUND_COMPLETE, stopped);
 		}
@@ -80,7 +80,7 @@ class SoundChannel
 			clip.volume = volume * masterVolume;
 			currentClip = clip;
 			currentSound = clip.loop(channelNum);
-			setVolume(clip.volume);
+			setVolume(volume);
 			
 			currentSound.addEventListener(Event.SOUND_COMPLETE, stopped);
 		}
@@ -189,7 +189,7 @@ class SoundChannel
 		
 		if(currentSound != null)
 		{
-			transform.volume = volume;
+			transform.volume = volume * masterVolume;
 			currentSound.soundTransform = transform;
 		}
 	}

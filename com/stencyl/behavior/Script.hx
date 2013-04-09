@@ -1896,12 +1896,6 @@ class Script
 	public function setVolumeForAllSounds(volume:Float)
 	{
 		SoundChannel.masterVolume = volume;
-		
-		for(i in 0...CHANNELS)
-		{
-			var sc:SoundChannel = engine.channels[i];
-			sc.setVolume(volume);
-		}
 	}
 	
 	/**
@@ -3025,7 +3019,7 @@ class Script
 	{
 		var cm:ColorMatrix = new ColorMatrix();
 		
-		cm.adjustBrightness(b);
+		cm.adjustBrightness(b/100);
 		
 		return cm.getFilter();
 	}
