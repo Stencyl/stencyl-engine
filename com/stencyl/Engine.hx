@@ -798,7 +798,7 @@ class Engine
 		if(Std.is(background, ScrollingBackground))
 		{
 			var scroller = cast(background, ScrollingBackground);
-			var img = new ScrollingBitmap(background.img, scroller.xVelocity, scroller.yVelocity, backgroundID);
+			var img = new ScrollingBitmap(background.img, scroller.xVelocity, scroller.yVelocity, 0, 0, backgroundID);
 			img.name = SCROLLING_BACKGROUND;
 			master.addChild(img);
 		}
