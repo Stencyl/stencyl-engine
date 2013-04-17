@@ -1896,6 +1896,12 @@ class Script
 	public function setVolumeForAllSounds(volume:Float)
 	{
 		SoundChannel.masterVolume = volume;
+		
+		for(i in 0...CHANNELS)
+		{
+			var sc:SoundChannel = engine.channels[i];
+			sc.setVolume(sc.volume);
+		}
 	}
 	
 	/**
