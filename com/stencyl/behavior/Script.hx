@@ -1378,8 +1378,8 @@ class Script
 	 */
 	public function showTileLayer(layerID:Int)
 	{
-		engine.layers.get(layerID).alpha = 255;
-		engine.actorsPerLayer.get(layerID).alpha = 255;
+		engine.layers.get(layerID).alpha = 1;
+		engine.actorsPerLayer.get(layerID).alpha = 1;
 	}
 	
 	/**
