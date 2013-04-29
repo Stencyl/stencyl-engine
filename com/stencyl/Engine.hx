@@ -632,6 +632,8 @@ class Engine
 		
 		#if cpp
 		Gc.run(true);
+		trace("Number of IntHashs: " + Gc.trace(IntHash, false));
+		trace("Number of Actors: " + Gc.trace(Actor, false));
 		#end
 		
 		for(atlas in atlasesToLoad)
