@@ -18,21 +18,50 @@ Installing
 
 1) Check the code out anywhere you'd like.
 
-2) Edit build.sh / build.bat and provide the path to Stencyl.
+2) Edit build-stencyl and provide the path to your Stencyl 3.0 install.
 
-3) That's it. Any time you modify the engine, run the build script and then run the game inside of Stencyl.
+```
+STENCYL_PATH=/path/to/stencyl/
+```
+
+That's it. Any time you modify the engine, run build-stencyl and then run a game from Stencyl.
+
+```
+./build.sh
+```
 
 
-Developing
+Developing alongside Stencyl
 ==============
 
-TODO
+Stencyl's engine is written in Haxe (http://www.haxe.org), a language similar to ActionScript 3. 
+You can edit Haxe directly from any text editor, or you can use something more complete such as FlashDevelop, 
+Sublime Text, MonoDevelop or Eclipse.
+
+Developing is as simple as editing the source, running the build-stencyl script and running any game from Stencyl. You 
+don't even have to restart Stencyl to see your changes reflected.
+
+
+Developing Standalone
+==============
+
+More serious developers may want to run the engine outside of Stencyl for a quicker workflow.
+
+See this Wiki page. (TODO)
+
+
+Code Structure
+==============
+
+See this Wiki page. (TODO)
 
 
 Contributing
 ==============
 
 All contributions are made in the form of pull requests. An ideal, model pull request can be found here (TODO).
+
+View this page for details on what areas of Stencyl need the most help. (TODO)
 
 
 MIT License
