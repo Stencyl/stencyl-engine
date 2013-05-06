@@ -54,6 +54,7 @@ haxelib run nme test TestProject.nmml ios
 haxelib run nme test TestProject.nmml android
 haxelib run nme test TestProject.nmml windows
 haxelib run nme test TestProject.nmml mac
+haxelib run nme test TestProject.nmml html5
 ```
 
 To edit the data for the standalone game, peek inside of Assets (contains the resource definitions, graphics, sounds) and inside of Scripts.
