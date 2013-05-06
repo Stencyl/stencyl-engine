@@ -20,9 +20,13 @@ Sublime Text, MonoDevelop or Eclipse.
 Installing
 ==============
 
-1) Check the code out anywhere you'd like.
+No installation is required. Just check the code out anywhere you'd like.
 
-2) Run build-stencyl, passing in the full path to your Stencyl install as its argument. For example:
+
+Developing alongside Stencyl
+==============
+
+To "build" the code, run build-stencyl, passing in the full path to your Stencyl install as its argument. For example:
 
 ```
 ./build-stencyl /Users/jon/stencyl/
@@ -31,11 +35,15 @@ Installing
 That's it. Any time you modify the engine, run build-stencyl and then run a game from Stencyl. You 
 don't have to restart Stencyl.
 
+All build-stencyl does is copy your checked out code to your Stencyl install. No compiling happens, 
+so you won't know if something went wrong until you run your game. For that reason, we recommend developing
+any larger changes standalone.
+
 
 Developing Standalone
 ==============
 
-For those who desire a quicker workflow, the engine can be run standalone, outside of Stencyl.
+For those who desire a more traditional workflow, the engine can be run standalone, outside of Stencyl.
 
 To do this, run any of the following commands from within the checked out directory to run the engine by itself using a minimal test project. You do not need to run the build-stencyl script.
 
