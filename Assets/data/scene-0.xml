@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<scene depth="2" desc="" eventsnippetid="1" format="1.0" gravx="-0.0" gravy="0.0" height="480" id="0" name="Main" revision="" savecount="0" tiled="1" tileh="32" tilew="32" type="standard" width="640">
+    <layers>
+        <layer color="0,0,255" id="1" name="Layer 1" order="0"/>
+        <layer color="100,168,234" id="0" name="Layer 0" order="1"/>
+    </layers>
+    <grad-bg b1="128" b2="51" g1="0" g2="51" r1="128" r2="51"/>
+    <backgrounds>
+        <ref id="18"></ref>
+    </backgrounds>
+    <foregrounds/>
+    <joints/>
+    <regions/>
+    <terrainRegions/>
+    <actors>
+        <actor a="0.0" aid="0" c="false" group="3" id="0" name="Pronger 1" sx="1.0" sy="1.0" x="0" y="0" z="1"/>
+        <actor a="0.0" aid="1" c="false" group="3" id="0" name="Pronger 2" sx="1.0" sy="1.0" x="100" y="0" z="1"/>
+    </actors>
+    <snippets/>
+    <terrain/>
+</scene>

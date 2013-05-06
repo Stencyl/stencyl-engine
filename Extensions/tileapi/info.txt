@@ -1,0 +1,6 @@
+name=Tile API
+description=Manipulate a scene's terrain at runtime.
+author=Jonathan Chung
+website=http://www.stencyl.com
+version=1.0
+compatibility=all

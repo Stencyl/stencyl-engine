@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<palette>
+	<block tag="label-create" spec="attach label to %0" code="Labels.create(~);" type="action" color="gray" returns="void">
+		<fields>
+			<actor order="0"></actor>
+		</fields>
+	</block>
+	<block tag="label-destroy" spec="destroy label for %0" code="Labels.destroy(~);" type="action" color="gray" returns="void">
+		<fields>
+			<actor order="0"></actor>
+		</fields>
+	</block>
+	<block tag="label-setfont" spec="set label's font for %0 to %1" code="Labels.setFont(~,~);" type="action" color="gray" returns="void">
+		<fields>
+			<actor order="0"></actor>
+			<font order="1"></font>
+		</fields>
+	</block>
+	<block tag="label-settext" spec="set label's text for %0 to %1" code="Labels.setText(~,~);" type="action" color="gray" returns="void">
+		<fields>
+			<actor order="0"></actor>
+			<text order="1"></text>
+		</fields>
+	</block>
+	<block tag="label-wrap" spec="enable text-wrap for %0 using width: %1" code="Labels.enableTextWrap(~,~);" type="action" color="gray" returns="void">
+		<fields>
+			<actor order="0"></actor>
+			<number order="1"></number>
+		</fields>
+	</block>
+	<block tag="label-align" spec="set label's alignment %0 to %1" code="Labels.setAlignment(~,~);" type="action" color="gray" returns="void">
+		<fields>
+			<actor order="0"></actor>
+			<dropdown order="1">
+				<choices>
+					<c text="Left" code="1"></c>
+					<c text="Center" code="3"></c>
+					<c text="Right" code="2"></c>
+				</choices>
+			</dropdown>
+		</fields>
+	</block>
+</palette>

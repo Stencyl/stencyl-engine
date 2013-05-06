@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pack>
+    <snippet attachedevent="true" classname="scripts.Motion" desc="Actor Specific Events" description="Actor Specific Events" design="true" drawOrder="0" id="0" language="" name="ActorEvents_0" oid="-1" package="scripts" scenespecific="false" shared="false" type="actor">
+        <blocks/>
+        <events/>
+    </snippet>
+</pack>

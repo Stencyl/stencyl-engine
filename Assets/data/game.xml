@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<game accelFramerate="0" adsPosition="0" aheight="384" airCert="" airPass="" appName="My Game" appType="0" author="" authorURL="" autoRotate="false" awidth="640" backgroundColor="-15592942" barBackgroundColor="-12303292" barColor="-7829368" barHeight="8" barLocation="0" barOffsetX="0" barOffsetXPhone="0" barOffsetXTablet="0" barOffsetY="0" barOffsetYPhone="0" barOffsetYTablet="0" barScalePhone="1.0" barScaleTablet="2.0" barWidth="120" borderColor="-12303292" borderThickness="2" bundleID="com.yourname.gamename" bundleVersion="1.0" checksum="none" cpmID="" cws-desc="Description" cws-icon128="" cws-icon16="" cws-name="Name" cws-version="1.0" defaultSceneID="0" defaultFramerate="60" desc="" deviceOS="4.3" engine="0" format="2.0" gameid="-1" height="384" kit="false" lockURL="" mochi="" multitouch="true" name="a" ngID="" ngKey="" orientation="0" preloaderstyle="0" products="" projectType="web" scale="1.0" showAds="false" simulatorOS="4.3" splashStyle="0" swfHeight="0" swfWidth="0" swfX="0" swfY="0" swfloc="" thumbstickStyle="0" useGlossyIcon="false" width="640">
+    <folders/>
+    <packs/>
+    <groups/>
+    <cgroups>
+        <cgroup g1="3" g2="3"/>
+    </cgroups>
+    <input>
+        <key id="0" keyname="UP" name="up" vk="38"/>
+        <key id="1" keyname="DOWN" name="down" vk="40"/>
+        <key id="2" keyname="LEFT" name="left" vk="37"/>
+        <key id="3" keyname="RIGHT" name="right" vk="39"/>
+        <key id="4" keyname="Z" name="action1" vk="90"/>
+        <key id="5" keyname="X" name="action2" vk="88"/>
+        <key id="6" keyname="ENTER" name="enter" vk="10"/>
+    </input>
+    <attcats>
+        <cat id="-1" name="Default"/>
+    </attcats>
+    <props/>
+    <attributes/>
+    <collisions>
+        <poly id="1" name="Square" pts="0.0,0.0#0.0,1.0#1.0,1.0#1.0,0.0"/>
+        <poly id="2" name="Tri 45R" pts="0.0,0.0#0.0,1.0#1.0,1.0"/>
+        <poly id="3" name="Tri 45L" pts="1.0,0.0#0.0,1.0#1.0,1.0"/>
+        <poly id="4" name="Tri 45R Inv" pts="0.0,0.0#0.0,1.0#1.0,0.0"/>
+        <poly id="5" name="Tri 45L Inv" pts="0.0,0.0#1.0,1.0#1.0,0.0"/>
+        <poly id="6" name="Tri 30R" pts="0.0,1.0#1.0,1.0#1.0,0.5"/>
+        <poly id="7" name="Tri 30L" pts="0.0,0.5#0.0,1.0#1.0,1.0"/>
+        <poly id="8" name="Tri 30-2R" pts="0.0,0.5#0.0,1.0#1.0,1.0#1.0,0.0"/>
+        <poly id="9" name="Tri 30-2L" pts="0.0,0.0#0.0,1.0#1.0,1.0#1.0,0.5"/>
+        <poly id="10" name="Tri 30R Inv" pts="0.0,0.0#1.0,0.5#1.0,0.0"/>
+        <poly id="11" name="Tri 30L Inv" pts="0.0,0.0#0.0,0.5#1.0,0.0"/>
+        <poly id="12" name="Tri 30-2R Inv" pts="0.0,0.0#0.0,0.5#1.0,1.0#1.0,0.0"/>
+        <poly id="13" name="Tri 30-2L Inv" pts="0.0,0.0#0.0,1.0#1.0,0.5#1.0,0.0"/>
+        <poly id="14" name="Tri 60R" pts="0.5,1.0#1.0,1.0#1.0,0.0"/>
+        <poly id="15" name="Tri 60L" pts="0.0,0.0#0.0,1.0#0.5,1.0"/>
+        <poly id="17" name="Tri 60-2L" pts="0.0,0.0#0.0,1.0#1.0,1.0#0.5,0.0"/>
+        <poly id="16" name="Tri 60-2R" pts="0.5,0.0#0.0,1.0#1.0,1.0#1.0,0.0"/>
+        <poly id="19" name="Tri 60L Inv" pts="0.0,0.0#0.0,1.0#0.5,0.0"/>
+        <poly id="18" name="Tri 60R Inv" pts="0.5,0.0#1.0,1.0#1.0,0.0"/>
+        <poly id="21" name="Tri 60-2L Inv" pts="0.0,0.0#0.0,1.0#0.5,1.0#1.0,0.0"/>
+        <poly id="20" name="Tri 60-2R Inv" pts="0.0,0.0#0.5,1.0#1.0,1.0#1.0,0.0"/>
+    </collisions>
+    <atlases>
+        <atlas dirty="true" id="0" members="0" name="Main Atlas (Default)" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="1" members="" name="Atlas 2" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="2" members="" name="Atlas 3" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="3" members="" name="Atlas 4" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="4" members="" name="Atlas 5" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="5" members="" name="Atlas 6" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="6" members="" name="Atlas 7" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="7" members="" name="Atlas 8" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="8" members="" name="Atlas 9" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="9" members="" name="Atlas 10" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="10" members="" name="Atlas 11" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="11" members="" name="Atlas 12" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="12" members="" name="Atlas 13" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="13" members="" name="Atlas 14" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="14" members="" name="Atlas 15" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="15" members="" name="Atlas 16" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="17" members="" name="Atlas 18" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="16" members="" name="Atlas 17" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="19" members="" name="Atlas 20" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="18" members="" name="Atlas 19" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="21" members="" name="Atlas 22" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="20" members="" name="Atlas 21" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="23" members="" name="Atlas 24" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="22" members="" name="Atlas 23" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="25" members="" name="Atlas 26" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="24" members="" name="Atlas 25" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="27" members="" name="Atlas 28" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="26" members="" name="Atlas 27" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="29" members="" name="Atlas 30" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="28" members="" name="Atlas 29" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="31" members="" name="Atlas 32" pvr="false" resize="0" start="true" target="0"/>
+        <atlas dirty="true" id="30" members="" name="Atlas 31" pvr="false" resize="0" start="true" target="0"/>
+    </atlases>
+    <libraries/>
+</game>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<classpath name="" />
+	<ndll name="native" />
+	<dependency name="SystemConfiguration.framework" if="ios" />
+	<java path="project/android" />
+</project>

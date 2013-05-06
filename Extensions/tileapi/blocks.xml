@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<palette>
+	<block tag="set-tile-at" spec="set tile at row: %0 col: %1 layerID: %2 using tileID: %4 from tilesetID: %3" code="TileAPI.setTileAt(Std.int(~),Std.int(~),~,~,~);" type="action" color="blue" returns="void">
+		<fields>
+			<number order="0"></number>
+			<number order="1"></number>
+			<number order="2"></number>
+			<number order="3"></number>
+			<number order="4"></number>
+		</fields>
+	</block>
+	<block tag="tile-exists-at" spec="tile exists at row: %0 col: %1 layerID: %2" code="TileAPI.tileExistsAt(Std.int(~),Std.int(~),~)" type="normal" color="blue" returns="boolean">
+		<fields>
+			<number order="0"></number>
+			<number order="1"></number>
+			<number order="2"></number>
+		</fields>
+	</block>
+	<block tag="tileID-at" spec="ID for tile at row: %0 col: %1 layerID: %2" code="TileAPI.getTileIDAt(Std.int(~),Std.int(~),~)" type="normal" color="blue" returns="number">
+		<fields>
+			<number order="0"></number>
+			<number order="1"></number>
+			<number order="2"></number>
+		</fields>
+	</block>
+	<block tag="tilesetID-at" spec="ID for tile's tileset at row: %0 col: %1 layerID: %2" code="TileAPI.getTilesetIDAt(Std.int(~),Std.int(~),~)" type="normal" color="blue" returns="number">
+		<fields>
+			<number order="0"></number>
+			<number order="1"></number>
+			<number order="2"></number>
+		</fields>
+	</block>
+	<block tag="remove-tile-at" spec="remove tile at row: %0 col: %1 layerID: %2" code="TileAPI.removeTileAt(Std.int(~),Std.int(~),~);" type="action" color="blue" returns="void">
+		<fields>
+			<number order="0"></number>
+			<number order="1"></number>
+			<number order="2"></number>
+		</fields>
+	</block>
+</palette>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pack>
+
+    <sprite atlasID="0" defaultAnimation="0" desc="" height="50" id="1" name="Pronger" shared="false" width="64">
+        <anim across="4" atlasID="-1" down="1" durations="100,100,100,100" height="64" id="0" loop="true" sync="false" 
+        name="Animation 0" numframes="6" originx="25" originy="25" width="300">
+            <poly data="4,0,0,64,0,64,64,0,64" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="false"/>
+        </anim>
+    </sprite>
+    
+    <actor adamp="0.0" ascale="true" atlasID="0" bodytype="2" continuous="true" desc="" eventsnippetid="0" 
+    fixedrot="false" fric="0.2" gid="3" id="0" ignoreg="false" inertia="1.0" ldamp="0.0" lw="false" mass="1.0" 
+    name="Pronger" oid="-1" pausable="true" rest="0.0" shared="false" sprite="1" static="false" touchable="true">
+        <snippets>
+            <s enabled="true" id="0">
+                <prop id="2147483647" list="0" val="thisactor"/>
+            </s>
+        </snippets>
+    </actor>
+    
+    <background atlasID="0" desc="" durations="100" dx="-1.0" dy="-0.0" height="320" id="18" name="Desert Background" 
+    numframes="1" oid="-1" repeats="false" resized="false" shared="false" width="480" xpf="1.0" ypf="1.0"/>
+    
+    <tileset across="1" atlasID="0" desc="" down="5" id="19" name="Bricks" oid="-1" shared="false" th="32" tw="32">
+        <tile collision="1" data="" durations="100" frames="0" id="6" order="-1"/>
+    </tileset>
+    
+</pack>

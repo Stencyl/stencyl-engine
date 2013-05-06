@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/stencylworks/!svn/ver/5908/plaf/extensions/hypertouch/fr/hyperfiction/events
+END
+GesturePinchEvent.hx
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/stencylworks/!svn/ver/5908/plaf/extensions/hypertouch/fr/hyperfiction/events/GesturePinchEvent.hx
+END
+GestureTapEvent.hx
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/stencylworks/!svn/ver/5908/plaf/extensions/hypertouch/fr/hyperfiction/events/GestureTapEvent.hx
+END
+GestureSwipeEvent.hx
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/stencylworks/!svn/ver/5908/plaf/extensions/hypertouch/fr/hyperfiction/events/GestureSwipeEvent.hx
+END
+GesturePanEvent.hx
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/stencylworks/!svn/ver/5908/plaf/extensions/hypertouch/fr/hyperfiction/events/GesturePanEvent.hx
+END
+GestureRotationEvent.hx
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/stencylworks/!svn/ver/5908/plaf/extensions/hypertouch/fr/hyperfiction/events/GestureRotationEvent.hx
+END

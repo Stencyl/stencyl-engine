@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<classpath name="." />
+	<ndll name="ads" />
+	<dependency name="iAd.framework" if="ios" />
+	<java path="project/android" />
+	<template path="template/android/libs" rename="libs" if="android"/>
+</project>

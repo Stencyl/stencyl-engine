@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/stencylworks/!svn/ver/5957/plaf/extensions/joystick
+END
+JoystickEvent.hx
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/stencylworks/!svn/ver/5957/plaf/extensions/joystick/JoystickEvent.hx
+END
+JoystickController.hx
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/stencylworks/!svn/ver/6390/plaf/extensions/joystick/JoystickController.hx
+END
+include.nmml
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/stencylworks/!svn/ver/5957/plaf/extensions/joystick/include.nmml
+END
+Joystick.hx
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/stencylworks/!svn/ver/6390/plaf/extensions/joystick/Joystick.hx
+END

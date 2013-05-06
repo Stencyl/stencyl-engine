@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="TestProject" package="com.stencyl.test" version="1.0.0" company="Stencyl" />
+	<app main="TestProject" file="TestProject" path="Export" preloader="scripts.StencylPreloader"/>
+	
+	<window width="480" height="320" orientation="landscape"/>
+	<window fps="65" />
+
+	<source path="Source" />
+	
+	<haxelib name="nme" />
+	<haxelib name="actuate" />
+	<haxelib name="console" />
+
+	<assets path="Assets/graphics" rename="assets/graphics" include="*"/>
+	<assets path="Assets/music" rename="assets/music" type="music" include="*"/>
+	<assets path="Assets/sfx" rename="assets/sfx" type="sound" include="*"/>
+	<assets path="Assets/data" rename="assets/data" include="*"/>
+	
+	<icon path="Icon.png" size="57" />
+	<icon path="Icon@2x.png" size="114" />
+	<icon path="Icon-72.png" size="72" />
+	<icon path="Icon-72@2x.png" size="144" />
+	
+	<launchImage path="Default.png" width="320" height="480" />
+	<launchImage path="Default@2x.png" width="640" height="960" />
+	<launchImage path="Default-568h@2x.png" width="640" height="960" />
+	<launchImage path="Default-Portrait~ipad.png" width="768" height="1024" />
+	<launchImage path="Default-Landscape~ipad.png" width="1024" height="768" />
+	<launchImage path="Default-Portrait@2x~ipad.png" width="1536" height="2048" />
+	<launchImage path="Default-Landscape@2x~ipad.png" width="2048" height="1536" />
+	
+	<haxedef name="network-sandbox" if="flash"/>
+	<haxedef name="as3_native" if="flash"/>
+	
+	<!-- Flash Libraries -->
+	<haxeflag name="-swf-lib" value="mochi.swf" if="flash"/>
+	<haxeflag name="-swf-lib" value="cpmstar.swf" if="flash"/>
+	<haxeflag name="-swf-lib" value="newgrounds.swf" if="flash"/>
+	
+	<!-- Background for the preloader -->
+	<haxeflag name="-resource" value="assets/graphics/bg.png@preloader-bg"/>
+
+	<include path="Extensions/joystick" if="mobile"/>
+	<include path="Extensions/ads" if="mobile"/>
+	<include path="Extensions/gamecenter" if="mobile"/>
+	<include path="Extensions/purchases" if="ios"/>
+	<include path="Extensions/native" if="mobile"/>
+	<include path="Extensions/hypertouch" if="mobile"/>
+
+	<ndll name="std" />
+	<ndll name="regexp" />
+	<ndll name="zlib" />
+	<ndll name="nme" haxelib="nme" />
+
+	<ios deployment="4.1" binaries="fat" devices="universal" />
+	
+	<setenv name="ANDROID_SETUP" value="false" if="android" />
+	<setenv name="IPHONE_STDOUT" value="ios-log.text"/>
+	
+	<!-- Uncomment this line if on a Mac -->
+	<setenv name="ANDROID_HOST" value="darwin-x86" if="android"/>
+</project>

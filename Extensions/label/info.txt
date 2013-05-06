@@ -1,0 +1,6 @@
+name=Labels
+description=Replicates label functionality from 2.x and below.
+author=Jon
+website=http://www.stencyl.com
+version=1.0
+compatibility=all

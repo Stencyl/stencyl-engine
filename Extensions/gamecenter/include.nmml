@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<ndll name="gamecenter"/>
+	<classpath name="." />
+	<dependency name="GameKit.framework" if="ios" />
+	<java path="project/android" />
+	<!--<template path="template/android/libs" rename="libs" if="android"/>-->
+</project>
