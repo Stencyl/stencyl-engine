@@ -60,5 +60,5 @@
 	<setenv name="IPHONE_STDOUT" value="ios-log.text"/>
 	
 	<!-- Uncomment this line if on a Mac -->
-	<setenv name="ANDROID_HOST" value="darwin-x86" if="android"/>
+	<!--<setenv name="ANDROID_HOST" value="darwin-x86" if="android"/>-->
 </project>
