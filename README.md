@@ -12,37 +12,32 @@ Requirements
 * Haxe 2.10 (http://www.haxe.org)
 * Stencyl 3.0 (http://www.stencyl.com)
 
+Stencyl's engine is written in Haxe (http://www.haxe.org), a language similar to ActionScript 3. 
+You can edit Haxe directly from any text editor, or you can use something more complete such as FlashDevelop, 
+Sublime Text, MonoDevelop or Eclipse.
+
 
 Installing
 ==============
 
 1) Check the code out anywhere you'd like.
 
-2) Edit build-stencyl and provide the path to your Stencyl 3.0 install.
+2) Run build-stencyl, passing in the full path to your Stencyl install as its argument. For example:
 
 ```
-STENCYL_PATH=/path/to/stencyl/
+./build-stencyl /Users/jon/stencyl/
 ```
 
 That's it. Any time you modify the engine, run build-stencyl and then run a game from Stencyl. You 
-don't even have to restart Stencyl to see your changes reflected.
-
-```
-./build.sh
-```
-
-Stencyl's engine is written in Haxe (http://www.haxe.org), a language similar to ActionScript 3. 
-You can edit Haxe directly from any text editor, or you can use something more complete such as FlashDevelop, 
-Sublime Text, MonoDevelop or Eclipse.
-
+don't have to restart Stencyl.
 
 
 Developing Standalone
 ==============
 
-For those seeking a quicker workflow, the engine can be run standalone, outside of Stencyl.
+For those who desire a quicker workflow, the engine can be run standalone, outside of Stencyl.
 
-To do this, run any of the following commands from within the checked out directory to test the engine standalone.
+To do this, run any of the following commands from within the checked out directory to run the engine by itself using a minimal test project. You do not need to run the build-stencyl script.
 
 ```
 haxelib run nme test TestProject.nmml flash -debug
@@ -61,7 +56,7 @@ Debugging
 
 If you're running the engine standalone, viewing the engine's logs involves external apps.
 
-* For Flash, use Vizzy.
+* For Flash, use Vizzy (https://code.google.com/p/flash-tracer)
 * For Windows, use XXXX?
 * For Mac, use OS X's Console app.
 * For iOS, use OS X's Console app. Also peek at the contents of ios-log.text.
