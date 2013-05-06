@@ -60,6 +60,12 @@ haxelib run nme test TestProject.nmml html5
 To edit the data for the standalone game, peek inside of Assets (contains the resource definitions, graphics, sounds) and inside of Scripts.
 
 
+Developing Extensions
+==============
+
+See this Wiki page. (TODO)
+
+
 Debugging
 ==============
 
@@ -71,6 +77,7 @@ If you're running the engine standalone, viewing the engine's logs involves exte
 * For iOS, use OS X's Console app. Also peek at the contents of ios-log.text.
 * For Android, use DDMS.
 * For HTML5, use your web browser's built in tools.
+
 
 
 Code Structure
