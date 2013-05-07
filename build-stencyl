@@ -1,0 +1,23 @@
+#!/bin/sh
+
+MYPATH=`echo $1 | sed "s/^\([\"']\)\(.*\)\1\$/\2/g"`
+EXTPATH="$MYPATH/plaf/haxe/extensions"
+HAXELIB="$MYPATH/plaf/haxe/lib"
+BOX2DDIR="$HAXELIB/box2d/1,11"
+ENGINEDIR="$HAXELIB/stencyl/1,00"
+
+echo "$MYPATH"
+echo "$EXTPATH"
+echo "$HAXELIB"
+echo "$BOX2DDIR"
+echo "$ENGINEDIR"
+
+mkdir -p "$HAXELIB"
+mkdir -p "$BOX2DDIR"
+mkdir -p "$ENGINEDIR"
+
+cp -PR "Source/com" "$ENGINEDIR"
+cp -P "Source/Universal.hx" "$ENGINEDIR/Universal.hx"
+cp -PR "Source/box2D" "$BOX2DDIR"
+cp -PR "Extensions" "$EXTPATH"
+
