@@ -3,7 +3,8 @@ Stencyl
 
 http://www.stencyl.com
 
-Create Flash, iOS, Android, desktop and HTML5 games with no code with Stencyl. This is the source to Stencyl's Haxe-based engine.
+Create Flash, iOS, Android, desktop and HTML5 games with no code with Stencyl. 
+This is the source to Stencyl's Haxe-based game engine. 
 
 
 Requirements
@@ -40,11 +41,7 @@ For example:
 ```
 
 That's it. Any time you modify the engine, run build-stencyl and then run a game from Stencyl. You 
-don't have to restart Stencyl.
-
-All build-stencyl does is copy your checked out code to your Stencyl install. No compiling happens, 
-so you won't know if something went wrong until you run your game. For that reason, we recommend developing
-any larger changes standalone.
+don't have to restart Stencyl each time you build the engine.
 
 
 Developing Standalone
@@ -52,7 +49,9 @@ Developing Standalone
 
 For those who desire a more traditional workflow, the engine can be run standalone, outside of Stencyl.
 
-To do this, run any of the following commands from within the checked out directory to run the engine by itself using a minimal test project. You do not need to run the build-stencyl script.
+To do this, run any of the following commands from within the checked out directory to run the engine by 
+itself using a minimal test project. You do not need to run the build-stencyl script unless you wish to
+run a game within Stencyl.
 
 ```
 haxelib run nme test TestProject.nmml flash -debug
@@ -64,13 +63,14 @@ haxelib run nme test TestProject.nmml mac
 haxelib run nme test TestProject.nmml html5
 ```
 
-To edit the data for the standalone game, peek inside of Assets (contains the resource definitions, graphics, sounds) and inside of Scripts.
+To edit the data for the standalone test game, peek inside of Assets (contains the resource definitions, graphics, sounds) 
+inside of Scripts.
 
 
-Developing Extensions
+Extensions
 ==============
 
-[View this page](https://github.com/Stencyl/stencyl-engine/wiki/Extensions)
+Extensions expose native mobile functionality to the Stencyl engine. [Read this page for details.](https://github.com/Stencyl/stencyl-engine/wiki/Extensions)
 
 
 Debugging
@@ -99,6 +99,14 @@ Contributing
 All contributions are made in the form of pull requests. An ideal, model pull request can be found here (TODO).
 
 View this page for details on what areas of Stencyl need the most help. (TODO)
+
+
+Credits
+==============
+
+Stencyl's game engine is proudly built on top of [NME](http://www.nme.io) and [Haxe](http://www.haxe.org). 
+We're a proud sponsor of the [Haxe Foundation](http://www.haxe-foundation.org).
+
 
 
 MIT License
