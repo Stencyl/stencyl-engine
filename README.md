@@ -9,10 +9,10 @@ Create Flash, iOS, Android, desktop and HTML5 games with no code with Stencyl. T
 Requirements
 ==============
 
-* Haxe 2.10 (http://www.haxe.org)
-* Stencyl 3.0 (http://www.stencyl.com)
+* [Haxe 2.10](http://www.haxe.org)
+* [Stencyl 3.0](http://www.stencyl.com)
 
-Stencyl's engine is written in Haxe (http://www.haxe.org), a language similar to ActionScript 3. 
+Stencyl's engine is written in [Haxe](http://www.haxe.org), a language similar to ActionScript 3. 
 You can edit Haxe directly from any text editor, or you can use something more complete such as FlashDevelop, 
 Sublime Text, MonoDevelop or Eclipse.
 
@@ -60,17 +60,24 @@ haxelib run nme test TestProject.nmml html5
 To edit the data for the standalone game, peek inside of Assets (contains the resource definitions, graphics, sounds) and inside of Scripts.
 
 
+Developing Extensions
+==============
+
+[View this page](https://github.com/Stencyl/stencyl-engine/wiki/Extensions)
+
+
 Debugging
 ==============
 
 If you're running the engine standalone, viewing the engine's logs involves external apps.
 
-* For Flash, use Vizzy (https://code.google.com/p/flash-tracer)
+* For Flash, use [Vizzy](https://code.google.com/p/flash-tracer)
 * For Windows, use XXXX?
 * For Mac, use OS X's Console app.
 * For iOS, use OS X's Console app. Also peek at the contents of ios-log.text.
 * For Android, use DDMS.
 * For HTML5, use your web browser's built in tools.
+
 
 
 Code Structure
