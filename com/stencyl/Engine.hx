@@ -1468,6 +1468,11 @@ class Engine
 			}
 		}
 		
+		for (a in allActors)
+		{
+			a.destroy();
+		}
+		
 		actorsOfType = null;
 		recycledActorsOfType = null;
 		
@@ -1509,6 +1514,12 @@ class Engine
 		whenMTEndListeners = null;
 		
 		whenFocusChangedListeners = null;
+		
+		Script.lastCreatedActor = null;
+		Script.lastCreatedJoint = null;
+		Script.lastCreatedRegion = null;
+		Script.lastCreatedTerrainRegion = null;
+		
 		
 		//Reset
 		Input.update();

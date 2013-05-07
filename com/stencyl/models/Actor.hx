@@ -627,6 +627,8 @@ class Actor extends Sprite
 		mouseOverListeners = null;
 		positionListeners = null;
 		collisionListeners = null;
+		allListeners = null;
+		allListenerReferences = null;
 		
 		positionListenerCount = 0;
 		collisionListenerCount = 0;
@@ -634,7 +636,18 @@ class Actor extends Sprite
 		registry = null;
 		
 		collisions = null;
-		simpleCollisions = null;
+		simpleCollisions = null;		
+		
+		if (bodyDef != null)
+		{
+			bodyDef.userData = null;
+			bodyDef = null;
+		}
+		
+		//do for all?
+		#if (cpp || neko)
+		nmeTarget = null;
+		#end
 		
 		behaviors.destroy();
 	}
