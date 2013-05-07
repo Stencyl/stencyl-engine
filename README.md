@@ -107,6 +107,11 @@ Stencyl's game engine is proudly built on top of [NME](http://www.nme.io) and [H
 We're a proud sponsor of the [Haxe Foundation](http://www.haxe-foundation.org).
 
 
+Contributors
+==============
+
+This is where we'll list out all our open source contributors.
+
 
 MIT License
 ==============
