@@ -20,13 +20,20 @@ Sublime Text, MonoDevelop or Eclipse.
 Installing
 ==============
 
-No installation is required. Just check the code out anywhere you'd like.
+1) Check the code out anywhere you'd like.
+
+2) If on Mac/Linux, chmod build-stencyl to 777.
+
+```
+chmod 777 build-stencyl
+```
 
 
 Developing alongside Stencyl
 ==============
 
-To "build" the code, run build-stencyl, passing in the full path to your Stencyl install as its argument. For example:
+To "build" the code, run build-stencyl, passing in the full (absolute) path to your Stencyl install as its argument. 
+For example:
 
 ```
 ./build-stencyl /Users/jon/stencyl/
