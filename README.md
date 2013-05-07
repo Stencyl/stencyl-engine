@@ -96,9 +96,8 @@ Code Structure
 Contributing
 ==============
 
-All contributions are made in the form of pull requests. An ideal, model pull request can be found here (TODO).
-
-View this page for details on what areas of Stencyl need the most help. (TODO)
+* [Making Contributions](https://github.com/Stencyl/stencyl-engine/wiki/Making-Contributions)
+* [What areas need the most help?](https://github.com/Stencyl/stencyl-engine/wiki/Areas-that-need-help)
 
 
 Credits
