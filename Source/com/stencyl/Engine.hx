@@ -846,7 +846,7 @@ class Engine
 			var attributes:Hash<Attribute> = new Hash<Attribute>();
 			
 			//Start honoring default values for events.
-			if(template != null && template.isEvent)
+			if(template.isEvent)
 			{
 				for(key in template.attributes.keys())
 				{
@@ -1468,6 +1468,11 @@ class Engine
 			}
 		}
 		
+		for (a in allActors)
+		{
+			a.destroy();
+		}
+		
 		actorsOfType = null;
 		recycledActorsOfType = null;
 		
@@ -1509,6 +1514,12 @@ class Engine
 		whenMTEndListeners = null;
 		
 		whenFocusChangedListeners = null;
+		
+		Script.lastCreatedActor = null;
+		Script.lastCreatedJoint = null;
+		Script.lastCreatedRegion = null;
+		Script.lastCreatedTerrainRegion = null;
+		
 		
 		//Reset
 		Input.update();
