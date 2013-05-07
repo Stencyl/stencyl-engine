@@ -90,7 +90,7 @@ If you're running the engine standalone, viewing the engine's logs involves exte
 Code Structure
 ==============
 
-See this Wiki page. (TODO)
+[Read this Wiki page](https://github.com/Stencyl/stencyl-engine/wiki/Code-Structure)
 
 
 Contributing
