@@ -6,6 +6,9 @@ http://www.stencyl.com
 Create Flash, iOS, Android, desktop and HTML5 games with no code with Stencyl. 
 This is the source to Stencyl's Haxe-based game engine. 
 
+At the moment, this source is only useful to those who can use Stencyl 3.0. It's not of much relevance to the public
+until 3.0 goes into public beta this summer.
+
 
 Requirements
 ==============
