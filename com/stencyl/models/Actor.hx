@@ -600,6 +600,8 @@ class Actor extends Sprite
 			Engine.engine.world.destroyBody(body);
 		}			
 		
+		cancelTweens();
+		
 		lastCollided = null;
 		
 		shapeMap = null;
