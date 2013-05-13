@@ -118,10 +118,14 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 			frame = 0;
 		}
 		
-		frameIndex = frame;
+		if(frame != frameIndex)
+		{
+			frameIndex = frame;
+			updateBitmap();
+		}
+
 		timer = 0;
 		finished = false;
-		updateBitmap();
 		
 		//Q: should we be altering the shared instance?
 		if(model != null)
