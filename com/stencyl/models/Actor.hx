@@ -3149,7 +3149,7 @@ class Actor extends Sprite
 	public function setFilter(filter:Array<BitmapFilter>)
 	{			
 		#if !cpp
-		filters = filter;
+		filters = filters.concat(filter);
 		#end
 	}
 	
