@@ -754,8 +754,7 @@ class Engine
 	    {	     	
 			layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */); // FLASH MOUSE SLOWDOWN
 			
-	     	layer.x = cameraX;
-	     	layer.y = cameraY;
+	     	layer.setPosition(cameraX, cameraY);
 	    }
 	}
 		
@@ -2862,8 +2861,7 @@ class Engine
 	     		layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */); // FLASH MOUSE SLOWDOWN
 	     	}
 	     	
-	     	layer.x = cameraX;
-	     	layer.y = cameraY;
+	     	layer.setPosition(cameraX, cameraY);
 	    }
      	
      	tileUpdated = false;

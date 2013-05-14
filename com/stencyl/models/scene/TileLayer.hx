@@ -69,8 +69,8 @@ class TileLayer extends Sprite
 		#if !cpp
 		bitmapData = new BitmapData
 		(
-			Std.int(Engine.sceneWidth * Engine.SCALE), 
-			Std.int(Engine.sceneHeight * Engine.SCALE), 
+			Std.int((Engine.screenWidth * Engine.SCALE) + (scene.tileWidth * Engine.SCALE)), 
+			Std.int((Engine.screenHeight * Engine.SCALE) + (scene.tileHeight * Engine.SCALE)), 
 			true, 
 			0
 		);
@@ -92,6 +92,19 @@ class TileLayer extends Sprite
 		bitmapData.dispose();
 		bitmapData = null;
 		
+		#end
+	}
+	
+	public function setPosition(x:Float, y:Float)
+	{
+		#if (flash || js)
+		this.x = x % (scene.tileWidth * Engine.SCALE);
+		this.y = y % (scene.tileHeight * Engine.SCALE);
+		#end
+		
+		#if cpp
+		this.x = x;
+		this.y = y;
 		#end
 	}
 	
@@ -190,24 +203,23 @@ class TileLayer extends Sprite
 		endX = Std.int(Math.min(endX, width));
 		endY = Std.int(Math.min(endY, height));
 		
-		var px:Int = startX * tw;
-		var py:Int = startY * th;
+		var px:Int = 0;
+		var py:Int = 0;
 		
-		var y = startY;
+		var y:Int = startY;	
 		
 		while(y < endY)
 		{
-			var x = startX;
+			var x:Int = startX;
 			
 			while(x < endX)
 			{
 				var t:Tile = getTileAt(y, x);
-									
-				px += tw;
 				
 				if(t == null)
 				{
 					x++;
+					px += tw;
 					continue;
 				}
 													
@@ -230,6 +242,7 @@ class TileLayer extends Sprite
 				if(source == null)
 				{
 					x++;
+					px += tw;
 					continue;
 				}
 				
@@ -246,19 +259,22 @@ class TileLayer extends Sprite
 						pixels = t.pixels;
 					}
 					
-					flashPoint.x = x * tw * Engine.SCALE;// - viewX;
-					flashPoint.y = y * th * Engine.SCALE;// - viewY;
-
 					if(source != null)
 					{
 						#if (flash || js)
+						flashPoint.x = px * Engine.SCALE;
+						flashPoint.y = py * Engine.SCALE;
+						
 						if(pixels != null)
 						{
 							bitmapData.copyPixels(pixels, source, flashPoint, null, null, true);
 						}
 						#end
 						
-						#if cpp						
+						#if cpp		
+						flashPoint.x = x * tw * Engine.SCALE;
+						flashPoint.y = y * th * Engine.SCALE;
+						
 						t.parent.data[0] = flashPoint.x;
 						t.parent.data[1] = flashPoint.y;
 						
@@ -282,12 +298,13 @@ class TileLayer extends Sprite
 				}
 				
 				x++;
+				px += tw;
 			}
 			
-			px = startX * tw;
+			px = 0;
 			py += th;
 			
 			y++;
-		}
+		}		
 	}
 }
