@@ -166,6 +166,10 @@ class GameModel
 			map.set(Std.parseInt(e.att.id), new Scene(sceneID, e.att.name, data));
 		}
 		
+		Data.get().scenesXML = null;
+		Data.get().sceneListXML = null;
+		Data.get().scenesTerrain = null;
+		
 		return map;
 	}
 	

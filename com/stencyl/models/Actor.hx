@@ -2892,17 +2892,17 @@ class Actor extends Sprite
 			trace(item.duration);
 		}*/
 		
-		Actuate.stop(this, ["alpha", "realScaleX", "realScaleY"]);
+		Actuate.stop(this, ["alpha", "realScaleX", "realScaleY"], false, false);
 		
 		if(isLightweight)
 		{
-			Actuate.stop(this, ["realAngle", "realX", "realY"]);
+			Actuate.stop(this, ["realAngle", "realX", "realY"], false, false);
 		}
 		
 		else
 		{
-			Actuate.stop(tweenAngle);
-			Actuate.stop(tweenLoc);
+			Actuate.stop(tweenAngle, null, false, false);
+			Actuate.stop(tweenLoc, null, false, false);
 		}
 		
 		/*trace("After");
@@ -3050,8 +3050,15 @@ class Actor extends Sprite
 	{
 		activePositionTweens--;
 		
-		colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
-		colY = realY - Math.floor(cacheHeight/2) - currOffset.y;
+		if (currOffset != null)
+		{
+			colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
+		}
+		
+		if (currOffset != null)
+		{
+			colY = realY - Math.floor(cacheHeight/2) - currOffset.y;
+		}
 	}
 	
 	
