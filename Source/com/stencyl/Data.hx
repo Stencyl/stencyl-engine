@@ -41,7 +41,6 @@ class Data
 			
 			#if(mobile && !air)
 			instance.preloader = Type.createInstance(Type.resolveClass("scripts.StencylPreloader"), []);
-			//TODO: Local, standalone runs on iOS don't recognize this class. If included in MyScripts, generates tons of compiler errors.
 			#end
 			
 			instance.loadAll();
@@ -105,21 +104,14 @@ class Data
 		//trace(pct);
 		
 		#if(mobile && !air)
-		if(preloader != null)
-		{
-			Reflect.callMethod(preloader, Reflect.field(preloader, "onUpdate"), [pct, 100]);
-		}
+		Reflect.callMethod(preloader, Reflect.field(preloader, "onUpdate"), [pct, 100]);
 		#end
 	}
 	
 	public function loadAll()
 	{
 		#if(mobile && !air)
-		if(preloader != null)
-		{
-			Lib.current.addChild(preloader);
-		}
-		
+		Lib.current.addChild(preloader);
 		updatePreloader(0);
 		#end
 		
@@ -147,10 +139,7 @@ class Data
 		updatePreloader(100);
 		
 		#if(mobile && !air)
-		if(preloader != null)
-		{
-			Lib.current.removeChild(instance.preloader);
-		}
+		Lib.current.removeChild(instance.preloader);
 		#end
 	}
 	
