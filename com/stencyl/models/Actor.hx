@@ -3716,9 +3716,12 @@ class Actor extends Sprite
 	
 	public function clearCollisionList()
 	{
-		for(k in simpleCollisions.keys()) 
+		if (collisionsCount > 0)
 		{
-			simpleCollisions.remove(k);
+			for(k in simpleCollisions.keys()) 
+			{
+				simpleCollisions.remove(k);
+			}
 		}
 		
 		collisionsCount = 0;

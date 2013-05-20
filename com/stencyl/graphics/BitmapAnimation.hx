@@ -24,6 +24,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 	private var pt:Point;
 	
 	private var finished:Bool;
+	private var needsUpdate:Bool;
 	
 	public function new(sheet:BitmapData, numFrames:Int, durations:Array<Int>, looping:Bool, model:Animation) 
 	{
@@ -49,7 +50,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		
 		finished = (numFrames <= 1);
 		
-		updateBitmap();
+		needsUpdate = true;
 	}		
 
 	public inline function update(elapsedTime:Float)
@@ -83,7 +84,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 				
 				if(old != frameIndex)
 				{
-					updateBitmap();
+					needsUpdate = true;
 				}
 			}
 		
@@ -97,7 +98,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		
 		if(old != frameIndex)
 		{
-			updateBitmap();
+			needsUpdate = true;
 		}
 	}
 	
@@ -121,7 +122,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		if(frame != frameIndex)
 		{
 			frameIndex = frame;
-			updateBitmap();
+			needsUpdate = true;
 		}
 
 		timer = 0;
@@ -139,20 +140,27 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		return finished;
 	}
 	
+	public function needsBitmapUpdate():Bool
+	{
+		return needsUpdate;
+	}
+	
 	public inline function reset()
 	{
 		timer = 0;
 		frameIndex = 0;
 		finished = false;
-		updateBitmap();
+		needsUpdate = true;
 	}
 	
-	private inline function updateBitmap()
+	public inline function updateBitmap()
 	{
 		region.x = frameWidth * frameIndex;
 		
 		bitmapData.fillRect(this.bitmapData.rect, 0x00000000);
 		bitmapData.copyPixels(sheet, region, pt);
+		
+		needsUpdate = false;
 	}
 	
 	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)

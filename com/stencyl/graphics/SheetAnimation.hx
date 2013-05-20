@@ -15,6 +15,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 	private var frameIndex:Int;
 	private var looping:Bool;
 	private var timer:Float;
+	private var needsUpdate:Bool;
 	
 	#if !js
 	private var tilesheet:Tilesheet;
@@ -53,7 +54,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 
 		data = [0.0, 0.0, 0];
 		
-		updateBitmap();
+		needsUpdate = true;
 	}		
 
 	public inline function update(elapsedTime:Float)
@@ -86,7 +87,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 				
 				if(old != frameIndex)
 				{
-					updateBitmap();
+					needsUpdate = true;
 				}
 			}
 		
@@ -100,7 +101,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		
 		if(old != frameIndex)
 		{
-			updateBitmap();
+			needsUpdate = true;
 		}
 	}
 	
@@ -122,7 +123,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		}
 		
 		frameIndex = frame;
-		updateBitmap();
+		needsUpdate = true;
 		
 		//Q: should we be altering the shared instance?
 		if(model != null)
@@ -136,14 +137,19 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		return !looping && frameIndex >= numFrames -1;
 	}
 	
+	public function needsBitmapUpdate():Bool
+	{
+		return needsUpdate;
+	}
+	
 	public inline function reset()
 	{
 		timer = 0;
 		frameIndex = 0;
-		updateBitmap();
+		needsUpdate = true;
 	}
 	
-	private inline function updateBitmap()
+	public inline function updateBitmap()
 	{
 		#if !js
 		data[0] = 0;
@@ -152,6 +158,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 
   		graphics.clear();
   		tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias);
+		needsUpdate = false;
   		#end
 	}
 	

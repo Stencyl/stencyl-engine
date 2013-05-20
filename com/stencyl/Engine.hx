@@ -1886,6 +1886,8 @@ class Engine
 		a.ySpeed = 0;
 		a.rSpeed = 0;
 		a.continuousCollision = false;
+		
+		allActors.remove(a.ID);
 	}
 	
 	public function getRecycledActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
@@ -1909,6 +1911,7 @@ class Engine
 				if(actor != null && actor.recycled)
 				{
 					actor.createTime = Lib.getTimer();
+					allActors.set(actor.ID, actor);
 				
 					actor.dead = false;
 					actor.dying = false;
@@ -2460,6 +2463,11 @@ class Engine
 				a.updateDrawingMatrix();
 				a.updateMatrix = false;
 				a.resetOrigin = false;
+			}
+			
+			if (a.currAnimationAsAnim != null && a.currAnimationAsAnim.needsBitmapUpdate())
+			{
+				a.currAnimationAsAnim.updateBitmap();
 			}
 			
 			if(a.body == null)

@@ -75,7 +75,8 @@ class Script
 	
 	public var propertyChangeListeners:Hash<Dynamic>;
 	public var equalityPairs:HashMap<Dynamic, Dynamic>; //hashmap does badly on some platforms when checking key equality (for primitives) - beware
-		
+	
+	public var checkProperties:Bool;
 		
 	//*-----------------------------------------------
 	//* Constants
@@ -122,6 +123,7 @@ class Script
 		this.engine = this.scene = engine;
 		
 		scriptInit = false;
+		checkProperties = false;
 		nameMap = new Hash<Dynamic>();	
 		propertyChangeListeners = new Hash<Dynamic>();
 		equalityPairs = new HashMap<Dynamic, Dynamic>();
@@ -692,49 +694,54 @@ class Script
 				cast(this, ActorScript).actor.registerListener(listeners2, func);
 			}
 		}
+		
+		checkProperties = true;
 	}
 	
 	public function propertyChanged(propertyKey:String, property:Dynamic)
 	{
-		var listeners = propertyChangeListeners.get(propertyKey);
+		if (checkProperties)
+		{					
+			var listeners = propertyChangeListeners.get(propertyKey);
 		
-		if(listeners != null)
-		{
-			var r = 0;
-		
-			while(r < listeners.length)
+			if(listeners != null)
 			{
-				try
+				var r = 0;
+		
+				while(r < listeners.length)
 				{
-					var f:Dynamic->Array<Dynamic>->Void = listeners[r];			
-					f(property, listeners);
-					
-					if(com.stencyl.utils.Utils.indexOf(listeners, f) == -1)
+					try
 					{
-						r--;
-						
-						//If equality, remove from other list as well
-						if(equalityPairs.get(f) != null)
+						var f:Dynamic->Array<Dynamic>->Void = listeners[r];			
+						f(property, listeners);
+					
+						if(com.stencyl.utils.Utils.indexOf(listeners, f) == -1)
 						{
-							for(list in cast(equalityPairs.get(f), Array<Dynamic>))
+							r--;
+						
+							//If equality, remove from other list as well
+							if(equalityPairs.get(f) != null)
 							{
-								if(list != listeners)
+								for(list in cast(equalityPairs.get(f), Array<Dynamic>))
 								{
-									list.splice(com.stencyl.utils.Utils.indexOf(list, f), 1);
+									if(list != listeners)
+									{
+										list.splice(com.stencyl.utils.Utils.indexOf(list, f), 1);
+									}
 								}
+								
+								equalityPairs.delete(f);
 							}
-							
-							equalityPairs.delete(f);
 						}
 					}
+					
+					catch(e:String)
+					{
+						trace(e);
+					}
+					
+					r++;
 				}
-				
-				catch(e:String)
-				{
-					trace(e);
-				}
-				
-				r++;
 			}
 		}
 	}
