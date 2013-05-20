@@ -54,7 +54,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 
 		data = [0.0, 0.0, 0];
 		
-		needsUpdate = true;
+		updateBitmap();
 	}		
 
 	public inline function update(elapsedTime:Float)
