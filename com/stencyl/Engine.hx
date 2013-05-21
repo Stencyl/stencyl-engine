@@ -1453,6 +1453,17 @@ class Engine
 			Utils.clear(set);
 		}
 		
+		for (rList in recycledActorsOfType)
+		{
+			for (a in rList)
+			{
+				if (!a.destroyed)
+				{
+					a.destroy();
+				}
+			}
+		}
+		
 		for(set in recycledActorsOfType)
 		{
 			Utils.clear(set);
@@ -1471,6 +1482,8 @@ class Engine
 		{
 			a.destroy();
 		}
+		
+		
 		
 		actorsOfType = null;
 		recycledActorsOfType = null;
