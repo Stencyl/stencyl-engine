@@ -50,7 +50,7 @@ class BitmapAnimation extends Bitmap, implements AbstractAnimation
 		
 		finished = (numFrames <= 1);
 		
-		needsUpdate = true;
+		updateBitmap();
 	}		
 
 	public inline function update(elapsedTime:Float)

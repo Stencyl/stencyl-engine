@@ -1543,7 +1543,7 @@ class Engine
 	{
 		trace("Request to switch to Scene " + sceneID);
 
-		if(isTransitioningOut())
+		if(isTransitioning())
 		{
 			trace("Warning: Switching Scene while already switching. Ignoring.");
 			return;
@@ -1893,6 +1893,7 @@ class Engine
 		{
 			a.body.setActive(false);
 			a.body.setAwake(false);
+			a.body.setRecycled(true);
 		}
 		
 		a.xSpeed = 0;
@@ -1937,6 +1938,7 @@ class Engine
 					{
 						actor.body.setActive(true);
 						actor.body.setAwake(true);
+						actor.body.setRecycled(false);
 					}
 					
 					actor.registry = new Hash<Dynamic>();
