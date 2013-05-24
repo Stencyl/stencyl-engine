@@ -262,8 +262,8 @@ class Region extends Actor
 			
 			body.createFixture(fixture);
 			
-			regionWidth = Engine.toPixelUnits(width);
-			regionHeight = Engine.toPixelUnits(height);
+			cacheWidth = regionWidth = Engine.toPixelUnits(width);
+			cacheHeight = regionHeight = Engine.toPixelUnits(height);
 		}
 		
 		var dw = (regionWidth - oldWidth);
@@ -323,19 +323,19 @@ class Region extends Actor
 			}
 		}
 							
-		while(justAdded.length > 0)
+		while(justAdded != null && justAdded.length > 0)
 		{				
 			var a = cast(justAdded.pop(), Actor);
 			Engine.invokeListeners2(whenActorEntersListeners, a);
 		}
 		
-		while(justRemoved.length > 0)
+		while(justRemoved != null && justRemoved.length > 0)
 		{
 			var a = cast(justRemoved.pop(), Actor);
 			Engine.invokeListeners2(whenActorExitsListeners, a);
 		}
 		
-		if(mouseOverListeners.length > 0)
+		if(mouseOverListeners != null && mouseOverListeners.length > 0)
 		{
 			//Previously was checkMouseState() - inlined for performance. See Actor:innerUpdate for other instance.
 			var mouseOver:Bool = isMouseOver();
