@@ -3,6 +3,14 @@ package com.stencyl.models;
 import nme.media.SoundChannel;
 import nme.Assets;
 
+//TODO: don't load a sound upfront - tie to atlas (remove loading from init)
+//Provide load/unload functions (need to hack into NME to unload a sound forcefully?)
+//Make sure load/unload get calleed alongside rest of atlas stuff.
+//For streaming sounds, the atlas flag is ignored (?).
+
+//Corner case - if sound is looping/playing and you unload...? (we "try" to immediately stop playback and then unload - but how do you know it's playing in the first place?)
+//Corner case - if the sound isn't loaded in, it's a no-op. It does not attempt to load it in.
+
 class Sound extends Resource
 {	
 	public var streaming:Bool;
@@ -35,7 +43,17 @@ class Sound extends Resource
 		{
 			src = Assets.getSound("assets/sfx/sound-" + ID + "." + this.ext);
 		}
-	}		
+	}	
+	
+	override public function loadGraphics()
+	{
+		//TODO
+	}
+	
+	override public function unloadGraphics()
+	{
+		//TODO
+	}
 	
 	public function play(channelNum:Int = 1, position:Float = 0):SoundChannel
 	{
