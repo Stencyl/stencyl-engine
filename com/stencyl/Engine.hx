@@ -336,7 +336,7 @@ class Engine
 	private var my:Float;
 	
 	private var collisionPairs:HashMap<Dynamic, HashMap<Dynamic, Bool>>;
-	private var disableCollisionList:Array<Actor>();
+	private var disableCollisionList:Array<Actor>;
 	
 	public var whenKeyPressedListeners:Hash<Dynamic>;
 	public var whenTypeGroupCreatedListeners:HashMap<Dynamic, Dynamic>;
