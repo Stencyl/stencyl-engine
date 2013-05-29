@@ -336,6 +336,7 @@ class Engine
 	private var my:Float;
 	
 	private var collisionPairs:HashMap<Dynamic, HashMap<Dynamic, Bool>>;
+	private var disableCollisionList:Array<Actor>();
 	
 	public var whenKeyPressedListeners:Hash<Dynamic>;
 	public var whenTypeGroupCreatedListeners:HashMap<Dynamic, Dynamic>;
@@ -684,6 +685,7 @@ class Engine
 		groups.set(GameModel.REGION_ID, regionGroup);
 		reverseGroups.set("Regions", regionGroup);
 		
+		disableCollisionList = new Array<Actor>();
 		actorsOfType = new IntHash<Array<Actor>>();
 		recycledActorsOfType = new IntHash<Array<Actor>>();
 		
@@ -1893,7 +1895,27 @@ class Engine
 		{
 			a.body.setActive(false);
 			a.body.setAwake(false);
-			a.body.setRecycled(true);
+			
+			// Remove world body list.
+			if (a.body.m_prev != null)
+			{
+				a.body.m_prev.m_next = a.body.m_next;		
+			}
+		
+			if (a.body.m_next != null)
+			{
+				a.body.m_next.m_prev = a.body.m_prev;				
+			}
+		
+			if (a.body == world.m_bodyList)
+			{
+				world.m_bodyList = a.body.m_next;
+			}
+			
+			a.body.m_prev = null;
+			a.body.m_next = null;
+			
+			--world.m_bodyCount;
 		}
 		
 		a.xSpeed = 0;
@@ -1938,7 +1960,17 @@ class Engine
 					{
 						actor.body.setActive(true);
 						actor.body.setAwake(true);
-						actor.body.setRecycled(false);
+						
+						//actor.body.m_prev = null;
+						//actor.body.m_next = world.m_bodyList;
+						//
+/*						if (world.m_bodyList != null)
+						{
+							world.m_bodyList.m_prev = actor.body;
+						}
+						
+						world.m_bodyList = actor.body;
+						++world.m_bodyCount;*/
 					}
 					
 					actor.registry = new Hash<Dynamic>();
@@ -1985,6 +2017,19 @@ class Engine
 					moveActorToLayer(actor, layerID);
 					
 					actor.initScripts();
+					
+					var f1 = whenTypeGroupCreatedListeners.get(type);
+					var f2 = whenTypeGroupCreatedListeners.get(actor.getGroup());
+		
+					if(f1 != null)
+					{
+						invokeListeners2(f1, actor);
+					}
+		
+					if(f2 != null)
+					{
+						invokeListeners2(f2, actor);
+					}
 
 					return actor;
 				}
@@ -2199,12 +2244,15 @@ class Engine
 			if(r == null) continue;
 			r.innerUpdate(elapsedTime, true);
 		}
-		
-		//TODO: Don't like making a new list each time...
-		var disableCollisionList = new Array<Actor>();
+				
+		while(disableCollisionList.length > 0)
+		{
+			disableCollisionList.pop();
+		}
 		
 		if(!NO_PHYSICS)
 		{
+			//clear rather than new
 			collisionPairs = new HashMap<Actor, HashMap<Actor, Bool>>();	
 		}
 		
@@ -2467,6 +2515,11 @@ class Engine
 				continue;
 			}
 			
+			if (a.currAnimationAsAnim != null && a.currAnimationAsAnim.needsBitmapUpdate())
+			{
+				a.currAnimationAsAnim.updateBitmap();
+			}
+			
 			if(a.dead || a.dying)
 			{
 				removeActor(a);
@@ -2478,12 +2531,7 @@ class Engine
 				a.updateDrawingMatrix();
 				a.updateMatrix = false;
 				a.resetOrigin = false;
-			}
-			
-			if (a.currAnimationAsAnim != null && a.currAnimationAsAnim.needsBitmapUpdate())
-			{
-				a.currAnimationAsAnim.updateBitmap();
-			}
+			}			
 			
 			if(a.body == null)
 			{
