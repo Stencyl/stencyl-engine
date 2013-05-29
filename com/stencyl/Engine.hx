@@ -1961,16 +1961,16 @@ class Engine
 						actor.body.setActive(true);
 						actor.body.setAwake(true);
 						
-						//actor.body.m_prev = null;
-						//actor.body.m_next = world.m_bodyList;
-						//
-/*						if (world.m_bodyList != null)
+						actor.body.m_prev = null;
+						actor.body.m_next = world.m_bodyList;
+						
+						if (world.m_bodyList != null)
 						{
 							world.m_bodyList.m_prev = actor.body;
 						}
 						
 						world.m_bodyList = actor.body;
-						++world.m_bodyCount;*/
+						++world.m_bodyCount;
 					}
 					
 					actor.registry = new Hash<Dynamic>();
