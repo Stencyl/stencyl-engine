@@ -1374,6 +1374,7 @@ class Script
     
     public function setBlendModeForLayer(layerID:Int, mode:nme.display.BlendMode)
     {
+		engine.tileLayers.get(layerID).blendMode = mode;
     	engine.layers.get(layerID).blendMode = mode;
 		engine.actorsPerLayer.get(layerID).blendMode = mode;
     }
@@ -1385,6 +1386,7 @@ class Script
 	 */
 	public function showTileLayer(layerID:Int)
 	{
+		engine.tileLayers.get(layerID).alpha = 1;
 		engine.layers.get(layerID).alpha = 1;
 		engine.actorsPerLayer.get(layerID).alpha = 1;
 	}
@@ -1396,6 +1398,7 @@ class Script
 	 */
 	public function hideTileLayer(layerID:Int)
 	{
+		engine.tileLayers.get(layerID).alpha = 0;
 		engine.layers.get(layerID).alpha = 0;
 		engine.actorsPerLayer.get(layerID).alpha = 0;
 	}
@@ -1415,6 +1418,7 @@ class Script
 			easing = Linear.easeNone;
 		}
 	
+		Actuate.tween(engine.tileLayers.get(layerID), duration, {alpha:alphaPct}).ease(easing);
 		Actuate.tween(engine.layers.get(layerID), duration, {alpha:alphaPct}).ease(easing);
 		Actuate.tween(engine.actorsPerLayer.get(layerID), duration, {alpha:alphaPct}).ease(easing);
 	}

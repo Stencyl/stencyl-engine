@@ -754,7 +754,7 @@ class Engine
 		//Remove because post update added now after scene load?
 		for(layer in tileLayers)
 	    {	     	
-			layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */); // FLASH MOUSE SLOWDOWN
+			layer.draw(Std.int(cameraX), Std.int(cameraY));
 			
 	     	layer.setPosition(cameraX, cameraY);
 	    }
@@ -2929,7 +2929,7 @@ class Engine
 	    {
 	    	if(cameraMoved || tileUpdated)
      		{
-	     		layer.draw(Std.int(cameraX), Std.int(cameraY), 1 /* TODO */); // FLASH MOUSE SLOWDOWN
+	     		layer.draw(Std.int(cameraX), Std.int(cameraY));
 	     	}
 	     	
 	     	layer.setPosition(cameraX, cameraY);

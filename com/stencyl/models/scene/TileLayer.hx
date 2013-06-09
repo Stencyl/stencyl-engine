@@ -169,7 +169,7 @@ class TileLayer extends Sprite
 	
 	//We're directly drawing since pre-rendering the layer might not be so memory friendly on large levels 
 	//and I don't know if it clips.
-	public function draw(viewX:Int, viewY:Int, alpha:Float)
+	public function draw(viewX:Int, viewY:Int)
 	{
 		#if cpp
 		graphics.clear();
@@ -183,8 +183,6 @@ class TileLayer extends Sprite
 		
 		bitmapData.fillRect(bitmapData.rect, 0);
 		#end
-		
-		this.alpha = alpha;
 	
 		viewX = Math.floor(Math.abs(viewX));
 		viewY = Math.floor(Math.abs(viewY));
