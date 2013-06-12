@@ -79,6 +79,8 @@ class TileLayer extends Sprite
 		bmp.smoothing = scripts.MyAssets.antialias;
 		addChild(bmp);
 		#end
+		
+		alpha = 1;
 	}
 	
 	public function clearBitmap()

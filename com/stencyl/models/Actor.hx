@@ -2905,6 +2905,9 @@ class Actor extends Sprite
 			Actuate.stop(tweenLoc, null, false, false);
 		}
 		
+		activePositionTweens = 0;
+		activeAngleTweens = 0;
+		
 		/*trace("After");
 		for(item in Actuate.getLibrary(this))
 		{
