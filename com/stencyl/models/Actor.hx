@@ -1466,8 +1466,8 @@ class Actor extends Sprite
 		lastAngle = realAngle;
 		lastScale.x = realScaleX;
 		lastScale.y = realScaleY;
-			
-		if(doAll)
+		
+		if(doAll && currAnimationAsAnim != null)
 		{
    			//This may be a slowdown on iOS by 3-5 FPS due to clear and redraw?
    			currAnimationAsAnim.update(elapsedTime);
