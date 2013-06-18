@@ -394,7 +394,16 @@ class Actor extends Sprite
 		
 		//---
 		
-		resetListeners();
+		allListeners = new HashMap<Dynamic, Dynamic>();
+		allListenerReferences = new Array<Dynamic>();
+		
+		whenCreatedListeners = new Array<Dynamic>();
+		whenUpdatedListeners = new Array<Dynamic>();
+		whenDrawingListeners = new Array<Dynamic>();
+		whenKilledListeners = new Array<Dynamic>();
+		mouseOverListeners = new Array<Dynamic>();
+		positionListeners = new Array<Dynamic>();
+		collisionListeners = new Array<Dynamic>();
 		
 		//---
 		
@@ -655,17 +664,46 @@ class Actor extends Sprite
 	}
 	
 	public function resetListeners()
-	{
-		allListeners = new HashMap<Dynamic, Dynamic>();
-		allListenerReferences = new Array<Dynamic>();
+	{		
+		for (key in allListeners.keys())
+		{
+			allListeners.delete(key);
+		}
 		
-		whenCreatedListeners = new Array<Dynamic>();
-		whenUpdatedListeners = new Array<Dynamic>();
-		whenDrawingListeners = new Array<Dynamic>();
-		whenKilledListeners = new Array<Dynamic>();
-		mouseOverListeners = new Array<Dynamic>();
-		positionListeners = new Array<Dynamic>();
-		collisionListeners = new Array<Dynamic>();
+		while (allListenerReferences.length > 0)
+		{
+			allListenerReferences.pop();
+		}
+		
+		while (whenUpdatedListeners.length > 0)
+		{
+			whenUpdatedListeners.pop();
+		}
+		
+		while (whenDrawingListeners.length > 0)
+		{
+			whenDrawingListeners.pop();
+		}
+		
+		while (whenKilledListeners.length > 0)
+		{
+			whenKilledListeners.pop();
+		}
+		
+		while (mouseOverListeners.length > 0)
+		{
+			mouseOverListeners.pop();
+		}
+		
+		while (positionListeners.length > 0)
+		{
+			positionListeners.pop();
+		}
+		
+		while (collisionListeners.length > 0)
+		{
+			collisionListeners.pop();
+		}
 		
 		positionListenerCount = 0;
 		collisionListenerCount = 0;
