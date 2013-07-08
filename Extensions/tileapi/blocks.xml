@@ -23,6 +23,13 @@
 			<number order="2"></number>
 		</fields>
 	</block>
+	<block tag="tileColID-at" spec="collision ID for tile at row: %0 col: %1 layerID: %2" code="TileAPI.getTileColIDAt(Std.int(~),Std.int(~),~)" type="normal" color="blue" returns="number">
+		<fields>
+			<number order="0"></number>
+			<number order="1"></number>
+			<number order="2"></number>
+		</fields>
+	</block>
 	<block tag="tilesetID-at" spec="ID for tile's tileset at row: %0 col: %1 layerID: %2" code="TileAPI.getTilesetIDAt(Std.int(~),Std.int(~),~)" type="normal" color="blue" returns="number">
 		<fields>
 			<number order="0"></number>

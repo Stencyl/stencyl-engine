@@ -38,9 +38,13 @@ class TileAPI
 			var x = col * engine.scene.tileWidth;
 			var y = row * engine.scene.tileHeight;
 			
-			if(tileShape != null)
+			if(!Engine.NO_PHYSICS && tileShape != null)
 			{
 				createDynamicTile(tileShape, Engine.toPhysicalUnits(x), Engine.toPhysicalUnits(y), layerID, engine.scene.tileWidth, engine.scene.tileHeight);
+			}
+			else if (tileShape != null)
+			{
+				engine.tileLayers.get(layerID).grid.setTile(col, row);
 			}
 		}
 		
@@ -62,6 +66,18 @@ class TileAPI
 		}
 		
 		return tile.tileID;
+	}
+	
+	public static function getTileColIDAt(row:Int, col:Int, layerID:Int):Int
+	{
+		var tile = getTileAt(row, col, layerID);
+		
+		if(tile == null)
+		{
+			return -1;
+		}
+		
+		return tile.collisionID;
 	}
 	
 	public static function getTilesetIDAt(row:Int, col:Int, layerID:Int):Int
@@ -106,7 +122,7 @@ class TileAPI
 		if(tile != null)
 		{
 			//Remove the collision box
-			if(tile.collisionID != -1)
+			if(!Engine.NO_PHYSICS && tile.collisionID != -1)
 			{
 				var x = col * engine.scene.tileWidth;
 				var y = row * engine.scene.tileHeight;
@@ -118,6 +134,11 @@ class TileAPI
 					engine.removeActor(a);
 					engine.dynamicTiles.remove(key);
 				}
+			}
+			
+			else if (tile.collisionID != -1)
+			{
+				engine.tileLayers.get(layerID).grid.clearTile(col, row);
 			}
 			
 			//Remove the tile image
