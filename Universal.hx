@@ -202,6 +202,8 @@ class Universal extends Sprite
 			
 			scaleX *= stageWidth / scripts.MyAssets.stageWidth;
 			scaleY *= stageHeight / scripts.MyAssets.stageHeight;
+			
+			trace("Algorithm: Stretch to Fit");
 		}
 		#end
 		
@@ -223,6 +225,8 @@ class Universal extends Sprite
 			originalHeight = Std.int(stageHeight / Engine.SCALE);
 			
 			usingFullScreen = true;
+			
+			trace("Algorithm: Full Screen");
 		}
 		#end
 	
@@ -231,49 +235,118 @@ class Universal extends Sprite
 		{
 			if(scripts.MyAssets.maxScale < 4)
 			{
+				//Scale to Fit: Letterboxed
+				if(scripts.MyAssets.scaleToFit1)
+				{
+					if(scripts.MyAssets.landscape)
+					{
+						scaleX *= stageWidth / scripts.MyAssets.stageWidth;
+						scaleY = scaleX;
+					}
+					
+					else
+					{
+						scaleY = stageHeight / scripts.MyAssets.stageHeight;
+						scaleX = scaleY;
+					}
+					
+					trace("Algorithm: Scale to Fit (Letterbox)");
+				}
+				
+				//Scale to Fit: Fill/Cropped
+				else if(scripts.MyAssets.scaleToFit2)
+				{
+					if(scripts.MyAssets.landscape)
+					{
+						scaleY = stageHeight / scripts.MyAssets.stageHeight;
+						scaleX = scaleY;
+					}
+					
+					else
+					{
+						scaleX *= stageWidth / scripts.MyAssets.stageWidth;
+						scaleY = scaleX;
+					}
+					
+					trace("Algorithm: Scale to Fit (Fill)");
+				}
+				
 				//Perfect Fit
-				if(scripts.MyAssets.landscape)
-				{
-					scaleX *= Std.int(stageWidth / scripts.MyAssets.stageWidth);
-					scaleY = scaleX;
-				}
-				
 				else
 				{
-					scaleY = Std.int(stageHeight / scripts.MyAssets.stageHeight);
-					scaleX = scaleY;
+					if(scripts.MyAssets.landscape)
+					{
+						scaleX *= Std.int(stageWidth / scripts.MyAssets.stageWidth);
+						scaleY = scaleX;
+					}
+					
+					else
+					{
+						scaleY = Std.int(stageHeight / scripts.MyAssets.stageHeight);
+						scaleX = scaleY;
+					}
+					
+					trace("Algorithm: No Scaling (Perfect Fit)");
 				}
-			
-				//Scale to Fit (letterbox) 
-				/*if(scripts.MyAssets.landscape)
-				{
-					scaleX *= stageWidth / scripts.MyAssets.stageWidth;
-					scaleY = scaleX;
-				}
-				
-				else
-				{
-					scaleY = stageHeight / scripts.MyAssets.stageHeight;
-					scaleX = scaleY;
-				}*/
-				
-				//Scale to Fit (crop)
 			}
 			
+			//TODO: I think the above and below are identical, clean this up later.
 			else
 			{
-				//Is the game width > device width? Adjust scaleX, then scaleY.
-				if(scripts.MyAssets.stageWidth > stageWidth)
+				//Scale to Fit: Letterboxed
+				if(scripts.MyAssets.scaleToFit1)
 				{
-					scaleX *= stageWidth / scripts.MyAssets.stageWidth;
-					scaleY = scaleX;
+					if(scripts.MyAssets.landscape)
+					{
+						scaleX *= stageWidth / scripts.MyAssets.stageWidth;
+						scaleY = scaleX;
+					}
+					
+					else
+					{
+						scaleY = stageHeight / scripts.MyAssets.stageHeight;
+						scaleX = scaleY;
+					}
+					
+					trace("Algorithm: Scale to Fit (Letterbox)");
 				}
 				
-				//If the game height * scaleY > device height? Adjust scaleY, then scaleX.
-				if(scripts.MyAssets.stageHeight * scaleY > stageHeight)
+				//Scale to Fit: Fill/Cropped
+				else if(scripts.MyAssets.scaleToFit1)
 				{
-					scaleY = stageHeight / scripts.MyAssets.stageHeight;
-					scaleX = scaleY;
+					if(scripts.MyAssets.landscape)
+					{
+						scaleY = stageHeight / scripts.MyAssets.stageHeight;
+						scaleX = scaleY;
+					}
+					
+					else
+					{
+						scaleX *= stageWidth / scripts.MyAssets.stageWidth;
+						scaleY = scaleX;
+					}
+					
+					trace("Algorithm: Scale to Fit (Fill)");
+				}
+				
+				//Perfect Fit
+				else
+				{
+					//Is the game width > device width? Adjust scaleX, then scaleY.
+					if(scripts.MyAssets.stageWidth > stageWidth)
+					{
+						scaleX *= stageWidth / scripts.MyAssets.stageWidth;
+						scaleY = scaleX;
+					}
+					
+					//If the game height * scaleY > device height? Adjust scaleY, then scaleX.
+					if(scripts.MyAssets.stageHeight * scaleY > stageHeight)
+					{
+						scaleY = stageHeight / scripts.MyAssets.stageHeight;
+						scaleX = scaleY;
+					}
+					
+					trace("Algorithm: No Scaling (Perfect Fit)");
 				}
 			}
 			
