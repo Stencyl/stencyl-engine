@@ -1524,12 +1524,15 @@ class Actor extends Sprite
 			return;
 		}
 		
+		var drawX:Float = realX;
+		var drawY:Float = realY;
+		
 		if (!isLightweight)
 		{
 			var p = body.getPosition();
 			
-			realX = Math.round(p.x * Engine.physicsScale);
-			realY = Math.round(p.y * Engine.physicsScale);
+			drawX = p.x * Engine.physicsScale;
+			drawY = p.y * Engine.physicsScale;
 		}
 		
 		var trueScaleX:Float = Engine.SCALE * realScaleX;
@@ -1547,7 +1550,8 @@ class Actor extends Sprite
 			transformMatrix.rotate(realAngle * Utils.RAD);
 		}
 		
-		transformMatrix.translate(realX * Engine.SCALE, realY * Engine.SCALE);
+		transformMatrix.translate(drawX * Engine.SCALE, drawY * Engine.SCALE);
+		
 						
 		if (transformObj == null)
 		{
