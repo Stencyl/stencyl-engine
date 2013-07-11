@@ -183,8 +183,7 @@ class Universal extends Sprite
 		
 		trace("Max Scale: " + scripts.MyAssets.maxScale);
 		trace("Engine Scale: " + Engine.IMG_BASE);
-		trace("Original Scale: " + theoreticalScale);
-		
+
 		var originalWidth = scripts.MyAssets.stageWidth;
 		var originalHeight = scripts.MyAssets.stageHeight;
 		
