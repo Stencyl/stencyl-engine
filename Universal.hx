@@ -88,12 +88,7 @@ class Universal extends Sprite
 			stageWidth = temp;
 		}
 		#end
-		
-		#if (air)
-		stageWidth = Std.int(nme.system.Capabilities.screenResolutionX);
-		stageHeight = Std.int(nme.system.Capabilities.screenResolutionY);
-		#end
-		
+
 		trace("Stage Width: " + scripts.MyAssets.stageWidth);
 		trace("Stage Height: " + scripts.MyAssets.stageHeight);
 		trace("Screen Width: " + stageWidth);
@@ -131,20 +126,43 @@ class Universal extends Sprite
 			Engine.isTabletIOS = true;
 		}		
 		
+		//Calculate the theoretical scale if no max scale were imposed
+		var theoreticalScale:Float = 0;
+		
+		if(larger >= 1920 && smaller >= 1280)
+		{
+			theoreticalScale = 4;
+		}
+		
+		else if(larger >= 960 && smaller >= 640)
+		{
+			theoreticalScale = 2;
+		}
+		
+		else if(larger >= 720 && smaller >= 480)
+		{
+			theoreticalScale = 1.5;
+		}
+		
+		else
+		{
+			theoreticalScale = 1;
+		}
+		
 		//4 scale sceheme
-		if(larger >= 1920 && smaller >= 1280 && !scripts.MyAssets.always1x)
+		if(larger >= 1920 && smaller >= 1280 && scripts.MyAssets.maxScale >= 4)
 		{
 			Engine.SCALE = 4;
 			Engine.IMG_BASE = "4x";
 		}
 		
-		else if(larger >= 960 && smaller >= 640 && !scripts.MyAssets.always1x)
+		else if(larger >= 960 && smaller >= 640 && scripts.MyAssets.maxScale >= 2)
 		{
 			Engine.SCALE = 2;
 			Engine.IMG_BASE = "2x";
 		}
 		
-		else if(larger >= 720 && smaller >= 480 && !scripts.MyAssets.always1x)
+		else if(larger >= 720 && smaller >= 480 && scripts.MyAssets.maxScale >= 1.5)
 		{
 			Engine.SCALE = 1.5;
 			Engine.IMG_BASE = "1.5x";
@@ -155,6 +173,7 @@ class Universal extends Sprite
 			Engine.SCALE = 1;
 			Engine.IMG_BASE = "1x";
 		}
+
 		#end
 		
 		#if(!mobile)
@@ -162,31 +181,9 @@ class Universal extends Sprite
 		Engine.IMG_BASE = scripts.MyAssets.gameImageBase;
 		#end
 		
-		//Purely for testing
-		#if(air && mobile)
-		Engine.SCALE = 1;
-		Engine.IMG_BASE = "1x";
-		
-		if(scripts.MyAssets.stageWidth == -1 || scripts.MyAssets.stageHeight == -1)
-		{
-			var larger = Math.max(stageWidth, stageHeight);
-			var smaller = Math.min(stageWidth, stageHeight);
-			
-			if(larger >= 1920 && !scripts.MyAssets.always1x)
-			{
-				Engine.SCALE = 4;
-				Engine.IMG_BASE = "4x";
-			}
-			
-			else if(larger >= 720 && !scripts.MyAssets.always1x)
-			{
-				Engine.SCALE = 2;
-				Engine.IMG_BASE = "2x";
-			}
-		}
-		#end
-		
+		trace("Max Scale: " + scripts.MyAssets.maxScale);
 		trace("Engine Scale: " + Engine.IMG_BASE);
+		trace("Original Scale: " + theoreticalScale);
 		
 		var originalWidth = scripts.MyAssets.stageWidth;
 		var originalHeight = scripts.MyAssets.stageHeight;
@@ -208,49 +205,47 @@ class Universal extends Sprite
 		}
 		#end
 		
-		#if(air)
-		if(scripts.MyAssets.stretchToFit)
-		{
-			stretchToFit = true;
-			
-			scaleX *= stageWidth / scripts.MyAssets.stageWidth;
-			scaleY *= stageHeight / scripts.MyAssets.stageHeight;
-		}
-		#end
-		
 		//Full Screen Mode
 		#if(mobile && !air)
 		if(originalWidth == -1 || originalHeight == -1)
-		{
+		{					
+			//Max Scale: set the scale to what it would have been
+			if(scripts.MyAssets.maxScale < theoreticalScale)
+			{
+				scaleX = theoreticalScale;
+				scaleY = theoreticalScale;
+			}
+			
 			scripts.MyAssets.stageWidth = stageWidth;
 			scripts.MyAssets.stageHeight = stageHeight;
-			
+				
 			originalWidth = Std.int(stageWidth / Engine.SCALE);
 			originalHeight = Std.int(stageHeight / Engine.SCALE);
 			
 			usingFullScreen = true;
 		}
 		#end
-			
-		#if(mobile && air)
-		if(originalWidth == -1 || originalHeight == -1)
-		{
-			scripts.MyAssets.stageWidth = stageWidth;
-			scripts.MyAssets.stageHeight = stageHeight;
-			
-			originalWidth = Std.int(stageWidth / Engine.SCALE);
-			originalHeight = Std.int(stageHeight / Engine.SCALE);
-			
-			usingFullScreen = true;
-		}
-		#end
-			
+	
 		#if(mobile && !air)
 		if(!usingFullScreen && !stretchToFit)
 		{
-			if(scripts.MyAssets.always1x)
+			if(scripts.MyAssets.maxScale < 4)
 			{
+				//Perfect Fit
 				if(scripts.MyAssets.landscape)
+				{
+					scaleX *= Std.int(stageWidth / scripts.MyAssets.stageWidth);
+					scaleY = scaleX;
+				}
+				
+				else
+				{
+					scaleY = Std.int(stageHeight / scripts.MyAssets.stageHeight);
+					scaleX = scaleY;
+				}
+			
+				//Scale to Fit (letterbox) 
+				/*if(scripts.MyAssets.landscape)
 				{
 					scaleX *= stageWidth / scripts.MyAssets.stageWidth;
 					scaleY = scaleX;
@@ -260,7 +255,9 @@ class Universal extends Sprite
 				{
 					scaleY = stageHeight / scripts.MyAssets.stageHeight;
 					scaleX = scaleY;
-				}
+				}*/
+				
+				//Scale to Fit (crop)
 			}
 			
 			else
