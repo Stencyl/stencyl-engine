@@ -147,17 +147,42 @@ class Universal extends Sprite
 		//Calculate the theoretical scale if no max scale were imposed
 		var theoreticalScale:Float = 0;
 		
-		if(larger >= 1920 && smaller >= 1280)
+		var x1 = scripts.MyAssets.stageHeight;
+		var y1 = scripts.MyAssets.stageWidth;
+		
+		if(x1 == -1 || y1 == -1)
+		{
+			x1 = stageWidth;
+			y1 = stageHeight;
+		}
+		
+		if(!scripts.MyAssets.landscape)
+		{
+			var temp = x1;
+			x1 = y1;
+			y1 = temp;
+		}
+		
+		var x15 = x1 * 3 / 2;
+		var y15 = y1 * 3 / 2;
+		
+		var x2 = x1 * 2;
+		var y2 = y1 * 2;
+		
+		var x4 = x2 * 2;
+		var y4 = y2 * 2;
+
+		if(larger >= x4 && smaller >= y4)
 		{
 			theoreticalScale = 4;
 		}
 		
-		else if(larger >= 960 && smaller >= 640)
+		else if(larger >= x2 && smaller >= y2)
 		{
 			theoreticalScale = 2;
 		}
 		
-		else if(larger >= 720 && smaller >= 480)
+		else if(larger >= x15 && smaller >= y15)
 		{
 			theoreticalScale = 1.5;
 		}
@@ -168,19 +193,19 @@ class Universal extends Sprite
 		}
 		
 		//4 scale sceheme
-		if(larger >= 1920 && smaller >= 1280 && scripts.MyAssets.maxScale >= 4)
+		if(larger >= x4 && smaller >= y4 && scripts.MyAssets.maxScale >= 4)
 		{
 			Engine.SCALE = 4;
 			Engine.IMG_BASE = "4x";
 		}
 		
-		else if(larger >= 960 && smaller >= 640 && scripts.MyAssets.maxScale >= 2)
+		else if(larger >= x2 && smaller >= y2 && scripts.MyAssets.maxScale >= 2)
 		{
 			Engine.SCALE = 2;
 			Engine.IMG_BASE = "2x";
 		}
 		
-		else if(larger >= 720 && smaller >= 480 && scripts.MyAssets.maxScale >= 1.5)
+		else if(larger >= x15 && smaller >= y15 && scripts.MyAssets.maxScale >= 1.5)
 		{
 			Engine.SCALE = 1.5;
 			Engine.IMG_BASE = "1.5x";
