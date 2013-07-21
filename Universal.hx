@@ -147,8 +147,9 @@ class Universal extends Sprite
 		//Calculate the theoretical scale if no max scale were imposed
 		var theoreticalScale:Float = 0;
 		
-		var x1 = scripts.MyAssets.stageHeight;
-		var y1 = scripts.MyAssets.stageWidth;
+		//Generalized this from 320 x 480 to work with any resolution
+		var x1 = scripts.MyAssets.stageWidth;
+		var y1 = scripts.MyAssets.stageHeight;
 		
 		if(x1 == -1 || y1 == -1)
 		{
@@ -192,7 +193,7 @@ class Universal extends Sprite
 			theoreticalScale = 1;
 		}
 		
-		//4 scale sceheme
+		//4 scale scheme
 		if(larger >= x4 && smaller >= y4 && scripts.MyAssets.maxScale >= 4)
 		{
 			Engine.SCALE = 4;
