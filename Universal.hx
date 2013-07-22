@@ -151,7 +151,8 @@ class Universal extends Sprite
 		var x1 = scripts.MyAssets.stageWidth;
 		var y1 = scripts.MyAssets.stageHeight;
 		
-		//TODO: Draw from the game's width/height instead
+		//TODO: Draw from the game's width/height instead. Games not close to 480x320 may act differently than expected.
+		//Can't do today because editor doesn't pass this info in full screen mode.
 		if(x1 == -1 || y1 == -1)
 		{
 			x1 = 480;
@@ -262,12 +263,6 @@ class Universal extends Sprite
 			{
 				scaleX = theoreticalScale;
 				scaleY = theoreticalScale;
-			}
-			
-			else
-			{
-				//scaleX = theoreticalScale;
-				//scaleY = theoreticalScale;
 			}
 			
 			scripts.MyAssets.stageWidth = stageWidth;
