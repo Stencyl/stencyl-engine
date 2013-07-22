@@ -151,10 +151,11 @@ class Universal extends Sprite
 		var x1 = scripts.MyAssets.stageWidth;
 		var y1 = scripts.MyAssets.stageHeight;
 		
+		//TODO: Draw from the game's width/height instead
 		if(x1 == -1 || y1 == -1)
 		{
-			x1 = stageWidth;
-			y1 = stageHeight;
+			x1 = 480;
+			y1 = 320;
 		}
 		
 		if(!scripts.MyAssets.landscape)
@@ -217,6 +218,8 @@ class Universal extends Sprite
 			Engine.SCALE = 1;
 			Engine.IMG_BASE = "1x";
 		}
+		
+		trace("Theoretical Scale: " + theoreticalScale);
 
 		#end
 		
@@ -259,6 +262,12 @@ class Universal extends Sprite
 			{
 				scaleX = theoreticalScale;
 				scaleY = theoreticalScale;
+			}
+			
+			else
+			{
+				//scaleX = theoreticalScale;
+				//scaleY = theoreticalScale;
 			}
 			
 			scripts.MyAssets.stageWidth = stageWidth;
