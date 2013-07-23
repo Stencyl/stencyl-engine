@@ -1302,8 +1302,8 @@ class Actor extends Sprite
 			
 			if(!isLightweight)
 			{
-				realX = getX();
-				realY = getY();
+				realX = getX(false);
+				realY = getY(false);
 			}
 			
 			if(animOrigin != null)
@@ -1480,13 +1480,13 @@ class Actor extends Sprite
 			var p = body.getPosition();		
 						
 			#if js			
-			realX = jeashX = Math.round(p.x * Engine.physicsScale);
-			realY = jeashY = Math.round(p.y * Engine.physicsScale);				
+			realX = jeashX = p.x * Engine.physicsScale;
+			realY = jeashY = p.y * Engine.physicsScale;				
 			#end
 			
 			#if !js							
-			realX = Math.round(p.x * Engine.physicsScale);
-			realY = Math.round(p.y * Engine.physicsScale);				
+			realX = p.x * Engine.physicsScale;
+			realY = p.y * Engine.physicsScale;				
 			#end
 			
 			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
@@ -2201,40 +2201,54 @@ class Actor extends Sprite
 	
 	//Big Change: Returns relative to the origin point as (0,0). Meaning if the origin = center, the center is now (0,0)!
 	
-	public function getX():Float
+	public function getX(round:Bool = true):Float
 	{
+		var toReturn:Float = -1;
+		
 		if(!Engine.NO_PHYSICS)
 		{
 			if(isRegion || isTerrainRegion)
 			{
-				return Math.round(Engine.toPixelUnits(body.getPosition().x) - cacheWidth/2);
+				toReturn = Engine.toPixelUnits(body.getPosition().x) - cacheWidth/2;
 			}
 			
 			else if(!isLightweight)
 			{
-				return Math.round(body.getPosition().x * Engine.physicsScale - Math.floor(cacheWidth / 2) - currOffset.x);
+				toReturn = body.getPosition().x * Engine.physicsScale - Math.floor(cacheWidth / 2) - currOffset.x;
 			}
 		}
 		
-		return realX - Math.floor(cacheWidth/2) - currOffset.x;
+		else
+		{
+			toReturn = realX - Math.floor(cacheWidth/2) - currOffset.x;
+		}
+		
+		return round ? Math.round(toReturn) : toReturn;
 	}
 	
-	public function getY():Float
+	public function getY(round:Bool = true):Float
 	{
+		var toReturn:Float = -1;
+		
 		if(!Engine.NO_PHYSICS)
 		{
 			if(isRegion || isTerrainRegion)
-			{
-				return Math.round(Engine.toPixelUnits(body.getPosition().y) - cacheHeight/2);
+			{				
+				toReturn = Engine.toPixelUnits(body.getPosition().y) - cacheHeight/2;
 			}
 			
 			else if(!isLightweight)
 			{
-				return Math.round(body.getPosition().y * Engine.physicsScale - Math.floor(cacheHeight / 2) - currOffset.y);
+				toReturn = body.getPosition().y * Engine.physicsScale - Math.floor(cacheHeight / 2) - currOffset.y;
 			}
 		}
 		
-		return Math.floor(realY - Math.floor(cacheHeight/2) - currOffset.y);
+		else
+		{
+			toReturn = realY - Math.floor(cacheHeight / 2) - currOffset.y;
+		}
+		
+		return round ? Math.round(toReturn) : toReturn;
 	}
 	
 	//TODO: Eliminate?
@@ -2292,9 +2306,7 @@ class Actor extends Sprite
 	}
 	
 	public function setX(x:Float, resetSpeed:Bool = false, noCollision:Bool = false)
-	{
-		x = Math.floor(x);
-	
+	{	
 		if(isLightweight)
 		{
 			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY, !noCollision && continuousCollision ? groupsToCollideWith: null);
@@ -2326,9 +2338,7 @@ class Actor extends Sprite
 	}
 	
 	public function setY(y:Float, resetSpeed:Bool = false, noCollision:Bool = false)
-	{
-		y = Math.floor(y);
-		
+	{		
 		if(isLightweight)
 		{
 			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y, !noCollision && continuousCollision ? groupsToCollideWith : null);
@@ -3022,8 +3032,8 @@ class Actor extends Sprite
 	
 	public function moveTo(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
 	{
-		tweenLoc.x = getX();
-		tweenLoc.y = getY();
+		tweenLoc.x = getX(false);
+		tweenLoc.y = getY(false);
 		
 		if(easing == null)
 		{
@@ -3082,7 +3092,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			moveTo(getX() + x, getY() + y, duration, easing);
+			moveTo(getX(false) + x, getY(false) + y, duration, easing);
 		}
 	}
 	
@@ -3804,15 +3814,10 @@ class Actor extends Sprite
 	{
 		clearCollisionList();		
 		
-		_moveX += x;
-		_moveY += y;
-		x = Math.round(_moveX);
-		y = Math.round(_moveY);
-		_moveX -= x;
-		_moveY -= y;
 		if (solidType != null)
 		{
-			var sign:Int, e:Actor;
+			var sign:Float, signIncr:Float, e:Actor;
+			
 			if (x != 0)
 			{
 				allowAdd = false;
@@ -3820,9 +3825,12 @@ class Actor extends Sprite
 				if (collidable && (sweep || collideTypes(solidType, realX + x, realY) != null))
 				{
 					allowAdd = true;
-					sign = x > 0 ? 1 : -1;
+					
 					while (x != 0)
 					{
+						signIncr = (x >= 1 || x <= -1) ? 1 : x;
+						sign = x > 0 ? signIncr : -signIncr;
+						
 						//Check regions first
 						if ((e = collide(GameModel.REGION_ID, realX + sign, realY)) != null)
 						{
@@ -3845,7 +3853,7 @@ class Actor extends Sprite
 					}
 				}
 				else realX += x;
-			}
+			}						
 			if (y != 0)
 			{
 				allowAdd = false;
@@ -3853,9 +3861,11 @@ class Actor extends Sprite
 				if (collidable && (sweep || collideTypes(solidType, realX, realY + y) != null))
 				{
 					allowAdd = true;
-					sign = y > 0 ? 1 : -1;
+					
 					while (y != 0)
 					{
+						signIncr = (y >= 1 || y <= -1) ? 1 : y;
+						sign = y > 0 ? signIncr : -signIncr;
 						//Check regions first
 						if ((e = collide(GameModel.REGION_ID, realX, realY + sign)) != null)
 						{
@@ -3923,7 +3933,7 @@ class Actor extends Sprite
 	 * When you collide with an Entity on the x-axis with moveTo() or moveBy().
 	 * @param	e		The Entity you collided with.
 	 */
-	public function moveCollideX(a:Actor, sign:Int)
+	public function moveCollideX(a:Actor, sign:Float)
 	{
 		handleCollisionsSimple(a, true, false, sign);
 	}
@@ -3932,12 +3942,12 @@ class Actor extends Sprite
 	 * When you collide with an Entity on the y-axis with moveTo() or moveBy().
 	 * @param	e		The Entity you collided with.
 	 */
-	public function moveCollideY(a:Actor, sign:Int)
+	public function moveCollideY(a:Actor, sign:Float)
 	{
 		handleCollisionsSimple(a, false, true, sign);
 	}
 	
-	private function handleCollisionsSimple(a:Actor, fromX:Bool, fromY:Bool, sign:Int)
+	private function handleCollisionsSimple(a:Actor, fromX:Bool, fromY:Bool, sign:Float)
 	{
 		if(Std.is(a, Region))
 		{
