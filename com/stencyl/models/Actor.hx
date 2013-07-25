@@ -2218,7 +2218,7 @@ class Actor extends Sprite
 			}
 		}
 		
-		else
+		if (Engine.NO_PHYSICS || isLightweight)
 		{
 			toReturn = realX - Math.floor(cacheWidth/2) - currOffset.x;
 		}
@@ -2243,7 +2243,7 @@ class Actor extends Sprite
 			}
 		}
 		
-		else
+		if (Engine.NO_PHYSICS || isLightweight)
 		{
 			toReturn = realY - Math.floor(cacheHeight / 2) - currOffset.y;
 		}
