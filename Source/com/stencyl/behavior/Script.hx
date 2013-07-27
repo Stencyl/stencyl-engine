@@ -2775,6 +2775,15 @@ class Script
 		#end
 	}
 	
+	public function purchasesRequestProductInfo(productIDlist:Array<Dynamic>):Void 
+	{
+		#if (mobile && cpp && !air)
+			Purchases.requestProductInfo(productIDlist);
+		#else
+			// TODO?
+		#end
+	}
+
 	public function purchasesGetTitle(productID:String):String 
 	{
 		#if (mobile && cpp && !air)

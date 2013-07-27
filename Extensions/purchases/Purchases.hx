@@ -68,7 +68,13 @@ class Purchases
 		trace("Purchases: Restored Purchase");
 		Engine.events.addPurchaseEvent(new StencylEvent(StencylEvent.PURCHASE_RESTORE, ""));
 	}
-	
+
+	public function onProductsVerified()
+	{
+		trace("Purchases: Products Verified");
+		Engine.events.addPurchaseEvent(new StencylEvent(StencylEvent.PURCHASE_PRODUCTS_VERIFIED, ""));
+	}
+		
 	//---------------------------------------------
 
 	private static var initialized:Bool = false;
@@ -115,6 +121,12 @@ class Purchases
 		{
 			trace("Purchases: Restored Purchase");
 			Engine.events.addPurchaseEvent(new StencylEvent(StencylEvent.PURCHASE_RESTORE, data));
+		}
+
+		else if(type == "productsVerified")
+		{
+			trace("Purchases: Products Verified");
+			Engine.events.addPurchaseEvent(new StencylEvent(StencylEvent.PURCHASE_PRODUCTS_VERIFIED, data));
 		}
 
 		//Consumable
@@ -292,7 +304,17 @@ class Purchases
 		funcBuy([productID]);
 		#end	
 	}
-	
+
+	public static function requestProductInfo(productIDlist:Array<Dynamic>):Void 
+	{
+		#if(cpp && mobile && !android)
+		var productIDcommalist:String = productIDlist.join(",");
+		purchases_requestProductInfo(productIDcommalist);
+		#else
+		// TODO?
+		#end
+	}
+
 	public static function getTitle(productID:String):String 
 	{
 		#if(cpp && mobile && !android)
@@ -349,6 +371,7 @@ class Purchases
 	private static var purchases_buy = Lib.load("purchases", "purchases_buy", 1);
 	private static var purchases_canbuy = Lib.load("purchases", "purchases_canbuy", 0);
 	private static var purchases_release = Lib.load("purchases", "purchases_release", 0);
+	private static var purchases_requestProductInfo = Lib.load("purchases", "purchases_requestProductInfo", 1);
 	private static var purchases_title = Lib.load("purchases", "purchases_title", 1);
 	private static var purchases_desc = Lib.load("purchases", "purchases_desc", 1);
 	private static var purchases_price = Lib.load("purchases", "purchases_price", 1);
