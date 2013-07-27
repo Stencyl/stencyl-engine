@@ -41,6 +41,12 @@ static void purchases_buy(value productID)
 }
 DEFINE_PRIM(purchases_buy, 1);
 
+static void purchases_requestProductInfo(value productIDcommalist)
+{
+	requestProductInfo(val_string(productIDcommalist));
+}
+DEFINE_PRIM(purchases_requestProductInfo, 1);
+
 static value purchases_title(value productID)
 {
 	return alloc_string(getTitle(val_string(productID)));
