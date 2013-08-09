@@ -28,7 +28,7 @@ class Transition
 	
 	public function start()
 	{
-		complete = true; //???
+		// complete = true;
 	}
 	
 	public function reset()
@@ -38,8 +38,12 @@ class Transition
 	
 	public function stop()
 	{
-		active = false;
 		complete = true;
+	}
+	
+	public function deactivate()
+	{
+		active = false;
 	}
 	
 	//Usually hides the transition

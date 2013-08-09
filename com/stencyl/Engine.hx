@@ -1543,13 +1543,15 @@ class Engine
 	
 	public function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)
 	{
-		trace("Request to switch to Scene " + sceneID);
+		// trace("Request to switch to Scene " + sceneID);
 
 		if(isTransitioning())
 		{
-			trace("Warning: Switching Scene while already switching. Ignoring.");
+			// trace("Warning: Switching Scene while already switching. Ignoring.");
 			return;
 		}
+		
+		trace("Switching to scene " + sceneID);
 		
 		if(leave != null && leave.isComplete())
 		{
@@ -2472,7 +2474,7 @@ class Engine
 		
 			if(leave.isComplete())
 			{
-				leave.stop();
+				leave.deactivate();
 				enterScene();
 			}
 			
@@ -2485,7 +2487,7 @@ class Engine
 		{
 			if(enter.isComplete())
 			{
-				enter.stop();
+				enter.deactivate();
 				enter.cleanup();
 				enter = null;
 			}
