@@ -664,6 +664,8 @@ class Engine
 			}
 		}
 		
+		scene.load();
+		
 		Engine.sceneWidth = scene.sceneWidth;
 		Engine.sceneHeight = scene.sceneHeight;
 		
@@ -1485,7 +1487,7 @@ class Engine
 			a.destroy();
 		}
 		
-		
+		scene.unload();
 		
 		actorsOfType = null;
 		recycledActorsOfType = null;

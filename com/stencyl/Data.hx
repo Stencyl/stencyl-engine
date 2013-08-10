@@ -72,10 +72,10 @@ class Data
 	//*-----------------------------------------------
 	
 	//Map of each [sceneID].xml by ID
-	public var scenesXML:IntHash<Fast>;
+	public var scenesXML:IntHash<String>;
 	
 	//Map of each [sceneID].scn by ID
-	public var scenesTerrain:IntHash<Dynamic>;
+	//public var scenesTerrain:IntHash<Dynamic>;
 
 	//Map of each resource in memory by ID
 	public var resources:IntHash<Resource>;
@@ -131,16 +131,18 @@ class Data
 		
 		updatePreloader(90);
 		
-		scenesXML = new IntHash<Fast>();
-		scenesTerrain = new IntHash<Dynamic>();
+		scenesXML = new IntHash<String>();
 		
-		loader.loadScenes(scenesXML, scenesTerrain);
+		loader.loadScenes(scenesXML);
 		
 		updatePreloader(100);
 		
 		#if(mobile && !air)
 		Lib.current.removeChild(instance.preloader);
 		#end
+		
+		resourceListXML = null;
+		behaviorListXML = null;		
 	}
 	
 	private function loadReaders()

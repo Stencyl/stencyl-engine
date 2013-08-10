@@ -70,10 +70,15 @@ class Scene
 	
 	public var animatedTiles:Array<Tile>;
 	
-	public function new(ID:Int, name:String, xml:Fast)
+	public function new(ID:Int, name:String)
 	{
 		this.ID = ID;
 		this.name = name;
+	}
+	
+	public function load()
+	{
+		var xml:Fast = new Fast(Xml.parse(nme.Assets.getText("assets/data/scene-" + ID + ".xml")).firstElement());
 		
 		var numLayers:Int = Std.parseInt(xml.att.depth);
 		
@@ -137,10 +142,30 @@ class Scene
 		#end
 		
 		#if !js
-		var rawLayers = readRawLayers(Data.get().scenesTerrain.get(ID), numLayers);
+		var rawLayers = readRawLayers(nme.Assets.getBytes("assets/data/scene-" + ID + ".scn"), numLayers);
 		#end
 		
 		terrain = readLayers(xml.node.layers.elements, rawLayers);
+	}
+	
+	public function unload()
+	{
+		colorBackground = null;
+	
+		bgs = null;
+		fgs = null;
+	
+		terrain = null;
+		actors = null;
+		behaviorValues = null;
+	
+		//Box2D
+		wireframes = null;
+		joints = null;
+		regions = null;
+		terrainRegions = null;
+	
+		animatedTiles = null;
 	}
 	
 	public function readRegions(list:Iterator<Fast>):IntHash<RegionDef>

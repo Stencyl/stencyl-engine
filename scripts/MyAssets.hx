@@ -50,9 +50,8 @@ class MyAssets implements AssetLoader
 		resourceMap.set("19.png", Assets.getBitmapData("assets/graphics/" + Engine.IMG_BASE + "/19.png"));
 	}
 	
-	public function loadScenes(scenesXML:IntHash<Fast>, scenesTerrain:IntHash<Dynamic>):Void
+	public function loadScenes(scenesXML:IntHash<String>):Void
 	{
-		scenesXML.set(0, new Fast(Xml.parse(Assets.getText("assets/data/scene-0.xml")).firstElement()));
-		scenesTerrain.set(0, Assets.getBytes("assets/data/scene-0.scn"));
+		scenesXML.set(0, "assets/data/scene-0.xml");
 	}
 }
