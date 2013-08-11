@@ -555,7 +555,7 @@ class BitmapFont
 	 */
 	public function drawText(graphics:Graphics, drawData:Array<Float>):Void
 	{
-		_tileSheet.drawTiles(graphics, drawData, false, _flags);
+		_tileSheet.drawTiles(graphics, drawData, scripts.MyAssets.antialias, _flags);
 	}
 	#end
 	
