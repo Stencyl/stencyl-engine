@@ -54,7 +54,15 @@ class Tileset extends Resource
 		
 		if(pixels != null)
 		{
-			tilesheet = new Tilesheet(pixels);
+			if(scripts.MyAssets.stretchToFit || scripts.MyAssets.scaleToFit1 || scripts.MyAssets.scaleToFit2)
+			{
+				// The tilesheet needs to be modified to avoid pixel bleeding when stretching.
+				tilesheet = new Tilesheet(convertPixels(pixels));
+			}
+			else
+			{
+				tilesheet = new Tilesheet(pixels);
+			}
 			
 			var counter = 0;
 			
@@ -94,8 +102,17 @@ class Tileset extends Resource
 			var row:Int = Math.floor(tile.frameIndex / framesAcross);
 			var col:Int = Math.floor(tile.frameIndex % framesAcross);
 			
-			temp.x = col * tileWidth * Engine.SCALE;
-			temp.y = row * tileHeight * Engine.SCALE;
+			if(scripts.MyAssets.stretchToFit || scripts.MyAssets.scaleToFit1 || scripts.MyAssets.scaleToFit2)
+			{
+				temp.x = ((col * tileWidth * Engine.SCALE) + (col * 2) + 1);
+				temp.y = ((row * tileHeight * Engine.SCALE) + (row * 2) + 1);
+			}
+			else
+			{
+				temp.x = col * tileWidth * Engine.SCALE;
+				temp.y = row * tileHeight * Engine.SCALE;
+			}
+
 			temp.width = tileWidth * Engine.SCALE;
 			temp.height = tileHeight * Engine.SCALE;
 			
@@ -129,5 +146,86 @@ class Tileset extends Resource
 		#end
 		
 		Data.get().resourceAssets.remove(ID + ".png");
+	}
+	
+	private function convertPixels(oldPixels:BitmapData):BitmapData
+	{
+		var scaledTileWidth = Std.int(tileWidth * Engine.SCALE);
+		var scaledTileHeight = Std.int(tileHeight * Engine.SCALE);
+		var widthInTiles = Std.int(oldPixels.width / scaledTileWidth);
+		var heightInTiles = Std.int(oldPixels.height / scaledTileHeight);
+		var newWidth = Std.int(oldPixels.width + (widthInTiles * 2));
+		var newHeight = Std.int(oldPixels.height + (heightInTiles * 2));
+		var tempPixels = new BitmapData(newWidth, newHeight, true, 0x00000000);
+		var heightIndex;
+		var widthIndex;
+		var pointX:Int;
+		var pointY:Int;
+		var rect:Rectangle;
+		var point:Point;
+			
+		// Move the old tiles into the new BitmapData in a way that gives all tiles a 1px border.
+		heightIndex = 0;
+		while (heightIndex < heightInTiles)
+		{
+			widthIndex = 0;
+			while (widthIndex < widthInTiles)
+			{
+				pointX = Std.int((widthIndex * scaledTileWidth) + (widthIndex * 2) + 1);
+				pointY = Std.int((heightIndex * scaledTileHeight) + (heightIndex * 2) + 1);
+				rect = new Rectangle((widthIndex * scaledTileWidth), (heightIndex * scaledTileHeight), (scaledTileWidth), (scaledTileHeight));
+				point = new Point(pointX,pointY);
+				tempPixels.copyPixels(oldPixels, rect, point);
+				widthIndex ++;
+			}
+			heightIndex ++;
+		}
+			
+		var index0:Int;
+		var tilePixel:Int;
+			
+		// Duplicate the border pixels.
+		heightIndex = 0;
+		while (heightIndex < heightInTiles)
+		{
+			widthIndex = 0;
+			while (widthIndex < widthInTiles)
+			{
+				pointX = Std.int((widthIndex * scaledTileWidth) + (widthIndex * 2) + 1);			
+				pointY = Std.int((heightIndex * scaledTileHeight) + (heightIndex * 2) + 1);
+					
+				index0 = 0;
+				while (index0 < scaledTileWidth)
+				{
+					// Duplicating top pixels...
+					tilePixel = tempPixels.getPixel32((pointX + index0), pointY);
+					tempPixels.setPixel32((pointX + index0),(pointY - 1),tilePixel);
+						
+					// Duplicating bottom pixels...
+					tilePixel = tempPixels.getPixel32((pointX + index0), (pointY + scaledTileHeight - 1));
+					tempPixels.setPixel32((pointX + index0),(pointY + scaledTileHeight),tilePixel);
+						
+					index0 ++;
+				}
+
+				index0 = 0;
+				while (index0 < scaledTileHeight)
+				{
+					// Duplicating left pixels...
+					tilePixel = tempPixels.getPixel32(pointX, (pointY + index0));
+					tempPixels.setPixel32((pointX - 1),(pointY + index0),tilePixel);
+						
+					// Duplicating right pixels...
+					tilePixel = tempPixels.getPixel32((pointX + scaledTileWidth - 1), (pointY + index0));
+					tempPixels.setPixel32((pointX + scaledTileWidth),(pointY + index0),tilePixel);
+						
+					index0 ++;
+				}
+				widthIndex ++;
+			}
+			heightIndex ++;
+		}
+		// This is the new BitmapData with duplicated pixels.
+		return tempPixels;
 	}
 }
