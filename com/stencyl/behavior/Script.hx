@@ -2813,6 +2813,15 @@ class Script
 		#end
 	}
 	
+	public function purchasesRequestProductInfo(productIDlist:Array<Dynamic>):Void 
+  	{
+    	#if (mobile && cpp && !air)
+      		Purchases.requestProductInfo(productIDlist);
+    	#else
+      		//Nothing
+    	#end
+	}
+	
 	//Consumables
 	
 	public function purchasesUse(productID:String):Void 
