@@ -11,9 +11,11 @@ namespace purchases
         void purchaseProduct(const char* productID);
         void releaseInAppPurchase();
         
-        char* getTitle(const char *inProductID);
-        char* getPrice(const char *inProductID);
-        char* getDescription(const char *inProductID);
+        void requestProductInfo(const char *inProductIDcommalist);
+
+        const char* getTitle(const char *inProductID);
+        const char* getPrice(const char *inProductID);
+        const char* getDescription(const char *inProductID);
     }
 }
 
