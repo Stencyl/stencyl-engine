@@ -3103,6 +3103,7 @@ class Actor extends Sprite
 	
 	public function onTweenPositionComplete()
 	{
+		updateTweenProperties();
 		activePositionTweens--;
 		
 		if (currOffset != null)
