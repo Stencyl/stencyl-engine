@@ -364,7 +364,7 @@ class Universal extends Sprite
 				}
 				
 				//Scale to Fit: Fill/Cropped
-				else if(scripts.MyAssets.scaleToFit1)
+				else if(scripts.MyAssets.scaleToFit2)
 				{
 					if(scripts.MyAssets.landscape)
 					{
