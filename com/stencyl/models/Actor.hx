@@ -1455,14 +1455,8 @@ class Actor extends Sprite
 				colY = realY - Math.floor(cacheHeight/2) - currOffset.y;				
 				
 				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);						
-			}
-			
-			else if (activePositionTweens > 0)
-			{
-				colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
-				colY = realY - Math.floor(cacheHeight/2) - currOffset.y;
-			}
-			
+			}			
+						
 			if(rSpeed != 0)
 			{
 				realAngle += elapsedTime * rSpeed * 0.001;				
@@ -1510,11 +1504,8 @@ class Actor extends Sprite
    			//This may be a slowdown on iOS by 3-5 FPS due to clear and redraw?
    			currAnimationAsAnim.update(elapsedTime);
 		}
-		
-		if(!isLightweight)
-		{
-			updateTweenProperties();
-		}
+			
+		updateTweenProperties();		
 	}	
 	
 	public function updateDrawingMatrix()
@@ -1567,12 +1558,7 @@ class Actor extends Sprite
 	}
 	
 	private function updateTweenProperties()
-	{
-		//In lightweight mode, none of this junk has to happen - it just works like it should!
-		if(isLightweight)
-		{
-			return;
-		}
+	{		
 	
 		//Since we can't tween directly on the Box2D values and can't make direct function calls,
 		//we have to reverse the normal flow of information from body -> NME to tween -> body
@@ -1588,20 +1574,28 @@ class Actor extends Sprite
 		}
 		
 		if(a && b)
-		{
-			realX = tweenLoc.x;
-			realY = tweenLoc.y;
-			realAngle = tweenAngle.angle;
+		{					
+			if (!isLightweight)
+			{
+				realX = tweenLoc.x;
+				realY = tweenLoc.y;
+				realAngle = tweenAngle.angle;
+				
+				dummy.x = Engine.toPhysicalUnits(realX + Math.floor(cacheWidth/2) + currOffset.x);
+				dummy.y = Engine.toPhysicalUnits(realY + Math.floor(cacheHeight/2) + currOffset.y);
 			
-			dummy.x = Engine.toPhysicalUnits(realX + Math.floor(cacheWidth/2) + currOffset.x);
-			dummy.y = Engine.toPhysicalUnits(realY + Math.floor(cacheHeight/2) + currOffset.y);
+				body.setPositionAndAngle
+				(
+					dummy,
+					Utils.RAD * realAngle
+				);
+			}
 			
-			body.setPositionAndAngle
-			(
-				dummy,
-				Utils.RAD * realAngle
-			);
-			
+			else
+			{
+				moveActorBy(tweenLoc.x - getX(false), tweenLoc.y - getY(false), groupsToCollideWith);
+			}
+
 			updateMatrix = true;
 		}
 		
@@ -1609,8 +1603,7 @@ class Actor extends Sprite
 		{
 			if(a)
 			{
-				setX(tweenLoc.x);
-				setY(tweenLoc.y);
+				moveActorBy(tweenLoc.x - getX(false), tweenLoc.y - getY(false), groupsToCollideWith);
 			}
 			
 			if(b)
@@ -2944,18 +2937,10 @@ class Actor extends Sprite
 			trace(item.duration);
 		}*/
 		
-		Actuate.stop(this, ["alpha", "realScaleX", "realScaleY"], false, false);
+		Actuate.stop(this, ["alpha", "realScaleX", "realScaleY"], false, false);		
 		
-		if(isLightweight)
-		{
-			Actuate.stop(this, ["realAngle", "realX", "realY"], false, false);
-		}
-		
-		else
-		{
-			Actuate.stop(tweenAngle, null, false, false);
-			Actuate.stop(tweenLoc, null, false, false);
-		}
+		Actuate.stop(tweenAngle, null, false, false);
+		Actuate.stop(tweenLoc, null, false, false);		
 		
 		activePositionTweens = 0;
 		activeAngleTweens = 0;
@@ -2997,17 +2982,9 @@ class Actor extends Sprite
 			easing = Linear.easeNone;
 		}
 		
-		activeAngleTweens++;
+		activeAngleTweens++;		
 		
-		if(isLightweight)
-		{
-			Actuate.tween(this, duration, {realAngle:angle}).ease(easing).onComplete(onTweenAngleComplete);
-		}
-		
-		else
-		{
-			Actuate.tween(tweenAngle, duration, {angle:angle}).ease(easing).onComplete(onTweenAngleComplete);
-		}
+		Actuate.tween(tweenAngle, duration, {angle:angle}).ease(easing).onComplete(onTweenAngleComplete);		
 		
 		//Taken out because people said it's buggy.
 		//Lock to final value to make up for lack of full syncing
@@ -3040,17 +3017,9 @@ class Actor extends Sprite
 			easing = Linear.easeNone;
 		}
 		
-		activePositionTweens++;
+		activePositionTweens++;		
 		
-		if(isLightweight)
-		{
-			Actuate.tween(this, duration, {realX:x, realY:y}).ease(easing).onComplete(onTweenPositionComplete);
-		}
-		
-		else
-		{
-			Actuate.tween(tweenLoc, duration, {x:x, y:y}).ease(easing).onComplete(onTweenPositionComplete);
-		}
+		Actuate.tween(tweenLoc, duration, {x:x, y:y}).ease(easing).onComplete(onTweenPositionComplete);		
 		
 		//Taken out because people said it's buggy.
 		//Lock to final value to make up for lack of full syncing
@@ -3084,16 +3053,8 @@ class Actor extends Sprite
 	}
 	
 	public function moveBy(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
-	{
-		if(isLightweight)
-		{
-			moveTo(realX + x, realY + y, duration, easing);
-		}
-		
-		else
-		{
-			moveTo(getX(false) + x, getY(false) + y, duration, easing);
-		}
+	{		
+		moveTo(getX(false) + x, getY(false) + y, duration, easing);	
 	}
 	
 	public function onTweenAngleComplete()
