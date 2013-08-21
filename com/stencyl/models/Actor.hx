@@ -1593,6 +1593,7 @@ class Actor extends Sprite
 			else
 			{
 				moveActorBy(tweenLoc.x - getX(false), tweenLoc.y - getY(false), groupsToCollideWith);
+				setAngle(tweenAngle.angle, false);
 			}
 
 			updateMatrix = true;
@@ -1602,7 +1603,17 @@ class Actor extends Sprite
 		{
 			if(a)
 			{
-				moveActorBy(tweenLoc.x - getX(false), tweenLoc.y - getY(false), groupsToCollideWith);
+				if (!isLightweight)
+				{
+					setX(tweenLoc.x);
+					setY(tweenLoc.y);
+				}
+				
+				else
+				{
+					moveActorBy(tweenLoc.x - getX(false), tweenLoc.y - getY(false), groupsToCollideWith);
+					updateMatrix = true;
+				}				
 			}
 			
 			if(b)
