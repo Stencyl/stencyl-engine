@@ -1451,8 +1451,7 @@ class Actor extends Sprite
 			
 			if(xSpeed != 0 || ySpeed != 0)
 			{
-				colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
-				colY = realY - Math.floor(cacheHeight/2) - currOffset.y;				
+				resetReal(realX, realY);			
 				
 				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);						
 			}			
@@ -1483,8 +1482,8 @@ class Actor extends Sprite
 			realY = p.y * Engine.physicsScale;				
 			#end
 			
-			colX = realX - Math.floor(cacheWidth / 2) - currOffset.x;
-			colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;	
+			resetReal(realX, realY);
+			
 			realAngle = body.getAngle() * Utils.DEG;				
 		}
 		
@@ -2453,8 +2452,8 @@ class Actor extends Sprite
 		
 		else
 		{
-			realX = Std.int(Engine.toPixelUnits(resetPosition.x));
-			realY = Std.int(Engine.toPixelUnits(resetPosition.y));
+			realX = Engine.toPixelUnits(resetPosition.x);
+			realY = Engine.toPixelUnits(resetPosition.y);
 		}
 		
 		resetOrigin = true;
@@ -3069,12 +3068,7 @@ class Actor extends Sprite
 		
 		if (currOffset != null)
 		{
-			colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
-		}
-		
-		if (currOffset != null)
-		{
-			colY = realY - Math.floor(cacheHeight/2) - currOffset.y;
+			resetReal(realX, realY);
 		}
 	}
 	
@@ -3498,13 +3492,7 @@ class Actor extends Sprite
 	//*-----------------------------------------------
 	
 	public function setLocation(x:Float, y:Float)
-	{
-		if(isCamera)
-		{
-			x = Std.int(x);
-			y = Std.int(y);
-		}
-	
+	{			
 		realX = x;
 		realY = y;
 		
@@ -3774,11 +3762,16 @@ class Actor extends Sprite
 
 	public function moveActorBy(x:Float, y:Float, solidType:Dynamic = null, sweep:Bool = false)
 	{
-		clearCollisionList();		
+		if (x == 0 && y == 0)
+		{
+			return;
+		}
 		
+		clearCollisionList();		
+				
 		if (solidType != null)
 		{
-			var sign:Float, signIncr:Float, e:Actor;
+			var sign:Float, signIncr:Float, e:Actor, checkMove:Bool;
 			
 			if (x != 0)
 			{
@@ -3792,14 +3785,15 @@ class Actor extends Sprite
 					{
 						signIncr = (x >= 1 || x <= -1) ? 1 : x;
 						sign = x > 0 ? signIncr : -signIncr;
+						checkMove = Std.int(realX) != Std.int(realX + sign);						
 						
 						//Check regions first
-						if ((e = collide(GameModel.REGION_ID, realX + sign, realY)) != null)
+						if (checkMove && (e = collide(GameModel.REGION_ID, realX + sign, realY)) != null)
 						{
 							cast(e, Region).addActor(this);
 						}
 						
-						if ((e = collideTypes(solidType, realX + sign, realY)) != null)
+						if (checkMove && (e = collideTypes(solidType, realX + sign, realY)) != null)
 						{							
 							moveCollideX(e, sign);
 							
@@ -3828,13 +3822,15 @@ class Actor extends Sprite
 					{
 						signIncr = (y >= 1 || y <= -1) ? 1 : y;
 						sign = y > 0 ? signIncr : -signIncr;
+						checkMove = Std.int(realY) != Std.int(realY + sign);
+						
 						//Check regions first
-						if ((e = collide(GameModel.REGION_ID, realX, realY + sign)) != null)
+						if (checkMove && (e = collide(GameModel.REGION_ID, realX, realY + sign)) != null)
 						{
 							cast(e, Region).addActor(this);
 						}
 						
-						if ((e = collideTypes(solidType, realX, realY + sign)) != null)
+						if (checkMove && (e = collideTypes(solidType, realX, realY + sign)) != null)
 						{						
 							moveCollideY(e, sign);
 							
@@ -3859,8 +3855,7 @@ class Actor extends Sprite
 			realY += y;
 		}
 		
-		colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
-		colY = realY - Math.floor(cacheHeight/2) - currOffset.y;
+		resetReal(realX, realY);
 	}
 	
 	/**

@@ -760,6 +760,10 @@ class Engine
 			
 	     	layer.setPosition(cameraX, cameraY);
 	    }
+		
+		#if cpp
+		Gc.run(true);
+		#end
 	}
 		
 	private function loadBackgrounds()
@@ -2788,8 +2792,8 @@ class Engine
 	{	
 		camera.setLocation
 		(
-			Math.round(actor.colX + actor.cacheWidth / 2),
-			Math.round(actor.colY + actor.cacheHeight / 2)
+			actor.colX + actor.cacheWidth / 2,
+			actor.colY + actor.cacheHeight / 2
 		);
 	}
 	
