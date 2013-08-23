@@ -159,13 +159,12 @@ class Universal extends Sprite
 			y1 = 320;
 		}
 		
-		//XXX: Causes bug in full screen: http://community.stencyl.com/index.php/topic,23921.0.html
-		/*if(!scripts.MyAssets.landscape)
+		else if(!scripts.MyAssets.landscape)
 		{
 			var temp = x1;
 			x1 = y1;
 			y1 = temp;
-		}*/
+		}
 		
 		var x15 = x1 * 3 / 2;
 		var y15 = y1 * 3 / 2;
