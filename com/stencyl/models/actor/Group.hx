@@ -1,33 +1,34 @@
 package com.stencyl.models.actor;
 
-import com.stencyl.utils.HashMap;
-
 class Group 
 {
-	public var list:HashMap<Actor, Actor>;
+	public var list:Array<Actor>;
 	public var name:String;
 	public var ID:Int;
+	public var sID:String;
 	
 	public function new(ID:Int, name:String) 
 	{	
 		this.name = name;
 		this.ID = ID;
 		
-		list = new HashMap<Actor,Actor>();
+		sID = "[Group " + ID + "," + name + "]";
+		
+		list = new Array<Actor>();
 	}		
 
 	public function addChild(a:Actor)
 	{
-		list.set(a, a);
+		list.push(a);
 	}
 	
 	public function removeChild(a:Actor)
 	{
-		list.delete(a);
+		
 	}
 	
 	public function toString():String
 	{
-		return "[Group " + ID + "," + name + "]";
+		return sID;
 	}
 }

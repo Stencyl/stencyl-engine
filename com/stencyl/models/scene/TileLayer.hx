@@ -11,7 +11,6 @@ import nme.display.Sprite;
 
 import com.stencyl.models.Scene;
 import com.stencyl.utils.Utils;
-import com.stencyl.utils.HashMap;
 import com.stencyl.models.collision.Grid;
 
 #if cpp
@@ -36,7 +35,7 @@ class TileLayer extends Sprite
 	private var pixels:BitmapData;
 	private var flashPoint:Point;
 	
-	private static var cacheSource = new HashMap<Tile, Rectangle>();
+	private static var cacheSource = new IntHash<Rectangle>();
 	
 	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
 	{
@@ -146,7 +145,7 @@ class TileLayer extends Sprite
 		a.visible = false;
 		a.ignoreGravity = true;
 		
-		Engine.engine.getGroup(GameModel.TERRAIN_ID).list.set(a, a);
+		Engine.engine.getGroup(GameModel.TERRAIN_ID).addChild(a);
 	}
 	
 	public function setTileAt(row:Int, col:Int, tile:Tile)
@@ -223,21 +222,21 @@ class TileLayer extends Sprite
 					continue;
 				}
 													
-				if(cacheSource.get(t) == null || t.updateSource)
+				if(cacheSource.get(t.tileID) == null || t.updateSource)
 				{
 					if(t.pixels == null)
 					{
-						cacheSource.set(t, t.parent.getImageSourceForTile(t.tileID, tw, th));
+						cacheSource.set(t.tileID, t.parent.getImageSourceForTile(t.tileID, tw, th));
 					}
 					
 					else
 					{						
-						cacheSource.set(t, t.getSource(tw, th));
+						cacheSource.set(t.tileID, t.getSource(tw, th));
 						t.updateSource = false;
 					}						
 				}
 				
-				var source:Rectangle = cacheSource.get(t);
+				var source:Rectangle = cacheSource.get(t.tileID);
 														
 				if(source == null)
 				{

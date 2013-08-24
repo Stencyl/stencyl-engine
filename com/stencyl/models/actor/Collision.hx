@@ -8,6 +8,8 @@ import box2D.dynamics.B2Fixture;
 
 class Collision 
 {
+	private static var recycledCollisions:Array<Collision> = new Array<Collision>();
+	
 	public var thisFromTop:Bool;
 	public var thisFromLeft:Bool;
 	public var thisFromBottom:Bool;
@@ -43,6 +45,27 @@ class Collision
 	{
 		points = new Array<CollisionPoint>();
 		
+		clear();
+	}
+	
+	public static function get():Collision
+	{
+		if (recycledCollisions.length > 0)
+		{
+			recycledCollisions[recycledCollisions.length - 1].clear();
+			return recycledCollisions.pop();
+		}
+		
+		return new Collision();
+	}
+	
+	public function clear()
+	{
+		while (points.length > 0)
+		{
+			points.pop();
+		}
+		
 		thisFromTop = false;
 		thisFromLeft = false;
 		thisFromBottom = false;
@@ -75,7 +98,7 @@ class Collision
 	
 	public function switchData():Collision
 	{
-		var c:Collision = new Collision();
+		var c:Collision = get();
 		
 		c.thisActor = otherActor;
 		c.thisShape = otherShape;

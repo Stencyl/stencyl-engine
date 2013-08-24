@@ -7,17 +7,20 @@ class Resource
 	public var ID:Int;
 	public var atlasID:Int;
 	public var name:String;
+	public var sID:String;
 	
 	public function new(ID:Int, name:String, atlasID:Int) 
 	{
 		this.ID = ID;
 		this.atlasID = atlasID;
 		this.name = name;
+		
+		sID = ID + "," + name;
 	}	
 	
 	public function toString():String
 	{
-		return ID + "," + name;
+		return sID;
 	}	
 	
 	//For Atlases

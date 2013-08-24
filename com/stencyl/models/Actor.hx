@@ -38,7 +38,6 @@ import com.stencyl.models.actor.Animation;
 import com.stencyl.models.GameModel;
 
 import com.stencyl.utils.Utils;
-import com.stencyl.utils.HashMap;
 
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Back;
@@ -218,7 +217,7 @@ class Actor extends Sprite
 	//* Events
 	//*-----------------------------------------------	
 	
-	public var allListeners:HashMap<Dynamic,Dynamic>;
+	public var allListeners:IntHash<Dynamic>;
 	public var allListenerReferences:Array<Dynamic>;
 	
 	public var whenCreatedListeners:Array<Dynamic>;
@@ -394,7 +393,7 @@ class Actor extends Sprite
 		
 		//---
 		
-		allListeners = new HashMap<Dynamic, Dynamic>();
+		allListeners = new IntHash<Dynamic>();
 		allListenerReferences = new Array<Dynamic>();
 		
 		whenCreatedListeners = new Array<Dynamic>();
@@ -665,9 +664,9 @@ class Actor extends Sprite
 	
 	public function resetListeners()
 	{		
-		for (key in allListeners.keys())
+		for (key in allListeners)
 		{
-			allListeners.delete(key);
+			allListeners.remove(key);
 		}
 		
 		while (allListenerReferences.length > 0)
@@ -3311,12 +3310,22 @@ class Actor extends Sprite
 	
 	public function registerListener(type:Array<Dynamic>, listener:Dynamic)
 	{
-		var listenerList:Array<Dynamic> = allListeners.get(type);
+		var ePos:Int = Utils.indexOf(allListenerReferences, type);
 		
-		if(listenerList == null)
+		var listenerList:Array<Dynamic> = null; 
+		
+		if (ePos != -1)
 		{
+			listenerList = allListeners.get(ePos);
+		}
+		
+		else
+		{
+			allListenerReferences.push(type);
+			ePos = allListenerReferences.length - 1;
+			
 			listenerList = new Array<Dynamic>();
-			allListeners.set(type, listenerList);
+			allListeners.set(ePos, listenerList);
 		}
 		
 		listenerList.push(listener);
@@ -3324,13 +3333,13 @@ class Actor extends Sprite
 	
 	public function removeAllListeners()
 	{			
-		for(k in allListeners.keys())
+		for(k in 0...allListenerReferences.length)
 		{
-			var listener = cast(k, Array<Dynamic>);
+			var listener = allListenerReferences[k];
 			
 			if(listener != null)
 			{
-				var list:Array<Dynamic> = cast(allListeners.get(listener), Array<Dynamic>);
+				var list:Array<Dynamic> = cast(allListeners.get(k), Array<Dynamic>);
 				
 				if(list != null)
 				{
@@ -3340,12 +3349,6 @@ class Actor extends Sprite
 					}
 				}
 			}
-		}
-		
-		//Not Needed?
-		for(dict in allListenerReferences)
-		{
-			dict.delete(this);
 		}
 		
 		Utils.clear(allListenerReferences);
@@ -3421,8 +3424,8 @@ class Actor extends Sprite
 	{
 		dying = true;
 		
-		var a = engine.whenTypeGroupDiesListeners.get(getType());
-		var b = engine.whenTypeGroupDiesListeners.get(getGroup());
+		var a = engine.whenTypeGroupDiesListeners.get(getType().sID);
+		var b = engine.whenTypeGroupDiesListeners.get(getGroup().sID);
 	
 		Engine.invokeListeners(whenKilledListeners);
 
@@ -3551,6 +3554,11 @@ class Actor extends Sprite
 			{
 				var e = actor;
 				
+				if (e.recycled)
+				{
+					continue;
+				}
+				
 				if (colX + cacheWidth >= e.colX
 				&& colY + cacheHeight >= e.colY
 				&& colX <= e.colX + e.cacheWidth
@@ -3573,6 +3581,11 @@ class Actor extends Sprite
 		for(actor in actorList.list)
 		{
 			var e = actor;
+			
+			if (e.recycled)
+			{
+				continue;
+			}
 	
 			if (colX + cacheWidth >= e.colX
 			&& colY + cacheHeight >= e.colY
@@ -3685,6 +3698,11 @@ class Actor extends Sprite
 			for(actor in actorList.list)
 			{
 				var e = actor;
+				
+				if (e.recycled)
+				{
+					continue;
+				}
 				
 				if (colX + cacheWidth >= e.colX
 				&& colY + cacheHeight >= e.colY

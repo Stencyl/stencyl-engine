@@ -67,7 +67,6 @@ import scripts.MyScripts;
 import com.stencyl.models.collision.Mask;
 
 import com.stencyl.utils.Utils;
-import com.stencyl.utils.HashMap;
 import com.stencyl.utils.SizedIntHash;
 
 import com.stencyl.event.EventMaster;
@@ -243,7 +242,7 @@ class Engine
 	//Used to be called actorsToRender
 	public var actorsPerLayer:IntHash<DisplayObjectContainer>;
 	
-	public var hudActors:HashMap<Actor, Actor>;
+	public var hudActors:IntHash<Actor>;
 	
 	//HashMap<Integer, HashSet<Actor>>
 	public var actorsOfType:IntHash<Array<Actor>>;
@@ -335,15 +334,15 @@ class Engine
 	private var mx:Float;
 	private var my:Float;
 	
-	private var collisionPairs:HashMap<Dynamic, HashMap<Dynamic, Bool>>;
+	private var collisionPairs:IntHash<IntHash<Bool>>;
 	private var disableCollisionList:Array<Actor>;
 	
 	public var whenKeyPressedListeners:Hash<Dynamic>;
-	public var whenTypeGroupCreatedListeners:HashMap<Dynamic, Dynamic>;
-	public var whenTypeGroupDiesListeners:HashMap<Dynamic, Dynamic>;
+	public var whenTypeGroupCreatedListeners:Hash<Dynamic>;
+	public var whenTypeGroupDiesListeners:Hash<Dynamic>;
 	public var typeGroupPositionListeners:IntHash<Dynamic>;
 	public var collisionListeners:IntHash<Dynamic>;
-	public var soundListeners:HashMap<Dynamic, Dynamic>;		
+	public var soundListeners:Hash<Dynamic>;		
 			
 	public var whenUpdatedListeners:Array<Dynamic>;
 	public var whenDrawingListeners:Array<Dynamic>;
@@ -573,6 +572,7 @@ class Engine
 		//Initialize things	
 		actorsToCreateInNextScene = new Array();			
 		gameAttributes = new Hash<Dynamic>();
+		collisionPairs = new IntHash<IntHash<Bool>>();
 		
 		//Profiler
 		//#if !js
@@ -698,18 +698,18 @@ class Engine
 		tileLayers = new IntHash<TileLayer>();
 		dynamicTiles = new Hash<Actor>();
 		animatedTiles = new Array<Tile>();
-		hudActors = new HashMap<Actor,Actor>();
+		hudActors = new IntHash<Actor>();
 		allActors = new IntHash<Actor>();
 		actorsPerLayer = new IntHash<DisplayObjectContainer>();
 		nextID = 0;
 		
 		//Events
 		whenKeyPressedListeners = new Hash<Dynamic>();
-		whenTypeGroupCreatedListeners = new HashMap<Dynamic, Dynamic>();
-		whenTypeGroupDiesListeners = new HashMap<Dynamic, Dynamic>();
+		whenTypeGroupCreatedListeners = new Hash<Dynamic>();
+		whenTypeGroupDiesListeners = new Hash<Dynamic>();
 		typeGroupPositionListeners = new IntHash<Dynamic>();
 		collisionListeners = new IntHash<Dynamic>();
-		soundListeners = new HashMap<Dynamic, Dynamic>();
+		soundListeners = new Hash<Dynamic>();
 		nativeListeners = new Array<NativeListener>();
 		
 		whenUpdatedListeners = new Array<Dynamic>();
@@ -1257,7 +1257,7 @@ class Engine
 			a.typeID = -1;
 			a.visible = false;
 			
-			getGroup(GameModel.TERRAIN_ID).list.set(a, a);	
+			getGroup(GameModel.TERRAIN_ID).addChild(a);	
 		}
 	}
 	
@@ -1770,7 +1770,7 @@ class Engine
 		
 		if(a.isHUD || a.alwaysSimulate)
 		{
-			hudActors.delete(a);
+			hudActors.remove(a.ID);
 		}
 		
 		a.destroy();
@@ -1833,8 +1833,8 @@ class Engine
 			return;
 		}
 	
-		var l1 = engine.whenTypeGroupDiesListeners.get(a.getType());
-		var l2 = engine.whenTypeGroupDiesListeners.get(a.getGroup());
+		var l1 = engine.whenTypeGroupDiesListeners.get(a.getType().sID);
+		var l2 = engine.whenTypeGroupDiesListeners.get(a.getGroup().sID);
 	
 		Engine.invokeListeners(a.whenKilledListeners);
 
@@ -1874,7 +1874,8 @@ class Engine
 		//a.moveTo(1000000, 1000000, 0.01);
 		//a.growTo(1, 1, 0.02);
 		//a.spinTo(0, 0.01);
-		a.fadeTo(1, 0.01);
+		//a.fadeTo(1, 0.01);
+		a.alpha = 1;
 		
 		a.realScaleX = 1;
 		a.realScaleY = 1;
@@ -2026,8 +2027,8 @@ class Engine
 					
 					actor.initScripts();
 					
-					var f1 = whenTypeGroupCreatedListeners.get(type);
-					var f2 = whenTypeGroupCreatedListeners.get(actor.getGroup());
+					var f1 = whenTypeGroupCreatedListeners.get(type.sID);
+					var f2 = whenTypeGroupCreatedListeners.get(actor.getGroup().sID);
 		
 					if(f1 != null)
 					{
@@ -2094,8 +2095,8 @@ class Engine
 		var a:Actor = createActor(ai, true);
 		a.initScripts();
 		
-		var f1 = whenTypeGroupCreatedListeners.get(type);
-		var f2 = whenTypeGroupCreatedListeners.get(a.getGroup());
+		var f1 = whenTypeGroupCreatedListeners.get(type.sID);
+		var f2 = whenTypeGroupCreatedListeners.get(a.getGroup().sID);
 		
 		if(f1 != null)
 		{
@@ -2260,8 +2261,10 @@ class Engine
 		
 		if(!NO_PHYSICS)
 		{
-			//clear rather than new
-			collisionPairs = new HashMap<Actor, HashMap<Actor, Bool>>();	
+			for (pair in collisionPairs.keys())
+			{
+				collisionPairs.remove(pair);
+			}	
 		}
 		
 		com.stencyl.models.actor.Animation.updateAll(elapsedTime);
@@ -2649,17 +2652,17 @@ class Engine
 		//Check if collision between actors has already happened
 		if(collisionPairs != null)
 		{
-			if(!collisionPairs.exists(a))
+			if(!collisionPairs.exists(a.ID))
 			{
-				collisionPairs.set(a, new HashMap<Dynamic, Bool>());
+				collisionPairs.set(a.ID, new IntHash<Bool>());
 			}
 			
-			if(!collisionPairs.exists(event.otherActor))
+			if(!collisionPairs.exists(event.otherActor.ID))
 			{
-				collisionPairs.set(event.otherActor, new HashMap<Dynamic, Bool>());
+				collisionPairs.set(event.otherActor.ID, new IntHash<Bool>());
 			}
 			
-			if(collisionPairs.get(a).exists(event.otherActor) || collisionPairs.get(event.otherActor).exists(a))
+			if(collisionPairs.get(a.ID).exists(event.otherActor.ID) || collisionPairs.get(event.otherActor.ID).exists(a.ID))
 			{
 				return;
 			}
@@ -2722,8 +2725,8 @@ class Engine
 		//Collision has been handled once, hold to prevent from double reporting collisions
 		if(collisionPairs != null)
 		{
-			collisionPairs.get(a).set(event.otherActor, false);
-			collisionPairs.get(event.otherActor).set(a, false);
+			collisionPairs.get(a.ID).set(event.otherActor.ID, false);
+			collisionPairs.get(event.otherActor.ID).set(a.ID, false);
 		}
 	}
 	
@@ -2731,8 +2734,8 @@ class Engine
 	{
 		var sc:SoundChannel = cast(channels[channelNum], SoundChannel);
 		
-		var channelListeners = soundListeners.get(channelNum);
-		var clipListeners = soundListeners.get(sc.currentClip);
+		var channelListeners = soundListeners.get("" + channelNum);
+		var clipListeners = soundListeners.get(sc.currentClip.sID);
 		
 		//trace(soundListeners.keys);
 		//trace(channelListeners);
@@ -2895,9 +2898,9 @@ class Engine
 		//Clean up HUD actors
 		for(a in hudActors)
 		{
-			if(a == null || a.dead)
+			if(a == null || a.dead || a.recycled)
 			{
-				hudActors.delete(a);
+				hudActors.remove(a.ID);
 			}
 		}
      
@@ -3045,12 +3048,12 @@ class Engine
 	
 	public function addHUDActor(a:Actor)
 	{
-		hudActors.set(a, a);
+		hudActors.set(a.ID, a);
 	}
 	
 	public function removeHUDActor(a:Actor)
 	{
-		hudActors.delete(a);
+		hudActors.remove(a.ID);
 	}
 	
 	
