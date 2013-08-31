@@ -1777,10 +1777,9 @@ class Engine
 		
 		//---
 		
-		var typeID:ActorType = cast(Data.get().resources.get(a.typeID), ActorType);
-		
-		if(typeID != null)
+		if (Data.get().resources.get(a.typeID) != null)
 		{
+			var typeID:ActorType = cast(Data.get().resources.get(a.typeID), ActorType);
 			var cache = actorsOfType.get(typeID.ID);
 			
 			if(cache != null)
