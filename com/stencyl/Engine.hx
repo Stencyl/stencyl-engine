@@ -68,6 +68,7 @@ import com.stencyl.models.collision.Mask;
 
 import com.stencyl.utils.Utils;
 import com.stencyl.utils.SizedIntHash;
+import com.stencyl.utils.HashMap;
 
 import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
@@ -338,11 +339,11 @@ class Engine
 	private var disableCollisionList:Array<Actor>;
 	
 	public var whenKeyPressedListeners:Hash<Dynamic>;
-	public var whenTypeGroupCreatedListeners:Hash<Dynamic>;
-	public var whenTypeGroupDiesListeners:Hash<Dynamic>;
+	public var whenTypeGroupCreatedListeners:HashMap<Dynamic, Dynamic>;
+	public var whenTypeGroupDiesListeners:HashMap<Dynamic, Dynamic>;
 	public var typeGroupPositionListeners:IntHash<Dynamic>;
 	public var collisionListeners:IntHash<Dynamic>;
-	public var soundListeners:Hash<Dynamic>;		
+	public var soundListeners:HashMap<Dynamic, Dynamic>;		
 			
 	public var whenUpdatedListeners:Array<Dynamic>;
 	public var whenDrawingListeners:Array<Dynamic>;
@@ -705,11 +706,11 @@ class Engine
 		
 		//Events
 		whenKeyPressedListeners = new Hash<Dynamic>();
-		whenTypeGroupCreatedListeners = new Hash<Dynamic>();
-		whenTypeGroupDiesListeners = new Hash<Dynamic>();
+		whenTypeGroupCreatedListeners = new HashMap<Dynamic, Dynamic>();
+		whenTypeGroupDiesListeners = new HashMap<Dynamic, Dynamic>();
 		typeGroupPositionListeners = new IntHash<Dynamic>();
 		collisionListeners = new IntHash<Dynamic>();
-		soundListeners = new Hash<Dynamic>();
+		soundListeners = new HashMap<Dynamic, Dynamic>();
 		nativeListeners = new Array<NativeListener>();
 		
 		whenUpdatedListeners = new Array<Dynamic>();
@@ -1832,8 +1833,8 @@ class Engine
 			return;
 		}
 	
-		var l1 = engine.whenTypeGroupDiesListeners.get(a.getType().sID);
-		var l2 = engine.whenTypeGroupDiesListeners.get(a.getGroup().sID);
+		var l1 = engine.whenTypeGroupDiesListeners.get(a.getType());
+		var l2 = engine.whenTypeGroupDiesListeners.get(a.getGroup());
 	
 		Engine.invokeListeners(a.whenKilledListeners);
 
@@ -2025,8 +2026,8 @@ class Engine
 					
 					actor.initScripts();
 					
-					var f1 = whenTypeGroupCreatedListeners.get(type.sID);
-					var f2 = whenTypeGroupCreatedListeners.get(actor.getGroup().sID);
+					var f1 = whenTypeGroupCreatedListeners.get(type);
+					var f2 = whenTypeGroupCreatedListeners.get(actor.getGroup());
 		
 					if(f1 != null)
 					{
@@ -2093,8 +2094,8 @@ class Engine
 		var a:Actor = createActor(ai, true);
 		a.initScripts();
 		
-		var f1 = whenTypeGroupCreatedListeners.get(type.sID);
-		var f2 = whenTypeGroupCreatedListeners.get(a.getGroup().sID);
+		var f1 = whenTypeGroupCreatedListeners.get(type);
+		var f2 = whenTypeGroupCreatedListeners.get(a.getGroup());
 		
 		if(f1 != null)
 		{
@@ -2732,8 +2733,8 @@ class Engine
 	{
 		var sc:SoundChannel = cast(channels[channelNum], SoundChannel);
 		
-		var channelListeners = soundListeners.get("" + channelNum);
-		var clipListeners = soundListeners.get(sc.currentClip.sID);
+		var channelListeners = soundListeners.get(channelNum);
+		var clipListeners = soundListeners.get(sc.currentClip);
 		
 		//trace(soundListeners.keys);
 		//trace(channelListeners);

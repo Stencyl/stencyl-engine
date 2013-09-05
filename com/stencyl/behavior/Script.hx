@@ -36,6 +36,7 @@ import com.stencyl.models.SoundChannel;
 import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.Tileset;
 
+import com.stencyl.utils.HashMap;
 import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
 
@@ -73,8 +74,7 @@ class Script
 	public var scene:Engine; //for compatibility - we'll remove it later
 	
 	public var propertyChangeListeners:Hash<Dynamic>;
-	public var equalityFunctionList:Array<Dynamic>;
-	public var equalityPairs:IntHash<Dynamic>;
+	public var equalityPairs:HashMap<Dynamic, Dynamic>; //hashmap does badly on some platforms when checking key equality (for primitives) - beware
 	
 	public var checkProperties:Bool;
 		
@@ -126,8 +126,7 @@ class Script
 		checkProperties = false;
 		nameMap = new Hash<Dynamic>();	
 		propertyChangeListeners = new Hash<Dynamic>();
-		equalityPairs = new IntHash<Dynamic>();
-		equalityFunctionList = new Array<Dynamic>();
+		equalityPairs = new HashMap<Dynamic, Dynamic>();
 	}		
 
 	//*-----------------------------------------------
@@ -683,9 +682,7 @@ class Script
 			var arr = new Array<Dynamic>();
 			arr.push(listeners);
 			arr.push(listeners2);
-			
-			equalityFunctionList.push(func);
-			equalityPairs.set(equalityFunctionList.length-1, arr);
+			equalityPairs.set(func, arr);
 		}
 		
 		if(Std.is(this, ActorScript))
@@ -722,11 +719,10 @@ class Script
 						{
 							r--;
 						
-							var ePos:Int = com.stencyl.utils.Utils.indexOf(equalityFunctionList, f);
 							//If equality, remove from other list as well
-							if(ePos != -1)
+							if(equalityPairs.get(f) != null)
 							{
-								for(list in cast(equalityPairs.get(ePos), Array<Dynamic>))
+								for(list in cast(equalityPairs.get(f), Array<Dynamic>))
 								{
 									if(list != listeners)
 									{
@@ -734,7 +730,7 @@ class Script
 									}
 								}
 								
-								equalityPairs.remove(ePos);
+								equalityPairs.delete(f);
 							}
 						}
 					}
@@ -796,12 +792,12 @@ class Script
 	
 	public function addWhenTypeGroupCreatedListener(obj:Dynamic, func:Actor->Array<Dynamic>->Void)
 	{
-		if(!engine.whenTypeGroupCreatedListeners.exists(obj.sID))
+		if(!engine.whenTypeGroupCreatedListeners.exists(obj))
 		{
-			engine.whenTypeGroupCreatedListeners.set(obj.sID, new Array<Dynamic>());
+			engine.whenTypeGroupCreatedListeners.set(obj, new Array<Dynamic>());
 		}
 		
-		var listeners = engine.whenTypeGroupCreatedListeners.get(obj.sID);
+		var listeners = engine.whenTypeGroupCreatedListeners.get(obj);
 		listeners.push(func);		
 		
 		if(Std.is(this, ActorScript))
@@ -814,10 +810,10 @@ class Script
 	{
 		if(!engine.whenTypeGroupDiesListeners.exists(obj))
 		{
-			engine.whenTypeGroupDiesListeners.set(obj.sID, new Array<Dynamic>());
+			engine.whenTypeGroupDiesListeners.set(obj, new Array<Dynamic>());
 		}
 		
-		var listeners = engine.whenTypeGroupDiesListeners.get(obj.sID);
+		var listeners = engine.whenTypeGroupDiesListeners.get(obj);
 		listeners.push(func);		
 		
 		if(Std.is(this, ActorScript))
@@ -828,24 +824,12 @@ class Script
 	
 	public function addSoundListener(obj:Dynamic, func:Array<Dynamic>->Void)
 	{
-		var sID:String = null;
-		
-		if (Std.is(obj, Resource))
+		if(!engine.soundListeners.exists(obj))
 		{
-			sID = obj.sID;
+			engine.soundListeners.set(obj, new Array<Dynamic>());
 		}
 		
-		else
-		{
-			sID = "" + obj;
-		}
-		
-		if(!engine.soundListeners.exists(sID))
-		{
-			engine.soundListeners.set(sID, new Array<Dynamic>());
-		}
-		
-		var listeners:Array<Dynamic> = engine.soundListeners.get(sID);
+		var listeners:Array<Dynamic> = engine.soundListeners.get(obj);
 		listeners.push(func);
 		
 		if(Std.is(this, ActorScript))

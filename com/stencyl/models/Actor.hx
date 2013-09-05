@@ -3424,8 +3424,8 @@ class Actor extends Sprite
 	{
 		dying = true;
 		
-		var a = engine.whenTypeGroupDiesListeners.get(getType().sID);
-		var b = engine.whenTypeGroupDiesListeners.get(getGroup().sID);
+		var a = engine.whenTypeGroupDiesListeners.get(getType());
+		var b = engine.whenTypeGroupDiesListeners.get(getGroup());
 	
 		Engine.invokeListeners(whenKilledListeners);
 
