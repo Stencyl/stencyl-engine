@@ -18,7 +18,7 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 	private var needsUpdate:Bool;
 	
 	#if !js
-	private var tilesheet:Tilesheet;
+	public var tilesheet:Tilesheet;
 	#end
 	
 	private var durations:Array<Int>;

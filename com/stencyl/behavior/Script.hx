@@ -37,6 +37,7 @@ import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.Tileset;
 
 import com.stencyl.utils.HashMap;
+import com.stencyl.utils.ColorMatrix;
 import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
 
@@ -51,7 +52,6 @@ import box2D.dynamics.B2Fixture;
 
 #if flash
 import flash.filters.ColorMatrixFilter;
-import com.stencyl.utils.ColorMatrix;
 #end
 
 import scripts.MyAssets;
@@ -2914,42 +2914,64 @@ class Script
 	//* Utilities
 	//*-----------------------------------------------
 	
-	//Flash only till NME supports ColorMatrixFilter!
-	
 	#if (cpp || js)
-	public function createGrayscaleFilter():BitmapFilter
+	public function createGrayscaleFilter():Array<Float>
 	{
-		return new BitmapFilter("");
+		var matrix = new Array<Float>();
+		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
+		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
+		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
+		matrix = matrix.concat([0,0,0,1,0]);
+		return matrix;
 	}
 	
-	public function createSepiaFilter():BitmapFilter
+	public function createSepiaFilter():Array<Float>
 	{
-		return new BitmapFilter("");
+		var matrix = new Array<Float>();
+		matrix = matrix.concat([0.34, 0.33, 0.33, 0.00, 30.00]);
+		matrix = matrix.concat([0.33, 0.34, 0.33, 0.00, 20.00]);
+		matrix = matrix.concat([0.33, 0.33, 0.34, 0.00, 0.00]);
+		matrix = matrix.concat([0.00, 0.00, 0.00, 1.00, 0.00]);
+		return matrix;
 	}
 	
-	public function createNegativeFilter():BitmapFilter
+	public function createNegativeFilter():Array<Float>
 	{
-		return new BitmapFilter("");
+		var matrix = new Array<Float>();
+		matrix = matrix.concat([-1, 0, 0, 0, 255]);
+		matrix = matrix.concat([0, -1, 0, 0, 255]);
+		matrix = matrix.concat([0, 0, -1, 0, 255]);
+		matrix = matrix.concat([0, 0, 0, 1, 0]);
+		return matrix;
 	}
 	
-	public function createTintFilter(color:Int, amount:Float = 1):BitmapFilter
+	public function createTintFilter(color:Int, amount:Float = 1):Array<Float>
 	{
-		return new BitmapFilter("");
+		var cm:ColorMatrix = new ColorMatrix();
+		cm.colorize(color, amount);
+		return cm.toArray(cm.matrix);
 	}
 	
-	public function createHueFilter(h:Float):BitmapFilter
+	public function createHueFilter(h:Float):Array<Float>
 	{
-		return new BitmapFilter("");
+		var cm:ColorMatrix = new ColorMatrix();
+		cm.adjustHue(h);
+		cm.adjustSaturation(1);
+		return cm.toArray(cm.matrix);
 	}
 
-	public function createSaturationFilter(s:Float):BitmapFilter
+	public function createSaturationFilter(s:Float):Array<Float>
 	{
-		return new BitmapFilter("");
+		var cm:ColorMatrix = new ColorMatrix();
+		cm.adjustSaturation(s/100);
+		return cm.toArray(cm.matrix);
 	}
 
-	public function createBrightnessFilter(b:Float):BitmapFilter
+	public function createBrightnessFilter(b:Float):Array<Float>
 	{
-		return new BitmapFilter("");
+		var cm:ColorMatrix = new ColorMatrix();
+		cm.adjustBrightness(b/100);
+		return cm.toArray(cm.matrix);
 	}
 	#end
 	
@@ -3004,7 +3026,7 @@ class Script
 		var cm:ColorMatrix = new ColorMatrix();
 		
 		cm.colorize(color, amount);
-		
+
 		return cm.getFilter();
 	}
 	

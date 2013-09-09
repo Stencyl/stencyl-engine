@@ -1,4 +1,3 @@
-#if flash
 package com.stencyl.utils;
 
 /*
@@ -60,7 +59,9 @@ package com.stencyl.utils;
  * THE SOFTWARE.
  */
 
+#if flash
 import flash.filters.ColorMatrixFilter;
+#end
 
 using com.stencyl.utils.RGB;
 
@@ -190,11 +191,13 @@ class ColorMatrix
 		matrix = new Array<Float>();
 	}
 	
+	#if flash
 	public function getFilter():ColorMatrixFilter
 	{
 		toArray(matrix);
 		return new ColorMatrixFilter(matrix);
 	}
+	#end
 	
 	public function identity():ColorMatrix
 	{
@@ -697,7 +700,7 @@ class ColorMatrix
 		}
 	}
 	
-	inline function toArray(out:Array<Float>):Array<Float>
+	public inline function toArray(out:Array<Float>):Array<Float>
 	{
 		out[ 0] = m11; out[ 1] = m12; out[ 2] = m13; out[ 3] = m14; out[ 4] = m15;
 		out[ 5] = m21; out[ 6] = m22; out[ 7] = m23; out[ 8] = m24; out[ 9] = m25;
@@ -773,5 +776,3 @@ class ColorMatrix
 		m45 = t41*i15 + t42*i25 + t43*i35 + t44*i45;
 	}
 }
-
-#end

@@ -16,6 +16,7 @@ import nme.display.Graphics;
 import nme.geom.Matrix;
 import nme.geom.Point;
 import nme.geom.Rectangle;
+import nme.utils.ByteArray;
 
 import com.stencyl.Input;
 import com.stencyl.Engine;
@@ -178,10 +179,12 @@ class Actor extends Sprite
 	//* Sprite-Based Animation
 	//*-----------------------------------------------
 	
-	public var currAnimationAsAnim:AbstractAnimation;
+	public var currAnimationAsAnim:Dynamic;
 	public var currAnimation:DisplayObject;
 	public var currAnimationName:String;
-	public var animationMap:Hash<DisplayObject>;
+	public var animationMap:Hash<Dynamic>;
+	public var backupAnimationMap:Hash<Dynamic>;
+	public var animsBackedUp:Bool = false;
 	
 	public var sprite:com.stencyl.models.actor.Sprite;
 	
@@ -435,7 +438,7 @@ class Actor extends Sprite
 		//---
 		
 		currAnimationName = "";
-		animationMap = new Hash<DisplayObject>();
+		animationMap = new Hash<Dynamic>();
 		shapeMap = new Hash<Dynamic>();
 		originMap = new Hash<B2Vec2>();
 		
@@ -3174,16 +3177,119 @@ class Actor extends Sprite
 	//* Filters
 	//*-----------------------------------------------
 
+	#if flash
 	public function setFilter(filter:Array<BitmapFilter>)
 	{			
-		#if !cpp
 		filters = filters.concat(filter);
-		#end
 	}
+	#end
+	
+	#if (cpp || js)
+	public function setFilter(filter:Array<Array<Float>>)
+	{	
+		#if js
+		// setFilter() is not implemented for HTML5.
+		return;
+		#end
+
+		// Backup the default animations so the filters can be undone later.
+		if (!animsBackedUp)
+		{
+			backupAnimationMap = new Hash<Dynamic>();
+		
+			for (key in animationMap.keys())
+			{
+				var anim = animationMap.get(key);
+				
+				if (Type.getClass(anim) == SheetAnimation)
+				{
+					backupAnimationMap.set(key, anim.tilesheet.nmeBitmap.clone());
+				}
+			}
+			animsBackedUp = true;
+		}
+		
+		// Stencyl adds the result of the filter blocks into an array, so for cpp targets it must be taken out.
+		var defaultMatrix:Array<Float> = filter[0];
+		
+		var matrix = new Array<Float>();
+		
+		// Take 12 values from the original array, ignoring alpha since no filters change it.
+		matrix[0]  = defaultMatrix[0];
+		matrix[1]  = defaultMatrix[1];
+		matrix[2]  = defaultMatrix[2];
+		matrix[3]  = defaultMatrix[4];
+		matrix[4]  = defaultMatrix[5];
+		matrix[5]  = defaultMatrix[6];
+		matrix[6]  = defaultMatrix[7];
+		matrix[7]  = defaultMatrix[9];
+		matrix[8]  = defaultMatrix[10];
+		matrix[9]  = defaultMatrix[11];
+		matrix[10] = defaultMatrix[12];
+		matrix[11] = defaultMatrix[14];
+		
+		for (anim in animationMap)
+		{
+			if (Type.getClass(anim) == SheetAnimation)
+			{
+				var imgData:BitmapData = anim.tilesheet.nmeBitmap;
+				var byteArray:ByteArray = imgData.getPixels(imgData.rect);
+				var i:Int = 0;
+				
+				while (i < byteArray.length)
+				{
+					var srcR:Float = byteArray[i + 1];
+					var srcG:Float = byteArray[i + 2];
+					var srcB:Float = byteArray[i + 3];
+					
+					var redResult:Float   = (matrix[0] * srcR) + (matrix[1] * srcG) + (matrix[2]  * srcB) + matrix[3];
+					var greenResult:Float = (matrix[4] * srcR) + (matrix[5] * srcG) + (matrix[6]  * srcB) + matrix[7];
+					var blueResult:Float  = (matrix[8] * srcR) + (matrix[9] * srcG) + (matrix[10] * srcB) + matrix[11];
+					
+					// This makes sure the resulting values are between 0 and 255;
+					redResult   = Math.max(Math.min(redResult  , 255), 0);
+					greenResult = Math.max(Math.min(greenResult, 255), 0);
+					blueResult  = Math.max(Math.min(blueResult , 255), 0);
+					
+					byteArray[i + 1] = Std.int(redResult);
+					byteArray[i + 2] = Std.int(greenResult);
+					byteArray[i + 3] = Std.int(blueResult);
+					i = i + 4;
+				}
+				// Not setting the ByteArray position back to 0 will result in an end-of-file error.
+				byteArray.position = 0;
+				
+				imgData.setPixels(imgData.rect, byteArray);
+			}
+
+		}
+	}
+	
+	#end
 	
 	public function clearFilters()
 	{
+		#if flash
 		filters = [];
+		#end
+		
+		#if (cpp)
+		if (animsBackedUp)
+		{
+			var pt:Point = new Point(0,0);
+			
+			for (key in backupAnimationMap.keys())
+			{
+				var imgData = backupAnimationMap.get(key);
+				var sheetValue = animationMap.get(key);
+				sheetValue.tilesheet.nmeBitmap.copyPixels(imgData, imgData.rect, pt);
+			}	
+		}
+		#end
+		
+		#if js
+			// clearFilters() is not implemented for HTML5.
+		#end
 	}
 	
 	//*-----------------------------------------------
