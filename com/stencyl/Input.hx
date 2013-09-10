@@ -317,15 +317,9 @@ class Input
 		{
 			var data = Accelerometer.get();
 			
-			#if android
 			accelX = data.x;
 			accelY = data.y;
 			accelZ = data.z;
-			#else
-			accelX = -data.x;
-			accelY = -data.y;
-			accelZ = -data.z;
-			#end
 		}
 		#end
 		
