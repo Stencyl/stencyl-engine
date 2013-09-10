@@ -5,6 +5,7 @@ import com.stencyl.behavior.TimedTask;
 import com.stencyl.models.collision.CollisionInfo;
 import com.stencyl.models.collision.Masklist;
 import flash.geom.Transform;
+import nme.Memory;
 import nme.display.Sprite;
 import nme.display.Bitmap;
 import nme.display.BitmapData;
@@ -3214,7 +3215,7 @@ class Actor extends Sprite
 		
 		var matrix = new Array<Float>();
 		
-		// Take 12 values from the original array, ignoring alpha since no filters change it.
+		// Take 12 values from the original array, ignoring alpha since no Stencyl filters change it.
 		matrix[0]  = defaultMatrix[0];
 		matrix[1]  = defaultMatrix[1];
 		matrix[2]  = defaultMatrix[2];
@@ -3235,27 +3236,64 @@ class Actor extends Sprite
 				var imgData:BitmapData = anim.tilesheet.nmeBitmap;
 				var byteArray:ByteArray = imgData.getPixels(imgData.rect);
 				var i:Int = 0;
+
+				var srcR:Int;
+				var srcG:Int;
+				var srcB:Int;
 				
+				var redResult:Float;
+				var greenResult:Float;
+				var blueResult:Float;
+				
+				// Using the Memory class with a ByteArray slightly increases performance.
+				Memory.select(byteArray);
+
 				while (i < byteArray.length)
 				{
-					var srcR:Float = byteArray[i + 1];
-					var srcG:Float = byteArray[i + 2];
-					var srcB:Float = byteArray[i + 3];
+					srcR = Memory.getByte(i + 1);
+					srcG = Memory.getByte(i + 2);
+					srcB = Memory.getByte(i + 3);
+
+					redResult = ((matrix[0] * srcR) + (matrix[1] * srcG) + (matrix[2]  * srcB) + matrix[3]);
 					
-					var redResult:Float   = (matrix[0] * srcR) + (matrix[1] * srcG) + (matrix[2]  * srcB) + matrix[3];
-					var greenResult:Float = (matrix[4] * srcR) + (matrix[5] * srcG) + (matrix[6]  * srcB) + matrix[7];
-					var blueResult:Float  = (matrix[8] * srcR) + (matrix[9] * srcG) + (matrix[10] * srcB) + matrix[11];
+					if (redResult > 255)
+					{
+						redResult = 255;
+					}
+					else if (redResult < 0)
+					{
+						redResult = 0;
+					}
 					
-					// This makes sure the resulting values are between 0 and 255;
-					redResult   = Math.max(Math.min(redResult  , 255), 0);
-					greenResult = Math.max(Math.min(greenResult, 255), 0);
-					blueResult  = Math.max(Math.min(blueResult , 255), 0);
+					greenResult = ((matrix[4] * srcR) + (matrix[5] * srcG) + (matrix[6]  * srcB) + matrix[7]);
 					
-					byteArray[i + 1] = Std.int(redResult);
-					byteArray[i + 2] = Std.int(greenResult);
-					byteArray[i + 3] = Std.int(blueResult);
+					if (greenResult > 255)
+					{
+						greenResult = 255;
+					}
+					else if (greenResult < 0)
+					{
+						greenResult = 0;
+					}
+					
+					blueResult = ((matrix[8] * srcR) + (matrix[9] * srcG) + (matrix[10] * srcB) + matrix[11]);
+					
+					if (blueResult > 255)
+					{
+						blueResult = 255;
+					}
+					else if (blueResult < 0)
+					{
+						blueResult = 0;
+					}
+
+					Memory.setByte((i + 1), Std.int(redResult));
+					Memory.setByte((i + 2), Std.int(greenResult));
+					Memory.setByte((i + 3), Std.int(blueResult));
+
 					i = i + 4;
 				}
+
 				// Not setting the ByteArray position back to 0 will result in an end-of-file error.
 				byteArray.position = 0;
 				
