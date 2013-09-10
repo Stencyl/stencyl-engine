@@ -3186,13 +3186,23 @@ class Actor extends Sprite
 	#end
 	
 	#if (cpp || js)
-	public function setFilter(filter:Array<Array<Float>>)
+	public function setFilter(filter:Array<Array<Dynamic>>)
 	{	
 		#if js
 		// setFilter() is not implemented for HTML5.
 		return;
 		#end
 
+		var name:String;
+		var i:Int;
+		var srcA:Int;
+		var srcR:Int;
+		var srcG:Int;
+		var srcB:Int;
+		var redResult:Float;
+		var greenResult:Float;
+		var blueResult:Float;
+		
 		// Backup the default animations so the filters can be undone later.
 		if (!animsBackedUp)
 		{
@@ -3211,11 +3221,12 @@ class Actor extends Sprite
 		}
 		
 		// Stencyl adds the result of the filter blocks into an array, so for cpp targets it must be taken out.
-		var defaultMatrix:Array<Float> = filter[0];
+		var defaultMatrix:Array<Dynamic> = filter[0];
 		
-		var matrix = new Array<Float>();
-		
+		name = defaultMatrix[15];
+
 		// Take 12 values from the original array, ignoring alpha since no Stencyl filters change it.
+		var matrix = new Array<Float>();
 		matrix[0]  = defaultMatrix[0];
 		matrix[1]  = defaultMatrix[1];
 		matrix[2]  = defaultMatrix[2];
@@ -3235,62 +3246,79 @@ class Actor extends Sprite
 			{
 				var imgData:BitmapData = anim.tilesheet.nmeBitmap;
 				var byteArray:ByteArray = imgData.getPixels(imgData.rect);
-				var i:Int = 0;
+				var len:Int = byteArray.length;
 
-				var srcR:Int;
-				var srcG:Int;
-				var srcB:Int;
-				
-				var redResult:Float;
-				var greenResult:Float;
-				var blueResult:Float;
-				
 				// Using the Memory class with a ByteArray slightly increases performance.
 				Memory.select(byteArray);
 
-				while (i < byteArray.length)
+				i = 0;
+				while (i < len)
 				{
+					srcA = Memory.getByte(i);
+					if (srcA == 0)
+					{
+						// Ignore pixels with full transparency.
+						i = i + 4;
+						continue;
+					}
+
 					srcR = Memory.getByte(i + 1);
 					srcG = Memory.getByte(i + 2);
 					srcB = Memory.getByte(i + 3);
+					
+					if (name == "NegativeFilter")
+					{
+						// Negative filter is the simplest filter, so use this shortcut.
+						Memory.setByte((i + 1), (255 - srcR));
+						Memory.setByte((i + 2), (255 - srcG));
+						Memory.setByte((i + 3), (255 - srcB));
+						
+						i = i + 4;
+						continue;
+					}
 
 					redResult = ((matrix[0] * srcR) + (matrix[1] * srcG) + (matrix[2]  * srcB) + matrix[3]);
-					
-					if (redResult > 255)
+					if (redResult > 254)
 					{
-						redResult = 255;
+						Memory.setByte((i + 1), 255);
 					}
-					else if (redResult < 0)
+					else if (redResult < 1)
 					{
-						redResult = 0;
+						Memory.setByte((i + 1), 0);
+					}
+					else
+					{
+						Memory.setByte((i + 1), Std.int(redResult));
 					}
 					
 					greenResult = ((matrix[4] * srcR) + (matrix[5] * srcG) + (matrix[6]  * srcB) + matrix[7]);
-					
-					if (greenResult > 255)
+					if (greenResult > 254)
 					{
-						greenResult = 255;
+						Memory.setByte((i + 2), 255);
 					}
-					else if (greenResult < 0)
+					else if (greenResult < 1)
 					{
-						greenResult = 0;
+						Memory.setByte((i + 2), 0);
+					}
+					else
+					{
+						Memory.setByte((i + 2), Std.int(greenResult));
 					}
 					
 					blueResult = ((matrix[8] * srcR) + (matrix[9] * srcG) + (matrix[10] * srcB) + matrix[11]);
+					if (blueResult > 254)
+					{
+						Memory.setByte((i + 3), 255);
+					}
+					else if (blueResult < 1)
+					{
+						Memory.setByte((i + 3), 0);
+					}
+					else
+					{
+						Memory.setByte((i + 3), Std.int(blueResult));
+					}
 					
-					if (blueResult > 255)
-					{
-						blueResult = 255;
-					}
-					else if (blueResult < 0)
-					{
-						blueResult = 0;
-					}
-
-					Memory.setByte((i + 1), Std.int(redResult));
-					Memory.setByte((i + 2), Std.int(greenResult));
-					Memory.setByte((i + 3), Std.int(blueResult));
-
 					i = i + 4;
 				}
 

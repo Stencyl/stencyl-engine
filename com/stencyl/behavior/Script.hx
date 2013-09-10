@@ -2913,63 +2913,74 @@ class Script
 	//*-----------------------------------------------
 	
 	#if (cpp || js)
-	public function createGrayscaleFilter():Array<Float>
+	public function createGrayscaleFilter():Array<Dynamic>
 	{
-		var matrix = new Array<Float>();
+		var matrix = new Array<Dynamic>();
 		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
 		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
 		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
 		matrix = matrix.concat([0,0,0,1,0]);
+		matrix[15] = "GrayscaleFilter";
 		return matrix;
 	}
 	
-	public function createSepiaFilter():Array<Float>
+	public function createSepiaFilter():Array<Dynamic>
 	{
-		var matrix = new Array<Float>();
+		var matrix = new Array<Dynamic>();
 		matrix = matrix.concat([0.34, 0.33, 0.33, 0.00, 30.00]);
 		matrix = matrix.concat([0.33, 0.34, 0.33, 0.00, 20.00]);
 		matrix = matrix.concat([0.33, 0.33, 0.34, 0.00, 0.00]);
 		matrix = matrix.concat([0.00, 0.00, 0.00, 1.00, 0.00]);
+		matrix[15] = "SepiaFilter";
 		return matrix;
 	}
 	
-	public function createNegativeFilter():Array<Float>
+	public function createNegativeFilter():Array<Dynamic>
 	{
-		var matrix = new Array<Float>();
+		var matrix = new Array<Dynamic>();
 		matrix = matrix.concat([-1, 0, 0, 0, 255]);
 		matrix = matrix.concat([0, -1, 0, 0, 255]);
 		matrix = matrix.concat([0, 0, -1, 0, 255]);
 		matrix = matrix.concat([0, 0, 0, 1, 0]);
+		matrix[15] = "NegativeFilter";
 		return matrix;
 	}
 	
-	public function createTintFilter(color:Int, amount:Float = 1):Array<Float>
+	public function createTintFilter(color:Int, amount:Float = 1):Array<Dynamic>
 	{
 		var cm:ColorMatrix = new ColorMatrix();
 		cm.colorize(color, amount);
-		return cm.toArray(cm.matrix);
+		var matrix = cast((cm.toArray(cm.matrix)),(Array<Dynamic>));
+		matrix[15] = "TintFilter";
+		return matrix;
 	}
 	
-	public function createHueFilter(h:Float):Array<Float>
+	public function createHueFilter(h:Float):Array<Dynamic>
 	{
 		var cm:ColorMatrix = new ColorMatrix();
 		cm.adjustHue(h);
 		cm.adjustSaturation(1);
-		return cm.toArray(cm.matrix);
+		var matrix = cast((cm.toArray(cm.matrix)),(Array<Dynamic>));
+		matrix[15] = "HueFilter";
+		return matrix;
 	}
 
-	public function createSaturationFilter(s:Float):Array<Float>
+	public function createSaturationFilter(s:Float):Array<Dynamic>
 	{
 		var cm:ColorMatrix = new ColorMatrix();
 		cm.adjustSaturation(s/100);
-		return cm.toArray(cm.matrix);
+		var matrix = cast((cm.toArray(cm.matrix)),(Array<Dynamic>));
+		matrix[15] = "SaturationFilter";
+		return matrix;
 	}
 
-	public function createBrightnessFilter(b:Float):Array<Float>
+	public function createBrightnessFilter(b:Float):Array<Dynamic>
 	{
 		var cm:ColorMatrix = new ColorMatrix();
 		cm.adjustBrightness(b/100);
-		return cm.toArray(cm.matrix);
+		var matrix = cast((cm.toArray(cm.matrix)),(Array<Dynamic>));
+		matrix[15] = "BrightnessFilter";
+		return matrix;
 	}
 	#end
 	
