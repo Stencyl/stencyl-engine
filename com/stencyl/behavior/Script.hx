@@ -538,14 +538,12 @@ class Script
 	
 	public function addSwipeListener(func:Array<Dynamic>->Void)
 	{
-		#if(mobile && !air)
 		engine.whenSwipedListeners.push(func);
 		
 		if(Std.is(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenSwipedListeners, func);
 		}
-		#end
 	}
 	
 	public function addMultiTouchStartListener(func:Dynamic->Array<Dynamic>->Void)

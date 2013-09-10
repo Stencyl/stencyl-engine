@@ -3,6 +3,8 @@ package com.stencyl;
 import nme.events.Event;
 import nme.events.KeyboardEvent;
 import nme.events.MouseEvent;
+import nme.display.DisplayObject;
+import nme.geom.Point;
 
 #if !js
 import nme.events.TouchEvent;
@@ -11,15 +13,6 @@ import nme.ui.Multitouch;
 
 #if cpp
 import nme.ui.Accelerometer;
-#end
-
-#if mobile
-import fr.hyperfiction.HyperTouch;
-import fr.hyperfiction.events.GesturePanEvent;
-import fr.hyperfiction.events.GesturePinchEvent;
-import fr.hyperfiction.events.GestureRotationEvent;
-import fr.hyperfiction.events.GestureSwipeEvent;
-import fr.hyperfiction.events.GestureTapEvent;
 #end
 
 import nme.ui.Keyboard;
@@ -204,16 +197,16 @@ class Input
 	public static function enableSwipeDetection()
 	{
 		#if(mobile && !air)
-		var gestures = HyperTouch.getInstance();
-		gestures.addEventListener(GestureSwipeEvent.SWIPE, onSwipe, false);
+		//var gestures = HyperTouch.getInstance();
+		//gestures.addEventListener(GestureSwipeEvent.SWIPE, onSwipe, false);
 		#end
 	}
 	
 	public static function disableSwipeDetection()
 	{
 		#if(mobile && !air)
-		var gestures = HyperTouch.getInstance();
-		gestures.removeEventListener(GestureSwipeEvent.SWIPE, onSwipe, false);
+		//var gestures = HyperTouch.getInstance();
+		//gestures.removeEventListener(GestureSwipeEvent.SWIPE, onSwipe, false);
 		#end
 	}
 
@@ -240,10 +233,8 @@ class Input
 	        }
 	        #end
 	        
-	        #if(mobile && !air)
-			//var gestures = HyperTouch.getInstance();
-			//gestures.addEventListener(GestureSwipeEvent.SWIPE, onSwipe, false);
-			#end
+			var roxAgent = new RoxGestureAgent(Engine.engine.root, RoxGestureAgent.GESTURE);
+			Engine.engine.root.addEventListener(RoxGestureEvent.GESTURE_SWIPE, onSwipe);
 			
 			swipeDirection = -1;
 			swipedLeft = false;
@@ -261,16 +252,43 @@ class Input
 		}
 	}
 	
-	#if(mobile && !air)
-	private static function onSwipe(e:GestureSwipeEvent):Void
+	private static function onSwipe(e:RoxGestureEvent):Void
 	{
-		swipeDirection = e.direction;
+		var pt = cast(e.extra, Point);
+        
+        if(Math.abs(pt.x) <= Math.abs(pt.y))
+        {
+        	//Up
+        	if(pt.y <= 0)
+        	{
+        		swipeDirection = 2;
+        	}
+        	
+        	//Down
+        	else
+        	{
+        		swipeDirection = 3;
+        	}
+        }
+        
+        else if(Math.abs(pt.x) > Math.abs(pt.y))
+        {
+        	//Left
+        	if(pt.x <= 0)
+        	{
+        		swipeDirection = 0;
+        	}
+        	
+        	//Right
+        	else
+        	{
+        		swipeDirection = 1;
+        	}
+        }
 	}
-	#end
 
 	public static function update()
 	{
-		#if(mobile && !air)
 		swipedLeft = false;
 		swipedRight = false;
 		swipedUp = false;
@@ -280,20 +298,19 @@ class Input
 		{
 			switch(swipeDirection)
 			{
-				case GestureSwipeEvent.DIRECTION_LEFT:
+				case 0:
 					swipedLeft = true;
-				case GestureSwipeEvent.DIRECTION_RIGHT:
+				case 1:
 					swipedRight = true;
-				case GestureSwipeEvent.DIRECTION_UP:
+				case 2:
 					swipedUp = true;
-				case GestureSwipeEvent.DIRECTION_DOWN:
+				case 3:
 					swipedDown = true;
 			}
 			
 			Engine.invokeListeners(Engine.engine.whenSwipedListeners);
 			swipeDirection = -1;
 		}
-		#end
 		
 		#if cpp
 		if(nme.sensors.Accelerometer.isSupported)
