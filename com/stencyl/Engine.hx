@@ -1416,6 +1416,10 @@ class Engine
 	
 	public function cleanup()
 	{
+		#if mobile
+		JoystickController.reset();
+		#end
+		
 		if(debugDrawer != null && debugDrawer.m_sprite != null)
 		{
 			debugDrawer.m_sprite.graphics.clear();
