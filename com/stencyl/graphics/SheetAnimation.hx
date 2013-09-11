@@ -12,6 +12,11 @@ import com.stencyl.Engine;
 
 class SheetAnimation extends Sprite, implements AbstractAnimation
 {
+	public var tint:Bool = false;
+	public var redValue:Float;
+	public var greenValue:Float;
+	public var blueValue:Float;
+
 	private var frameIndex:Int;
 	private var looping:Bool;
 	private var timer:Float;
@@ -155,9 +160,22 @@ class SheetAnimation extends Sprite, implements AbstractAnimation
 		data[0] = 0;
 		data[1] = 0;
 		data[2] = frameIndex;
-
-  		graphics.clear();
-  		tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias);
+		
+		if (tint)
+		{
+			data[3] = redValue;
+			data[4] = greenValue;
+			data[5] = blueValue;
+			
+			graphics.clear();
+			tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_RGB);
+		}
+		else
+		{
+			graphics.clear();
+			tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias);
+		}
+		
 		needsUpdate = false;
   		#end
 	}

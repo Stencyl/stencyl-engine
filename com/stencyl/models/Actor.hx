@@ -202,7 +202,6 @@ class Actor extends Sprite
 	public var updateMatrix:Bool;
 	public var drawMatrix:Matrix; //For use when drawing actor image
 	
-	
 	//*-----------------------------------------------
 	//* Behaviors
 	//*-----------------------------------------------
@@ -3193,7 +3192,7 @@ class Actor extends Sprite
 		return;
 		#end
 
-		var name:String;
+		var filterName:String;
 		var i:Int;
 		var srcA:Int;
 		var srcR:Int;
@@ -3223,114 +3222,218 @@ class Actor extends Sprite
 		// Stencyl adds the result of the filter blocks into an array, so for cpp targets it must be taken out.
 		var defaultMatrix:Array<Dynamic> = filter[0];
 		
-		name = defaultMatrix[15];
-
-		// Take 12 values from the original array, ignoring alpha since no Stencyl filters change it.
-		var matrix = new Array<Float>();
-		matrix[0]  = defaultMatrix[0];
-		matrix[1]  = defaultMatrix[1];
-		matrix[2]  = defaultMatrix[2];
-		matrix[3]  = defaultMatrix[4];
-		matrix[4]  = defaultMatrix[5];
-		matrix[5]  = defaultMatrix[6];
-		matrix[6]  = defaultMatrix[7];
-		matrix[7]  = defaultMatrix[9];
-		matrix[8]  = defaultMatrix[10];
-		matrix[9]  = defaultMatrix[11];
-		matrix[10] = defaultMatrix[12];
-		matrix[11] = defaultMatrix[14];
+		filterName = defaultMatrix[0];
 		
-		for (anim in animationMap)
+		if (filterName == "NegativeFilter")
 		{
-			if (Type.getClass(anim) == SheetAnimation)
+			for (anim in animationMap)
 			{
-				var imgData:BitmapData = anim.tilesheet.nmeBitmap;
-				var byteArray:ByteArray = imgData.getPixels(imgData.rect);
-				var len:Int = byteArray.length;
-
-				// Using the Memory class with a ByteArray slightly increases performance.
-				Memory.select(byteArray);
-
-				i = 0;
-				while (i < len)
+				if (Type.getClass(anim) == SheetAnimation)
 				{
-					srcA = Memory.getByte(i);
-					if (srcA == 0)
-					{
-						// Ignore pixels with full transparency.
-						i = i + 4;
-						continue;
-					}
+					var imageData:BitmapData = anim.tilesheet.nmeBitmap;
+					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
+					var len:Int = byteArray.length;
 
-					srcR = Memory.getByte(i + 1);
-					srcG = Memory.getByte(i + 2);
-					srcB = Memory.getByte(i + 3);
-					
-					if (name == "NegativeFilter")
+					// Using the Memory class with a ByteArray slightly increases performance.
+					Memory.select(byteArray);
+
+					i = 0;
+					while (i < len)
 					{
-						// Negative filter is the simplest filter, so use this shortcut.
+						srcA = Memory.getByte(i);
+						if (srcA == 0)
+						{
+							// Ignore pixels with full transparency.
+							i = i + 4;
+							continue;
+						}
+
+						srcR = Memory.getByte(i + 1);
+						srcG = Memory.getByte(i + 2);
+						srcB = Memory.getByte(i + 3);
+					
 						Memory.setByte((i + 1), (255 - srcR));
 						Memory.setByte((i + 2), (255 - srcG));
 						Memory.setByte((i + 3), (255 - srcB));
-						
+
 						i = i + 4;
-						continue;
 					}
 
-					redResult = ((matrix[0] * srcR) + (matrix[1] * srcG) + (matrix[2]  * srcB) + matrix[3]);
-					if (redResult > 254)
-					{
-						Memory.setByte((i + 1), 255);
-					}
-					else if (redResult < 1)
-					{
-						Memory.setByte((i + 1), 0);
-					}
-					else
-					{
-						Memory.setByte((i + 1), Std.int(redResult));
-					}
-					
-					greenResult = ((matrix[4] * srcR) + (matrix[5] * srcG) + (matrix[6]  * srcB) + matrix[7]);
-					if (greenResult > 254)
-					{
-						Memory.setByte((i + 2), 255);
-					}
-					else if (greenResult < 1)
-					{
-						Memory.setByte((i + 2), 0);
-					}
-					else
-					{
-						Memory.setByte((i + 2), Std.int(greenResult));
-					}
-					
-					blueResult = ((matrix[8] * srcR) + (matrix[9] * srcG) + (matrix[10] * srcB) + matrix[11]);
-					if (blueResult > 254)
-					{
-						Memory.setByte((i + 3), 255);
-					}
-					else if (blueResult < 1)
-					{
-						Memory.setByte((i + 3), 0);
-					}
-					else
-					{
-						Memory.setByte((i + 3), Std.int(blueResult));
-					}
-					
-					i = i + 4;
+					// Not setting the ByteArray position back to 0 will result in an end-of-file error.
+					byteArray.position = 0;
+				
+					imageData.setPixels(imageData.rect, byteArray);
 				}
 
-				// Not setting the ByteArray position back to 0 will result in an end-of-file error.
-				byteArray.position = 0;
-				
-				imgData.setPixels(imgData.rect, byteArray);
 			}
+		}
+		else if (filterName == "TintFilter")
+		{
+			for (anim in animationMap)
+			{
+				if (Type.getClass(anim) == SheetAnimation)
+				{
+					// The tint filter uses drawTiles for much better performance.
+					anim.tint = true;
+					var tintAmount:Float = 1 - defaultMatrix[4];
+					anim.redValue   = Math.min((defaultMatrix[1] + tintAmount), 1);
+					anim.greenValue = Math.min((defaultMatrix[2] + tintAmount), 1);
+					anim.blueValue  = Math.min((defaultMatrix[3] + tintAmount), 1);
+					anim.updateBitmap();
+				}
+			}
+		}
+		else if (filterName == "GrayscaleFilter")
+		{
+			for (anim in animationMap)
+			{
+				if (Type.getClass(anim) == SheetAnimation)
+				{
+					var imageData:BitmapData = anim.tilesheet.nmeBitmap;
+					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
+					var len:Int = byteArray.length;
+					var greyResult:Int;
 
+					// Using the Memory class with a ByteArray slightly increases performance.
+					Memory.select(byteArray);
+
+					i = 0;
+					while (i < len)
+					{
+						srcA = Memory.getByte(i);
+						if (srcA == 0)
+						{
+							// Ignore pixels with full transparency.
+							i = i + 4;
+							continue;
+						}
+
+						srcR = Memory.getByte(i + 1);
+						srcG = Memory.getByte(i + 2);
+						srcB = Memory.getByte(i + 3);
+						
+						// All color values are the same in greyscale, so just calculate one.
+						greyResult = Std.int((srcR * 0.5) + (srcG * 0.5) + (srcB * 0.5));
+
+						if (greyResult > 254)
+						{
+							greyResult = 255;
+						}
+						else if (greyResult < 1)
+						{
+							greyResult = 0;
+						}
+
+						Memory.setByte((i + 1), greyResult);
+						Memory.setByte((i + 2), greyResult);
+						Memory.setByte((i + 3), greyResult);
+						
+						i = i + 4;
+					}
+
+					// Not setting the ByteArray position back to 0 will result in an end-of-file error.
+					byteArray.position = 0;
+				
+					imageData.setPixels(imageData.rect, byteArray);
+				}
+			}
+		}
+		else
+		{
+			// Take 12 values from the original array, ignoring alpha since no Stencyl filters change it.
+			var matrix = new Array<Float>();
+			matrix[0]  = defaultMatrix[1];
+			matrix[1]  = defaultMatrix[2];
+			matrix[2]  = defaultMatrix[3];
+			matrix[3]  = defaultMatrix[5];
+			matrix[4]  = defaultMatrix[6];
+			matrix[5]  = defaultMatrix[7];
+			matrix[6]  = defaultMatrix[8];
+			matrix[7]  = defaultMatrix[10];
+			matrix[8]  = defaultMatrix[11];
+			matrix[9]  = defaultMatrix[12];
+			matrix[10] = defaultMatrix[13];
+			matrix[11] = defaultMatrix[15];
+			
+			for (anim in animationMap)
+			{
+				if (Type.getClass(anim) == SheetAnimation)
+				{
+					var imageData:BitmapData = anim.tilesheet.nmeBitmap;
+					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
+					var len:Int = byteArray.length;
+
+					// Using the Memory class with a ByteArray slightly increases performance.
+					Memory.select(byteArray);
+
+					i = 0;
+					while (i < len)
+					{
+						srcA = Memory.getByte(i);
+						if (srcA == 0)
+						{
+							// Ignore pixels with full transparency.
+							i = i + 4;
+							continue;
+						}
+
+						srcR = Memory.getByte(i + 1);
+						srcG = Memory.getByte(i + 2);
+						srcB = Memory.getByte(i + 3);
+
+						redResult = ((matrix[0] * srcR) + (matrix[1] * srcG) + (matrix[2]  * srcB) + matrix[3]);
+						if (redResult > 254)
+						{
+							Memory.setByte((i + 1), 255);
+						}
+						else if (redResult < 1)
+						{
+							Memory.setByte((i + 1), 0);
+						}
+						else
+						{
+							Memory.setByte((i + 1), Std.int(redResult));
+						}
+					
+						greenResult = ((matrix[4] * srcR) + (matrix[5] * srcG) + (matrix[6]  * srcB) + matrix[7]);
+						if (greenResult > 254)
+						{
+							Memory.setByte((i + 2), 255);
+						}
+						else if (greenResult < 1)
+						{
+							Memory.setByte((i + 2), 0);
+						}
+						else
+						{
+							Memory.setByte((i + 2), Std.int(greenResult));
+						}
+					
+						blueResult = ((matrix[8] * srcR) + (matrix[9] * srcG) + (matrix[10] * srcB) + matrix[11]);
+						if (blueResult > 254)
+						{
+							Memory.setByte((i + 3), 255);
+						}
+						else if (blueResult < 1)
+						{
+							Memory.setByte((i + 3), 0);
+						}
+						else
+						{
+							Memory.setByte((i + 3), Std.int(blueResult));
+						}
+					
+						i = i + 4;
+					}
+
+					// Not setting the ByteArray position back to 0 will result in an end-of-file error.
+					byteArray.position = 0;
+				
+					imageData.setPixels(imageData.rect, byteArray);
+				}
+			}
 		}
 	}
-	
 	#end
 	
 	public function clearFilters()
@@ -3346,9 +3449,11 @@ class Actor extends Sprite
 			
 			for (key in backupAnimationMap.keys())
 			{
-				var imgData = backupAnimationMap.get(key);
+				var imageData = backupAnimationMap.get(key);
 				var sheetValue = animationMap.get(key);
-				sheetValue.tilesheet.nmeBitmap.copyPixels(imgData, imgData.rect, pt);
+				sheetValue.tilesheet.nmeBitmap.copyPixels(imageData, imageData.rect, pt);
+				sheetValue.tint = false;
+				sheetValue.updateBitmap();
 			}	
 		}
 		#end

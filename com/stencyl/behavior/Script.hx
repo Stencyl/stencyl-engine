@@ -2916,11 +2916,7 @@ class Script
 	public function createGrayscaleFilter():Array<Dynamic>
 	{
 		var matrix = new Array<Dynamic>();
-		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
-		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
-		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
-		matrix = matrix.concat([0,0,0,1,0]);
-		matrix[15] = "GrayscaleFilter";
+		matrix[0] = "GrayscaleFilter";
 		return matrix;
 	}
 	
@@ -2931,27 +2927,26 @@ class Script
 		matrix = matrix.concat([0.33, 0.34, 0.33, 0.00, 20.00]);
 		matrix = matrix.concat([0.33, 0.33, 0.34, 0.00, 0.00]);
 		matrix = matrix.concat([0.00, 0.00, 0.00, 1.00, 0.00]);
-		matrix[15] = "SepiaFilter";
+		matrix.insert(0, "SepiaFilter");
+		
 		return matrix;
 	}
 	
 	public function createNegativeFilter():Array<Dynamic>
 	{
 		var matrix = new Array<Dynamic>();
-		matrix = matrix.concat([-1, 0, 0, 0, 255]);
-		matrix = matrix.concat([0, -1, 0, 0, 255]);
-		matrix = matrix.concat([0, 0, -1, 0, 255]);
-		matrix = matrix.concat([0, 0, 0, 1, 0]);
-		matrix[15] = "NegativeFilter";
+		matrix[0] = "NegativeFilter";
 		return matrix;
 	}
 	
 	public function createTintFilter(color:Int, amount:Float = 1):Array<Dynamic>
 	{
-		var cm:ColorMatrix = new ColorMatrix();
-		cm.colorize(color, amount);
-		var matrix = cast((cm.toArray(cm.matrix)),(Array<Dynamic>));
-		matrix[15] = "TintFilter";
+		var matrix = new Array<Dynamic>();
+		matrix[0] = "TintFilter";
+		matrix[1] = ((color >> 16) & 0xFF) / 255.0;
+		matrix[2] = ((color >> 8) & 0xFF) / 255.0;
+		matrix[3] = ((color) & 0xFF) / 255.0;
+		matrix[4] = amount;
 		return matrix;
 	}
 	
@@ -2961,7 +2956,7 @@ class Script
 		cm.adjustHue(h);
 		cm.adjustSaturation(1);
 		var matrix = cast((cm.toArray(cm.matrix)),(Array<Dynamic>));
-		matrix[15] = "HueFilter";
+		matrix.insert(0, "HueFilter");
 		return matrix;
 	}
 
@@ -2970,7 +2965,7 @@ class Script
 		var cm:ColorMatrix = new ColorMatrix();
 		cm.adjustSaturation(s/100);
 		var matrix = cast((cm.toArray(cm.matrix)),(Array<Dynamic>));
-		matrix[15] = "SaturationFilter";
+		matrix.insert(0, "SaturationFilter");
 		return matrix;
 	}
 
@@ -2979,7 +2974,7 @@ class Script
 		var cm:ColorMatrix = new ColorMatrix();
 		cm.adjustBrightness(b/100);
 		var matrix = cast((cm.toArray(cm.matrix)),(Array<Dynamic>));
-		matrix[15] = "BrightnessFilter";
+		matrix.insert(0, "BrightnessFilter");
 		return matrix;
 	}
 	#end
