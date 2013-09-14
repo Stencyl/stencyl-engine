@@ -5,7 +5,6 @@ import com.stencyl.behavior.TimedTask;
 import com.stencyl.models.collision.CollisionInfo;
 import com.stencyl.models.collision.Masklist;
 import flash.geom.Transform;
-import nme.Memory;
 import nme.display.Sprite;
 import nme.display.Bitmap;
 import nme.display.BitmapData;
@@ -18,6 +17,10 @@ import nme.geom.Matrix;
 import nme.geom.Point;
 import nme.geom.Rectangle;
 import nme.utils.ByteArray;
+
+#if (flash || cpp)
+import nme.Memory;
+#end
 
 import com.stencyl.Input;
 import com.stencyl.Engine;
@@ -3184,14 +3187,18 @@ class Actor extends Sprite
 	}
 	#end
 	
-	#if (cpp || js)
+	#if js
 	public function setFilter(filter:Array<Array<Dynamic>>)
-	{	
-		#if js
+	{
 		// setFilter() is not implemented for HTML5.
 		return;
-		#end
-
+	}
+	#end
+	
+	
+	#if cpp
+	public function setFilter(filter:Array<Array<Dynamic>>)
+	{	
 		var filterName:String;
 		var i:Int;
 		var srcA:Int;
