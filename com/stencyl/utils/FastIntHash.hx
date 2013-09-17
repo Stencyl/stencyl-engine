@@ -9,7 +9,6 @@ class FastIntHash<T> extends IntHash<T>
 	override public function iterator():Iterator<T> 
 	{
 		#if (cpp)		
-		trace("THIS IS WHAT it is doing");
 		untyped return __global__.__int_hash_fast_values(h);
 		#else
 		return super.iterator();
