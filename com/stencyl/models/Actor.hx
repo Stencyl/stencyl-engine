@@ -3221,6 +3221,21 @@ class Actor extends Sprite
 				if (Type.getClass(anim) == SheetAnimation)
 				{
 					backupAnimationMap.set(key, anim.tilesheet.nmeBitmap.clone());
+					
+					var frameWidth = Std.int(anim.tilesheet.nmeBitmap.width / anim.numFrames);
+					var frameHeight = anim.tilesheet.nmeBitmap.height;
+					var tempData:BitmapData = anim.tilesheet.nmeBitmap.clone();
+					var tempTilesheet = new Tilesheet(tempData);
+					
+					var i = 0;
+					while (i < anim.numFrames)
+					{
+						tempTilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * i, 0, frameWidth, frameHeight * Engine.SCALE));
+						i++;
+					}
+					
+					anim.tilesheet = tempTilesheet;
+					anim.updateBitmap();
 				}
 			}
 			animsBackedUp = true;
