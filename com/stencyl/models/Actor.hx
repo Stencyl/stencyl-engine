@@ -3230,7 +3230,7 @@ class Actor extends Sprite
 					var i = 0;
 					while (i < anim.numFrames)
 					{
-						tempTilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * i, 0, frameWidth, frameHeight * Engine.SCALE));
+						tempTilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * i, 0, frameWidth, frameHeight));
 						i++;
 					}
 					
