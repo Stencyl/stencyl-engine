@@ -29,6 +29,7 @@ import com.stencyl.graphics.G;
 import com.stencyl.graphics.AbstractAnimation;
 import com.stencyl.graphics.BitmapAnimation;
 import com.stencyl.graphics.SheetAnimation;
+import com.stencyl.graphics.fonts.Label;
 
 import com.stencyl.behavior.Behavior;
 import com.stencyl.behavior.BehaviorManager;
@@ -204,6 +205,8 @@ class Actor extends Sprite
 	public var transformMatrix:Matrix;
 	public var updateMatrix:Bool;
 	public var drawMatrix:Matrix; //For use when drawing actor image
+	
+	public var label:Label;
 	
 	//*-----------------------------------------------
 	//* Behaviors
@@ -1433,6 +1436,12 @@ class Actor extends Sprite
 		   ep.get(groupType) != null)
 		{
 			checkScreenState();
+		}
+		
+		// If this actor has a label, set the label's alpha to match the actor's alpha.
+		if (label != null)
+		{
+			label.setAlpha(alpha);
 		}
 	}
 	

@@ -716,16 +716,18 @@ class Label extends Sprite
 		return pSpacing;
 	}
 	
-	public function setAlpha(pAlpha:Float):Float
+	public function setAlpha(pAlpha:Float):Void
 	{
-		_alpha = pAlpha;
-		#if (flash || js)
-		this.alpha = _alpha;
-		#else
-		_pendingTextChange = true;
-		update();
-		#end
-		return pAlpha;
+		if (_alpha != pAlpha)
+		{
+			_alpha = pAlpha;
+			#if (flash || js)
+			this.alpha = _alpha;
+			#else
+			_pendingTextChange = true;
+			update();
+			#end
+		}
 	}
 	
 	public function getAlpha():Float
