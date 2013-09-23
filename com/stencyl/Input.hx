@@ -24,6 +24,7 @@ class Input
 
 	public static var keyString:String = "";
 
+	public static var lastEvent:KeyboardEvent;
 	public static var lastKey:Int;
 	
 	public static var mouseX:Float = 0;
@@ -219,6 +220,34 @@ class Input
 			Engine.stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 2);
 			Engine.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false,  2);
 			Engine.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 2);
+			
+			//Disable default behavior for Android Back Button
+			#if(mobile && android)
+			if(scripts.MyAssets.disableBackButton)
+			{
+				Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, function(event) 
+				{
+				   	lastEvent = event;
+				   
+				   	if(lastEvent.keyCode == 27) 
+				   	{
+					  	lastEvent.stopImmediatePropagation();
+					  	lastEvent.stopPropagation();
+				   	}
+				});
+				
+				Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, function(event) 
+				{
+					lastEvent = event;
+
+				   	if(lastEvent.keyCode == 27) 
+				   	{
+					  	lastEvent.stopImmediatePropagation();
+					  	lastEvent.stopPropagation();
+				   	}
+				});
+			}
+			#end
 			
 			#if !js
 			multiTouchEnabled = Multitouch.supportsTouchEvents;

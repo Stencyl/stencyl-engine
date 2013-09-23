@@ -35,6 +35,7 @@ class MyAssets implements AssetLoader
 	public static var debugDraw:Bool = true;
 	public static var always1x:Bool = false;
 	public static var maxScale:Float = 1;
+	public static var disableBackButton:Bool = false;
 	
 	//Keys
 	public static var androidPublicKey:String = "";
