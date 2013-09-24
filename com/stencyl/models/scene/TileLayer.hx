@@ -222,21 +222,21 @@ class TileLayer extends Sprite
 					continue;
 				}
 													
-				if(cacheSource.get(t.tileID) == null || t.updateSource)
+				if(cacheSource.get(t.parent.ID * 1000000 + t.tileID) == null || t.updateSource)
 				{
 					if(t.pixels == null)
 					{
-						cacheSource.set(t.tileID, t.parent.getImageSourceForTile(t.tileID, tw, th));
+						cacheSource.set(t.parent.ID * 1000000 + t.tileID, t.parent.getImageSourceForTile(t.tileID, tw, th));
 					}
 					
 					else
 					{						
-						cacheSource.set(t.tileID, t.getSource(tw, th));
+						cacheSource.set(t.parent.ID * 1000000 + t.tileID, t.getSource(tw, th));
 						t.updateSource = false;
 					}						
 				}
 				
-				var source:Rectangle = cacheSource.get(t.tileID);
+				var source:Rectangle = cacheSource.get(t.parent.ID * 1000000 + t.tileID);
 														
 				if(source == null)
 				{
