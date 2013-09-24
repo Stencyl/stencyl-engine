@@ -2923,6 +2923,21 @@ class Actor extends Sprite
 		var xPos = colX - offsetX;
 		var yPos = colY - offsetY;
 
+		if(rotation != 0)
+		{
+			// Imagine a circle with the actor's origin point as the center and the mouse position somewhere on the circle.
+			// If the circle is rotated by the actor's direction, then the mouse's new position can be compared with the actor's original bounding box.
+			var actorOriginX:Float = xPos + currOrigin.x;
+			var actorOriginY:Float = yPos + currOrigin.y;
+			var xFromOrigin:Float = mx - actorOriginX;
+			var yFromOrigin:Float = my - actorOriginY;
+			var rotationRadians:Float = Utils.RAD * rotation;
+			var mxNew:Float = actorOriginX + (xFromOrigin * Math.cos(rotationRadians)) + (yFromOrigin * Math.sin(rotationRadians));
+			var myNew:Float = actorOriginY - (xFromOrigin * Math.sin(rotationRadians)) + (yFromOrigin * Math.cos(rotationRadians));
+			mx = mxNew;
+			my = myNew;
+		}
+
 		return (mx >= xPos && 
 		   		my >= yPos && 
 		   		mx < xPos + cacheWidth + offsetX * 2 && 
