@@ -229,8 +229,20 @@ class Universal extends Sprite
 		#end
 		
 		#if(!mobile)
-		Engine.SCALE = scripts.MyAssets.gameScale;
-		Engine.IMG_BASE = scripts.MyAssets.gameImageBase;
+		// Scale Dynamically Mode
+		if (scripts.MyAssets.scaleMode == 1)
+		{
+			Engine.SCALE = 1;
+			Engine.IMG_BASE = "1x";
+			scaleX = scripts.MyAssets.gameScale;
+			scaleY = scripts.MyAssets.gameScale;
+		}
+		// Hi-Res Mode
+		else
+		{
+			Engine.SCALE = scripts.MyAssets.gameScale;
+			Engine.IMG_BASE = scripts.MyAssets.gameImageBase;
+		}
 		#end
 		
 		trace("Max Scale: " + scripts.MyAssets.maxScale);

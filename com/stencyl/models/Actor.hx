@@ -2894,8 +2894,18 @@ class Actor extends Sprite
 		{
 			//on flash/desktop adjust for full screen mode
 			#if(!js && !mobile)
-			mx = (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX;
-		 	my = (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY;
+			// Scale Dynamically Mode
+			if (scripts.MyAssets.scaleMode == 1)
+			{
+				mx = Input.mouseX - Engine.engine.root.x;
+				my = Input.mouseY - Engine.engine.root.y;
+			}
+			// Hi-Res Mode
+			else
+			{
+				mx = (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX;
+				my = (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY;
+			}
 		 	#else
 		 	mx = Input.mouseX / Engine.SCALE;
 		 	my = Input.mouseY / Engine.SCALE;
@@ -2906,8 +2916,18 @@ class Actor extends Sprite
 		{
 			//on flash/desktop adjust for full screen mode
 			#if(!js && !mobile)
-			mx = (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX - Engine.cameraX / Engine.SCALE;
-		 	my = (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY - Engine.cameraY / Engine.SCALE;
+			// Scale Dynamically Mode
+			if (scripts.MyAssets.scaleMode == 1)
+			{
+				mx = Input.mouseX - Engine.engine.root.x - Engine.cameraX;
+				my = Input.mouseY - Engine.engine.root.y - Engine.cameraY;
+			}
+			// Hi-Res Mode
+			else
+			{
+				mx = (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX - Engine.cameraX / Engine.SCALE;
+				my = (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY - Engine.cameraY / Engine.SCALE;
+			}
 		 	#else
 		 	mx = (Input.mouseX - Engine.cameraX) / Engine.SCALE;
 		 	my = (Input.mouseY - Engine.cameraY) / Engine.SCALE;
