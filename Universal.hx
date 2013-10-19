@@ -279,6 +279,8 @@ class Universal extends Sprite
 			{
 				scaleX = theoreticalScale;
 				scaleY = theoreticalScale;
+				stageWidth = Std.int(stageWidth / theoreticalScale);
+				stageHeight = Std.int(stageHeight / theoreticalScale);
 			}
 			
 			scripts.MyAssets.stageWidth = stageWidth;
