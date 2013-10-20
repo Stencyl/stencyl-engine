@@ -3004,6 +3004,8 @@ class Actor extends Sprite
 		activePositionTweens = 0;
 		activeAngleTweens = 0;
 		
+		Actuate.unloadForTarget(this);
+		
 		/*trace("After");
 		for(item in Actuate.getLibrary(this))
 		{
