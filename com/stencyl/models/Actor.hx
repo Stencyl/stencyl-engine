@@ -2990,12 +2990,6 @@ class Actor extends Sprite
 	
 	public function cancelTweens()
 	{
-		/*trace("Before");
-		for(item in Actuate.getLibrary(this))
-		{
-			trace(item.duration);
-		}*/
-		
 		Actuate.stop(this, ["alpha", "realScaleX", "realScaleY"], false, false);		
 		
 		Actuate.stop(tweenAngle, null, false, false);
@@ -3005,12 +2999,8 @@ class Actor extends Sprite
 		activeAngleTweens = 0;
 		
 		Actuate.unloadForTarget(this);
-		
-		/*trace("After");
-		for(item in Actuate.getLibrary(this))
-		{
-			trace(item.duration);
-		}*/
+		Actuate.unloadForTarget(tweenAngle);
+		Actuate.unloadForTarget(tweenLoc);
 	}
 	
 	public function fadeTo(value:Float, duration:Float = 1, easing:Dynamic = null)
