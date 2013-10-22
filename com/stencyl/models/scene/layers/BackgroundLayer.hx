@@ -53,10 +53,12 @@ class BackgroundLayer extends Sprite
 		data = [0.0, 0.0, 0];
 		
 		var dummy = new Bitmap(model.img);
+		dummy.smoothing = scripts.MyAssets.antialias;
 		addChild(dummy);
 		#end
 
 		this.model = model;
+		this.smoothing = scripts.MyAssets.antialias;
 		
 		currIndex = 0;
 		currTime = 0;
