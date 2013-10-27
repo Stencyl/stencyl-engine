@@ -1516,7 +1516,16 @@ class Script
 	{
 		//on flash/desktop adjust for full screen mode
 		#if(!js && !mobile)
-		return (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX;
+		// Scale Dynamically Mode
+		if (scripts.MyAssets.scaleMode == 1)
+		{
+			return (Input.mouseX - Engine.engine.root.x);
+		}
+		// Hi-Res Mode
+		else
+		{
+			return (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX;
+		}
 		#else
 		return Input.mouseX / Engine.SCALE;
 		#end
@@ -1526,7 +1535,16 @@ class Script
 	{
 		//on flash/desktop adjust for full screen mode
 		#if(!js && !mobile)
-		return (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY;
+		// Scale Dynamically Mode
+		if (scripts.MyAssets.scaleMode == 1)
+		{
+			return (Input.mouseY - Engine.engine.root.y);
+		}
+		// Hi-Res Mode
+		else
+		{
+			return (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY;
+		}
 		#else
 		return Input.mouseY / Engine.SCALE;
 		#end
