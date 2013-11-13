@@ -20,6 +20,7 @@ class MyAssets implements AssetLoader
 	public static var gameScale:Float = 2;
 	public static var gameImageBase:String = "2x";
 	public static var antialias:Bool = true;
+	public static var startInFullScreen = false;
 	
 	//APIs
 	public static var adPositionBottom:Bool = true;
@@ -44,14 +45,14 @@ class MyAssets implements AssetLoader
 	{
 	}
 	
-	public function loadResources(resourceMap:Hash<Dynamic>):Void
+	public function loadResources(resourceMap:Map<String,Dynamic>):Void
 	{
 		resourceMap.set("1-0.png", Assets.getBitmapData("assets/graphics/" + Engine.IMG_BASE + "/1-0.png"));
 		resourceMap.set("18-0.png", Assets.getBitmapData("assets/graphics/" + Engine.IMG_BASE + "/18-0.png"));
 		resourceMap.set("19.png", Assets.getBitmapData("assets/graphics/" + Engine.IMG_BASE + "/19.png"));
 	}
 	
-	public function loadScenes(scenesXML:IntHash<String>):Void
+	public function loadScenes(scenesXML:Map<Int,String>):Void
 	{
 		scenesXML.set(0, "assets/data/scene-0.xml");
 	}

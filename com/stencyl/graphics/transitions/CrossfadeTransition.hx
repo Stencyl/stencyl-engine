@@ -9,8 +9,8 @@ import nme.geom.Transform;
 
 import com.stencyl.Engine;
 
-import com.eclecticdesignstudio.motion.Actuate;
-import com.eclecticdesignstudio.motion.easing.Linear;
+import motion.Actuate;
+import motion.easing.Linear;
 
 class CrossfadeTransition extends Transition
 {	

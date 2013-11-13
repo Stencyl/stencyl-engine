@@ -20,7 +20,7 @@ class Region extends Actor
 	public var isCircle:Bool;
 	
 	///All Hash sets of Integers
-	private var containedActors:IntHash<Int>;
+	private var containedActors:Map<Int,Int>;
 
 	private var copy:B2Shape;
 	
@@ -58,7 +58,7 @@ class Region extends Actor
 		this.simpleBounds = simpleBounds;
 		copy = shapes[0];
 		
-		containedActors = new IntHash<Int>();
+		containedActors = new Map<Int,Int>();
 		whenActorEntersListeners = new Array<Dynamic>();
 		whenActorExitsListeners = new Array<Dynamic>();
 		
@@ -154,7 +154,7 @@ class Region extends Actor
 		}
 	}
 	
-	public function getContainedActors():IntHash<Int>
+	public function getContainedActors():Map<Int,Int>
 	{
 		return containedActors;
 	}

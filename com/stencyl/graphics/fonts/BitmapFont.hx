@@ -18,14 +18,14 @@ import nme.display.Tilesheet;
  */
 class BitmapFont 
 {
-	private static var _storedFonts:Hash<BitmapFont> = new Hash<BitmapFont>();
+	private static var _storedFonts:Map<String,BitmapFont> = new Map<String,BitmapFont>();
 	
 	private static var ZERO_POINT:Point = new Point();
 	
 	#if (flash || js)
 	private var _glyphs:Array<BitmapData>;
 	#else
-	private var _glyphs:IntHash<FontSymbol>;
+	private var _glyphs:Map<Int,FontSymbol>;
 	private var _num_letters:Int;
 	private var _tileSheet:Tilesheet;
 	private static var _flags = Tilesheet.TILE_SCALE | Tilesheet.TILE_ROTATION | Tilesheet.TILE_ALPHA | Tilesheet.TILE_RGB;
@@ -54,7 +54,7 @@ class BitmapFont
 		_colorTransform = new ColorTransform();
 		_glyphs = [];
 		#else
-		_glyphs = new IntHash<FontSymbol>();
+		_glyphs = new Map<Int,FontSymbol>();
 		_num_letters = 0;
 		#end
 	}
@@ -212,7 +212,7 @@ class BitmapFont
 		#if (flash || js)
 		_glyphs = [];
 		#else
-		_glyphs = new IntHash<FontSymbol>();
+		_glyphs = new Map<Int,FontSymbol>();
 		#end
 		_glyphString = "";
 	}

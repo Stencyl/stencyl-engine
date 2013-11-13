@@ -59,7 +59,7 @@ class G
 	private var actor:Actor;
 	
 	//Cache for speed
-	private static var fontCache:IntHash<Array<BitmapData>> = null;
+	private static var fontCache:Map<Int,Array<BitmapData>> = null;
 	
 	public function new() 
 	{	
@@ -97,7 +97,7 @@ class G
 		#if (flash || js)
 		if(fontCache == null)
 		{
-			fontCache = new IntHash<Array<BitmapData>>();
+			fontCache = new Map<Int,Array<BitmapData>>();
 		}
 		
 		mtx = new Matrix();
@@ -234,16 +234,36 @@ class G
 		drawActor = true;
 		actor = a;
 	
-		if(Engine.NO_PHYSICS)
+		if (a.smoothMove)
 		{
-			x = a.colX * scaleX;
-			y = a.colY * scaleY;
-		}
+			var drawX:Float = a.drawX - Math.floor(a.cacheWidth / 2) - a.currOffset.x;
+			var drawY:Float = a.drawY - Math.floor(a.cacheHeight / 2) - a.currOffset.y;
 		
+			if(Engine.NO_PHYSICS)
+			{
+				x = drawX * scaleX;
+				y = drawY * scaleY;
+			}
+			
+			else
+			{
+				x = drawX * scaleX;
+				y = drawY * scaleY;
+			}
+		}
 		else
 		{
-			x = a.colX * scaleX;
-			y = a.colY * scaleY;
+			if(Engine.NO_PHYSICS)
+			{
+				x = a.colX * scaleX;
+				y = a.colY * scaleY;
+			}
+			
+			else
+			{
+				x = a.colX * scaleX;
+				y = a.colY * scaleY;
+			}
 		}
 	}
 	
@@ -256,9 +276,6 @@ class G
 			resetFont();
 		}
 		
-		//startGraphics();
-		//graphics.lineStyle();
-
 		var drawX:Float;
 		var drawY:Float;
 		
@@ -302,6 +319,7 @@ class G
 			font.font.render(bitmapData, fontData, s, 0x000000, alpha, 0, 0, 0, 0);
 		#end
 		
+			//TODO: This approach is really, really slow!
 			#if (flash)
 			graphics.beginBitmapFill(bitmapData, mtx);
 			graphics.drawRect(drawX, drawY, w, h);
@@ -309,8 +327,6 @@ class G
 			#end
 			
 			#if (js)
-			//drawImage(bitmapData, x, y);
-			
 			graphics.beginBitmapFill(bitmapData, mtx);
 			graphics.drawRect(drawX, drawY, w, h);
 	 	 	graphics.endFill();
@@ -319,8 +335,6 @@ class G
 		#if(flash || js)
 		}
 		#end
-		
-		//endGraphics();
 	}
 	
 	public inline function drawLine(x1:Float, y1:Float, x2:Float, y2:Float)

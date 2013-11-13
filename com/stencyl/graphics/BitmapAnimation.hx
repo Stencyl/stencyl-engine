@@ -8,7 +8,7 @@ import nme.geom.Point;
 import com.stencyl.Engine;
 
 //TODO: It would be better to pass in the frames, broken up and swap between the frames.
-class BitmapAnimation extends Bitmap, implements AbstractAnimation
+class BitmapAnimation extends Bitmap implements AbstractAnimation
 {
 	private var model:Animation;
 

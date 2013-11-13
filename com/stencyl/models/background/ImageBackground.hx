@@ -10,7 +10,7 @@ import nme.geom.Point;
 import com.stencyl.Engine;
 import com.stencyl.models.scene.layers.BackgroundLayer;
 
-class ImageBackground extends Resource, implements Background 
+class ImageBackground extends Resource implements Background 
 {
 	public var currFrame:Int;
 	public var currTime:Float;

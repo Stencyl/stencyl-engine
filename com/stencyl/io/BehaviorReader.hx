@@ -36,7 +36,7 @@ class BehaviorReader
 		{
 		}
 		
-		var attributes:Hash<Attribute> = new Hash<Attribute>();
+		var attributes:Map<String,Attribute> = new Map<String,Attribute>();
 		var type:String = xml.att.type;
 	
 		for(e in xml.elements)

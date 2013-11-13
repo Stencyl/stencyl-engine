@@ -8,7 +8,7 @@ class ActorType extends Resource
 {
 	public var groupID:Int;
 	public var spriteID:Int;
-	public var behaviorValues:Hash<Dynamic>;
+	public var behaviorValues:Map<String,Dynamic>;
 	public var bodyDef:B2BodyDef;
 	public var isLightweight:Bool;
 	public var autoScale:Bool;
@@ -22,7 +22,7 @@ class ActorType extends Resource
 		name:String, 
 		groupID:Int, 
 		spriteID:Int, 
-		behaviorValues:Hash<Dynamic>, 
+		behaviorValues:Map<String,Dynamic>, 
 		bodyDef:B2BodyDef, 
 		isLightweight:Bool, 
 		autoScale:Bool,

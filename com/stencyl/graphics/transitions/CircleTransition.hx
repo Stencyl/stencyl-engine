@@ -13,8 +13,8 @@ import nme.geom.Rectangle;
 import com.stencyl.Engine;
 import com.stencyl.utils.Utils;
 
-import com.eclecticdesignstudio.motion.Actuate;
-import com.eclecticdesignstudio.motion.easing.Linear;
+import motion.Actuate;
+import motion.easing.Linear;
 
 class CircleTransition extends Transition
 {

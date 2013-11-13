@@ -10,7 +10,7 @@ import nme.display.Tilesheet;
 
 import com.stencyl.Engine;
 
-class SheetAnimation extends Sprite, implements AbstractAnimation
+class SheetAnimation extends Sprite implements AbstractAnimation
 {
 	public var tint:Bool = false;
 	public var redValue:Float;

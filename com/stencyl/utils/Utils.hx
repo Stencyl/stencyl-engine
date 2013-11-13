@@ -23,15 +23,16 @@ import com.stencyl.models.actor.Collision;
  */
 class Utils
 {
-	public static inline var INT_MAX:Int = 100000000;
+	public static var INTEGER_MAX:Int = 100000000;
 
 	/**
 	 * Flash equivalent: Number.MAX_VALUE
 	 */
 #if flash
-	public static inline var NUMBER_MAX_VALUE = untyped __global__["Number"].MAX_VALUE;
+	public static var NUMBER_MAX_VALUE(get_NUMBER_MAX_VALUE,never):Float;
+	public static inline function get_NUMBER_MAX_VALUE(): Float { return untyped __global__["Number"].MAX_VALUE; }
 #else
-	public static inline var NUMBER_MAX_VALUE = 179 * Math.pow(10, 306); // 1.79e+308
+	public static var NUMBER_MAX_VALUE = 1.79769313486231e+308;
 #end
 
 	/**
@@ -186,9 +187,9 @@ class Utils
 	/**
 	 * Global volume factor for all sounds, a value from 0 to 1.
 	 */
-	public static var volume(getVolume, setVolume):Float;
-	private static inline function getVolume():Float { return _volume; }
-	private static function setVolume(value:Float):Float
+	public static var volume(get_volume, set_volume):Float;
+	private static inline function get_volume():Float { return _volume; }
+	private static function set_volume(value:Float):Float
 	{
 		if (value < 0) value = 0;
 		if (_volume == value) return value;
@@ -202,9 +203,9 @@ class Utils
 	/**
 	 * Global panning factor for all sounds, a value from -1 to 1.
 	 */
-	public static var pan(getPan, setPan):Float;
-	private static inline function getPan():Float { return _pan; }
-	private static function setPan(value:Float):Float
+	public static var pan(get_pan, set_pan):Float;
+	private static inline function get_pan():Float { return _pan; }
+	private static function set_pan(value:Float):Float
 	{
 		if (value < -1) value = -1;
 		if (value > 1) value = 1;
@@ -518,9 +519,9 @@ class Utils
 	/**
 	 * The random seed used by FP's random functions.
 	 */
-	public static var randomSeed(getRandomSeed, setRandomSeed):Int;
-	private static inline function getRandomSeed():Int { return _getSeed; }
-	private static inline function setRandomSeed(value:Int):Int
+	public static var randomSeed(get_randomSeed, set_randomSeed):Int;
+	private static inline function get_randomSeed():Int { return _getSeed; }
+	private static inline function set_randomSeed(value:Int):Int
 	{
 		_seed = Std.int(clamp(value, 1.0, 2147483646.0));
 		_getSeed = _seed;
@@ -538,8 +539,8 @@ class Utils
 	/**
 	 * A pseudo-random Float produced using FP's random seed, where 0 <= Float < 1.
 	 */
-	public static var random(getRandom, null):Float;
-	private static inline function getRandom():Float
+	public static var random(get_random, null):Float;
+	private static inline function get_random():Float
 	{
 		_seed = Std.int((_seed * 16807.0) % 2147483647.0);
 		return _seed / 2147483647.0;
@@ -722,8 +723,8 @@ class Utils
 		}
 	}
 
-	public static var time(null, setTime):Float;
-	private static inline function setTime(value:Float):Float {
+	public static var time(null, set_time):Float;
+	private static inline function set_time(value:Float):Float {
 		_time = value;
 		return _time;
 	}
@@ -736,7 +737,7 @@ class Utils
 	public static var _flashTime:Float;
 
 	// Bitmap storage.
-	private static var _bitmap:Hash<BitmapData> = new Hash<BitmapData>();
+	private static var _bitmap:Map<String,BitmapData> = new Map<String,BitmapData>();
 
 	// Pseudo-random number generation (the seed is set in Engine's contructor).
 	private static var _seed:Int = 0;
@@ -751,8 +752,8 @@ class Utils
 
 
 	// Used for rad-to-deg and deg-to-rad conversion.
-	public static inline var DEG:Float = 180 / Math.PI;
-	public static inline var RAD:Float = Math.PI / 180;
+	public static inline var DEG:Float = 180 / 3.14159;
+	public static inline var RAD:Float = 3.14159 / 180;
 
 	// Global Flash objects.
 	public static var stage:Stage;

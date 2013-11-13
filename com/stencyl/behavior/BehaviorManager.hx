@@ -4,7 +4,7 @@ class BehaviorManager
 {
 	public var behaviors:Array<Behavior>;
 
-	public var cache:Hash<Behavior>;
+	public var cache:Map<String,Behavior>;
 	
 	//*-----------------------------------------------
 	//* Init
@@ -13,7 +13,7 @@ class BehaviorManager
 	public function new()
 	{
 		behaviors = new Array<Behavior>();
-		cache = new Hash<Behavior>();
+		cache = new Map<String,Behavior>();
 	}
 	
 	public function destroy()

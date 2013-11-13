@@ -112,9 +112,9 @@ class SpriteReader implements AbstractReader
 		);
 	}
 	
-	public function readSimpleShapes(xml:Fast, imgWidth:Float, imgHeight:Float):IntHash<Dynamic>
+	public function readSimpleShapes(xml:Fast, imgWidth:Float, imgHeight:Float):Map<Int,Dynamic>
 	{
-		var shapes = new IntHash<Dynamic>();
+		var shapes = new Map<Int,Dynamic>();
 						
 		for(e in xml.elements)
 		{
@@ -159,9 +159,9 @@ class SpriteReader implements AbstractReader
 		return shapes;
 	}
 	
-	public function readShapes(xml:Fast, imgWidth:Float, imgHeight:Float):IntHash<Dynamic>
+	public function readShapes(xml:Fast, imgWidth:Float, imgHeight:Float):Map<Int,Dynamic>
 	{
-		var shapes = new IntHash<Dynamic>();
+		var shapes = new Map<Int,Dynamic>();
 		
 		//TODO - We should load a custom hitbox instead based on the AABB of the actual shape
 		//so that smaller boxes are supported!
@@ -368,11 +368,11 @@ class SpriteReader implements AbstractReader
 				//arr.push(poly);
 			}*/
 			
-			var toReturn = new IntHash<Dynamic>();
+			var toReturn = new Map<Int,Dynamic>();
 			toReturn.set(0, arr);
 			toReturn.set(1, w);
 			toReturn.set(2, h);
-			
+
 			return toReturn;				
 		}
 		

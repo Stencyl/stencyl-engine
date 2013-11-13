@@ -2,7 +2,7 @@ package com.stencyl.models.background;
 
 import nme.display.Graphics;
 
-class ColorBackground extends Resource, implements Background 
+class ColorBackground extends Resource implements Background 
 {	
 	public var bgColor:Int;
 	

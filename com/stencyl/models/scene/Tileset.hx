@@ -25,7 +25,7 @@ class Tileset extends Resource
 	public var data:Array<Float>;
 	
 	//tileID -> sheetID
-	public var sheetMap:IntHash<Int>;
+	public var sheetMap:Map<Int,Int>;
 	#end
 	
 	public function new(ID:Int, atlasID:Int, name:String, framesAcross:Int, framesDown:Int, tileWidth:Int, tileHeight:Int, tiles:Array<Tile>)
@@ -49,7 +49,7 @@ class Tileset extends Resource
 	public function setupTilesheet()
 	{
 		#if cpp
-		sheetMap = new IntHash<Int>();
+		sheetMap = new Map<Int,Int>();
 		data = [0.0,0.0,0];
 		
 		if(pixels != null)

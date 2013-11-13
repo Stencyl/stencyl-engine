@@ -1,5 +1,7 @@
 package com.stencyl.models;
 
+import de.polygonal.ds.IntHashTable;
+
 import com.stencyl.behavior.TimedTask;
 
 import com.stencyl.models.collision.CollisionInfo;
@@ -45,17 +47,17 @@ import com.stencyl.models.GameModel;
 
 import com.stencyl.utils.Utils;
 
-import com.eclecticdesignstudio.motion.Actuate;
-import com.eclecticdesignstudio.motion.easing.Back;
-import com.eclecticdesignstudio.motion.easing.Cubic;
-import com.eclecticdesignstudio.motion.easing.Elastic;
-import com.eclecticdesignstudio.motion.easing.Expo;
-import com.eclecticdesignstudio.motion.easing.Linear;
-import com.eclecticdesignstudio.motion.easing.Quad;
-import com.eclecticdesignstudio.motion.easing.Quart;
-import com.eclecticdesignstudio.motion.easing.Quint;
-import com.eclecticdesignstudio.motion.easing.Sine;
-import com.eclecticdesignstudio.motion.actuators.GenericActuator;
+import motion.Actuate;
+import motion.easing.Back;
+import motion.easing.Cubic;
+import motion.easing.Elastic;
+import motion.easing.Expo;
+import motion.easing.Linear;
+import motion.easing.Quad;
+import motion.easing.Quart;
+import motion.easing.Quint;
+import motion.easing.Sine;
+import motion.actuators.GenericActuator;
 
 import box2D.dynamics.B2Body;
 import box2D.dynamics.B2BodyDef;
@@ -83,7 +85,7 @@ import com.stencyl.utils.ColorMatrix;
 #end
 
 #if js
-import jeash.filters.ColorMatrixFilter;
+//import jeash.filters.ColorMatrixFilter;
 #end
 
 
@@ -187,14 +189,14 @@ class Actor extends Sprite
 	public var currAnimationAsAnim:Dynamic;
 	public var currAnimation:DisplayObject;
 	public var currAnimationName:String;
-	public var animationMap:Hash<Dynamic>;
-	public var backupAnimationMap:Hash<Dynamic>;
+	public var animationMap:Map<String,Dynamic>;
+	public var backupAnimationMap:Map<String,Dynamic>;
 	public var animsBackedUp:Bool = false;
 	
 	public var sprite:com.stencyl.models.actor.Sprite;
 	
-	public var shapeMap:Hash<Dynamic>;
-	public var originMap:Hash<B2Vec2>;
+	public var shapeMap:Map<String,Dynamic>;
+	public var originMap:Map<String,B2Vec2>;
 	public var defaultAnim:String;
 	
 	public var currOrigin:Point;
@@ -208,6 +210,17 @@ class Actor extends Sprite
 	
 	public var label:Label;
 	
+	// These are for the smooth movement option.
+	public var smoothMove:Bool = false;
+	public var firstMove:Bool = false;
+	public var drawX:Float = 0;
+	public var drawY:Float = 0;
+	public static var moveMultiplier:Float = 0.33;
+	public var moveXDistance:Float = 0;
+	public var moveYDistance:Float = 0;
+	public var minMove:Float = 3;
+	public var maxMove:Float = 40;
+	
 	//*-----------------------------------------------
 	//* Behaviors
 	//*-----------------------------------------------
@@ -219,14 +232,14 @@ class Actor extends Sprite
 	//* Actor Values
 	//*-----------------------------------------------
 	
-	public var registry:Hash<Dynamic>;
+	public var registry:Map<String,Dynamic>;
 
 	
 	//*-----------------------------------------------
 	//* Events
 	//*-----------------------------------------------	
 	
-	public var allListeners:IntHash<Dynamic>;
+	public var allListeners:Map<Int,Dynamic>;
 	public var allListenerReferences:Array<Dynamic>;
 	
 	public var whenCreatedListeners:Array<Dynamic>;
@@ -237,7 +250,6 @@ class Actor extends Sprite
 	public var positionListeners:Array<Dynamic>;
 	public var collisionListeners:Array<Dynamic>;
 	
-	//Caching the array length since it was sapping 2-3 FPS a piece on iPod Touch 2 as a fn call
 	public var positionListenerCount:Int;
 	public var collisionListenerCount:Int;
 	
@@ -259,9 +271,9 @@ class Actor extends Sprite
 	public var bodyScale:Point;
 	
 	public var handlesCollisions:Bool;
-	public var contacts:IntHash<B2Contact>;
-	public var regionContacts:IntHash<B2Contact>;
-	public var collisions:IntHash<Collision>;
+	public var contacts:IntHashTable<B2Contact>;
+	public var regionContacts:IntHashTable<B2Contact>;
+	public var collisions:IntHashTable<Collision>;
 	
 	public var dummy:B2Vec2;
 	public var zero:B2Vec2;
@@ -288,7 +300,7 @@ class Actor extends Sprite
 		width:Float=32, 
 		height:Float=32,
 		sprite:com.stencyl.models.actor.Sprite=null,
-		behaviorValues:Hash<Dynamic>=null,
+		behaviorValues:Map<String,Dynamic>=null,
 		actorType:ActorType=null,
 		bodyDef:B2BodyDef=null,
 		isSensor:Bool=false,
@@ -304,6 +316,15 @@ class Actor extends Sprite
 	{
 		super();
 		
+		//DO NOT HAVE IN PRODUCTION CODE!!!
+		#if cpp
+		/*if(groupID != 2)
+		{
+			DUMB = new com.stencyl.utils.HashMap();
+		}*/
+		//cpp.vm.Gc.doNotKill(this);
+		#end
+		
 		//---
 		
 		dummy = new B2Vec2();
@@ -313,12 +334,12 @@ class Actor extends Sprite
 		_moveX = _moveY = 0;
 		
 		HITBOX = new Mask();		
-		setShape(HITBOX);
+		set_shape(HITBOX);
 		
 		if(Std.is(this, Region) && Engine.NO_PHYSICS)
 		{
 			shape = HITBOX = new Hitbox(Std.int(width), Std.int(height), 0, 0, false);
-			setShape(shape);
+			set_shape(shape);
 		}
 		
 		//---
@@ -372,7 +393,7 @@ class Actor extends Sprite
 		
 		currOrigin = new Point(0, 0);
 		currOffset = new Point(0, 0);			
-		registry = new Hash<Dynamic>();
+		registry = new Map<String,Dynamic>();
 		
 		this.isLightweight = isLightweight;
 		this.autoScale = autoScale;
@@ -402,7 +423,7 @@ class Actor extends Sprite
 		
 		//---
 		
-		allListeners = new IntHash<Dynamic>();
+		allListeners = new Map<Int,Dynamic>();
 		allListenerReferences = new Array<Dynamic>();
 		
 		whenCreatedListeners = new Array<Dynamic>();
@@ -428,10 +449,16 @@ class Actor extends Sprite
 		
 		groupsToCollideWith = GameModel.get().groupsCollidesWith.get(groupID);
 		
-		collisions = new IntHash<Collision>();
-		simpleCollisions = new IntHash<CollisionInfo>();
-		contacts = new IntHash<B2Contact>();
-		regionContacts = new IntHash<B2Contact>();
+		collisions = new IntHashTable<Collision>(16);
+		simpleCollisions = new IntHashTable<CollisionInfo>(16);
+		contacts = new IntHashTable<B2Contact>(16);
+		regionContacts = new IntHashTable<B2Contact>(16);
+		
+		collisions.reuseIterator = true;
+		simpleCollisions.reuseIterator = true;
+		contacts.reuseIterator = true;
+		regionContacts.reuseIterator = true;
+		
 		contactCount = 0;
 		collisionsCount = 0;
 		
@@ -444,9 +471,9 @@ class Actor extends Sprite
 		//---
 		
 		currAnimationName = "";
-		animationMap = new Hash<Dynamic>();
-		shapeMap = new Hash<Dynamic>();
-		originMap = new Hash<B2Vec2>();
+		animationMap = new Map<String,Dynamic>();
+		shapeMap = new Map<String,Dynamic>();
+		originMap = new Map<String,B2Vec2>();
 		
 		this.sprite = sprite;
 		
@@ -519,12 +546,12 @@ class Actor extends Sprite
 		
 		else
 		{
-			if(shape == null)
+			if(shape == null || Type.typeof(shape) == TFloat)
 			{				
 				shape = createBox(width, height);
 			}
 			
-			if (bodyDef != null)
+			if(bodyDef != null)
 			{
 				continuousCollision = bodyDef.bullet;
 			}
@@ -542,7 +569,7 @@ class Actor extends Sprite
 			
 			if(shape != null && Std.is(shape, com.stencyl.models.collision.Mask))
 			{
-				setShape(shape);
+				set_shape(shape);
 				isTerrain = true;
 			}
 			
@@ -615,7 +642,7 @@ class Actor extends Sprite
 			}
 			
 			Engine.engine.world.destroyBody(body);
-		}			
+		}
 		
 		cancelTweens();
 		
@@ -657,16 +684,11 @@ class Actor extends Sprite
 		collisions = null;
 		simpleCollisions = null;		
 		
-		if (bodyDef != null)
+		if(bodyDef != null)
 		{
 			bodyDef.userData = null;
 			bodyDef = null;
 		}
-		
-		//do for all?
-		#if (cpp || neko)
-		nmeTarget = null;
-		#end
 		
 		behaviors.destroy();
 	}
@@ -729,7 +751,7 @@ class Actor extends Sprite
 		originY:Float = 0,
 		durations:Array<Int>=null, 
 		looping:Bool=true, 
-		shapes:IntHash<Dynamic>=null
+		shapes:Map<Int,Dynamic>=null
 	)
 	{
 		if(shapes != null)
@@ -950,7 +972,8 @@ class Actor extends Sprite
 	
 	public function switchToDefaultAnimation()
 	{
-		if(sprite != null && sprite.animations.size > 0)
+		//TODO: PERF - We lost SizedMap - this operation is O(n)
+		if(sprite != null && Lambda.count(sprite.animations) > 0)
 		{
 			var anim = sprite.animations.get(sprite.defaultAnimation);
 		
@@ -1180,13 +1203,19 @@ class Actor extends Sprite
 				//SECRET/showthread.php?tid=9773&page=3
 				for(k in collisions.keys()) 
 				{
-					collisions.remove(k);
+					collisions.clr(k);
 				}
 				
-				collisions = new IntHash<Collision>();
-				simpleCollisions = new IntHash<CollisionInfo>();
-				contacts = new IntHash<B2Contact>();
-				regionContacts = new IntHash<B2Contact>();
+				collisions = new IntHashTable<Collision>(16);
+				simpleCollisions = new IntHashTable<CollisionInfo>(16);
+				contacts = new IntHashTable<B2Contact>(16);
+				regionContacts = new IntHashTable<B2Contact>(16);
+				
+				collisions.reuseIterator = true;
+				simpleCollisions.reuseIterator = true;
+				contacts.reuseIterator = true;
+				regionContacts.reuseIterator = true;
+				
 				contactCount = 0;
 				collisionsCount = 0;
 				
@@ -1292,7 +1321,7 @@ class Actor extends Sprite
 			else if(shapeMap.get(name) != null && isLightweight)
 			{				
 				//Get hitbox list for Simple Physics
-				setShape(shapeMap.get(name));
+				set_shape(shapeMap.get(name));
 				HITBOX = _mask;
 				
 				//TODO: Compare hitboxes
@@ -1319,11 +1348,6 @@ class Actor extends Sprite
 				setOriginPoint(Std.int(animOrigin.x), Std.int(animOrigin.y));				
 			}
 			
-			if (isLightweight)
-			{
-				
-			}
-			
 			updateMatrix = true;
 			
 			//----------------
@@ -1344,9 +1368,6 @@ class Actor extends Sprite
 		innerUpdate(elapsedTime, true);
 	}
 	
-	//mouse/col/screen checks kill 5 FPS (is it even active?)
-	//actor update kills 20-25 FPS (!!)
-	//internal update kills 5 FPS
 	public function innerUpdate(elapsedTime:Float, hudCheck:Bool)
 	{
 		//HUD / always simulate actors are updated separately to prevent double updates.
@@ -1486,9 +1507,9 @@ class Actor extends Sprite
 		{			
 			var p = body.getPosition();		
 						
-			#if js			
-			realX = jeashX = p.x * Engine.physicsScale;
-			realY = jeashY = p.y * Engine.physicsScale;				
+			#if js
+			realX = __x = p.x * Engine.physicsScale;
+			realY = __y = p.y * Engine.physicsScale;				
 			#end
 			
 			#if !js							
@@ -1528,15 +1549,130 @@ class Actor extends Sprite
 			return;
 		}
 		
-		var drawX:Float = realX;
-		var drawY:Float = realY;
-		
-		if (!isLightweight)
+		if(smoothMove)
 		{
-			var p = body.getPosition();
+			if(!firstMove)
+			{
+				drawX = realX;
+				drawY = realY;
+				firstMove = true;
+			}
 			
-			drawX = p.x * Engine.physicsScale;
-			drawY = p.y * Engine.physicsScale;
+			moveXDistance = realX - drawX;
+			moveYDistance = realY - drawY;
+			
+			//Check x distance
+			if(moveXDistance > minMove)
+			{
+				if(moveXDistance * moveMultiplier > minMove)
+				{
+					if(moveXDistance > maxMove)
+					{
+						drawX = realX;
+					}
+					
+					else
+					{
+						drawX += moveXDistance * moveMultiplier;
+					}
+				}
+				
+				else
+				{
+					drawX += minMove;
+				}
+			}
+			
+			else if(moveXDistance < minMove * -1)
+			{
+				if(moveXDistance * moveMultiplier < minMove * -1)
+				{
+					if(moveXDistance < maxMove * -1)
+					{
+						drawX = realX;
+					}
+					
+					else
+					{
+						drawX += moveXDistance * moveMultiplier;
+					}
+				}
+				
+				else
+				{
+					drawX -= minMove;
+				}
+			}
+			
+			else
+			{
+				drawX = realX;
+			}
+				
+			//Check y distance
+			if(moveYDistance > minMove)
+			{
+				if(moveYDistance * moveMultiplier > minMove)
+				{
+					if(moveYDistance > maxMove)
+					{
+						drawY = realY;
+					}
+					
+					else
+					{
+						drawY += moveYDistance * moveMultiplier;
+					}
+				}
+				
+				else
+				{
+					drawY += minMove;
+				}
+			}
+			
+			else if(moveYDistance < minMove * -1)
+			{
+				if(moveYDistance * moveMultiplier < minMove * -1)
+				{
+					if(moveYDistance < maxMove * -1)
+					{
+						drawY = realY;
+					}
+					
+					else
+					{
+						drawY += moveYDistance * moveMultiplier;
+					}
+				}
+				
+				else
+				{
+					drawY -= minMove;
+				}
+			}
+			
+			else
+			{
+				drawY = realY;
+			}
+		}
+		
+		//Normal Movement
+		else
+		{
+			if(isLightweight)
+			{
+				drawX = realX;
+				drawY = realY;
+			}
+			else
+			{
+				var p = body.getPosition();
+				
+				drawX = p.x * Engine.physicsScale;
+				drawY = p.y * Engine.physicsScale;
+			}
 		}
 		
 		var trueScaleX:Float = Engine.SCALE * realScaleX;
@@ -1549,7 +1685,7 @@ class Actor extends Sprite
 		transformMatrix.translate( -transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
 		transformMatrix.scale(realScaleX, realScaleY);
 		
-		if (realAngle != 0)
+		if(realAngle != 0)
 		{
 			transformMatrix.rotate(realAngle * Utils.RAD);
 		}
@@ -1557,7 +1693,7 @@ class Actor extends Sprite
 		transformMatrix.translate(drawX * Engine.SCALE, drawY * Engine.SCALE);
 		
 						
-		if (transformObj == null)
+		if(transformObj == null)
 		{
 			transformObj = transform;
 		}
@@ -1566,13 +1702,12 @@ class Actor extends Sprite
 		
 		//Temp until jeash handles on their end?
 		#if js
-		currAnimation.jeashInvalidateMatrix();
+		currAnimation.__invalidateMatrix();
 		#end
 	}
 	
 	private function updateTweenProperties()
 	{		
-	
 		//Since we can't tween directly on the Box2D values and can't make direct function calls,
 		//we have to reverse the normal flow of information from body -> NME to tween -> body
 		var a:Bool = activePositionTweens > 0;
@@ -1580,7 +1715,7 @@ class Actor extends Sprite
 				
 		if(autoScale && !isLightweight && body != null && bodyDef.type != B2Body.b2_staticBody && (bodyScale.x != realScaleX || bodyScale.y != realScaleY))
 		{			
-			if (realScaleX != 0 && realScaleY != 0)
+			if(realScaleX != 0 && realScaleY != 0)
 			{
 				scaleBody(realScaleX, realScaleY);
 			}
@@ -1588,7 +1723,7 @@ class Actor extends Sprite
 		
 		if(a && b)
 		{					
-			if (!isLightweight)
+			if(!isLightweight)
 			{
 				realX = tweenLoc.x;
 				realY = tweenLoc.y;
@@ -1617,7 +1752,7 @@ class Actor extends Sprite
 		{
 			if(a)
 			{
-				if (!isLightweight)
+				if(!isLightweight)
 				{
 					setX(tweenLoc.x);
 					setY(tweenLoc.y);
@@ -1769,7 +1904,7 @@ class Actor extends Sprite
 				
 				var a1 = cast(p.getFixtureA().getUserData(), Actor);
 				var a2 = cast(p.getFixtureB().getUserData(), Actor);
-					
+				
 				if(a1 == this)
 				{
 					otherActor = a2;
@@ -2020,7 +2155,7 @@ class Actor extends Sprite
 			contacts.set(point.key, point);
 			contactCount++;
 			
-			if(collisions.remove(point.key))
+			if(collisions.clr(point.key))
 			{
 				collisionsCount--;
 			}
@@ -2031,7 +2166,7 @@ class Actor extends Sprite
 	{
 		if(collisions != null)
 		{
-			if(collisions.remove(point.key))
+			if(collisions.clr(point.key))
 			{
 				collisionsCount--;
 			}
@@ -2039,7 +2174,7 @@ class Actor extends Sprite
 		
 		if(contacts != null)
 		{
-			if(contacts.remove(point.key))
+			if(contacts.clr(point.key))
 			{
 				contactCount--;
 			}
@@ -2058,7 +2193,7 @@ class Actor extends Sprite
 	{
 		if(regionContacts != null)
 		{
-			regionContacts.remove(point.key);
+			regionContacts.clr(point.key);
 		}
 	}
 	
@@ -2215,6 +2350,11 @@ class Actor extends Sprite
 	//*-----------------------------------------------
 	//* Physics: Position
 	//*-----------------------------------------------
+	
+	public function enableSmoothMotion()
+	{
+		smoothMove = true;
+	}
 	
 	//Big Change: Returns relative to the origin point as (0,0). Meaning if the origin = center, the center is now (0,0)!
 	
@@ -2892,46 +3032,14 @@ class Actor extends Sprite
 		
 		if(isHUD)
 		{
-			//on flash/desktop adjust for full screen mode
-			#if(!js && !mobile)
-			// Scale Dynamically Mode
-			if (scripts.MyAssets.scaleMode == 1)
-			{
-				mx = Input.mouseX - Engine.engine.root.x;
-				my = Input.mouseY - Engine.engine.root.y;
-			}
-			// Hi-Res Mode
-			else
-			{
-				mx = (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX;
-				my = (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY;
-			}
-		 	#else
-		 	mx = Input.mouseX / Engine.SCALE;
+			mx = Input.mouseX / Engine.SCALE;
 		 	my = Input.mouseY / Engine.SCALE;
-		 	#end
 		}
 		
 		else
 		{
-			//on flash/desktop adjust for full screen mode
-			#if(!js && !mobile)
-			// Scale Dynamically Mode
-			if (scripts.MyAssets.scaleMode == 1)
-			{
-				mx = Input.mouseX - Engine.engine.root.x - Engine.cameraX;
-				my = Input.mouseY - Engine.engine.root.y - Engine.cameraY;
-			}
-			// Hi-Res Mode
-			else
-			{
-				mx = (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX - Engine.cameraX / Engine.SCALE;
-				my = (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY - Engine.cameraY / Engine.SCALE;
-			}
-		 	#else
-		 	mx = (Input.mouseX - Engine.cameraX) / Engine.SCALE;
+			mx = (Input.mouseX - Engine.cameraX) / Engine.SCALE;
 		 	my = (Input.mouseY - Engine.cameraY) / Engine.SCALE;
-		 	#end
 		}
 		
 		//TODO: Mike - Make this work with arbitrary origin points
@@ -2991,9 +3099,9 @@ class Actor extends Sprite
 	public function cancelTweens()
 	{
 		Actuate.stop(this, ["alpha", "realScaleX", "realScaleY"], false, false);		
-		
+
 		Actuate.stop(tweenAngle, null, false, false);
-		Actuate.stop(tweenLoc, null, false, false);		
+		Actuate.stop(tweenLoc, null, false, false);
 		
 		activePositionTweens = 0;
 		activeAngleTweens = 0;
@@ -3036,26 +3144,6 @@ class Actor extends Sprite
 		activeAngleTweens++;		
 		
 		Actuate.tween(tweenAngle, duration, {angle:angle}).ease(easing).onComplete(onTweenAngleComplete);		
-		
-		//Taken out because people said it's buggy.
-		//Lock to final value to make up for lack of full syncing
-		/*var toExecute = function(timeTask:TimedTask):Void
-		{
-			if(isLightweight)
-			{
-				Actuate.stop(this, "realAngle", true, true);
-			}
-			
-			else
-			{
-				Actuate.stop(tweenAngle, "angle", true, true);
-			}
-			
-			setAngle(Utils.RAD * angle);
-		};
-		
-		var t:TimedTask = new TimedTask(toExecute, Std.int(duration * 1000) - 1, false, this);
-		engine.addTask(t);*/
 	}
 	
 	public function moveTo(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
@@ -3071,30 +3159,6 @@ class Actor extends Sprite
 		activePositionTweens++;		
 		
 		Actuate.tween(tweenLoc, duration, {x:x, y:y}).ease(easing).onComplete(onTweenPositionComplete);		
-		
-		//Taken out because people said it's buggy.
-		//Lock to final value to make up for lack of full syncing
-		/*var toExecute = function(timeTask:TimedTask):Void
-		{
-			if(isLightweight)
-			{
-				Actuate.stop(this, ["realX", "realY"], true, true);
-			}
-			
-			else
-			{
-				Actuate.stop(tweenLoc, ["x", "y"], true, true);
-			}
-			
-			setX(x);
-			setY(y);
-			
-			colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
-			colY = realY - Math.floor(cacheHeight/2) - currOffset.y;
-		};
-		
-		var t:TimedTask = new TimedTask(toExecute, Std.int(duration * 1000) - 1, false, this);
-		engine.addTask(t);*/
 	}
 	
 	//In degrees
@@ -3249,7 +3313,7 @@ class Actor extends Sprite
 		// Backup the default animations so the filters can be undone later.
 		if (!animsBackedUp)
 		{
-			backupAnimationMap = new Hash<Dynamic>();
+			backupAnimationMap = new Map<String,Dynamic>();
 		
 			for (key in animationMap.keys())
 			{
@@ -3257,11 +3321,11 @@ class Actor extends Sprite
 				
 				if (Type.getClass(anim) == SheetAnimation)
 				{
-					backupAnimationMap.set(key, anim.tilesheet.nmeBitmap.clone());
+					backupAnimationMap.set(key, anim.tilesheet.__bitmap.clone());
 					
-					var frameWidth = Std.int(anim.tilesheet.nmeBitmap.width / anim.numFrames);
-					var frameHeight = anim.tilesheet.nmeBitmap.height;
-					var tempData:BitmapData = anim.tilesheet.nmeBitmap.clone();
+					var frameWidth = Std.int(anim.tilesheet.__bitmap.width / anim.numFrames);
+					var frameHeight = anim.tilesheet.__bitmap.height;
+					var tempData:BitmapData = anim.tilesheet.__bitmap.clone();
 					var tempTilesheet = new Tilesheet(tempData);
 					
 					var i = 0;
@@ -3289,7 +3353,7 @@ class Actor extends Sprite
 			{
 				if (Type.getClass(anim) == SheetAnimation)
 				{
-					var imageData:BitmapData = anim.tilesheet.nmeBitmap;
+					var imageData:BitmapData = anim.tilesheet.__bitmap;
 					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
 					var len:Int = byteArray.length;
 
@@ -3348,7 +3412,7 @@ class Actor extends Sprite
 			{
 				if (Type.getClass(anim) == SheetAnimation)
 				{
-					var imageData:BitmapData = anim.tilesheet.nmeBitmap;
+					var imageData:BitmapData = anim.tilesheet.__bitmap;
 					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
 					var len:Int = byteArray.length;
 					var greyResult:Int;
@@ -3418,7 +3482,7 @@ class Actor extends Sprite
 			{
 				if (Type.getClass(anim) == SheetAnimation)
 				{
-					var imageData:BitmapData = anim.tilesheet.nmeBitmap;
+					var imageData:BitmapData = anim.tilesheet.__bitmap;
 					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
 					var len:Int = byteArray.length;
 
@@ -3510,7 +3574,7 @@ class Actor extends Sprite
 			{
 				var imageData = backupAnimationMap.get(key);
 				var sheetValue = animationMap.get(key);
-				sheetValue.tilesheet.nmeBitmap.copyPixels(imageData, imageData.rect, pt);
+				sheetValue.tilesheet.__bitmap.copyPixels(imageData, imageData.rect, pt);
 				sheetValue.tint = false;
 				sheetValue.updateBitmap();
 			}	
@@ -3858,9 +3922,9 @@ class Actor extends Sprite
 	 * An optional Mask component, used for specialized collision. If this is
 	 * not assigned, collision checks will use the Entity's hitbox by default.
 	 */
-	public var shape(getShape, setShape):Mask;
-	private inline function getShape():Mask { return _mask; }
-	private function setShape(value:Mask):Mask
+	public var shape(get_shape, set_shape):Mask;
+	private inline function get_shape():Mask { return _mask; }
+	private function set_shape(value:Mask):Mask
 	{
 		if (_mask == value) return value;
 		if (_mask != null) _mask.assignTo(null);
@@ -4090,7 +4154,7 @@ class Actor extends Sprite
 		{
 			for(k in simpleCollisions.keys()) 
 			{
-				simpleCollisions.remove(k);
+				simpleCollisions.clr(k);
 			}
 		}
 		
@@ -4291,7 +4355,7 @@ class Actor extends Sprite
 		if(fromX)
 		{
 			//If tile, have to use travel direction
-			if (a.ID == Utils.INT_MAX)
+			if (a.ID == Utils.INTEGER_MAX)
 			{
 				Utils.collision.thisFromLeft = sign < 0;
 				Utils.collision.thisFromRight = sign > 0;
@@ -4312,7 +4376,7 @@ class Actor extends Sprite
 		if(fromY)
 		{
 			//If tile, have to use travel direction
-			if (a.ID == Utils.INT_MAX)
+			if (a.ID == Utils.INTEGER_MAX)
 			{
 				Utils.collision.thisFromTop = sign < 0;
 				Utils.collision.thisFromBottom = sign > 0;
@@ -4332,7 +4396,7 @@ class Actor extends Sprite
 		
 		//TODO
 		Utils.collision.thisCollidedWithActor = true;
-		Utils.collision.thisCollidedWithTile = a.ID == Utils.INT_MAX;
+		Utils.collision.thisCollidedWithTile = a.ID == Utils.INTEGER_MAX;
 		
 		if(info != null)
 		{
@@ -4347,7 +4411,7 @@ class Actor extends Sprite
 		Utils.collision.thisCollidedWithTerrain = false;
 		
 		Utils.collision.otherCollidedWithActor = true;
-		Utils.collision.otherCollidedWithTile = a.ID == Utils.INT_MAX;
+		Utils.collision.otherCollidedWithTile = a.ID == Utils.INTEGER_MAX;
 		
 		if(info != null)
 		{
@@ -4376,6 +4440,6 @@ class Actor extends Sprite
 	private var _moveX:Float;
 	private var _moveY:Float;
 	private var _point:Point;
-	private var simpleCollisions:IntHash<CollisionInfo>;
+	private var simpleCollisions:IntHashTable<CollisionInfo>;
 	private var allowAdd:Bool;
 }

@@ -4,6 +4,8 @@ package com.stencyl;
 import cpp.vm.Gc;
 #end
 
+import de.polygonal.ds.IntHashTable;
+
 import com.stencyl.behavior.Attribute;
 import com.stencyl.behavior.Behavior;
 import com.stencyl.behavior.TimedTask;
@@ -29,7 +31,6 @@ import nme.events.KeyboardEvent;
 import nme.events.MouseEvent;
 import nme.Assets;
 import nme.Lib;
-import nme.ObjectHash;
 import nme.ui.Keyboard;
 
 import com.stencyl.graphics.transitions.Transition;
@@ -63,18 +64,17 @@ import com.stencyl.models.scene.ScrollingBitmap;
 import com.stencyl.models.background.ImageBackground;
 import com.stencyl.models.background.ScrollingBackground;
 
+//Do not remove - forces your behaviors to be included
 import scripts.MyScripts;
 import com.stencyl.models.collision.Mask;
 
 import com.stencyl.utils.Utils;
-import com.stencyl.utils.SizedIntHash;
-import com.stencyl.utils.HashMap;
 
 import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
 
-import com.eclecticdesignstudio.motion.Actuate;
-import com.eclecticdesignstudio.motion.easing.Elastic;
+import motion.Actuate;
+import motion.easing.Elastic;
 
 import box2D.dynamics.B2World;
 import box2D.common.math.B2Vec2;
@@ -96,6 +96,8 @@ import box2D.collision.shapes.B2PolygonShape;
 import box2D.collision.shapes.B2CircleShape;
 import box2D.dynamics.contacts.B2Contact;
 import box2D.dynamics.contacts.B2ContactEdge;
+
+import haxe.ds.ObjectMap;
 
 
 class Engine 
@@ -213,9 +215,9 @@ class Engine
 	public var tasks:Array<TimedTask>;
 	
 	//Scene-Specific
-	public var regions:IntHash<Region>;
-	public var terrainRegions:IntHash<Terrain>;
-	public var joints:IntHash<B2Joint>;
+	public var regions:IntHashTable<Region>;
+	public var terrainRegions:Map<Int,Terrain>;
+	public var joints:Map<Int,B2Joint>;
 	
 	public static var movieClip:MovieClip;
 	public static var stage:Stage;
@@ -234,22 +236,22 @@ class Engine
 	//* Model - Actors & Groups
 	//*-----------------------------------------------
 	
-	public var groups:IntHash<Group>;
-	public var reverseGroups:Hash<Group>;
+	public var groups:Map<Int,Group>;
+	public var reverseGroups:Map<String,Group>;
 	
-	public var allActors:IntHash<Actor>;
+	public var allActors:IntHashTable<Actor>;
 	public var nextID:Int;
 	
 	//Used to be called actorsToRender
-	public var actorsPerLayer:IntHash<DisplayObjectContainer>;
+	public var actorsPerLayer:Map<Int,DisplayObjectContainer>;
 	
-	public var hudActors:IntHash<Actor>;
-	
-	//HashMap<Integer, HashSet<Actor>>
-	public var actorsOfType:IntHash<Array<Actor>>;
+	public var hudActors:IntHashTable<Actor>;
 	
 	//HashMap<Integer, HashSet<Actor>>
-	public var recycledActorsOfType:IntHash<Array<Actor>>;
+	public var actorsOfType:Map<Int,Array<Actor>>;
+	
+	//HashMap<Integer, HashSet<Actor>>
+	public var recycledActorsOfType:Map<Int,Array<Actor>>;
 	
 	//List<DeferredActor>
 	public var actorsToCreateInNextScene:Array<DeferredActor>;
@@ -265,10 +267,10 @@ class Engine
 	//can tell us the order and which layers are above, below. And what layer is on top/bottom.
 	//A Layer = Sprite/Container.
 	
-	public var layers:IntHash<Layer>;
-	public var tileLayers:IntHash<TileLayer>;
+	public var layers:IntHashTable<Layer>;
+	public var tileLayers:IntHashTable<TileLayer>;
 	
-	public var dynamicTiles:Hash<Actor>;
+	public var dynamicTiles:Map<String,Actor>;
 	public var animatedTiles:Array<Tile>;
 	
 	public var topLayer:Int;
@@ -278,16 +280,16 @@ class Engine
 	//int[]
 	//index -> order
 	//value -> layerID
-	public var layersToDraw:SizedIntHash<Int>;
-	public var layerOrders:SizedIntHash<Int>;
+	public var layersToDraw:Map<Int,Int>;
+	public var layerOrders:Map<Int,Int>;
 		
 	public var tileUpdated:Bool;
 	public var cameraMoved:Bool;
 	public var cameraOldX:Float;
 	public var cameraOldY:Float;	
 	
-	public var atlasesToLoad:IntHash<Int>;
-	public var atlasesToUnload:IntHash<Int>;
+	public var atlasesToLoad:Map<Int,Int>;
+	public var atlasesToUnload:Map<Int,Int>;
 	
 	
 	//*-----------------------------------------------
@@ -301,7 +303,7 @@ class Engine
 	//* Model - Behaviors & Game Attributes
 	//*-----------------------------------------------
 	
-	public var gameAttributes:Hash<Dynamic>;
+	public var gameAttributes:Map<String,Dynamic>;
 	public var behaviors:BehaviorManager;
 	
 	
@@ -335,15 +337,16 @@ class Engine
 	private var mx:Float;
 	private var my:Float;
 	
-	private var collisionPairs:IntHash<IntHash<Bool>>;
+	private var collisionPairs:IntHashTable<Map<Int,Bool>>;
 	private var disableCollisionList:Array<Actor>;
 	
-	public var whenKeyPressedListeners:Hash<Dynamic>;
-	public var whenTypeGroupCreatedListeners:HashMap<Dynamic, Dynamic>;
-	public var whenTypeGroupDiesListeners:HashMap<Dynamic, Dynamic>;
-	public var typeGroupPositionListeners:IntHash<Dynamic>;
-	public var collisionListeners:IntHash<Dynamic>;
-	public var soundListeners:HashMap<Dynamic, Dynamic>;		
+	public var whenKeyPressedListeners:Map<String, Dynamic>;
+	public var hasKeyPressedListeners:Bool;
+	public var whenTypeGroupCreatedListeners:ObjectMap<Dynamic, Dynamic>;
+	public var whenTypeGroupDiesListeners:ObjectMap<Dynamic, Dynamic>;
+	public var typeGroupPositionListeners:Map<Int,Dynamic>;
+	public var collisionListeners:Map<Int,Dynamic>;
+	public var soundListeners:ObjectMap<Dynamic, Dynamic>;		
 			
 	public var whenUpdatedListeners:Array<Dynamic>;
 	public var whenDrawingListeners:Array<Dynamic>;
@@ -390,15 +393,22 @@ class Engine
 			isFullScreen = false;
 			Lib.current.stage.displayState = StageDisplayState.NORMAL;
 			
+			var screenWidth = Lib.current.stage.stageWidth;
+			var screenHeight = Lib.current.stage.stageHeight;
+			
 			root.scaleX = 1.0;
 			root.scaleY = 1.0;
 			root.x = 0.0;
 			root.y = 0.0;
 			
-			
+			Engine.screenScaleX = root.scaleX;
+			Engine.screenScaleY = root.scaleY;
+			Engine.screenOffsetX = Std.int(root.x);
+			Engine.screenOffsetY = Std.int(root.y);
+					
 			if(stats != null)
 			{
-				stats.x = Lib.current.stage.stageWidth - stats.width;
+				stats.x = screenWidth - stats.width;
 				stats.y = 0;
 			}
 			
@@ -410,32 +420,12 @@ class Engine
 			isFullScreen = true;
 			Lib.current.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 			
-			var xScaleFresh:Int = Math.floor(cast(Lib.current.stage.stageWidth, Float) / cast(scripts.MyAssets.stageWidth, Float));
-			var yScaleFresh:Int = Math.floor(cast(Lib.current.stage.stageHeight, Float) / cast(scripts.MyAssets.stageHeight, Float));
+			cast(root, Universal).initScreen(true);
 			
-			if(xScaleFresh < yScaleFresh)
-			{
-				root.scaleX = cast(xScaleFresh, Float);
-				root.scaleY = cast(xScaleFresh, Float);
-			}
-			
-			else if(yScaleFresh < xScaleFresh)
-			{
-				root.scaleX = cast(yScaleFresh, Float);
-				root.scaleY = cast(yScaleFresh, Float);
-			} 
-			
-			else
-			{
-				root.scaleX = cast(xScaleFresh, Float);
-				root.scaleY = cast(yScaleFresh, Float);
-			}
-			
-			root.x = (cast(Lib.current.stage.stageWidth, Float) / 2.0) - (cast(scripts.MyAssets.stageWidth*root.scaleX,Float) / 2.0);
-			root.y = (cast(Lib.current.stage.stageHeight, Float) / 2.0) - (cast(scripts.MyAssets.stageHeight*root.scaleY,Float) / 2.0);
-			
-			var r = new nme.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
-			root.scrollRect = r;
+			Engine.screenScaleX = root.scaleX;
+			Engine.screenScaleY = root.scaleY;
+			Engine.screenOffsetX = Std.int(root.x);
+			Engine.screenOffsetY = Std.int(root.y);
 			
 			if(stats != null)
 			{
@@ -458,7 +448,7 @@ class Engine
 		root.mouseEnabled = false;
 		//root.stage.mouseChildren = false;
 
-		if(/*!scripts.MyAssets.releaseMode &&*/ scripts.MyAssets.debugDraw)
+		if(scripts.MyAssets.debugDraw)
 		{
 			DEBUG_DRAW = true;
 		}
@@ -481,8 +471,8 @@ class Engine
 	
 	public function begin(initSceneID:Int)
 	{		
-		atlasesToLoad = new IntHash<Int>();
-		atlasesToUnload = new IntHash<Int>();
+		atlasesToLoad = new Map<Int,Int>();
+		atlasesToUnload = new Map<Int,Int>();
 	
 		Input.enable();
 		Input.define(INTERNAL_SHIFT, [Key.SHIFT]);
@@ -572,11 +562,10 @@ class Engine
 				
 		//Initialize things	
 		actorsToCreateInNextScene = new Array();			
-		gameAttributes = new Hash<Dynamic>();
-		collisionPairs = new IntHash<IntHash<Bool>>();
+		gameAttributes = new Map<String,Dynamic>();
 		
 		//Profiler
-		//#if !js
+		#if !js
 		//if(!scripts.MyAssets.releaseMode)
 		{
 			if(scripts.MyAssets.showConsole)
@@ -585,7 +574,15 @@ class Engine
 				stage.addChild(stats);
 			}
 		}
-		//#end
+		
+		/*if(scripts.MyAssets.showConsole)
+		{
+			pgr.gconsole.GameConsole.init();
+			pgr.GameConsole.setConsoleFont('./path/to/your/font.ttf');
+        	pgr.GameConsole.setPromptFont('./remember/to/make/it/relative.ttf');
+        	pgr.GameConsole.setMonitorFont('./or/you/will/be/confused.ttf');   
+		}*/
+		#end
 		
 		#if (flash)
 		movieClip = new MovieClip();
@@ -641,8 +638,10 @@ class Engine
 			Data.get().loadAtlas(atlas);
 		}
 		
-		atlasesToLoad = new IntHash<Int>();
-		atlasesToUnload = new IntHash<Int>();
+		atlasesToLoad = new Map<Int,Int>();
+		atlasesToUnload = new Map<Int,Int>();
+		
+		collisionPairs = new IntHashTable<Map<Int,Bool>>(32);
 	
 		//---
 	
@@ -672,8 +671,8 @@ class Engine
 		
 		behaviors = new BehaviorManager();
 		
-		groups = new IntHash<Group>();
-		reverseGroups = new Hash<Group>();
+		groups = new Map<Int,Group>();
+		reverseGroups = new Map<String,Group>();
 		
 		for(grp in GameModel.get().groups)
 		{
@@ -689,28 +688,38 @@ class Engine
 		reverseGroups.set("Regions", regionGroup);
 		
 		disableCollisionList = new Array<Actor>();
-		actorsOfType = new IntHash<Array<Actor>>();
-		recycledActorsOfType = new IntHash<Array<Actor>>();
+		actorsOfType = new Map<Int,Array<Actor>>();
+		recycledActorsOfType = new Map<Int,Array<Actor>>();
 		
-		regions = new IntHash<Region>();
-		terrainRegions = new IntHash<Terrain>();
-		joints = new IntHash<B2Joint>();
-		layers = new IntHash<Layer>();
-		tileLayers = new IntHash<TileLayer>();
-		dynamicTiles = new Hash<Actor>();
+		regions = new IntHashTable<Region>(32);
+		regions.reuseIterator = true;
+		
+		terrainRegions = new Map<Int,Terrain>();
+		joints = new Map<Int,B2Joint>();
+		
+		layers = new IntHashTable<Layer>(16);
+		layers.reuseIterator = true;
+		tileLayers = new IntHashTable<TileLayer>(16);
+		tileLayers.reuseIterator = true;
+		
+		dynamicTiles = new Map<String,Actor>();
 		animatedTiles = new Array<Tile>();
-		hudActors = new IntHash<Actor>();
-		allActors = new IntHash<Actor>();
-		actorsPerLayer = new IntHash<DisplayObjectContainer>();
+		hudActors = new IntHashTable<Actor>(16);
+		hudActors.reuseIterator = true;
+		allActors = new IntHashTable<Actor>(256);
+		allActors.reuseIterator = true;
+		actorsPerLayer = new Map<Int,DisplayObjectContainer>();
 		nextID = 0;
 		
 		//Events
-		whenKeyPressedListeners = new Hash<Dynamic>();
-		whenTypeGroupCreatedListeners = new HashMap<Dynamic, Dynamic>();
-		whenTypeGroupDiesListeners = new HashMap<Dynamic, Dynamic>();
-		typeGroupPositionListeners = new IntHash<Dynamic>();
-		collisionListeners = new IntHash<Dynamic>();
-		soundListeners = new HashMap<Dynamic, Dynamic>();
+		whenKeyPressedListeners = new Map<String, Dynamic>();
+		hasKeyPressedListeners = false;
+	
+		whenTypeGroupCreatedListeners = new ObjectMap<Dynamic, Dynamic>();
+		whenTypeGroupDiesListeners = new ObjectMap<Dynamic, Dynamic>();
+		typeGroupPositionListeners = new Map<Int,Dynamic>();
+		collisionListeners = new Map<Int,Dynamic>();
+		soundListeners = new ObjectMap<Dynamic, Dynamic>();
 		nativeListeners = new Array<NativeListener>();
 		
 		whenUpdatedListeners = new Array<Dynamic>();
@@ -830,7 +839,7 @@ class Engine
 	public static function initBehaviors
 	(
 		manager:BehaviorManager, 
-		behaviorValues:Hash<Dynamic>, 
+		behaviorValues:Map<String,Dynamic>, 
 		parent:Dynamic, 
 		game:Engine,
 		initialize:Bool
@@ -851,7 +860,13 @@ class Engine
 			}
 			
 			var template:Behavior = Data.get().behaviors.get(bi.behaviorID);
-			var attributes:Hash<Attribute> = new Hash<Attribute>();
+			var attributes:Map<String,Attribute> = new Map<String,Attribute>();
+			
+			if(template == null)
+			{
+				trace("Non-Existent Behavior ID (Init): " + bi.behaviorID);
+				continue;
+			}
 			
 			//Start honoring default values for events.
 			if(template.isEvent)
@@ -1045,7 +1060,8 @@ class Engine
 	
 	private function loadRegions()
 	{					
-		regions = new IntHash<Region>();
+		regions = new IntHashTable<Region>(32);
+		regions.reuseIterator = true;
 
 		for(r in scene.regions)
 		{
@@ -1067,7 +1083,7 @@ class Engine
 	
 	private function loadTerrainRegions()
 	{						
-		terrainRegions = new IntHash<Terrain>();
+		terrainRegions = new Map<Int,Terrain>();
 		
 		if(NO_PHYSICS)
 		{
@@ -1209,7 +1225,7 @@ class Engine
 				a = new Actor
 				(
 					this, 
-					Utils.INT_MAX,
+					Utils.INTEGER_MAX,
 					GameModel.TERRAIN_ID,
 					wireframe.x, 
 					wireframe.y, 
@@ -1235,7 +1251,7 @@ class Engine
 				a = new Actor
 				(
 					this, 
-					Utils.INT_MAX,
+					Utils.INTEGER_MAX,
 					GameModel.TERRAIN_ID,
 					wireframe.x, 
 					wireframe.y, 
@@ -1243,7 +1259,7 @@ class Engine
 					Std.int(wireframe.width), 
 					Std.int(wireframe.height), 
 					null, 
-					new Hash<Dynamic>(),
+					new Map<String,Dynamic>(),
 					null,
 					null, 
 					false, 
@@ -1265,9 +1281,9 @@ class Engine
 	//This is mainly to establish mappings and figure out top, middle, bottom
 	private function initLayers()
 	{
-		var layers = new SizedIntHash<Int>();
-		var orders = new SizedIntHash<Int>();
-		var exists = new SizedIntHash<Int>();
+		var layers = new Map<Int,Int>();
+		var orders = new Map<Int,Int>();
+		var exists = new Map<Int,Int>();
 		var highestLayerOrder = 0;
 		
 		tileLayers = scene.terrain;
@@ -1414,6 +1430,32 @@ class Engine
 	//* Scene Switching
 	//*-----------------------------------------------
 	
+	//PRIVATE API - No guarantee of this existing in the future!
+	//Shrink the pool down to its current size to optimize memory usage.
+	//Recommended: No more than every 5 seconds.
+	//Warning: Will memory leak a little beyond baseline memory. Leak cleared upon switching or reloading scene.
+	public function optimizePool()
+	{
+		for(cache in recycledActorsOfType)
+		{
+			var toRemove:Array<Actor> = new Array<Actor>();
+			
+			for(actor in cache)
+			{
+				if(actor != null && actor.recycled)
+				{
+					toRemove.push(actor);
+				}
+			}
+			
+			for(actor in toRemove)
+			{
+				cache.remove(actor);
+				removeActor(actor);
+			}
+		}
+	}
+
 	public function cleanup()
 	{
 		#if mobile
@@ -1424,7 +1466,7 @@ class Engine
 		{
 			debugDrawer.m_sprite.graphics.clear();
 		}
-		
+
 		Utils.removeAllChildren(master);
 		Utils.removeAllChildren(hudLayer);
 			
@@ -1483,7 +1525,7 @@ class Engine
 		}
 		
 		//Clear old TileLayer data
-		if (scene != null && scene.terrain != null)
+		if(scene != null && scene.terrain != null)
 		{			
 			for (tl in scene.terrain)
 			{
@@ -1491,9 +1533,18 @@ class Engine
 			}
 		}
 		
-		for (a in allActors)
+		for(a in allActors)
 		{
 			a.destroy();
+			//removeActor(a);
+		}
+		
+		while(Lambda.count(allActors) > 0)
+		{
+			for(key in allActors.keys())
+			{
+				allActors.clr(key);
+			}
 		}
 		
 		scene.unload();
@@ -1518,13 +1569,16 @@ class Engine
 		scene = null;
 		tasks = null;
 		
-		whenKeyPressedListeners = null;		
+		collisionPairs = null;
+		disableCollisionList = null;
+		
+		whenKeyPressedListeners = null;	
+		hasKeyPressedListeners = false;
 		whenTypeGroupCreatedListeners = null;
 		whenTypeGroupDiesListeners = null;
 		typeGroupPositionListeners = null;
 		collisionListeners = null;
 		soundListeners = null;
-		nativeListeners = null;
 					
 		whenUpdatedListeners = null;
 		whenDrawingListeners = null;
@@ -1533,12 +1587,14 @@ class Engine
 		whenMouseMovedListeners = null;
 		whenMouseDraggedListeners = null;		
 		whenPausedListeners = null;
+		
 		whenSwipedListeners = null;
 		whenMTStartListeners = null;
 		whenMTDragListeners = null;
 		whenMTEndListeners = null;
 		
 		whenFocusChangedListeners = null;
+		nativeListeners = null;
 		
 		Script.lastCreatedActor = null;
 		Script.lastCreatedJoint = null;
@@ -1725,7 +1781,7 @@ class Engine
 		//---
 
 		//Use the next available ID
-		if(ai.elementID == Utils.INT_MAX)
+		if(ai.elementID == Utils.INTEGER_MAX)
 		{
 			nextID++;
 			a.ID = nextID;
@@ -1765,7 +1821,7 @@ class Engine
 	
 	public function removeActor(a:Actor)
 	{
-		allActors.remove(a.ID);
+		allActors.clr(a.ID);
 
 		//Remove from the layer group
 		removeActorFromLayer(a, a.layerID);
@@ -1775,7 +1831,7 @@ class Engine
 		
 		if(a.isHUD || a.alwaysSimulate)
 		{
-			hudActors.remove(a.ID);
+			hudActors.clr(a.ID);
 		}
 		
 		a.destroy();
@@ -1862,6 +1918,7 @@ class Engine
 			a.makeSometimesSimulate(false);
 		}
 	
+		a.firstMove = false;
 		a.setX(1000000, false, true);
 		a.setY(1000000, false, true);
 		a.colX = 1000000;
@@ -1935,7 +1992,7 @@ class Engine
 		a.rSpeed = 0;
 		a.continuousCollision = false;
 		
-		allActors.remove(a.ID);
+		allActors.clr(a.ID);
 	}
 	
 	public function getRecycledActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
@@ -1955,7 +2012,7 @@ class Engine
 			//Check for next available one O(1)
 			//In practice, this doesn't exceed 10-20.
 			for(actor in cache)
-			{
+			{			
 				if(actor != null && actor.recycled)
 				{
 					actor.createTime = Lib.getTimer();
@@ -1985,7 +2042,7 @@ class Engine
 						++world.m_bodyCount;
 					}
 					
-					actor.registry = new Hash<Dynamic>();
+					actor.registry = new Map<String,Dynamic>();
 					actor.enableActorDrawing();					
 					actor.setX(x, false, true);
 					actor.setY(y, false, true);
@@ -2049,7 +2106,7 @@ class Engine
 			
 			//Otherwise make a new one
 			a = createActorOfType(type, x, y, layerConst);
-			cache.push(a);
+			//cache.push(a);
 		}
 		
 		return a;
@@ -2082,7 +2139,7 @@ class Engine
 		
 		var ai:ActorInstance = new ActorInstance
 		(
-			Utils.INT_MAX,
+			Utils.INTEGER_MAX,
 			Std.int(x),
 			Std.int(y),
 			1,
@@ -2147,7 +2204,7 @@ class Engine
 		}
 		
 		//Update Tweens - Synced to engine
-		com.eclecticdesignstudio.motion.actuators.SimpleActuator.shape_onEnterFrame(null);
+		motion.actuators.SimpleActuator.stage_onEnterFrame(null);
 		
 		if(!NO_PHYSICS)
 		{
@@ -2158,14 +2215,8 @@ class Engine
 			aabb.upperBound.y = aabb.lowerBound.y + ((Engine.screenHeight + paddingBottom + paddingTop) / physicsScale);
 		}
 		
-		//on flash/desktop adjust for full screen mode		
-		#if(!js && !mobile)
-		var inputx = (Input.mouseX / Engine.SCALE - root.x) * root.scaleX;
-		var inputy = (Input.mouseY / Engine.SCALE - root.y) * root.scaleY;
-		#else
-		var inputx = Input.mouseX / Engine.SCALE;
-		var inputy = Input.mouseY / Engine.SCALE;
-		#end
+		var inputx = Std.int(Input.mouseX / Engine.SCALE);
+		var inputy = Std.int(Input.mouseY / Engine.SCALE);
 						
 		if(Input.mousePressed)
 		{
@@ -2216,22 +2267,27 @@ class Engine
 		}
 		
 		//Poll Keyboard Inputs
-		for(key in whenKeyPressedListeners.keys())
+		if(hasKeyPressedListeners)
 		{
-			var listeners = whenKeyPressedListeners.get(key);
-			var pressed = Input.pressed(key);
-			var released = Input.released(key);
-			
-			if(pressed || released)
+			//Creates array per frame. Not optimal but hard to optimize out because of string keys.
+			for(key in whenKeyPressedListeners.keys())
 			{
-				invokeListeners3(listeners, pressed, released);
-			}				
+				var pressed = Input.pressed(key);
+				var released = Input.released(key);
+				
+				if(pressed || released)
+				{
+					var listeners = whenKeyPressedListeners.get(key);
+					invokeListeners3(listeners, pressed, released);
+				}				
+			}
 		}
 		
 		//Native
 		#if mobile
-		for(listener in nativeListeners)
+		for(n in 0...nativeListeners.length)
 		{
+			var listener = nativeListeners[n];
 			listener.checkEvents(Engine.events);
 		}
 		
@@ -2251,12 +2307,15 @@ class Engine
 			}
 		}
 
-		for(r in regions)
+		if(!regions.isEmpty())
 		{
-			if(r == null) continue;
-			r.innerUpdate(elapsedTime, true);
+			for(r in regions)
+			{
+				if(r == null) continue;
+				r.innerUpdate(elapsedTime, true);
+			}
 		}
-				
+		
 		while(disableCollisionList.length > 0)
 		{
 			disableCollisionList.pop();
@@ -2264,72 +2323,81 @@ class Engine
 		
 		if(!NO_PHYSICS)
 		{
-			for (pair in collisionPairs.keys())
+			if(!collisionPairs.isEmpty())
 			{
-				collisionPairs.remove(pair);
-			}	
+				for(pair in collisionPairs.keys())
+				{
+					collisionPairs.clr(pair);
+				}
+			}
 		}
 		
 		com.stencyl.models.actor.Animation.updateAll(elapsedTime);
 		
-		for(a in allActors)
-		{		
-			if(a != null && !a.dead && !a.recycled) 
-			{
-				//--- HAND INLINED THIS SINCE ITS CALLED SO MUCH
-				var isOnScreen = (a.isLightweight || a.body.isActive()) && 
-			   	a.colX + a.cacheWidth >= -Engine.cameraX / Engine.SCALE - Engine.paddingLeft && 
-			   	a.colY + a.cacheHeight >= -Engine.cameraY / Engine.SCALE - Engine.paddingTop &&
-			   	a.colX < -Engine.cameraX / Engine.SCALE + Engine.screenWidth + Engine.paddingRight &&
-			   	a.colY < -Engine.cameraY / Engine.SCALE + Engine.screenHeight + Engine.paddingBottom;
-				
-				a.isOnScreenCache = isOnScreen;
-				
-				//---
-			
-				if(!a.isLightweight && a.body != null)
+		if(!allActors.isEmpty())
+		{
+			for(a in allActors)
+			{		
+				if(a != null && !a.dead && !a.recycled) 
 				{
-					if(a.killLeaveScreen && !isOnScreen)
-					{		
-						recycleActor(a);
-					}
+					//--- HAND INLINED THIS SINCE ITS CALLED SO MUCH
+					var isOnScreen = (a.isLightweight || a.body.isActive()) && 
+					a.colX + a.cacheWidth >= -Engine.cameraX / Engine.SCALE - Engine.paddingLeft && 
+					a.colY + a.cacheHeight >= -Engine.cameraY / Engine.SCALE - Engine.paddingTop &&
+					a.colX < -Engine.cameraX / Engine.SCALE + Engine.screenWidth + Engine.paddingRight &&
+					a.colY < -Engine.cameraY / Engine.SCALE + Engine.screenHeight + Engine.paddingBottom;
 					
-					else if(a.body.isActive() || a.alwaysSimulate || a.isHUD)
-					{		
-						a.innerUpdate(elapsedTime, false);						
-					}
-				}
+					a.isOnScreenCache = isOnScreen;
+					
+					//---
 				
-				else if(a.isLightweight)
-				{
-					if(a.killLeaveScreen && !isOnScreen)
+					if(!a.isLightweight && a.body != null)
 					{
-						recycleActor(a);
+						if(a.killLeaveScreen && !isOnScreen)
+						{		
+							recycleActor(a);
+						}
+						
+						else if(a.body.isActive() || a.alwaysSimulate || a.isHUD)
+						{		
+							a.innerUpdate(elapsedTime, false);						
+						}
 					}
 					
-					else if(isOnScreen || a.alwaysSimulate || a.isHUD)
-					{		
-						a.innerUpdate(elapsedTime, false);
+					else if(a.isLightweight)
+					{
+						if(a.killLeaveScreen && !isOnScreen)
+						{
+							recycleActor(a);
+						}
+						
+						else if(isOnScreen || a.alwaysSimulate || a.isHUD)
+						{		
+							a.innerUpdate(elapsedTime, false);
+						}
 					}
-				}
-				
-				if(a.dead)
-				{
-					disableCollisionList.push(a);
+					
+					if(a.dead)
+					{
+						disableCollisionList.push(a);
+					}
 				}
 			}
 		}
 			
-		for(a in disableCollisionList)
+		for(n in 0...disableCollisionList.length)
 		{
+			var a = disableCollisionList[n];
+			
 			if(a != null)
 			{
 				a.handlesCollisions = false;
 			}
 		}
 		
-		for(tile in animatedTiles)
+		for(n in 0...animatedTiles.length)
 		{
+			var tile = animatedTiles[n];
 			tile.update(elapsedTime);
 			tileUpdated = tileUpdated || tile.updateSource;
 		}
@@ -2482,7 +2550,7 @@ class Engine
 		if(leave != null)
 		{
 			//Update here, or you can have a transition that fails to finish
-			com.eclecticdesignstudio.motion.actuators.SimpleActuator.shape_onEnterFrame(null);
+			motion.actuators.SimpleActuator.stage_onEnterFrame(null);
 		
 			if(leave.isComplete())
 			{
@@ -2522,34 +2590,37 @@ class Engine
 		lastTime = currTime;
 			
 		//On screen flag reset
-		for(a in allActors)
+		if(!allActors.isEmpty())
 		{
-			if(a == null || (!a.isLightweight && a.body == null))
+			for(a in allActors)
 			{
-				continue;
-			}
-			
-			if (a.currAnimationAsAnim != null && a.currAnimationAsAnim.needsBitmapUpdate())
-			{
-				a.currAnimationAsAnim.updateBitmap();
-			}
-			
-			if(a.dead || a.dying)
-			{
-				removeActor(a);
-				continue;
-			}
-			
-			else if (a.updateMatrix || a.resetOrigin)
-			{
-				a.updateDrawingMatrix();
-				a.updateMatrix = false;
-				a.resetOrigin = false;
-			}			
-			
-			if(a.body == null)
-			{
-				continue;
+				if(a == null || (!a.isLightweight && a.body == null))
+				{
+					continue;
+				}
+				
+				if(a.currAnimationAsAnim != null && a.currAnimationAsAnim.needsBitmapUpdate())
+				{
+					a.currAnimationAsAnim.updateBitmap();
+				}
+				
+				if(a.dead || a.dying)
+				{
+					removeActor(a);
+					continue;
+				}
+				
+				else if (a.updateMatrix || a.resetOrigin)
+				{
+					a.updateDrawingMatrix();
+					a.updateMatrix = false;
+					a.resetOrigin = false;
+				}			
+				
+				if(a.body == null)
+				{
+					continue;
+				}
 			}
 		}
 		
@@ -2655,14 +2726,14 @@ class Engine
 		//Check if collision between actors has already happened
 		if(collisionPairs != null)
 		{
-			if(!collisionPairs.exists(a.ID))
+			if(!collisionPairs.hasKey(a.ID))
 			{
-				collisionPairs.set(a.ID, new IntHash<Bool>());
+				collisionPairs.set(a.ID, new Map<Int,Bool>());
 			}
 			
-			if(!collisionPairs.exists(event.otherActor.ID))
+			if(!collisionPairs.hasKey(event.otherActor.ID))
 			{
-				collisionPairs.set(event.otherActor.ID, new IntHash<Bool>());
+				collisionPairs.set(event.otherActor.ID, new Map<Int,Bool>());
 			}
 			
 			if(collisionPairs.get(a.ID).exists(event.otherActor.ID) || collisionPairs.get(event.otherActor.ID).exists(a.ID))
@@ -2816,12 +2887,17 @@ class Engine
 		
 		paused = true;
 		
-		for(a in allActors)
+		if(!allActors.isEmpty())
 		{
-			if(a != null)
+			for(actorID in allActors.keys())
 			{
-				a.pause();
-			}									
+				var a = allActors.get(actorID);
+				
+				if(a != null)
+				{
+					a.pause();
+				}									
+			}
 		}
 		
 		invokeListeners2(whenPausedListeners, true);
@@ -2831,12 +2907,17 @@ class Engine
 	{
 		paused = false;
 		
-		for(a in allActors)
+		if(!allActors.isEmpty())
 		{
-			if(a != null)
+			for(actorID in allActors.keys())
 			{
-				a.unpause();
-			}								
+				var a = allActors.get(actorID);
+			
+				if(a != null)
+				{
+					a.unpause();
+				}								
+			}
 		}
 		
 		invokeListeners2(whenPausedListeners, false);
@@ -2887,7 +2968,7 @@ class Engine
 			#if (js)
 			if (l.drawnOn)
 			{
-				l.overlay.graphics.jeashInvalidate();
+				l.overlay.graphics.__invalidate();
 				l.bitmapOverlay.bitmapData.fillRect(l.bitmapOverlay.bitmapData.rect, 0);
 				l.drawnOn = false;
 			}
@@ -2899,43 +2980,49 @@ class Engine
 		}
 		
 		//Clean up HUD actors
-		for(a in hudActors)
+		if(!hudActors.isEmpty())
 		{
-			if(a == null || a.dead || a.recycled)
+			for(a in hudActors)
 			{
-				hudActors.remove(a.ID);
-			}
-		}
-     
-		//Walk through all actors
-		//TODO: cache the actors that need to be drawn instead upon creation
-		for(a in allActors)
-		{
-			if(a.whenDrawingListeners.length > 0)
-			{
-				var layer = layers.get(a.layerID);
-				
-				if(layer != null)
+				if(a.dead || a.recycled)
 				{
-					layer.drawnOn = true;
-					
-					g.graphics = layer.overlay.graphics;
-					
-					#if (js)
-					g.canvas = layer.bitmapOverlay.bitmapData;
-	     			#end
-	     			
-	     			#if (cpp || flash)
-					g.canvas = layer.bitmapOverlay;
-					#end		
-	     			
-					g.translateToActor(a);
-					g.resetGraphicsSettings();		
-					Engine.invokeListeners4(a.whenDrawingListeners, g, 0, 0);
+					hudActors.clr(a.ID);
 				}
 			}
 		}
-
+		
+		//Walk through all actors
+		//TODO: cache the actors that need to be drawn instead upon creation
+		if(!allActors.isEmpty())
+		{
+			for(a in allActors)
+			{
+				if(a.whenDrawingListeners.length > 0)
+				{
+					var layer = layers.get(a.layerID);
+					
+					if(layer != null)
+					{
+						layer.drawnOn = true;
+						
+						g.graphics = layer.overlay.graphics;
+						
+						#if (js)
+						g.canvas = layer.bitmapOverlay.bitmapData;
+						#end
+						
+						#if (cpp || flash)
+						g.canvas = layer.bitmapOverlay;
+						#end		
+						
+						g.translateToActor(a);
+						g.resetGraphicsSettings();
+						Engine.invokeListeners4(a.whenDrawingListeners, g, 0, 0);
+					}
+				}
+			}
+		}
+		
      	//Walk through each of the drawing events
      	
      	//Only if camera changed? Or tile updated
@@ -3056,7 +3143,7 @@ class Engine
 	
 	public function removeHUDActor(a:Actor)
 	{
-		hudActors.remove(a.ID);
+		hudActors.clr(a.ID);
 	}
 	
 	
@@ -3068,7 +3155,8 @@ class Engine
 	{
 		var lID = layerID;
 
-		if(lID < 0 || lID > layersToDraw.size - 1) 
+		//TODO: PERF - We lost SizedMap - this operation is O(n)
+		if(lID < 0 || lID > Lambda.count(layersToDraw) - 1) 
 		{
 			return;
 		}
@@ -3096,7 +3184,8 @@ class Engine
 		
 		var order:Int = getOrderForLayerID(a.layerID);
 		
-		if(order < layersToDraw.size - 1)
+		//TODO: PERF - We lost SizedMap - this operation is O(n)
+		if(order < Lambda.count(layersToDraw) - 1)
 		{
 			a.layerID = layersToDraw.get(order + 1);	
 		}
@@ -3555,7 +3644,7 @@ class Engine
 	public function removeRegion(ID:Int)
 	{
 		var r = getRegion(ID);	
-		regions.remove(r.ID);
+		regions.clr(r.ID);
 		r.destroy();
 		
 		if(NO_PHYSICS)
@@ -3569,7 +3658,7 @@ class Engine
 		return regions.get(ID);
 	}
 	
-	public function getRegions():IntHash<Region>
+	public function getRegions():IntHashTable<Region>
 	{
 		return regions;
 	}
@@ -3669,7 +3758,7 @@ class Engine
 		return terrainRegions.get(ID);
 	}
 	
-	public function getTerrainRegions():IntHash<Terrain>
+	public function getTerrainRegions():Map<Int,Terrain>
 	{
 		return terrainRegions;
 	}

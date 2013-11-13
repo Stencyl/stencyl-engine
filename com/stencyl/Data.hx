@@ -72,19 +72,19 @@ class Data
 	//*-----------------------------------------------
 	
 	//Map of each [sceneID].xml by ID
-	public var scenesXML:IntHash<String>;
+	public var scenesXML:Map<Int,String>;
 	
 	//Map of each [sceneID].scn by ID
-	//public var scenesTerrain:IntHash<Dynamic>;
+	//public var scenesTerrain:Map<Int,Dynamic>;
 
 	//Map of each resource in memory by ID
-	public var resources:IntHash<Resource>;
+	public var resources:Map<Int,Resource>;
 	
 	//Map of each static asset by filename
-	public var resourceAssets:Hash<Dynamic>;
+	public var resourceAssets:Map<String,Dynamic>;
 	
 	//Map of each behavior by ID
-	public var behaviors:IntHash<Behavior>;
+	public var behaviors:Map<Int,Behavior>;
 	
 
 	//*-----------------------------------------------
@@ -104,14 +104,20 @@ class Data
 		//trace(pct);
 		
 		#if(mobile && !air)
-		Reflect.callMethod(preloader, Reflect.field(preloader, "onUpdate"), [pct, 100]);
+		if(preloader != null)
+		{
+			Reflect.callMethod(preloader, Reflect.field(preloader, "onUpdate"), [pct, 100]);
+		}
 		#end
 	}
 	
 	public function loadAll()
 	{
 		#if(mobile && !air)
-		Lib.current.addChild(preloader);
+		if(preloader != null)
+		{
+			Lib.current.addChild(preloader);
+		}
 		updatePreloader(0);
 		#end
 		
@@ -131,7 +137,7 @@ class Data
 		
 		updatePreloader(90);
 		
-		scenesXML = new IntHash<String>();
+		scenesXML = new Map<Int,String>();
 		
 		loader.loadScenes(scenesXML);
 		
@@ -158,7 +164,7 @@ class Data
 	
 	private function loadBehaviors()
 	{
-		behaviors = new IntHash<Behavior>();
+		behaviors = new Map<Int,Behavior>();
 		
 		#if(mobile && !air)
 		var numParts = 0;
@@ -190,7 +196,7 @@ class Data
 	
 	private function loadResources()
 	{
-		resourceAssets = new Hash<Dynamic>();	
+		resourceAssets = new Map<String,Dynamic>();	
 		loader.loadResources(resourceAssets);
 		updatePreloader(65);	
 		readResourceXML(resourceListXML);
@@ -198,7 +204,7 @@ class Data
 	
 	private function readResourceXML(list:Fast)
 	{
-		resources = new IntHash<Resource>();
+		resources = new Map<Int,Resource>();
 		
 		#if(mobile && !air)
 		var numParts = 0;

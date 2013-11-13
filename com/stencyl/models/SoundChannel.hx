@@ -3,7 +3,7 @@ package com.stencyl.models;
 import nme.events.Event;
 import com.stencyl.Engine;
 import com.stencyl.models.Sound;
-import com.eclecticdesignstudio.motion.Actuate;
+import motion.Actuate;
 
 import nme.media.SoundTransform;
 
@@ -50,7 +50,14 @@ class SoundChannel
 		{
 			clip.volume = volume * masterVolume;
 			currentClip = clip;
-			currentSound = clip.play(channelNum);	
+			currentSound = clip.play(channelNum);
+			
+			if(currentSound == null)
+			{
+				currentClip = null;
+				return null;
+			}
+			
 			setVolume(volume);
 			
 			currentSound.addEventListener(Event.SOUND_COMPLETE, stopped);
@@ -80,6 +87,13 @@ class SoundChannel
 			clip.volume = volume * masterVolume;
 			currentClip = clip;
 			currentSound = clip.loop(channelNum);
+			
+			if(currentSound == null)
+			{
+				currentClip = null;
+				return null;
+			}
+			
 			setVolume(volume);
 			
 			currentSound.addEventListener(Event.SOUND_COMPLETE, stopped);
@@ -154,6 +168,9 @@ class SoundChannel
 		if(currentSound != null)
 		{
 			currentSound.stop();
+			
+			//keep on stopping it till it's stopped?
+			
 			position = 0;
 			currentSource = null;
 		}			

@@ -9,8 +9,8 @@ class Animation
 	public var animName:String;
 	
 	public var parentID:Int;
-	public var simpleShapes:IntHash<Dynamic>;
-	public var physicsShapes:IntHash<Dynamic>;
+	public var simpleShapes:Map<Int,Dynamic>;
+	public var physicsShapes:Map<Int,Dynamic>;
 	public var looping:Bool;
 	public var sync:Bool;
 	public var durations:Array<Int>;
@@ -35,8 +35,8 @@ class Animation
 		animID:Int,
 		animName:String,
 		parentID:Int, 
-		simpleShapes:IntHash<Dynamic>, 
-		physicsShapes:IntHash<Dynamic>, 
+		simpleShapes:Map<Int,Dynamic>, 
+		physicsShapes:Map<Int,Dynamic>, 
 		looping:Bool, 
 		sync:Bool,
 		imgWidth:Int,

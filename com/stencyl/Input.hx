@@ -42,7 +42,7 @@ class Input
 	
 	#if !js
 	public static var multiTouchEnabled:Bool;
-	public static var multiTouchPoints:Hash<TouchEvent>;
+	public static var multiTouchPoints:Map<String,TouchEvent>;
 	#end
 	
 	public static var numTouches:Int;
@@ -254,7 +254,7 @@ class Input
 			
 			if(multiTouchEnabled)
 	        {
-	        	multiTouchPoints = new Hash<TouchEvent>();
+	        	multiTouchPoints = new Map<String,TouchEvent>();
 	        	Multitouch.inputMode = nme.ui.MultitouchInputMode.TOUCH_POINT;
 	        	Engine.stage.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
 	        	Engine.stage.addEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
@@ -376,13 +376,6 @@ class Input
 	{
 		var v:Int = _control.get(key)[0];
 		
-		#if (neko || cpp) 
-		if(v >= 65 && v <= 122) 
-		{
-			v = v + 32;
-		}
-		#end
-		
 		Input.onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, v, v));
 		
 		//Due to order of execution, events will never get thrown since the
@@ -399,13 +392,6 @@ class Input
 	public static function simulateKeyRelease(key:String)
 	{
 		var v:Int = _control.get(key)[0];
-		
-		#if (neko || cpp) 
-		if(v >= 65 && v <= 122) 
-		{
-			v = v + 32;
-		}
-		#end
 		
 		Input.onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, v, v));
 		
@@ -424,13 +410,6 @@ class Input
 	{
 		var code:Int = lastKey = e.keyCode;
 		
-		#if (neko || cpp) 
-		if(code >= 65 && code <= 122) 
-		{
-			code = code - 32;
-		}
-		#end
-
 		if(code == Key.BACKSPACE) 
 		{
 			keyString = keyString.substr(0, keyString.length - 1);
@@ -458,13 +437,6 @@ class Input
 	public static function onKeyUp(e:KeyboardEvent = null)
 	{
 		var code:Int = e.keyCode;
-		
-		#if (neko || cpp) 
-		if(code >= 65 && code <= 122) 
-		{
-			code = code - 32;
-		}
-		#end
 		
 		if(_key[code])
 		{
@@ -545,6 +517,6 @@ class Input
 	private static var _pressNum:Int = 0;
 	private static var _release:Array<Int> = new Array<Int>();
 	private static var _releaseNum:Int = 0;
-	private static var _control:Hash<Array<Int>> = new Hash<Array<Int>>();
+	private static var _control:Map<String,Array<Int>> = new Map<String,Array<Int>>();
 	private static var _mouseWheelDelta:Int = 0;
 }

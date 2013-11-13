@@ -23,14 +23,14 @@ class GameModel
 	public var defaultSceneID:Int;
 	
 	public var groups:Array<GroupDef>;
-	public var groupsCollidesWith:IntHash<Array<Int>>;
+	public var groupsCollidesWith:Map<Int,Array<Int>>;
 	public static var collisionMap:Array<Array<Bool>>;
 	
 	public var collisionGroups:Array<CollisionGroupDef>;
-	public var gameAttributes:Hash<Dynamic>;
-	public var shapes:IntHash<B2PolygonShape>;
-	public var atlases:IntHash<Atlas>;
-	public var scenes:IntHash<Scene>;
+	public var gameAttributes:Map<String,Dynamic>;
+	public var shapes:Map<Int,B2PolygonShape>;
+	public var atlases:Map<Int,Atlas>;
+	public var scenes:Map<Int,Scene>;
 	
 	public static var INHERIT_ID:Int = -1000;
 	public static var REGION_ID:Int = -2;
@@ -81,7 +81,7 @@ class GameModel
 		
 		//---
 		
-		groupsCollidesWith = new IntHash<Array<Int>>();
+		groupsCollidesWith = new Map<Int,Array<Int>>();
 		
 		collisionGroups = readCollisionGroups(xml.node.cgroups.elements);
 		collisionGroups.push(new CollisionGroupDef(PLAYER_ID, TERRAIN_ID));
@@ -120,7 +120,7 @@ class GameModel
 		{
 			var g1 = cg.group1;
 			var g2 = cg.group2;
-		
+			
 			if(!groupsCollidesWith.exists(g1))
 			{
 				groupsCollidesWith.set(g1, new Array<Int>());
@@ -156,9 +156,9 @@ class GameModel
 		scenes = readScenes(Data.get().sceneListXML);
 	}
 	
-	public function readScenes(list:Fast):IntHash<Scene>
+	public function readScenes(list:Fast):Map<Int,Scene>
 	{
-		var map:IntHash<Scene> = new IntHash<Scene>();
+		var map:Map<Int,Scene> = new Map<Int,Scene>();
 		
 		for(e in list.elements)
 		{
@@ -173,9 +173,9 @@ class GameModel
 		return map;
 	}
 	
-	public function readShapes(list:Iterator<Fast>):IntHash<B2PolygonShape>
+	public function readShapes(list:Iterator<Fast>):Map<Int,B2PolygonShape>
 	{
-		var map:IntHash<B2PolygonShape> = new IntHash<B2PolygonShape>();
+		var map:Map<Int,B2PolygonShape> = new Map<Int,B2PolygonShape>();
 		
 		for(e in list)
 		{
@@ -201,9 +201,9 @@ class GameModel
 		return map;
 	}
 	
-	public function readAtlases(list:Iterator<Fast>):IntHash<Atlas>
+	public function readAtlases(list:Iterator<Fast>):Map<Int,Atlas>
 	{
-		var map:IntHash<Atlas> = new IntHash<Atlas>();
+		var map:Map<Int,Atlas> = new Map<Int,Atlas>();
 		
 		for(e in list)
 		{
@@ -248,9 +248,9 @@ class GameModel
 		return map;
 	}
 	
-	public static function readGameAttributes(list:Iterator<Fast>):Hash<Dynamic>
+	public static function readGameAttributes(list:Iterator<Fast>):Map<String,Dynamic>
 	{
-		var map:Hash<Dynamic> = new Hash<Dynamic>();
+		var map:Map<String,Dynamic> = new Map<String,Dynamic>();
 		
 		for(e in list)
 		{

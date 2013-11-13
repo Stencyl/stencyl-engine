@@ -2,6 +2,7 @@ package com.stencyl.models;
 
 import nme.media.SoundChannel;
 import nme.Assets;
+import com.stencyl.behavior.Script;
 
 //TODO: don't load a sound upfront - tie to atlas (remove loading from init)
 //Provide load/unload functions (need to hack into NME to unload a sound forcefully?)
@@ -33,26 +34,35 @@ class Sound extends Resource
 		this.volume = volume;
 		this.ext = ext;
 		
-		#if(cpp && desktop)
+		#if(mobile || desktop || js)
 		this.ext = "ogg";
 		#else
 		this.ext = "mp3";
 		#end
 		
-		if(!streaming)
-		{
-			src = Assets.getSound("assets/sfx/sound-" + ID + "." + this.ext);
-		}
+		loadGraphics();
 	}	
 	
 	override public function loadGraphics()
 	{
-		//TODO
+		if(!streaming)
+		{
+			src = Assets.getSound("assets/sfx/sound-" + ID + "." + this.ext);
+		}
 	}
 	
 	override public function unloadGraphics()
 	{
-		//TODO
+		if(!streaming)
+		{
+			if(src != null)
+			{
+				stopInstances();
+				src.close();
+			}
+			
+			src = null;
+		}
 	}
 	
 	public function play(channelNum:Int = 1, position:Float = 0):SoundChannel
@@ -60,6 +70,12 @@ class Sound extends Resource
 		if(streaming)
 		{
 			src = Assets.getSound("assets/music/sound-" + ID + "." + ext);
+		}
+		
+		if(src == null)
+		{
+			trace("Trying to play uninitialized sound: " + name + " - " + ID);
+			return null;
 		}
 		
 		return src.play(position);	
@@ -72,6 +88,25 @@ class Sound extends Resource
 			src = Assets.getSound("assets/music/sound-" + ID + "." + ext);
 		}
 		
-		return src.play(position, com.stencyl.utils.Utils.INT_MAX);
+		if(src == null)
+		{
+			trace("Trying to play uninitialized sound: " + name + " - " + ID);
+			return null;
+		}
+		
+		return src.play(position, com.stencyl.utils.Utils.INTEGER_MAX);
+	}
+	
+	public function stopInstances()
+	{
+		for(i in 0...Script.CHANNELS)
+		{
+			var sc:com.stencyl.models.SoundChannel = com.stencyl.Engine.engine.channels[i];	
+			
+			if(sc.currentSource == src)
+			{
+				sc.stopSound();
+			}
+		}
 	}
 }

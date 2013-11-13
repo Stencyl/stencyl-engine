@@ -35,7 +35,7 @@ class TileLayer extends Sprite
 	private var pixels:BitmapData;
 	private var flashPoint:Point;
 	
-	private static var cacheSource = new IntHash<Rectangle>();
+	private static var cacheSource = new Map<Int,Rectangle>();
 	
 	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
 	{
@@ -120,7 +120,7 @@ class TileLayer extends Sprite
 		var a = new Actor
 		(
 			Engine.engine, 
-			Utils.INT_MAX,
+			Utils.INTEGER_MAX,
 			GameModel.TERRAIN_ID,
 			0, 
 			0, 
@@ -128,7 +128,7 @@ class TileLayer extends Sprite
 			grid.width, 
 			grid.height, 
 			null, 
-			new Hash<Dynamic>(),
+			new Map<String,Dynamic>(),
 			null,
 			null, 
 			false, 

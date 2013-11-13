@@ -16,7 +16,7 @@ class ActorInstance
 	public var groupID:Int;
 	public var actorID:Int;
 	public var isCustomized:Bool;
-	public var behaviorValues:Hash<BehaviorInstance>;		
+	public var behaviorValues:Map<String,BehaviorInstance>;		
 	
 	public var actorType:ActorType;
 	
@@ -31,7 +31,7 @@ class ActorInstance
 		angle:Int,
 		groupID:Int,
 		actorID:Int,
-		behaviors:Hash<BehaviorInstance>,
+		behaviors:Map<String,BehaviorInstance>,
 		isCustomized:Bool
 	)
 	{

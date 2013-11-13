@@ -36,19 +36,20 @@ import com.stencyl.models.SoundChannel;
 import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.Tileset;
 
-import com.stencyl.utils.HashMap;
 import com.stencyl.utils.ColorMatrix;
 import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
 
-import com.eclecticdesignstudio.motion.Actuate;
-import com.eclecticdesignstudio.motion.easing.Linear;
+import motion.Actuate;
+import motion.easing.Linear;
 
 import box2D.collision.shapes.B2Shape;
 import box2D.dynamics.joints.B2Joint;
 import box2D.common.math.B2Vec2;
 import box2D.dynamics.B2World;
 import box2D.dynamics.B2Fixture;
+
+import haxe.ds.ObjectMap;
 
 #if flash
 import flash.filters.ColorMatrixFilter;
@@ -58,7 +59,7 @@ import scripts.MyAssets;
 
 //XXX: For some reason, it wasn't working by importing nme.net.SharedObjectFlushedStatus
 #if js
-typedef JeashSharedObjectFlushStatus = jeash.net.SharedObjectFlushedStatus;
+//typedef JeashSharedObjectFlushStatus = flash.net.SharedObjectFlushedStatus;
 #end
 
 //Actual scripts extend from this
@@ -73,8 +74,8 @@ class Script
 	public var engine:Engine;
 	public var scene:Engine; //for compatibility - we'll remove it later
 	
-	public var propertyChangeListeners:Hash<Dynamic>;
-	public var equalityPairs:HashMap<Dynamic, Dynamic>; //hashmap does badly on some platforms when checking key equality (for primitives) - beware
+	public var propertyChangeListeners:Map<String,Dynamic>;
+	public var equalityPairs:ObjectMap<Dynamic, Dynamic>; //hashmap does badly on some platforms when checking key equality (for primitives) - beware
 	
 	public var checkProperties:Bool;
 		
@@ -110,7 +111,7 @@ class Script
 	//* Display Names
 	//*-----------------------------------------------
 	
-	public var nameMap:Hash<Dynamic>;
+	public var nameMap:Map<String,Dynamic>;
 		
 		
 	//*-----------------------------------------------
@@ -124,9 +125,9 @@ class Script
 		
 		scriptInit = false;
 		checkProperties = false;
-		nameMap = new Hash<Dynamic>();	
-		propertyChangeListeners = new Hash<Dynamic>();
-		equalityPairs = new HashMap<Dynamic, Dynamic>();
+		nameMap = new Map<String,Dynamic>();	
+		propertyChangeListeners = new Map<String,Dynamic>();
+		equalityPairs = new ObjectMap<Dynamic, Dynamic>();
 	}		
 
 	//*-----------------------------------------------
@@ -286,7 +287,7 @@ class Script
 	
 	public function clearListeners()
 	{
-		propertyChangeListeners = new Hash<Dynamic>();
+		propertyChangeListeners = new Map<String,Dynamic>();
 	}
 	
 	//Physics = Pass in event.~Shape (a b2Shape)
@@ -589,6 +590,8 @@ class Script
 			engine.whenKeyPressedListeners.set(key, new Array<Dynamic>());
 		}
 		
+		engine.hasKeyPressedListeners = true;
+		
 		var listeners = engine.whenKeyPressedListeners.get(key);
 		listeners.push(func);
 								
@@ -728,7 +731,7 @@ class Script
 									}
 								}
 								
-								equalityPairs.delete(f);
+								equalityPairs.remove(f);
 							}
 						}
 					}
@@ -766,12 +769,12 @@ class Script
 	{
 		if(!engine.collisionListeners.exists(obj))
 		{
-			engine.collisionListeners.set(obj, new IntHash<Dynamic>());									
+			engine.collisionListeners.set(obj, new Map<Int,Dynamic>());									
 		}
 		
 		if(!engine.collisionListeners.exists(obj2))
 		{
-			engine.collisionListeners.set(obj2, new IntHash<Dynamic>());
+			engine.collisionListeners.set(obj2, new Map<Int,Dynamic>());
 		}	
 		
 		if(!engine.collisionListeners.get(obj).exists(obj2))
@@ -1514,60 +1517,22 @@ class Script
 	
 	public function getMouseX():Float
 	{
-		//on flash/desktop adjust for full screen mode
-		#if(!js && !mobile)
-		// Scale Dynamically Mode
-		if (scripts.MyAssets.scaleMode == 1)
-		{
-			return (Input.mouseX - Engine.engine.root.x);
-		}
-		// Hi-Res Mode
-		else
-		{
-			return (Input.mouseX / Engine.SCALE - Engine.engine.root.x) / Engine.engine.root.scaleX;
-		}
-		#else
 		return Input.mouseX / Engine.SCALE;
-		#end
 	}
 
 	public function getMouseY():Float
 	{
-		//on flash/desktop adjust for full screen mode
-		#if(!js && !mobile)
-		// Scale Dynamically Mode
-		if (scripts.MyAssets.scaleMode == 1)
-		{
-			return (Input.mouseY - Engine.engine.root.y);
-		}
-		// Hi-Res Mode
-		else
-		{
-			return (Input.mouseY / Engine.SCALE - Engine.engine.root.y) / Engine.engine.root.scaleY;
-		}
-		#else
 		return Input.mouseY / Engine.SCALE;
-		#end
 	}
 	
 	public function getMouseWorldX():Float
 	{
-		//on flash/desktop adjust for full screen mode
-		#if(!js && !mobile)
-		return (Input.mouseX / Engine.SCALE + Engine.cameraX - Engine.engine.root.x) / Engine.engine.root.scaleX;
-		#else
 		return Input.mouseX / Engine.SCALE + Engine.cameraX;
-		#end
 	}
 	
 	public function getMouseWorldY():Float
 	{
-		//on flash/desktop adjust for full screen mode
-		#if(!js && !mobile)
-		return (Input.mouseY / Engine.SCALE + Engine.cameraY - Engine.engine.root.y) / Engine.engine.root.scaleY;
-		#else
 		return Input.mouseY / Engine.SCALE + Engine.cameraY;
-		#end
 	}
 	
 	public function getMousePressedX():Float
@@ -2227,10 +2192,10 @@ class Script
 			Reflect.setField(so.data, key, engine.gameAttributes.get(key));
 		}	
 
-		#if (cpp || neko)
-		var flushStatus:nme.net.SharedObjectFlushStatus = null;
-		#else
+		#if flash
 		var flushStatus:String = null;
+		#else
+		var flushStatus:nme.net.SharedObjectFlushStatus = null;
 		#end
 		
 		try 
@@ -2250,26 +2215,17 @@ class Script
 		
 		if(flushStatus != null) 
 		{
-		    switch(flushStatus) 
-		    {
-		    	#if js
-		    	case JeashSharedObjectFlushStatus.PENDING:
-		            //trace('requesting permission to save');
-		        case JeashSharedObjectFlushStatus.FLUSHED:
-		            trace("Saved Game: " + fileName);
-		            onComplete(true);
-		            //TODO: Event
-		    	#end
-		    	
-		    	#if !js
-		        case nme.net.SharedObjectFlushStatus.PENDING:
-		            //trace('requesting permission to save');
-		        case nme.net.SharedObjectFlushStatus.FLUSHED:
-		            trace("Saved Game: " + fileName);
-		            onComplete(true);
-		            //TODO: Event
-		        #end
-		    }
+			if(flushStatus == nme.net.SharedObjectFlushStatus.PENDING)
+			{
+				//trace('requesting permission to save');
+			}
+			
+			else if(flushStatus == nme.net.SharedObjectFlushStatus.FLUSHED)
+			{
+				trace("Saved Game: " + fileName);
+		        onComplete(true);
+		        //TODO: Event
+			}
 		}
 	}
 	
@@ -2396,7 +2352,8 @@ class Script
 	//* Newgrounds
 	//*-----------------------------------------------
 	
-	#if(flash && !air)
+	
+	#if(flash)
 	private static var medalPopup:com.newgrounds.components.MedalPopup = null;
 	private static var clickArea:TextField = null;
 	private static var scoreBrowser:com.newgrounds.components.ScoreBrowser = null;
@@ -2404,7 +2361,7 @@ class Script
 	
 	public function newgroundsShowAd()
 	{
-		#if(flash && !air)
+		#if(flash)
 		var flashAd = new com.newgrounds.components.FlashAd();
 		flashAd.fullScreen = true;
 		flashAd.showPlayButton = true;
@@ -2416,7 +2373,7 @@ class Script
 	
 	public function newgroundsSetMedalPosition(x:Int, y:Int)
 	{
-		#if(flash && !air)
+		#if(flash)
 		if(medalPopup == null)
 		{
 			medalPopup = new com.newgrounds.components.MedalPopup();
@@ -2430,7 +2387,7 @@ class Script
 	
 	public function newgroundsUnlockMedal(medalName:String)
 	{
-		#if(flash && !air)
+		#if(flash)
 		if(medalPopup == null)
 		{
 			medalPopup = new com.newgrounds.components.MedalPopup();
@@ -2443,14 +2400,14 @@ class Script
 	
 	public function newgroundsSubmitScore(boardName:String, value:Float)
 	{
-		#if(flash && !air)
+		#if(flash)
 		com.newgrounds.API.API.postScore(boardName, value);
 		#end
 	}
 	
 	public function newgroundsShowScore(boardName:String)
 	{
-		#if(flash && !air)
+		#if(flash)
 		if(scoreBrowser == null)
 		{
 			scoreBrowser = new com.newgrounds.components.ScoreBrowser();
@@ -2498,7 +2455,7 @@ class Script
 		
 	private function newgroundsHelper(event:nme.events.MouseEvent)
 	{
-		#if(flash && !air)
+		#if(flash)
 		Engine.engine.root.parent.removeChild(scoreBrowser);
 		#end
 	}

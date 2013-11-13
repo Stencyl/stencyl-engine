@@ -8,8 +8,8 @@ import nme.display.Shape;
 
 import com.stencyl.Engine;
 
-import com.eclecticdesignstudio.motion.Actuate;
-import com.eclecticdesignstudio.motion.easing.Linear;
+import motion.Actuate;
+import motion.easing.Linear;
 
 
 class BlindsTransition extends Transition

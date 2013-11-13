@@ -4,6 +4,6 @@ import haxe.xml.Fast;
 
 interface AssetLoader
 {
-	function loadResources(resourceMap:Hash<Dynamic>):Void;
-	function loadScenes(scenesXML:IntHash<String>):Void;
+	function loadResources(resourceMap:Map<String,Dynamic>):Void;
+	function loadScenes(scenesXML:Map<Int,String>):Void;
 }

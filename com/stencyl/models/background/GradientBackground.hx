@@ -5,7 +5,7 @@ import nme.geom.Matrix;
 import nme.display.GradientType;
 import nme.display.SpreadMethod;
 
-class GradientBackground extends Resource, implements Background 
+class GradientBackground extends Resource implements Background 
 {	
 	private var topColor:Int;
 	private var bottomColor:Int;

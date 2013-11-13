@@ -6,7 +6,7 @@ import com.stencyl.utils.Utils;
 class EventMaster 
 {	
 	//HashTable of Lists of Events. Key = EventType
-	public var eventTable:IntHash<Array<StencylEvent>>;
+	public var eventTable:Map<Int,Array<StencylEvent>>;
 	
 	public static var TYPE_ADS:Int = 1;
 	public static var TYPE_PURCHASES:Int = 2;
@@ -15,7 +15,7 @@ class EventMaster
 
 	public function new() 
 	{	
-		eventTable = new IntHash<Array<StencylEvent>>();
+		eventTable = new Map<Int,Array<StencylEvent>>();
 		
 		eventTable.set(TYPE_ADS, new Array<StencylEvent>());
 		eventTable.set(TYPE_PURCHASES, new Array<StencylEvent>());

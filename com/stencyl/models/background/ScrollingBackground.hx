@@ -3,7 +3,7 @@ package com.stencyl.models.background;
 import nme.display.Graphics;
 import nme.display.BitmapData;
 
-class ScrollingBackground extends ImageBackground, implements Background 
+class ScrollingBackground extends ImageBackground implements Background 
 {
 	public var xVelocity:Float;
 	public var yVelocity:Float;

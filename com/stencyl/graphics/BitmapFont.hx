@@ -190,14 +190,14 @@ class BitmapFont extends Bitmap
 		}
     }
     
-    public var text(getTextString, setTextString):String;
+    public var text(get_text, set_text):String;
 	
 	/**
 	 * Set this value to update the text in this sprite. Carriage returns are automatically stripped out if multiLine is false. Text is converted to upper case if autoUpperCase is true.
 	 * 
 	 * @return	void
 	 */ 
-	public function setTextString(content:String):String
+	public function set_text(content:String):String
 	{
 		if(autoUpperCase)
 		{
@@ -215,7 +215,7 @@ class BitmapFont extends Bitmap
 		return _text;
 	}
 	
-	public function getTextString():String
+	public function get_text():String
 	{
 		return _text;
 	}
@@ -271,7 +271,24 @@ class BitmapFont extends Bitmap
 			for(i in 0...lines.length)
 			{
 				//	This line of text is held in lines[i] - need to work out the alignment
-				switch (align)
+				if(align == ALIGN_LEFT)
+				{
+					cx = 0;
+				}
+				
+				else if(align == ALIGN_RIGHT)
+				{
+					cx = temp.width - (lines[i].length * (characterWidth + customSpacingX));
+				}
+				
+				else if(align == ALIGN_CENTER)
+				{
+					cx = Math.floor((temp.width / 2) - ((lines[i].length * (characterWidth + customSpacingX)) / 2));
+					cx += Math.floor(customSpacingX / 2);
+				}
+				
+				//Haxe 3 doesn't like this
+				/*switch (align)
 				{
 					case ALIGN_LEFT:
 						cx = 0;
@@ -285,7 +302,7 @@ class BitmapFont extends Bitmap
 						cx = Math.floor((temp.width / 2) - ((lines[i].length * (characterWidth + customSpacingX)) / 2));
 						cx += Math.floor(customSpacingX / 2);
 						break;
-				}
+				}*/
 				
 				pasteLine(temp, lines[i], cx, cy, customSpacingX);
 				

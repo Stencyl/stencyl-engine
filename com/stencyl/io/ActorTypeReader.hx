@@ -68,7 +68,7 @@ class ActorTypeReader implements AbstractReader
 		
 		//These are more like behavior instances
 		//They reference the Behavior + Map of instance values
-		var behaviorValues:Hash<BehaviorInstance> = readBehaviors(xml.node.snippets);
+		var behaviorValues:Map<String,BehaviorInstance> = readBehaviors(xml.node.snippets);
 		
 		if(xml.att.eventsnippetid != "")
 		{
@@ -76,16 +76,16 @@ class ActorTypeReader implements AbstractReader
 			
 			if(eventID > -1)
 			{
-				behaviorValues.set(xml.att.eventsnippetid, new BehaviorInstance(eventID, new Hash<Dynamic>()));
+				behaviorValues.set(xml.att.eventsnippetid, new BehaviorInstance(eventID, new Map<String,Dynamic>()));
 			}
 		}
 			
 		return new ActorType(ID, atlasID, name, groupID, spriteID, behaviorValues, bodyDef, isLightweight, autoScale, pausable, ignoreGravity);
 	}
 	
-	public static function readBehaviors(xml:Fast):Hash<BehaviorInstance>
+	public static function readBehaviors(xml:Fast):Map<String,BehaviorInstance>
 	{
-		var toReturn:Hash<BehaviorInstance> = new Hash<BehaviorInstance>();
+		var toReturn:Map<String,BehaviorInstance> = new Map<String,BehaviorInstance>();
 			
 		for(e in xml.elements)
 		{
@@ -105,7 +105,7 @@ class ActorTypeReader implements AbstractReader
 	public static function readBehavior(xml:Fast):BehaviorInstance
 	{
 		var ID:Int = Std.parseInt(xml.att.id);
-		var map:Hash<Dynamic> = new Hash<Dynamic>();
+		var map:Map<String,Dynamic> = new Map<String,Dynamic>();
 		
 		for(e in xml.elements)
 		{

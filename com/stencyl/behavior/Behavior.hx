@@ -19,7 +19,7 @@ class Behavior
 	public var cls:Class<Dynamic>;
 	public var script:Script;
 	
-	public var attributes:Hash<Attribute>;
+	public var attributes:Map<String,Attribute>;
 
 	public function new
 	(
@@ -30,7 +30,7 @@ class Behavior
 		classname:String, 
 		enabled:Bool, 
 		drawable:Bool,
-		attributes:Hash<Attribute>,
+		attributes:Map<String,Attribute>,
 		type:String,
 		isEvent:Bool
 	)

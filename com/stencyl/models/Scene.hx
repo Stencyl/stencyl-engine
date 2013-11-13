@@ -1,5 +1,8 @@
 package com.stencyl.models;
 
+import de.polygonal.ds.IntHashTable;
+import de.polygonal.ds.HashTable;
+
 import com.stencyl.io.BackgroundReader;
 import com.stencyl.io.ActorTypeReader;
 import com.stencyl.io.SpriteReader;
@@ -58,15 +61,15 @@ class Scene
 	public var bgs:Array<Int>;
 	public var fgs:Array<Int>;
 	
-	public var terrain:IntHash<TileLayer>;
-	public var actors:IntHash<ActorInstance>;
-	public var behaviorValues:Hash<BehaviorInstance>;
+	public var terrain:IntHashTable<TileLayer>;
+	public var actors:Map<Int,ActorInstance>;
+	public var behaviorValues:Map<String,BehaviorInstance>;
 	
 	//Box2D
 	public var wireframes:Array<Wireframe>;
-	public var joints:IntHash<B2JointDef>;
-	public var regions:IntHash<RegionDef>;
-	public var terrainRegions:IntHash<TerrainDef>;
+	public var joints:Map<Int,B2JointDef>;
+	public var regions:Map<Int,RegionDef>;
+	public var terrainRegions:Map<Int,TerrainDef>;
 	
 	public var animatedTiles:Array<Tile>;
 	
@@ -127,7 +130,7 @@ class Scene
 			
 			if(eventID > -1)
 			{
-				behaviorValues.set(eventSnippetID, new BehaviorInstance(eventID, new Hash<Dynamic>()));
+				behaviorValues.set(eventSnippetID, new BehaviorInstance(eventID, new Map<String,Dynamic>()));
 			}
 		}
 		
@@ -168,9 +171,9 @@ class Scene
 		animatedTiles = null;
 	}
 	
-	public function readRegions(list:Iterator<Fast>):IntHash<RegionDef>
+	public function readRegions(list:Iterator<Fast>):Map<Int,RegionDef>
 	{
-		var map = new IntHash<RegionDef>();
+		var map = new Map<Int,RegionDef>();
 		
 		for(e in list)
 		{
@@ -377,9 +380,9 @@ class Scene
 		shapeList.push(polyShape);
 	}
 	
-	public function readTerrainRegions(list:Iterator<Fast>):IntHash<TerrainDef>
+	public function readTerrainRegions(list:Iterator<Fast>):Map<Int,TerrainDef>
 	{
-		var map = new IntHash<TerrainDef>();
+		var map = new Map<Int,TerrainDef>();
 		
 		for(e in list)
 		{
@@ -464,9 +467,9 @@ class Scene
 		return terrainRegion;
 	}
 	
-	public function readJoints(list:Iterator<Fast>):IntHash<B2JointDef>
+	public function readJoints(list:Iterator<Fast>):Map<Int,B2JointDef>
 	{
-		var map = new IntHash<B2JointDef>();
+		var map = new Map<Int,B2JointDef>();
 		
 		for(e in list)
 		{
@@ -558,9 +561,10 @@ class Scene
 		return null;
 	}
 
-	public function readLayers(list:Iterator<Fast>, rawLayers:IntHash<TileLayer> = null):IntHash<TileLayer>
+	public function readLayers(list:Iterator<Fast>, rawLayers:IntHashTable<TileLayer> = null):IntHashTable<TileLayer>
 	{
-		var map = new IntHash<TileLayer>();
+		var map = new IntHashTable<TileLayer>(16);
+		map.reuseIterator = true;
 		
 		for(e in list)
 		{
@@ -587,9 +591,10 @@ class Scene
 	}
 	
 	#if js
-	public function readRawLayers(data:String, numLayers:Int):IntHash<TileLayer>
+	public function readRawLayers(data:String, numLayers:Int):IntHashTable<TileLayer>
 	{
-		var map = new IntHash<TileLayer>();
+		var map = new IntHashTable<TileLayer>(16);
+		map.reuseIterator = true;
 
 		if(data != null)
 		{
@@ -699,9 +704,11 @@ class Scene
 	#end
 	
 	#if !js
-	public function readRawLayers(bytes:ByteArray, numLayers:Int):IntHash<TileLayer>
+	public function readRawLayers(bytes:ByteArray, numLayers:Int):IntHashTable<TileLayer>
 	{
-		var map = new IntHash<TileLayer>();
+		var map = new IntHashTable<TileLayer>(16);
+		map.reuseIterator = true;
+		
 		var layerHeaders = new Array<Int>();
 		
 		if(bytes != null)
@@ -887,8 +894,8 @@ class Scene
 			
 			else
 			{
-				var shapeData = cast(SpriteReader.createShape(shapeType, shapeParams, x, y), IntHash<Dynamic>);
-			
+				var shapeData:Map<Int,Dynamic> = SpriteReader.createShape(shapeType, shapeParams, x, y); 
+				
 				map.push
 				(
 					new Wireframe
@@ -907,9 +914,9 @@ class Scene
 		return map;
 	}
 	
-	public function readActors(list:Iterator<Fast>):IntHash<ActorInstance>
+	public function readActors(list:Iterator<Fast>):Map<Int,ActorInstance>
 	{
-		var map:IntHash<ActorInstance> = new IntHash<ActorInstance>();
+		var map:Map<Int,ActorInstance> = new Map<Int,ActorInstance>();
 		
 		for(e in list)
 		{
@@ -949,7 +956,7 @@ class Scene
 		var actorID:Int = Std.parseInt(xml.att.id);
 		var isCustomized:Bool = Utils.toBoolean(xml.att.c);
 		
-		var behaviors:Hash<BehaviorInstance> = null;
+		var behaviors:Map<String,BehaviorInstance> = null;
 		
 		if(isCustomized)
 		{
