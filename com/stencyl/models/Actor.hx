@@ -3232,7 +3232,7 @@ class Actor extends Sprite
 				y += transformMatrix.ty - drawMatrix.ty;
 			}
 			
-			cast(currAnimation, AbstractAnimation).draw(g, x, y, -realAngle * Utils.RAD, g.alpha);
+			cast(currAnimation, AbstractAnimation).draw(g, x, y, realAngle * Utils.RAD, g.alpha);
 		}
 	}
 	
