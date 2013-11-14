@@ -2615,7 +2615,14 @@ class Engine
 					a.updateDrawingMatrix();
 					a.updateMatrix = false;
 					a.resetOrigin = false;
-				}			
+				}
+				else if (a.smoothMove)
+				{
+					if (a.drawX != a.realX || a.drawY != a.realY)
+					{
+						a.updateDrawingMatrix();
+					}
+				}		
 				
 				if(a.body == null)
 				{

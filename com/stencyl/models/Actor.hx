@@ -219,7 +219,7 @@ class Actor extends Sprite
 	public var moveXDistance:Float = 0;
 	public var moveYDistance:Float = 0;
 	public var minMove:Float = 3;
-	public var maxMove:Float = 40;
+	public var maxMove:Float = 99999;
 	
 	//*-----------------------------------------------
 	//* Behaviors
