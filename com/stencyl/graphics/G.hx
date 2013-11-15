@@ -586,36 +586,69 @@ class G
 		#end
 		
 		#if (flash)
-  		mtx.identity();
- 	 	mtx.translate(point.x, point.y);
- 	 	
- 	 	if(alpha != 1)
- 	 	{
- 	 		point2.x = 0;
- 	 		point2.y = 0;
- 	 		
- 	 		rect2.width = img.width;
- 	 		rect2.height = img.height;
- 	 	
- 	 		//TODO: Can we avoid making a new one each time?
- 	 		var temp = new BitmapData(img.width, img.height, true, toARGB(0x000000, Std.int(alpha * 255)));
- 	 		var temp2 = new BitmapData(img.width, img.height, true, 0);
- 	 		
-			temp2.copyPixels(img, rect2, point2, temp, null, true);
-			img = temp2;
+		var newImg:BitmapData = null;
+		var imgSize = 0;
+		mtx.identity();
+		mtx.rotate(angle);
+		mtx.translate(point.x, point.y);
+		
+		if (angle == 0)
+		{
+			if (alpha == 1)
+			{
+				//TODO: This is pretty wasteful but some weird caching bug if we don't do it.
+				//http://community.stencyl.com/index.php/topic,13870.new.html#new
+				graphics.beginBitmapFill(img.clone(), mtx);
+			}
+			else // actor is transparent
+			{
+				point2.x = 0;
+				point2.y = 0;
+				rect2.width = img.width;
+				rect2.height = img.height;
 			
-			graphics.beginBitmapFill(img, mtx);
- 	 	}
- 	 	
- 	 	//TODO: This is pretty wasteful but some weird caching bug if we don't do it.
- 	 	//http://community.stencyl.com/index.php/topic,13870.new.html#new
- 	 	else
- 	 	{
- 	 		graphics.beginBitmapFill(img.clone(), mtx);
- 	 	}
-  		
-		graphics.drawRect(point.x, point.y, img.width, img.height);
-	 	graphics.endFill();
+				//TODO: Can we avoid making a new one each time?
+				var temp = new BitmapData(img.width, img.height, true, toARGB(0x000000, Std.int(alpha * 255)));
+				var temp2 = new BitmapData(img.width, img.height, true, 0);
+				
+				temp2.copyPixels(img, rect2, point2, temp, null, true);
+				img = temp2;
+				
+				graphics.beginBitmapFill(img, mtx);
+			}
+			
+			graphics.drawRect(point.x, point.y, img.width, img.height);
+		}
+		else // actor is rotated
+		{
+			if (alpha != 1)
+			{
+				point2.x = 0;
+				point2.y = 0;
+				rect2.width = img.width;
+				rect2.height = img.height;
+			
+				//TODO: Can we avoid making a new one each time?
+				var temp = new BitmapData(img.width, img.height, true, toARGB(0x000000, Std.int(alpha * 255)));
+				var temp2 = new BitmapData(img.width, img.height, true, 0);
+				
+				temp2.copyPixels(img, rect2, point2, temp, null, true);
+				img = temp2;
+			}
+			
+			newImg = new BitmapData(img.width + 2, img.height + 2, true, 0x00000000);
+			imgSize = Std.int(Math.sqrt(Math.pow(newImg.width, 2) + Math.pow(newImg.height, 2)));
+			var srcRect = new Rectangle(0, 0, img.width, img.height);
+			var destPt = new Point(1,1);
+			newImg.copyPixels(img, srcRect, destPt);
+			
+			graphics.beginBitmapFill(newImg, mtx, false, scripts.MyAssets.antialias);
+			var rectX = ((imgSize - img.width) / 2);
+			var rectY = ((imgSize - img.height) / 2);
+			graphics.drawRect(this.x - rectX, this.y - rectY, imgSize, imgSize);
+		}
+		
+		graphics.endFill();
 		#end
 		
 		//TODO: Can't get alpha to work in this setup.
