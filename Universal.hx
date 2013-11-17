@@ -260,7 +260,7 @@ class Universal extends Sprite
 				theoreticalScale = 2;
 			}
 			
-			#if(android)
+			#if(android || flash || desktop)
 			else if(larger >= x15 && smaller >= y15)
 			{
 				theoreticalScale = 1.5;
@@ -285,7 +285,7 @@ class Universal extends Sprite
 				Engine.IMG_BASE = "2x";
 			}
 			
-			#if(android)
+			#if(android || flash || desktop)
 			else if(larger >= x15 && smaller >= y15 && scripts.MyAssets.maxScale >= 1.5)
 			{
 				Engine.SCALE = 1.5;
