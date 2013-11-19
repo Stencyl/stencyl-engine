@@ -704,7 +704,7 @@ class Engine
 		
 		dynamicTiles = new Map<String,Actor>();
 		animatedTiles = new Array<Tile>();
-		hudActors = new IntHashTable<Actor>(16);
+		hudActors = new IntHashTable<Actor>(64);
 		hudActors.reuseIterator = true;
 		allActors = new IntHashTable<Actor>(256);
 		allActors.reuseIterator = true;
