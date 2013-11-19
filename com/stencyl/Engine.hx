@@ -2633,8 +2633,8 @@ class Engine
 		
 		//Drawing
 		
-		var tempX = Std.int(cameraX / scene.tileWidth);
-		var tempY = Std.int(cameraY / scene.tileHeight);
+		var tempX = Std.int(cameraX / (scene.tileWidth * Engine.SCALE));
+		var tempY = Std.int(cameraY / (scene.tileHeight * Engine.SCALE));
 		
 		cameraMoved = !(cameraOldX == tempX && cameraOldY == tempY);
 		
