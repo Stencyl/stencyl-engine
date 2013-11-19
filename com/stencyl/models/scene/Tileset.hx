@@ -102,6 +102,7 @@ class Tileset extends Resource
 			var row:Int = Math.floor(tile.frameIndex / framesAcross);
 			var col:Int = Math.floor(tile.frameIndex % framesAcross);
 			
+			#if cpp
 			if(scripts.MyAssets.stretchToFit || scripts.MyAssets.scaleToFit1 || scripts.MyAssets.scaleToFit2)
 			{
 				temp.x = ((col * tileWidth * Engine.SCALE) + (col * 2) + 1);
@@ -112,6 +113,10 @@ class Tileset extends Resource
 				temp.x = col * tileWidth * Engine.SCALE;
 				temp.y = row * tileHeight * Engine.SCALE;
 			}
+			#else
+			temp.x = col * tileWidth * Engine.SCALE;
+			temp.y = row * tileHeight * Engine.SCALE;
+			#end
 
 			temp.width = tileWidth * Engine.SCALE;
 			temp.height = tileHeight * Engine.SCALE;
