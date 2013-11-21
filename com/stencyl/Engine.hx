@@ -1930,6 +1930,7 @@ class Engine
 		//a.setFilter(null);
 		
 		a.cancelTweens();
+		a.clearFilters();
 		
 		//Only the fading is necessary. Don't fully understand why...
 		//a.moveTo(1000000, 1000000, 0.01);
