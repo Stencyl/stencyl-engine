@@ -213,9 +213,10 @@ class Actor extends Sprite
 	// These are for the smooth movement option.
 	public var smoothMove:Bool = false;
 	public var firstMove:Bool = false;
+	public var snapOnSet:Bool = false;
 	public var drawX:Float = 0;
 	public var drawY:Float = 0;
-	public static var moveMultiplier:Float = 0.33;
+	public var moveMultiplier:Float = 0.33;
 	public var moveXDistance:Float = 0;
 	public var moveYDistance:Float = 0;
 	public var minMove:Float = 3;
@@ -2491,6 +2492,12 @@ class Actor extends Sprite
 			}
 		}
 		
+		if (snapOnSet)
+		{
+			drawX = realX;
+			drawY = realY;
+		}
+		
 		updateMatrix = true;
 	}
 	
@@ -2521,6 +2528,12 @@ class Actor extends Sprite
 			{
 				body.setLinearVelocity(zero);
 			}
+		}
+		
+		if (snapOnSet)
+		{
+			drawX = realX;
+			drawY = realY;
 		}
 		
 		updateMatrix = true;
