@@ -60,7 +60,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		{
 			timer += elapsedTime;
 		
-			if(numFrames > 1 && timer > durations[frameIndex])
+			if(numFrames > 0 && timer > durations[frameIndex])
 			{
 				var old = frameIndex;
 			
@@ -137,14 +137,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	
 	public function isFinished():Bool
 	{
-		if (numFrames == 1)
-		{
-			return true;
-		}
-		else
-		{
-			return finished;
-		}
+		return finished;
 	}
 	
 	public function needsBitmapUpdate():Bool

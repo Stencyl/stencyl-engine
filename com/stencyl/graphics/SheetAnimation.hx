@@ -20,6 +20,7 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	private var frameIndex:Int;
 	private var looping:Bool;
 	private var timer:Float;
+	private var finished:Bool;
 	private var needsUpdate:Bool;
 	
 	#if !js
@@ -69,7 +70,7 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 		{
 			timer += elapsedTime;
 		
-			if(numFrames > 1 && timer > durations[frameIndex])
+			if(numFrames > 0 && timer > durations[frameIndex])
 			{
 				var old = frameIndex;
 			
@@ -86,6 +87,7 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 					
 					else
 					{	
+						finished = true;
 						frameIndex--;
 					}
 				}
@@ -139,7 +141,7 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	
 	public function isFinished():Bool
 	{
-		return !looping && frameIndex >= numFrames -1;
+		return finished;
 	}
 	
 	public function needsBitmapUpdate():Bool
@@ -151,6 +153,7 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	{
 		timer = 0;
 		frameIndex = 0;
+		finished = false;
 		needsUpdate = true;
 	}
 	
