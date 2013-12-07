@@ -137,7 +137,14 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	
 	public function isFinished():Bool
 	{
-		return finished;
+		if (numFrames == 1)
+		{
+			return true;
+		}
+		else
+		{
+			return finished;
+		}
 	}
 	
 	public function needsBitmapUpdate():Bool
