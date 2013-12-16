@@ -131,6 +131,7 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 		
 		frameIndex = frame;
 		needsUpdate = true;
+		finished = false;
 		
 		//Q: should we be altering the shared instance?
 		if(model != null)
