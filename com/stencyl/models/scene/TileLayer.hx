@@ -29,6 +29,7 @@ class TileLayer extends Sprite
 	public var scene:Scene;
 	public var numRows:Int;
 	public var numCols:Int;
+	public var blendName:String = "NORMAL";
 
 	//Internal/Temporary stuff
 	public var bitmapData:BitmapData;
@@ -283,14 +284,45 @@ class TileLayer extends Sprite
 							
 							if(t.parent.tilesheet != null)
 							{
-								t.parent.tilesheet.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias);
+								if (blendName == "ADD")
+								{
+									t.parent.tilesheet.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_ADD);
+								}
+								else if (blendName == "MULTIPLY")
+								{
+									t.parent.tilesheet.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_MULTIPLY);
+								}
+								else if (blendName == "SCREEN")
+								{
+									t.parent.tilesheet.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_SCREEN);
+								}
+								else
+								{
+									t.parent.tilesheet.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_NORMAL);
+								}
 							}
 						}
 						
 						else
 						{
 							t.parent.data[2] = t.currFrame;
-							t.data.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias);
+							
+							if (blendName == "ADD")
+							{
+								t.data.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_ADD);
+							}
+							else if (blendName == "MULTIPLY")
+							{
+								t.data.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_MULTIPLY);
+							}
+							else if (blendName == "SCREEN")
+							{
+								t.data.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_SCREEN);
+							}
+							else
+							{
+								t.data.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_NORMAL);
+							}
 						}						
 				  		#end
 					}

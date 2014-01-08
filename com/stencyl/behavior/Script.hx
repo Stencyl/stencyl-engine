@@ -1375,9 +1375,13 @@ class Script
     
     public function setBlendModeForLayer(layerID:Int, mode:nme.display.BlendMode)
     {
+		#if cpp
+		engine.tileLayers.get(layerID).blendName = Std.string(mode);
+		#else
 		engine.tileLayers.get(layerID).blendMode = mode;
     	engine.layers.get(layerID).blendMode = mode;
 		engine.actorsPerLayer.get(layerID).blendMode = mode;
+		#end
     }
 	
 	/**
