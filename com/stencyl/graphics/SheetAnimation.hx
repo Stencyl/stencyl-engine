@@ -16,6 +16,7 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	public var redValue:Float;
 	public var greenValue:Float;
 	public var blueValue:Float;
+	public var blendName:String = "NORMAL";
 
 	private var frameIndex:Int;
 	private var looping:Bool;
@@ -177,7 +178,26 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 		else
 		{
 			graphics.clear();
+			#if flash
 			tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias);
+			#else
+			if (blendName == "ADD")
+			{
+				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_ADD);
+			}
+			else if (blendName == "MULTIPLY")
+			{
+				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_MULTIPLY);
+			}
+			else if (blendName == "SCREEN")
+			{
+				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_SCREEN);
+			}
+			else
+			{
+				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_NORMAL);
+			}
+			#end
 		}
 		
 		needsUpdate = false;

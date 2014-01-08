@@ -3599,6 +3599,36 @@ class Actor extends Sprite
 		#end
 	}
 	
+	public function setBlendMode(blendName:Dynamic)
+	{
+		#if cpp
+		for (anim in animationMap)
+		{
+			if (Type.getClass(anim) == SheetAnimation)
+			{
+				anim.blendName = blendName;
+				anim.updateBitmap();
+			}
+		}
+		#else
+		blendMode = blendName;
+		#end
+	}
+	
+	public function resetBlendMode()
+	{
+		#if cpp
+		for (anim in animationMap)
+		{
+			if (Type.getClass(anim) == SheetAnimation)
+			{
+				anim.blendName = "NORMAL";
+				anim.updateBitmap();
+			}
+		}
+		#end
+	}
+	
 	//*-----------------------------------------------
 	//* Behaviors
 	//*-----------------------------------------------
