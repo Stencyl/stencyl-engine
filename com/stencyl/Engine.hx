@@ -1077,7 +1077,6 @@ class Engine
 			region.ID = r.ID;
 			
 			addRegion(region);
-			regions.set(r.ID, region);
 		}
 	}
 	
@@ -1101,7 +1100,6 @@ class Engine
 			region.ID = r.ID;
 			
 			addTerrainRegion(region);
-			terrainRegions.set(r.ID, region);
 		}
 	}
 			
