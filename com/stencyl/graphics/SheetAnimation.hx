@@ -177,25 +177,30 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 		}
 		else
 		{
+			data[3] = 1;
+			data[4] = 1;
+			data[5] = 1;
+			
 			graphics.clear();
+			
 			#if flash
 			tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias);
 			#else
 			if (blendName == "ADD")
 			{
-				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_ADD);
+				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_RGB | Tilesheet.TILE_BLEND_ADD);
 			}
 			else if (blendName == "MULTIPLY")
 			{
-				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_MULTIPLY);
+				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_RGB | Tilesheet.TILE_BLEND_MULTIPLY);
 			}
 			else if (blendName == "SCREEN")
 			{
-				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_SCREEN);
+				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_RGB | Tilesheet.TILE_BLEND_SCREEN);
 			}
 			else
 			{
-				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_NORMAL);
+				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_RGB | Tilesheet.TILE_BLEND_NORMAL);
 			}
 			#end
 		}
