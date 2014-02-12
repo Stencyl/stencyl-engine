@@ -2731,6 +2731,13 @@ class Script
 		#end	
 	}
 	
+	public function gameCenterShowBanner(title:String, msg:String):Void 
+	{
+		#if (mobile && !android && !air)
+			GameCenter.showAchievementBanner(title, msg);
+		#end	
+	}
+	
 	//Purchases
 	
 	public function purchasesAreInitialized():Bool 
