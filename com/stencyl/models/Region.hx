@@ -252,6 +252,7 @@ class Region extends Actor
 		fixture.isSensor = true;
 		fixture.userData = this;
 		fixture.shape = shape;
+		fixture.groupID = GameModel.INHERIT_ID;
 		
 		if(body != null && body.getFixtureList() != null)
 		{
