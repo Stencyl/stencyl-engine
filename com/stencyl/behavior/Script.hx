@@ -2421,8 +2421,8 @@ class Script
 			scoreBrowser.period = com.newgrounds.ScoreBoard.ALL_TIME;
 			scoreBrowser.loadScores();
 			
-			scoreBrowser.x = Engine.screenWidth/2*Engine.SCALE - scoreBrowser.width/2;
-			scoreBrowser.y = Engine.screenHeight/2*Engine.SCALE - scoreBrowser.height/2;
+			scoreBrowser.x = Engine.screenWidth/2*Engine.SCALE*Engine.screenScaleX - scoreBrowser.width/2;
+			scoreBrowser.y = Engine.screenHeight/2*Engine.SCALE*Engine.screenScaleY - scoreBrowser.height/2;
 			
 			var button = new nme.display.Sprite();
 			button.x = 8;
