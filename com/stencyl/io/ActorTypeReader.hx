@@ -61,7 +61,7 @@ class ActorTypeReader implements AbstractReader
 
 		var spriteID:Int = Std.parseInt(xml.att.sprite);
 		var groupID:Int = Std.parseInt(xml.att.gid);
-		var isLightweight:Bool = Utils.toBoolean(xml.att.lw);
+		var physicsMode:Int = Std.parseInt(xml.att.physicsMode);
 		var autoScale:Bool = Utils.toBoolean(xml.att.ascale);
 		var pausable:Bool = Utils.toBoolean(xml.att.pausable);
 		var ignoreGravity:Bool = bodyDef.ignoreGravity || bodyDef.type == B2Body.b2_staticBody || bodyDef.type == B2Body.b2_kinematicBody;
@@ -80,7 +80,7 @@ class ActorTypeReader implements AbstractReader
 			}
 		}
 			
-		return new ActorType(ID, atlasID, name, groupID, spriteID, behaviorValues, bodyDef, isLightweight, autoScale, pausable, ignoreGravity);
+		return new ActorType(ID, atlasID, name, groupID, spriteID, behaviorValues, bodyDef, physicsMode, autoScale, pausable, ignoreGravity);
 	}
 	
 	public static function readBehaviors(xml:Fast):Map<String,BehaviorInstance>

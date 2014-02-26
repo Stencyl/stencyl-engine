@@ -134,7 +134,7 @@ class Actor extends Sprite
 	
 	public var isCamera:Bool;
 	public var killLeaveScreen:Bool;	
-	public var isLightweight:Bool;
+	public var physicsMode:Int;
 	public var autoScale:Bool;
 	
 	public var dead:Bool; //gone from the game - don't touch
@@ -310,12 +310,17 @@ class Actor extends Sprite
 		canRotate:Bool=false,
 		shape:Dynamic=null, //B2Shape or Mask - Used only for terrain.
 		typeID:Int = 0,
-		isLightweight:Bool=false,
 		autoScale:Bool = true,
-		ignoreGravity:Bool = false		
+		ignoreGravity:Bool = false,
+		physicsMode:Int = 0
 	)
 	{
 		super();
+		
+		if(Engine.NO_PHYSICS && physicsMode == 0)
+		{
+			this.physicsMode = 1;
+		}
 		
 		//DO NOT HAVE IN PRODUCTION CODE!!!
 		#if cpp
@@ -360,7 +365,7 @@ class Actor extends Sprite
 		solid = !isSensor;
 		updateMatrix = true;
 		
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			this.x = x * Engine.physicsScale;
 			this.y = y * Engine.physicsScale;
@@ -396,7 +401,7 @@ class Actor extends Sprite
 		currOffset = new Point(0, 0);			
 		registry = new Map<String,Dynamic>();
 		
-		this.isLightweight = isLightweight;
+		this.physicsMode = physicsMode;
 		this.autoScale = autoScale;
 		xSpeed = 0;
 		ySpeed = 0;
@@ -504,7 +509,7 @@ class Actor extends Sprite
 						a.originY,
 						a.durations, 
 						a.looping,
-						isLightweight?a.simpleShapes:a.physicsShapes
+						physicsMode > 0 ? a.simpleShapes : a.physicsShapes
 					);
 					
 					if(a.animID == s.defaultAnimation)
@@ -519,7 +524,7 @@ class Actor extends Sprite
 		
 		addAnim(-1, "recyclingDefault", null, 1, 1, 1, 1, 1, [1000], false, null);
 
-		if(bodyDef != null && !isLightweight)
+		if(bodyDef != null && physicsMode == 0)
 		{
 			if(bodyDef.bullet)
 			{
@@ -574,7 +579,7 @@ class Actor extends Sprite
 				isTerrain = true;
 			}
 			
-			else if(!isLightweight)
+			else if(physicsMode == 0)
 			{
 				initBody(groupID, isSensor, isStationary, isKinematic, canRotate, shape);
 			}
@@ -601,7 +606,7 @@ class Actor extends Sprite
 				cacheHeight = this.height = height;
 			}
 			
-			else if(!isLightweight)
+			else if(physicsMode == 0)
 			{
 				body.setPosition(new B2Vec2(x, y));
 			}
@@ -632,7 +637,7 @@ class Actor extends Sprite
 		
 		Utils.removeAllChildren(this);
 
-		if(body != null && !isLightweight)
+		if(body != null && physicsMode == 0)
 		{
 			var contact:B2ContactEdge = body.getContactList();
 			
@@ -759,11 +764,11 @@ class Actor extends Sprite
 		{
 			var arr = new Array<Dynamic>();
 			
-			if (isLightweight)
+			if(physicsMode == 1)
 			{
 				for(s in shapes)
 				{				
-					if (Std.is(s, Hitbox) && isLightweight)
+					if(Std.is(s, Hitbox) && physicsMode > 0)
 					{		
 						s = cast(s, Hitbox).clone();
 						s.assignTo(this);
@@ -771,6 +776,11 @@ class Actor extends Sprite
 				
 					arr.push(s);
 				}
+			}
+			
+			else if(physicsMode == 2)
+			{
+				//no shapes at all
 			}
 			
 			else
@@ -781,7 +791,7 @@ class Actor extends Sprite
 				}
 			}
 			
-			if (isLightweight)
+			if(physicsMode > 0)
 			{
 				shapeMap.set(name, new Masklist(arr));
 			}
@@ -842,6 +852,12 @@ class Actor extends Sprite
 	
 	public function initScripts()
 	{		
+		if(physicsMode == 2)
+		{
+			handlesCollisions = false;
+			return;
+		}
+	
 		handlesCollisions = true;
 		behaviors.initScripts();
 		
@@ -1063,7 +1079,7 @@ class Actor extends Sprite
 			
 			//XXX: Only switch the animation shape if it's different from before.
 			//http://community.stencyl.com/index.php/topic,16464.0.html
-			if(body != null && !isLightweight)
+			if(body != null && physicsMode == 0)
 			{
 				var arrOld = shapeMap.get(currAnimationName);
 				var arrNew = shapeMap.get(name);
@@ -1172,7 +1188,7 @@ class Actor extends Sprite
 			
 			var animOrigin:B2Vec2 = originMap.get(name);		
 			
-			if(!isLightweight)
+			if(physicsMode == 0)
 			{
 				updateTweenProperties();
 			}
@@ -1180,7 +1196,7 @@ class Actor extends Sprite
 			var centerx = (currAnimation.width / Engine.SCALE / 2) - animOrigin.x;
 			var centery = (currAnimation.height / Engine.SCALE / 2) - animOrigin.y;
 			
-			if(body != null && isDifferentShape && !isLightweight)
+			if(body != null && isDifferentShape && physicsMode == 0)
 			{
 				//Remember regions
 				var regions = new Array<Region>();
@@ -1319,7 +1335,7 @@ class Actor extends Sprite
 				}
 			}	
 						
-			else if(shapeMap.get(name) != null && isLightweight)
+			else if(shapeMap.get(name) != null && physicsMode == 1)
 			{				
 				//Get hitbox list for Simple Physics
 				set_shape(shapeMap.get(name));
@@ -1338,7 +1354,7 @@ class Actor extends Sprite
 				body.size.y = Engine.toPhysicalUnits(cacheHeight);
 			}
 			
-			if(!isLightweight)
+			if(physicsMode == 0)
 			{
 				realX = getX(false);
 				realY = getY(false);
@@ -1439,7 +1455,7 @@ class Actor extends Sprite
 		var ec = engine.collisionListeners;
 		var ep = engine.typeGroupPositionListeners;
 				
-		if(!isLightweight)
+		if(physicsMode == 0)
 		{
 			if(collisionListenerCount > 0 || 
 			   ec.get(checkType) != null || 
@@ -1451,8 +1467,12 @@ class Actor extends Sprite
 		}
 
 		internalUpdate(elapsedTime, true);
-		Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
-
+		
+		if(physicsMode < 2)
+		{
+			Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
+		}
+		
 		if(positionListenerCount > 0 || 
 		   ep.get(checkType) != null || 
 		   ep.get(groupType) != null)
@@ -1460,8 +1480,8 @@ class Actor extends Sprite
 			checkScreenState();
 		}
 		
-		// If this actor has a label, set the label's alpha to match the actor's alpha.
-		if (label != null)
+		//If this actor has a label, set the label's alpha to match the actor's alpha.
+		if(label != null)
 		{
 			label.setAlpha(alpha);
 		}
@@ -1476,9 +1496,9 @@ class Actor extends Sprite
 			return;
 		}
 					
-		if(isLightweight)
+		if(physicsMode > 0)
 		{		
-			if (!ignoreGravity && !isHUD)
+			if(physicsMode == 1 && !ignoreGravity && !isHUD)
 			{
 				//TODO: Adjust?
 				xSpeed += elapsedTime * engine.gravityX * 0.001;
@@ -1662,11 +1682,12 @@ class Actor extends Sprite
 		//Normal Movement
 		else
 		{
-			if(isLightweight)
+			if(physicsMode > 0)
 			{
 				drawX = realX;
 				drawY = realY;
 			}
+			
 			else
 			{
 				var p = body.getPosition();
@@ -1714,7 +1735,7 @@ class Actor extends Sprite
 		var a:Bool = activePositionTweens > 0;
 		var b:Bool = activeAngleTweens > 0;
 				
-		if(autoScale && !isLightweight && body != null && bodyDef.type != B2Body.b2_staticBody && (bodyScale.x != realScaleX || bodyScale.y != realScaleY))
+		if(autoScale && physicsMode == 0 && body != null && bodyDef.type != B2Body.b2_staticBody && (bodyScale.x != realScaleX || bodyScale.y != realScaleY))
 		{			
 			if(realScaleX != 0 && realScaleY != 0)
 			{
@@ -1724,7 +1745,7 @@ class Actor extends Sprite
 		
 		if(a && b)
 		{					
-			if(!isLightweight)
+			if(physicsMode == 0)
 			{
 				realX = tweenLoc.x;
 				realY = tweenLoc.y;
@@ -1753,7 +1774,7 @@ class Actor extends Sprite
 		{
 			if(a)
 			{
-				if(!isLightweight)
+				if(physicsMode == 0)
 				{
 					setX(tweenLoc.x);
 					setY(tweenLoc.y);
@@ -2214,7 +2235,7 @@ class Actor extends Sprite
 	
 	public function getGroupID():Int
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			return groupID;
 		}
@@ -2265,7 +2286,7 @@ class Actor extends Sprite
 		{
 			this.paused = true;
 			
-			if(!isLightweight)
+			if(physicsMode == 0)
 			{
 				this.body.setPaused(true);
 			}
@@ -2278,7 +2299,7 @@ class Actor extends Sprite
 		{
 			this.paused = false;
 			
-			if(!isLightweight)
+			if(physicsMode == 0)
 			{
 				this.body.setPaused(false);
 			}
@@ -2370,13 +2391,13 @@ class Actor extends Sprite
 				toReturn = Engine.toPixelUnits(body.getPosition().x) - cacheWidth/2;
 			}
 			
-			else if(!isLightweight)
+			else if(physicsMode == 0)
 			{
 				toReturn = body.getPosition().x * Engine.physicsScale - Math.floor(cacheWidth / 2) - currOffset.x;
 			}
 		}
 		
-		if (Engine.NO_PHYSICS || isLightweight)
+		if (Engine.NO_PHYSICS || physicsMode > 0)
 		{
 			toReturn = realX - Math.floor(cacheWidth/2) - currOffset.x;
 		}
@@ -2395,13 +2416,13 @@ class Actor extends Sprite
 				toReturn = Engine.toPixelUnits(body.getPosition().y) - cacheHeight/2;
 			}
 			
-			else if(!isLightweight)
+			else if(physicsMode == 0)
 			{
 				toReturn = body.getPosition().y * Engine.physicsScale - Math.floor(cacheHeight / 2) - currOffset.y;
 			}
 		}
 		
-		if (Engine.NO_PHYSICS || isLightweight)
+		if (Engine.NO_PHYSICS || physicsMode > 0)
 		{
 			toReturn = realY - Math.floor(cacheHeight / 2) - currOffset.y;
 		}
@@ -2412,7 +2433,7 @@ class Actor extends Sprite
 	//TODO: Eliminate?
 	public function getXCenter():Float
 	{
-		if(!isLightweight)
+		if(physicsMode == 0)
 		{
 			return Math.round(Engine.toPixelUnits(body.getWorldCenter().x) - currOffset.x);
 		}
@@ -2426,7 +2447,7 @@ class Actor extends Sprite
 	//TODO: Eliminate?
 	public function getYCenter():Float
 	{
-		if(!isLightweight)
+		if(physicsMode == 0)
 		{
 			return Math.round(Engine.toPixelUnits(body.getWorldCenter().y) - currOffset.y);
 		}
@@ -2465,9 +2486,14 @@ class Actor extends Sprite
 	
 	public function setX(x:Float, resetSpeed:Bool = false, noCollision:Bool = false)
 	{	
-		if(isLightweight)
+		if(physicsMode == 1)
 		{
 			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY, !noCollision && continuousCollision ? groupsToCollideWith: null);
+		}
+		
+		else if(physicsMode == 2)
+		{
+			resetReal(x + Math.floor(cacheWidth/2) + currOffset.x, realY);
 		}
 		
 		else
@@ -2503,9 +2529,14 @@ class Actor extends Sprite
 	
 	public function setY(y:Float, resetSpeed:Bool = false, noCollision:Bool = false)
 	{		
-		if(isLightweight)
+		if(physicsMode == 1)
 		{
 			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y, !noCollision && continuousCollision ? groupsToCollideWith : null);
+		}
+		
+		else if(physicsMode == 2)
+		{
+			resetReal(realX, y + Math.floor(cacheHeight/2) + currOffset.y);
 		}
 		
 		else
@@ -2546,7 +2577,7 @@ class Actor extends Sprite
 			return;
 		}
 	
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			moveActorTo(a.getXCenter(), a.getYCenter());	
 			return;
@@ -2557,7 +2588,7 @@ class Actor extends Sprite
 	
 	public function followWithOffset(a:Actor, ox:Int, oy:Int)
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			moveActorTo(a.getXCenter() + ox, a.getYCenter() + oy);
 			return;
@@ -2575,7 +2606,7 @@ class Actor extends Sprite
 	{
 		var resetPosition:B2Vec2 = null;
 		
-		if (!isLightweight)
+		if (physicsMode == 0)
 		{
 			resetPosition = body.getPosition();
 		}
@@ -2623,7 +2654,7 @@ class Actor extends Sprite
 		resetPosition.x += Engine.toPhysicalUnits(offsetDiff.x);
 		resetPosition.y += Engine.toPhysicalUnits(offsetDiff.y);
 		
-		if (!isLightweight)
+		if(physicsMode == 0)
 		{
 			body.setPosition(resetPosition);
 		}
@@ -2643,7 +2674,7 @@ class Actor extends Sprite
 	
 	public function getXVelocity():Float
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			return xSpeed;
 		}
@@ -2653,7 +2684,7 @@ class Actor extends Sprite
 	
 	public function getYVelocity():Float
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			return ySpeed;
 		}
@@ -2663,7 +2694,7 @@ class Actor extends Sprite
 	
 	public function setXVelocity(dx:Float)
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			xSpeed = dx;
 			return;
@@ -2677,7 +2708,7 @@ class Actor extends Sprite
 	
 	public function setYVelocity(dy:Float)
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			ySpeed = dy;
 			return;
@@ -2717,7 +2748,7 @@ class Actor extends Sprite
 	
 	public function getAngle():Float
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			return Utils.RAD * realAngle;
 		}
@@ -2727,7 +2758,7 @@ class Actor extends Sprite
 	
 	public function getAngleInDegrees():Float
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			return realAngle;
 		}
@@ -2739,7 +2770,7 @@ class Actor extends Sprite
 	{
 		if(inRadians)
 		{
-			if(isLightweight)
+			if(physicsMode > 0)
 			{
 				realAngle = Utils.DEG * angle;
 			}
@@ -2752,7 +2783,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			if(isLightweight)
+			if(physicsMode > 0)
 			{
 				realAngle = angle;
 			}
@@ -2770,7 +2801,7 @@ class Actor extends Sprite
 	{
 		if(inRadians)
 		{
-			if(isLightweight)
+			if(physicsMode > 0)
 			{
 				realAngle += Utils.DEG * angle;
 			}
@@ -2783,7 +2814,7 @@ class Actor extends Sprite
 			
 		else
 		{
-			if(isLightweight)
+			if(physicsMode > 0)
 			{
 				realAngle += angle;
 			}
@@ -2797,7 +2828,7 @@ class Actor extends Sprite
 	
 	public function getAngularVelocity():Float
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			return Utils.RAD * rSpeed;
 		}
@@ -2807,7 +2838,7 @@ class Actor extends Sprite
 	
 	public function setAngularVelocity(omega:Float)
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			rSpeed = Utils.DEG * omega;
 		}
@@ -2821,7 +2852,7 @@ class Actor extends Sprite
 	
 	public function changeAngularVelocity(omega:Float)
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			rSpeed += Utils.DEG * omega;
 		}
@@ -2839,7 +2870,7 @@ class Actor extends Sprite
 	
 	public function push(dirX:Float, dirY:Float, magnitude:Float)
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			dummy.x = dirX;
 			dummy.y = dirY;
@@ -2880,7 +2911,7 @@ class Actor extends Sprite
 	
 	public function applyImpulse(dirX:Float, dirY:Float, magnitude:Float)
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			dummy.x = dirX;
 			dummy.y = dirY;
@@ -2924,7 +2955,7 @@ class Actor extends Sprite
 	
 	public function applyTorque(torque:Float)
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			if(!fixedRotation)
 			{
@@ -2974,7 +3005,7 @@ class Actor extends Sprite
 	
 	public function setFriction(value:Float)
 	{
-		if(!isLightweight)
+		if(physicsMode == 0)
 		{
 			body.setFriction(value);
 		}
@@ -2982,7 +3013,7 @@ class Actor extends Sprite
 	
 	public function setBounciness(value:Float)
 	{
-		if(!isLightweight)
+		if(physicsMode == 0)
 		{
 			body.setBounciness(value);
 		}
@@ -2990,7 +3021,7 @@ class Actor extends Sprite
 	
 	public function enableRotation()
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			fixedRotation = false;
 		}
@@ -3003,7 +3034,7 @@ class Actor extends Sprite
 	
 	public function disableRotation()
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			fixedRotation = true;
 		}
@@ -3018,7 +3049,7 @@ class Actor extends Sprite
 	{
 		ignoreGravity = state;
 	
-		if(!isLightweight)
+		if(physicsMode == 0)
 		{
 			body.setIgnoreGravity(state);
 		}
@@ -3026,7 +3057,7 @@ class Actor extends Sprite
 	
 	public function ignoresGravity():Bool
 	{
-		if(isLightweight)
+		if(physicsMode > 0)
 		{
 			return ignoreGravity;
 		}
@@ -3803,7 +3834,7 @@ class Actor extends Sprite
 	
 	public function anchorToScreen()
 	{
-		if(!isLightweight)
+		if(physicsMode == 0)
 		{
 			body.setAlwaysActive(true);
 		}
@@ -3818,7 +3849,7 @@ class Actor extends Sprite
 	
 	public function unanchorFromScreen()
 	{
-		if(!isLightweight)
+		if(physicsMode == 0)
 		{
 			body.setAlwaysActive(alwaysSimulate);
 		}
@@ -3838,7 +3869,7 @@ class Actor extends Sprite
 	
 	public function makeAlwaysSimulate(alterBody:Bool = true)
 	{
-		if(!isLightweight && alterBody)
+		if(physicsMode == 0 && alterBody)
 		{
 			body.setAlwaysActive(true);
 		}
@@ -3849,7 +3880,7 @@ class Actor extends Sprite
 	
 	public function makeSometimesSimulate(alterBody:Bool = true)
 	{
-		if(!isLightweight && alterBody)
+		if(physicsMode == 0 && alterBody)
 		{
 			body.setAlwaysActive(false);
 		}
@@ -3906,7 +3937,7 @@ class Actor extends Sprite
 		var right = Engine.paddingRight;
 		var bottom = Engine.paddingBottom;
 	
-		return (isLightweight || body.isActive()) && 
+		return (physicsMode > 0 || body.isActive()) && 
 			   getX() >= -cameraX - left && 
 			   getY() >= -cameraY - top &&
 			   getX() < -cameraX + Engine.screenWidth + right &&
@@ -3915,7 +3946,7 @@ class Actor extends Sprite
 	
 	public function isInScene():Bool
 	{
-		return (isLightweight || body.isActive()) && 
+		return (physicsMode > 0 || body.isActive()) && 
 			   getX() >= 0 && 
 			   getY() >= 0 &&
 			   getX() < Engine.sceneWidth &&
@@ -4390,7 +4421,7 @@ class Actor extends Sprite
 		Utils.collision.thisActor = Utils.collision.actorA = this;
 		Utils.collision.otherActor = Utils.collision.actorB = a;
 		
-		if (a.isLightweight)
+		if (a.physicsMode == 1)
 		{
 			a.clearCollisionList();
 		}

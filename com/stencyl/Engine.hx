@@ -1722,9 +1722,9 @@ class Engine
 			false,
 			null,
 			ai.actorType.ID,
-			ai.actorType.isLightweight || NO_PHYSICS,
 			ai.actorType.autoScale,
-			ai.actorType.ignoreGravity
+			ai.actorType.ignoreGravity,
+			ai.actorType.physicsMode
 		);
 
 		if(ai.angle != 0)
@@ -1769,15 +1769,18 @@ class Engine
 		
 		//----
 		
-		var group = groups.get(ai.groupID);
-		
-		if(group != null)
+		if(ai.actorType.physicsMode < 2)
 		{
-			group.addChild(a);
+			var group = groups.get(ai.groupID);
+			
+			if(group != null)
+			{
+				group.addChild(a);
+			}
 		}
 		
 		//---
-
+		
 		//Use the next available ID
 		if(ai.elementID == Utils.INTEGER_MAX)
 		{
@@ -1944,7 +1947,7 @@ class Engine
 		a.disableActorDrawing();
 		
 		//Kill previous contacts
-		if(!a.isLightweight && a.body != null)
+		if(a.physicsMode == 0 && a.body != null)
 		{
 			var contact:B2ContactEdge = a.body.getContactList();
 			
@@ -1960,7 +1963,7 @@ class Engine
 		
 		removeActorFromLayer(a, a.layerID);
 		
-		if(!a.isLightweight)
+		if(a.physicsMode == 0)
 		{
 			a.body.setActive(false);
 			a.body.setAwake(false);
@@ -2025,7 +2028,7 @@ class Engine
 					actor.switchToDefaultAnimation();						
 					actor.enableAllBehaviors();
 					
-					if(!actor.isLightweight)
+					if(actor.physicsMode == 0)
 					{
 						actor.body.setActive(true);
 						actor.body.setAwake(true);
@@ -2047,7 +2050,7 @@ class Engine
 					actor.setX(x, false, true);
 					actor.setY(y, false, true);
 					
-					if (!actor.isLightweight)
+					if(actor.physicsMode == 0)
 					{
 						actor.colX = x;
 						actor.colY = y;
@@ -2058,7 +2061,7 @@ class Engine
 					actor.realScaleX = 1;
 					actor.realScaleY = 1;
 					
-					if (actor.bodyDef != null)
+					if(actor.bodyDef != null)
 					{
 						actor.continuousCollision = actor.bodyDef.bullet;
 					}
@@ -2341,7 +2344,7 @@ class Engine
 				if(a != null && !a.dead && !a.recycled) 
 				{
 					//--- HAND INLINED THIS SINCE ITS CALLED SO MUCH
-					var isOnScreen = (a.isLightweight || a.body.isActive()) && 
+					var isOnScreen = (a.physicsMode > 0 || a.body.isActive()) && 
 					a.colX + a.cacheWidth >= -Engine.cameraX / Engine.SCALE - Engine.paddingLeft && 
 					a.colY + a.cacheHeight >= -Engine.cameraY / Engine.SCALE - Engine.paddingTop &&
 					a.colX < -Engine.cameraX / Engine.SCALE + Engine.screenWidth + Engine.paddingRight &&
@@ -2351,7 +2354,7 @@ class Engine
 					
 					//---
 				
-					if(!a.isLightweight && a.body != null)
+					if(a.physicsMode == 0 && a.body != null)
 					{
 						if(a.killLeaveScreen && !isOnScreen)
 						{		
@@ -2364,7 +2367,7 @@ class Engine
 						}
 					}
 					
-					else if(a.isLightweight)
+					else if(a.physicsMode > 0)
 					{
 						if(a.killLeaveScreen && !isOnScreen)
 						{
@@ -2594,7 +2597,7 @@ class Engine
 		{
 			for(a in allActors)
 			{
-				if(a == null || (!a.isLightweight && a.body == null))
+				if(a == null || (a.physicsMode == 0 && a.body == null))
 				{
 					continue;
 				}

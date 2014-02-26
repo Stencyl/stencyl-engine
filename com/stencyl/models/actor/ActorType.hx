@@ -10,7 +10,7 @@ class ActorType extends Resource
 	public var spriteID:Int;
 	public var behaviorValues:Map<String,Dynamic>;
 	public var bodyDef:B2BodyDef;
-	public var isLightweight:Bool;
+	public var physicsMode:Int;
 	public var autoScale:Bool;
 	public var pausable:Bool;
 	public var ignoreGravity:Bool;
@@ -24,7 +24,7 @@ class ActorType extends Resource
 		spriteID:Int, 
 		behaviorValues:Map<String,Dynamic>, 
 		bodyDef:B2BodyDef, 
-		isLightweight:Bool, 
+		physicsMode:Int, 
 		autoScale:Bool,
 		pausable:Bool,
 		ignoreGravity:Bool
@@ -36,7 +36,7 @@ class ActorType extends Resource
 		this.spriteID = spriteID;
 		this.behaviorValues = behaviorValues;
 		this.bodyDef = bodyDef;
-		this.isLightweight = isLightweight;
+		this.physicsMode = physicsMode;
 		this.autoScale = autoScale;
 		this.pausable = pausable;
 		this.ignoreGravity = ignoreGravity;

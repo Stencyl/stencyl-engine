@@ -1732,7 +1732,7 @@ class Script
 	{
 		if (Engine.NO_PHYSICS)
 		{
-			if (actor != null && actor.isLightweight)
+			if (actor != null && actor.physicsMode == 1)
 			{
 				actor.continuousCollision = true;
 			}
@@ -1741,7 +1741,7 @@ class Script
 		
 		B2World.m_continuousPhysics = true;
 		
-		if(actor != null && !actor.isLightweight)
+		if(actor != null && actor.physicsMode == 0)
 		{
 			actor.body.setBullet(true);
 		}

@@ -70,12 +70,12 @@ class Mask
 			info.maskA = this;
 			info.maskB = other;			
 			
-			if (parent.isLightweight)
+			if (parent.physicsMode == 1)
 			{
 				parent.addCollision(info);
 			}
 			
-			if (other.parent.isLightweight)
+			if (other.parent.physicsMode == 1)
 			{
 				other.parent.addCollision(info);
 			}
