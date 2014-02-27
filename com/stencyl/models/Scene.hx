@@ -741,6 +741,7 @@ class Scene
 		
 		var layer = new TileLayer(layerID, zOrder, this, width, height);
 		
+		var noTiles = true;
 		var row = 0;
 		var col = 0;
 		
@@ -751,12 +752,6 @@ class Scene
 		var grid = new com.stencyl.models.collision.Grid(sceneWidth, sceneHeight, tileWidth, tileHeight);
 		layer.grid = grid;
 		
-		//Testing tiles in Universal test app
-		/*layer.setTileAt(0, 0, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);
-		layer.setTileAt(1, 1, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);
-		layer.setTileAt(2, 2, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);
-		layer.setTileAt(3, 3, (cast(Data.get().resources.get(19), Tileset)).tiles[6]);*/		
-
 		for(i in 0...numChunks)
 		{
 			//Unused value we have to keep for compatibility reasons.
@@ -796,6 +791,8 @@ class Scene
 					
 					else
 					{
+						noTiles = false;
+						
 						layer.setTileAt(row, col, tile);
 
 						if(tile.collisionID > 0)
@@ -829,6 +826,13 @@ class Scene
 					row++;
 				}
 			}
+		}
+		
+		layer.noTiles = noTiles;
+
+		if(noTiles)
+		{
+			trace("Layer " + layerID + " has no tiles.");
 		}
 		
 		return layer;

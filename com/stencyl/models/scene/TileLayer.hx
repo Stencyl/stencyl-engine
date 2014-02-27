@@ -35,6 +35,7 @@ class TileLayer extends Sprite
 	public var bitmapData:BitmapData;
 	private var pixels:BitmapData;
 	private var flashPoint:Point;
+	public var noTiles:Bool;
 	
 	private static var cacheSource = new Map<Int,Rectangle>();
 	
@@ -48,6 +49,7 @@ class TileLayer extends Sprite
 		this.scene = scene;
 		this.numRows = numRows;
 		this.numCols = numCols;
+		this.noTiles = false;
 
 		rows = new Array<Array<Tile>>();
 		
@@ -67,17 +69,24 @@ class TileLayer extends Sprite
 	public function reset()
 	{
 		#if !cpp
-		bitmapData = new BitmapData
-		(
-			Std.int((Engine.screenWidth * Engine.SCALE) + (scene.tileWidth * Engine.SCALE)), 
-			Std.int((Engine.screenHeight * Engine.SCALE) + (scene.tileHeight * Engine.SCALE)), 
-			true, 
-			0
-		);
+		if(noTiles)
+		{
+		}
 		
-		var bmp = new Bitmap(bitmapData);
-		bmp.smoothing = scripts.MyAssets.antialias;
-		addChild(bmp);
+		else
+		{
+			bitmapData = new BitmapData
+			(
+				Std.int((Engine.screenWidth * Engine.SCALE) + (scene.tileWidth * Engine.SCALE)), 
+				Std.int((Engine.screenHeight * Engine.SCALE) + (scene.tileHeight * Engine.SCALE)), 
+				true, 
+				0
+			);
+			
+			var bmp = new Bitmap(bitmapData);
+			bmp.smoothing = scripts.MyAssets.antialias;
+			addChild(bmp);
+		}
 		#end
 		
 		alpha = 1;
@@ -86,12 +95,16 @@ class TileLayer extends Sprite
 	public function clearBitmap()
 	{
 		#if !cpp		
-		while (numChildren > 0)
+		while(numChildren > 0)
 		{
 			removeChildAt(0);
 		}
 		
-		bitmapData.dispose();
+		if(bitmapData != null)
+		{
+			bitmapData.dispose();
+		}
+		
 		bitmapData = null;
 		
 		#end
@@ -173,6 +186,11 @@ class TileLayer extends Sprite
 	//and I don't know if it clips.
 	public function draw(viewX:Int, viewY:Int)
 	{
+		if(noTiles)
+		{
+			return;
+		}
+		
 		#if cpp
 		graphics.clear();
 		#end
