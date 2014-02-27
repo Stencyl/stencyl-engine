@@ -319,6 +319,7 @@ class Actor extends Sprite
 		
 		if(Engine.NO_PHYSICS && physicsMode == 0)
 		{
+			physicsMode = 1;
 			this.physicsMode = 1;
 		}
 		
