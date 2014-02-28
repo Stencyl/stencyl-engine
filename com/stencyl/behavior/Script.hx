@@ -2058,12 +2058,14 @@ class Script
 	
 	public function captureScreenshot():BitmapData
 	{
-		return null; //TODO - We need this!
+		var img:BitmapData = new BitmapData(getScreenWidth(), getScreenHeight());
+		img.draw(nme.Lib.current.stage);
+		return img;
 	}
 	
 	public function getImageForActor(a:Actor):BitmapData
 	{
-		return a.getCurrentImage(); //TODO - Incomplete on non-Flash platforms. See SheetAnimation.hx.
+		return a.getCurrentImage();
 	}
 	
 	//Example path: "sample.png" - stick into the "extras" folder for your game - see: http://community.stencyl.com/index.php/topic,24729.0.html
