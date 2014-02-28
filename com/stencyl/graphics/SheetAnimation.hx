@@ -240,6 +240,8 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	
 	public function getCurrentImage():BitmapData
 	{
-		return null; //TODO - Ask rob for details.
+		var img = new BitmapData(Std.int(width), Std.int(height), true, 0x00ffffff);
+		img.copyPixels(tilesheet.__bitmap, new nme.geom.Rectangle(frameIndex * width, 0, Std.int(width), Std.int(height)), new nme.geom.Point(0, 0), null, null, false);
+		return img;
 	}
 }
