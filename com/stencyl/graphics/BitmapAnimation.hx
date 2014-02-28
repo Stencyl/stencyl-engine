@@ -183,4 +183,9 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 			}
 		}
 	}
+	
+	public function getCurrentImage():BitmapData
+	{
+		return bitmapData;
+	}
 }

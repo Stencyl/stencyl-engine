@@ -3281,6 +3281,11 @@ class Actor extends Sprite
 		}
 	}
 	
+	public function getCurrentImage()
+	{
+		return cast(currAnimation, AbstractAnimation).getCurrentImage();
+	}
+	
 	public function enableActorDrawing()
 	{
 		drawActor = true;

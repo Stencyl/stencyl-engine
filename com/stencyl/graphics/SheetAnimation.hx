@@ -237,4 +237,9 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 			}
 		}
 	}
+	
+	public function getCurrentImage():BitmapData
+	{
+		return null; //TODO - Ask rob for details.
+	}
 }

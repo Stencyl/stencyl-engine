@@ -14,6 +14,8 @@ import nme.filters.BitmapFilter;
 import nme.text.TextField;
 
 import nme.display.Graphics;
+import nme.display.BitmapData;
+import nme.display.Bitmap;
 
 import com.stencyl.graphics.G;
 import com.stencyl.models.scene.ScrollingBitmap;
@@ -1944,6 +1946,59 @@ class Script
 		}
 	}
 	
+	/**
+	* Gets the current position for the given channel in milliseconds.
+	* If not playing, will return the last point it was played at.
+	*/
+	public function getPositionForChannel(channelNum:Int)
+	{			
+		var sc:SoundChannel = engine.channels[channelNum];	
+		
+		if(sc != null && sc.currentSound != null)
+		{
+			return sc.currentSound.position;
+		}
+		
+		else
+		{
+			return 0;
+		}
+	}
+	
+	/**
+	* Gets the length for the given channel in milliseconds.
+	*/
+	public function getSoundLengthForChannel(channelNum:Int)
+	{			
+		var sc:SoundChannel = engine.channels[channelNum];		
+		
+		if(sc != null && sc.currentSource != null)
+		{
+			return sc.currentSource.length;
+		}
+		
+		else
+		{
+			return 0;
+		}
+	}
+	
+	/**
+	* Gets the length of the given sound in milliseconds.
+	*/
+	public function getSoundLength(clip:Sound)
+	{			
+		if(clip != null && clip.src != null)
+		{
+			return clip.src.length;
+		}
+		
+		else
+		{
+			return 0;
+		}
+	}
+	
 	
 	//*-----------------------------------------------
 	//* Background Manipulation
@@ -1996,6 +2051,67 @@ class Script
 			}
 		}*/
 	}
+	
+	//*-----------------------------------------------
+	//* Image API
+	//*-----------------------------------------------
+	
+	public function captureScreenshot():BitmapData
+	{
+		return null; //TODO - We need this!
+	}
+	
+	public function getImageForActor(a:Actor):BitmapData
+	{
+		return a.getCurrentImage(); //TODO - Incomplete on non-Flash platforms. See SheetAnimation.hx.
+	}
+	
+	//Example path: "sample.png" - stick into the "extras" folder for your game - see: http://community.stencyl.com/index.php/topic,24729.0.html
+	public function getExternalImage(path:String):BitmapData
+	{
+		return nme.Assets.getBitmapData("assets/data/" + path);
+	}
+	
+	public function attachImageToActor(img:Bitmap, a:Actor, x:Int, y:Int, pos:Int)
+	{
+		if(img != null)
+		{
+			a.addChildAt(img, pos);
+			img.x = x - a.getWidth()/2;
+			img.y = y - a.getHeight()/2;
+		}
+	}
+	
+	//Will be "fixed" like an HUD
+	public function attachImageToHUD(img:Bitmap, x:Int, y:Int, pos:Int)
+	{
+		if(img != null)
+		{
+			engine.hudLayer.addChildAt(img, pos);
+			img.x = x;
+			img.y = y;
+		}
+	}
+	
+	public function attachImageToLayer(img:Bitmap, layerID:Int, x:Int, y:Int, pos:Int)
+	{
+		if(img != null)
+		{
+			var layer = engine.actorsPerLayer.get(layerID);
+			layer.addChildAt(img, pos);
+			img.x = x;
+			img.y = y;
+		}
+	}
+	
+	public function removeImage(img:Bitmap)
+	{
+		if(img != null)
+		{
+			img.parent.removeChild(img);
+		}
+	}
+	
 		
 	//*-----------------------------------------------
 	//* Eye Candy

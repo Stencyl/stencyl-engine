@@ -1,5 +1,7 @@
 package com.stencyl.graphics;
 
+import nme.display.BitmapData;
+
 interface AbstractAnimation 
 {
 	public function update(elapsedTime:Float):Void;
@@ -13,4 +15,5 @@ interface AbstractAnimation
 	public function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float):Void;
 	public function getFrameDurations():Array<Int>;
 	public function setFrameDurations(time:Int):Void;
+	public function getCurrentImage():BitmapData;
 }
