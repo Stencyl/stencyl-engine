@@ -16,6 +16,11 @@ import nme.text.TextField;
 import nme.display.Graphics;
 import nme.display.BitmapData;
 import nme.display.Bitmap;
+import nme.display.Sprite;
+import nme.display.BlendMode;
+import nme.geom.ColorTransform;
+import nme.geom.Matrix;
+import nme.geom.Rectangle;
 
 import com.stencyl.graphics.G;
 import com.stencyl.models.scene.ScrollingBitmap;
@@ -2056,6 +2061,9 @@ class Script
 	//* Image API
 	//*-----------------------------------------------
 	
+	public static var dummyRect = new flash.geom.Rectangle(0, 0, 1, 1);
+	public static var dummyPoint = new flash.geom.Point(0, 0);
+	
 	public function captureScreenshot():BitmapData
 	{
 		var img:BitmapData = new BitmapData(getScreenWidth(), getScreenHeight());
@@ -2113,6 +2121,84 @@ class Script
 			img.parent.removeChild(img);
 		}
 	}
+	
+	public function drawImageOnImage(source:BitmapData, dest:BitmapData, x:Int, y:Int)
+	{
+		if(source != null && dest != null)
+		{
+			dummyRect.x = 0;
+			dummyRect.y = 0;
+			dummyRect.width = source.width;
+			dummyRect.height = source.height;
+			
+			dummyPoint.x = x;
+			dummyPoint.y = y;
+			
+			dest.copyPixels(source, dummyRect, dummyPoint);
+		}
+	}
+	
+	public function clearImagePartially(img:BitmapData, x:Int, y:Int, width:Int, height:Int)
+	{
+		if(img != null)
+		{
+			dummyRect.x = x;
+			dummyRect.y = y;
+			dummyRect.width = width;
+			dummyRect.height = height;
+		
+			img.fillRect(dummyRect, 0x00000000);
+		}
+	}
+	
+	public function clearImage(img:BitmapData)
+	{
+		fillImage(img, 0);
+	}
+	
+	public function clearImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
+	{
+		//Inspired by http://franto.com/inverse-masking-disclosed/
+		var temp = new Sprite();
+		var bmpDest = new Bitmap(dest);
+		var bmpMask = new Bitmap(mask);
+		bmpMask.x = x;
+		bmpMask.y = y;
+		bmpDest.blendMode = BlendMode.LAYER;
+		bmpMask.blendMode = BlendMode.ERASE;
+		temp.addChild(bmpDest);
+		temp.addChild(bmpMask);
+		
+		var final = new BitmapData(dest.width, dest.height, true, 0);
+		final.draw(temp);
+		
+		dummyRect.x = 0;
+		dummyRect.y = 0;
+		dummyRect.width = dest.width;
+		dummyRect.height = dest.height;
+		
+		dummyPoint.x = x;
+		dummyPoint.y = y;
+		
+		dest.copyPixels(final, dummyRect, dummyPoint);
+		
+		//This does the exact opposite. Might be useful in the future.
+		//dest.copyChannel(mask, dummyRect, dummyPoint, nme.display.BitmapDataChannel.ALPHA, nme.display.BitmapDataChannel.ALPHA);
+	}
+	
+	public function fillImage(img:BitmapData, color:Int)
+	{
+		if(img != null)
+		{
+			dummyRect.x = 0;
+			dummyRect.y = 0;
+			dummyRect.width = img.width;
+			dummyRect.height = img.height;
+			
+			img.fillRect(dummyRect, (255 << 24) | color);
+		}
+	}
+	
 	
 		
 	//*-----------------------------------------------
