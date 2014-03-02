@@ -2179,8 +2179,8 @@ class Script
 		dummyRect.width = dest.width;
 		dummyRect.height = dest.height;
 		
-		dummyPoint.x = x;
-		dummyPoint.y = y;
+		dummyPoint.x = 0;
+		dummyPoint.y = 0;
 		
 		dest.copyPixels(final, dummyRect, dummyPoint);
 		
