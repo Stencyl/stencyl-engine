@@ -2100,6 +2100,7 @@ class Script
 			engine.hudLayer.addChildAt(img, pos);
 			img.x = x;
 			img.y = y;
+			img.smoothing = true;
 		}
 	}
 	
@@ -2111,6 +2112,7 @@ class Script
 			layer.addChildAt(img, pos);
 			img.x = x;
 			img.y = y;
+			img.smoothing = true;
 		}
 	}
 	
@@ -2293,6 +2295,58 @@ class Script
 		dummyPoint.y = 0;
 		
 		img.copyPixels(final, dummyRect, dummyPoint);
+	}
+	
+	public function fadeImageTo(img:Bitmap, value:Float, duration:Float = 1, easing:Dynamic = null)
+	{	
+		if(easing == null)
+		{
+			easing = Linear.easeNone;
+		}
+	
+		Actuate.tween(img, duration, {alpha:value}).ease(easing);
+	}
+	
+	public function growImageTo(img:Bitmap, scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:Dynamic = null)
+	{
+		if(easing == null)
+		{
+			easing = Linear.easeNone;
+		}
+	
+		Actuate.tween(img, duration, {scaleX:scaleX, scaleY:scaleY}).ease(easing);
+	}
+	
+	//In degrees
+	public function spinImageTo(img:Bitmap, angle:Float, duration:Float = 1, easing:Dynamic = null)
+	{
+		if(easing == null)
+		{
+			easing = Linear.easeNone;
+		}
+		
+		Actuate.tween(img, duration, {rotation:angle}).ease(easing);		
+	}
+	
+	public function moveImageTo(img:Bitmap, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
+	{
+		if(easing == null)
+		{
+			easing = Linear.easeNone;
+		}
+
+		Actuate.tween(img, duration, {x:x, y:y}).ease(easing);		
+	}
+	
+	//In degrees
+	public function spinImageBy(img:Bitmap, angle:Float, duration:Float = 1, easing:Dynamic = null)
+	{
+		spinImageTo(img, img.rotation + angle, duration, easing);
+	}
+	
+	public function moveImageBy(img:Bitmap, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
+	{		
+		moveImageTo(img, img.x + x, img.y + y, duration, easing);	
 	}
 	
 		
