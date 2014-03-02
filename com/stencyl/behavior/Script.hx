@@ -2148,6 +2148,30 @@ class Script
 		}
 	}
 	
+	public function drawTextOnImage(img:BitmapData, text:String, x:Int, y:Int, font:Font)
+	{
+		if(img != null)
+		{
+			#if(flash || js)
+			var fontData = G.fontCache.get(font.ID);
+				
+			if(fontData == null)
+			{
+				fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, false);
+				G.fontCache.set(font.ID, fontData);
+			}
+		
+			font.font.render(img, fontData, text, 0x000000, 1, x, y, 0, 0);
+			#else
+			var drawData = [];
+			font.font.render(drawData, text, 0x000000, 1, x, y, 0, font.fontScale, 0, false);
+			var temp = new Sprite();
+			font.font.drawText(temp.graphics, drawData);
+			img.draw(temp);
+			#end
+		}
+	}
+	
 	public function clearImagePartially(img:BitmapData, x:Int, y:Int, width:Int, height:Int)
 	{
 		if(img != null)

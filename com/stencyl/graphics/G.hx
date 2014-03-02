@@ -59,7 +59,7 @@ class G
 	private var actor:Actor;
 	
 	//Cache for speed
-	private static var fontCache:Map<Int,Array<BitmapData>> = null;
+	public static var fontCache:Map<Int,Array<BitmapData>> = null;
 	
 	public function new() 
 	{	
