@@ -2199,6 +2199,101 @@ class Script
 		}
 	}
 	
+	//Takes ONE filter at a time.
+	public function filterImage(img:BitmapData, filter:BitmapFilter)
+	{
+		if(img != null)
+		{
+			dummyRect.x = 0;
+			dummyRect.y = 0;
+			dummyRect.width = img.width;
+			dummyRect.height = img.height;
+			
+			dummyPoint.x = 0;
+			dummyPoint.y = 0;
+		
+			img.applyFilter(img, dummyRect, dummyPoint, filter);
+		}
+	}
+	
+	public function imageSetPixel(img:BitmapData, x:Int, y:Int, color:Int)
+	{
+		if(img != null)
+		{
+			img.setPixel(x, y, color);
+		}
+	}
+	
+	public function imageGetPixel(img:BitmapData, x:Int, y:Int):Int
+	{
+		if(img != null)
+		{
+			return img.getPixel(x, y);
+		}
+		
+		return 0;
+	}
+	
+	public function imageSwapColor(img:BitmapData, originalColor:Int, newColor:Int)
+	{
+		if(img != null)
+		{
+			dummyRect.x = 0;
+			dummyRect.y = 0;
+			dummyRect.width = img.width;
+			dummyRect.height = img.height;
+			
+			dummyPoint.x = 0;
+			dummyPoint.y = 0;
+			
+			originalColor = (255 << 24) | originalColor;
+			newColor = (255 << 24) | newColor;
+			
+			img.threshold(img, dummyRect, dummyPoint, "==", originalColor, newColor, 0xffffffff, true);
+		}
+	}
+	
+	//TODO: Can we do this "in place" without the extra objects?
+	public function flipImageHorizontal(img:BitmapData)
+	{
+		var matrix:Matrix = new Matrix();
+		matrix.scale(-1, 1);
+		matrix.translate(img.width, 0);
+		
+		var final = new BitmapData(img.width, img.height, true, 0);
+		final.draw(img, matrix);
+		
+		dummyRect.x = 0;
+		dummyRect.y = 0;
+		dummyRect.width = final.width;
+		dummyRect.height = final.height;
+		
+		dummyPoint.x = 0;
+		dummyPoint.y = 0;
+		
+		img.copyPixels(final, dummyRect, dummyPoint);
+	}
+	
+	//TODO: Can we do this "in place" without the extra objects?
+	public function flipImageVertical(img:BitmapData)
+	{
+		var matrix:Matrix = new Matrix();
+		matrix.scale(1, -1);
+		matrix.translate(0, img.height);
+		
+		var final = new BitmapData(img.width, img.height, true, 0);
+		final.draw(img, matrix);
+		
+		dummyRect.x = 0;
+		dummyRect.y = 0;
+		dummyRect.width = final.width;
+		dummyRect.height = final.height;
+		
+		dummyPoint.x = 0;
+		dummyPoint.y = 0;
+		
+		img.copyPixels(final, dummyRect, dummyPoint);
+	}
 	
 		
 	//*-----------------------------------------------
