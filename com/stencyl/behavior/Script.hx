@@ -2183,9 +2183,19 @@ class Script
 		dummyPoint.y = 0;
 		
 		dest.copyPixels(final, dummyRect, dummyPoint);
+	}
+	
+	public function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
+	{
+		dummyRect.x = 0;
+		dummyRect.y = 0;
+		dummyRect.width = dest.width;
+		dummyRect.height = dest.height;
 		
-		//This does the exact opposite. Might be useful in the future.
-		//dest.copyChannel(mask, dummyRect, dummyPoint, nme.display.BitmapDataChannel.ALPHA, nme.display.BitmapDataChannel.ALPHA);
+		dummyPoint.x = 0;
+		dummyPoint.y = 0;
+		
+		dest.copyChannel(mask, dummyRect, dummyPoint, nme.display.BitmapDataChannel.ALPHA, nme.display.BitmapDataChannel.ALPHA);
 	}
 	
 	public function fillImage(img:BitmapData, color:Int)
