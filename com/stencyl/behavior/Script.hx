@@ -2201,6 +2201,7 @@ class Script
 		}
 	}
 	
+	#if flash
 	//Takes ONE filter at a time.
 	public function filterImage(img:BitmapData, filter:BitmapFilter)
 	{
@@ -2217,6 +2218,16 @@ class Script
 			img.applyFilter(img, dummyRect, dummyPoint, filter);
 		}
 	}
+	#else
+	//Takes ONE filter at a time.
+	public function filterImage(img:BitmapData, filter:Array<Dynamic>)
+	{
+		if(img != null)
+		{
+			//TODO: Reuse Actor's setFilter if possible.
+		}
+	}
+	#end
 	
 	public function imageSetPixel(img:BitmapData, x:Int, y:Int, color:Int)
 	{
@@ -2347,6 +2358,23 @@ class Script
 	public function moveImageBy(img:Bitmap, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
 	{		
 		moveImageTo(img, img.x + x, img.y + y, duration, easing);	
+	}
+	
+	#if flash
+	public function setFilterForImage(img:Bitmap, filter:BitmapFilter)
+	{			
+		img.filters = img.filters.concat([filter]);
+	}
+	#else
+	public function setFilterForImage(img:Bitmap, filter:Array<Dynamic>)
+	{			
+		//TODO: Reuse Actor's setFilter if possible.
+	}
+	#end
+	
+	public function clearFiltersForImage(img:Bitmap)
+	{
+		img.filters = [];
 	}
 	
 		
