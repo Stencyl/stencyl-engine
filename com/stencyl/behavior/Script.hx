@@ -2362,8 +2362,11 @@ class Script
 	
 	#if flash
 	public function setFilterForImage(img:Bitmap, filter:BitmapFilter)
-	{			
-		img.filters = img.filters.concat([filter]);
+	{		
+		if(img != null)
+		{
+			img.filters = img.filters.concat([filter]);
+		}
 	}
 	#else
 	public function setFilterForImage(img:Bitmap, filter:Array<Dynamic>)
@@ -2374,7 +2377,18 @@ class Script
 	
 	public function clearFiltersForImage(img:Bitmap)
 	{
-		img.filters = [];
+		if(img != null)
+		{
+			img.filters = [];
+		}
+	}
+	
+	public function setOrderForImage(img:Bitmap, order:Int)
+	{
+		if(img != null && img.parent != null)
+		{
+			img.parent.setChildIndex(img, order);
+		}
 	}
 	
 		
