@@ -2124,7 +2124,7 @@ class Script
 		}
 	}
 	
-	public function drawImageOnImage(source:BitmapData, dest:BitmapData, x:Int, y:Int)
+	public function drawImageOnImage(source:BitmapData, dest:BitmapData, x:Int, y:Int, blendMode:BlendMode)
 	{
 		if(source != null && dest != null)
 		{
@@ -2136,7 +2136,15 @@ class Script
 			dummyPoint.x = x;
 			dummyPoint.y = y;
 			
-			dest.copyPixels(source, dummyRect, dummyPoint);
+			if(blendMode == BlendMode.NORMAL)
+			{
+				dest.copyPixels(source, dummyRect, dummyPoint);
+			}
+			
+			else
+			{
+				dest.draw(source, null, null, blendMode);
+			}
 		}
 	}
 	
