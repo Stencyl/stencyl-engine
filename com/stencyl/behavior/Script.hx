@@ -13,6 +13,8 @@ import nme.Lib;
 import nme.filters.BitmapFilter;
 import nme.text.TextField;
 
+import nme.display.DisplayObject;
+import nme.display.Loader;
 import nme.display.Graphics;
 import nme.display.BitmapData;
 import nme.display.Bitmap;
@@ -57,6 +59,11 @@ import box2D.dynamics.B2World;
 import box2D.dynamics.B2Fixture;
 
 import haxe.ds.ObjectMap;
+
+import flash.utils.ByteArray;
+import haxe.crypto.BaseCode;
+import haxe.io.Bytes;
+import haxe.io.BytesData;
 
 #if flash
 import flash.filters.ColorMatrixFilter;
@@ -2164,7 +2171,7 @@ class Script
 			font.font.render(img, fontData, text, 0x000000, 1, x, y, 0, 0);
 			#else
 			var drawData = [];
-			font.font.render(drawData, text, 0x000000, 1, x, y, 0, font.fontScale, 0, false);
+			font.font.render(drawData, text, 0x000000, 1, Std.int(x), Std.int(y), 0, font.fontScale, 0, false);
 			var temp = new Sprite();
 			font.font.drawText(temp.graphics, drawData);
 			img.draw(temp);
@@ -2433,7 +2440,103 @@ class Script
 		}
 	}
 	
+	//Base64 encodes raw image data. Does NOT convert to a PNG.
+	public function imageToText(img:BitmapData):String
+	{
+		dummyRect.x = 0;
+		dummyRect.y = 0;
+		dummyRect.width = img.width;
+		dummyRect.height = img.height;
 		
+		var bytes = img.getPixels(dummyRect);
+		
+		#if(cpp)
+		var b = Bytes.alloc(bytes.length);
+		
+		for(i in 0...bytes.length)
+		{
+			b.set(i, bytes[i]);
+		}
+		
+		return img.width + ";" + img.height + ";" + toBase64(b);
+		#else
+		return img.width + ";" + img.height + ";" + toBase64(Bytes.ofData(bytes));
+		#end
+	}
+	
+	//This is extremely slow. Tried this (https://github.com/underscorediscovery/gameapi-haxe/blob/master/playtomic/Encode.hx) 
+	//but that didn't work. May try again in the future.
+	public function imageFromText(text:String):BitmapData
+	{
+		var parts = text.split(";");
+		var width = Std.parseInt(parts[0]);
+		var height = Std.parseInt(parts[1]);
+		var bytes = fromBase64(parts[2]);
+		
+		var data = new ByteArray();
+
+		for(n in 0...bytes.length)
+		{
+			data.writeByte(bytes.get(n));
+		}
+		
+		data.position = 0;
+		
+		var img = new BitmapData(width, height, true, 0);
+		dummyRect.x = 0;
+		dummyRect.y = 0;
+		dummyRect.width = width;
+		dummyRect.height = height;
+		img.setPixels(dummyRect, data);
+		return img;
+	}
+	
+	private static inline var BASE_64_ENCODINGS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	private static inline var BASE_64_PADDING = "=";
+	
+	private static function toBase64(bytes:Bytes):String 
+	{
+		var encodings = Bytes.ofString(BASE_64_ENCODINGS);
+		var base64 = new BaseCode(encodings).encodeBytes(bytes).toString();
+		
+		var remainder = base64.length % 4;
+
+		if(remainder > 1) 
+		{
+			base64 += BASE_64_PADDING;
+		}
+
+		if(remainder == 2) 
+		{
+			base64 += BASE_64_PADDING;
+		}
+		
+		return base64;
+	}
+
+	private static function fromBase64(base64:String):Bytes 
+	{
+		var paddingSize = -1;
+		
+		if(base64.charAt(base64.length - 2) == BASE_64_PADDING) 
+		{
+			paddingSize = 2;
+		}
+		
+		else if(base64.charAt(base64.length - 1) == BASE_64_PADDING)
+		{
+			paddingSize = 1;
+		}
+		
+		if(paddingSize != -1) 
+		{
+			base64 = base64.substr(0, base64.length - paddingSize);
+		}
+		
+		var encodings = Bytes.ofString(BASE_64_ENCODINGS);
+		return new BaseCode(encodings).decodeBytes(Bytes.ofString(base64));
+	}
+
 	//*-----------------------------------------------
 	//* Eye Candy
 	//*-----------------------------------------------
