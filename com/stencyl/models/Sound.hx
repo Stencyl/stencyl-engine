@@ -40,14 +40,19 @@ class Sound extends Resource
 		this.ext = "mp3";
 		#end
 		
+		#if mobile
+		//don't auto-load sounds - atlasize them
+		#else
 		loadGraphics();
+		#end
 	}	
 	
 	override public function loadGraphics()
 	{
 		if(!streaming)
 		{
-			src = Assets.getSound("assets/sfx/sound-" + ID + "." + this.ext);
+			trace("Loading sound: " + ID);
+			src = Assets.getSound("assets/sfx/sound-" + ID + "." + this.ext, false);
 		}
 	}
 	
@@ -69,7 +74,7 @@ class Sound extends Resource
 	{
 		if(streaming)
 		{
-			src = Assets.getSound("assets/music/sound-" + ID + "." + ext);
+			src = Assets.getSound("assets/music/sound-" + ID + "." + ext, false);
 		}
 		
 		if(src == null)
@@ -85,7 +90,7 @@ class Sound extends Resource
 	{
 		if(streaming)
 		{
-			src = Assets.getSound("assets/music/sound-" + ID + "." + ext);
+			src = Assets.getSound("assets/music/sound-" + ID + "." + ext, false);
 		}
 		
 		if(src == null)

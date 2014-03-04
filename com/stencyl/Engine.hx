@@ -54,6 +54,7 @@ import com.stencyl.models.Scene;
 import com.stencyl.models.SoundChannel;
 import com.stencyl.models.Region;
 import com.stencyl.models.Terrain;
+import com.stencyl.models.Sound;
 
 import com.stencyl.models.scene.DeferredActor;
 import com.stencyl.models.scene.Tile;
@@ -505,6 +506,23 @@ class Engine
 
 		Data.get();
 		GameModel.get().loadScenes();
+		
+		#if mobile
+		//Preload sounds here.
+		for(r in Data.get().resources)
+		{
+			if(Std.is(r, Sound))
+			{
+				var sound = cast(r, Sound);		
+				var atlas = GameModel.get().atlases.get(sound.atlasID);
+	
+				if(atlas != null && atlas.active)
+				{
+					sound.loadGraphics();
+				}
+			}
+		}
+		#end
 		
 		g = new G();
 		

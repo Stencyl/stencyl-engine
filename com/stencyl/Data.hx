@@ -19,6 +19,7 @@ import com.stencyl.models.Resource;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.Atlas;
+import com.stencyl.models.Sound;
 import nme.display.Sprite;
 
 class Data
@@ -296,6 +297,8 @@ class Data
 	
 	public function loadAtlas(atlasID:Int)
 	{
+		trace("Load Atlas: " + atlasID);
+	
 		var atlas = GameModel.get().atlases.get(atlasID);
 		
 		if(atlas != null && !atlas.active)
@@ -317,6 +320,8 @@ class Data
 	public function unloadAtlas(atlasID:Int)
 	{
 		#if(mobile && !air)
+		trace("Unload Atlas: " + atlasID);
+		
 		var atlas = GameModel.get().atlases.get(atlasID);
 		
 		if(atlas != null && atlas.active)

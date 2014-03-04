@@ -26,7 +26,9 @@ class SoundReader implements AbstractReader
 		var panning:Float = Std.parseFloat(xml.att.pan);
 		var volume:Float = Std.parseFloat(xml.att.volume);	
 		var ext:String = xml.att.type;
+		var s = new Sound(ID, name, streaming, looping, panning, volume, ext);
+		s.atlasID = atlasID;
 		
-		return new Sound(ID, name, streaming, looping, panning, volume, ext);
+		return s;
 	}
 }

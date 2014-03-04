@@ -213,12 +213,17 @@ class GameModel
 			var active = e.att.start == "true";
 			var members = new Array<Int>();
 			
-			for(n in mems)
+			if(e.att.members != "")
 			{
-				members.push(Std.parseInt(n));
+				for(n in mems)
+				{
+					members.push(Std.parseInt(n));
+				}
+				
+				members.pop();
 			}
-
-			map.set(ID, new Atlas(ID, name, members, active));
+			
+			map.set(ID, new Atlas(ID, name, members, active)); 
 		}
 		
 		return map;
