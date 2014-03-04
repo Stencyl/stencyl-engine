@@ -269,6 +269,7 @@ class Engine
 	
 	public var layers:IntHashTable<Layer>;
 	public var tileLayers:IntHashTable<TileLayer>;
+	public var scrollFactors:Map<Int, Float>;
 	
 	public var dynamicTiles:Map<String,Actor>;
 	public var animatedTiles:Array<Tile>;
@@ -701,6 +702,8 @@ class Engine
 		layers.reuseIterator = true;
 		tileLayers = new IntHashTable<TileLayer>(16);
 		tileLayers.reuseIterator = true;
+		scrollFactors = new Map<Int, Float>();
+
 		
 		dynamicTiles = new Map<String,Actor>();
 		animatedTiles = new Array<Tile>();
@@ -766,8 +769,7 @@ class Engine
 		//Remove because post update added now after scene load?
 		for(layer in tileLayers)
 	    {	     	
-			layer.draw(Std.int(cameraX), Std.int(cameraY));
-			
+			layer.draw(Std.int(cameraX), Std.int(cameraY));	
 	     	layer.setPosition(cameraX, cameraY);
 	    }
 		
@@ -1348,6 +1350,7 @@ class Engine
 			}
 			
 			var list = new RegularLayer();
+			list.layerID = layerID;
 			var terrain = null;
 			var overlay = new Sprite();
 			
@@ -1398,6 +1401,7 @@ class Engine
 				}
 				
 				this.layers.set(layerID, terrain);
+				this.scrollFactors.set(layerID, 1);
 			}
 				
 			/*overlay.name =*/ list.name = REGULAR_LAYER;
@@ -2501,8 +2505,11 @@ class Engine
 			//Regular Layer
 			else if(Std.is(child, RegularLayer))
 			{
-				child.x = cameraX;
-				child.y = cameraY;
+				var l = cast(child, RegularLayer);
+				var scrollFactor = scrollFactors.get(l.layerID);
+			
+				child.x = cameraX * scrollFactor;
+				child.y = cameraY * scrollFactor;
 			}
 			
 			//Something that doesn't scroll - Do nothing
@@ -3038,12 +3045,14 @@ class Engine
      	//Only if camera changed? Or tile updated
      	for(layer in tileLayers)
 	    {
+	    	var scrollFactor = scrollFactors.get(layer.layerID);
+	    	
 	    	if(cameraMoved || tileUpdated)
      		{
-	     		layer.draw(Std.int(cameraX), Std.int(cameraY));
+	     		layer.draw(Std.int(cameraX), Std.int(cameraY), scrollFactor);
 	     	}
-	     	
-	     	layer.setPosition(cameraX, cameraY);
+
+	     	layer.setPosition(cameraX, cameraY, scrollFactor);
 	    }
      	
      	tileUpdated = false;
@@ -3815,6 +3824,11 @@ class Engine
 	//*-----------------------------------------------
 	//* Utils
 	//*-----------------------------------------------
+	
+	public function setScrollFactor(layerID:Int, amount:Float)
+	{
+		scrollFactors.set(layerID, amount);
+	}
 	
 	//0 args
 	public static inline function invokeListeners(listeners:Array<Dynamic>)

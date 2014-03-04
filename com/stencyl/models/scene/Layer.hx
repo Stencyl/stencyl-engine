@@ -29,6 +29,7 @@ class Layer extends RegularLayer
 		this.bitmapOverlay = bitmapOverlay;
 		
 		this.ID = ID;
+		this.layerID = ID;
 		this.order = order;
 
 		//scrollFactor.x = 0;
