@@ -2150,7 +2150,10 @@ class Script
 			
 			else
 			{
-				dest.draw(source, null, null, blendMode);
+				var drawMatrix = new Matrix();
+				drawMatrix.identity();
+				drawMatrix.translate(x * Engine.SCALE, y * Engine.SCALE);
+				dest.draw(source, drawMatrix, null, blendMode);
 			}
 		}
 	}
