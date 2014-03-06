@@ -323,15 +323,6 @@ class Actor extends Sprite
 			this.physicsMode = 1;
 		}
 		
-		//DO NOT HAVE IN PRODUCTION CODE!!!
-		#if cpp
-		/*if(groupID != 2)
-		{
-			DUMB = new com.stencyl.utils.HashMap();
-		}*/
-		//cpp.vm.Gc.doNotKill(this);
-		#end
-		
 		//---
 		
 		dummy = new B2Vec2();
@@ -2264,7 +2255,14 @@ class Actor extends Sprite
 			return null;
 		}
 		
-		return cast(Data.get().resources.get(typeID), ActorType);
+		var result = Data.get().resources.get(typeID);
+		
+		if(Std.is(result, ActorType))
+		{
+			return cast(result, ActorType);
+		}
+		
+		return null;
 	}
 		
 	//*-----------------------------------------------
