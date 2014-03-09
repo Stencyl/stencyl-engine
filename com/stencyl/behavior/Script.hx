@@ -2151,21 +2151,47 @@ class Script
 		return new BitmapData(1, 1);
 	}
 	
-	//TODO
+	public function setOrderForImage(img:Bitmap, order:Int)
+	{
+		if(img != null && img.parent != null)
+		{
+			if(order >= 0 && order < img.parent.numChildren)
+			{
+				img.parent.setChildIndex(img, order);
+			}
+		}
+	}
+	
 	public function bringImageBack(img:Bitmap)
 	{
+		if(img != null && img.parent != null)
+		{
+			setOrderForImage(img, img.parent.getChildIndex(img) - 1);
+		}
 	}
 	
 	public function bringImageForward(img:Bitmap)
 	{
+		if(img != null && img.parent != null)
+		{
+			setOrderForImage(img, img.parent.getChildIndex(img) + 1);
+		}
 	}
 	
 	public function bringImageToBack(img:Bitmap)
 	{
+		if(img != null && img.parent != null)
+		{
+			setOrderForImage(img, 0);
+		}
 	}
 	
 	public function bringImagetoFront(img:Bitmap)
 	{
+		if(img != null && img.parent != null)
+		{
+			setOrderForImage(img, img.parent.numChildren - 1);
+		}
 	}
 	
 	public function attachImageToActor(img:Bitmap, a:Actor, x:Int, y:Int, pos:Int = 1)
@@ -2534,14 +2560,6 @@ class Script
 		if(img != null)
 		{
 			img.filters = [];
-		}
-	}
-	
-	public function setOrderForImage(img:Bitmap, order:Int)
-	{
-		if(img != null && img.parent != null)
-		{
-			img.parent.setChildIndex(img, order);
 		}
 	}
 	
