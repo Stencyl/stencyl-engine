@@ -2097,6 +2097,28 @@ class Script
 		return nme.Assets.getBitmapData("assets/data/" + path);
 	}
 	
+	public function getSubImage(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapData
+	{
+		if(img != null && x >= 0 && y >= 0 && width > 0 && height > 0 && x < img.width && y < img.height)
+		{
+			var newImg:BitmapData = new BitmapData(width, height);
+			
+			dummyRect.x = x;
+			dummyRect.y = y;
+			dummyRect.width = width;
+			dummyRect.height = height;
+			
+			dummyPoint.x = 0;
+			dummyPoint.y = 0;
+			
+			newImg.copyPixels(img, dummyRect, dummyPoint);
+			
+			return newImg;
+		}
+		
+		return new BitmapData(1, 1);
+	}
+	
 	//TODO
 	public function bringImageBack(img:Bitmap)
 	{
