@@ -15,6 +15,7 @@ import nme.text.TextField;
 
 import nme.display.DisplayObject;
 import nme.display.Loader;
+import nme.display.LoaderInfo;
 import nme.display.Graphics;
 import nme.display.BitmapData;
 import nme.display.Bitmap;
@@ -2095,6 +2096,20 @@ class Script
 	public function getExternalImage(path:String):BitmapData
 	{
 		return nme.Assets.getBitmapData("assets/data/" + path);
+	}
+	
+	//TODO: See - http://www.onegiantmedia.com/as3--load-a-remote-image-from-any-url--domain-with-no-stupid-security-sandbox-errors
+	public function loadImageFromURL(URL:String, onComplete:BitmapData->Void)
+	{
+		var handler = function(event:Event):Void
+		{
+			var bitmapData = cast(event.currentTarget.content, Bitmap).bitmapData;
+    		onComplete(bitmapData);
+		}
+	
+		var loader:Loader = new Loader();
+    	loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handler);
+    	loader.load(new URLRequest(URL));
 	}
 	
 	public function getSubImage(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapData
