@@ -2097,34 +2097,74 @@ class Script
 		return nme.Assets.getBitmapData("assets/data/" + path);
 	}
 	
-	public function attachImageToActor(img:Bitmap, a:Actor, x:Int, y:Int, pos:Int)
+	//TODO
+	public function bringImageBack(img:Bitmap)
+	{
+	}
+	
+	public function bringImageForward(img:Bitmap)
+	{
+	}
+	
+	public function bringImageToBack(img:Bitmap)
+	{
+	}
+	
+	public function bringImagetoFront(img:Bitmap)
+	{
+	}
+	
+	public function attachImageToActor(img:Bitmap, a:Actor, x:Int, y:Int, pos:Int = 1)
 	{
 		if(img != null)
 		{
-			a.addChildAt(img, pos);
+			//Behind the Actor - Send to the very back.
+			if(pos == 2)
+			{
+				a.addChild(img);
+				a.setChildIndex(img, 0);
+			}
+		
+			else
+			{
+				a.addChild(img);
+			}
+			
 			img.x = x - a.getWidth()/2;
 			img.y = y - a.getHeight()/2;
+			img.smoothing = true;
 		}
 	}
 	
 	//Will be "fixed" like an HUD
-	public function attachImageToHUD(img:Bitmap, x:Int, y:Int, pos:Int)
+	public function attachImageToHUD(img:Bitmap, x:Int, y:Int)
 	{
 		if(img != null)
 		{
-			engine.hudLayer.addChildAt(img, pos);
+			engine.hudLayer.addChild(img);
 			img.x = x;
 			img.y = y;
 			img.smoothing = true;
 		}
 	}
 	
-	public function attachImageToLayer(img:Bitmap, layerID:Int, x:Int, y:Int, pos:Int)
+	public function attachImageToLayer(img:Bitmap, layerID:Int, x:Int, y:Int, pos:Int = 1)
 	{
 		if(img != null)
 		{
-			var layer = engine.actorsPerLayer.get(layerID);
-			layer.addChildAt(img, pos);
+			//Behind all Actors & Tiles in this layer.
+			if(pos == 2)
+			{
+				var layer = engine.layers.get(layerID);
+				layer.addChild(img);
+			}
+			
+			else
+			{
+				var layer = engine.actorsPerLayer.get(layerID);
+				layer.addChild(img);
+			}
+			
 			img.x = x;
 			img.y = y;
 			img.smoothing = true;
