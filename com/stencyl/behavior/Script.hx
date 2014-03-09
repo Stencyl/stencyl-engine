@@ -2101,6 +2101,12 @@ class Script
 	//TODO: See - http://www.onegiantmedia.com/as3--load-a-remote-image-from-any-url--domain-with-no-stupid-security-sandbox-errors
 	public function loadImageFromURL(URL:String, onComplete:BitmapData->Void)
 	{
+		#if flash
+		var lc = new flash.system.LoaderContext();
+		lc.checkPolicyFile = false;
+		lc.securityDomain = flash.system.SecurityDomain.currentDomain;
+		lc.applicationDomain = flash.system.ApplicationDomain.currentDomain; 
+		
 		var handler = function(event:Event):Void
 		{
 			var bitmapData = cast(event.currentTarget.content, Bitmap).bitmapData;
@@ -2110,6 +2116,17 @@ class Script
 		var loader:Loader = new Loader();
     	loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handler);
     	loader.load(new URLRequest(URL));
+		#else
+		var handler = function(event:Event):Void
+		{
+			var bitmapData = cast(event.currentTarget.content, Bitmap).bitmapData;
+    		onComplete(bitmapData);
+		}
+	
+		var loader:Loader = new Loader();
+    	loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handler);
+    	loader.load(new URLRequest(URL));
+    	#end
 	}
 	
 	public function getSubImage(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapData
