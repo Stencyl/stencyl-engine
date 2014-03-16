@@ -18,24 +18,30 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	private var sheet:BitmapData;
 	private var durations:Array<Int>;
 	private var numFrames:Int;
+	private var across:Int;
+	private var down:Int;
 	
 	private var frameWidth:Int;
+	private var frameHeight:Int;
 	private var region:Rectangle;
 	private var pt:Point;
 	
 	private var finished:Bool;
 	private var needsUpdate:Bool;
 	
-	public function new(sheet:BitmapData, numFrames:Int, durations:Array<Int>, looping:Bool, model:Animation) 
+	public function new(sheet:BitmapData, numFrames:Int, across:Int, down:Int, durations:Array<Int>, looping:Bool, model:Animation) 
 	{
-		super(new BitmapData(Std.int(sheet.width/numFrames), sheet.height));
+		super(new BitmapData(Std.int(sheet.width/across), Std.int(sheet.height/down)));
 		
 		this.model = model;
 		
-		this.frameWidth = Std.int(sheet.width/numFrames);		
+		this.across = across;
+		this.down = down;
+		this.frameWidth = Std.int(sheet.width / across);
+		this.frameHeight = Std.int(sheet.height / down);
 		
-		this.x = -sheet.width/(2 * numFrames) * Engine.SCALE;
-		this.y = -sheet.height/2 * Engine.SCALE;		
+		this.x = -sheet.width/(2 * across) * Engine.SCALE;
+		this.y = -sheet.height/(2 * down) * Engine.SCALE;		
 		
 		this.timer = 0;
 		this.frameIndex = 0;
@@ -45,7 +51,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		this.numFrames = numFrames;
 		this.smoothing = scripts.MyAssets.antialias;
 		
-		region = new Rectangle(0, 0, frameWidth, sheet.height);
+		region = new Rectangle(0, 0, frameWidth* Engine.SCALE, frameHeight* Engine.SCALE);
 		pt = new Point(0, 0);
 		
 		finished = (numFrames <= 1);
@@ -155,7 +161,8 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	
 	public inline function updateBitmap()
 	{
-		region.x = frameWidth * frameIndex;
+		region.x = frameWidth * (frameIndex % across);
+		region.y = frameHeight * Math.floor(frameIndex/ across);
 		
 		bitmapData.fillRect(this.bitmapData.rect, 0x00000000);
 		bitmapData.copyPixels(sheet, region, pt);

@@ -67,6 +67,7 @@ class SpriteReader implements AbstractReader
 		var originX:Float = Std.parseFloat(xml.att.originx);
 		var originY:Float = Std.parseFloat(xml.att.originy);
 		
+		var frameCount:Int = Std.parseInt(xml.att.numframes);
 		var framesAcross:Int = Std.parseInt(xml.att.across);
 		var framesDown:Int = Std.parseInt(xml.att.down);
 		
@@ -106,6 +107,7 @@ class SpriteReader implements AbstractReader
 			originX,
 			originY,
 			durations, 
+			frameCount,
 			framesAcross, 
 			framesDown,
 			parent.atlasID

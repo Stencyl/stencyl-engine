@@ -494,9 +494,11 @@ class Actor extends Sprite
 						a.animID,
 						a.animName, 
 						a.imgData, 
-						a.framesAcross, 
+						a.frameCount, 
 						Math.floor(a.imgWidth / a.framesAcross), 
 						Math.floor(a.imgHeight / a.framesDown), 
+						a.framesAcross,
+						a.framesDown,
 						a.originX,
 						a.originY,
 						a.durations, 
@@ -514,7 +516,7 @@ class Actor extends Sprite
 		
 		//--
 		
-		addAnim(-1, "recyclingDefault", null, 1, 1, 1, 1, 1, [1000], false, null);
+		addAnim(-1, "recyclingDefault", null, 1, 1, 1, 1, 1, 1, 1, [1000], false, null);
 
 		if(bodyDef != null && physicsMode == 0)
 		{
@@ -745,6 +747,8 @@ class Actor extends Sprite
 		frameCount:Int=1, 
 		frameWidth:Int=0, 
 		frameHeight:Int = 0, 
+		framesAcross:Int = 1,
+		framesDown:Int = 1,
 		originX:Float = 0,
 		originY:Float = 0,
 		durations:Array<Int>=null, 
@@ -799,7 +803,7 @@ class Actor extends Sprite
 			//animationMap.set(name, new Sprite());
 			
 			//XXX: Did some work on cases where image dta is missing. It's still an error but won't crash anymore.
-			animationMap.set(name, new BitmapAnimation(new BitmapData(16, 16), 1, [1000000], false, null));
+			animationMap.set(name, new BitmapAnimation(new BitmapData(16, 16), 1, 1, 1, [1000000], false, null));
 			originMap.set(name, new B2Vec2(originX, originY));
 			return;
 		}
@@ -807,22 +811,24 @@ class Actor extends Sprite
 		#if cpp
 		var tilesheet = new Tilesheet(imgData);
 				
-		frameWidth = Std.int(imgData.width/frameCount);
+		//frameWidth = Std.int(imgData.width/frameCount);
 				
 		for(i in 0...frameCount)
 		{			
-			tilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * i, 0, frameWidth, frameHeight * Engine.SCALE)); 	
+			tilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * (i % framesAcross)* Engine.SCALE, Math.floor(i / framesAcross) * frameHeight* Engine.SCALE, frameWidth * Engine.SCALE, frameHeight * Engine.SCALE));
 		}
 		 	
 		var sprite = new SheetAnimation
 		(
 			tilesheet, 
 			durations, 
-			Std.int(frameWidth), 
+			Std.int(frameWidth * Engine.SCALE), 
 			Std.int(frameHeight * Engine.SCALE),
 			looping,
 			this.sprite.animations.get(animID).sync ? this.sprite.animations.get(animID) : null
 		);
+		
+		sprite.framesAcross = framesAcross;
 		
 		animationMap.set(name, sprite);
 		#end
@@ -832,6 +838,8 @@ class Actor extends Sprite
 		(
 			imgData, 
 			frameCount, 
+			framesAcross,
+			framesDown,
 			durations, 
 			looping, 
 			this.sprite.animations.get(animID).sync ? this.sprite.animations.get(animID) : null

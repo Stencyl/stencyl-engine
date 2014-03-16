@@ -19,6 +19,7 @@ class Animation
 	public var imgWidth:Int;
 	public var imgHeight:Int;
 	
+	public var frameCount:Int;
 	public var framesAcross:Int;
 	public var framesDown:Int;
 	
@@ -44,6 +45,7 @@ class Animation
 		originX:Float,
 		originY:Float,
 		durations:Array<Int>, 
+		frameCount:Int,
 		framesAcross:Int, 
 		framesDown:Int,
 		atlasID:Int
@@ -62,6 +64,7 @@ class Animation
 		this.imgWidth = imgWidth;
 		this.imgHeight = imgHeight;
 		
+		this.frameCount = frameCount;
 		this.framesAcross = framesAcross;
 		this.framesDown = framesDown;
 		
