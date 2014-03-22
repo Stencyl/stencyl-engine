@@ -25,6 +25,8 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	private var needsUpdate:Bool;
 	
 	public var framesAcross:Int;
+	public var frameWidth:Int;
+	public var frameHeight:Int;
 	
 	#if !js
 	public var tilesheet:Tilesheet;
@@ -53,6 +55,8 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 		
 		this.timer = 0;
 		this.frameIndex = 0;
+		this.frameWidth = width;
+		this.frameHeight = height;
 		this.looping = looping;
 		#if !js
 		this.tilesheet = tilesheet;

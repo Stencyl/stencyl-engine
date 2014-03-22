@@ -3379,15 +3379,16 @@ class Actor extends Sprite
 				{
 					backupAnimationMap.set(key, anim.tilesheet.__bitmap.clone());
 					
-					var frameWidth = Std.int(anim.tilesheet.__bitmap.width / anim.numFrames);
-					var frameHeight = anim.tilesheet.__bitmap.height;
+					var frameWidth = anim.frameWidth;
+					var frameHeight = anim.frameHeight;
 					var tempData:BitmapData = anim.tilesheet.__bitmap.clone();
 					var tempTilesheet = new Tilesheet(tempData);
 					
 					var i = 0;
+					
 					while (i < anim.numFrames)
 					{
-						tempTilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * i, 0, frameWidth, frameHeight));
+						tempTilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * (i % anim.framesAcross), Math.floor(i / anim.framesAcross) * frameHeight, frameWidth, frameHeight));
 						i++;
 					}
 					
