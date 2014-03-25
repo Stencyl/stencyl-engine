@@ -2089,7 +2089,8 @@ class Script
 	
 	public function getImageForActor(a:Actor):BitmapData
 	{
-		return a.getCurrentImage();
+		var original:BitmapData = a.getCurrentImage();
+		return original.clone();
 	}
 	
 	//Example path: "sample.png" - stick into the "extras" folder for your game - see: http://community.stencyl.com/index.php/topic,24729.0.html
@@ -2273,7 +2274,7 @@ class Script
 			
 			if(blendMode == BlendMode.NORMAL)
 			{
-				dest.copyPixels(source, dummyRect, dummyPoint);
+				dest.copyPixels(source, dummyRect, dummyPoint, null, null, true);
 			}
 			
 			else
