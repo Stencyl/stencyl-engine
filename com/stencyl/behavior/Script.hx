@@ -2132,6 +2132,11 @@ class Script
 	
 	public function getSubImage(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapData
 	{
+		x = Std.int(x * Engine.SCALE);
+		y = Std.int(y * Engine.SCALE);
+		width = Std.int(width * Engine.SCALE);
+		height = Std.int(height * Engine.SCALE);
+	
 		if(img != null && x >= 0 && y >= 0 && width > 0 && height > 0 && x < img.width && y < img.height)
 		{
 			var newImg:BitmapData = new BitmapData(width, height);
@@ -2197,6 +2202,9 @@ class Script
 	
 	public function attachImageToActor(img:Bitmap, a:Actor, x:Int, y:Int, pos:Int = 1)
 	{
+		x = Std.int(x * Engine.SCALE);
+		y = Std.int(y * Engine.SCALE);
+		
 		if(img != null)
 		{
 			//Behind the Actor - Send to the very back.
@@ -2210,9 +2218,32 @@ class Script
 			{
 				a.addChild(img);
 			}
+
+			//XXX: Awful, but it works. Clean this up.
+			if(Engine.SCALE == 1)
+			{
+				img.x = x - (a.getWidth()/2);
+				img.y = y - (a.getHeight()/2);
+			}
 			
-			img.x = x - a.getWidth()/2;
-			img.y = y - a.getHeight()/2;
+			else if(Engine.SCALE == 2)
+			{
+				img.x = x - (Engine.SCALE * a.getWidth());
+				img.y = y - (Engine.SCALE * a.getHeight());
+			}
+			
+			else if(Engine.SCALE == 4)
+			{
+				img.x = x - (Engine.SCALE * a.getWidth() * 2);
+				img.y = y - (Engine.SCALE * a.getHeight() * 2);
+			}
+			
+			else
+			{
+				img.x = x - (Engine.SCALE * a.getWidth() * 1.5);
+				img.y = y - (Engine.SCALE * a.getHeight() * 1.5);
+			}
+			
 			img.smoothing = true;
 		}
 	}
@@ -2220,6 +2251,9 @@ class Script
 	//Will be "fixed" like an HUD
 	public function attachImageToHUD(img:Bitmap, x:Int, y:Int)
 	{
+		x = Std.int(x * Engine.SCALE);
+		y = Std.int(y * Engine.SCALE);
+		
 		if(img != null)
 		{
 			engine.hudLayer.addChild(img);
@@ -2231,6 +2265,9 @@ class Script
 	
 	public function attachImageToLayer(img:Bitmap, layerID:Int, x:Int, y:Int, pos:Int = 1)
 	{
+		x = Std.int(x * Engine.SCALE);
+		y = Std.int(y * Engine.SCALE);
+		
 		if(img != null)
 		{
 			//Behind all Actors & Tiles in this layer.
@@ -2262,6 +2299,9 @@ class Script
 	
 	public function drawImageOnImage(source:BitmapData, dest:BitmapData, x:Int, y:Int, blendMode:BlendMode)
 	{
+		x = Std.int(x * Engine.SCALE);
+		y = Std.int(y * Engine.SCALE);
+		
 		if(source != null && dest != null)
 		{
 			dummyRect.x = 0;
@@ -2289,6 +2329,9 @@ class Script
 	
 	public function drawTextOnImage(img:BitmapData, text:String, x:Int, y:Int, font:Font)
 	{
+		x = Std.int(x * Engine.SCALE);
+		y = Std.int(y * Engine.SCALE);
+		
 		if(img != null)
 		{
 			#if(flash || js)
@@ -2313,6 +2356,11 @@ class Script
 	
 	public function clearImagePartially(img:BitmapData, x:Int, y:Int, width:Int, height:Int)
 	{
+		x = Std.int(x * Engine.SCALE);
+		y = Std.int(y * Engine.SCALE);
+		width = Std.int(width * Engine.SCALE);
+		height = Std.int(height * Engine.SCALE);
+		
 		if(img != null)
 		{
 			dummyRect.x = x;
@@ -2331,6 +2379,9 @@ class Script
 	
 	public function clearImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
+		x = Std.int(x * Engine.SCALE);
+		y = Std.int(y * Engine.SCALE);
+		
 		//Inspired by http://franto.com/inverse-masking-disclosed/
 		var temp = new Sprite();
 		var bmpDest = new Bitmap(dest);
@@ -2358,6 +2409,9 @@ class Script
 	
 	public function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
+		x = Std.int(x * Engine.SCALE);
+		y = Std.int(y * Engine.SCALE);
+		
 		dummyRect.x = 0;
 		dummyRect.y = 0;
 		dummyRect.width = dest.width;
@@ -2414,7 +2468,27 @@ class Script
 	{
 		if(img != null)
 		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+		
 			img.setPixel(x, y, color);
+			
+			if(Engine.SCALE == 2)
+			{
+				img.setPixel(x + 1, y, color);
+				img.setPixel(x, y + 1, color);
+				img.setPixel(x + 1, y + 1, color);
+			}
+			
+			if(Engine.SCALE == 4)
+			{
+				img.setPixel(x + 2, y, color);
+				img.setPixel(x + 2, y + 1, color);
+				img.setPixel(x + 2, y + 2, color);
+				
+				img.setPixel(x, y + 2, color);
+				img.setPixel(x + 1, y + 2, color);
+			}
 		}
 	}
 	
@@ -2422,6 +2496,9 @@ class Script
 	{
 		if(img != null)
 		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+		
 			return img.getPixel(x, y);
 		}
 		
@@ -2489,6 +2566,22 @@ class Script
 		img.copyPixels(final, dummyRect, dummyPoint);
 	}
 	
+	public function setXForImage(img:Bitmap, value:Float)
+	{
+		if(img != null)
+		{
+			img.x = (Engine.SCALE * value);
+		}
+	}
+	
+	public function setYForImage(img:Bitmap, value:Float)
+	{
+		if(img != null)
+		{
+			img.y = (Engine.SCALE * value);
+		}
+	}
+	
 	public function fadeImageTo(img:Bitmap, value:Float, duration:Float = 1, easing:Dynamic = null)
 	{	
 		if(easing == null)
@@ -2522,6 +2615,9 @@ class Script
 	
 	public function moveImageTo(img:Bitmap, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
 	{
+		x = (x * Engine.SCALE);
+		y = (y * Engine.SCALE);
+		
 		if(easing == null)
 		{
 			easing = Linear.easeNone;
