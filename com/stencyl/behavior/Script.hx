@@ -2244,7 +2244,7 @@ class Script
 				img.y = y - (Engine.SCALE * a.getHeight() * 1.5);
 			}
 			
-			img.smoothing = true;
+			img.smoothing = scripts.MyAssets.antialias;
 		}
 	}
 	
@@ -2259,7 +2259,7 @@ class Script
 			engine.hudLayer.addChild(img);
 			img.x = x;
 			img.y = y;
-			img.smoothing = true;
+			img.smoothing = scripts.MyAssets.antialias;
 		}
 	}
 	
@@ -2285,7 +2285,7 @@ class Script
 			
 			img.x = x;
 			img.y = y;
-			img.smoothing = true;
+			img.smoothing = scripts.MyAssets.antialias;
 		}
 	}
 	
