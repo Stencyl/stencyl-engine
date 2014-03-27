@@ -29,6 +29,7 @@ class BitmapFont
 	private var _num_letters:Int;
 	private var _tileSheet:Tilesheet;
 	private static var _flags = Tilesheet.TILE_SCALE | Tilesheet.TILE_ROTATION | Tilesheet.TILE_ALPHA | Tilesheet.TILE_RGB;
+	public static var skipFlags = false;
 	#end
 	private var _glyphString:String;
 	private var _maxHeight:Int;
@@ -159,6 +160,8 @@ class BitmapFont
 						_glyphString += charString;
 						
 						var xadvance:Int = Std.parseInt(node.get("xadvance"));
+						//var padding:Int = Std.parseInt(node.get("padding"));
+						
 						var charWidth:Int = xadvance;
 
 						if(rect.width > xadvance)
@@ -515,21 +518,26 @@ class BitmapFont
 				drawData.push(_point.x + glyph.xoffset * pScale);			// x
 				drawData.push(_point.y + glyph.yoffset * pScale);			// y
 				drawData.push(glyph.tileID);								// tile_ID
-				drawData.push(pScale);										// scale
-				drawData.push(0);											// rotation
-				if (pUseColorTransform)
+				
+				if(!skipFlags)
 				{
-					drawData.push(red);			
-					drawData.push(green);
-					drawData.push(blue);
+					drawData.push(pScale);										// scale
+					drawData.push(0);											// rotation
+					if (pUseColorTransform)
+					{
+						drawData.push(red);			
+						drawData.push(green);
+						drawData.push(blue);
+					}
+					else
+					{
+						drawData.push(1);			
+						drawData.push(1);
+						drawData.push(1);
+					}
+					drawData.push(pAlpha);										// alpha
 				}
-				else
-				{
-					drawData.push(1);			
-					drawData.push(1);
-					drawData.push(1);
-				}
-				drawData.push(pAlpha);										// alpha
+				
 				_point.x += glyphWidth * pScale + pLetterSpacing;
 				#end
 			}
@@ -553,9 +561,18 @@ class BitmapFont
 	 * @param	graphics
 	 * @param	drawData
 	 */
-	public function drawText(graphics:Graphics, drawData:Array<Float>):Void
+	public function drawText(graphics:Graphics, drawData:Array<Float>, overrideFlags:Bool = false, altFlags:Int = 0):Void
 	{
-		_tileSheet.drawTiles(graphics, drawData, scripts.MyAssets.antialias, _flags);
+		if(overrideFlags)
+		{
+			trace(drawData);
+			_tileSheet.drawTiles(graphics, drawData, scripts.MyAssets.antialias, altFlags);
+		}
+		
+		else
+		{
+			_tileSheet.drawTiles(graphics, drawData, scripts.MyAssets.antialias, _flags);
+		}
 	}
 	#end
 	

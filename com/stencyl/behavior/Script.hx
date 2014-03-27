@@ -37,6 +37,7 @@ import com.stencyl.models.scene.Layer;
 import com.stencyl.models.Region;
 import com.stencyl.models.Resource;
 import com.stencyl.models.Terrain;
+import com.stencyl.graphics.fonts.BitmapFont;
 import com.stencyl.graphics.transitions.Transition;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.Font;
@@ -120,7 +121,10 @@ class Script
 	public static var mry:Float = 0;
 	
 	public static var dummyVec:B2Vec2 = new B2Vec2();
-		
+	
+	private static var drawData:Array<Float> = new Array<Float>();
+	private static var ma:Matrix = new Matrix();
+	
 		
 	//*-----------------------------------------------
 	//* Display Names
@@ -2345,11 +2349,15 @@ class Script
 		
 			font.font.render(img, fontData, text, 0x000000, 1, x, y, 0, 0);
 			#else
-			var drawData = [];
-			font.font.render(drawData, text, 0x000000, 1, Std.int(x), Std.int(y), 0, font.fontScale, 0, false);
+			BitmapFont.skipFlags = true;
+			drawData.splice(0, drawData.length);
+			font.font.render(drawData, text, 0x000000, 1, 0, 0, 0, font.fontScale, 0, false);
 			var temp = new Sprite();
-			font.font.drawText(temp.graphics, drawData);
-			img.draw(temp);
+			font.font.drawText(temp.graphics, drawData, true, 0);
+			ma.tx = x;
+			ma.ty = y;
+			img.draw(temp, ma);
+			BitmapFont.skipFlags = false;
 			#end
 		}
 	}
