@@ -811,19 +811,21 @@ class Actor extends Sprite
 		#if cpp
 		var tilesheet = new Tilesheet(imgData);
 				
-		//frameWidth = Std.int(imgData.width/frameCount);
+		frameWidth = Std.int(imgData.width/framesAcross);
+		frameHeight = Std.int(imgData.height/framesDown);
 				
 		for(i in 0...frameCount)
 		{			
-			tilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * (i % framesAcross)* Engine.SCALE, Math.floor(i / framesAcross) * frameHeight* Engine.SCALE, frameWidth * Engine.SCALE, frameHeight * Engine.SCALE));
+			tilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * (i % framesAcross), Math.floor(i / framesAcross) * frameHeight, frameWidth, frameHeight));
+			trace("x: " + (frameWidth * (i % framesAcross)) + " y: " + (Math.floor(i / framesAcross) * frameHeight) + " w: " + (frameWidth) + " h: " + (frameHeight));
 		}
 		 	
 		var sprite = new SheetAnimation
 		(
 			tilesheet, 
 			durations, 
-			Std.int(frameWidth * Engine.SCALE), 
-			Std.int(frameHeight * Engine.SCALE),
+			frameWidth, 
+			frameHeight,
 			looping,
 			this.sprite.animations.get(animID).sync ? this.sprite.animations.get(animID) : null
 		);
