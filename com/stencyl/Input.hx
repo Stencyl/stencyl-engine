@@ -337,7 +337,11 @@ class Input
 					swipedDown = true;
 			}
 			
-			Engine.invokeListeners(Engine.engine.whenSwipedListeners);
+			if(Engine.engine.whenSwipedListeners != null)
+			{
+				Engine.invokeListeners(Engine.engine.whenSwipedListeners);
+			}
+			
 			swipeDirection = -1;
 		}
 		
