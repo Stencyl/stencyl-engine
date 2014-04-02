@@ -817,7 +817,7 @@ class Actor extends Sprite
 		for(i in 0...frameCount)
 		{			
 			tilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * (i % framesAcross), Math.floor(i / framesAcross) * frameHeight, frameWidth, frameHeight));
-			trace("x: " + (frameWidth * (i % framesAcross)) + " y: " + (Math.floor(i / framesAcross) * frameHeight) + " w: " + (frameWidth) + " h: " + (frameHeight));
+			// trace("x: " + (frameWidth * (i % framesAcross)) + " y: " + (Math.floor(i / framesAcross) * frameHeight) + " w: " + (frameWidth) + " h: " + (frameHeight));
 		}
 		 	
 		var sprite = new SheetAnimation
