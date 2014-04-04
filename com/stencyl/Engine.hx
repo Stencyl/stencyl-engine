@@ -99,6 +99,8 @@ import box2D.dynamics.contacts.B2Contact;
 import box2D.dynamics.contacts.B2ContactEdge;
 
 import haxe.ds.ObjectMap;
+import com.stencyl.graphics.shaders.PostProcess;
+import com.stencyl.graphics.shaders.Shader;
 
 
 class Engine 
@@ -368,6 +370,17 @@ class Engine
 	
 	
 	//*-----------------------------------------------
+	//* Full Screen Shaders - EXPERIMENTAL - C++
+	//*-----------------------------------------------
+	
+	#if desktop
+	private var shader:PostProcess;
+	public var shaderLayer:Sprite;
+	public var shaders:Array<PostProcess>;
+	#end
+	
+	
+	//*-----------------------------------------------
 	//* Full Screen
 	//*-----------------------------------------------
 	
@@ -446,6 +459,13 @@ class Engine
 
 	public function new(root:Sprite) 
 	{		
+		#if desktop
+		if(openfl.display.OpenGLView.isSupported)
+		{
+			shaderLayer = new Sprite();
+		}
+		#end
+		
 		root.mouseChildren = false;
 		root.mouseEnabled = false;
 		//root.stage.mouseChildren = false;
@@ -469,7 +489,48 @@ class Engine
 		stage.addEventListener(Event.DEACTIVATE, onFocusLost);
 		stage.addEventListener(Event.ACTIVATE, onFocus);
 		begin(scripts.MyAssets.initSceneID);
+		
+		#if desktop
+		if(openfl.display.OpenGLView.isSupported)
+		{
+			root.addChild(shaderLayer);
+		}
+		#end
 	}
+	
+	#if !desktop
+	public function addShader(s:PostProcess) {}
+	public function clearShaders() {}
+	#else
+	public function addShader(s:PostProcess) 
+	{
+		if(openfl.display.OpenGLView.isSupported)
+		{
+			shaderLayer.addChild(s);
+
+			if(shaders == null)
+			{
+				shaders = [s];
+			}
+			
+			else
+			{
+				shaders.push(s);
+			}
+		}
+		
+		else
+		{
+			trace("Shaders are not supported on this platform.");
+		}
+	}
+	
+	public function clearShaders()
+	{
+		Utils.removeAllChildren(shaderLayer);
+		shaders = [];
+	}
+	#end
 	
 	public function begin(initSceneID:Int)
 	{		
@@ -3111,7 +3172,17 @@ class Engine
 		else if(enter != null && enter.isActive())
 		{
 			enter.draw(null);
-		} 
+		}
+		
+		#if desktop
+		if(shaders != null)
+		{
+			for(s in shaders)
+			{
+				s.capture();
+			}
+		}
+		#end
      }
 	
 	//*-----------------------------------------------
