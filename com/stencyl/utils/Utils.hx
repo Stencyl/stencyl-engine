@@ -108,7 +108,7 @@ class Utils
 		{
 			if(arr[i] == value)
 			{
-				arr.slice(i, 1);
+				arr.splice(i, 1);
 			}
 		
 			i--;
