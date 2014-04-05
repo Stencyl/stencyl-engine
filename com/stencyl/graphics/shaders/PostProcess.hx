@@ -14,7 +14,7 @@ class PostProcess
 {
 	public var timeScale:Float = 1;
 	public var parent:Dynamic;
-
+	public var to:Dynamic;
 
 	public function new(shader:String, literalText:Bool = false)
 	{

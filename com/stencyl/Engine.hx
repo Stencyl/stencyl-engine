@@ -3178,12 +3178,10 @@ class Engine
 		}
 		
 		#if desktop
-		if(shaders != null)
+		if(shaders != null && shaders.length > 0)
 		{
-			for(s in shaders)
-			{
-				s.capture();
-			}
+			//Only need to capture the first shader in the chain
+			shaders[0].capture();
 		}
 		#end
      }

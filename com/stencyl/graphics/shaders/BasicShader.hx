@@ -22,7 +22,6 @@ class BasicShader
 	
 	public function enable()
 	{
-		Engine.engine.clearShaders();
 		Engine.engine.addShader(model);
 	}
 	
@@ -45,5 +44,13 @@ class BasicShader
 	public function setTimeScale(amount:Float)
 	{
 		model.timeScale = amount;
+	}
+	
+	//Enable only needs to be called on the final shader in the chain.
+	public function combine(shader:BasicShader):BasicShader
+	{
+		Engine.engine.addShader(model);
+		model.to = shader.model;
+		return shader;
 	}
 }
