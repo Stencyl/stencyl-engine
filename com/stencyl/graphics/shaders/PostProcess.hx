@@ -11,7 +11,7 @@ import com.stencyl.Engine;
  */
 class PostProcess
 {
-	public function new(shader:String)
+	public function new(shader:String, literalText:Bool = false)
 	{
 		#if debug trace("Post processing not supported on Flash"); #end
 	}
@@ -44,7 +44,7 @@ class PostProcess extends OpenGLView
 	 * Create a new PostProcess object
 	 * @param fragmentShader  A glsl file in your assets path
 	 */
-	public function new(fragmentShader:String)
+	public function new(fragmentShader:String, literalText:Bool = false)
 	{
 		super();
 		uniforms = new Map<String, Uniform>();
@@ -76,11 +76,22 @@ class PostProcess extends OpenGLView
 		GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(cast vertices), GL.STATIC_DRAW);
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 
-		shader = new Shader([
-			{ src: vertexShader, fragment: false },
-			{ src: Assets.getText(fragmentShader), fragment: true }
-		]);
+		if(literalText)
+		{
+			shader = new Shader([
+				{ src: vertexShader, fragment: false },
+				{ src: fragmentShader, fragment: true }
+			]);
+		}
 
+		else
+		{
+			shader = new Shader([
+				{ src: vertexShader, fragment: false },
+				{ src: Assets.getText(fragmentShader), fragment: true }
+			]);
+		}
+		
 		// default shader variables
 		imageUniform = shader.uniform("uImage0");
 		timeUniform = shader.uniform("uTime");
