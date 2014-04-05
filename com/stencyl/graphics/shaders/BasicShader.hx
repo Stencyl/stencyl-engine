@@ -17,7 +17,7 @@ class BasicShader
 	
 	public function tweenProperty(name:String, targetValue:Float, duration:Float = 1, easing:Dynamic = null)
 	{
-		//TODO - How to pull this off?
+		model.tweenUniform(name, targetValue, duration, easing);
 	}
 	
 	public function enable()

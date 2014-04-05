@@ -2,6 +2,7 @@ package com.stencyl.graphics.shaders;
 
 import flash.geom.Rectangle;
 import com.stencyl.Engine;
+import motion.Actuate;
 
 #if flash
 
@@ -117,6 +118,15 @@ class PostProcess extends OpenGLView
 		{
 			var id:Int = shader.uniform(uniform);
 			if (id != -1) uniforms.set(uniform, {id: id, value: value});
+		}
+	}
+	
+	public function tweenUniform(name:String, targetValue:Float, duration:Float = 1, easing:Dynamic = null)
+	{
+		if(uniforms.exists(name))
+		{
+			var uniform = uniforms.get(name);
+			Actuate.tween(uniform, duration, {value:targetValue}).ease(easing);
 		}
 	}
 
