@@ -156,8 +156,9 @@ class PostProcess extends OpenGLView
 		if (texture != null) GL.deleteTexture(texture);
 		if (renderbuffer != null) GL.deleteRenderbuffer(renderbuffer);
 
-		createTexture(Engine.screenWidth, Engine.screenHeight);
-		createRenderbuffer(Engine.screenWidth, Engine.screenHeight);
+		createTexture(Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
+		createRenderbuffer(Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
+		
 		GL.bindFramebuffer(GL.FRAMEBUFFER, null);
 	}
 
@@ -196,7 +197,8 @@ class PostProcess extends OpenGLView
 	{
 		GL.bindFramebuffer(GL.FRAMEBUFFER, framebuffer);
 
-		GL.viewport(0, 0, Engine.screenWidth, Engine.screenHeight);
+		GL.viewport(0, 0, Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
+		
 		GL.clear(GL.DEPTH_BUFFER_BIT | GL.COLOR_BUFFER_BIT);
 	}
 
@@ -225,7 +227,7 @@ class PostProcess extends OpenGLView
 
 		GL.uniform1i(imageUniform, 0);
 		GL.uniform1f(timeUniform, time);
-		GL.uniform2f(resolutionUniform, Engine.screenWidth, Engine.screenHeight);
+		GL.uniform2f(resolutionUniform, Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
 
 		//for (u in uniforms) GL.uniform1f(u.id, u.value);
 		var it = uniforms.iterator();
