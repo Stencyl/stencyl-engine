@@ -12,6 +12,10 @@ import motion.Actuate;
  */
 class PostProcess
 {
+	public var timeScale:Float = 1;
+	public var parent:Dynamic;
+
+
 	public function new(shader:String, literalText:Bool = false)
 	{
 		#if debug trace("Post processing not supported on Flash"); #end
@@ -20,6 +24,7 @@ class PostProcess
 	public function capture() { }
 	public function rebuild() { }
 	public function setUniform(variable:String, value:Float) { }
+	public function tweenUniform(name:String, targetValue:Float, duration:Float = 1, easing:Dynamic = null) { }
 }
 
 #else
