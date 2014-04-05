@@ -217,7 +217,7 @@ class PostProcess extends OpenGLView
 	 */
 	override public function render(rect:Rectangle)
 	{
-		time += Engine.elapsedTime;
+		time += Engine.elapsedTime * timeScale;
 		GL.bindFramebuffer(GL.FRAMEBUFFER, renderTo);
 
 		GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
@@ -277,6 +277,7 @@ class PostProcess extends OpenGLView
 
 	/* @private Time accumulator passed to the shader */
 	private var time:Float = 0;
+	public var timeScale:Float = 1;
 
 	private var vertexSlot:Int;
 	private var texCoordSlot:Int;

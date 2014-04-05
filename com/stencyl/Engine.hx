@@ -499,14 +499,17 @@ class Engine
 	}
 	
 	#if !desktop
-	public function addShader(s:PostProcess) {}
+	public function addShader(s:PostProcess, addToDisplayTree:Bool = true) {}
 	public function clearShaders() {}
 	#else
-	public function addShader(s:PostProcess) 
+	public function addShader(s:PostProcess, addToDisplayTree:Bool = true) 
 	{
 		if(openfl.display.OpenGLView.isSupported)
 		{
-			shaderLayer.addChild(s);
+			if(addToDisplayTree)
+			{
+				shaderLayer.addChild(s);
+			}
 
 			if(shaders == null)
 			{
