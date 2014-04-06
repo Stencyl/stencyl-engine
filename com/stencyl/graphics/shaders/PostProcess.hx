@@ -277,7 +277,7 @@ class PostProcess extends OpenGLView
 
 	private var shader:Shader;
 	private var buffer:GLBuffer;
-	private var renderTo:GLFramebuffer;
+	public var renderTo:GLFramebuffer;
 	private var defaultFramebuffer:GLFramebuffer = null;
 
 	/* @private Time accumulator passed to the shader */

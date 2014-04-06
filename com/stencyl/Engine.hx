@@ -506,6 +506,27 @@ class Engine
 	{
 		if(openfl.display.OpenGLView.isSupported)
 		{
+			//Clear out existing shader if one is currently active, otherwise we hit graphical glitches.
+			if(shaders != null && s.renderTo == null)
+			{
+				var removeAll = false;
+				
+				for(shader in shaders)
+				{
+					if(shader.renderTo == null)
+					{
+						removeAll = true;
+						break;
+					}
+				}
+				
+				if(removeAll)
+				{
+					trace("Enabling a shader over an existing shader. Clearing existing shader first.");
+					clearShaders();
+				}
+			}
+			
 			if(addToDisplayTree)
 			{
 				shaderLayer.addChild(s);
