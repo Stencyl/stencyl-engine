@@ -43,7 +43,7 @@ class HueShader extends BasicShader
 	{
 		if(asDegrees)
 		{
-			hue = Math.PI / 180 * hue;
+			amount = Math.PI / 180 * amount;
 		}
 		
 		setProperty("hue", amount);
