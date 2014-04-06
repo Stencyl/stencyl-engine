@@ -1,8 +1,8 @@
 package com.stencyl.graphics.shaders;
 
-class ContrastShader extends BasicShader
+class CSBShader extends BasicShader
 {
-	public function new(amount:Float = 1.0)
+	public function new(contrast:Float = 1.0, brightness:Float = 1.0, saturation:Float = 1.0)
 	{
 		super();
 		
@@ -10,18 +10,18 @@ class ContrastShader extends BasicShader
 			varying vec2 vTexCoord;
 			uniform sampler2D uImage0;
 			uniform float contrast;
+			uniform float brightness;
+			uniform float saturation;
 
 			void main() 
 			{
 				vec3 color = texture2D(uImage0, vTexCoord).rgb;
 				const vec3 luminanceCoefficient = vec3(0.2125, 0.7154, 0.0721);
-		
 				vec3 avgLuminance = vec3(0.5, 0.5, 0.5);
 		
-				vec3 intensity = vec3(dot(color, luminanceCoefficient));
-		
-				// could substitute a uniform for this 1. and have variable saturation
-				vec3 satColor = mix(intensity, color, 1.0);
+				vec3 brtColor = vec3(color.x * brightness, color.y * brightness, color.z * brightness);
+				vec3 intensity = vec3(dot(brtColor, luminanceCoefficient));
+				vec3 satColor = mix(intensity, brtColor, saturation);
 				vec3 conColor = mix(avgLuminance, satColor, contrast);
 		
 				gl_FragColor = vec4(conColor, 1);
@@ -35,11 +35,23 @@ class ContrastShader extends BasicShader
 	
 		model = new PostProcess(script, true);
 		
-		setAmount(amount);
+		setContrast(contrast);
+		setBrightness(brightness);
+		setSaturation(saturation);
 	}
 	
-	public function setAmount(amount:Float)
+	public function setContrast(amount:Float)
 	{
 		setProperty("contrast", amount);
+	}
+	
+	public function setBrightness(amount:Float)
+	{
+		setProperty("brightness", amount);
+	}
+	
+	public function setSaturation(amount:Float)
+	{
+		setProperty("saturation", amount);
 	}
 }
