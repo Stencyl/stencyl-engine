@@ -2,6 +2,22 @@ package com.stencyl.graphics.shaders;
 
 class CSBShader extends BasicShader
 {
+	//Helper function for blocks
+	public static function create(type:String = "contrast", amount:Float = 1.0):CSBShader
+	{
+		if(type == "contrast")
+		{
+			return new CSBShader(amount, 1.0, 1.0);
+		}
+		
+		else if(type == "saturation")
+		{
+			return new CSBShader(1.0, 1.0, amount);
+		}
+		
+		return new CSBShader(1.0, amount, 1.0);
+	}
+
 	public function new(contrast:Float = 1.0, brightness:Float = 1.0, saturation:Float = 1.0)
 	{
 		super();

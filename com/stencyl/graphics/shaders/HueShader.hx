@@ -35,7 +35,7 @@ class HueShader extends BasicShader
 	
 		model = new PostProcess(script, true);
 		
-		setHue(hue);
+		setHue(hue, false);
 	}
 	
 	//Passed in degrees
