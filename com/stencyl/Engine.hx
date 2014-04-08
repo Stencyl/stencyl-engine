@@ -501,6 +501,7 @@ class Engine
 	#if !desktop
 	public function addShader(s:PostProcess, addToDisplayTree:Bool = true) {}
 	public function clearShaders() {}
+	public function toggleShadersForHUD() {} 
 	#else
 	public function addShader(s:PostProcess, addToDisplayTree:Bool = true) 
 	{
@@ -553,6 +554,14 @@ class Engine
 	{
 		Utils.removeAllChildren(shaderLayer);
 		shaders = [];
+	}
+	
+	public function toggleShadersForHUD()
+	{
+		if(shaderLayer != null && hudLayer != null && root != null)
+		{
+			root.swapChildren(shaderLayer, hudLayer);
+		}
 	}
 	#end
 	
