@@ -46,7 +46,7 @@ import com.stencyl.models.SoundChannel;
 
 import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.Tileset;
-
+import com.stencyl.utils.Utils;
 import com.stencyl.utils.ColorMatrix;
 import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
@@ -3108,6 +3108,123 @@ class Script
 		{
 			trace("Cannot open URL.");
 		}		
+	}
+	
+	//Purpose: Support Unicode in downloaded text or text from external files.
+	//Author: out2lunch
+	//http://community.stencyl.com/index.php/topic,30954.0.html
+	public function convertToPseudoUnicode(internationalText:String):String
+	{
+		#if flash
+		// Not needed in Flash, just return it
+		return internationalText;
+		#else
+		
+		var utf8List:Array<Dynamic> = [];
+		var characterList:Array<Dynamic> = [];
+		var hexAscii = ["A","B","C","D","E","F"];
+		var other_bits:Int = 6;
+		var realCount = 0;
+	
+		for (i in 0...internationalText.length)
+		{
+			if (i < realCount)
+			{
+				continue;
+			}
+	
+			if (internationalText.charCodeAt(i) < 128)
+			{ // Standard character
+				characterList.push(internationalText.charAt(i));
+			}
+			else
+			{ // Accumulate and convert UTF-8 chars
+				Utils.clear(utf8List);
+				var utf8count:Int = i;
+	
+				while (utf8count < internationalText.length)
+				{
+					if (internationalText.charCodeAt(utf8count) >= 128)
+					{ // add UTF-8 to utf8List
+						utf8List.push(internationalText.charCodeAt(utf8count));
+						realCount += 1;
+					}
+	
+					if ((internationalText.charCodeAt(utf8count) < 128) || (utf8count == (internationalText.length - 1)))
+					{ // Convert utf8List now
+						if (utf8List.length > 0)
+						{
+							var charcode:Int = 0;
+							var high_bit_mask:Int = (1 << 6) - 1;
+							var high_bit_shift:Int = 0;
+							var total_bits:Int = 0;
+							var character:Int = Std.int(asNumber(utf8List[0]));
+							utf8List.splice(0, 1);
+	
+							// Convert UTF-8 to UTF-32 http://stackoverflow.com/questions/18534494/convert-from-utf-8-to-unicode-c
+							while ((character & 0xC0) == 0xC0)
+							{
+								character <<= 1;
+								character &= 0xff;
+								total_bits += 6;
+								high_bit_mask >>= 1;
+								high_bit_shift++;
+								charcode <<= other_bits;
+								charcode |= Std.int(asNumber(utf8List[0])) & ((1 << other_bits) - 1);
+								utf8List.splice(0, 1);
+							}
+	
+							// UTF-32 to Hex String
+							var hexString:String = "";
+							charcode |= ((character >> high_bit_shift) & high_bit_mask) << total_bits;
+							var quotient:Int = charcode;
+							while (quotient != 0)
+							{
+								var temp:Int = quotient % 16;
+								if (temp < 10) hexString += ("" + temp);
+								else hexString += hexAscii[Std.int(Math.min(Math.max(temp - 10, 0), 5))];
+	
+								quotient = Std.int(Math.floor(quotient / 16));
+							}
+	
+							// Hex String formatting - first reverse it
+							var formattedHexString:String = "";
+							var ii:Int = (hexString.length - 1);
+							while (ii >= 0)
+							{
+								formattedHexString += hexString.charAt(ii);
+								ii--;
+							}
+	
+							// Then prepend zeroes
+							for (jj in 0...(4 - formattedHexString.length))
+							{
+								formattedHexString = "0" + formattedHexString;
+							}
+	
+							// Then prepend escape sequence and push it
+							characterList.push("~x" + formattedHexString);
+							Utils.clear(utf8List);
+						}
+	
+						realCount -= 1;
+						break;
+					}
+	
+					utf8count += 1;
+				}
+			}
+	
+			realCount += 1;
+		}
+	
+		var convertedString:String = "";
+		for (item in characterList)
+		{
+			convertedString = convertedString + item;
+		}
+		return convertedString;
+	#end
 	}
 	
 	//*-----------------------------------------------
