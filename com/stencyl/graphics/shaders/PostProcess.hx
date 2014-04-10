@@ -211,9 +211,9 @@ class PostProcess extends OpenGLView
 	public function capture()
 	{
 		GL.bindFramebuffer(GL.FRAMEBUFFER, framebuffer);
-
-		GL.viewport(0, 0, Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
 		
+		//These seem to have no effect.
+		GL.viewport(0, 0, Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
 		GL.clear(GL.DEPTH_BUFFER_BIT | GL.COLOR_BUFFER_BIT);
 	}
 
@@ -224,6 +224,9 @@ class PostProcess extends OpenGLView
 	{
 		time += Engine.elapsedTime * timeScale;
 		GL.bindFramebuffer(GL.FRAMEBUFFER, renderTo);
+		
+		//Makes it work on full screen.
+		GL.viewport(0, 0, Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
 
 		GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 
