@@ -396,6 +396,11 @@ class Engine
 		}
 	}
 	
+	public function isInFullScreen():Bool
+	{
+		return Lib.current.stage.displayState == StageDisplayState.FULL_SCREEN_INTERACTIVE;
+	}
+	
 	public function toggleFullscreen(forceOff:Bool = false):Void
 	{
 		if(forceOff)

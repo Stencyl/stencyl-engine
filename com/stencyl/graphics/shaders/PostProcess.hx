@@ -172,15 +172,24 @@ class PostProcess extends OpenGLView
 		if (renderbuffer != null) GL.deleteRenderbuffer(renderbuffer);
 
 		#if(desktop)
-		createTexture(Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
-		createRenderbuffer(Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
+		if(Engine.engine.isInFullScreen())
+		{
+			createTexture(Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
+			createRenderbuffer(Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
+		}
+		
+		else
+		{
+			createTexture(Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
+			createRenderbuffer(Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
+		}
+		
+		trace("AAA: " + nme.Lib.current.stage.stageWidth + "," + nme.Lib.current.stage.stageHeight);
 		#else
 		createTexture(Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
 		createRenderbuffer(Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
 		#end
-		//createTexture(1280, 736);
-		//createRenderbuffer(1280, 736);
-		
+
 		GL.bindFramebuffer(GL.FRAMEBUFFER, null);
 	}
 
@@ -234,11 +243,19 @@ class PostProcess extends OpenGLView
 		
 		//Makes it work on full screen.
 		#if(desktop)
-		GL.viewport(0, 0, Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
+		if(Engine.engine.isInFullScreen())
+		{
+			GL.viewport(0, 0, Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
+		}
+		
+		else
+		{
+			GL.viewport(0, 0, Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
+		}
 		#else
 		GL.viewport(0, 0, Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
 		#end
-		//GL.viewport(0, 0, 1280, 736);
+
 
 		GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 
