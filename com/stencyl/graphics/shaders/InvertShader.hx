@@ -7,8 +7,6 @@ class InvertShader extends BasicShader
 		super();
 	
 		var script = "
-			#version 120
-	
 			#ifdef GL_ES
 				precision mediump float;
 			#endif

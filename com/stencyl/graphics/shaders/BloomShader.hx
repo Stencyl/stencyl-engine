@@ -18,6 +18,7 @@ class BloomShader extends BasicShader
 	{
 		super();
 		
+		#if desktop
 		var script = "
 			varying vec2 vTexCoord;
 			uniform vec2 uResolution;
@@ -67,6 +68,55 @@ class BloomShader extends BasicShader
 			   }
 			}
 		";
+		#else
+		var script = "
+			varying vec2 vTexCoord;
+			uniform vec2 uResolution;
+			uniform sampler2D uImage0;
+			
+			uniform float currPixelWeight;
+			uniform float neighborPixelWeight;
+			uniform float lowThreshold;
+			uniform float mediumThreshold;
+			uniform float lowMultiplier;
+			uniform float mediumMultiplier;
+			uniform float highMultiplier;
+
+			void main(void)
+			{
+				vec4 sum = vec4(0.0);
+				vec2 q1 = vTexCoord;
+				vec4 oricol = texture2D(uImage0, vec2(q1.x, q1.y));
+				vec3 col;
+				
+				for(int i = -3; i < 3; i++) 
+				{
+					for(int j = -3; j < 3; j++) 
+					{
+						sum += texture2D(uImage0, vec2(j, i) * neighborPixelWeight + vec2(q1.x, q1.y)) * currPixelWeight;
+					}
+			   	}
+			 
+			  	if(oricol.r < lowThreshold) 
+			  	{
+					gl_FragColor = sum * sum * lowMultiplier + oricol;
+			  	} 
+			  
+			  	else 
+			  	{
+					if(oricol.r < mediumThreshold) 
+					{
+						gl_FragColor = sum * sum * mediumMultiplier + oricol;
+				   	} 
+				   	
+				   	else 
+				   	{
+						gl_FragColor = sum * sum * highMultiplier + oricol;
+				   	}
+			   }
+			}
+		";
+		#end
 	
 		model = new PostProcess(script, true);
 		

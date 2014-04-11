@@ -7,8 +7,6 @@ class ScanlineShader extends BasicShader
 		super();
 		
 		var script = "
-			#version 120
-
 			#ifdef GL_ES
 				precision mediump float;
 			#endif
@@ -17,7 +15,7 @@ class ScanlineShader extends BasicShader
 			uniform vec2 uResolution;
 			uniform sampler2D uImage0;
 			
-			uniform float scale = 1.0;
+			uniform float scale;
 			
 			void main()
 			{

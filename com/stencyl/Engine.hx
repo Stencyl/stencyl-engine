@@ -373,7 +373,7 @@ class Engine
 	//* Full Screen Shaders - EXPERIMENTAL - C++
 	//*-----------------------------------------------
 	
-	#if desktop
+	#if(desktop || iphone || android)
 	private var shader:PostProcess;
 	public var shaderLayer:Sprite;
 	public var shaders:Array<PostProcess>;
@@ -459,7 +459,7 @@ class Engine
 
 	public function new(root:Sprite) 
 	{		
-		#if desktop
+		#if(desktop || iphone || android)
 		if(openfl.display.OpenGLView.isSupported)
 		{
 			shaderLayer = new Sprite();
@@ -490,7 +490,7 @@ class Engine
 		stage.addEventListener(Event.ACTIVATE, onFocus);
 		begin(scripts.MyAssets.initSceneID);
 		
-		#if desktop
+		#if(desktop || iphone || android)
 		if(openfl.display.OpenGLView.isSupported)
 		{
 			root.addChild(shaderLayer);
@@ -498,7 +498,7 @@ class Engine
 		#end
 	}
 	
-	#if !desktop
+	#if(flash || js)
 	public function addShader(s:PostProcess, addToDisplayTree:Bool = true) {}
 	public function clearShaders() {}
 	public function toggleShadersForHUD() {} 
@@ -3207,7 +3207,7 @@ class Engine
 			enter.draw(null);
 		}
 		
-		#if desktop
+		#if(desktop || iphone || android)
 		if(shaders != null && shaders.length > 0)
 		{
 			//Only need to capture the first shader in the chain
