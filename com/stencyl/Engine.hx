@@ -428,11 +428,12 @@ class Engine
 					
 			if(stats != null)
 			{
-				stats.x = screenWidth - stats.width;
+				stats.x = Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale) - stats.width;
 				stats.y = 0;
 			}
 			
 			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			resetShaders();
 		} 
 		
 		else 
@@ -449,11 +450,12 @@ class Engine
 			
 			if(stats != null)
 			{
-				stats.x = Lib.current.stage.stageWidth - stats.width;
+				stats.x = Std.int(nme.system.Capabilities.screenResolutionX) - stats.width;
 				stats.y = 0;
 			}
 			
 			Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
+			resetShaders();
 		}
 	}
 	#end
@@ -507,6 +509,7 @@ class Engine
 	public function addShader(s:PostProcess, addToDisplayTree:Bool = true) {}
 	public function clearShaders() {}
 	public function toggleShadersForHUD() {} 
+	public function resetShaders() {}
 	#else
 	public function addShader(s:PostProcess, addToDisplayTree:Bool = true) 
 	{
@@ -566,6 +569,14 @@ class Engine
 		if(shaderLayer != null && hudLayer != null && root != null)
 		{
 			root.swapChildren(shaderLayer, hudLayer);
+		}
+	}
+	
+	public function resetShaders()
+	{
+		for(shader in shaders)
+		{
+			shader.rebuild();
 		}
 	}
 	#end

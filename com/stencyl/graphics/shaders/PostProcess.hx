@@ -180,11 +180,9 @@ class PostProcess extends OpenGLView
 		
 		else
 		{
-			createTexture(Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
-			createRenderbuffer(Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
+			createTexture(Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale), Std.int(scripts.MyAssets.stageHeight * scripts.MyAssets.gameScale));
+			createRenderbuffer(Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale), Std.int(scripts.MyAssets.stageHeight * scripts.MyAssets.gameScale));
 		}
-		
-		trace("AAA: " + nme.Lib.current.stage.stageWidth + "," + nme.Lib.current.stage.stageHeight);
 		#else
 		createTexture(Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
 		createRenderbuffer(Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
@@ -250,7 +248,7 @@ class PostProcess extends OpenGLView
 		
 		else
 		{
-			GL.viewport(0, 0, Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
+			GL.viewport(0, 0, Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale), Std.int(scripts.MyAssets.stageHeight * scripts.MyAssets.gameScale));
 		}
 		#else
 		GL.viewport(0, 0, Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
