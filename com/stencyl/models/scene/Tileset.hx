@@ -135,6 +135,11 @@ class Tileset extends Resource
 			"assets/graphics/" + Engine.IMG_BASE + "/tileset-" + ID + ".png"
 		);
 		
+		for (tile in tiles)
+		{
+			tile.loadGraphics();
+		}
+		
 		//On a first read, this won't be ready to do, and we'll load when we're OK
 		if(tiles.length > 0)
 		{
@@ -149,6 +154,11 @@ class Tileset extends Resource
 		#if cpp
 		tilesheet = null;
 		#end
+		
+		for (tile in tiles)
+		{
+			tile.unloadGraphics();
+		}
 		
 		Data.get().resourceAssets.remove(ID + ".png");
 	}
