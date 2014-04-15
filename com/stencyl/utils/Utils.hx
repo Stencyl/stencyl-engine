@@ -102,7 +102,7 @@ class Utils
 	{
 		var len:Int = arr.length;
 		
-		var i:Int = len;
+		var i:Int = len - 1;
 		
 		while(i > -1)
 		{
@@ -119,7 +119,7 @@ class Utils
 	{
 		var len:Int = arr.length;
 		
-		var i:Int = len;
+		var i:Int = len - 1;
 		
 		while(i > -1)
 		{
