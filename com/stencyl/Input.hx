@@ -54,6 +54,14 @@ class Input
 	public static var swipedRight:Bool;
 
 	/**
+	 * Returns the control->key map.
+	 */
+	public static function getControlMap():Map<String,Array<Int>>
+	{
+		return _control;
+	}
+	
+	/**
 	 * Defines a new input.
 	 * @param	name		String to map the input to.
 	 * @param	...keys		The keys to use for the Input.
