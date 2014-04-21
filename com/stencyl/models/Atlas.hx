@@ -14,7 +14,7 @@ class Atlas
 		this.members = members;
 		this.active = active;
 		
-		#if(mobile && !air)
+		#if(cpp)
 		
 		#else
 		this.active = true;

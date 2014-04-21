@@ -2301,6 +2301,18 @@ class Script
 		}
 	}
 	
+	//This returns a new BitmapData. It isn't possible to actually resize a BitmapData without creating a new one.
+	public function resizeImage(img:BitmapData, xScale:Float = 1.0, yScale:Float = 1.0, smoothing:Bool = true):BitmapData
+	{
+		var matrix:Matrix = new Matrix();
+		matrix.scale(xScale, yScale);
+		
+		var toReturn:BitmapData = new BitmapData(Std.int(img.width * xScale), Std.int(img.height * yScale), true, 0x000000);
+		toReturn.draw(img, matrix, null, null, null, smoothing);
+		
+		return toReturn;
+	}
+	
 	public function drawImageOnImage(source:BitmapData, dest:BitmapData, x:Int, y:Int, blendMode:BlendMode)
 	{
 		x = Std.int(x * Engine.SCALE);

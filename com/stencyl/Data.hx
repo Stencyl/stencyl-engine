@@ -319,7 +319,7 @@ class Data
 	
 	public function unloadAtlas(atlasID:Int)
 	{
-		#if(mobile && !air)
+		#if(cpp)
 		trace("Unload Atlas: " + atlasID);
 		
 		var atlas = GameModel.get().atlases.get(atlasID);
