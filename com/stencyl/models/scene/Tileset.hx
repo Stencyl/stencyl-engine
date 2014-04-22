@@ -137,7 +137,10 @@ class Tileset extends Resource
 		
 		for (tile in tiles)
 		{
-			tile.loadGraphics();
+			if (tile != null)
+			{
+				tile.loadGraphics();
+			}
 		}
 		
 		//On a first read, this won't be ready to do, and we'll load when we're OK
