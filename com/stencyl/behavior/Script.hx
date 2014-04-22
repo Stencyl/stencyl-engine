@@ -3131,9 +3131,8 @@ class Script
 		// Not needed in Flash, just return it
 		return internationalText;
 		#else
-		
 		var utf8List:Array<Dynamic> = [];
-		var characterList:Array<Dynamic> = [];
+		var convertedString:String = "";
 		var hexAscii = ["A","B","C","D","E","F"];
 		var other_bits:Int = 6;
 		var realCount = 0;
@@ -3147,7 +3146,7 @@ class Script
 	
 			if (internationalText.charCodeAt(i) < 128)
 			{ // Standard character
-				characterList.push(internationalText.charAt(i));
+				convertedString += internationalText.charAt(i);
 			}
 			else
 			{ // Accumulate and convert UTF-8 chars
@@ -3164,7 +3163,7 @@ class Script
 	
 					if ((internationalText.charCodeAt(utf8count) < 128) || (utf8count == (internationalText.length - 1)))
 					{ // Convert utf8List now
-						if (utf8List.length > 0)
+						while (utf8List.length > 0)
 						{
 							var charcode:Int = 0;
 							var high_bit_mask:Int = (1 << 6) - 1;
@@ -3214,9 +3213,8 @@ class Script
 								formattedHexString = "0" + formattedHexString;
 							}
 	
-							// Then prepend escape sequence and push it
-							characterList.push("~x" + formattedHexString);
-							Utils.clear(utf8List);
+							// Then prepend escape sequence and add it
+							convertedString += "~x" + formattedHexString;
 						}
 	
 						realCount -= 1;
@@ -3230,13 +3228,8 @@ class Script
 			realCount += 1;
 		}
 	
-		var convertedString:String = "";
-		for (item in characterList)
-		{
-			convertedString = convertedString + item;
-		}
 		return convertedString;
-	#end
+		#end
 	}
 	
 	//*-----------------------------------------------
