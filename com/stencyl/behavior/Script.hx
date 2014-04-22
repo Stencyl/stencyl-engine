@@ -2437,8 +2437,8 @@ class Script
 		dummyRect.width = dest.width;
 		dummyRect.height = dest.height;
 		
-		dummyPoint.x = 0;
-		dummyPoint.y = 0;
+		dummyPoint.x = x;
+      	dummyPoint.y = y;
 		
 		dest.copyChannel(mask, dummyRect, dummyPoint, nme.display.BitmapDataChannel.ALPHA, nme.display.BitmapDataChannel.ALPHA);
 	}
