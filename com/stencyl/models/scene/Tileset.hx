@@ -160,7 +160,10 @@ class Tileset extends Resource
 		
 		for (tile in tiles)
 		{
-			tile.unloadGraphics();
+			if (tile != null)
+			{
+				tile.unloadGraphics();
+			}
 		}
 		
 		Data.get().resourceAssets.remove(ID + ".png");
