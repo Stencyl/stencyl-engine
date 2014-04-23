@@ -2264,8 +2264,8 @@ class Script
 			
 			else
 			{
-				img.x = x - (Engine.SCALE * a.getWidth() * 1.5);
-				img.y = y - (Engine.SCALE * a.getHeight() * 1.5);
+				img.x = x - (Engine.SCALE * a.getWidth() * 0.75);
+				img.y = y - (Engine.SCALE * a.getHeight() * 0.75);
 			}
 			
 			img.smoothing = scripts.MyAssets.antialias;
