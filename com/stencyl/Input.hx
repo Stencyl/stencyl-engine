@@ -444,6 +444,8 @@ class Input
 			_keyNum++;
 			_press[_pressNum++] = code;
 		}
+		
+		Engine.invokeListeners2(Engine.engine.whenAnyKeyPressedListeners, e);
 	}
 
 	public static function onKeyUp(e:KeyboardEvent = null)
@@ -456,6 +458,8 @@ class Input
 			_keyNum--;
 			_release[_releaseNum++] = code;
 		}
+		
+		Engine.invokeListeners2(Engine.engine.whenAnyKeyReleasedListeners, e);
 	}
 
 	private static function onMouseDown(e:MouseEvent)

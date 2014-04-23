@@ -620,6 +620,26 @@ class Script
 		}
 	}
 	
+	public function addAnyKeyPressedListener(func:Dynamic->Array<Dynamic>->Void)
+	{
+		engine.whenAnyKeyPressedListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenAnyKeyPressedListeners, func);
+		}
+	}
+	
+	public function addAnyKeyReleasedListener(func:Dynamic->Array<Dynamic>->Void)
+	{
+		engine.whenAnyKeyReleasedListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenAnyKeyReleasedListeners, func);
+		}
+	}
+	
 	public function addMousePressedListener(func:Array<Dynamic>->Void)
 	{
 		engine.whenMousePressedListeners.push(func);
