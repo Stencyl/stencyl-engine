@@ -1816,6 +1816,24 @@ class Script
 	}
 	
 	/**
+	* Returns a SoundClip resource by Name
+	*/
+	public function getSoundByName(soundName:String):Sound
+	{
+		var sounds = Data.get().getResourcesOfType(Sound);
+		
+		for(sound in sounds)
+		{
+			if(sound.name == soundName)
+			{
+				return sound;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
 	* Play a specific SoundClip resource once (use loopSound() to play a looped version)
 	*/
 	public function playSound(clip:Sound)
