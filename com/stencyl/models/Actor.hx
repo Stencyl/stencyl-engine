@@ -3046,22 +3046,6 @@ class Actor extends Sprite
 		return body;
 	}
 	
-	public function setFriction(value:Float)
-	{
-		if(physicsMode == 0)
-		{
-			body.setFriction(value);
-		}
-	}
-	
-	public function setBounciness(value:Float)
-	{
-		if(physicsMode == 0)
-		{
-			body.setBounciness(value);
-		}
-	}
-	
 	public function enableRotation()
 	{
 		if(physicsMode > 0)
@@ -3106,6 +3090,116 @@ class Actor extends Sprite
 		}
 		
 		return body.isIgnoringGravity();
+	}
+	
+	public function getFriction():Float
+	{
+		if (physicsMode == 0 && body.m_fixtureList != null)
+		{
+			return body.m_fixtureList.m_friction;
+		}
+		
+		return 0;
+	}
+	
+	public function getBounciness():Float
+	{
+		if (physicsMode == 0 && body.m_fixtureList != null)
+		{
+			return body.m_fixtureList.m_restitution;
+		}
+		
+		return 0;
+	}
+	
+	public function getMass():Float
+	{
+		if (physicsMode == 0)
+		{
+			return md.mass;
+		}
+		
+		return 0;
+	}
+	
+	public function getAngularMass():Float
+	{
+		if (physicsMode == 0)
+		{
+			return md.I;
+		}
+		
+		return 0;
+	}
+	
+	public function getLinearDamping():Float
+	{
+		if (physicsMode == 0)
+		{
+			return body.getLinearDamping();
+		}
+		
+		return 0;
+	}
+	
+	public function getAngularDamping():Float
+	{
+		if (physicsMode == 0)
+		{
+			return body.getAngularDamping();
+		}
+		
+		return 0;
+	}
+	
+	public function setFriction(value:Float)
+	{
+		if(physicsMode == 0)
+		{
+			body.setFriction(value);
+		}
+	}
+	
+	public function setBounciness(value:Float)
+	{
+		if(physicsMode == 0)
+		{
+			body.setBounciness(value);
+		}
+	}
+	
+	public function setMass(newMass:Float)
+	{
+		if (physicsMode == 0)
+		{
+			md.mass = newMass;
+			body.setMassData(this.md);
+		}
+	}
+	
+	public function setAngularMass(newAMass:Float)
+	{
+		if (physicsMode == 0)
+		{
+			md.I = newAMass;
+			body.setMassData(this.md);
+		}
+	}
+	
+	public function setLinearDamping(newDamping:Float)
+	{
+		if (physicsMode == 0)
+		{
+			body.setLinearDamping(newDamping);
+		}
+	}
+	
+	public function setAngularDamping(newDamping:Float)
+	{
+		if (physicsMode == 0)
+		{
+			body.setAngularDamping(newDamping);
+		}
 	}
 	
 	//*-----------------------------------------------
