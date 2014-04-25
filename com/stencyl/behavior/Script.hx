@@ -2468,17 +2468,18 @@ class Script
 	public function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
 		x = Std.int(x * Engine.SCALE);
-		y = Std.int(y * Engine.SCALE);
-		
-		dummyRect.x = 0;
-		dummyRect.y = 0;
-		dummyRect.width = dest.width;
-		dummyRect.height = dest.height;
-		
-		dummyPoint.x = x;
+      	y = Std.int(y * Engine.SCALE);
+      
+      	dummyRect.x = 0;
+      	dummyRect.y = 0;
+
+      	dummyRect.width = mask.width;
+      	dummyRect.height = mask.height;
+      
+      	dummyPoint.x = x;
       	dummyPoint.y = y;
-		
-		dest.copyChannel(mask, dummyRect, dummyPoint, nme.display.BitmapDataChannel.ALPHA, nme.display.BitmapDataChannel.ALPHA);
+      
+      	dest.copyChannel(mask, dummyRect, dummyPoint, nme.display.BitmapDataChannel.ALPHA, nme.display.BitmapDataChannel.ALPHA);
 	}
 	
 	public function fillImage(img:BitmapData, color:Int)
