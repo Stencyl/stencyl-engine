@@ -3385,6 +3385,11 @@ class Engine
 		return layersToDraw.get(layerOrder - 1);
 	}
 	
+	public function getNumberOfActorsWithinLayer(layerID:Int):Int
+	{
+		return actorsPerLayer.get(layerID).numChildren;
+	}
+	
 	//*-----------------------------------------------
 	//* Physics
 	//*-----------------------------------------------

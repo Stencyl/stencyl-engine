@@ -2378,6 +2378,40 @@ class Actor extends Sprite
 		}
 	}
 	
+	public function moveToBottom()
+	{
+		this.parent.setChildIndex(this, 0);
+	}
+	
+	public function moveToTop()
+	{
+		this.parent.setChildIndex(this, this.parent.numChildren-1);
+	}
+	
+	public function moveDown()
+	{
+		var index:Int = this.parent.getChildIndex(this);
+		if (index > 0)
+		{
+			this.parent.setChildIndex(this, index-1);
+		}
+	}
+	
+	public function moveUp()
+	{
+		var index:Int = this.parent.getChildIndex(this);
+		var max:Int = this.parent.numChildren-1;
+		if (index < max)
+		{
+			this.parent.setChildIndex(this, index+1);
+		}
+	}
+	
+	public function getZIndex():Int
+	{
+		return this.parent.getChildIndex(this);
+	}
+	
 	//*-----------------------------------------------
 	//* Physics: Position
 	//*-----------------------------------------------
