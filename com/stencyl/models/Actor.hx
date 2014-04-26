@@ -1964,6 +1964,7 @@ class Actor extends Sprite
 				
 				//if there are multiple points in m_points, getPoint() returns the average
 				//some collisions contain (0,0) which causes the average to be halfed. pick any non-(0,0) point
+				//XXX: actually all non-(0,0) points should be handled, but that seems to impact the performance too much
 				for (point in manifold.m_points)
 				{
 					if (point.x != 0 && point.y != 0)
