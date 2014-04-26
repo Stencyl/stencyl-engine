@@ -67,6 +67,7 @@ import box2D.dynamics.B2World;
 import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2PolygonShape;
 import box2D.collision.shapes.B2CircleShape;
+import box2D.collision.shapes.B2EdgeShape;
 import box2D.collision.shapes.B2MassData;
 import box2D.dynamics.contacts.B2Contact;
 import box2D.dynamics.contacts.B2ContactEdge;
@@ -1956,11 +1957,22 @@ class Actor extends Sprite
 				//var manifold = new B2WorldManifold();
 				p.getWorldManifold(manifold);
 				
-				var pt = manifold.getPoint();
+				var pt = null;
 				var cp:CollisionPoint;
 				
 				//trace(manifold.getPoint().x + " - " + manifold.getPoint().y);
 				
+				//if there are multiple points in m_points, getPoint() returns the average
+				//some collisions contain (0,0) which causes the average to be halfed. pick any non-(0,0) point
+				for (point in manifold.m_points)
+				{
+					if (point.x != 0 && point.y != 0)
+					{
+						pt = point;
+						break;
+					}
+				}
+					
 				if(pt == null)
 				{
 					cp = new CollisionPoint
@@ -1973,30 +1985,14 @@ class Actor extends Sprite
 				}
 				
 				else
-				{
-					//XXX: Workaround for this bug
-					//http://community.stencyl.com/index.php/topic,14925.0.html
-					if(Std.is(thisShape.getShape(), B2CircleShape))
-					{
-						cp = new CollisionPoint
-						(
-							manifold.getPoint().x * 2, 
-							manifold.getPoint().y * 2, 
-							manifold.m_normal.x,
-							manifold.m_normal.y
-						);
-					}
-				
-					else
-					{
-						cp = new CollisionPoint
-						(
-							manifold.getPoint().x, 
-							manifold.getPoint().y, 
-							manifold.m_normal.x,
-							manifold.m_normal.y
-						);
-					}				
+				{	
+					cp = new CollisionPoint
+					(
+						pt.x, 
+						pt.y, 
+						manifold.m_normal.x,
+						manifold.m_normal.y
+					);				
 				} 
 	
 				collisions.set(key, d);
