@@ -193,6 +193,7 @@ class Actor extends Sprite
 	public var animationMap:Map<String,Dynamic>;
 	public var backupAnimationMap:Map<String,Dynamic>;
 	public var animsBackedUp:Bool = false;
+	public var tint:Bool = false;
 	
 	public var sprite:com.stencyl.models.actor.Sprite;
 	
@@ -3493,43 +3494,46 @@ class Actor extends Sprite
 		var greenResult:Float;
 		var blueResult:Float;
 		
-		// Backup the default animations so the filters can be undone later.
-		if (!animsBackedUp)
-		{
-			backupAnimationMap = new Map<String,Dynamic>();
-		
-			for (key in animationMap.keys())
-			{
-				var anim = animationMap.get(key);
-				
-				if (Type.getClass(anim) == SheetAnimation)
-				{
-					backupAnimationMap.set(key, anim.tilesheet.__bitmap.clone());
-					
-					var frameWidth = anim.frameWidth;
-					var frameHeight = anim.frameHeight;
-					var tempData:BitmapData = anim.tilesheet.__bitmap.clone();
-					var tempTilesheet = new Tilesheet(tempData);
-					
-					var i = 0;
-					
-					while (i < anim.numFrames)
-					{
-						tempTilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * (i % anim.framesAcross), Math.floor(i / anim.framesAcross) * frameHeight, frameWidth, frameHeight));
-						i++;
-					}
-					
-					anim.tilesheet = tempTilesheet;
-					anim.updateBitmap();
-				}
-			}
-			animsBackedUp = true;
-		}
-		
 		// Stencyl adds the result of the filter blocks into an array, so for cpp targets it must be taken out.
 		var defaultMatrix:Array<Dynamic> = filter[0];
 		
 		filterName = defaultMatrix[0];
+		
+		if (filterName != "TintFilter")
+		{
+			// Backup the default animations so the filters can be undone later.
+			if (!animsBackedUp)
+			{
+				backupAnimationMap = new Map<String,Dynamic>();
+			
+				for (key in animationMap.keys())
+				{
+					var anim = animationMap.get(key);
+					
+					if (Type.getClass(anim) == SheetAnimation)
+					{
+						backupAnimationMap.set(key, anim.tilesheet.__bitmap.clone());
+						
+						var frameWidth = anim.frameWidth;
+						var frameHeight = anim.frameHeight;
+						var tempData:BitmapData = anim.tilesheet.__bitmap.clone();
+						var tempTilesheet = new Tilesheet(tempData);
+						
+						var i = 0;
+						
+						while (i < anim.numFrames)
+						{
+							tempTilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * (i % anim.framesAcross), Math.floor(i / anim.framesAcross) * frameHeight, frameWidth, frameHeight));
+							i++;
+						}
+						
+						anim.tilesheet = tempTilesheet;
+						anim.updateBitmap();
+					}
+				}
+				animsBackedUp = true;
+			}
+		}
 		
 		if (filterName == "NegativeFilter")
 		{
@@ -3576,6 +3580,8 @@ class Actor extends Sprite
 		}
 		else if (filterName == "TintFilter")
 		{
+			tint = true;
+			
 			for (anim in animationMap)
 			{
 				if (Type.getClass(anim) == SheetAnimation)
@@ -3762,6 +3768,17 @@ class Actor extends Sprite
 				sheetValue.tint = false;
 				sheetValue.updateBitmap();
 			}	
+		}
+		else if (tint)
+		{
+			for (anim in animationMap)
+			{
+				if (Type.getClass(anim) == SheetAnimation)
+				{
+					anim.tint = false;
+					anim.updateBitmap();
+				}
+			}
 		}
 		#end
 		
