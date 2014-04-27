@@ -2410,6 +2410,20 @@ class Actor extends Sprite
 		return this.parent.getChildIndex(this);
 	}
 	
+	public function setZIndex(zindex:Int)
+	{
+		var max:Int = this.parent.numChildren-1;
+		if (zindex > max)
+		{
+			zindex = max;
+		}
+		if (zindex < 0)
+		{
+			zindex = 0;
+		}
+		this.parent.setChildIndex(this, zindex);
+	}
+	
 	//*-----------------------------------------------
 	//* Physics: Position
 	//*-----------------------------------------------
