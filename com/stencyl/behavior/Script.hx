@@ -1494,6 +1494,26 @@ class Script
 	}
 	
 	/**
+	 * x-center position of the camera
+	 *
+	 * @return The x-position of the camera
+	 */
+	public function getScreenXCenter():Float
+	{
+		return Math.abs(Engine.cameraX / Engine.SCALE) + Engine.screenWidth/2 / Engine.SCALE;
+	}
+	
+	/**
+	 * y-center position of the camera
+	 *
+	 * @return The y-position of the camera
+	 */
+	public function getScreenYCenter():Float
+	{
+		return Math.abs(Engine.cameraY / Engine.SCALE) + Engine.screenHeight/2 / Engine.SCALE;
+	}
+	
+	/**
 	 * Returns the actor that represents the camera
 	 *
 	 * @return The actor representing the camera
