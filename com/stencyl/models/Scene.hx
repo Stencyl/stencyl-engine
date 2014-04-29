@@ -832,7 +832,7 @@ class Scene
 
 		if(noTiles)
 		{
-			trace("Layer " + layerID + " has no tiles.");
+			// trace("Layer " + layerID + " has no tiles.");
 		}
 		
 		return layer;
