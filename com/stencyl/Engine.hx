@@ -576,9 +576,12 @@ class Engine
 	
 	public function resetShaders()
 	{
-		for(shader in shaders)
+		if(shaders != null)
 		{
-			shader.rebuild();
+			for(shader in shaders)
+			{
+				shader.rebuild();
+			}
 		}
 	}
 	#end
