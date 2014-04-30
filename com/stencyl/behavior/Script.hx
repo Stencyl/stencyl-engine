@@ -2452,7 +2452,15 @@ class Script
 	
 	public function clearImage(img:BitmapData)
 	{
-		fillImage(img, 0);
+		if(img != null)
+		{
+			dummyRect.x = 0;
+			dummyRect.y = 0;
+			dummyRect.width = img.width;
+			dummyRect.height = img.height;
+			
+			img.fillRect(dummyRect, 0x00000000);
+		}
 	}
 	
 	public function clearImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
