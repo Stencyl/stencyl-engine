@@ -437,6 +437,33 @@ class Universal extends Sprite
 						}
 					}
 					
+					//Scale to Fit: Full Screen
+					else if(scripts.MyAssets.scaleToFit3)
+					{
+						if(scripts.MyAssets.landscape)
+						{
+							scaleY = stageHeight / scripts.MyAssets.stageHeight;
+							scaleX = scaleY;
+						}
+						
+						else
+						{
+							scaleX *= stageWidth / scripts.MyAssets.stageWidth;
+							scaleY = scaleX;
+						}
+						
+						scripts.MyAssets.stageWidth = stageWidth;
+                        scripts.MyAssets.stageHeight = stageHeight;
+					
+                        originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
+                        originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
+
+                        stageWidth = Std.int(stageWidth / theoreticalScale);
+                        stageHeight = Std.int(stageHeight / theoreticalScale);
+						
+						trace("Algorithm: Scale to Fit (Full Screen)");
+					}
+					
 					//"No Scaling" (Only integer scales)
 					else
 					{
@@ -511,6 +538,33 @@ class Universal extends Sprite
 						}
 					}
 					
+					//Scale to Fit: Full Screen
+					else if(scripts.MyAssets.scaleToFit3)
+					{
+						if(scripts.MyAssets.landscape)
+						{
+							scaleY = stageHeight / scripts.MyAssets.stageHeight;
+							scaleX = scaleY;
+						}
+						
+						else
+						{
+							scaleX *= stageWidth / scripts.MyAssets.stageWidth;
+							scaleY = scaleX;
+						}
+						
+						scripts.MyAssets.stageWidth = stageWidth;
+                        scripts.MyAssets.stageHeight = stageHeight;
+					
+                        originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
+                        originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
+
+                        stageWidth = Std.int(stageWidth / theoreticalScale);
+                        stageHeight = Std.int(stageHeight / theoreticalScale);
+						
+						trace("Algorithm: Scale to Fit (Full Screen)");
+					}
+					
 					//"No Scaling" (Only integer scales)
 					else
 					{
@@ -532,8 +586,15 @@ class Universal extends Sprite
 					}
 				}
 				
-				x += (stageWidth - scripts.MyAssets.stageWidth * scaleX)/2;
-				y += (stageHeight - scripts.MyAssets.stageHeight * scaleY)/2;
+				if(scripts.MyAssets.scaleToFit3)
+				{
+				}
+				
+				else
+				{
+					x += (stageWidth - scripts.MyAssets.stageWidth * scaleX)/2;
+					y += (stageHeight - scripts.MyAssets.stageHeight * scaleY)/2;
+				}
 			}
 		}
 		#end
