@@ -752,8 +752,8 @@ class Utils
 
 
 	// Used for rad-to-deg and deg-to-rad conversion.
-	public static inline var DEG:Float = 180 / 3.14159;
-	public static inline var RAD:Float = 3.14159 / 180;
+	public static inline var DEG:Float = 180 / 3.1415926535897;
+	public static inline var RAD:Float = 3.1415926535897 / 180;
 
 	// Global Flash objects.
 	public static var stage:Stage;
