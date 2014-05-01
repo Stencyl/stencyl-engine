@@ -13,6 +13,7 @@ class MyAssets implements AssetLoader
 	public static var stretchToFit:Bool = false;
 	public static var scaleToFit1:Bool = false;
 	public static var scaleToFit2:Bool = false;
+	public static var scaleToFit3:Bool = false;
 	public static var stageWidth:Int = 320;
 	public static var stageHeight:Int = 480;
 	public static var initSceneID:Int = 0;
