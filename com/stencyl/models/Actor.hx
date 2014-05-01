@@ -1960,184 +1960,85 @@ class Actor extends Sprite
 				
 				var pt = null;
 				var cp:CollisionPoint;
-				
-				//trace(manifold.getPoint().x + " - " + manifold.getPoint().y);
-				
-				//if there are multiple points in m_points, getPoint() returns the average
-				//some collisions contain (0,0) which causes the average to be halfed. pick any non-(0,0) point
-				//XXX: actually all non-(0,0) points should be handled, but that seems to impact the performance too much
-				for (point in manifold.m_points)
-				{
-					if (point.x != 0 && point.y != 0)
-					{
-						pt = point;
-						break;
-					}
-				}
-					
-				if(pt == null)
-				{
-					cp = new CollisionPoint
-					(
-						-9999, 
-						-9999, 
-						manifold.m_normal.x,
-						manifold.m_normal.y
-					);
-				}
-				
-				else
-				{	
-					cp = new CollisionPoint
-					(
-						pt.x, 
-						pt.y, 
-						manifold.m_normal.x,
-						manifold.m_normal.y
-					);				
-				} 
-	
+
 				collisions.set(key, d);
 				collisionsCount++;
 				
-				if(cp.x != -9999 && cp.y != -9999)
+				var thisActor:Actor = this;
+				var body = thisActor.getBody();	
+				var otherBody = otherActor.getBody();	
+				var body1 = p.getFixtureA().getBody();
+				var body2 = p.getFixtureB().getBody();
+
+				//loop over all points in manifold.m_points
+				for (point in manifold.m_points)
 				{
-					d.points.push(cp);
-					
-					var thisActor:Actor = this;
-					var body = thisActor.getBody();	
-					var otherBody = otherActor.getBody();	
-					var body1 = p.getFixtureA().getBody();
-					var body2 = p.getFixtureB().getBody();
-			
-					d.thisFromBottom = false;
-					d.thisFromTop = false;
-					d.thisFromLeft = false;
-					d.thisFromRight = false;
-			
-					//collidedFromBottom
-					if(body1 == body)
+					//ignore the point if it is (0,0)
+					if (point.x != 0 && point.y != 0)
 					{
-						d.thisFromBottom = cp.normalY > 0;
-					}
-					
-					else if(body2 == body)
-					{
-						d.thisFromBottom = cp.normalY < 0;
-					}
-			
-					//collidedFromTop
-					if(body1 == body)
-					{
-						d.thisFromTop = cp.normalY < 0;
-					}
-					
-					else if(body2 == body)
-					{
-						d.thisFromTop = cp.normalY > 0;
-					}
-					
-					//collidedFromLeft
-					if(body1 == body)
-					{
-						d.thisFromLeft = cp.normalX < 0;
-					}
-					
-					else if(body2 == body)
-					{
-						d.thisFromLeft = cp.normalX > 0;
-					}
-					
-					//collidedFromRight
-					if(body1 == body)
-					{
-						d.thisFromRight = cp.normalX > 0;
-					}
-					
-					else if(body2 == body)
-					{
-						d.thisFromRight = cp.normalX < 0;
-					}
-					
-					//---
-					
-					d.otherFromBottom = false;
-					d.otherFromTop = false;
-					d.otherFromLeft = false;
-					d.otherFromRight = false;
-					
-					//collidedFromBottom
-					if(body1 == otherBody)
-					{
-						d.otherFromBottom = cp.normalY > 0;
-					}
-					
-					else if(body2 == otherBody)
-					{
-						d.otherFromBottom = cp.normalY < 0;
-					}
-					
-					//collidedFromTop
-					if(body1 == otherBody)
-					{
-						d.otherFromTop = cp.normalY < 0;
-					}
-					
-					else if(body2 == otherBody)
-					{
-						d.otherFromTop = cp.normalY > 0;
-					}
-					
-					//collidedFromLeft
-					if(body1 == otherBody)
-					{
-						d.otherFromLeft = cp.normalX < 0;
-					}
-					
-					else if(body2 == otherBody)
-					{
-						d.otherFromLeft = cp.normalX > 0;
-					}
-					
-					//collidedFromRight
-					if(body1 == otherBody)
-					{
-						d.otherFromRight = cp.normalX > 0;
-					}
-					
-					else if(body2 == otherBody)
-					{
-						d.otherFromRight = cp.normalX < 0;
+						pt = point;
+
+						cp = new CollisionPoint
+						(
+							pt.x, 
+							pt.y, 
+							manifold.m_normal.x,
+							manifold.m_normal.y
+						);				
+
+						d.points.push(cp);
+						
+						if(body1 == body)
+						{
+							d.thisFromBottom = d.thisFromBottom || cp.normalY > 0;
+							d.thisFromTop = d.thisFromTop || cp.normalY < 0;
+							d.thisFromLeft = d.thisFromLeft || cp.normalX < 0;
+							d.thisFromRight = d.thisFromRight || cp.normalX > 0;
+						}
+						
+						else if(body2 == body)
+						{
+							d.thisFromBottom = d.thisFromBottom || cp.normalY < 0;
+							d.thisFromTop = d.thisFromTop || cp.normalY > 0;
+							d.thisFromLeft = d.thisFromLeft || cp.normalX > 0;
+							d.thisFromRight = d.thisFromRight || cp.normalX < 0;
+						}
+				
+						//---
+						
+						if(body1 == otherBody)
+						{
+							d.otherFromBottom = d.otherFromBottom || cp.normalY > 0;
+							d.otherFromTop = d.otherFromTop || cp.normalY < 0;
+							d.otherFromLeft = d.otherFromLeft || cp.normalX < 0;
+							d.otherFromRight = d.otherFromRight || cp.normalX > 0;
+						}
+						
+						else if(body2 == otherBody)
+						{
+							d.otherFromBottom = d.otherFromBottom || cp.normalY < 0;
+							d.otherFromTop = d.otherFromTop || cp.normalY > 0;
+							d.otherFromLeft = d.otherFromLeft || cp.normalX > 0;
+							d.otherFromRight = d.otherFromRight || cp.normalX < 0;
+						}
+				
+						//---
+						
+						if(otherActor != null)
+						{
+							d.thisCollidedWithActor = d.thisCollidedWithActor || (otherActor.groupID != 1 && otherActor.groupID != -2 && !otherActor.isTerrainRegion);					
+							d.thisCollidedWithTerrain = d.thisCollidedWithTerrain || otherActor.isTerrainRegion;			
+							d.thisCollidedWithTile = d.thisCollidedWithTile || otherActor.groupID == 1;
+						}
+						
+						d.otherCollidedWithActor = d.otherCollidedWithActor || (this.groupID != 1 && this.groupID != -2 && !this.isTerrainRegion);					
+						d.otherCollidedWithTerrain = d.otherCollidedWithTerrain || this.isTerrainRegion;			
+						d.otherCollidedWithTile = d.otherCollidedWithTile || this.groupID == 1;
+						
+						d.thisCollidedWithSensor = d.thisCollidedWithSensor || otherShape.isSensor();
+						d.otherCollidedWithSensor = d.otherCollidedWithSensor || thisShape.isSensor();		
 					}
 				}
-			
-				//---
-				
-				d.thisCollidedWithActor = false;					
-				d.thisCollidedWithTerrain = false;			
-				d.thisCollidedWithTile = false;
-				d.thisCollidedWithSensor = false;
-				
-				d.otherCollidedWithActor = false;			
-				d.otherCollidedWithTerrain = false;	
-				d.otherCollidedWithTile = false;
-				d.otherCollidedWithSensor = false;
-				
-				//---
-				
-				if(otherActor != null)
-				{
-					d.thisCollidedWithActor = otherActor.groupID != 1 && otherActor.groupID != -2 && !otherActor.isTerrainRegion;					
-					d.thisCollidedWithTerrain = otherActor.isTerrainRegion;			
-					d.thisCollidedWithTile = otherActor.groupID == 1;
-				}
-				
-				d.otherCollidedWithActor = this.groupID != 1 && this.groupID != -2 && !this.isTerrainRegion;					
-				d.otherCollidedWithTerrain = this.isTerrainRegion;			
-				d.otherCollidedWithTile = this.groupID == 1;
-				
-				d.thisCollidedWithSensor = otherShape.isSensor();
-				d.otherCollidedWithSensor = thisShape.isSensor();		
 			}
 		}
 		
