@@ -3591,6 +3591,16 @@ class Script
 		//#end
 	}
 	
+	public function atlasIsLoaded(atlasID:Int):Bool
+	{
+		#if flash
+		return true;
+		#else
+		var atlas = GameModel.get().atlases.get(atlasID);
+		return (atlas != null && atlas.active);
+		#end
+	}
+	
 	//Ads
 	
 	public function showMobileAd()
