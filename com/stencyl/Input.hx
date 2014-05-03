@@ -35,6 +35,15 @@ class Input
 	public static var mousePressed:Bool;
 	public static var mouseReleased:Bool;
 	public static var mouseWheel:Bool;
+	public static var rightMouseDown:Bool;
+	public static var rightMouseUp:Bool;
+	public static var rightMousePressed:Bool;
+	public static var rightMouseReleased:Bool;
+	public static var middleMouseDown:Bool;
+	public static var middleMouseUp:Bool;
+	public static var middleMousePressed:Bool;
+	public static var middleMouseReleased:Bool;
+	public static var mouseWheelDelta:Int = 0;
 	
 	public static var accelX:Float;
 	public static var accelY:Float;
@@ -229,6 +238,13 @@ class Input
 			Engine.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false,  2);
 			Engine.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 2);
 			
+			#if desktop
+			Engine.stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, onRightMouseDown, false, 2);
+			Engine.stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, onRightMouseUp, false, 2);
+			Engine.stage.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, onMiddleMouseDown, false, 2);
+			Engine.stage.addEventListener(MouseEvent.MIDDLE_MOUSE_UP, onMiddleMouseUp, false, 2);
+			#end
+			
 			//Disable default behavior for Android Back Button
 			#if(mobile && android)
 			if(scripts.MyAssets.disableBackButton)
@@ -382,6 +398,28 @@ class Input
 		{
 			mouseReleased = false;
 		}
+		
+		if(rightMousePressed) 
+		{
+			rightMousePressed = false;
+		}
+		
+		if(rightMouseReleased) 
+		{
+			rightMouseReleased = false;
+		}
+		
+		if(middleMousePressed) 
+		{
+			middleMousePressed = false;
+		}
+		
+		if(middleMouseReleased) 
+		{
+			middleMouseReleased = false;
+		}
+		
+		mouseWheelDelta = 0;
 	}
 	
 	public static function simulateKeyPress(key:String)
@@ -493,10 +531,44 @@ class Input
 		mouseReleased = true;
 	}
 
+	private static function onRightMouseDown(e:MouseEvent)
+	{
+		if(!rightMouseDown)
+		{
+			rightMouseDown = true;
+			rightMouseUp = false;
+			rightMousePressed = true;
+		}
+	}
+	
+	private static function onRightMouseUp(e:MouseEvent)
+	{
+		rightMouseDown = false;
+		rightMouseUp = true;
+		rightMouseReleased = true;
+	}
+	
+	private static function onMiddleMouseDown(e:MouseEvent)
+	{
+		if(!middleMouseDown)
+		{
+			middleMouseDown = true;
+			middleMouseUp = false;
+			middleMousePressed = true;
+		}
+	}
+	
+	private static function onMiddleMouseUp(e:MouseEvent)
+	{
+		middleMouseDown = false;
+		middleMouseUp = true;
+		middleMouseReleased = true;
+	}
+	
 	private static function onMouseWheel(e:MouseEvent)
 	{
 		mouseWheel = true;
-		_mouseWheelDelta = e.delta;
+		mouseWheelDelta = e.delta;
 	}
 	
 	#if !js
@@ -534,5 +606,4 @@ class Input
 	private static var _release:Array<Int> = new Array<Int>();
 	private static var _releaseNum:Int = 0;
 	private static var _control:Map<String,Array<Int>> = new Map<String,Array<Int>>();
-	private static var _mouseWheelDelta:Int = 0;
 }
