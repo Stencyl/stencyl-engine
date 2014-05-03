@@ -222,10 +222,10 @@ class Utils
 	 * @param	objs		The Objects you want to randomly choose from. Can be ints, Floats, Points, etc.
 	 * @return	A randomly chosen one of the provided parameters.
 	 */
-	public static inline function choose(objs:Array<Dynamic>):Dynamic
+	/*public static inline function choose(objs:Array<Dynamic>):Dynamic
 	{
 		return objs[rand(objs.length)];
-	}
+	}*/
 
 	/**
 	 * Finds the sign of the provided value.
@@ -519,43 +519,45 @@ class Utils
 	/**
 	 * The random seed used by FP's random functions.
 	 */
-	public static var randomSeed(get_randomSeed, set_randomSeed):Int;
+	/*public static var randomSeed(get_randomSeed, set_randomSeed):Int;
 	private static inline function get_randomSeed():Int { return _getSeed; }
 	private static inline function set_randomSeed(value:Int):Int
 	{
 		_seed = Std.int(clamp(value, 1.0, 2147483646.0));
 		_getSeed = _seed;
 		return _seed;
-	}
+	}*/
 
 	/**
 	 * Randomizes the random seed using Flash's Math.random() function.
 	 */
-	public static inline function randomizeSeed()
+	/*public static inline function randomizeSeed()
 	{
 		randomSeed = Std.int(2147483647.0 * Math.random());
-	}
+	}*/
 
 	/**
 	 * A pseudo-random Float produced using FP's random seed, where 0 <= Float < 1.
 	 */
-	public static var random(get_random, null):Float;
+	//DEPRECATED: use Math.random() instead
+	/*public static var random(get_random, null):Float;
 	private static inline function get_random():Float
 	{
 		_seed = Std.int((_seed * 16807.0) % 2147483647.0);
 		return _seed / 2147483647.0;
-	}
+	}*/
 
 	/**
 	 * Returns a pseudo-random Int.
 	 * @param	amount		The returned Int will always be 0 <= Int < amount.
 	 * @return	The Int.
 	 */
-	public static inline function rand(amount:Int):Int
+	//DEPRECATED: use Std.random(x:Int) instead
+	/*public static inline function rand(amount:Int):Int
 	{
 		_seed = Std.int((_seed * 16807.0) % 2147483647.0);
 		return Std.int((_seed / 2147483647.0) * amount);
-	}
+	}*/
 
 	public static function indexOf<T>(a:Array<T>, v:T):Int
 	{
@@ -709,7 +711,7 @@ class Utils
 	 * Shuffles the elements in the array.
 	 * @param	a		The Object to shuffle (an Array or Vector).
 	 */
-	public static function shuffle(a:Dynamic)
+	/*public static function shuffle(a:Dynamic)
 	{
 		if (Std.is(a, Array))
 		{
@@ -721,7 +723,7 @@ class Utils
 				a[j] = t;
 			}
 		}
-	}
+	}*/
 
 	public static var time(null, set_time):Float;
 	private static inline function set_time(value:Float):Float {
