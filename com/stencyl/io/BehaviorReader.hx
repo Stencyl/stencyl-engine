@@ -61,7 +61,7 @@ class BehaviorReader
 			//Attributes
 			else
 			{
-				attributes.set(e.att.id, readAttribute(e));	
+				attributes.set(e.att.id, readAttribute(e, isEvent));	
 			}
 		}
 		
@@ -82,12 +82,12 @@ class BehaviorReader
 		return b;
 	}
 	
-	public static function readAttribute(xml:Fast):Attribute
+	public static function readAttribute(xml:Fast, isEvent:Bool):Attribute
 	{
 		var ID:Int = Std.parseInt(xml.att.id);
 		var fieldName:String = xml.att.name;
 		var fullName:String = xml.att.fullname;
-		var hidden:Bool = xml.att.hidden == "true";
+		var hidden:Bool = isEvent || xml.att.hidden == "true";
 		var defaultValue:String = "";
 		
 		try
