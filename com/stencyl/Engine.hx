@@ -842,9 +842,8 @@ class Engine
 		animatedTiles = new Array<Tile>();
 		hudActors = new IntHashTable<Actor>(64);
 		hudActors.reuseIterator = true;
-		allActors = new IntHashTable<Actor>(256);
-		//reusing the iterator breaks "for each actor on screen" loops 
-		//allActors.reuseIterator = true;
+		allActors = new IntHashTable<Actor>(256); 
+		allActors.reuseIterator = true;
 		actorsPerLayer = new Map<Int,DisplayObjectContainer>();
 		nextID = 0;
 		
