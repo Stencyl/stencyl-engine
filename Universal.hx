@@ -121,7 +121,7 @@ class Universal extends Sprite
 		#end
 		
 		#if flash
-		if(isFullScreen || scripts.MyAssets.stageWidth != Lib.current.stage.stageWidth)
+		if(isFullScreen)
 		{
 			stageWidth = Lib.current.stage.stageWidth;
 			stageHeight = Lib.current.stage.stageHeight;
