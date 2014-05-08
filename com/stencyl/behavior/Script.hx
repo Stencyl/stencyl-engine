@@ -2158,7 +2158,7 @@ class Script
 	//Example path: "sample.png" - stick into the "extras" folder for your game - see: http://community.stencyl.com/index.php/topic,24729.0.html
 	public function getExternalImage(path:String):BitmapData
 	{
-		return nme.Assets.getBitmapData("assets/data/" + path);
+		return nme.Assets.getBitmapData("assets/data/" + path, false);
 	}
 	
 	//TODO: See - http://www.onegiantmedia.com/as3--load-a-remote-image-from-any-url--domain-with-no-stupid-security-sandbox-errors
