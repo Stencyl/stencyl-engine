@@ -1117,7 +1117,7 @@ class Engine
 		debugDrawer.setLineThickness(3);
 		debugDrawer.setDrawScale(10 * Engine.SCALE);
 		debugDrawer.setFillAlpha(0);
-		debugDrawer.setFlags(B2DebugDraw.e_shapeBit);
+		debugDrawer.setFlags(B2DebugDraw.e_shapeBit | B2DebugDraw.e_jointBit);
 		world.setDebugDraw(debugDrawer);
 		
 		//---
