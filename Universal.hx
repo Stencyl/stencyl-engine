@@ -121,7 +121,7 @@ class Universal extends Sprite
 		#end
 		
 		#if flash
-		if(isFullScreen)
+		if(isFullScreen || scripts.MyAssets.gameScale > scripts.MyAssets.maxScale)
 		{
 			stageWidth = Lib.current.stage.stageWidth;
 			stageHeight = Lib.current.stage.stageHeight;
@@ -166,7 +166,7 @@ class Universal extends Sprite
 		trace("Screen DPI: " + Capabilities.screenDPI);
 		
 		//Tablets and other high-res devices get to use 2x mode, (TODO: if it's not a tablet-only game.)
-		#if(flash || desktop || mobile)	
+		#if(flash || desktop || mobile)
 		
 		//Calculate the theoretical scale if no max scale were imposed
 		var theoreticalScale:Float = 0;
