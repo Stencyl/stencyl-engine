@@ -376,13 +376,19 @@ class Universal extends Sprite
 			{
 				var screenW = Std.int(nme.system.Capabilities.screenResolutionX);
 				var screenH = Std.int(nme.system.Capabilities.screenResolutionY);
-				var screenLandscape = scripts.MyAssets.stageWidth > scripts.MyAssets.stageHeight;
+				
+				if(screenW < screenH && scripts.MyAssets.landscape)
+				{
+					screenH = Std.int(nme.system.Capabilities.screenResolutionX);
+					screenW = Std.int(nme.system.Capabilities.screenResolutionY);
+				}
+				
+				var screenLandscape = Lib.current.stage.width > Lib.current.stage.height;
 				
 				trace(screenW);
 				trace(screenH);
 				trace(screenLandscape);
 				
-			
 				if(scripts.MyAssets.maxScale < 4)
 				{
 					//Scale to Fit: Letterboxed
@@ -443,25 +449,42 @@ class Universal extends Sprite
 						if(scripts.MyAssets.landscape)
 						{
 							scaleY = stageHeight / scripts.MyAssets.stageHeight;
+							
+							//Height's scale causes width to spill over. Clamp to width instead.
+							if(Lib.current.stage.width * scaleY > screenW)
+							{
+								scaleY = stageWidth / scripts.MyAssets.stageWidth;
+							}
+							
 							scaleX = scaleY;
 						}
 						
 						else
 						{
-							scaleX *= stageWidth / scripts.MyAssets.stageWidth;
+							scaleX = stageWidth / scripts.MyAssets.stageWidth;
+							
+							//Width's scale causes width to spill over. Clamp to height instead.
+							if(Lib.current.stage.height * scaleX > screenH)
+							{
+								scaleX = stageHeight / scripts.MyAssets.stageHeight;
+							}
+							
 							scaleY = scaleX;
 						}
+						
+						trace("Algorithm: Scale to Fit (Full Screen)");
 						
 						scripts.MyAssets.stageWidth = stageWidth;
                         scripts.MyAssets.stageHeight = stageHeight;
 					
+                        //originalWidth = Std.int(Lib.current.stage.width);
+                        //originalHeight = Std.int(Lib.current.stage.height);
+                        
                         originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
                         originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
 
                         stageWidth = Std.int(stageWidth / theoreticalScale);
                         stageHeight = Std.int(stageHeight / theoreticalScale);
-						
-						trace("Algorithm: Scale to Fit (Full Screen)");
 					}
 					
 					//"No Scaling" (Only integer scales)
@@ -544,18 +567,37 @@ class Universal extends Sprite
 						if(scripts.MyAssets.landscape)
 						{
 							scaleY = stageHeight / scripts.MyAssets.stageHeight;
+							
+							//Height's scale causes width to spill over. Clamp to width instead.
+							if(Lib.current.stage.width * scaleY > screenW)
+							{
+								scaleY = stageWidth / scripts.MyAssets.stageWidth;
+							}
+							
 							scaleX = scaleY;
 						}
 						
 						else
 						{
-							scaleX *= stageWidth / scripts.MyAssets.stageWidth;
+							scaleX = stageWidth / scripts.MyAssets.stageWidth;
+							
+							//Width's scale causes width to spill over. Clamp to height instead.
+							if(Lib.current.stage.height * scaleX > screenH)
+							{
+								scaleX = stageHeight / scripts.MyAssets.stageHeight;
+							}
+							
 							scaleY = scaleX;
 						}
+						
+						trace("Algorithm: Scale to Fit (Full Screen)");
 						
 						scripts.MyAssets.stageWidth = stageWidth;
                         scripts.MyAssets.stageHeight = stageHeight;
 					
+                         //originalWidth = Std.int(Lib.current.stage.width);
+                        //originalHeight = Std.int(Lib.current.stage.height);
+                        
                         originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
                         originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
 
@@ -588,6 +630,24 @@ class Universal extends Sprite
 				
 				if(scripts.MyAssets.scaleToFit3)
 				{
+					//Disabled - this defeats the purpose of full screen?
+					//If the scaled game is less than the screen's size, we need to apply an offset to it.
+					//For example, native res of (544 x 320) on an iPad (1024 x 768) will be (1088 x 640) at a 2x scale. It will sit high and have black space below.
+					
+					/*var realX = Lib.current.stage.width * (Engine.SCALE * scaleX);
+					var realY = Lib.current.stage.height * (Engine.SCALE * scaleY);
+					
+					if(screenW > realX)
+					{
+						x += (screenW - realX) / 2;
+						trace("Offset X by: " + ((screenW - realX) / 2));
+					}
+					
+					if(screenH > realY)
+					{
+						y += (screenH - realY) / 2;
+						trace("Offset Y by: " + ((screenH - realY) / 2));
+					}*/
 				}
 				
 				else
