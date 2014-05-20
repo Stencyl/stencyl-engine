@@ -477,9 +477,6 @@ class Universal extends Sprite
 						scripts.MyAssets.stageWidth = stageWidth;
                         scripts.MyAssets.stageHeight = stageHeight;
 					
-                        //originalWidth = Std.int(Lib.current.stage.width);
-                        //originalHeight = Std.int(Lib.current.stage.height);
-                        
                         originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
                         originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
 
@@ -595,16 +592,11 @@ class Universal extends Sprite
 						scripts.MyAssets.stageWidth = stageWidth;
                         scripts.MyAssets.stageHeight = stageHeight;
 					
-                         //originalWidth = Std.int(Lib.current.stage.width);
-                        //originalHeight = Std.int(Lib.current.stage.height);
-                        
                         originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
                         originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
 
                         stageWidth = Std.int(stageWidth / theoreticalScale);
                         stageHeight = Std.int(stageHeight / theoreticalScale);
-						
-						trace("Algorithm: Scale to Fit (Full Screen)");
 					}
 					
 					//"No Scaling" (Only integer scales)
