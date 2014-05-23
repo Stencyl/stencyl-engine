@@ -2905,7 +2905,7 @@ class Engine
 				
 				if(listeners.length == 0)
 				{
-					collisionListeners.get(type1).delete(type2);
+					collisionListeners.get(type1).remove(type2);
 				}
 			}
 			
@@ -2918,7 +2918,7 @@ class Engine
 				
 				if(listeners.length == 0)
 				{
-					collisionListeners.get(type2).delete(type1);
+					collisionListeners.get(type2).remove(type1);
 				}
 			}
 		}
@@ -2932,7 +2932,7 @@ class Engine
 				
 				if(listeners.length == 0)
 				{
-					collisionListeners.get(group1).delete(group2);
+					collisionListeners.get(group1).remove(group2);
 				}
 			}
 			
@@ -2945,7 +2945,7 @@ class Engine
 				
 				if(listeners.length == 0)
 				{
-					collisionListeners.get(group2).delete(group1);
+					collisionListeners.get(group2).remove(group1);
 				}
 			}
 		}
