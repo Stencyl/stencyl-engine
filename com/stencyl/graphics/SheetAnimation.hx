@@ -234,13 +234,17 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	}
 	
 	public function setFrameDurations(time:Int)
-	{
+	{	
 		if(durations != null)
 		{
+			var newDurations:Array<Int> = new Array<Int>();
+		
 			for(i in 0...durations.length)
 			{
-				durations[i] = time;
+				newDurations.push(time);
 			}
+			
+			durations = newDurations;
 		}
 	}
 	
