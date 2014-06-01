@@ -1635,6 +1635,18 @@ class Script
 		Mouse.hide();
 	}
 	
+	public function charFromCharCode(code:Int):String
+	{
+		if (code < 32 || (code > 126 && code < 160))
+		{
+			return "";
+		}
+		else
+		{
+			return String.fromCharCode(code);
+		}
+	}
+	
 	//*-----------------------------------------------
 	//* Actor Creation
 	//*-----------------------------------------------
