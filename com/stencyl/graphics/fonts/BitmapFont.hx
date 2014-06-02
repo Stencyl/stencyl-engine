@@ -680,4 +680,8 @@ class BitmapFont
 		return f;
 	}
 
+	public function containsCharacter(char:String):Bool
+	{
+		return _glyphString.indexOf(char) >= 0;
+	}
 }
