@@ -11,6 +11,7 @@ class Tile
 {
 	public var tileID:Int;
 	public var collisionID:Int;
+	public var metadata:String;
 	public var frameIndex:Int;
 	public var parent:Tileset;
 			
@@ -27,14 +28,15 @@ class Tile
 	#end
 	
 	#if !js
-	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, parent:Tileset)
+	public function new(tileID:Int, collisionID:Int, metadata:String, frameIndex:Int, durations:Array<Int>, parent:Tileset)
 	#end
 	#if js
-	public function new(tileID:Int, collisionID:Int, frameIndex:Int, durations:Array<Int>, parent:Dynamic)
+	public function new(tileID:Int, collisionID:Int, metadata:String, frameIndex:Int, durations:Array<Int>, parent:Dynamic)
 	#end
 	{
 		this.tileID = tileID;
 		this.collisionID = collisionID;
+		this.metadata = metadata;
 		this.frameIndex = frameIndex;
 		this.durations = durations;
 		this.parent = parent;	

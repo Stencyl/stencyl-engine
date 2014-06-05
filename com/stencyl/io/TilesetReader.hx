@@ -44,7 +44,7 @@ class TilesetReader implements AbstractReader
 	{
 		var tileID:Int = Std.parseInt(xml.att.id);
 		var collisionID:Int = Std.parseInt(xml.att.collision);
-		
+		var metadata:String = xml.att.data;
 		//Always single for now!
 		var frameID:Int = Std.parseInt(xml.att.frames);
 		
@@ -67,6 +67,6 @@ class TilesetReader implements AbstractReader
 			counter++;
 		}
 
-		return new Tile(tileID, collisionID, frameID, durations, parent);
+		return new Tile(tileID, collisionID, metadata, frameID, durations, parent);
 	}
 }
