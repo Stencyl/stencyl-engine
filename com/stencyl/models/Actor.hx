@@ -4047,6 +4047,91 @@ class Actor extends Sprite
 		return "[Actor " + ID + "," + name + "]";
 	}
 	
+	public static function scaleShape(shape:B2Shape, center:B2Vec2, factor:Float)
+	{
+		if(Std.is(shape, B2CircleShape))
+		{
+			var circle:B2CircleShape = cast(shape, B2CircleShape);
+			
+			circle.m_radius *= factor;
+		}
+		
+		else if(Std.is(shape, B2PolygonShape))
+		{
+			var polygon:B2PolygonShape = cast(shape, B2PolygonShape);
+			var vertices:Array<B2Vec2> = polygon.m_vertices;
+			var newVertices:Array<B2Vec2> = new Array<B2Vec2>();
+			
+			for (v in vertices)
+			{
+				v.subtract(center);
+				v.multiply(factor);
+				v.add(center);
+				newVertices.push(v);
+			}
+			
+			polygon.setAsArray(newVertices);
+		}
+	}
+	
+	public function addRectangularShape(x:Float, y:Float, w:Float, h:Float)
+	{
+		if (physicsMode == 0)
+		{
+			var polygon:B2PolygonShape = new B2PolygonShape();
+			var vertices:Array<B2Vec2> = new Array<B2Vec2>();
+			x = Engine.toPhysicalUnits(x - Math.floor(cacheWidth / 2) - currOffset.x);
+			y = Engine.toPhysicalUnits(y - Math.floor(cacheHeight / 2) - currOffset.y);
+			w = Engine.toPhysicalUnits(w);
+			h = Engine.toPhysicalUnits(h);
+			vertices.push(new B2Vec2(x, y));
+			vertices.push(new B2Vec2(x + w, y));
+			vertices.push(new B2Vec2(x + w, y + h));
+			vertices.push(new B2Vec2(x, y + h));
+			polygon.setAsVector(vertices);
+			var fixture:B2Fixture = this.getBody().createFixture2(polygon, 1);
+			fixture.SetUserData(this);
+		}
+	}
+	
+	public function addCircularShape(x:Float, y:Float, r:Float)
+	{
+		if (physicsMode == 0)
+		{
+			var circle:B2CircleShape = new B2CircleShape();
+			circle.m_radius = Engine.toPhysicalUnits(r);
+			circle.m_p.x = Engine.toPhysicalUnits(x);
+			circle.m_p.y = Engine.toPhysicalUnits(y);
+			var fixture:B2Fixture = this.getBody().createFixture2(circle, 1);
+			fixture.SetUserData(this);
+		}
+	}
+	
+	public function addVertex(vertices:Array<B2Vec2>, x:Float, y:Float)
+	{
+		x = Engine.toPhysicalUnits(x - Math.floor(cacheWidth / 2) - currOffset.x);
+		y = Engine.toPhysicalUnits(y - Math.floor(cacheHeight / 2) - currOffset.y);
+		vertices.push(new B2Vec2(x, y));
+	}
+	
+	public function addPolygonalShape(vertices:Array<B2Vec2>)
+	{
+		if (physicsMode == 0)
+		{
+			var polygon:B2PolygonShape = new B2PolygonShape();
+			/*var newVertices:Array<B2Vec2> = new Array<B2Vec2>();
+			for (v in vertices)
+			{
+				v.subtract(new B2Vec2(getPhysicsWidth()/2, getPhysicsHeight()/2));
+				newVertices.push(v);
+			}
+			polygon.setAsArray(newVertices);*/
+			polygon.setAsArray(vertices);
+			var fixture:B2Fixture = this.getBody().createFixture2(polygon, 1);
+			fixture.SetUserData(this);
+		}
+	}
+	
 	//*-----------------------------------------------
 	//* Camera-Only
 	//*-----------------------------------------------
