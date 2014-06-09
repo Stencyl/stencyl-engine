@@ -33,6 +33,7 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	#end
 	
 	private var durations:Array<Int>;
+	private var individualDurations:Bool;
 	public var numFrames:Int;
 	
 	private var data:Array<Float>;
@@ -238,13 +239,31 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 		if(durations != null)
 		{
 			var newDurations:Array<Int> = new Array<Int>();
-		
 			for(i in 0...durations.length)
 			{
 				newDurations.push(time);
 			}
-			
 			durations = newDurations;
+			individualDurations = true;
+		}
+	}
+	
+	public function setFrameDuration(frame:Int, time:Int):Void
+	{
+		if (!individualDurations)
+		{
+			var newDurations:Array<Int> = new Array<Int>();
+			for(i in 0...durations.length)
+			{
+				newDurations.push(durations[i]);
+			}
+			durations = newDurations;
+			individualDurations = true;
+		}
+		
+		if (frame >= 0 && frame < durations.length)
+		{
+			durations[frame] = time;
 		}
 	}
 	

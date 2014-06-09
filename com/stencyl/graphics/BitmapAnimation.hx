@@ -17,6 +17,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	private var timer:Float;
 	private var sheet:BitmapData;
 	private var durations:Array<Int>;
+	private var individualDurations:Bool;
 	private var numFrames:Int;
 	private var across:Int;
 	private var down:Int;
@@ -48,6 +49,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		this.looping = looping;
 		this.sheet = sheet;
 		this.durations = durations;
+		this.individualDurations = false;
 		this.numFrames = numFrames;
 		this.smoothing = scripts.MyAssets.antialias;
 		
@@ -185,13 +187,31 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		if(durations != null)
 		{
 			var newDurations:Array<Int> = new Array<Int>();
-		
 			for(i in 0...durations.length)
 			{
 				newDurations.push(time);
 			}
-			
 			durations = newDurations;
+			individualDurations = true;
+		}
+	}
+	
+	public function setFrameDuration(frame:Int, time:Int):Void
+	{
+		if (!individualDurations)
+		{
+			var newDurations:Array<Int> = new Array<Int>();
+			for(i in 0...durations.length)
+			{
+				newDurations.push(durations[i]);
+			}
+			durations = newDurations;
+			individualDurations = true;
+		}
+		
+		if (frame >= 0 && frame < durations.length)
+		{
+			durations[frame] = time;
 		}
 	}
 	
