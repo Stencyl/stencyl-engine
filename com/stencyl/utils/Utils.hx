@@ -134,6 +134,54 @@ class Utils
 		return false;
 	}
 	
+	public static function mapContainsValue(map:Map<String, Dynamic>, value:Dynamic):Bool
+	{
+		for (item in map)
+		{
+			if (item == value)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public static function mapCount(map:Map<String, Dynamic>):Int
+	{
+		var i:Int = 0;
+		
+		for (item in map)
+		{
+			i++;
+		}
+		
+		return i;
+	}
+	
+	public static function mapToList(map:Map<String, Dynamic>, type:String):Array<Dynamic>
+	{
+		var toReturn:Array<Dynamic> = new Array<Dynamic>();
+		
+		if (type == "key")
+		{
+			for (item in map.keys())
+			{
+				toReturn.push(item);
+			}
+		}
+		
+		else
+		{
+			for (item in map)
+			{
+				toReturn.push(item);
+			}
+		}
+		
+		return toReturn;
+	}
+	
 	public static function removeAllChildren(container:DisplayObjectContainer)
 	{
 		while(container.numChildren > 0)

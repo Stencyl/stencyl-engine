@@ -146,6 +146,16 @@ class Attribute
 				}	
 			}
 			
+			else if (type == "map")
+			{
+				realValue = value;
+				
+				if (value == null)
+				{
+					realValue = new Map<String, Dynamic>();
+				}
+			}
+			
 			else if(value != null && type == "actor")
 			{
 				if(value == "thisactor")
