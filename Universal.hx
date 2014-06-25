@@ -451,7 +451,7 @@ class Universal extends Sprite
 							scaleY = stageHeight / scripts.MyAssets.stageHeight;
 							
 							//Height's scale causes width to spill over. Clamp to width instead.
-							if(Lib.current.stage.width * scaleY > screenW)
+							if(Lib.current.stage.width * Engine.SCALE * scaleY > screenW)
 							{
 								scaleY = stageWidth / scripts.MyAssets.stageWidth;
 							}
@@ -464,7 +464,7 @@ class Universal extends Sprite
 							scaleX = stageWidth / scripts.MyAssets.stageWidth;
 							
 							//Width's scale causes width to spill over. Clamp to height instead.
-							if(Lib.current.stage.height * scaleX > screenH)
+							if(Lib.current.stage.height * Engine.SCALE * scaleX > screenH)
 							{
 								scaleX = stageHeight / scripts.MyAssets.stageHeight;
 							}
