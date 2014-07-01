@@ -59,11 +59,11 @@ class Universal extends Sprite
 	
 	private function onKeyDown(e:KeyboardEvent = null)
 	{
-		if(e.keyCode == Keyboard.ESCAPE)
+		/*if(e.keyCode == Keyboard.ESCAPE)
 		{
 			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			nme.system.System.exit(0);
-		}
+		}*/
 	}
 	
 	public function initServices()
