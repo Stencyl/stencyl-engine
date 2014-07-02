@@ -291,6 +291,19 @@ class GameModel
 				
 				map.set(e.att.name, value);
 			}
+			
+			else if(type == "map")
+			{
+				var value:Map<String,Dynamic> = new Map<String,Dynamic>();
+				
+				for(item in e.elements)
+				{
+					//TODO MIKE: Support references
+					value.set(item.att.key, item.att.value);
+				}
+				
+				map.set(e.att.name, value);
+			}
 		}
 		
 		return map;

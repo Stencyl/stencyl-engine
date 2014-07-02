@@ -110,10 +110,20 @@ class ActorTypeReader implements AbstractReader
 		for(e in xml.elements)
 		{
 			map.set(e.att.id, e.att.val);
-			
-			if(e.elements.hasNext())
+						
+			if(e.elements.hasNext() )
 			{
-				map.set(e.att.id, readList(e));
+				var listType:Int = Std.parseInt(e.att.list);
+				
+				if (listType == 1)
+				{
+					map.set(e.att.id, readList(e));
+				}
+				
+				else if (listType == 2)
+				{
+					map.set(e.att.id, readMap(e));
+				}
 			}
 		}
 		
@@ -158,6 +168,76 @@ class ActorTypeReader implements AbstractReader
 				}
 				
 				map.insert(index, value);
+			}
+			
+			else if(type == "map")
+			{
+				var value:Map<String,Dynamic> = new Map<String,Dynamic>();
+				
+				for(item in e.elements)
+				{
+					//TODO MIKE: Support references
+					value.set(item.att.key, item.att.value);
+				}
+				
+				map.insert(index, value);
+			}
+		}
+		
+		return map;	
+	}
+	
+	public static function readMap(list:Fast):Map<String,Dynamic>
+	{
+		var map:Map<String,Dynamic> = new Map<String,Dynamic>();
+			
+		for(e in list.elements)
+		{
+			var key:String = e.att.key;
+			var type:String = e.name;
+						
+			if(type == "number")
+			{
+				var num:Float = Std.parseFloat(e.att.value);
+				map.set(key, num);
+			}
+				
+			else if(type == "text")
+			{
+				var str:String = e.att.value;
+				map.set(key, str);
+			}
+				
+			else if(type == "bool")
+			{
+				var bool:Bool = Utils.toBoolean(e.att.value);
+				map.set(key, bool);
+			}
+				
+			else if(type == "list")
+			{
+				var value:Array<Dynamic> = new Array<Dynamic>();
+				
+				for(item in e.elements)
+				{	
+					var index2:Int = Std.parseInt(item.att.order);
+					value[index2] = item.att.value;
+				}
+				
+				map.set(key, value);
+			}
+			
+			else if(type == "map")
+			{
+				var value:Map<String,Dynamic> = new Map<String,Dynamic>();
+				
+				for(item in e.elements)
+				{
+					//TODO MIKE: Support references
+					value.set(item.att.key, item.att.value);
+				}
+				
+				map.set(key, value);
 			}
 		}
 		

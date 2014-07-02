@@ -1031,6 +1031,11 @@ class Engine
 					{
 						attributes.set(key, new Attribute(ID, attribute.fieldName, attribute.fullName, [], type, null, attribute.hidden));
 					}
+					
+					else if(type == "map")
+					{
+						attributes.set(key, new Attribute(ID, attribute.fieldName, attribute.fullName, new Map<String, Dynamic>(), type, null, attribute.hidden));
+					}
 				}
 			}
 

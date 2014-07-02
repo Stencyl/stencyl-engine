@@ -1,6 +1,7 @@
 package com.stencyl.behavior;
 
 import nme.display.Graphics;
+import haxe.ds.StringMap;
 
 class Behavior 
 {	
@@ -176,6 +177,29 @@ class Behavior
 						}
 		
 						Reflect.setField(script, attributeName, list);
+					}
+					
+					else if(a.type == "map")
+					{
+						var map:Map<String, Dynamic> = null;
+						
+						if(realValue != null)
+						{
+							var realMap:Map.IMap<String,Dynamic> = realValue;
+							map = new Map<String, Dynamic>();
+							
+							for (key in realMap.keys())
+							{
+								map.set(key, realMap.get(key));
+							}
+						}
+						
+						else
+						{
+							map = new StringMap<Dynamic>();
+						}
+		
+						Reflect.setField(script, attributeName, map);
 					}
 					
 					else
