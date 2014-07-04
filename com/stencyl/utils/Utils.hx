@@ -12,6 +12,7 @@ import nme.geom.Rectangle;
 import flash.media.SoundMixer;
 #end
 import nme.media.SoundTransform;
+import nme.net.SharedObject;
 import nme.system.System;
 import haxe.Timer;
 import nme.display.DisplayObjectContainer;
@@ -777,6 +778,78 @@ class Utils
 	private static inline function set_time(value:Float):Float {
 		_time = value;
 		return _time;
+	}
+	
+	/**
+	 * Saves an arbitrary map to the "StencylSaves/[GameName]/[FileName]" location
+	 *
+	 * Callback = function(success:Boolean):void
+	 */
+	public static function saveMap(map:Map<String, Dynamic>, fileName:String, onComplete:Bool->Void=null)
+	{
+		var so = SharedObject.getLocal(fileName);
+		
+		for(key in map.keys())
+		{
+			Reflect.setField(so.data, key, map.get(key));
+		}
+
+		#if flash
+		var flushStatus:String = null;
+		#else
+		var flushStatus:nme.net.SharedObjectFlushStatus = null;
+		#end
+		
+		try 
+		{
+		    flushStatus = so.flush();
+		} 
+		
+		catch(e:Dynamic) 
+		{
+			trace("Error: Failed to save - " + fileName +  " - " + e);
+			//TODO: Event
+			if(onComplete != null)
+				onComplete(false);
+			return;
+		}
+		
+		trace(flushStatus);
+		
+		if(flushStatus != null) 
+		{
+			if(flushStatus == nme.net.SharedObjectFlushStatus.PENDING)
+			{
+				//trace('requesting permission to save');
+			}
+			
+			else if(flushStatus == nme.net.SharedObjectFlushStatus.FLUSHED)
+			{
+				trace("Saved Map: " + fileName);
+				if(onComplete != null)
+		        	onComplete(true);
+		        //TODO: Event
+			}
+		}
+	}
+	
+	/**
+  	 * Load a saved map
+	 *
+	 * Callback = function(success:Boolean):void
+	 */
+	public static function loadMap(map:Map<String, Dynamic>, fileName:String, onComplete:Bool->Void=null)
+	{
+		var data = SharedObject.getLocal(fileName);
+		
+		trace("Loaded Map: " + fileName);
+		
+		for(key in Reflect.fields(data.data))
+		{
+			map.set(key, Reflect.field(data.data, key));
+		}
+		
+		onComplete(true);
 	}
 
 	// Time information.

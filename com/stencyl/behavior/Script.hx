@@ -642,6 +642,26 @@ class Script
 			cast(this, ActorScript).actor.registerListener(engine.whenAnyKeyReleasedListeners, func);
 		}
 	}
+
+	public function addAnyGamepadPressedListener(func:Dynamic->Array<Dynamic>->Void)
+	{
+		engine.whenAnyGamepadPressedListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenAnyGamepadPressedListeners, func);
+		}
+	}
+	
+	public function addAnyGamepadReleasedListener(func:Dynamic->Array<Dynamic>->Void)
+	{
+		engine.whenAnyGamepadReleasedListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.whenAnyGamepadReleasedListeners, func);
+		}
+	}
 	
 	public function addMousePressedListener(func:Array<Dynamic>->Void)
 	{

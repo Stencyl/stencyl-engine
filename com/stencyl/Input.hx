@@ -1,6 +1,11 @@
 package com.stencyl;
 
+import com.stencyl.utils.Utils;
+
 import nme.events.Event;
+#if desktop
+import nme.events.JoystickEvent;
+#end
 import nme.events.KeyboardEvent;
 import nme.events.MouseEvent;
 import nme.display.DisplayObject;
@@ -49,6 +54,8 @@ class Input
 	public static var accelY:Float;
 	public static var accelZ:Float;
 	
+	public static var joySensitivity:Float = .12;
+
 	#if !js
 	public static var multiTouchEnabled:Bool;
 	public static var multiTouchPoints:Map<String,TouchEvent>;
@@ -228,6 +235,20 @@ class Input
 		#end
 	}
 
+	public static function enableJoystick()
+	{
+		if(!_joystickEnabled && Engine.stage != null)
+		{
+			#if desktop
+			Engine.stage.addEventListener(JoystickEvent.AXIS_MOVE, onJoyAxisMove, false, 2);
+			Engine.stage.addEventListener(JoystickEvent.BALL_MOVE, onJoyBallMove, false, 2);
+			Engine.stage.addEventListener(JoystickEvent.HAT_MOVE, onJoyHatMove, false, 2);
+			Engine.stage.addEventListener(JoystickEvent.BUTTON_DOWN, onJoyButtonDown, false, 2);
+			Engine.stage.addEventListener(JoystickEvent.BUTTON_UP, onJoyButtonUp, false, 2);
+			#end
+		}
+	}
+
 	public static function enable()
 	{
 		if(!_enabled && Engine.stage != null)
@@ -237,14 +258,13 @@ class Input
 			Engine.stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 2);
 			Engine.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false,  2);
 			Engine.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 2);
-			
 			#if desktop
 			Engine.stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, onRightMouseDown, false, 2);
 			Engine.stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, onRightMouseUp, false, 2);
 			Engine.stage.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, onMiddleMouseDown, false, 2);
 			Engine.stage.addEventListener(MouseEvent.MIDDLE_MOUSE_UP, onMiddleMouseUp, false, 2);
 			#end
-			
+
 			//Disable default behavior for Android Back Button
 			#if(mobile && android)
 			if(scripts.MyAssets.disableBackButton)
@@ -570,7 +590,199 @@ class Input
 		mouseWheel = true;
 		mouseWheelDelta = e.delta;
 	}
-	
+
+	#if desktop
+	private static function onJoyAxisMove(e:JoystickEvent)
+	{
+		if(!_joyAxisState.exists(e.device))
+		{
+			var a:Array<Int> = [];
+			for(f in e.axis)
+				a.push(0);
+			_joyAxisState.set(e.device, a);
+		}
+		
+		var oldState:Array<Int> = _joyAxisState.get(e.device);
+		
+		var cur:Int;
+		var old:Int;
+
+		for(i in 0...e.axis.length)
+		{
+			if(e.axis[i] < -joySensitivity)
+				cur = -1;
+			else if(e.axis[i] > joySensitivity)
+				cur = 1;
+			else
+				cur = 0;
+
+			old = oldState[i];
+
+			if(cur != old)
+			{
+				if(old == -1)
+					joyRelease(e.device + ", -axis " + i);
+				else if(old == 1)
+					joyRelease(e.device + ", +axis " + i);
+				if(cur == -1)
+					joyPress(e.device + ", -axis " + i);
+				else if(cur == 1)
+					joyPress(e.device + ", +axis " + i);
+			}
+
+			oldState[i] = cur;
+		}
+
+		_joyAxisPressure.set(e.device, e.axis);
+	}
+
+	private static function onJoyBallMove(e:JoystickEvent)
+	{
+		//not sure what to do with this
+	}
+
+	private static function onJoyHatMove(e:JoystickEvent)
+	{
+		if(!_joyHatState.exists(e.device))
+			_joyHatState.set(e.device, [0, 0]);
+
+		var oldX:Int = _joyHatState.get(e.device)[0];
+		var oldY:Int = _joyHatState.get(e.device)[1];
+
+		if(e.x != oldX)
+		{
+			if(oldX == -1)
+				joyRelease(e.device + ", left hat");
+			else if(oldX == 1)
+				joyRelease(e.device + ", right hat");
+			if(e.x == -1)
+				joyPress(e.device + ", left hat");
+			else if(e.x == 1)
+				joyPress(e.device + ", right hat");
+		}
+		if(e.y != oldY)
+		{
+			if(oldY == -1)
+				joyRelease(e.device + ", up hat");
+			else if(oldY == 1)
+				joyRelease(e.device + ", down hat");
+			if(e.y == -1)
+				joyPress(e.device + ", up hat");
+			else if(e.y == 1)
+				joyPress(e.device + ", down hat");
+		}
+
+		_joyHatState.set(e.device, [Std.int(e.x), Std.int(e.y)]);
+	}
+
+	private static function onJoyButtonDown(e:JoystickEvent)
+	{
+		joyPress(e.device + ", " + e.id);
+	}
+
+	private static function onJoyButtonUp(e:JoystickEvent)
+	{
+		joyRelease(e.device + ", " + e.id);
+	}
+
+	private static function joyPress(id:String)
+	{
+		if(_joyControlMap.exists(id))
+			simulateKeyPress(_joyControlMap.get(id));
+
+		Engine.invokeListeners2(Engine.engine.whenAnyGamepadPressedListeners, id);
+	}
+
+	private static function joyRelease(id:String)
+	{
+		if(_joyControlMap.exists(id))
+			simulateKeyRelease(_joyControlMap.get(id));
+
+		Engine.invokeListeners2(Engine.engine.whenAnyGamepadReleasedListeners, id);
+	}
+	#end
+
+	public static function setJoySensitivity(val:Float)
+	{
+		#if desktop
+		joySensitivity = val;
+		#end
+	}
+
+	public static function mapJoystickButton(id:String, control:String)
+	{
+		#if desktop
+		_joyControlMap.set(id, control);
+		if(_controlAxisMap.exists(control))
+			_controlAxisMap.remove(control);
+		if(id.indexOf("axis") != -1)
+		{
+			var device:Int = Std.parseInt(id.substr(0, id.indexOf(" ")));
+			var axis:Int = Std.parseInt(id.substr(id.lastIndexOf(" ") + 1));
+			var sign:Int = id.substr(id.indexOf("axis") - 1, 1) == "+" ? 1 : -1;
+
+			_controlAxisMap.set(control, [device, axis, sign]);
+		}
+		#end
+	}
+
+	public static function getButtonPressure(control:String):Float
+	{
+		#if desktop
+
+		if(_controlAxisMap.exists(control))
+		{
+			var a = _controlAxisMap.get(control);
+			if(_joyAxisState.get(a[0])[a[1]] == a[2])
+				return Math.abs(_joyAxisPressure.get(a[0])[a[1]]);
+			else
+				return 0;
+		}
+		else
+			return check(control) ? 1 : 0;
+
+		#else
+
+		return check(control) ? 1 : 0;
+
+		#end
+	}
+
+	private static var joyData:Map<String, Dynamic>;
+
+	public static function saveJoystickConfig(filename:String):Void
+	{
+		#if desktop
+		joyData = new Map<String, Dynamic>();
+		joyData.set("_joyControlMap", _joyControlMap);
+		joyData.set("_controlAxisMap", _controlAxisMap);
+		joyData.set("joySensitivity", joySensitivity);
+		Utils.saveMap(joyData, "_jc-" + filename);
+		joyData = null;
+		#end
+	}
+
+	public static function loadJoystickConfig(filename:String):Void
+	{
+		#if desktop
+		joyData = new Map<String, Dynamic>();
+		Utils.loadMap(joyData, "_jc-" + filename, function(success:Bool):Void
+		{
+			_joyControlMap = joyData.get("_joyControlMap");
+			_controlAxisMap = joyData.get("_controlAxisMap");
+			joySensitivity = joyData.get("joySensitivity");
+			joyData = null;
+		});
+		#end
+	}
+
+	public static function clearJoystickConfig():Void
+	{
+		_joyControlMap = new Map<String,String>();
+		_controlAxisMap = new Map<String,Array<Dynamic>>();
+		joySensitivity = .12;
+	}
+
 	#if !js
 	private static function onTouchBegin(e:TouchEvent)
 	{
@@ -598,6 +810,7 @@ class Input
 
 	private static inline var kKeyStringMax = 100;
 
+	private static var _joystickEnabled:Bool = false;
 	private static var _enabled:Bool = false;
 	private static var _key:Array<Bool> = new Array<Bool>();
 	private static var _keyNum:Int = 0;
@@ -605,5 +818,12 @@ class Input
 	private static var _pressNum:Int = 0;
 	private static var _release:Array<Int> = new Array<Int>();
 	private static var _releaseNum:Int = 0;
+	
+	private static var _joyHatState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
+	private static var _joyAxisState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
+	private static var _joyAxisPressure:Map<Int,Array<Float>> = new Map<Int,Array<Float>>();
+	private static var _joyControlMap:Map<String,String> = new Map<String,String>();
+	private static var _controlAxisMap:Map<String,Array<Dynamic>> = new Map<String,Array<Dynamic>>();
+
 	private static var _control:Map<String,Array<Int>> = new Map<String,Array<Int>>();
 }

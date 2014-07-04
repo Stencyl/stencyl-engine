@@ -348,6 +348,8 @@ class Engine
 	public var hasKeyPressedListeners:Bool;
 	public var whenAnyKeyPressedListeners:Array<Dynamic>;
 	public var whenAnyKeyReleasedListeners:Array<Dynamic>;
+	public var whenAnyGamepadPressedListeners:Array<Dynamic>;
+	public var whenAnyGamepadReleasedListeners:Array<Dynamic>;
 	public var whenTypeGroupCreatedListeners:ObjectMap<Dynamic, Dynamic>;
 	public var whenTypeGroupDiesListeners:ObjectMap<Dynamic, Dynamic>;
 	public var typeGroupPositionListeners:Map<Int,Dynamic>;
@@ -587,7 +589,7 @@ class Engine
 	#end
 	
 	public function begin(initSceneID:Int)
-	{		
+	{
 		atlasesToLoad = new Map<Int,Int>();
 		atlasesToUnload = new Map<Int,Int>();
 	
@@ -852,6 +854,8 @@ class Engine
 		hasKeyPressedListeners = false;
 		whenAnyKeyPressedListeners = new Array<Dynamic>();
 		whenAnyKeyReleasedListeners = new Array<Dynamic>();
+		whenAnyGamepadPressedListeners = new Array<Dynamic>();
+		whenAnyGamepadReleasedListeners = new Array<Dynamic>();
 	
 		whenTypeGroupCreatedListeners = new ObjectMap<Dynamic, Dynamic>();
 		whenTypeGroupDiesListeners = new ObjectMap<Dynamic, Dynamic>();
@@ -1718,6 +1722,8 @@ class Engine
 		hasKeyPressedListeners = false;
 		whenAnyKeyPressedListeners = null;
 		whenAnyKeyReleasedListeners = null;
+		whenAnyGamepadPressedListeners = null;
+		whenAnyGamepadReleasedListeners = null;
 		whenTypeGroupCreatedListeners = null;
 		whenTypeGroupDiesListeners = null;
 		typeGroupPositionListeners = null;
