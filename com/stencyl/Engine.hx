@@ -2097,6 +2097,7 @@ class Engine
 		
 		a.switchToDefaultAnimation();
 		a.disableActorDrawing();
+		a.removeAttachedImages();
 		
 		//Kill previous contacts
 		if(a.physicsMode == 0 && a.body != null)

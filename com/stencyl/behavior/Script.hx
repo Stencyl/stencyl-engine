@@ -2342,6 +2342,8 @@ class Script
 			}
 			
 			img.smoothing = scripts.MyAssets.antialias;
+
+			a.attachedImages.push(img);
 		}
 	}
 	
@@ -2390,6 +2392,8 @@ class Script
 	{
 		if(img != null)
 		{
+			if(Std.is(img.parent, Actor))
+				cast(img.parent, Actor).attachedImages.remove(img);
 			img.parent.removeChild(img);
 		}
 	}

@@ -211,6 +211,8 @@ class Actor extends Sprite
 	public var drawMatrix:Matrix; //For use when drawing actor image
 	
 	public var label:Label;
+
+	public var attachedImages:Array<Bitmap> = null;
 	
 	// These are for the smooth movement option.
 	public var smoothMove:Bool = false;
@@ -394,6 +396,8 @@ class Actor extends Sprite
 		currOrigin = new Point(0, 0);
 		currOffset = new Point(0, 0);			
 		registry = new Map<String,Dynamic>();
+		
+		attachedImages = new Array<Bitmap>();
 		
 		this.physicsMode = physicsMode;
 		this.autoScale = autoScale;
@@ -1378,6 +1382,13 @@ class Actor extends Sprite
 				cast(currAnimation, AbstractAnimation).reset();
 			}				
 		}
+	}
+
+	public function removeAttachedImages()
+	{
+		for(b in attachedImages)
+			removeChild(b);
+		attachedImages = new Array<Bitmap>();
 	}
 	
 	//*-----------------------------------------------
