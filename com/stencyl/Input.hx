@@ -677,11 +677,13 @@ class Input
 
 	private static function onJoyButtonDown(e:JoystickEvent)
 	{
+		_joyButtonState.get(e.device)[e.id] = true;
 		joyPress(e.device + ", " + e.id);
 	}
 
 	private static function onJoyButtonUp(e:JoystickEvent)
 	{
+		_joyButtonState.get(e.device)[e.id] = false;
 		joyRelease(e.device + ", " + e.id);
 	}
 
@@ -712,17 +714,26 @@ class Input
 	public static function mapJoystickButton(id:String, control:String)
 	{
 		#if desktop
-		_joyControlMap.set(id, control);
-		if(_controlAxisMap.exists(control))
-			_controlAxisMap.remove(control);
-		if(id.indexOf("axis") != -1)
-		{
-			var device:Int = Std.parseInt(id.substr(0, id.indexOf(" ")));
-			var axis:Int = Std.parseInt(id.substr(id.lastIndexOf(" ") + 1));
-			var sign:Int = id.substr(id.indexOf("axis") - 1, 1) == "+" ? 1 : -1;
+		var button:JoystickButton = JoystickButton.fromID(id);
 
-			_controlAxisMap.set(control, [device, axis, sign]);
+		if(_joyControlMap.exists(id))
+		{
+			var buttons:Array<JoystickButton> = _controlButtonMap.get(_joyControlMap.get(id));
+
+			var i:Int = 0;
+			while(i < buttons.length)
+			{
+				if(buttons[i].equals(button))
+					buttons.splice(i--, 1);
+				++i;
+			}
 		}
+		
+		if(!_controlButtonMap.exists(control))
+			_controlButtonMap.set(control, new Array<JoystickButton>());
+		_controlButtonMap.get(control).push(button);
+
+		_joyControlMap.set(id, control);
 		#end
 	}
 
@@ -730,16 +741,31 @@ class Input
 	{
 		#if desktop
 
-		if(_controlAxisMap.exists(control))
+		if(_controlButtonMap.exists(control))
 		{
-			var a = _controlAxisMap.get(control);
-			if(_joyAxisState.get(a[0])[a[1]] == a[2])
-				return Math.abs(_joyAxisPressure.get(a[0])[a[1]]);
-			else
-				return 0;
+			var buttons = _controlButtonMap.get(control);
+
+			var highestPressure:Float = 0;
+			for(b in buttons)
+			{
+				switch(b.a[JoystickButton.TYPE])
+				{
+					case JoystickButton.AXIS:
+						if(_joyAxisState.get(b.a[0])[b.a[2]] == b.a[3])
+							highestPressure = Math.max(highestPressure, Math.abs(_joyAxisPressure.get(b.a[0])[b.a[2]]));
+					case JoystickButton.HAT:
+						if(_joyHatState.get(b.a[0])[b.a[2]] == b.a[3])
+							highestPressure = 1;
+					case JoystickButton.BUTTON:
+						if(_joyButtonState.get(b.a[0])[b.a[2]])
+							highestPressure = 1;
+				}
+			}
+
+			return highestPressure;
 		}
 		else
-			return check(control) ? 1 : 0;
+			return 0;
 
 		#else
 
@@ -755,7 +781,7 @@ class Input
 		#if desktop
 		joyData = new Map<String, Dynamic>();
 		joyData.set("_joyControlMap", _joyControlMap);
-		joyData.set("_controlAxisMap", _controlAxisMap);
+		joyData.set("_controlButtonMap", _controlButtonMap);
 		joyData.set("joySensitivity", joySensitivity);
 		Utils.saveMap(joyData, "_jc-" + filename);
 		joyData = null;
@@ -769,7 +795,7 @@ class Input
 		Utils.loadMap(joyData, "_jc-" + filename, function(success:Bool):Void
 		{
 			_joyControlMap = joyData.get("_joyControlMap");
-			_controlAxisMap = joyData.get("_controlAxisMap");
+			_controlButtonMap = joyData.get("_controlButtonMap");
 			joySensitivity = joyData.get("joySensitivity");
 			joyData = null;
 		});
@@ -779,7 +805,7 @@ class Input
 	public static function clearJoystickConfig():Void
 	{
 		_joyControlMap = new Map<String,String>();
-		_controlAxisMap = new Map<String,Array<Dynamic>>();
+		_controlButtonMap = new Map<String,Array<JoystickButton>>();
 		joySensitivity = .12;
 	}
 
@@ -822,8 +848,77 @@ class Input
 	private static var _joyHatState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
 	private static var _joyAxisState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
 	private static var _joyAxisPressure:Map<Int,Array<Float>> = new Map<Int,Array<Float>>();
+	private static var _joyButtonState:Map<Int,Array<Bool>> = new Map<Int,Array<Bool>>();
+
 	private static var _joyControlMap:Map<String,String> = new Map<String,String>();
-	private static var _controlAxisMap:Map<String,Array<Dynamic>> = new Map<String,Array<Dynamic>>();
+	private static var _controlButtonMap:Map<String,Array<JoystickButton>> = new Map<String,Array<JoystickButton>>();
 
 	private static var _control:Map<String,Array<Int>> = new Map<String,Array<Int>>();
+}
+
+class JoystickButton
+{
+	public static var DEVICE:Int = 0;
+	public static var TYPE:Int = 1;
+
+	public static var UP:Int = 0;
+	public static var DOWN:Int = 1;
+	public static var LEFT:Int = 2;
+	public static var RIGHT:Int = 3;
+
+	public static var AXIS:Int = 0;
+	public static var HAT:Int = 1;
+	public static var BUTTON:Int = 2;
+	public static var BALL:Int = 3;
+
+	public static function fromID(id:String):JoystickButton
+	{
+		var b:JoystickButton = new JoystickButton();
+		b.id = id;
+
+		if(id.indexOf("axis") != -1)
+		{
+			var device:Int = Std.parseInt(id.substr(0, id.indexOf(",")));
+			var axis:Int = Std.parseInt(id.substr(id.lastIndexOf(" ") + 1));
+			var sign:Int = id.substr(id.indexOf("axis") - 1, 1) == "+" ? 1 : -1;
+			b.a = [device, AXIS, axis, sign];
+		}
+		else if(id.indexOf("hat") != -1)
+		{
+			var device:Int = Std.parseInt(id.substr(0, id.indexOf(",")));
+			var hat:Int = 0;
+			var sign:Int = 0;
+			switch(id.split(" ")[1])
+			{
+				case "up": hat = 1; sign = -1;
+				case "down": hat = 1; sign = 1;
+				case "right": hat = 0; sign = 1;
+				case "left": hat = 0; sign = -1;
+			}
+			b.a = [device, HAT, hat, sign];
+		}
+		else
+		{
+			var device:Int = Std.parseInt(id.substr(0, id.indexOf(",")));
+			var button:Int = Std.parseInt(id.substr(id.lastIndexOf(" ")));
+
+			b.a = [device, BUTTON, button];
+		}
+
+		return b;
+	}
+
+	public function new()
+	{
+		id = "";
+		a = [];
+	}
+
+	public function equals(b:JoystickButton):Bool
+	{
+		return id == b.id;
+	}
+
+	public var id:String;
+	public var a:Array<Int>;
 }
