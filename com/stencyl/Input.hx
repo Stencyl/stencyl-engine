@@ -239,6 +239,7 @@ class Input
 	{
 		if(!_joystickEnabled && Engine.stage != null)
 		{
+			_joystickEnabled = true;
 			#if desktop
 			Engine.stage.addEventListener(JoystickEvent.AXIS_MOVE, onJoyAxisMove, false, 2);
 			Engine.stage.addEventListener(JoystickEvent.BALL_MOVE, onJoyBallMove, false, 2);
@@ -677,12 +678,16 @@ class Input
 
 	private static function onJoyButtonDown(e:JoystickEvent)
 	{
+		if(!_joyButtonState.exists(e.device))
+			_joyButtonState.set(e.device, []);
 		_joyButtonState.get(e.device)[e.id] = true;
 		joyPress(e.device + ", " + e.id);
 	}
 
 	private static function onJoyButtonUp(e:JoystickEvent)
 	{
+		if(!_joyButtonState.exists(e.device))
+			_joyButtonState.set(e.device, []);
 		_joyButtonState.get(e.device)[e.id] = false;
 		joyRelease(e.device + ", " + e.id);
 	}
@@ -781,7 +786,6 @@ class Input
 		#if desktop
 		joyData = new Map<String, Dynamic>();
 		joyData.set("_joyControlMap", _joyControlMap);
-		joyData.set("_controlButtonMap", _controlButtonMap);
 		joyData.set("joySensitivity", joySensitivity);
 		Utils.saveMap(joyData, "_jc-" + filename);
 		joyData = null;
@@ -795,7 +799,16 @@ class Input
 		Utils.loadMap(joyData, "_jc-" + filename, function(success:Bool):Void
 		{
 			_joyControlMap = joyData.get("_joyControlMap");
-			_controlButtonMap = joyData.get("_controlButtonMap");
+			_controlButtonMap = new Map<String,Array<JoystickButton>>();
+			for(k in _joyControlMap.keys())
+			{
+				var control:String = _joyControlMap.get(k);
+				var button:JoystickButton = JoystickButton.fromID(k);
+
+				if(!_controlButtonMap.exists(control))
+					_controlButtonMap.set(control, new Array<JoystickButton>());
+				_controlButtonMap.get(control).push(button);
+			}
 			joySensitivity = joyData.get("joySensitivity");
 			joyData = null;
 		});
