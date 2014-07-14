@@ -2179,7 +2179,7 @@ class Script
 	
 	public function captureScreenshot():BitmapData
 	{
-		var img:BitmapData = new BitmapData(getScreenWidth(), getScreenHeight());
+		var img:BitmapData = new BitmapData(Std.int(getScreenWidth() * Engine.SCALE) , Std.int(getScreenHeight() * Engine.SCALE));
 		img.draw(nme.Lib.current.stage);
 		return img;
 	}
