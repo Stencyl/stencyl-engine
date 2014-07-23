@@ -302,7 +302,7 @@ class G
 		
 		#if(cpp)
 		drawData.splice(0, drawData.length);
-		font.font.render(drawData, s, 0x000000, alpha, Std.int(drawX), Std.int(drawY), 0, font.fontScale, 0, false);
+		font.font.render(drawData, s, 0x000000, alpha, Std.int(drawX), Std.int(drawY), font.letterSpacing, font.fontScale, 0, false);
 		font.font.drawText(graphics, drawData);
 		#end
 		
@@ -310,13 +310,13 @@ class G
 		mtx.identity();
  	 	mtx.translate(drawX, drawY);
  	 	
- 	 	var w = font.font.getTextWidth(s, 0, font.fontScale);
+ 	 	var w = font.font.getTextWidth(s, font.letterSpacing, font.fontScale);
  	 	var h = Std.int(font.font.getFontHeight() * font.fontScale);
  	 	
  	 	if(w > 0 && h > 0)
  	 	{
  	 		var bitmapData = new BitmapData(w, h, true, 0);
-			font.font.render(bitmapData, fontData, s, 0x000000, alpha, 0, 0, 0, 0);
+			font.font.render(bitmapData, fontData, s, 0x000000, alpha, 0, 0, font.letterSpacing, 0);
 		#end
 		
 			//TODO: This approach is really, really slow!

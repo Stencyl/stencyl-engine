@@ -13,6 +13,7 @@ class Font extends Resource
 	
 	public var font:BitmapFont;
 	public var fontScale:Float;
+	public var letterSpacing:Int;
 	public var isDefault:Bool;
 
 	public function new(ID:Int, atlasID:Int, name:String, isDefault:Bool)
@@ -46,6 +47,7 @@ class Font extends Resource
 			var xml = Xml.parse(textBytes);
 			defaultFont = font = new BitmapFont().loadAngelCode(Assets.getBitmapData("assets/graphics/default-font.png"), xml);
 			fontScale = 1 * Engine.SCALE;
+			letterSpacing = 0;
 		}
 		
 		else
@@ -60,6 +62,7 @@ class Font extends Resource
 			
 			font = new BitmapFont().loadAngelCode(img, xml);
 			fontScale = 1;
+			letterSpacing = 0;
 		}
 	}
 	
@@ -68,7 +71,13 @@ class Font extends Resource
 		//Use the default font - no extra memory, graceful fallback.
 		font = defaultFont;
 		fontScale = 1;
+		letterSpacing = 0;
 		
 		Data.get().resourceAssets.remove(ID + ".png");
+	}
+	
+	public function setLetterSpacing(spacing:Float)
+	{
+		letterSpacing = Std.int(spacing);
 	}
 }
