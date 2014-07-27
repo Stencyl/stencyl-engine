@@ -210,7 +210,9 @@ class GameModel
 			var ID = Std.parseInt(e.att.id);
 			var name = e.att.name;
 			var mems = e.att.members.split(",");
-			var allScenes = e.att.allScenes == "true";
+			var allScenes = e.has.allScenes ?
+				e.att.allScenes == "true" :
+				e.att.start == "true";
 			var members = new Array<Int>();
 			
 			if(e.att.members != "")

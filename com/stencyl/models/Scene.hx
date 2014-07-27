@@ -153,7 +153,10 @@ class Scene
 		
 		terrain = readLayers(xml.node.layers.elements, rawLayers);
 
-		retainsAtlases = xml.node.atlases.att.retainAtlases == "true";
+		retainsAtlases = xml.hasNode.atlases ?
+			xml.node.atlases.att.retainAtlases == "true" :
+			true;
+		
 		if(!retainsAtlases)
 			atlases = readAtlases(xml.node.atlases);
 		else
