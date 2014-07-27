@@ -64,7 +64,10 @@ class Scene
 	public var terrain:IntHashTable<TileLayer>;
 	public var actors:Map<Int,ActorInstance>;
 	public var behaviorValues:Map<String,BehaviorInstance>;
-	
+	public var atlases:Array<Int>;
+
+	public var retainsAtlases:Bool;
+
 	//Box2D
 	public var wireframes:Array<Wireframe>;
 	public var joints:Map<Int,B2JointDef>;
@@ -149,6 +152,12 @@ class Scene
 		#end
 		
 		terrain = readLayers(xml.node.layers.elements, rawLayers);
+
+		retainsAtlases = xml.node.atlases.att.retainAtlases == "true";
+		if(!retainsAtlases)
+			atlases = readAtlases(xml.node.atlases);
+		else
+			atlases = new Array<Int>();
 	}
 	
 	public function unload()
@@ -849,6 +858,28 @@ class Scene
 		}
 		
 		return map;
+	}
+
+	public function readAtlases(e:Fast):Array<Int>
+	{
+		var members = new Array<Int>();
+		var mems = e.att.members.split(",");
+
+		if(e.att.members != "")
+		{
+			for(n in mems)
+			{
+				var atlasID:Int = Std.parseInt(n);
+				if(GameModel.get().atlases.get(atlasID).allScenes)
+					continue;
+
+				members.push(Std.parseInt(n));
+			}
+			
+			members.pop();
+		}
+		
+		return members;
 	}
 	
 	private static var MAX_VERTICES:Int = 200;

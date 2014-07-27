@@ -292,6 +292,7 @@ class Engine
 	public var cameraOldX:Float;
 	public var cameraOldY:Float;	
 	
+	public var loadedAtlases:Map<Int,Int>;
 	public var atlasesToLoad:Map<Int,Int>;
 	public var atlasesToUnload:Map<Int,Int>;
 	
@@ -590,9 +591,10 @@ class Engine
 	
 	public function begin(initSceneID:Int)
 	{
+		loadedAtlases = new Map<Int,Int>();
 		atlasesToLoad = new Map<Int,Int>();
 		atlasesToUnload = new Map<Int,Int>();
-	
+
 		Input.enable();
 		Input.define(INTERNAL_SHIFT, [Key.SHIFT]);
 		Input.define(INTERNAL_CTRL, [Key.CONTROL]);
@@ -623,6 +625,16 @@ class Engine
 
 		Data.get();
 		GameModel.get().loadScenes();
+
+		#if cpp
+		{
+			for(atlas in GameModel.get().atlases)
+			{
+				if(atlas.active)
+					atlasesToLoad.set(atlas.ID, atlas.ID);
+			}
+		}
+		#end
 		
 		#if mobile
 		//Preload sounds here.
@@ -759,24 +771,7 @@ class Engine
 	}	
 	
 	public function loadScene(sceneID:Int)
-	{				
-		for(atlas in atlasesToUnload)
-		{
-			Data.get().unloadAtlas(atlas);
-		}
-		
-		#if cpp
-		Gc.run(true);
-		#end
-		
-		for(atlas in atlasesToLoad)
-		{
-			Data.get().loadAtlas(atlas);
-		}
-		
-		atlasesToLoad = new Map<Int,Int>();
-		atlasesToUnload = new Map<Int,Int>();
-		
+	{
 		collisionPairs = new IntHashTable<Map<Int,Bool>>(32);
 	
 		//---
@@ -801,6 +796,70 @@ class Engine
 		}
 		
 		scene.load();
+
+		#if(!flash)
+		{
+			var desiredAtlasList = new Map<Int,Int>();
+
+			if(scene.retainsAtlases)
+			{
+				trace("Scene retains atlases");
+				for(i in loadedAtlases)
+				{
+					trace("Keeping loaded atlas " + i);
+					desiredAtlasList.set(i, i);
+				}
+			}
+			else
+			{
+				trace("Scene has own atlases");
+
+				for(i in scene.atlases)
+				{
+					trace("Adding scenes atlas " + i);
+					desiredAtlasList.set(i, i);
+				}
+			}
+
+			for(atlas in atlasesToLoad)
+			{
+				desiredAtlasList.set(atlas, atlas);
+				trace("Going to load extra atlas " + atlas);
+			}
+			for(atlas in atlasesToUnload)
+			{
+				desiredAtlasList.remove(atlas);
+				trace("Going to unload extra atlas " + atlas);
+			}
+			
+			for(atlas in loadedAtlases)
+			{
+				if(!desiredAtlasList.exists(atlas))
+				{
+					trace("UNLOADED " + atlas);
+					Data.get().unloadAtlas(atlas);
+					loadedAtlases.remove(atlas);
+				}
+			}
+
+			#if cpp
+			Gc.run(true);
+			#end
+			
+			for(atlas in desiredAtlasList)
+			{
+				if(!loadedAtlases.exists(atlas))
+				{
+					trace("LOADED " + atlas);
+					Data.get().loadAtlas(atlas);
+					loadedAtlases.set(atlas, atlas);
+				}
+			}
+			
+			atlasesToLoad = new Map<Int,Int>();
+			atlasesToUnload = new Map<Int,Int>();
+		}
+		#end
 		
 		Engine.sceneWidth = scene.sceneWidth;
 		Engine.sceneHeight = scene.sceneHeight;

@@ -210,7 +210,7 @@ class GameModel
 			var ID = Std.parseInt(e.att.id);
 			var name = e.att.name;
 			var mems = e.att.members.split(",");
-			var active = e.att.start == "true";
+			var allScenes = e.att.allScenes == "true";
 			var members = new Array<Int>();
 			
 			if(e.att.members != "")
@@ -223,7 +223,7 @@ class GameModel
 				members.pop();
 			}
 			
-			map.set(ID, new Atlas(ID, name, members, active)); 
+			map.set(ID, new Atlas(ID, name, allScenes, members)); 
 		}
 		
 		return map;
