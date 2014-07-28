@@ -773,9 +773,9 @@ class Engine
 	public function loadScene(sceneID:Int)
 	{
 		collisionPairs = new IntHashTable<Map<Int,Bool>>(32);
-	
+		
 		//---
-	
+		
 		setOffscreenTolerance(0, 0, 0, 0);
 		
 		tasks = new Array<TimedTask>();
@@ -799,44 +799,40 @@ class Engine
 
 		#if(!flash)
 		{
+			//figure out which atlases we want for this scene
 			var desiredAtlasList = new Map<Int,Int>();
 
 			if(scene.retainsAtlases)
 			{
-				trace("Scene retains atlases");
+				//if the scene retains atlases, it's easy. Copy them over.
+
 				for(i in loadedAtlases)
-				{
-					trace("Keeping loaded atlas " + i);
 					desiredAtlasList.set(i, i);
-				}
 			}
 			else
 			{
-				trace("Scene has own atlases");
+				//make sure that the "all scenes" atlases are copied over
+				//other than that, only the atlases the scene has marked.
 
-				for(i in scene.atlases)
+				for(i in loadedAtlases)
 				{
-					trace("Adding scenes atlas " + i);
-					desiredAtlasList.set(i, i);
+					if(GameModel.get().atlases.get(i).allScenes)
+						desiredAtlasList.set(i, i);
 				}
+				for(i in scene.atlases)
+					desiredAtlasList.set(i, i);
 			}
 
+			//using the load/unload blocks overwrites everything
 			for(atlas in atlasesToLoad)
-			{
 				desiredAtlasList.set(atlas, atlas);
-				trace("Going to load extra atlas " + atlas);
-			}
 			for(atlas in atlasesToUnload)
-			{
 				desiredAtlasList.remove(atlas);
-				trace("Going to unload extra atlas " + atlas);
-			}
-			
+
 			for(atlas in loadedAtlases)
 			{
 				if(!desiredAtlasList.exists(atlas))
 				{
-					trace("UNLOADED " + atlas);
 					Data.get().unloadAtlas(atlas);
 					loadedAtlases.remove(atlas);
 				}
@@ -850,7 +846,6 @@ class Engine
 			{
 				if(!loadedAtlases.exists(atlas))
 				{
-					trace("LOADED " + atlas);
 					Data.get().loadAtlas(atlas);
 					loadedAtlases.set(atlas, atlas);
 				}

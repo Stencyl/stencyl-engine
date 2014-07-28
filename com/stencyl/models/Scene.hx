@@ -872,16 +872,17 @@ class Scene
 		{
 			for(n in mems)
 			{
+				if(n == "")
+					continue;
+
 				var atlasID:Int = Std.parseInt(n);
 				if(GameModel.get().atlases.get(atlasID).allScenes)
 					continue;
 
 				members.push(Std.parseInt(n));
 			}
-			
-			members.pop();
 		}
-		
+
 		return members;
 	}
 	
