@@ -25,22 +25,26 @@ class BitmapWrapper extends Sprite
 
 	public function set_imgX(x:Float):Float
 	{
-		return this.x = x + offsetX;
+		this.x = x + offsetX;
+
+		return imgX = x;
 	}
 	
 	public function get_imgX():Float
 	{
-		return x - offsetX;
+		return imgX;
 	}
 
 	public function set_imgY(y:Float):Float
 	{
-		return this.y = y + offsetY;
+		this.y = y + offsetY;
+
+		return imgY = y;
 	}
 	
 	public function get_imgY():Float
 	{
-		return y - offsetY;
+		return imgY;
 	}
 
 	public function set_smoothing(smoothing:Bool):Bool

@@ -2756,7 +2756,14 @@ class Script
 			easing = Linear.easeNone;
 		}
 
-		Actuate.tween(img, duration, {imgX:x, imgY:y}).ease(easing);
+		Actuate
+			.tween(img, duration, {imgX:x, imgY:y}).ease(easing)
+			.onUpdate(function()
+				{
+					//Actuate isn't setting the property with its setter, so do it manually
+					img.imgX = img.imgX;
+					img.imgY = img.imgY;
+				});
 	}
 	
 	//In degrees
@@ -2766,8 +2773,8 @@ class Script
 	}
 	
 	public function moveImageBy(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
-	{		
-		moveImageTo(img, img.imgX + x, img.imgY + y, duration, easing);	
+	{
+		moveImageTo(img, (img.imgX / Engine.SCALE) + x, (img.imgY / Engine.SCALE) + y, duration, easing);
 	}
 	
 	#if flash
