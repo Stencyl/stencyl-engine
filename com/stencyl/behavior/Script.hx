@@ -22,6 +22,7 @@ import nme.display.Bitmap;
 import nme.display.Sprite;
 import nme.display.BlendMode;
 import nme.geom.ColorTransform;
+import nme.geom.Point;
 import nme.geom.Matrix;
 import nme.geom.Rectangle;
 
@@ -40,6 +41,7 @@ import com.stencyl.models.scene.Tileset;
 import com.stencyl.models.Region;
 import com.stencyl.models.Resource;
 import com.stencyl.models.Terrain;
+import com.stencyl.graphics.BitmapWrapper;
 import com.stencyl.graphics.fonts.BitmapFont;
 import com.stencyl.graphics.transitions.Transition;
 import com.stencyl.models.actor.ActorType;
@@ -2254,7 +2256,7 @@ class Script
 		return new BitmapData(1, 1);
 	}
 	
-	public function setOrderForImage(img:Bitmap, order:Int)
+	public function setOrderForImage(img:BitmapWrapper, order:Int)
 	{
 		if(img != null && img.parent != null)
 		{
@@ -2265,7 +2267,7 @@ class Script
 		}
 	}
 	
-	public function bringImageBack(img:Bitmap)
+	public function bringImageBack(img:BitmapWrapper)
 	{
 		if(img != null && img.parent != null)
 		{
@@ -2273,7 +2275,7 @@ class Script
 		}
 	}
 	
-	public function bringImageForward(img:Bitmap)
+	public function bringImageForward(img:BitmapWrapper)
 	{
 		if(img != null && img.parent != null)
 		{
@@ -2281,7 +2283,7 @@ class Script
 		}
 	}
 	
-	public function bringImageToBack(img:Bitmap)
+	public function bringImageToBack(img:BitmapWrapper)
 	{
 		if(img != null && img.parent != null)
 		{
@@ -2289,7 +2291,7 @@ class Script
 		}
 	}
 	
-	public function bringImagetoFront(img:Bitmap)
+	public function bringImagetoFront(img:BitmapWrapper)
 	{
 		if(img != null && img.parent != null)
 		{
@@ -2297,7 +2299,7 @@ class Script
 		}
 	}
 	
-	public function attachImageToActor(img:Bitmap, a:Actor, x:Int, y:Int, pos:Int = 1)
+	public function attachImageToActor(img:BitmapWrapper, a:Actor, x:Int, y:Int, pos:Int = 1)
 	{
 		x = Std.int(x * Engine.SCALE);
 		y = Std.int(y * Engine.SCALE);
@@ -2319,26 +2321,26 @@ class Script
 			//XXX: Awful, but it works. Clean this up.
 			if(Engine.SCALE == 1)
 			{
-				img.x = x - (a.getWidth()/2);
-				img.y = y - (a.getHeight()/2);
+				img.imgX = x - (a.getWidth()/2);
+				img.imgY = y - (a.getHeight()/2);
 			}
 			
 			else if(Engine.SCALE == 2)
 			{
-				img.x = x - (Engine.SCALE * a.getWidth());
-				img.y = y - (Engine.SCALE * a.getHeight());
+				img.imgX = x - (Engine.SCALE * a.getWidth());
+				img.imgY = y - (Engine.SCALE * a.getHeight());
 			}
 			
 			else if(Engine.SCALE == 4)
 			{
-				img.x = x - (Engine.SCALE * a.getWidth() * 2);
-				img.y = y - (Engine.SCALE * a.getHeight() * 2);
+				img.imgX = x - (Engine.SCALE * a.getWidth() * 2);
+				img.imgY = y - (Engine.SCALE * a.getHeight() * 2);
 			}
 			
 			else
 			{
-				img.x = x - (Engine.SCALE * a.getWidth() * 0.75);
-				img.y = y - (Engine.SCALE * a.getHeight() * 0.75);
+				img.imgX = x - (Engine.SCALE * a.getWidth() * 0.75);
+				img.imgY = y - (Engine.SCALE * a.getHeight() * 0.75);
 			}
 			
 			img.smoothing = scripts.MyAssets.antialias;
@@ -2348,7 +2350,7 @@ class Script
 	}
 	
 	//Will be "fixed" like an HUD
-	public function attachImageToHUD(img:Bitmap, x:Int, y:Int)
+	public function attachImageToHUD(img:BitmapWrapper, x:Int, y:Int)
 	{
 		x = Std.int(x * Engine.SCALE);
 		y = Std.int(y * Engine.SCALE);
@@ -2356,13 +2358,13 @@ class Script
 		if(img != null)
 		{
 			engine.hudLayer.addChild(img);
-			img.x = x;
-			img.y = y;
+			img.imgX = x;
+			img.imgY = y;
 			img.smoothing = scripts.MyAssets.antialias;
 		}
 	}
 	
-	public function attachImageToLayer(img:Bitmap, layerID:Int, x:Int, y:Int, pos:Int = 1)
+	public function attachImageToLayer(img:BitmapWrapper, layerID:Int, x:Int, y:Int, pos:Int = 1)
 	{
 		x = Std.int(x * Engine.SCALE);
 		y = Std.int(y * Engine.SCALE);
@@ -2382,13 +2384,13 @@ class Script
 				layer.addChild(img);
 			}
 			
-			img.x = x;
-			img.y = y;
+			img.imgX = x;
+			img.imgY = y;
 			img.smoothing = scripts.MyAssets.antialias;
 		}
 	}
 	
-	public function removeImage(img:Bitmap)
+	public function removeImage(img:BitmapWrapper)
 	{
 		if(img != null)
 		{
@@ -2692,24 +2694,24 @@ class Script
 		img.copyPixels(final, dummyRect, dummyPoint);
 	}
 	
-	public function setXForImage(img:Bitmap, value:Float)
+	public function setXForImage(img:BitmapWrapper, value:Float)
 	{
 		if(img != null)
 		{
-			img.x = (Engine.SCALE * value);
+			img.imgX = (Engine.SCALE * value);
 		}
 	}
 	
-	public function setYForImage(img:Bitmap, value:Float)
+	public function setYForImage(img:BitmapWrapper, value:Float)
 	{
 		if(img != null)
 		{
-			img.y = (Engine.SCALE * value);
+			img.imgY = (Engine.SCALE * value);
 		}
 	}
 	
-	public function fadeImageTo(img:Bitmap, value:Float, duration:Float = 1, easing:Dynamic = null)
-	{	
+	public function fadeImageTo(img:BitmapWrapper, value:Float, duration:Float = 1, easing:Dynamic = null)
+	{
 		if(easing == null)
 		{
 			easing = Linear.easeNone;
@@ -2717,8 +2719,13 @@ class Script
 	
 		Actuate.tween(img, duration, {alpha:value}).ease(easing);
 	}
+
+	public function setOriginForImage(img:BitmapWrapper, x:Float, y:Float)
+	{
+		img.setOrigin(x, y);
+	}
 	
-	public function growImageTo(img:Bitmap, scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:Dynamic = null)
+	public function growImageTo(img:BitmapWrapper, scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:Dynamic = null)
 	{
 		if(easing == null)
 		{
@@ -2729,17 +2736,17 @@ class Script
 	}
 	
 	//In degrees
-	public function spinImageTo(img:Bitmap, angle:Float, duration:Float = 1, easing:Dynamic = null)
+	public function spinImageTo(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:Dynamic = null)
 	{
 		if(easing == null)
 		{
 			easing = Linear.easeNone;
 		}
-		
-		Actuate.tween(img, duration, {rotation:angle}).ease(easing);		
+
+		Actuate.tween(img, duration, {rotation:angle}).ease(easing);
 	}
-	
-	public function moveImageTo(img:Bitmap, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
+
+	public function moveImageTo(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
 	{
 		x = (x * Engine.SCALE);
 		y = (y * Engine.SCALE);
@@ -2749,36 +2756,36 @@ class Script
 			easing = Linear.easeNone;
 		}
 
-		Actuate.tween(img, duration, {x:x, y:y}).ease(easing);		
+		Actuate.tween(img, duration, {imgX:x, imgY:y}).ease(easing);
 	}
 	
 	//In degrees
-	public function spinImageBy(img:Bitmap, angle:Float, duration:Float = 1, easing:Dynamic = null)
+	public function spinImageBy(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:Dynamic = null)
 	{
 		spinImageTo(img, img.rotation + angle, duration, easing);
 	}
 	
-	public function moveImageBy(img:Bitmap, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
+	public function moveImageBy(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
 	{		
-		moveImageTo(img, img.x + x, img.y + y, duration, easing);	
+		moveImageTo(img, img.imgX + x, img.imgY + y, duration, easing);	
 	}
 	
 	#if flash
-	public function setFilterForImage(img:Bitmap, filter:BitmapFilter)
-	{		
+	public function setFilterForImage(img:BitmapWrapper, filter:BitmapFilter)
+	{
 		if(img != null)
 		{
 			img.filters = img.filters.concat([filter]);
 		}
 	}
 	#else
-	public function setFilterForImage(img:Bitmap, filter:Array<Dynamic>)
+	public function setFilterForImage(img:BitmapWrapper, filter:Array<Dynamic>)
 	{			
 		//TODO: Reuse Actor's setFilter if possible.
 	}
 	#end
 	
-	public function clearFiltersForImage(img:Bitmap)
+	public function clearFiltersForImage(img:BitmapWrapper)
 	{
 		if(img != null)
 		{

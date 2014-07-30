@@ -30,6 +30,7 @@ import com.stencyl.Engine;
 import com.stencyl.graphics.G;
 import com.stencyl.graphics.AbstractAnimation;
 import com.stencyl.graphics.BitmapAnimation;
+import com.stencyl.graphics.BitmapWrapper;
 import com.stencyl.graphics.SheetAnimation;
 import com.stencyl.graphics.fonts.Label;
 
@@ -212,7 +213,7 @@ class Actor extends Sprite
 	
 	public var label:Label;
 
-	public var attachedImages:Array<Bitmap> = null;
+	public var attachedImages:Array<BitmapWrapper> = null;
 	
 	// These are for the smooth movement option.
 	public var smoothMove:Bool = false;
@@ -397,7 +398,7 @@ class Actor extends Sprite
 		currOffset = new Point(0, 0);			
 		registry = new Map<String,Dynamic>();
 		
-		attachedImages = new Array<Bitmap>();
+		attachedImages = new Array<BitmapWrapper>();
 		
 		this.physicsMode = physicsMode;
 		this.autoScale = autoScale;
@@ -1388,7 +1389,7 @@ class Actor extends Sprite
 	{
 		for(b in attachedImages)
 			removeChild(b);
-		attachedImages = new Array<Bitmap>();
+		attachedImages = new Array<BitmapWrapper>();
 	}
 	
 	//*-----------------------------------------------
