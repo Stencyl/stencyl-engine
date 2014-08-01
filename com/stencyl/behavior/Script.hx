@@ -1482,16 +1482,16 @@ class Script
 	 * @param	duration	the duration of the fading (in milliseconds)
 	 * @param	easing		easing function to apply. Linear (no smoothing) is the default.
 	 */
-	public function fadeTileLayerTo(layerID:Int, alphaPct:Float, duration:Float, easing:Dynamic = null)
+	public function fadeTileLayerTo(layerID:Float, alphaPct:Float, duration:Float, easing:Dynamic = null)
 	{
 		if(easing == null)
 		{
 			easing = Linear.easeNone;
 		}
 	
-		Actuate.tween(engine.tileLayers.get(layerID), duration, {alpha:alphaPct}).ease(easing);
-		Actuate.tween(engine.layers.get(layerID), duration, {alpha:alphaPct}).ease(easing);
-		Actuate.tween(engine.actorsPerLayer.get(layerID), duration, {alpha:alphaPct}).ease(easing);
+		Actuate.tween(engine.tileLayers.get(Std.int(layerID)), duration, {alpha:alphaPct}).ease(easing);
+		Actuate.tween(engine.layers.get(Std.int(layerID)), duration, {alpha:alphaPct}).ease(easing);
+		Actuate.tween(engine.actorsPerLayer.get(Std.int(layerID)), duration, {alpha:alphaPct}).ease(easing);
 	}
 	
 	//*-----------------------------------------------
