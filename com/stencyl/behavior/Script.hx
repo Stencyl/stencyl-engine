@@ -1428,25 +1428,23 @@ class Script
 	//*-----------------------------------------------
 	
 	/**
-     * Force the given layer to show.
-     *
      * @param   layerID     ID of the layer
      */
-    public function getLayer(layerID:Int):Layer
+    public function getLayer(layerID:Float):Layer
     {
-    	return engine.layers.get(layerID);
+    	return engine.layers.get(Std.int(layerID));
     }
     
-    public function setBlendModeForLayer(layerID:Int, mode:nme.display.BlendMode)
+    public function setBlendModeForLayer(layerID:Float, mode:nme.display.BlendMode)
     {
 		#if cpp
-		var tileLayer = engine.tileLayers.get(layerID);
+		var tileLayer = engine.tileLayers.get(Std.int(layerID));
 		tileLayer.blendName = Std.string(mode);
 		tileLayer.draw(Std.int(Engine.cameraX), Std.int(Engine.cameraY));
 		#else
-		engine.tileLayers.get(layerID).blendMode = mode;
-    	engine.layers.get(layerID).blendMode = mode;
-		engine.actorsPerLayer.get(layerID).blendMode = mode;
+		engine.tileLayers.get(Std.int(layerID)).blendMode = mode;
+    	engine.layers.get(Std.int(layerID)).blendMode = mode;
+		engine.actorsPerLayer.get(Std.int(layerID)).blendMode = mode;
 		#end
     }
 	
@@ -1455,11 +1453,11 @@ class Script
 	 *
 	 * @param	layerID		ID of the layer
 	 */
-	public function showTileLayer(layerID:Int)
+	public function showTileLayer(layerID:Float)
 	{
-		engine.tileLayers.get(layerID).alpha = 1;
-		engine.layers.get(layerID).alpha = 1;
-		engine.actorsPerLayer.get(layerID).alpha = 1;
+		engine.tileLayers.get(Std.int(layerID)).alpha = 1;
+		engine.layers.get(Std.int(layerID)).alpha = 1;
+		engine.actorsPerLayer.get(Std.int(layerID)).alpha = 1;
 	}
 	
 	/**
@@ -1467,11 +1465,11 @@ class Script
 	 *
 	 * @param	layerID		ID of the layer
 	 */
-	public function hideTileLayer(layerID:Int)
+	public function hideTileLayer(layerID:Float)
 	{
-		engine.tileLayers.get(layerID).alpha = 0;
-		engine.layers.get(layerID).alpha = 0;
-		engine.actorsPerLayer.get(layerID).alpha = 0;
+		engine.tileLayers.get(Std.int(layerID)).alpha = 0;
+		engine.layers.get(Std.int(layerID)).alpha = 0;
+		engine.actorsPerLayer.get(Std.int(layerID)).alpha = 0;
 	}
 	
 	/**
