@@ -54,7 +54,8 @@ class Tileset extends Resource
 		
 		if(pixels != null)
 		{
-			if(scripts.MyAssets.stretchToFit || scripts.MyAssets.scaleToFit1 || scripts.MyAssets.scaleToFit2)
+			// The tile line fix now affects all scale modes.  Set to false if this causes any problems.
+			if(true)
 			{
 				// The tilesheet needs to be modified to avoid pixel bleeding when stretching.
 				tilesheet = new Tilesheet(convertPixels(pixels));
@@ -103,7 +104,8 @@ class Tileset extends Resource
 			var col:Int = Math.floor(tile.frameIndex % framesAcross);
 			
 			#if cpp
-			if(scripts.MyAssets.stretchToFit || scripts.MyAssets.scaleToFit1 || scripts.MyAssets.scaleToFit2)
+			// The tile line fix now affects all scale modes.  Set to false if this causes any problems.
+			if(true)
 			{
 				temp.x = ((col * tileWidth * Engine.SCALE) + (col * 2) + 1);
 				temp.y = ((row * tileHeight * Engine.SCALE) + (row * 2) + 1);
