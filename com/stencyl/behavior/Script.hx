@@ -33,11 +33,17 @@ import com.stencyl.models.Actor;
 import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.CollisionPoint;
 import com.stencyl.models.actor.Group;
+import com.stencyl.models.background.ColorBackground;
+import com.stencyl.models.background.GradientBackground;
+import com.stencyl.models.background.ImageBackground;
 import com.stencyl.models.Scene;
 import com.stencyl.models.GameModel;
+import com.stencyl.models.scene.layers.BackgroundLayer;
+import com.stencyl.models.scene.layers.RegularLayer;
 import com.stencyl.models.scene.Layer;
 import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.Tileset;
+import com.stencyl.models.scene.TileLayer;
 import com.stencyl.models.Region;
 import com.stencyl.models.Resource;
 import com.stencyl.models.Terrain;
@@ -1428,68 +1434,69 @@ class Script
 	//*-----------------------------------------------
 	
 	/**
-     * @param   layerID     ID of the layer
+     * @param	refType		0 to get layer by ID, 1 for name
+     * @param	ref			The ID or name of the layer as a String
      */
-    public function getLayer(layerID:Float):Layer
+    public function getLayer(refType:Int, ref:String):RegularLayer
     {
-    	return engine.layers.get(Std.int(layerID));
+    	return engine.getLayer(refType, ref);
     }
     
-    public function setBlendModeForLayer(layerID:Float, mode:nme.display.BlendMode)
+    public function setBlendModeForLayer(refType:Int, ref:String, mode:nme.display.BlendMode)
     {
+    	var layer = getLayer(refType, ref);
 		#if cpp
-		var tileLayer = engine.tileLayers.get(Std.int(layerID));
-		tileLayer.blendName = Std.string(mode);
-		tileLayer.draw(Std.int(Engine.cameraX), Std.int(Engine.cameraY));
+		//only implemented for tilelayers on cpp
+		if(Std.is(layer, Layer))
+		{
+			var tileLayer = cast(layer, Layer).tiles;
+			tileLayer.blendName = Std.string(mode);
+			tileLayer.draw(Std.int(Engine.cameraX * layer.scrollFactorX), Std.int(Engine.cameraY * layer.scrollFactorY));
+		}
 		#else
-		engine.tileLayers.get(Std.int(layerID)).blendMode = mode;
-    	engine.layers.get(Std.int(layerID)).blendMode = mode;
-		engine.actorsPerLayer.get(Std.int(layerID)).blendMode = mode;
+		getLayer(refType, ref).blendMode = mode;
 		#end
     }
 	
 	/**
 	 * Force the given layer to show.
 	 *
-	 * @param	layerID		ID of the layer
+	 * @param	refType		0 to get layer by ID, 1 for name
+	 * @param	ref			The ID or name of the layer as a String
 	 */
-	public function showTileLayer(layerID:Float)
+	public function showTileLayer(refType:Int, ref:String)
 	{
-		engine.tileLayers.get(Std.int(layerID)).alpha = 1;
-		engine.layers.get(Std.int(layerID)).alpha = 1;
-		engine.actorsPerLayer.get(Std.int(layerID)).alpha = 1;
+		engine.getLayer(refType, ref).alpha = 1;
 	}
 	
 	/**
 	 * Force the given layer to become invisible.
 	 *
-	 * @param	layerID		ID of the layer
+	 * @param	refType		0 to get layer by ID, 1 for name
+	 * @param	ref			The ID or name of the layer as a String
 	 */
-	public function hideTileLayer(layerID:Float)
+	public function hideTileLayer(refType:Int, ref:String)
 	{
-		engine.tileLayers.get(Std.int(layerID)).alpha = 0;
-		engine.layers.get(Std.int(layerID)).alpha = 0;
-		engine.actorsPerLayer.get(Std.int(layerID)).alpha = 0;
+		engine.getLayer(refType, ref).alpha = 0;
 	}
 	
 	/**
 	 * Force the given layer to fade to the given opacity over time, applying the easing function.
 	 *
-	 * @param	layerID		ID of the layer
-	 * @param	alphaPct	the opacity (0-255) to fade to
-	 * @param	duration	the duration of the fading (in milliseconds)
-	 * @param	easing		easing function to apply. Linear (no smoothing) is the default.
+	 * @param	layerRefType	0 to get layer by ID, 1 for name
+	 * @param	layerRef		The ID or name of the layer as a String
+	 * @param	alphaPct		the opacity (0-255) to fade to
+	 * @param	duration		the duration of the fading (in milliseconds)
+	 * @param	easing			easing function to apply. Linear (no smoothing) is the default.
 	 */
-	public function fadeTileLayerTo(layerID:Float, alphaPct:Float, duration:Float, easing:Dynamic = null)
+	public function fadeTileLayerTo(layerRefType:Int, layerRef:String, alphaPct:Float, duration:Float, easing:Dynamic = null)
 	{
 		if(easing == null)
 		{
 			easing = Linear.easeNone;
 		}
-	
-		Actuate.tween(engine.tileLayers.get(Std.int(layerID)), duration, {alpha:alphaPct}).ease(easing);
-		Actuate.tween(engine.layers.get(Std.int(layerID)), duration, {alpha:alphaPct}).ease(easing);
-		Actuate.tween(engine.actorsPerLayer.get(Std.int(layerID)), duration, {alpha:alphaPct}).ease(easing);
+		
+		Actuate.tween(getLayer(layerRefType, layerRef), duration, {alpha:alphaPct}).ease(easing);
 	}
 	
 	//*-----------------------------------------------
@@ -1684,12 +1691,19 @@ class Script
 		var a:Actor = engine.createActorOfType(type, x, y, layerConst);
 		Script.lastCreatedActor = a;
 		return a;
-	}	
-		
+	}
+	
 	public function createRecycledActor(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
 	{
-		var a:Actor = engine.getRecycledActorOfType(type, x, y, layerConst);		
-		Script.lastCreatedActor = a;	
+		var a:Actor = engine.getRecycledActorOfType(type, x, y, layerConst);
+		Script.lastCreatedActor = a;
+		return a;
+	}
+
+	public function createRecycledActorOnLayer(type:ActorType, x:Float, y:Float, layerRefType:Int, layerRef:String):Actor
+	{
+		var a:Actor = engine.getRecycledActorOfTypeOnLayer(type, x, y, engine.getLayer(layerRefType, layerRef).ID);
+		Script.lastCreatedActor = a;
 		return a;
 	}
 	
@@ -1697,7 +1711,7 @@ class Script
 	{
 		engine.recycleActor(a);
 	}
-		
+	
 	public function createActorInNextScene(type:ActorType, x:Float, y:Float, layerConst:Int)
 	{
 		engine.createActorInNextScene(type, x, y, layerConst);
@@ -2123,51 +2137,119 @@ class Script
 	//*-----------------------------------------------
 	
 	/**
+	* Set the solid or gradient color background
+	*/
+	public function setColorBackground(c:Int, c2:Int = -2 /*ColorBackground.TRANSPARENT*/)
+	{
+		Engine.engine.colorBackground.graphics.clear();
+
+		if(c != ColorBackground.TRANSPARENT)
+		{
+			if(c2 == ColorBackground.TRANSPARENT)
+			{
+				new ColorBackground(c).draw(Engine.engine.colorBackground.graphics, 0, 0, Std.int(getScreenWidth() * Engine.SCALE), Std.int(getScreenHeight() * Engine.SCALE));
+			}
+			else
+			{
+				new GradientBackground(c, c2).draw(Engine.engine.colorBackground.graphics, 0, 0, Std.int(getScreenWidth() * Engine.SCALE), Std.int(getScreenHeight() * Engine.SCALE));
+			}
+		}
+	}
+
+	/**
 	* Set the speed of all scrolling backgrounds (Backgrounds must already be set to scrolling)
 	*/
-	public function setScrollSpeedForBackground(xSpeed:Float, ySpeed:Float, backgroundID:Int = -1)
+	public function setScrollSpeedForBackground(refType:Int, ref:String, xSpeed:Float, ySpeed:Float)
 	{
-		for(i in 0...Engine.engine.master.numChildren)
+		var allBackgrounds:Bool = (refType == 0 && ref == "-1");
+
+		if(allBackgrounds)
 		{
-			var child = Engine.engine.master.getChildAt(i);
-			
-			//Background
-			if(Std.is(child, ScrollingBitmap))
+			for(layer in Engine.engine.backgroundLayers)
 			{
-				var bg = cast(child, ScrollingBitmap);
-				
-				if(backgroundID == -1 || backgroundID == bg.backgroundID)
+				if(Std.is(layer.getBitmap(), ScrollingBitmap))
 				{
+					var bg = cast(layer.getBitmap(), ScrollingBitmap);
+					
+					bg.xVelocity = xSpeed;
+					bg.yVelocity = ySpeed;
+				}
+			}
+		}
+		else
+		{
+			var layer = Engine.engine.getLayer(refType, ref);
+			if(Std.is(layer, BackgroundLayer))
+			{
+				var bmp = cast(layer, BackgroundLayer).getBitmap();
+				if(Std.is(bmp, ScrollingBitmap))
+				{
+					var bg = cast(bmp, ScrollingBitmap);
+					
 					bg.xVelocity = xSpeed;
 					bg.yVelocity = ySpeed;
 				}
 			}
 		}
 	}
+
+	/**
+	* Set the parallax factor of a background or tilelayer
+	*/
+	public function setScrollFactorForLayer(refType:Int, ref:String, scrollFactorX:Float, scrollFactorY:Float)
+	{
+		var layer = Engine.engine.getLayer(refType, ref);
+		if(Std.is(layer, BackgroundLayer))
+		{
+			cast(layer, BackgroundLayer).setScrollFactor(scrollFactorX, scrollFactorY);
+		}
+		else if(Std.is(layer, Layer))
+		{
+			layer.scrollFactorX = scrollFactorX;
+			layer.scrollFactorY = scrollFactorY;
+		}
+	}
 	
 	/**
 	* Switches one background for another
 	*/
-	public function setBackground(oldBackName:String, newBackName:String)
+	public function changeBackground(layerRefType:Int, layerRef:String, newBackName:String)
 	{
-		/*var newBg:ImageBackground = Assets.get().resources[getIDForResource(newBackName)];
+		var types = Data.get().getResourcesOfType(ImageBackground);
 		
-		if (newBg == null || !(newBg is ImageBackground))
+		var bg:ImageBackground = null;
+
+		for(type in types)
 		{
-			print("Entered background does not exist");
-			return;
+			if(type.name == newBackName)
+			{
+				bg = cast(type, ImageBackground);
+			}
 		}
 		
-		for each (var bArea:Area in scene.parallax.backLayers)
-		{		
-			var oldBg:ImageBackground = bArea.getBackgroundImage();
-			
-			if (oldBg != null && oldBg.name == oldBackName)
-			{
-				bArea.setBackgroundImage(newBg);
-				return;
-			}
-		}*/
+		if(bg == null)
+			return;
+
+		var layer = Engine.engine.getLayer(layerRefType, layerRef);
+		if(Std.is(layer, BackgroundLayer))
+		{
+			cast(layer, BackgroundLayer).reload(bg.ID);
+		}
+	}
+
+	/**
+	* Change a background's image
+	*/
+	public function changeBackgroundImage(layerRefType:Int, layerRef:String, newImg:BitmapData)
+	{
+		if(newImg == null)
+			return;
+
+		var layer = Engine.engine.getLayer(layerRefType, layerRef);
+		if(Std.is(layer, BackgroundLayer))
+		{
+			cast(layer, BackgroundLayer).setImage(newImg);
+		}
 	}
 	
 	//*-----------------------------------------------
@@ -2362,23 +2444,22 @@ class Script
 		}
 	}
 	
-	public function attachImageToLayer(img:BitmapWrapper, layerID:Int, x:Int, y:Int, pos:Int = 1)
+	public function attachImageToLayer(img:BitmapWrapper, layerRefType:Int, layerRef:String, x:Int, y:Int, pos:Int = 1)
 	{
 		x = Std.int(x * Engine.SCALE);
 		y = Std.int(y * Engine.SCALE);
 		
 		if(img != null)
 		{
+			var layer = engine.getLayer(layerRefType, layerRef);
+
 			//Behind all Actors & Tiles in this layer.
 			if(pos == 2)
 			{
-				var layer = engine.layers.get(layerID);
-				layer.addChild(img);
+				layer.addChildAt(img, 0);
 			}
-			
 			else
 			{
-				var layer = engine.actorsPerLayer.get(layerID);
 				layer.addChild(img);
 			}
 			
@@ -2943,21 +3024,28 @@ class Script
 		return engine.getMiddleLayer();
 	}
 
-	public function setTileAt(row:Dynamic, col:Dynamic, layerID:Dynamic, tilesetID:Dynamic, tileID:Dynamic)
+	public function getTileLayerAt(refType:Int, ref:String):TileLayer
+	{
+		var layer = engine.getLayer(refType, ref);
+		if(layer == null || !Std.is(layer, Layer))
+			return null;
+		return cast(layer, Layer).tiles;
+	}
+
+	public function setTileAt(row:Dynamic, col:Dynamic, refType:Int, ref:String, tilesetID:Dynamic, tileID:Dynamic)
 	{
 		row = Std.int(row);
 		col = Std.int(col);
-		layerID = Std.int(layerID);
 		tilesetID = Std.int(tilesetID);
 		tileID = Std.int(tileID);
 	
-		var tlayer = engine.tileLayers.get(layerID);
-		
-		if(tlayer == null)
+		var layer = engine.getLayer(refType, ref);
+		if(layer == null || !Std.is(layer, Layer))
 		{
 			return;
 		}
-		
+		var tlayer = cast(layer, Layer).tiles;
+
 		var tset = cast(Data.get().resources.get(tilesetID), Tileset);
 		var tile:Tile = tset.tiles[tileID];
 		
@@ -2994,33 +3082,31 @@ class Script
 			
 			if(!Engine.NO_PHYSICS && tileShape != null)
 			{
-				createDynamicTile(tileShape, Engine.toPhysicalUnits(x), Engine.toPhysicalUnits(y), layerID, engine.scene.tileWidth, engine.scene.tileHeight);
+				createDynamicTile(tileShape, Engine.toPhysicalUnits(x), Engine.toPhysicalUnits(y), layer.ID, engine.scene.tileWidth, engine.scene.tileHeight);
 			}
 			else if (tileShape != null)
 			{
-				engine.tileLayers.get(layerID).grid.setTile(col, row);
+				getTileLayerAt(refType, ref).grid.setTile(col, row);
 			}
 		}
 		
 		engine.tileUpdated = true;
 	}
 	
-	public function tileExistsAt(row:Dynamic, col:Dynamic, layerID:Dynamic):Bool
+	public function tileExistsAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Bool
 	{
-		return getTileAt(Std.int(row), Std.int(col), Std.int(layerID)) != null;
+		return getTileAt(Std.int(row), Std.int(col), refType, ref) != null;
 	}
 	
 	//tileCollisionAt function added to return True if ANY collision shape exists, or False for no tile or collision shape
 	//if the user gives it a negative value for the layer, it will loop through all layers instead of a specific one
-	public function tileCollisionAt(row:Dynamic, col:Dynamic, layerID:Dynamic):Bool
+	public function tileCollisionAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Bool
 	{
-		if(layerID < 0)
+		if(refType == 0 && Std.parseInt(ref) < 0)
 		{
-			var i:Int = 0;
-			for (layer in engine.tileLayers)
+			for (layer in engine.interactiveLayers)
 			{
-				var tile = getTileAt(Std.int(row), Std.int(col), i);
-				i++;
+				var tile = layer.tiles.getTileAt(Std.int(row), Std.int(col));
 				if((tile == null) || (tile.collisionID == -1))
 				{
 					continue;
@@ -3034,7 +3120,7 @@ class Script
 		}
 		else
 		{
-			var tile = getTileAt(Std.int(row), Std.int(col), Std.int(layerID));
+			var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
 			if((tile == null) || (tile.collisionID == -1))
 			{
 				return false;
@@ -3061,9 +3147,9 @@ class Script
 		}
 	}
 
-	public function getTileIDAt(row:Dynamic, col:Dynamic, layerID:Dynamic):Int
+	public function getTileIDAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Int
 	{
-		var tile = getTileAt(Std.int(row), Std.int(col), Std.int(layerID));
+		var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
 		
 		if(tile == null)
 		{
@@ -3073,9 +3159,9 @@ class Script
 		return tile.tileID;
 	}
 	
-	public function getTileColIDAt(row:Dynamic, col:Dynamic, layerID:Dynamic):Int
+	public function getTileColIDAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Int
     {
-    	var tile = getTileAt(Std.int(row), Std.int(col), Std.int(layerID));
+    	var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
                        
         if(tile == null)
         {
@@ -3085,9 +3171,9 @@ class Script
         return tile.collisionID;
     }
 
-	public function getTileDataAt(row:Dynamic, col:Dynamic, layerID:Dynamic):String
+	public function getTileDataAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):String
     {
-    	var tile = getTileAt(Std.int(row), Std.int(col), Std.int(layerID));
+    	var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
         
         if(tile == null)
         {
@@ -3097,9 +3183,9 @@ class Script
         return tile.metadata;
     }
 	
-	public function getTilesetIDAt(row:Dynamic, col:Dynamic, layerID:Dynamic):Int
+	public function getTilesetIDAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Int
 	{
-		var tile = getTileAt(Std.int(row), Std.int(col), Std.int(layerID));
+		var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
 		
 		if(tile == null)
 		{
@@ -3109,9 +3195,9 @@ class Script
 		return tile.parent.ID;
 	}
 	
-	public function getTileAt(row:Dynamic, col:Dynamic, layerID:Dynamic):Tile
+	public function getTileAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Tile
 	{
-		var tlayer = engine.tileLayers.get(Std.int(layerID));
+		var tlayer = getTileLayerAt(refType, ref);
 		
 		if(tlayer == null)
 		{
@@ -3121,21 +3207,20 @@ class Script
 		return tlayer.getTileAt(Std.int(row), Std.int(col));
 	}
 	
-	public function removeTileAt(row:Dynamic, col:Dynamic, layerID:Dynamic)
+	public function removeTileAt(row:Dynamic, col:Dynamic, refType:Int, ref:String)
 	{
 		row = Std.int(row);
 		col = Std.int(col);
-		layerID = Std.int(layerID);
-	
-		var tlayer = engine.tileLayers.get(layerID);
 		
-		if(tlayer == null)
+		var layer = engine.getLayer(refType, ref);
+		if(layer == null || !Std.is(layer, Layer))
 		{
 			return;
 		}
+		var tlayer = cast(layer, Layer).tiles;
 		
 		//grab the tile to get the shape
-		var tile:Tile = getTileAt(row, col, layerID);
+		var tile:Tile = getTileAt(row, col, refType, ref);
 		
 		//If we find a tile in this location
 		if(tile != null)
@@ -3145,7 +3230,7 @@ class Script
 			{
 				var x = col * engine.scene.tileWidth;
 				var y = row * engine.scene.tileHeight;
-				var key = "ID" + "-" + x + "-" + y + "-" + layerID;
+				var key = "ID" + "-" + x + "-" + y + "-" + layer.ID;
 				var a = engine.dynamicTiles.get(key);
 				
 				if(a != null)
@@ -3157,7 +3242,7 @@ class Script
 			
 			else if (tile.collisionID != -1)
 			{
-				engine.tileLayers.get(layerID).grid.clearTile(col, row);
+				tlayer.grid.clearTile(col, row);
 			}
 			
 			//Remove the tile image
@@ -3188,10 +3273,9 @@ class Script
 		x = getTilePosition(0, x);
 		y = getTilePosition(1, y);
 
-		var i:Int = 0;
-		for(layer in engine.tileLayers)
+		for(layer in engine.interactiveLayers)
 		{
-			var tile = getTileAt(y, x, i++);
+			var tile = layer.tiles.getTileAt(y, x);
 			if((tile == null) || (tile.collisionID == -1))
 				continue;
 			return tile;

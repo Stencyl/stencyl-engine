@@ -1,6 +1,202 @@
 package com.stencyl.models.scene.layers;
 
 import nme.display.Sprite;
+import nme.display.BlendMode;
+import nme.display.Bitmap;
+import nme.display.BitmapData;
+import nme.display.DisplayObject;
+import nme.display.PixelSnapping;
+
+import com.stencyl.models.scene.ScrollingBitmap;
+import com.stencyl.models.background.ImageBackground;
+import com.stencyl.models.background.ScrollingBackground;
+
+//TODO:
+//Botched implementation of drawTiles
+//Wrong because tilesheet only contains one frame at a time (not ideal)
+//Also doesn't even draw/work. (==SEE BELOW==)
+
+class BackgroundLayer extends RegularLayer
+{
+	public var model:ImageBackground;
+	public var bitmap:Bitmap;
+
+	public var resourceID:Int;
+	public var customScroll:Bool;
+
+	public var isAnimated:Bool;
+	public var frameCount:Int;
+	
+	public var currIndex:Int;
+	public var currTime:Float;
+	
+	public var cacheWidth:Float;
+	public var cacheHeight:Float;
+
+	private var bgChild:Dynamic; //Bitmap or ScrollingBitmap
+	
+	public function new(ID:Int, name:String, order:Int, scrollFactorX:Float, scrollFactorY:Float, opacity:Float, blendMode:BlendMode, resourceID:Int, customScroll:Bool) 
+	{
+		super(ID, name, order, scrollFactorX, scrollFactorY, opacity, blendMode);
+		this.resourceID = resourceID;
+		this.customScroll = customScroll;
+	}
+
+	public function load()
+	{
+		model = cast(Data.get().resources.get(resourceID), ImageBackground);
+
+		if(model == null || model.img == null)
+		{
+			trace("Warning: Could not load a background. Ignoring...");
+            return;
+		}
+
+		bitmap = new Bitmap(model.img, PixelSnapping.AUTO, true);
+		bitmap.smoothing = scripts.MyAssets.antialias;
+		
+		currIndex = 0;
+		currTime = 0;
+		
+		isAnimated = model.frames.length > 1;
+		frameCount = model.frames.length;
+
+		if(model.repeats && !model.repeated)
+		{
+			model.drawRepeated(this, Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
+		}
+		
+		var parallaxX:Float = 1;
+		var parallaxY:Float = 1;
+		if(customScroll)
+		{
+			parallaxX = scrollFactorX;
+			parallaxY = scrollFactorY;
+		}
+		else if(model.repeats)
+		{
+			parallaxX = model.parallaxX;
+			parallaxY = model.parallaxY;
+		}
+		else
+		{
+			if(model.img.width > Engine.screenWidth && model.img.width < Engine.sceneWidth)
+				parallaxX = 1 - ((Engine.sceneWidth - model.img.width) / (Engine.sceneWidth - Engine.screenWidth));
+			
+			if(model.img.height > Engine.screenHeight && model.img.height < Engine.sceneHeight)
+				parallaxY = 1 - ((Engine.sceneHeight - model.img.height) / (Engine.sceneHeight - Engine.screenHeight));
+		}
+
+		if(Std.is(model, ScrollingBackground))
+		{
+			var scroller = cast(model, ScrollingBackground);
+
+			var img = new ScrollingBitmap(model.img, scroller.xVelocity, scroller.yVelocity, parallaxX, parallaxY, resourceID);
+			addChild(bgChild = img);
+		}
+		else if(model.repeats)
+		{
+			var img = new ScrollingBitmap(model.img, 0, 0, parallaxX, parallaxY, resourceID);
+			addChild(bgChild = img);
+		}
+		else
+		{
+			cacheWidth = model.img.width;
+			cacheHeight = model.img.height;
+			scrollFactorX = parallaxX;
+			scrollFactorY = parallaxY;
+
+			addChild(bgChild = bitmap);
+		}
+	}
+
+	public function setScrollFactor(x:Float, y:Float)
+	{
+		scrollFactorX = x;
+		scrollFactorY = y;
+
+		if(Std.is(bgChild, ScrollingBitmap))
+		{
+			var bmp = cast(bgChild, ScrollingBitmap);
+			bmp.parallaxX = x;
+			bmp.parallaxY = y;
+		}
+	}
+
+	public function reload(bgID:Int)
+	{
+		if(bgChild != null)
+		{
+			removeChild(bgChild);
+			bgChild = null;
+		}
+
+		resourceID = bgID;
+
+		load();
+	}
+	
+	public function setImage(bitmapData:BitmapData)
+	{
+		bitmap.bitmapData = bitmapData;
+		
+		currIndex = 0;
+		currTime = 0;
+		
+		isAnimated = model.frames.length > 1;
+		frameCount = model.frames.length;
+	}
+	
+	public function updateAnimation(elapsedTime:Float)
+	{
+		currTime += elapsedTime;
+
+		if(model != null && currTime >= model.durations[currIndex])
+		{
+			currTime = 0;
+			currIndex++;
+			
+			if(currIndex >= frameCount)
+			{
+				currIndex = 0;
+			}
+			
+			bitmap.bitmapData = model.frames[currIndex];
+		}
+	}
+
+	override public function updatePosition(x:Float, y:Float, elapsedTime:Float)
+	{
+		if(Std.is(bgChild, ScrollingBitmap))
+		{
+			var bg = cast(bgChild, ScrollingBitmap);
+			bg.update(x, y, elapsedTime);
+		}
+		
+		else
+		{
+			this.x = Std.int(x * scrollFactorX);
+			this.y = Std.int(y * scrollFactorY);
+			
+			if(isAnimated)
+			{
+				updateAnimation(elapsedTime);
+			}
+		}
+	}
+
+	public function getBitmap():Dynamic
+	{
+		return bgChild;
+	}
+}
+
+/*************************************\
+* ==========   OLD   =================|
+\*************************************/
+
+/*
+import nme.display.Sprite;
 import nme.display.Bitmap;
 import nme.display.BitmapData;
 import nme.display.DisplayObject;
@@ -120,3 +316,4 @@ class BackgroundLayer extends Sprite
 		}
 	}
 }
+*/

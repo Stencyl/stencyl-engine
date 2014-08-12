@@ -2166,7 +2166,8 @@ class Actor extends Sprite
 	
 	public function getLayerOrder():Int
 	{
-		return engine.getOrderForLayerID(layerID) + 1;
+		return engine.layers.get(layerID).order;
+		//getOrderForLayerID(layerID) + 1; WHY plus one??
 	}
 	
 	public function getType():ActorType
@@ -2249,11 +2250,11 @@ class Actor extends Sprite
 	//* Layering
 	//*-----------------------------------------------
 	
-	public function moveToLayer(layerID:Float)
+	public function moveToLayer(layerRefType:Int, layerRef:String)
 	{
 		if(!isHUD)
 		{
-			engine.moveToLayer(this, Std.int(layerID));
+			engine.moveToLayer(this, layerRefType, layerRef);
 		}
 	}
 	

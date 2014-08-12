@@ -116,9 +116,6 @@ class Engine
 	//* Constants
 	//*-----------------------------------------------
 		
-	public static var BACKGROUND:String = "b";
-	public static var SCROLLING_BACKGROUND:String = "s";
-	public static var REGULAR_LAYER:String = "l";
 	public static var DOODAD:String = "";
 	
 	public static var INTERNAL_SHIFT:String = "iSHIFT";
@@ -276,24 +273,25 @@ class Engine
 	//My feeling is that we don't need anything except a way to map from layerID to Layer, which in turn
 	//can tell us the order and which layers are above, below. And what layer is on top/bottom.
 	//A Layer = Sprite/Container.
-	
-	public var layers:IntHashTable<Layer>;
-	public var tileLayers:IntHashTable<TileLayer>;
-	public var scrollFactors:Map<Int, Float>;
-	
+	public var colorBackground:Shape;
+
+	//complete listing	
+	public var layers:IntHashTable<RegularLayer>;
+	public var layersByName:Map<String,RegularLayer>;
+
+	//For quick iteration
+	public var interactiveLayers:Array<Layer>;
+	public var backgroundLayers:Array<BackgroundLayer>;
+
 	public var dynamicTiles:Map<String,Actor>;
 	public var animatedTiles:Array<Tile>;
 	
-	public var topLayer:Int;
-	public var bottomLayer:Int;
-	public var middleLayer:Int;
+	public var topLayer:Int; //order of top layer among interactive layers
+	public var bottomLayer:Int; //order of bottom layer among interactive layers
+	public var middleLayer:Int; //order of middle layer among interactive layers
 	
-	//int[]
-	//index -> order
-	//value -> layerID
-	public var layersToDraw:Map<Int,Int>;
-	public var layerOrders:Map<Int,Int>;
-		
+	public var layersToDraw:Map<Int,RegularLayer>; //Map order -> Layer/BackgroundLayer
+
 	public var tileUpdated:Bool;
 	public var cameraMoved:Bool;
 	public var cameraOldX:Float;
@@ -916,13 +914,6 @@ class Engine
 		terrainRegions = new Map<Int,Terrain>();
 		joints = new Map<Int,B2Joint>();
 		
-		layers = new IntHashTable<Layer>(16);
-		layers.reuseIterator = true;
-		tileLayers = new IntHashTable<TileLayer>(16);
-		tileLayers.reuseIterator = true;
-		scrollFactors = new Map<Int, Float>();
-
-		
 		dynamicTiles = new Map<String,Actor>();
 		animatedTiles = new Array<Tile>();
 		hudActors = new IntHashTable<Actor>(64);
@@ -974,11 +965,10 @@ class Engine
 			gravityY = scene.gravityY;
 		}
 		
-		loadBackgrounds();
 		loadTerrain();
 		loadRegions();
 		loadTerrainRegions();
-		loadActors();			
+		loadActors();
 		loadCamera();
 		loadJoints();
 		
@@ -986,78 +976,9 @@ class Engine
 		initBehaviors(behaviors, scene.behaviorValues, this, this, true);			
 		initActorScripts();
 		
-		loadForegrounds();
-		
-		//Remove because post update added now after scene load?
-		for(layer in tileLayers)
-	    {	     	
-			layer.draw(Std.int(cameraX), Std.int(cameraY));	
-	     	layer.setPosition(cameraX, cameraY);
-	    }
-		
 		#if cpp
 		Gc.run(true);
 		#end
-	}
-		
-	private function loadBackgrounds()
-	{
-		var bg = new Shape();
-		scene.colorBackground.draw(bg.graphics, 0, 0, Std.int(screenWidth * Engine.SCALE), Std.int(screenHeight * Engine.SCALE));
-		master.addChild(bg);
-		
-		for(backgroundID in scene.bgs)
-		{
-			loadBackground(backgroundID);
-		}
-	}
-	
-	private function loadForegrounds()
-	{
-		for(backgroundID in scene.fgs)
-		{
-			loadBackground(backgroundID, true);
-		}
-	}
-	
-	private function loadBackground(backgroundID:Int, isForeground:Bool = false)
-	{
-		var background = cast(Data.get().resources.get(backgroundID), ImageBackground);
-		var backImg:BackgroundLayer = new BackgroundLayer(background.img, background);	
-			
-		if(background == null || background.img == null)
-		{
-			trace("Warning: Could not load a background. Ignoring...");
-            return;
-		}
-		
-		if(background.repeats && !background.repeated)
-		{
-			background.drawRepeated(backImg, Std.int(screenWidth * Engine.SCALE), Std.int(screenHeight * Engine.SCALE));
-		}
-			
-		if(Std.is(background, ScrollingBackground))
-		{
-			var scroller = cast(background, ScrollingBackground);
-			var img = new ScrollingBitmap(background.img, scroller.xVelocity, scroller.yVelocity, 0, 0, backgroundID);
-			img.name = SCROLLING_BACKGROUND;
-			master.addChild(img);
-		}
-		
-		else if (background.repeats)
-		{
-			var img = new ScrollingBitmap(background.img, 0, 0, background.parallaxX, background.parallaxY, backgroundID);
-			img.name = SCROLLING_BACKGROUND;
-			master.addChild(img);
-		}
-		
-		else
-		{
-			backImg.cacheWidth = backImg.width;
-			backImg.cacheHeight = backImg.height;
-			backImg.name = BACKGROUND;
-			master.addChild(backImg);
-		}
 	}
 	
 	public static function initBehaviors
@@ -1437,7 +1358,7 @@ class Engine
 	}
 	
 	public function loadTerrain()
-	{				
+	{
 		initLayers();
 		
 		for(wireframe in scene.wireframes)
@@ -1508,12 +1429,8 @@ class Engine
 	//This is mainly to establish mappings and figure out top, middle, bottom
 	private function initLayers()
 	{
-		var layers = new Map<Int,Int>();
-		var orders = new Map<Int,Int>();
-		var exists = new Map<Int,Int>();
-		var highestLayerOrder = 0;
-		
-		tileLayers = scene.terrain;
+		loadColorBackground();
+
 		animatedTiles = scene.animatedTiles;
 		
 		if(animatedTiles != null)
@@ -1524,135 +1441,84 @@ class Engine
 				tile.currTime = 0;
 			}
 		}
-		
-		if(scene.terrain != null)
-		{
-			for(l in scene.terrain)
-			{
-				highestLayerOrder = Std.int(Math.max(highestLayerOrder, l.zOrder));
-				
-				layers.set(l.zOrder, l.layerID);
-				orders.set(l.layerID, l.zOrder);
-				exists.set(l.zOrder, l.zOrder);
-			}
-		}
-		
-		for(i in 0...highestLayerOrder + 1)
-		{
-			if(!exists.exists(i))
-			{
-				layers.set(i, -1);
-			}
-		}
-		
-		layersToDraw = layers;
-		layerOrders = orders;
-		
+
+		layers = scene.layers;
+		layersToDraw = new Map<Int,RegularLayer>();
+		layersByName = new Map<String, RegularLayer>();
+		interactiveLayers = new Array<Layer>();
+		backgroundLayers = new Array<BackgroundLayer>();
+
 		var foundBottom:Bool = false;
 		var foundMiddle:Bool = false;
-		var realNumLayers:Int = 0;
-		
-		//Figure out how many there actually are
-		for(i in 0...highestLayerOrder + 1)
-		{
-			var layerID:Int = layersToDraw.get(i);
-			
-			if(layerID != -1)
-			{
-				realNumLayers++;
-			}
-		}
-		
-		var numLayersProcessed:Int = 0;
-		
-		for(i in 0...highestLayerOrder + 1)
-		{
-			var j = highestLayerOrder - i;
-			var layerID:Int = layersToDraw.get(j);
-			
-			if(layerID == -1 || !layersToDraw.exists(j))
-			{
-				//trace("No layer exists for drawing order: " + j);
-				continue;
-			}
-			
-			var list = new RegularLayer();
-			list.layerID = layerID;
-			var terrain = null;
-			var overlay = new Sprite();
-			
-			#if (js)
-			var bitmapOverlay = new Bitmap(new BitmapData(Engine.screenWidth, Engine.screenHeight, true, 0));
-			#end
-			
-			#if (cpp || flash)
-			var bitmapOverlay = new Sprite();
-			#end
-			
-			if(scene.terrain != null)
-			{
-				terrain = new Layer(layerID, j, scene.terrain.get(layerID), overlay, bitmapOverlay);
-			}
-			
-			if(!foundBottom)
-			{
-				foundBottom = true;
-				bottomLayer = j;
-			}
-			
-			if(!foundMiddle && numLayersProcessed == Math.floor(realNumLayers / 2))
-			{
-				foundMiddle = true;
-				middleLayer = j;
-			}
+		var numLayersProcessed:Int = 0; //for finding middle
+		var highestLayerOrder = -1;
 
-			if(terrain != null)
+		for(l in layers)
+		{
+			highestLayerOrder = Std.int(Math.max(highestLayerOrder, l.order));
+
+			layersToDraw.set(l.order, l);
+			layersByName.set(l.layerName, l);
+			if(Std.is(l, Layer))
+				interactiveLayers.push(cast(l, Layer));
+			else if(Std.is(l, BackgroundLayer))
+				backgroundLayers.push(cast(l, BackgroundLayer));
+		}
+
+		for(i in 0...highestLayerOrder + 1)
+		{
+			var j:Int = highestLayerOrder - i;
+			var l:RegularLayer = layersToDraw.get(j);
+
+			if(Std.is(l, BackgroundLayer))
 			{
-				var tileLayer = scene.terrain.get(layerID);
-				
-				if(tileLayer == null)
-				{
-					trace("LayerID does not exist: " + layerID);
-					continue;
-				}
-				
-				tileLayer.reset();
-			
-				terrain.name = REGULAR_LAYER;
-				master.addChild(terrain);
-				master.addChild(tileLayer);
-				
-				if(NO_PHYSICS)
-				{
-					scene.terrain.get(layerID).mountGrid();
-				}
-				
-				this.layers.set(layerID, terrain);
-				this.scrollFactors.set(layerID, 1);
+				var layer = cast(l, BackgroundLayer);
+				layer.load();
+				master.addChild(layer);
 			}
+			else if(Std.is(l, Layer))
+			{
+				var layer = cast(l, Layer);
 				
-			/*overlay.name =*/ list.name = REGULAR_LAYER;
-			master.addChild(list);
-			master.addChild(overlay);
-			master.addChild(bitmapOverlay);
-			
-			actorsPerLayer.set(layerID, list);
-			
-			
-			//Eventually, this will become the correct value
-			topLayer = j;
-			defaultGroup = list;
-			
-			numLayersProcessed++;
+				if(!foundBottom)
+				{
+					foundBottom = true;
+					bottomLayer = j;
+				}
+				
+				if(!foundMiddle && numLayersProcessed == Math.floor(interactiveLayers.length / 2))
+				{
+					foundMiddle = true;
+					middleLayer = j;
+				}
+
+				if(NO_PHYSICS)
+					layer.tiles.mountGrid();
+				
+				master.addChild(layer);
+				actorsPerLayer.set(layer.ID, layer.actorContainer);
+				
+				//Eventually, this will become the correct value
+				topLayer = j;
+				defaultGroup = layer.actorContainer;
+				
+				numLayersProcessed++;
+			}
 		}
 		
 		//For scenes with no scene data
 		if(defaultGroup == null)
 		{
-			defaultGroup = new RegularLayer();
-			defaultGroup.name = REGULAR_LAYER;
+			defaultGroup = new RegularLayer(0, "", 0, 1, 1, 1, nme.display.BlendMode.NORMAL);
 			master.addChild(defaultGroup);
 		}
+	}
+
+	private function loadColorBackground()
+	{
+		colorBackground = new Shape();
+		scene.colorBackground.draw(colorBackground.graphics, 0, 0, Std.int(screenWidth * Engine.SCALE), Std.int(screenHeight * Engine.SCALE));
+		master.addChild(colorBackground);
 	}
 
 	//*-----------------------------------------------
@@ -1754,12 +1620,9 @@ class Engine
 		}
 		
 		//Clear old TileLayer data
-		if(scene != null && scene.terrain != null)
-		{			
-			for (tl in scene.terrain)
-			{
-				tl.clearBitmap();
-			}
+		for(layer in interactiveLayers)
+		{
+			layer.tiles.clearBitmap();
 		}
 		
 		for(a in allActors)
@@ -1783,9 +1646,12 @@ class Engine
 		
 		hudActors = null;
 		layers = null;
+		layersByName = null;
+		interactiveLayers = null;
+		backgroundLayers = null;
 		actorsPerLayer = null;
 		layersToDraw = null;
-		layerOrders = null;
+		
 		dynamicTiles = null;
 		animatedTiles = null;
 		
@@ -1915,7 +1781,7 @@ class Engine
 	}
 	
 	public function isTransitioningOut():Bool
-	{			
+	{
 		if(leave != null && leave.isActive())
 		{
 			return true;
@@ -1923,7 +1789,7 @@ class Engine
 		
 		return false;
 	}
-	
+
 	//*-----------------------------------------------
 	//* Actor Creation
 	//*-----------------------------------------------
@@ -2236,6 +2102,28 @@ class Engine
 	
 	public function getRecycledActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
 	{
+		var layerID = 0;
+		
+		if(layerConst == Script.FRONT)
+		{
+			layerID = getTopLayer();
+		}
+			
+		else if(layerConst == Script.BACK)
+		{
+			layerID = getBottomLayer();
+		}
+			
+		else
+		{
+			layerID = getMiddleLayer();
+		}
+
+		return getRecycledActorOfTypeOnLayer(type, x, y, layerID);
+	}
+
+	public function getRecycledActorOfTypeOnLayer(type:ActorType, x:Float, y:Float, layerID:Int):Actor
+	{
 		var a:Actor = null;
 		
 		if(recycledActorsOfType.get(type.ID) == null)
@@ -2305,23 +2193,6 @@ class Engine
 					//actor.setFilter(null);					
 
 					//move to specified layer
-					var layerID = 0;
-					
-					if(layerConst == Script.FRONT)
-					{
-						layerID = getTopLayer();
-					}
-						
-					else if(layerConst == Script.BACK)
-					{
-						layerID = getBottomLayer();
-					}
-						
-					else
-					{
-						layerID = getMiddleLayer();
-					}
-					
 					moveActorToLayer(actor, layerID);
 					
 					actor.initScripts();
@@ -2344,36 +2215,19 @@ class Engine
 			}
 			
 			//Otherwise make a new one
-			a = createActorOfType(type, x, y, layerConst);
+			a = createActorOfType(type, x, y, layerID);
 			//cache.push(a);
 		}
 		
 		return a;
 	}
 	
-	public function createActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
+	public function createActorOfType(type:ActorType, x:Float, y:Float, layerID:Int):Actor
 	{
 		if(type == null)
 		{
 			trace("Tried to create actor with null or invalid type.");
 			return null;
-		}
-		
-		var layerID = 0;
-		
-		if(layerConst == Script.FRONT)
-		{
-			layerID = getTopLayer();
-		}
-			
-		else if(layerConst == Script.BACK)
-		{
-			layerID = getBottomLayer();
-		}
-			
-		else
-		{
-			layerID = getMiddleLayer();
 		}
 		
 		var ai:ActorInstance = new ActorInstance
@@ -2416,17 +2270,17 @@ class Engine
 		
 	public function getTopLayer():Int
 	{
-		return layersToDraw.get(topLayer);
+		return layersToDraw.get(topLayer).ID;
 	}
 	
 	public function getBottomLayer():Int
 	{
-		return layersToDraw.get(bottomLayer);
+		return layersToDraw.get(bottomLayer).ID;
 	}
 	
 	public function getMiddleLayer():Int
 	{
-		return layersToDraw.get(middleLayer);
+		return layersToDraw.get(middleLayer).ID;
 	}
 		
 		
@@ -2678,73 +2532,9 @@ class Engine
 		cameraX = Math.min(0, cameraX);
 		cameraY = Math.min(0, cameraY);
 		
-		for(i in 0...master.numChildren)
+		for(layer in layers)
 		{
-			var child = master.getChildAt(i);
-			
-			//Background
-			if(Std.is(child, BackgroundLayer))
-			{
-				var bgLayer = cast(child, BackgroundLayer);
-			
-				var endX = Math.abs(bgLayer.cacheWidth - screenWidth * Engine.SCALE);
-				var endY = Math.abs(bgLayer.cacheHeight - screenHeight * Engine.SCALE);
-
-				//child.x = endX * ( - (cameraX / Engine.SCALE) / Engine.sceneWidth);
-				//child.y = endY * ( - (cameraY / Engine.SCALE) / Engine.sceneHeight);
-				
-				if(maxCamX != 0)
-				{
-					child.x = -endX * Math.abs(cameraX/(maxCamX * Engine.SCALE));
-				}
-				
-				else
-				{
-					child.x = 0;
-				}
-				
-				if(maxCamY != 0)
-				{
-					child.y = -endY * Math.abs(cameraY/(maxCamY * Engine.SCALE));
-				}
-				
-				else
-				{
-					child.y = 0;
-				}
-				
-				if(bgLayer.isAnimated)
-				{
-					bgLayer.updateAnimation(elapsedTime);
-				}
-			}
-			
-			else if(Std.is(child, ScrollingBitmap))
-			{
-				var bg = cast(child, ScrollingBitmap);
-				
-				if (bg.parallax)
-				{
-					bg.updateParallax();
-				}
-				
-				else
-				{
-					bg.updateAuto(elapsedTime);
-				}
-			}
-			
-			//Regular Layer
-			else if(Std.is(child, RegularLayer))
-			{
-				var l = cast(child, RegularLayer);
-				var scrollFactor = scrollFactors.get(l.layerID);
-			
-				child.x = cameraX * scrollFactor;
-				child.y = cameraY * scrollFactor;
-			}
-			
-			//Something that doesn't scroll - Do nothing
+			layer.updatePosition(cameraX, cameraY, elapsedTime);
 		}
 		
 		if(!NO_PHYSICS && DEBUG_DRAW)
@@ -3210,7 +3000,7 @@ class Engine
      //Change to a repaint on demand mechanism
      public function draw()
      {
-     	for(l in layers)
+     	for(l in interactiveLayers)
 		{
 			l.overlay.graphics.clear();
 			
@@ -3248,14 +3038,14 @@ class Engine
 			{
 				if(a.whenDrawingListeners.length > 0)
 				{
-					var layer = layers.get(a.layerID);
+					var layer = cast(layers.get(a.layerID), Layer);
 					
 					if(layer != null)
 					{
 						layer.drawnOn = true;
 						
 						g.graphics = layer.overlay.graphics;
-						
+
 						#if (js)
 						g.canvas = layer.bitmapOverlay.bitmapData;
 						#end
@@ -3275,16 +3065,12 @@ class Engine
      	//Walk through each of the drawing events
      	
      	//Only if camera changed? Or tile updated
-     	for(layer in tileLayers)
+     	for(layer in interactiveLayers)
 	    {
-	    	var scrollFactor = scrollFactors.get(layer.layerID);
-	    	
 	    	if(cameraMoved || tileUpdated)
      		{
-	     		layer.draw(Std.int(cameraX), Std.int(cameraY), scrollFactor);
+	     		layer.tiles.draw(Std.int(cameraX * layer.scrollFactorX), Std.int(cameraY * layer.scrollFactorY));
 	     	}
-
-	     	layer.setPosition(cameraX, cameraY, scrollFactor);
 	    }
      	
      	tileUpdated = false;
@@ -3410,24 +3196,30 @@ class Engine
 	//* Actors - Layering
 	//*-----------------------------------------------
 	
-	public function moveToLayer(a:Actor, layerID:Int)
+	public function getLayer(refType:Int, ref:String):RegularLayer
 	{
-		var lID = layerID;
+		if(refType == 0)
+			return engine.layers.get(Std.parseInt(ref));
+		else
+			return engine.layersByName.get(ref);
+	}
 
-		//TODO: PERF - We lost SizedMap - this operation is O(n)
-		if(lID < 0 || lID > Lambda.count(layersToDraw) - 1) 
+	public function moveToLayer(a:Actor, refType:Int, ref:String)
+	{
+		var layer = getLayer(refType, ref);
+		
+		if(Std.is(layer, BackgroundLayer))
 		{
 			return;
 		}
-			
-		if(a.layerID == layerID) 
+		if(a.layerID == layer.ID) 
 		{
 			return;
 		}
 
 		removeActorFromLayer(a, a.layerID);
-		a.layerID = lID;
-		moveActorToLayer(a,lID);
+		a.layerID = layer.ID;
+		moveActorToLayer(a,layer.ID);
 	}
 	
 	public function sendToBack(a:Actor)
@@ -3441,15 +3233,16 @@ class Engine
 	{
 		removeActorFromLayer(a, a.layerID);
 		
-		var order:Int = getOrderForLayerID(a.layerID);
-		
-		//TODO: PERF - We lost SizedMap - this operation is O(n)
-		if(order < Lambda.count(layersToDraw) - 1)
+		var order:Int = layers.get(a.layerID).order;
+		while(layersToDraw.exists(++order))
 		{
-			a.layerID = layersToDraw.get(order + 1);	
+			if(Std.is(layersToDraw.get(order), Layer))
+			{
+				a.layerID = layersToDraw.get(order).ID;
+				moveActorToLayer(a, a.layerID);
+				return;
+			}
 		}
-		
-		moveActorToLayer(a, a.layerID);
 	}
 	
 	public function bringToFront(a:Actor)
@@ -3463,29 +3256,26 @@ class Engine
 	{
 		removeActorFromLayer(a, a.layerID);
 		
-		var order:Int = getOrderForLayerID(a.layerID);
-		
-		if(order > 0)
+		var order:Int = layers.get(a.layerID).order;
+		while(layersToDraw.exists(--order))
 		{
-			a.layerID = layersToDraw.get(order - 1);	
+			if(Std.is(layersToDraw.get(order), Layer))
+			{
+				a.layerID = layersToDraw.get(order).ID;
+				moveActorToLayer(a, a.layerID);
+				return;
+			}
 		}
+	}
+	
+	public function getNumberOfActorsWithinLayer(refType:Int, ref:String):Int
+	{
+		var layer = getLayer(refType, ref);
 		
-		moveActorToLayer(a, a.layerID);
-	}
-	
-	public function getOrderForLayerID(layerID:Int):Int
-	{
-		return layerOrders.get(layerID);
-	}
-	
-	public function getIDFromLayerOrder(layerOrder:Int):Int
-	{
-		return layersToDraw.get(layerOrder - 1);
-	}
-	
-	public function getNumberOfActorsWithinLayer(layerID:Int):Int
-	{
-		return actorsPerLayer.get(layerID).numChildren;
+		if(Std.is(layer, Layer))
+			return cast(layer, Layer).actorContainer.numChildren;
+		else
+			return 0;
 	}
 	
 	//*-----------------------------------------------
@@ -4070,9 +3860,10 @@ class Engine
 	//* Utils
 	//*-----------------------------------------------
 	
-	public function setScrollFactor(layerID:Int, amount:Float)
+	public function setScrollFactor(layerID:Int, amountX:Float, amountY:Float)
 	{
-		scrollFactors.set(layerID, amount);
+		layers.get(layerID).scrollFactorX = amountX;
+		layers.get(layerID).scrollFactorY = amountY;
 	}
 	
 	//0 args

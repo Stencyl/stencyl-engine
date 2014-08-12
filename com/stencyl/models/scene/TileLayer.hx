@@ -110,25 +110,16 @@ class TileLayer extends Sprite
 		#end
 	}
 	
-	public function setPosition(x:Float, y:Float, scrollFactor:Float = 1)
+	public function setPosition(x:Int, y:Int)
 	{
 		#if (flash || js)
-		if(scrollFactor != 1)
-		{
-			this.x = x * scrollFactor;
-			this.y = y * scrollFactor;
-		}
-		
-		else
-		{
-			this.x = x % (scene.tileWidth * Engine.SCALE);
-			this.y = y % (scene.tileHeight * Engine.SCALE);
-		}
+		this.x = x - x % (scene.tileWidth * Engine.SCALE);
+		this.y = y - y % (scene.tileHeight * Engine.SCALE);
 		#end
 		
 		#if cpp
-		this.x = x * scrollFactor;
-		this.y = y * scrollFactor;
+		//this.x = x;
+		//this.y = y;
 		#end
 	}
 	
@@ -178,6 +169,8 @@ class TileLayer extends Sprite
 			return;
 		}
 		
+		noTiles = false;
+
 		rows[row][col] = tile;			
 	}
 	
@@ -193,7 +186,7 @@ class TileLayer extends Sprite
 	
 	//We're directly drawing since pre-rendering the layer might not be so memory friendly on large levels 
 	//and I don't know if it clips.
-	public function draw(viewX:Int, viewY:Int, scrollFactor:Float = 1)
+	public function draw(viewX:Int, viewY:Int)
 	{
 		if(noTiles)
 		{

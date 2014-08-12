@@ -21,6 +21,7 @@ class ScrollingBitmap extends Sprite
 	
 	public var running:Bool;
 	public var parallax:Bool;
+	public var scrolling:Bool;
 	
 	public var cacheWidth:Float;
 	public var cacheHeight:Float;
@@ -99,21 +100,38 @@ class ScrollingBitmap extends Sprite
         xVelocity = dx;
         yVelocity = dy;
 		
-		parallax = false;
 		parallaxX = px;
 		parallaxY = py;
 		
-		if (dx == 0 && dy == 0)
-		{
-			parallax = true;
-		}
+		scrolling = (dx  != 0 || dy != 0);
+		parallax = (px != 1 || py != 1);
 		
 		backgroundID = ID;
 	}
 	
-	public function updateAuto(elapsedTime:Float)
+	public function update(x:Float, y:Float, elapsedTime:Float)
 	{
-		if(running)
+		var needsReset:Bool = false;
+		
+		if(parallax)
+		{
+			xPos = Std.int(x * parallaxX);
+			yPos = Std.int(y * parallaxY);
+
+			needsReset = true;
+		}
+		else if(running)
+		{
+			xPos = 0;
+			yPos = 0;
+		}
+		else
+		{
+			xPos = xP;
+			yPos = yP;
+		}
+
+		if(scrolling && running)
 		{
 			var width = cacheWidth;
 			var height = cacheHeight;
@@ -131,28 +149,28 @@ class ScrollingBitmap extends Sprite
 	            yP = 0;
 	        }
 	        
-	        xPos = Math.floor(xP);
-	        yPos = Math.floor(yP);
+	        xPos += Math.floor(xP);
+	        yPos += Math.floor(yP);
 	        
 			curStep += 1;
 			
-			if(curStep < 1) 
+			if(curStep >= 1) 
 			{
-				return;
+				needsReset = true;
+					        
+				curStep -= Math.floor(curStep);
 			}
+		}
 		
-			//TODO: Optimize?
-	        resetPositions();
-	        
-			curStep -= Math.floor(curStep);
+		if(needsReset)
+		{
+			//TODO: optimize?
+			resetPositions();
 		}
 	}
 	
-	public function updateParallax()
-	{		
-		xPos = Engine.cameraX * parallaxX;
-		yPos = Engine.cameraY * parallaxY;
-		
+	public function resetPositions()
+	{
 		if (xPos < -cacheWidth)
 		{
 			xPos = xPos % cacheWidth;
@@ -161,14 +179,8 @@ class ScrollingBitmap extends Sprite
 		if (yPos < -cacheHeight)
 		{
 			yPos = yPos % cacheHeight;
-		}	
-		
-		//TODO: Optimize?
-		resetPositions();
-	}
-	
-	public function resetPositions()
-	{
+		}
+
 		image1.x = xPos;
 	    image1.y = yPos;
 	        

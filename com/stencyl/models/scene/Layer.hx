@@ -5,36 +5,73 @@ import nme.geom.ColorTransform;
 
 import nme.display.Bitmap;
 import nme.display.BitmapData;
+import nme.display.BlendMode;
 
 import com.stencyl.models.scene.layers.RegularLayer;
 
 class Layer extends RegularLayer
 {
-	private var tiles:TileLayer;
-	
-	public var ID:Int;
-	public var order:Int;
-	public var color:Int;
-	
+	//Tiles
+	public var tiles:TileLayer;
+	//For Image API
+	public var underActors:Sprite;
+	public var overActors:Sprite;
+	//Actors
+	public var actorContainer:Sprite;
+	//Custom Drawing (graphics)
 	public var overlay:Sprite;
+	//More custom Drawing (canvas)
 	public var bitmapOverlay:Dynamic;
+	
+
+	public var color:Int; //???
+
 	public var drawnOn:Bool;
 	
-	public function new(ID:Int, order:Int, tiles:TileLayer, overlay:Sprite, bitmapOverlay:Dynamic)
+	public function new(ID:Int, name:String, order:Int, scrollFactorX:Float, scrollFactorY:Float, opacity:Float, blendMode:BlendMode, tileLayer:TileLayer)
 	{
-		super();
+		super(ID, name, order, scrollFactorX, scrollFactorY, opacity, blendMode);
 		
-		this.tiles = tiles;
-		this.overlay = overlay;
-		this.bitmapOverlay = bitmapOverlay;
-		
-		this.ID = ID;
-		this.layerID = ID;
-		this.order = order;
+		tiles = tileLayer;
+		tiles.reset();
+		tiles.blendName = Std.string(blendMode);
 
-		//scrollFactor.x = 0;
-		//scrollFactor.y = 0;
+		underActors = new Sprite();
+		actorContainer = new Sprite();
+		overActors = new Sprite();
+		overlay = new Sprite();
+
+		#if (js)
+		bitmapOverlay = new Bitmap(new BitmapData(Engine.screenWidth, Engine.screenHeight, true, 0));
+		#end
 		
+		#if (cpp || flash)
+		bitmapOverlay = new Sprite();
+		#end
+
+		addChild(tiles);
+		addChild(underActors);
+		addChild(actorContainer);
+		addChild(overActors);
+		addChild(overlay);
+		addChild(bitmapOverlay);
+
 		drawnOn = true;
+	}
+
+	override public function updatePosition(x:Float, y:Float, elapsedTime:Float)
+	{
+		x = Std.int(x);
+		y = Std.int(y);
+		var xScrolled = Std.int(x * scrollFactorX);
+		var yScrolled = Std.int(y * scrollFactorY);
+
+		this.x = xScrolled;
+		this.y = yScrolled;
+		overlay.x = -x;
+		overlay.y = -y;
+		bitmapOverlay.x = -x;
+		bitmapOverlay.y = -y;
+		tiles.setPosition(-xScrolled, -yScrolled);
 	}
 }

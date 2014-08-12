@@ -10,6 +10,9 @@ import com.stencyl.io.SpriteReader;
 import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.Tileset;
 import com.stencyl.models.scene.TileLayer;
+import com.stencyl.models.scene.Layer;
+import com.stencyl.models.scene.layers.BackgroundLayer;
+import com.stencyl.models.scene.layers.RegularLayer;
 
 import com.stencyl.models.background.ColorBackground;
 import com.stencyl.models.scene.ActorInstance;
@@ -18,7 +21,9 @@ import com.stencyl.models.scene.TerrainDef;
 import com.stencyl.models.scene.Wireframe;
 import com.stencyl.models.collision.Mask;
 import com.stencyl.behavior.BehaviorInstance;
+import com.stencyl.graphics.BlendModes;
 
+import nme.display.BlendMode;
 import nme.geom.Point;
 import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2EdgeShape;
@@ -57,11 +62,8 @@ class Scene
 	public var eventID:Int;
 	
 	public var colorBackground:Background;
+	public var layers:IntHashTable<RegularLayer>;
 	
-	public var bgs:Array<Int>;
-	public var fgs:Array<Int>;
-	
-	public var terrain:IntHashTable<TileLayer>;
 	public var actors:Map<Int,ActorInstance>;
 	public var behaviorValues:Map<String,BehaviorInstance>;
 	public var atlases:Array<Int>;
@@ -86,7 +88,7 @@ class Scene
 	{
 		var xml:Fast = new Fast(Xml.parse(nme.Assets.getText("assets/data/scene-" + ID + ".xml")).firstElement());
 		
-		var numLayers:Int = Std.parseInt(xml.att.depth);
+		var numTileLayers:Int = Std.parseInt(xml.att.depth);
 		
 		sceneWidth = Std.parseInt(xml.att.width);
 		sceneHeight = Std.parseInt(xml.att.height);
@@ -98,20 +100,6 @@ class Scene
 		gravityY = Std.parseFloat(xml.att.gravy);
 								
 		animatedTiles = new Array<Tile>();
-		
-		bgs = readBackgrounds(xml.node.backgrounds.elements);
-		fgs = readBackgrounds(xml.node.foregrounds.elements);
-					
-		colorBackground = new ColorBackground(0xFFFFFFFF);
-		
-		for(e in xml.elements)
-		{
-			if(e.name == "color-bg" || e.name == "grad-bg")
-			{
-				colorBackground = cast(new BackgroundReader().read(0, 0, e.name, "", e), Background);
-				break;
-			}
-		}
 		
 		actors = readActors(xml.node.actors.elements);
 		behaviorValues = ActorTypeReader.readBehaviors(xml.node.snippets);
@@ -144,14 +132,14 @@ class Scene
 		wireframes = readWireframes(xml.node.terrain.elements);
 		
 		#if js
-		var rawLayers = readRawLayers(nme.Assets.getText("assets/data/scene-" + ID + ".txt"), numLayers);
+		var rawLayers = readRawLayers(nme.Assets.getText("assets/data/scene-" + ID + ".txt"), numTileLayers);
 		#end
 		
 		#if !js
-		var rawLayers = readRawLayers(nme.Assets.getBytes("assets/data/scene-" + ID + ".scn"), numLayers);
+		var rawLayers = readRawLayers(nme.Assets.getBytes("assets/data/scene-" + ID + ".scn"), numTileLayers);
 		#end
-		
-		terrain = readLayers(xml.node.layers.elements, rawLayers);
+
+		layers = readAllLayers(xml.node.layers.elements, rawLayers);
 
 		retainsAtlases = xml.hasNode.atlases ?
 			xml.node.atlases.att.retainAtlases == "true" :
@@ -167,13 +155,10 @@ class Scene
 	{
 		colorBackground = null;
 	
-		bgs = null;
-		fgs = null;
-	
-		terrain = null;
 		actors = null;
 		behaviorValues = null;
-	
+		layers = null;
+		
 		//Box2D
 		wireframes = null;
 		joints = null;
@@ -573,29 +558,46 @@ class Scene
 		return null;
 	}
 
-	public function readLayers(list:Iterator<Fast>, rawLayers:IntHashTable<TileLayer> = null):IntHashTable<TileLayer>
+	public function readAllLayers(list:Iterator<Fast>, rawLayers:IntHashTable<TileLayer>):IntHashTable<RegularLayer>
 	{
-		var map = new IntHashTable<TileLayer>(16);
+		var map:IntHashTable<RegularLayer> = new IntHashTable<RegularLayer>(16);
 		map.reuseIterator = true;
-		
+
 		for(e in list)
 		{
-			var eid = Std.parseInt(e.att.id);
-		
-			map.set(eid, rawLayers.get(eid));
-			
-			var layer:TileLayer = map.get(eid);
-			
-			if(layer != null)
-			{
-				layer.name = e.att.name;
-				layer.zOrder = Std.parseInt(e.att.order);
-			}
-			
+			if(e.name == "color-bg" || e.name == "grad-bg")
+				colorBackground = cast(new BackgroundReader().read(0, 0, e.name, "", e), Background);
 			else
 			{
-				var dummy = new TileLayer(eid, Std.parseInt(e.att.order), this, Std.int(Math.floor(sceneWidth / tileWidth)), Std.int(Math.floor(sceneHeight / tileHeight)));
-				map.set(eid, dummy);
+				var ID:Int = Std.parseInt(e.att.id);
+				var name:String = e.att.name;
+				var order:Int = Std.parseInt(e.att.order);
+				var scrollFactorX:Float = Std.parseFloat(e.att.scrollFactorX);
+				var scrollFactorY:Float = Std.parseFloat(e.att.scrollFactorY);
+				var opacity:Float = Std.parseFloat(e.att.opacity) / 100;
+				var blendMode:BlendMode = BlendModes.get(e.att.blendMode);
+
+				if(e.name == "layer")
+				{
+					var tileLayer:TileLayer = rawLayers.get(ID);
+					if(tileLayer == null)
+						tileLayer = new TileLayer(ID, order, this, Std.int(Math.floor(sceneWidth / tileWidth)), Std.int(Math.floor(sceneHeight / tileHeight)));
+					tileLayer.name = name;
+
+					var layer:Layer = new Layer(ID, name, order, scrollFactorX, scrollFactorY, opacity, blendMode, tileLayer);
+
+					map.set(layer.ID, layer);
+				}
+				else if(e.name == "background")
+				{
+					//Need to change order, atlases aren't loaded yet
+					var bgID = Std.parseInt(e.att.rid);
+					var customScroll = e.att.customScrollFactor == "true";
+
+					var layer:BackgroundLayer = new BackgroundLayer(ID, name, order, scrollFactorX, scrollFactorY, opacity, blendMode, bgID, customScroll);
+
+					map.set(layer.ID, layer);
+				}
 			}
 		}
 		
@@ -603,7 +605,7 @@ class Scene
 	}
 	
 	#if js
-	public function readRawLayers(data:String, numLayers:Int):IntHashTable<TileLayer>
+	public function readRawLayers(data:String, numTileLayers:Int):IntHashTable<TileLayer>
 	{
 		var map = new IntHashTable<TileLayer>(16);
 		map.reuseIterator = true;
@@ -612,7 +614,7 @@ class Scene
 		{
 			var split = data.split("~");
 		
-			for(i in 0...numLayers)
+			for(i in 0...numTileLayers)
 			{
 				var newLayer = readRawLayer(split[i]);
 				map.set(newLayer.layerID, newLayer);
@@ -623,7 +625,7 @@ class Scene
 	}
 	
 	public function readRawLayer(data:String):TileLayer
-	{	
+	{
 		var split = data.split("#");
 		var width = Std.int(Math.floor(sceneWidth / tileWidth));
 		var height = Std.int(Math.floor(sceneHeight / tileHeight));
@@ -716,7 +718,7 @@ class Scene
 	#end
 	
 	#if !js
-	public function readRawLayers(bytes:ByteArray, numLayers:Int):IntHashTable<TileLayer>
+	public function readRawLayers(bytes:ByteArray, numTileLayers:Int):IntHashTable<TileLayer>
 	{
 		var map = new IntHashTable<TileLayer>(16);
 		map.reuseIterator = true;
@@ -725,12 +727,12 @@ class Scene
 		
 		if(bytes != null)
 		{
-			for(i in 0...numLayers)
+			for(i in 0...numTileLayers)
 			{
 				layerHeaders[i] = bytes.readInt();
 			}
 			
-			for(i in 0...numLayers)
+			for(i in 0...numTileLayers)
 			{
 				var newLayer = readRawLayer(bytes, layerHeaders[i]);
 				map.set(newLayer.layerID, newLayer);
@@ -850,18 +852,6 @@ class Scene
 		return layer;
 	}
 	#end
-	
-	public function readBackgrounds(list:Iterator<Fast>):Array<Int>
-	{
-		var map:Array<Int> = new Array<Int>();
-		
-		for(e in list)
-		{
-			map.push(Std.parseInt(e.att.id));
-		}
-		
-		return map;
-	}
 
 	public function readAtlases(e:Fast):Array<Int>
 	{
