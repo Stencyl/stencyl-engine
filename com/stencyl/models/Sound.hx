@@ -51,7 +51,7 @@ class Sound extends Resource
 	{
 		if(!streaming)
 		{
-			trace("Loading sound: " + ID);
+			//trace("Loading sound: " + ID);
 			src = Assets.getSound("assets/sfx/sound-" + ID + "." + this.ext, false);
 		}
 	}
