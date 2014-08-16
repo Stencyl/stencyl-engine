@@ -80,7 +80,10 @@ class Data
 
 	//Map of each resource in memory by ID
 	public var resources:Map<Int,Resource>;
-	
+
+	//Map of each resource in memory by name
+	public var resourceMap:Map<String,Resource>;
+
 	//Map of each static asset by filename
 	public var resourceAssets:Map<String,Dynamic>;
 	
@@ -201,6 +204,15 @@ class Data
 		loader.loadResources(resourceAssets);
 		updatePreloader(65);	
 		readResourceXML(resourceListXML);
+
+		resourceMap = new Map<String,Resource>();
+		for(r in resources)
+		{
+			if(r == null || Std.is(r, Sprite))
+				continue;
+
+			resourceMap.set(r.name, r);
+		}
 	}
 	
 	private function readResourceXML(list:Fast)
