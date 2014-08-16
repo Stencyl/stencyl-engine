@@ -40,12 +40,12 @@ class BackgroundLayer extends RegularLayer
 		super(ID, name, order, scrollFactorX, scrollFactorY, opacity, blendMode);
 		this.resourceID = resourceID;
 		this.customScroll = customScroll;
+
+		model = cast(Data.get().resources.get(resourceID), ImageBackground);
 	}
 
 	public function load()
 	{
-		model = cast(Data.get().resources.get(resourceID), ImageBackground);
-
 		if(model == null || model.img == null)
 		{
 			trace("Warning: Could not load a background. Ignoring...");
@@ -110,6 +110,15 @@ class BackgroundLayer extends RegularLayer
 		}
 	}
 
+	public function loadFromImg(img:BitmapData, tiled:Bool)
+	{
+		model = new ScrollingBackground(-1, -1, "", [100], 0, 0, tiled, 0, 0);
+		model.img = img;
+		model.frames = [img];
+
+		load();
+	}
+
 	public function setScrollFactor(x:Float, y:Float)
 	{
 		scrollFactorX = x;
@@ -123,6 +132,22 @@ class BackgroundLayer extends RegularLayer
 		}
 	}
 
+	public function setScrollSpeed(x:Float, y:Float)
+	{
+		if(Std.is(bgChild, ScrollingBitmap))
+		{
+			var bg = cast(bgChild, ScrollingBitmap);
+			
+			bg.xVelocity = x;
+			bg.yVelocity = y;
+		}
+
+		else
+		{
+			//TODO: Make it so you can set a non-scrolling background to scroll?
+		}
+	}
+
 	public function reload(bgID:Int)
 	{
 		if(bgChild != null)
@@ -132,6 +157,8 @@ class BackgroundLayer extends RegularLayer
 		}
 
 		resourceID = bgID;
+
+		model = cast(Data.get().resources.get(resourceID), ImageBackground);
 
 		load();
 	}

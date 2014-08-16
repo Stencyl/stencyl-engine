@@ -68,6 +68,7 @@ import com.stencyl.models.scene.Layer;
 import com.stencyl.models.scene.TileLayer;
 import com.stencyl.models.scene.ScrollingBitmap;
 
+import com.stencyl.models.Background;
 import com.stencyl.models.background.ImageBackground;
 import com.stencyl.models.background.ScrollingBackground;
 
@@ -230,6 +231,7 @@ class Engine
 	public static var stage:Stage;
 	public var defaultGroup:Sprite; //The default layer (bottom-most)
 	public var root:Sprite; //The absolute root
+	public var colorLayer:Shape;
 	public var master:Sprite; // the root of the main node
 	public var hudLayer:Sprite; //Shows above everything else
 	public var transitionBitmapLayer:DisplayObject; //Shows above everything else
@@ -273,7 +275,6 @@ class Engine
 	//My feeling is that we don't need anything except a way to map from layerID to Layer, which in turn
 	//can tell us the order and which layers are above, below. And what layer is on top/bottom.
 	//A Layer = Sprite/Container.
-	public var colorBackground:Shape;
 
 	//complete listing	
 	public var layers:IntHashTable<RegularLayer>;
@@ -709,6 +710,9 @@ class Engine
 		Engine.sceneHeight = stageHeight; //Overriden once scene loads
 			
 		//Display List
+		colorLayer = new Shape();
+		root.addChild(colorLayer);
+
 		master = new Sprite();
 		root.addChild(master);
 		
@@ -1429,7 +1433,7 @@ class Engine
 	//This is mainly to establish mappings and figure out top, middle, bottom
 	private function initLayers()
 	{
-		loadColorBackground();
+		setColorBackground(scene.colorBackground);
 
 		animatedTiles = scene.animatedTiles;
 		
@@ -1453,11 +1457,13 @@ class Engine
 		var numLayersProcessed:Int = 0; //for finding middle
 		var highestLayerOrder = -1;
 
+		var reverseOrders = new Map<Int,RegularLayer>();
+
 		for(l in layers)
 		{
 			highestLayerOrder = Std.int(Math.max(highestLayerOrder, l.order));
 
-			layersToDraw.set(l.order, l);
+			reverseOrders.set(l.order, l);
 			layersByName.set(l.layerName, l);
 			if(Std.is(l, Layer))
 				interactiveLayers.push(cast(l, Layer));
@@ -1468,7 +1474,14 @@ class Engine
 		for(i in 0...highestLayerOrder + 1)
 		{
 			var j:Int = highestLayerOrder - i;
-			var l:RegularLayer = layersToDraw.get(j);
+			var l:RegularLayer = reverseOrders.get(i);
+			l.order = j;
+			layersToDraw.set(j, l);
+		}
+
+		for(i in 0...highestLayerOrder + 1)
+		{
+			var l:RegularLayer = layersToDraw.get(i);
 
 			if(Std.is(l, BackgroundLayer))
 			{
@@ -1483,13 +1496,13 @@ class Engine
 				if(!foundBottom)
 				{
 					foundBottom = true;
-					bottomLayer = j;
+					bottomLayer = i;
 				}
 				
 				if(!foundMiddle && numLayersProcessed == Math.floor(interactiveLayers.length / 2))
 				{
 					foundMiddle = true;
-					middleLayer = j;
+					middleLayer = i;
 				}
 
 				if(NO_PHYSICS)
@@ -1499,7 +1512,7 @@ class Engine
 				actorsPerLayer.set(layer.ID, layer.actorContainer);
 				
 				//Eventually, this will become the correct value
-				topLayer = j;
+				topLayer = i;
 				defaultGroup = layer.actorContainer;
 				
 				numLayersProcessed++;
@@ -1514,11 +1527,9 @@ class Engine
 		}
 	}
 
-	private function loadColorBackground()
+	public function setColorBackground(bg:Background)
 	{
-		colorBackground = new Shape();
-		scene.colorBackground.draw(colorBackground.graphics, 0, 0, Std.int(screenWidth * Engine.SCALE), Std.int(screenHeight * Engine.SCALE));
-		master.addChild(colorBackground);
+		bg.draw(colorLayer.graphics, 0, 0, Std.int(screenWidth * Engine.SCALE), Std.int(screenHeight * Engine.SCALE));
 	}
 
 	//*-----------------------------------------------
@@ -3234,7 +3245,7 @@ class Engine
 		removeActorFromLayer(a, a.layerID);
 		
 		var order:Int = layers.get(a.layerID).order;
-		while(layersToDraw.exists(++order))
+		while(layersToDraw.exists(--order))
 		{
 			if(Std.is(layersToDraw.get(order), Layer))
 			{
@@ -3257,7 +3268,7 @@ class Engine
 		removeActorFromLayer(a, a.layerID);
 		
 		var order:Int = layers.get(a.layerID).order;
-		while(layersToDraw.exists(--order))
+		while(layersToDraw.exists(++order))
 		{
 			if(Std.is(layersToDraw.get(order), Layer))
 			{
@@ -3276,6 +3287,102 @@ class Engine
 			return cast(layer, Layer).actorContainer.numChildren;
 		else
 			return 0;
+	}
+
+	public function getNumberOfLayers():Int
+	{
+		return master.numChildren;
+	}
+
+	public function getOrderOfLayer(refType:Int, ref:String):Int
+	{
+		return getLayer(refType, ref).order;
+	}
+
+	public function moveLayerToOrder(refType:Int, ref:String, order:Int)
+	{
+		var layer = getLayer(refType, ref);
+
+		if(order < 0)
+			order = 0;
+		if(order > master.numChildren - 1)
+			order = master.numChildren - 1;
+
+		if(layer.order == order)
+			return;
+
+		master.setChildIndex(layer, order);
+
+		refreshLayers();
+	}
+
+	public function getNextLayerID():Int
+	{
+		var highestID:Int = -1;
+		for(l in layers)
+		{
+			highestID = Std.int(Math.max(highestID, l.ID));
+		}
+		return highestID + 1;
+	}
+
+	public function insertLayer(layer:RegularLayer, order:Int)
+	{
+		master.addChildAt(layer, order);
+
+		if(Std.is(layer, BackgroundLayer))
+			backgroundLayers.push(cast(layer, BackgroundLayer));
+		else if(Std.is(layer, Layer))
+			interactiveLayers.push(cast(layer, Layer));
+		layers.set(layer.ID, layer);
+		layersByName.set(layer.layerName, layer);
+
+		refreshLayers();
+	}
+
+	public function removeLayer(layer:RegularLayer)
+	{
+		master.removeChild(layer);
+		
+		if(Std.is(layer, BackgroundLayer))
+			backgroundLayers.remove(cast(layer, BackgroundLayer));
+		else if(Std.is(layer, Layer))
+			interactiveLayers.remove(cast(layer, Layer));
+		layers.clr(layer.ID);
+		layersByName.remove(layer.layerName);
+
+		refreshLayers();
+	}
+
+	public function refreshLayers()
+	{
+		var foundBottom:Bool = false;
+		var foundMiddle:Bool = false;
+		var numLayersProcessed:Int = 0; //for finding middle
+		
+		for(i in 0...master.numChildren)
+		{
+			var l:RegularLayer = cast(master.getChildAt(i), RegularLayer);
+			layersToDraw.set(i, l);
+			
+			if(Std.is(l, Layer))
+			{
+				if(!foundBottom)
+				{
+					foundBottom = true;
+					bottomLayer = i;
+				}
+				
+				if(!foundMiddle && numLayersProcessed == Math.floor(interactiveLayers.length / 2))
+				{
+					foundMiddle = true;
+					middleLayer = i;
+				}
+
+				topLayer = i;
+				numLayersProcessed++;
+			}
+		}
 	}
 	
 	//*-----------------------------------------------

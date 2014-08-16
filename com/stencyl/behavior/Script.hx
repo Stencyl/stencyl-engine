@@ -2141,17 +2141,17 @@ class Script
 	*/
 	public function setColorBackground(c:Int, c2:Int = -2 /*ColorBackground.TRANSPARENT*/)
 	{
-		Engine.engine.colorBackground.graphics.clear();
+		engine.colorLayer.graphics.clear();
 
 		if(c != ColorBackground.TRANSPARENT)
 		{
 			if(c2 == ColorBackground.TRANSPARENT)
 			{
-				new ColorBackground(c).draw(Engine.engine.colorBackground.graphics, 0, 0, Std.int(getScreenWidth() * Engine.SCALE), Std.int(getScreenHeight() * Engine.SCALE));
+				engine.setColorBackground(new ColorBackground(c));
 			}
 			else
 			{
-				new GradientBackground(c, c2).draw(Engine.engine.colorBackground.graphics, 0, 0, Std.int(getScreenWidth() * Engine.SCALE), Std.int(getScreenHeight() * Engine.SCALE));
+				engine.setColorBackground(new GradientBackground(c, c2));
 			}
 		}
 	}
@@ -2167,13 +2167,7 @@ class Script
 		{
 			for(layer in Engine.engine.backgroundLayers)
 			{
-				if(Std.is(layer.getBitmap(), ScrollingBitmap))
-				{
-					var bg = cast(layer.getBitmap(), ScrollingBitmap);
-					
-					bg.xVelocity = xSpeed;
-					bg.yVelocity = ySpeed;
-				}
+				layer.setScrollSpeed(xSpeed, ySpeed);
 			}
 		}
 		else
@@ -2181,14 +2175,7 @@ class Script
 			var layer = Engine.engine.getLayer(refType, ref);
 			if(Std.is(layer, BackgroundLayer))
 			{
-				var bmp = cast(layer, BackgroundLayer).getBitmap();
-				if(Std.is(bmp, ScrollingBitmap))
-				{
-					var bg = cast(bmp, ScrollingBitmap);
-					
-					bg.xVelocity = xSpeed;
-					bg.yVelocity = ySpeed;
-				}
+				cast(layer, BackgroundLayer).setScrollSpeed(xSpeed, ySpeed);
 			}
 		}
 	}
@@ -2245,13 +2232,35 @@ class Script
 		if(newImg == null)
 			return;
 
-		var layer = Engine.engine.getLayer(layerRefType, layerRef);
+		var layer = engine.getLayer(layerRefType, layerRef);
 		if(Std.is(layer, BackgroundLayer))
 		{
 			cast(layer, BackgroundLayer).setImage(newImg);
 		}
 	}
+
+	public function addBackground(backgroundName:String, layerName:String, order:Int)
+	{
+		var bg = Data.get().resourceMap.get(backgroundName);
+		var layer = new BackgroundLayer(engine.getNextLayerID(), layerName, order, 0, 0, 1, BlendMode.NORMAL, bg.ID, false);
+		layer.load();
+		engine.insertLayer(layer, order);
+	}
+
+	public function addBackgroundFromImage(image:BitmapData, tiled:Bool, layerName:String, order:Int)
+	{
+		var layer = new BackgroundLayer(engine.getNextLayerID(), layerName, order, 0, 0, 1, BlendMode.NORMAL, -1, false);
+		layer.loadFromImg(image, tiled);
+		engine.insertLayer(layer, order);
+	}
 	
+	public function removeBackground(layerRefType:Int, layerRef:String)
+	{
+		var layer = engine.getLayer(layerRefType, layerRef);
+		if(Std.is(layer, BackgroundLayer))
+			engine.removeLayer(layer);
+	}
+
 	//*-----------------------------------------------
 	//* Image API
 	//*-----------------------------------------------
@@ -3030,6 +3039,16 @@ class Script
 		if(layer == null || !Std.is(layer, Layer))
 			return null;
 		return cast(layer, Layer).tiles;
+	}
+
+	public function getTilesetIDByName(tilesetName:String):Int
+	{
+		var r = Data.get().resourceMap.get(tilesetName);
+		if(Std.is(r, Tileset))
+		{
+			return r.ID;
+		}
+		return -1;
 	}
 
 	public function setTileAt(row:Dynamic, col:Dynamic, refType:Int, ref:String, tilesetID:Dynamic, tileID:Dynamic)
