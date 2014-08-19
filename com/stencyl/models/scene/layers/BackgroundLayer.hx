@@ -80,10 +80,10 @@ class BackgroundLayer extends RegularLayer
 		}
 		else
 		{
-			if(model.img.width > Engine.screenWidth && model.img.width < Engine.sceneWidth)
+			if(model.img.width >= Engine.screenWidth && model.img.width < Engine.sceneWidth)
 				parallaxX = 1 - ((Engine.sceneWidth - model.img.width) / (Engine.sceneWidth - Engine.screenWidth));
 			
-			if(model.img.height > Engine.screenHeight && model.img.height < Engine.sceneHeight)
+			if(model.img.height >= Engine.screenHeight && model.img.height < Engine.sceneHeight)
 				parallaxY = 1 - ((Engine.sceneHeight - model.img.height) / (Engine.sceneHeight - Engine.screenHeight));
 		}
 

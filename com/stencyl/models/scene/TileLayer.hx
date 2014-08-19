@@ -198,7 +198,6 @@ class TileLayer extends Sprite
 	{
 		if(noTiles)
 		{
-			trace("No tiles in this layer");
 			return;
 		}
 		
