@@ -153,7 +153,7 @@ class ImageBackground extends Resource implements Background
 		//Replace with a 1x1 px blank - graceful fallback
 		img = new BitmapData(1, 1);
 		currFrame = 0;
-		
+		repeated = false;
 		frames = [];
 		
 		for(d in durations)
