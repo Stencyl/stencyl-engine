@@ -104,7 +104,7 @@ class ScrollingBitmap extends Sprite
 		parallaxY = py;
 		
 		scrolling = (dx  != 0 || dy != 0);
-		parallax = (px != 1 || py != 1);
+		parallax = (px != 0 || py != 0);
 		
 		backgroundID = ID;
 	}
