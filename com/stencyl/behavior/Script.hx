@@ -2362,6 +2362,8 @@ class Script
 		{
 			return img.parent.getChildIndex(img);
 		}
+		
+		return -1;
 	}
 	
 	public function bringImageBack(img:BitmapWrapper)
