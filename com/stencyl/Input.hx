@@ -246,6 +246,9 @@ class Input
 			Engine.stage.addEventListener(JoystickEvent.HAT_MOVE, onJoyHatMove, false, 2);
 			Engine.stage.addEventListener(JoystickEvent.BUTTON_DOWN, onJoyButtonDown, false, 2);
 			Engine.stage.addEventListener(JoystickEvent.BUTTON_UP, onJoyButtonUp, false, 2);
+
+			//for(i in 0...16)
+			//	_joyControllerReady[i] = false;
 			#end
 		}
 	}
@@ -593,16 +596,23 @@ class Input
 	}
 
 	#if desktop
+	private static function initJoyController(e:JoystickEvent)
+	{
+		_joyControllerReady[e.device] = true;
+
+		var a:Array<Int> = [];
+		for(f in e.axis)
+			a.push(0);
+		_joyAxisState.set(e.device, a);
+		_joyHatState.set(e.device, [0, 0]);
+		_joyButtonState.set(e.device, []);
+	}
+
 	private static function onJoyAxisMove(e:JoystickEvent)
 	{
-		if(!_joyAxisState.exists(e.device))
-		{
-			var a:Array<Int> = [];
-			for(f in e.axis)
-				a.push(0);
-			_joyAxisState.set(e.device, a);
-		}
-		
+		if(!_joyControllerReady[e.device])
+			initJoyController(e);
+
 		var oldState:Array<Int> = _joyAxisState.get(e.device);
 		
 		var cur:Int;
@@ -644,9 +654,9 @@ class Input
 
 	private static function onJoyHatMove(e:JoystickEvent)
 	{
-		if(!_joyHatState.exists(e.device))
-			_joyHatState.set(e.device, [0, 0]);
-
+		if(!_joyControllerReady[e.device])
+			initJoyController(e);
+		
 		var oldX:Int = _joyHatState.get(e.device)[0];
 		var oldY:Int = _joyHatState.get(e.device)[1];
 
@@ -678,16 +688,18 @@ class Input
 
 	private static function onJoyButtonDown(e:JoystickEvent)
 	{
-		if(!_joyButtonState.exists(e.device))
-			_joyButtonState.set(e.device, []);
+		if(!_joyControllerReady[e.device])
+			initJoyController(e);
+
 		_joyButtonState.get(e.device)[e.id] = true;
 		joyPress(e.device + ", " + e.id);
 	}
 
 	private static function onJoyButtonUp(e:JoystickEvent)
 	{
-		if(!_joyButtonState.exists(e.device))
-			_joyButtonState.set(e.device, []);
+		if(!_joyControllerReady[e.device])
+			initJoyController(e);
+
 		_joyButtonState.get(e.device)[e.id] = false;
 		joyRelease(e.device + ", " + e.id);
 	}
@@ -751,8 +763,15 @@ class Input
 			var buttons = _controlButtonMap.get(control);
 
 			var highestPressure:Float = 0;
+			
+			if(check(control))
+				return 1;
+
 			for(b in buttons)
 			{
+				if(!_joyControllerReady[b.a[0]])
+					continue;
+
 				switch(b.a[JoystickButton.TYPE])
 				{
 					case JoystickButton.AXIS:
@@ -760,17 +779,17 @@ class Input
 							highestPressure = Math.max(highestPressure, Math.abs(_joyAxisPressure.get(b.a[0])[b.a[2]]));
 					case JoystickButton.HAT:
 						if(_joyHatState.get(b.a[0])[b.a[2]] == b.a[3])
-							highestPressure = 1;
+							return 1;
 					case JoystickButton.BUTTON:
 						if(_joyButtonState.get(b.a[0])[b.a[2]])
-							highestPressure = 1;
+							return 1;
 				}
 			}
 
 			return highestPressure;
 		}
 		else
-			return 0;
+			return check(control) ? 1 : 0;
 
 		#else
 
@@ -858,6 +877,7 @@ class Input
 	private static var _release:Array<Int> = new Array<Int>();
 	private static var _releaseNum:Int = 0;
 	
+	private static var _joyControllerReady:Map<Int, Bool> = new Map<Int,Bool>();
 	private static var _joyHatState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
 	private static var _joyAxisState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
 	private static var _joyAxisPressure:Map<Int,Array<Float>> = new Map<Int,Array<Float>>();
