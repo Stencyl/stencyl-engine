@@ -35,7 +35,7 @@ class TileLayer extends Sprite
 	public var bitmapData:BitmapData;
 	private var pixels:BitmapData;
 	private var flashPoint:Point;
-	public var noTiles:Bool;
+	private var noTiles:Bool;
 	
 	private static var cacheSource = new Map<Int,Rectangle>();
 	
@@ -49,7 +49,7 @@ class TileLayer extends Sprite
 		this.scene = scene;
 		this.numRows = numRows;
 		this.numCols = numCols;
-		this.noTiles = false;
+		this.noTiles = true;
 
 		rows = new Array<Array<Tile>>();
 		
@@ -169,7 +169,15 @@ class TileLayer extends Sprite
 			return;
 		}
 		
-		noTiles = false;
+		if(noTiles && tile != null)
+		{
+			noTiles = false;
+
+			#if !cpp
+			if(bitmapData == null)
+				reset();
+			#end
+		}
 
 		rows[row][col] = tile;			
 	}
@@ -190,6 +198,7 @@ class TileLayer extends Sprite
 	{
 		if(noTiles)
 		{
+			trace("No tiles in this layer");
 			return;
 		}
 		

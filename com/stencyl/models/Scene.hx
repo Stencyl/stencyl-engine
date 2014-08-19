@@ -789,7 +789,7 @@ class Scene
 			
 			for(runIndex in 0...runLength)
 			{
-				if(tset == null || tileID < 0 || tset == null)
+				if(tset == null || tileID < 0)
 				{
 					layer.setTileAt(row, col, null);
 				}
@@ -805,8 +805,6 @@ class Scene
 					
 					else
 					{
-						noTiles = false;
-						
 						layer.setTileAt(row, col, tile);
 
 						if(tile.collisionID > 0)
@@ -840,13 +838,6 @@ class Scene
 					row++;
 				}
 			}
-		}
-		
-		layer.noTiles = noTiles;
-
-		if(noTiles)
-		{
-			// trace("Layer " + layerID + " has no tiles.");
 		}
 		
 		return layer;
