@@ -66,8 +66,8 @@ class BackgroundLayer extends RegularLayer
 			model.drawRepeated(this, Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
 		}
 		
-		var parallaxX:Float = 1;
-		var parallaxY:Float = 1;
+		var parallaxX:Float = 0;
+		var parallaxY:Float = 0;
 		if(customScroll)
 		{
 			parallaxX = scrollFactorX;
@@ -80,10 +80,10 @@ class BackgroundLayer extends RegularLayer
 		}
 		else
 		{
-			if(model.img.width >= Engine.screenWidth && model.img.width < Engine.sceneWidth)
+			if(model.img.width > Engine.screenWidth && model.img.width < Engine.sceneWidth)
 				parallaxX = 1 - ((Engine.sceneWidth - model.img.width) / (Engine.sceneWidth - Engine.screenWidth));
 			
-			if(model.img.height >= Engine.screenHeight && model.img.height < Engine.sceneHeight)
+			if(model.img.height > Engine.screenHeight && model.img.height < Engine.sceneHeight)
 				parallaxY = 1 - ((Engine.sceneHeight - model.img.height) / (Engine.sceneHeight - Engine.screenHeight));
 		}
 
