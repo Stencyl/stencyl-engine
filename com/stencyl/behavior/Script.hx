@@ -2355,6 +2355,14 @@ class Script
 			}
 		}
 	}
+
+	public function getOrderForImage(img:BitmapWrapper)
+	{
+		if(img != null && img.parent != null)
+		{
+			return img.parent.getChildIndex(img);
+		}
+	}
 	
 	public function bringImageBack(img:BitmapWrapper)
 	{
