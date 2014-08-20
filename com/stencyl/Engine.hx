@@ -3969,8 +3969,10 @@ class Engine
 	//* Utils
 	//*-----------------------------------------------
 	
-	public function setScrollFactor(layerID:Int, amountX:Float, amountY:Float)
+	public function setScrollFactor(layerID:Int, amountX:Float, ?amountY:Float)
 	{
+		if(amountY == null)
+			amountY = amountX;
 		layers.get(layerID).scrollFactorX = amountX;
 		layers.get(layerID).scrollFactorY = amountY;
 	}
