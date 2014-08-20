@@ -1364,7 +1364,7 @@ class Engine
 	public function loadTerrain()
 	{
 		initLayers();
-		
+
 		for(wireframe in scene.wireframes)
 		{
 			var a:Actor = null;
@@ -1505,16 +1505,18 @@ class Engine
 					middleLayer = i;
 				}
 
-				if(NO_PHYSICS)
-					layer.tiles.mountGrid();
-				
 				master.addChild(layer);
 				actorsPerLayer.set(layer.ID, layer.actorContainer);
 				
 				//Eventually, this will become the correct value
 				topLayer = i;
 				defaultGroup = layer.actorContainer;
-				
+
+				if(NO_PHYSICS)
+				{
+					layer.tiles.mountGrid();
+				}
+
 				numLayersProcessed++;
 			}
 		}
@@ -3219,7 +3221,7 @@ class Engine
 	{
 		var layer = getLayer(refType, ref);
 		
-		if(Std.is(layer, BackgroundLayer))
+		if(!Std.is(layer, Layer))
 		{
 			return;
 		}
