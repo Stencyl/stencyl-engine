@@ -80,11 +80,18 @@ class BackgroundLayer extends RegularLayer
 		}
 		else
 		{
-			if(model.img.width > Engine.screenWidth && model.img.width < Engine.sceneWidth)
-				parallaxX = 1 - ((Engine.sceneWidth - model.img.width) / (Engine.sceneWidth - Engine.screenWidth));
+			var bgWidth:Int = model.img.width;
+			var bgHeight:Int = model.img.height;
+			var screenWidth:Int = Std.int(Engine.screenWidth * Engine.SCALE);
+			var screenHeight:Int = Std.int(Engine.screenHeight * Engine.SCALE);
+			var sceneWidth:Int = Std.int(Engine.sceneWidth * Engine.SCALE);
+			var sceneHeight:Int = Std.int(Engine.sceneHeight * Engine.SCALE);
 			
-			if(model.img.height > Engine.screenHeight && model.img.height < Engine.sceneHeight)
-				parallaxY = 1 - ((Engine.sceneHeight - model.img.height) / (Engine.sceneHeight - Engine.screenHeight));
+			if(bgWidth > screenWidth && bgWidth < sceneWidth)
+				parallaxX = 1 - ((sceneWidth - bgWidth) / (sceneWidth - screenWidth));
+			
+			if(bgHeight > screenHeight && bgHeight < sceneHeight)
+				parallaxY = 1 - ((sceneHeight - bgHeight) / (sceneHeight - screenHeight));
 		}
 
 		if(Std.is(model, ScrollingBackground))
