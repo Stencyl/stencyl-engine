@@ -41,28 +41,7 @@ class Hitbox extends Mask
 			&& parent.colY + _y + _height >= other.parent.colY
 			&& parent.colX + _x <= other.parent.colX + other.parent.cacheWidth
 			&& parent.colY + _y <= other.parent.colY + other.parent.cacheHeight)
-		{
-			if (Std.is(parent, Region) || Std.is(other.parent, Region) )
-			{
-				return true; 
-			}
-			
-			var info:CollisionInfo = new CollisionInfo();
-			
-			info.solidCollision = solid && other.solid;
-			info.maskA = this;
-			info.maskB = other;			
-			
-			if (parent.physicsMode == 1)
-			{
-				parent.addCollision(info);
-			}
-			
-			if (other.parent.physicsMode == 1)
-			{
-				other.parent.addCollision(info);
-			}
-			
+		{						
 			return true;	
 		}
 		
@@ -71,38 +50,12 @@ class Hitbox extends Mask
 
 	/** @private Collides against a Hitbox. */
 	private function collideHitbox(other:Hitbox):Bool
-	{
-		if (other.parent.alreadyCollided(this, other))
-		{
-			return false;
-		}
-		
+	{		
 		if (parent.colX + _x + _width >= other.parent.colX + other._x
 			&& parent.colY + _y + _height >= other.parent.colY + other._y
 			&& parent.colX + _x <= other.parent.colX + other._x + other._width
 			&& parent.colY + _y <= other.parent.colY + other._y + other._height)
-		{
-			if (Std.is(parent, Region) || Std.is(other.parent, Region) )
-			{
-				return true; 
-			}
-			
-			var info:CollisionInfo = new CollisionInfo();
-			
-			info.solidCollision = solid && other.solid;
-			info.maskA = this;
-			info.maskB = other;			
-			
-			if (parent.physicsMode == 1)
-			{
-				parent.addCollision(info);
-			}
-			
-			if (other.parent.physicsMode == 1)
-			{
-				other.parent.addCollision(info);
-			}
-						
+		{									
 			return true;
 		}
 		

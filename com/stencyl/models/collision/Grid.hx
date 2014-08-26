@@ -6,6 +6,8 @@ import nme.display.Graphics;
 import nme.geom.Point;
 import nme.geom.Rectangle;
 
+import com.stencyl.models.actor.Collision;
+
 import com.stencyl.utils.Utils;
 
 /**
@@ -18,6 +20,7 @@ class Grid extends Hitbox
 	 * If x/y positions should be used instead of columns/rows.
 	 */
 	public var usePositions:Bool;
+	public var lastBounds:Rectangle;
 
 
 	/**
@@ -38,6 +41,8 @@ class Grid extends Hitbox
 		{
 			throw "Illegal Grid, sizes cannot be 0.";
 		}
+		
+		lastBounds = new Rectangle();
 
 		_rect = Utils.rect;
 		_point = Utils.point;
@@ -232,14 +237,12 @@ class Grid extends Hitbox
 			for (dx in rectX...pointX)
 			{
 				if (getTile(dx, dy))
-				{
-					var info:CollisionInfo = new CollisionInfo();
+				{					
+					lastBounds.x = dx * _tile.width;
+					lastBounds.y = dy * _tile.height;
+					lastBounds.width = _tile.width;
+					lastBounds.height = _tile.height;
 			
-					info.solidCollision = other.solid;
-					info.maskA = other;
-					info.maskB = this;			
-			
-					other.parent.addCollision(info);
 					return true;
 				}
 			}

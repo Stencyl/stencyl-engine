@@ -1,9 +1,12 @@
 package com.stencyl.models.actor;
 
 import com.stencyl.models.Actor;
+import com.stencyl.models.collision.Mask;
 
 import box2D.common.math.B2Vec2;
 import box2D.dynamics.B2Fixture;
+
+import nme.geom.Rectangle;
 
 
 class Collision 
@@ -41,9 +44,24 @@ class Collision
 	public var actorA:Actor;
 	public var actorB:Actor;
 	
+	//Simple Physics
+	public var maskA:Mask;
+	public var maskB:Mask;
+	
+	public var bounds:Rectangle;
+	public var useBounds:Bool;
+	public var remove:Bool;
+	
+	public var solidCollision:Bool;
+	public var linkedCollision:Collision;
+	
+	
+	
+	
 	public function new()
 	{
 		points = new Array<CollisionPoint>();
+		bounds = new Rectangle();
 		
 		clear();
 	}
@@ -52,11 +70,16 @@ class Collision
 	{
 		if (recycledCollisions.length > 0)
 		{
-			recycledCollisions[recycledCollisions.length - 1].clear();
 			return recycledCollisions.pop();
 		}
 		
 		return new Collision();
+	}
+	
+	public static function recycle(c:Collision)
+	{
+		c.clear();
+		recycledCollisions.push(c);
 	}
 	
 	public function clear()
@@ -85,6 +108,10 @@ class Collision
 		otherCollidedWithTile = false;
 		otherCollidedWithSensor = false;
 		otherCollidedWithTerrain = false;
+		
+		useBounds = false; 
+		solidCollision = false;
+		remove = false;
 	
 		thisActor = null;
 		otherActor = null;
@@ -94,11 +121,17 @@ class Collision
 		
 		actorA = null;
 		actorB = null;
+		
+		maskA = maskB = null;
+		linkedCollision = null;
+		
+		bounds.setEmpty();
+		
 	}
 	
-	public function switchData():Collision
-	{
-		var c:Collision = get();
+	public function switchData(c:Collision):Collision
+	{		
+		if (c == null) return null;
 		
 		c.thisActor = otherActor;
 		c.thisShape = otherShape;
@@ -125,6 +158,14 @@ class Collision
 		c.actorA = actorA;
 		c.actorB = actorB;
 		c.points = points;
+		
+		c.useBounds = useBounds;
+		c.maskA = maskA;
+		c.maskB = maskB;		
+		c.solidCollision = solidCollision;
+		
+		c.linkedCollision = this;
+		this.linkedCollision = c;		
 		
 		return c;
 	}	

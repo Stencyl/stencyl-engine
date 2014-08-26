@@ -309,7 +309,7 @@ class Region extends Actor
 	
 	override public function innerUpdate(elapsedTime:Float, hudCheck:Bool)
 	{		
-		clearCollisionList();
+		clearCollisionInfoList();
 		
 		if(Engine.NO_PHYSICS)
 		{

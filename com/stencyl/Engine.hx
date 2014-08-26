@@ -2810,7 +2810,7 @@ class Engine
 			if(type1 != type2 && collisionListeners.exists(type2) && collisionListeners.get(type2).exists(type1))
 			{
 				var listeners = collisionListeners.get(type2).get(type1);
-				var reverseEvent = event.switchData();
+				var reverseEvent = event.switchData(Collision.get());
 				
 				invokeListeners2(listeners, reverseEvent);
 				
@@ -2837,7 +2837,7 @@ class Engine
 			if(group1 != group2 && collisionListeners.exists(group2) && collisionListeners.get(group2).exists(group1))
 			{
 				var listeners = collisionListeners.get(group2).get(group1);
-				var reverseEvent = event.switchData();
+				var reverseEvent = event.switchData(Collision.get());
 				
 				invokeListeners2(listeners, reverseEvent);
 				

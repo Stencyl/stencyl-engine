@@ -18,6 +18,8 @@ class Masklist extends Hitbox
 		_masks = new Array<Mask>();
 		_temp = new Array<Mask>();
 		
+		solid = false;
+		
 		var m:Mask;
 		for (m in masks) add(m);
 	}
@@ -57,7 +59,8 @@ class Masklist extends Hitbox
 	{
 		_masks[_count ++] = mask;
 		mask.list = this;
-		mask.parent = parent;
+		mask.parent = parent;		
+		solid = solid || mask.solid;
 		update();
 		return mask;
 	}

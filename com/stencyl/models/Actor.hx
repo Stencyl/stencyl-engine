@@ -78,6 +78,7 @@ import box2D.collision.B2WorldManifold;
 
 import com.stencyl.models.collision.Mask;
 import com.stencyl.models.collision.Hitbox;
+import com.stencyl.models.collision.Grid;
 
 import nme.filters.BitmapFilter;
 
@@ -454,8 +455,10 @@ class Actor extends Sprite
 		
 		groupsToCollideWith = GameModel.get().groupsCollidesWith.get(groupID);
 		
+		collidedList = new Array<Actor>();
+		
 		collisions = new IntHashTable<Collision>(16);
-		simpleCollisions = new IntHashTable<CollisionInfo>(16);
+		simpleCollisions = new IntHashTable<Collision>(16);
 		contacts = new IntHashTable<B2Contact>(16);
 		regionContacts = new IntHashTable<B2Contact>(16);
 		
@@ -1233,7 +1236,7 @@ class Actor extends Sprite
 				}
 				
 				collisions = new IntHashTable<Collision>(16);
-				simpleCollisions = new IntHashTable<CollisionInfo>(16);
+				simpleCollisions = new IntHashTable<Collision>(16);
 				contacts = new IntHashTable<B2Contact>(16);
 				regionContacts = new IntHashTable<B2Contact>(16);
 				
@@ -1481,8 +1484,18 @@ class Actor extends Sprite
 				handleCollisions();		
 			}
 		}
-
-		internalUpdate(elapsedTime, true);
+		
+		internalUpdate(elapsedTime, true);		
+		
+		if (physicsMode == 1)
+		{
+			if(collisionListenerCount > 0 || 
+			   ec.get(checkType) != null || 
+			   ec.get(groupType) != null) 
+			{
+				handleCollisionsSimple();
+			}
+		}
 		
 		if(physicsMode < 2)
 		{
@@ -2431,12 +2444,12 @@ class Actor extends Sprite
 	{
 		if(isHUD)
 		{
-			return getX();
+			return getX(true);
 		}
 		
 		else
 		{
-			return getX() + Engine.cameraX / Engine.SCALE;
+			return getX(true) + Engine.cameraX / Engine.SCALE;
 		}
 	}
 	
@@ -2444,12 +2457,12 @@ class Actor extends Sprite
 	{
 		if(isHUD)
 		{
-			return getY();
+			return getY(true);
 		}
 			
 		else
 		{
-			return getY() + Engine.cameraY / Engine.SCALE;
+			return getY(true) + Engine.cameraY / Engine.SCALE;
 		}
 	}
 	
@@ -4023,19 +4036,19 @@ class Actor extends Sprite
 		var bottom = Engine.paddingBottom;
 	
 		return (physicsMode > 0 || body.isActive()) && 
-			   getX() >= -cameraX - left && 
-			   getY() >= -cameraY - top &&
-			   getX() < -cameraX + Engine.screenWidth + right &&
-			   getY() < -cameraY + Engine.screenHeight + bottom;
+			   getX(true) >= -cameraX - left && 
+			   getY(true) >= -cameraY - top &&
+			   getX(true) < -cameraX + Engine.screenWidth + right &&
+			   getY(true) < -cameraY + Engine.screenHeight + bottom;
 	}
 	
 	public function isInScene():Bool
 	{
 		return (physicsMode > 0 || body.isActive()) && 
-			   getX() >= 0 && 
-			   getY() >= 0 &&
-			   getX() < Engine.sceneWidth &&
-			   getY() < Engine.sceneHeight;
+			   getX(true) >= 0 && 
+			   getY(true) >= 0 &&
+			   getX(true) < Engine.sceneWidth &&
+			   getY(true) < Engine.sceneHeight;
 	}
 	
 	public function getLastCollidedActor():Actor
@@ -4210,7 +4223,8 @@ class Actor extends Sprite
 				&& e.collidable && e != this)
 				{
 					if (e._mask == null || e._mask.collide(HITBOX))
-					{						
+					{			
+						colMask = e._mask;
 						resetReal(_x, _y);						
 						
 						return e;
@@ -4238,7 +4252,8 @@ class Actor extends Sprite
 			&& e.collidable && e != this)
 			{				
 				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX))
-				{					
+				{			
+					colMask = (e._mask != null ? e._mask : e.HITBOX);
 					resetReal(_x, _y);										
 					
 					return e;
@@ -4258,12 +4273,21 @@ class Actor extends Sprite
 	 */
 	public function collideTypes(types:Dynamic, x:Float, y:Float):Actor
 	{
+		var cc:Int = collidedList.length;
+		
 		if (Std.is(types, String))
 		{
-			return collide(types, x, y);
+			collideInto(types, x, y, collidedList);
+			
+			if (collidedList.length > cc)
+			{
+				return collidedList[collidedList.length - 1];
+			}
 		}
 		else
 		{
+			
+			
 			var a:Array<Int> = cast types;
 			if (a != null)
 			{
@@ -4273,8 +4297,12 @@ class Actor extends Sprite
 				{
 					if (type == GameModel.REGION_ID) continue;
 					
-					e = collide(type, x, y);
-					if (e != null) return e;
+					collideInto(type, x, y, collidedList);
+				}
+				
+				if (collidedList.length > cc)
+				{					
+					return collidedList[collidedList.length - 1];
 				}
 			}
 		}
@@ -4354,7 +4382,13 @@ class Actor extends Sprite
 				&& colY <= e.colY + e.cacheHeight
 				&& e.collidable && e != this)
 				{
-					if (e._mask == null || e._mask.collide(HITBOX)) array[n++] = e;
+					if (e._mask == null || e._mask.collide(HITBOX)) 
+					{
+						if (!Utils.contains(array, e))
+						{
+							array[n++] = e;
+						}
+					}
 				}
 			}
 			resetReal(_x, _y);
@@ -4371,66 +4405,123 @@ class Actor extends Sprite
 			&& colY <= e.colY + e.cacheHeight
 			&& e.collidable && e != this)			
 			{
-				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX)) array[n++] = e;
+				if (_mask.collide(e._mask != null ? e._mask : e.HITBOX)) 
+				{
+					if (!Utils.contains(array, e))
+					{
+						array[n++] = e;
+					}
+				}
 			};
 		}
 		resetReal(_x, _y);
 		return;
 	}
-
-	/**
-	 * Populates an array with all collided Entities of multiple types.
-	 * @param	types		An array of Entity types to check for.
-	 * @param	x			Virtual x position to place this Entity.
-	 * @param	y			Virtual y position to place this Entity.
-	 * @param	array		The Array or Vector object to populate.
-	 * @return	The array, populated with all collided Entities.
-	 */
-	public function collideTypesInto(types:Array<Int>, x:Float, y:Float, array:Array<Actor>)
-	{
-		var type:String;
-		for (type in types) collideInto(type, x, y, array);
-	}
 	
-	public function clearCollisionList()
+	public function clearCollisionInfoList()
 	{
 		if (collisionsCount > 0)
 		{
-			for(k in simpleCollisions.keys()) 
+			for(info in simpleCollisions) 
 			{
-				simpleCollisions.clr(k);
+				info.remove = true;		
+				
+				if (info.linkedCollision != null)
+				{
+					info.linkedCollision.remove = true;
+				}
 			}
-		}
-		
-		collisionsCount = 0;
+		}	
 	}
 	
-	public function addCollision(info:CollisionInfo)
+	private function clearCollidedList()
 	{
-		if (!allowAdd) return;
-		
-		simpleCollisions.set(collisionsCount, info);
-		collisionsCount++;
-	}
-	
-	public function alreadyCollided(maskA:Mask, maskB:Mask):Bool
-	{
-		for (info in simpleCollisions)
+		while (collidedList.length > 0)
 		{
-			if (info.maskA == maskA && info.maskB == maskB)
+			collidedList.pop();
+		}
+		
+		listChecked = 0;
+	}
+	
+	public function addCollision(info:Collision):Collision
+	{
+		var check:Int;
+		
+		if ((check = alreadyCollided(info.maskA, info.maskB)) != -1) {			
+			var oldInfo:Collision = simpleCollisions.get(check);
+			
+			info.switchData(oldInfo.linkedCollision);
+			info.linkedCollision.remove = false;
+			info.remove = false;
+			
+			Collision.recycle(oldInfo);
+			
+			simpleCollisions.clr(check);
+			simpleCollisions.set(check, info);
+			
+			return info;
+		}
+		
+		simpleCollisions.clr(collisionsCount);
+		simpleCollisions.set(collisionsCount, info);
+		collisionsCount++;		
+		
+		return info;
+	}
+	
+	public function alreadyCollided(maskA:Mask, maskB:Mask):Int
+	{
+		for (key in simpleCollisions.keys())
+		{
+			var info:Collision = simpleCollisions.get(key);
+			
+			if (info != null && ((info.maskA == maskA && info.maskB == maskB) || (info.maskA == maskB && info.maskB == maskA)))			
 			{
-				return true;
+				return key;
 			}
 		}
 		
-		return false;
+		return -1;
 	}
 	
 	public function resetReal(x:Float, y:Float)
 	{
 		realX = x; realY = y;
 		colX = realX - Math.floor(cacheWidth/2) - currOffset.x;
-		colY = realY - Math.floor(cacheHeight/2) - currOffset.y;
+		colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
+	}
+	
+	private function getAllCollisionInfo(xDir:Float, yDir:Float):Collision
+	{		
+		var solidCollision:Collision = null;
+		
+		while (listChecked < collidedList.length)
+		{
+			var lastCollisionInfo:Collision = Collision.get();
+			
+			colMask = collidedList[listChecked]._mask;			
+			
+			fillCollisionInfo(lastCollisionInfo, collidedList[listChecked], xDir, yDir);
+			addCollision(lastCollisionInfo);
+							
+			if (lastCollisionInfo.linkedCollision == null)
+			{
+				var linked:Collision = Collision.get();
+								
+				lastCollisionInfo.switchData(linked);
+				collidedList[listChecked].addCollision(linked);
+			}
+			
+			if (lastCollisionInfo.solidCollision)
+			{
+				solidCollision = lastCollisionInfo;
+			}
+			
+			listChecked++;
+		}	
+		
+		return solidCollision;			
 	}
 
 	public function moveActorBy(x:Float, y:Float, solidType:Dynamic = null, sweep:Bool = false)
@@ -4438,41 +4529,56 @@ class Actor extends Sprite
 		if (x == 0 && y == 0)
 		{
 			return;
-		}
+		}		
 		
-		clearCollisionList();		
-				
+		clearCollisionInfoList();		
+		clearCollidedList();
+		
 		if (solidType != null)
 		{
-			var sign:Float, signIncr:Float, e:Actor, checkMove:Bool;
+			var sign:Float, signIncr:Float, next:Float, e:Actor;			
 			
 			if (x != 0)
 			{
-				allowAdd = false;
+				next = x > 0 ? Math.ceil(realX + x) : Math.floor(realX + x);
 				
-				if (collidable && (sweep || collideTypes(solidType, realX + x, realY) != null))
+				if (collidable && (sweep || collideTypes(solidType, next, realY) != null))
 				{
-					allowAdd = true;
+					clearCollidedList();
 					
 					while (x != 0)
 					{
-						signIncr = (x >= 1 || x <= -1) ? 1 : x;
-						sign = x > 0 ? signIncr : -signIncr;
-						checkMove = Std.int(realX) != Std.int(realX + sign);						
+						signIncr = (x >= 1 || x <= -1) ? 1 : Math.abs(x);
+						sign = x > 0 ? signIncr : -signIncr;						
+						next = sign > 0 ? Math.ceil(realX + sign) : Math.floor(realX + sign);
 						
 						//Check regions first
-						if (checkMove && (e = collide(GameModel.REGION_ID, realX + sign, realY)) != null)
+						if ((e = collide(GameModel.REGION_ID, next, realY)) != null)
 						{
 							cast(e, Region).addActor(this);
 						}
 						
-						if (checkMove && (e = collideTypes(solidType, realX + sign, realY)) != null)
+						if ((e = collideTypes(solidType, next, realY)) != null)
 						{							
-							moveCollideX(e, sign);
+							var solidCollision:Collision = getAllCollisionInfo(sign, 0);
 							
-							if (simpleCollisions.get(collisionsCount -1) != null && simpleCollisions.get(collisionsCount -1).solidCollision)
+							if (solidCollision != null)
 							{
 								xSpeed = 0;
+								
+								if (solidCollision.useBounds)
+								{
+									if (sign > 0)
+									{
+										realX = solidCollision.bounds.x - (cacheWidth/2);
+									}
+									
+									else
+									{
+										realX = solidCollision.bounds.x + solidCollision.bounds.width + (cacheWidth/2);
+									}
+								}
+								
 								break;
 							}							
 						}
@@ -4485,31 +4591,47 @@ class Actor extends Sprite
 			}						
 			if (y != 0)
 			{
-				allowAdd = false;
+				next = y > 0 ? Math.ceil(realY + y) : Math.floor(realY + y);
 				
-				if (collidable && (sweep || collideTypes(solidType, realX, realY + y) != null))
-				{
-					allowAdd = true;
-					
+				clearCollidedList();
+				
+				if (collidable && (sweep || collideTypes(solidType, realX, next) != null))
+				{		
+					//trace("Figure it out " + y);
+					clearCollidedList();
 					while (y != 0)
 					{
-						signIncr = (y >= 1 || y <= -1) ? 1 : y;
+						signIncr = (y >= 1 || y <= -1) ? 1 : Math.abs(y);
 						sign = y > 0 ? signIncr : -signIncr;
-						checkMove = Std.int(realY) != Std.int(realY + sign);
+						next = sign > 0 ? Math.ceil(realY + sign) : Math.floor(realY + sign);
 						
 						//Check regions first
-						if (checkMove && (e = collide(GameModel.REGION_ID, realX, realY + sign)) != null)
+						if ((e = collide(GameModel.REGION_ID, realX, next)) != null)
 						{
 							cast(e, Region).addActor(this);
 						}
 						
-						if (checkMove && (e = collideTypes(solidType, realX, realY + sign)) != null)
-						{						
-							moveCollideY(e, sign);
+						if ((e = collideTypes(solidType, realX, next)) != null)
+						{		
+							var solidCollision:Collision = getAllCollisionInfo(0, sign);
 							
-							if (simpleCollisions.get(collisionsCount -1) != null && simpleCollisions.get(collisionsCount -1).solidCollision)
+							if (solidCollision != null)
 							{
 								ySpeed = 0;
+								
+								if (solidCollision.useBounds)
+								{
+									if (sign > 0)
+									{
+										realY = solidCollision.bounds.y - (cacheHeight/2);
+									}
+									
+									else
+									{
+										realY = solidCollision.bounds.y + solidCollision.bounds.height + (cacheHeight/2);
+									}
+								}
+								
 								break;
 							}
 						}
@@ -4529,7 +4651,7 @@ class Actor extends Sprite
 		}
 		
 		resetReal(realX, realY);
-	}
+	}	
 	
 	/**
 	 * Moves the Entity to the position, retaining integer values for its x and y.
@@ -4563,21 +4685,19 @@ class Actor extends Sprite
 	 * When you collide with an Entity on the x-axis with moveTo() or moveBy().
 	 * @param	e		The Entity you collided with.
 	 */
-	public function moveCollideX(a:Actor, sign:Float)
-	{
-		handleCollisionsSimple(a, true, false, sign);
+	public function moveCollideX(info:Collision, sign:Float)
+	{		
 	}
 
 	/**
 	 * When you collide with an Entity on the y-axis with moveTo() or moveBy().
 	 * @param	e		The Entity you collided with.
 	 */
-	public function moveCollideY(a:Actor, sign:Float)
+	public function moveCollideY(info:Collision, sign:Float)
 	{
-		handleCollisionsSimple(a, false, true, sign);
 	}
 	
-	private function handleCollisionsSimple(a:Actor, fromX:Bool, fromY:Bool, sign:Float)
+	private function fillCollisionInfo(info:Collision, a:Actor, xDir:Float, yDir:Float)
 	{
 		if(Std.is(a, Region))
 		{
@@ -4585,105 +4705,123 @@ class Actor extends Sprite
 			region.addActor(this);
 			return;
 		}
-		
-		var info:CollisionInfo = simpleCollisions.get(collisionsCount -1);
 	
-		Utils.collision.thisActor = Utils.collision.actorA = this;
-		Utils.collision.otherActor = Utils.collision.actorB = a;
+		info.thisActor = info.actorA = this;
+		info.otherActor = info.actorB = a;
 		
-		if (a.physicsMode == 1)
+		info.maskA = _mask;
+		info.maskB = colMask;
+		info.solidCollision = _mask.solid && colMask.solid;
+		
+		if (colMask != null && Std.is(colMask, Grid))
 		{
-			a.clearCollisionList();
+			var grid:Grid = cast(colMask, Grid);
+			
+			info.useBounds = true;
+			info.bounds.x = grid.lastBounds.x;
+			info.bounds.y = grid.lastBounds.y;
+			info.bounds.width = grid.lastBounds.width;
+			info.bounds.height = grid.lastBounds.height;
 		}
-		
-		if(fromX)
+					
+		if(xDir != 0)
 		{
 			//If tile, have to use travel direction
 			if (a.ID == Utils.INTEGER_MAX)
 			{
-				Utils.collision.thisFromLeft = sign < 0;
-				Utils.collision.thisFromRight = sign > 0;
+				info.thisFromLeft = xDir < 0;
+				info.thisFromRight = xDir > 0;
 			}
 			else
 			{			
-				Utils.collision.thisFromLeft = a.colX < colX;
-				Utils.collision.thisFromRight = a.colX > colX;
+				info.thisFromLeft = a.colX < colX;
+				info.thisFromRight = a.colX > colX;
 			}
 			
-			Utils.collision.otherFromLeft = !Utils.collision.thisFromLeft;
-			Utils.collision.otherFromRight = !Utils.collision.thisFromRight;
+			info.otherFromLeft = !info.thisFromLeft;
+			info.otherFromRight = !info.thisFromRight;
 		
-			Utils.collision.thisFromTop = Utils.collision.otherFromTop = false;
-			Utils.collision.thisFromBottom = Utils.collision.otherFromBottom = false;
+			info.thisFromTop = info.otherFromTop = false;
+			info.thisFromBottom = info.otherFromBottom = false;
 		}
 		
-		if(fromY)
+		if(yDir != 0)
 		{
 			//If tile, have to use travel direction
 			if (a.ID == Utils.INTEGER_MAX)
 			{
-				Utils.collision.thisFromTop = sign < 0;
-				Utils.collision.thisFromBottom = sign > 0;
+				info.thisFromTop = yDir < 0;
+				info.thisFromBottom = yDir > 0;
 			}
 			else
 			{			
-				Utils.collision.thisFromTop = a.colY < colY;
-				Utils.collision.thisFromBottom = a.colY > colY;
+				info.thisFromTop = a.colY < colY;
+				info.thisFromBottom = a.colY > colY;
 			}
 		
-			Utils.collision.otherFromTop = !Utils.collision.thisFromTop;
-			Utils.collision.otherFromBottom = !Utils.collision.thisFromBottom;
+			info.otherFromTop = !info.thisFromTop;
+			info.otherFromBottom = !info.thisFromBottom;
 		
-			Utils.collision.thisFromLeft = Utils.collision.otherFromLeft = false;
-			Utils.collision.thisFromRight = Utils.collision.otherFromRight = false;
+			info.thisFromLeft = info.otherFromLeft = false;
+			info.thisFromRight = info.otherFromRight = false;
 		}
 		
 		//TODO
-		Utils.collision.thisCollidedWithActor = true;
-		Utils.collision.thisCollidedWithTile = a.ID == Utils.INTEGER_MAX;
+		info.thisCollidedWithActor = true;
+		info.thisCollidedWithTile = a.ID == Utils.INTEGER_MAX;
 		
 		if(info != null)
 		{
-			Utils.collision.thisCollidedWithSensor = !info.maskB.solid;
+			info.thisCollidedWithSensor = !info.maskB.solid;
 		}
 		
 		else
 		{
-			Utils.collision.thisCollidedWithSensor = false;
+			info.thisCollidedWithSensor = false;
 		}
 		
-		Utils.collision.thisCollidedWithTerrain = false;
+		info.thisCollidedWithTerrain = false;
 		
-		Utils.collision.otherCollidedWithActor = true;
-		Utils.collision.otherCollidedWithTile = a.ID == Utils.INTEGER_MAX;
+		info.otherCollidedWithActor = true;
+		info.otherCollidedWithTile = a.ID == Utils.INTEGER_MAX;
 		
 		if(info != null)
 		{
-			Utils.collision.otherCollidedWithSensor = !info.maskA.solid;
+			info.otherCollidedWithSensor = !info.maskA.solid;
 		}
 		
 		else
 		{
-			Utils.collision.otherCollidedWithSensor = false;
+			info.otherCollidedWithSensor = false;
 		}
 		
-		Utils.collision.otherCollidedWithTerrain = false;
-
-		lastCollided = a;
-		Engine.invokeListeners2(collisionListeners, Utils.collision);
-		engine.handleCollision(this, Utils.collision);
-		
-		lastCollided = this;
-		Engine.invokeListeners2(a.collisionListeners, Utils.collision.switchData());
+		info.otherCollidedWithTerrain = false;
+	}
+	
+	public function handleCollisionsSimple()
+	{
+		if (collisionsCount > 0)
+		{
+			for (info in simpleCollisions)
+			{
+				if (info == null || info.remove == true) continue;
+				
+				lastCollided = info.otherActor;
+				Engine.invokeListeners2(collisionListeners, info);
+				engine.handleCollision(this, info);								
+			}
+		}
 	}
 	
 	private var HITBOX:Mask;
 	private var _mask:Mask;
+	private var colMask:Mask;
 	private var _x:Float;
 	private var _y:Float;
 	private var _moveX:Float;
 	private var _moveY:Float;
 	private var _point:Point;
-	private var simpleCollisions:IntHashTable<CollisionInfo>;
-	private var allowAdd:Bool;
+	private var simpleCollisions:IntHashTable<Collision>;
+	private var collidedList:Array<Actor>;
+	private var listChecked:Int;
 }

@@ -63,23 +63,7 @@ class Mask
 			&& parent.colY + parent.cacheHeight >= other.parent.colY
 			&& parent.colX <= other.parent.colX + other.parent.cacheWidth
 			&& parent.colY <= other.parent.colY + other.parent.cacheHeight)
-		{
-			var info:CollisionInfo = new CollisionInfo();
-			
-			info.solidCollision = solid && other.solid;
-			info.maskA = this;
-			info.maskB = other;			
-			
-			if (parent.physicsMode == 1)
-			{
-				parent.addCollision(info);
-			}
-			
-			if (other.parent.physicsMode == 1)
-			{
-				other.parent.addCollision(info);
-			}
-			
+		{			
 			return true;				
 		}
 		
