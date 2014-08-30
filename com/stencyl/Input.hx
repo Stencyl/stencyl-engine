@@ -484,6 +484,11 @@ class Input
 	{
 		var code:Int = lastKey = e.keyCode;
 		
+		if (code > 7000)
+		{
+			return;
+		}
+		
 		if(code == Key.BACKSPACE) 
 		{
 			keyString = keyString.substr(0, keyString.length - 1);
@@ -513,6 +518,11 @@ class Input
 	public static function onKeyUp(e:KeyboardEvent = null)
 	{
 		var code:Int = e.keyCode;
+		
+		if (code > 7000)
+		{
+			return;
+		}
 		
 		if(_key[code])
 		{
