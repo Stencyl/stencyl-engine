@@ -3,6 +3,8 @@ package com.stencyl.models.collision;
 import com.stencyl.models.Actor;
 import com.stencyl.utils.Utils;
 
+import nme.geom.Rectangle;
+
 /**
  * A Mask that can contain multiple Masks of one or various types.
  */
@@ -30,7 +32,15 @@ class Masklist extends Hitbox
 		var m:Mask;
 		for (m in _masks)
 		{
-			if (m.collide(mask)) return true;
+			if (m.collide(mask)) 
+			{
+				lastBounds.x = m.lastBounds.x;
+				lastBounds.y = m.lastBounds.y;
+				lastBounds.width = m.lastBounds.width;
+				lastBounds.height = m.lastBounds.height;				
+				
+				return true;
+			}
 		}
 		return false;
 	}
@@ -44,7 +54,16 @@ class Masklist extends Hitbox
 		{
 			for (b in other._masks)
 			{
-				if (a.collide(b)) return true;
+				if (a.collide(b)) 
+				{
+					//Readjust since dealing with two masks?
+					other.lastBounds.x = b.lastBounds.x;
+					other.lastBounds.y = b.lastBounds.y;
+					other.lastBounds.width = b.lastBounds.width;
+					other.lastBounds.height = b.lastBounds.height;
+					
+					return true;
+				}
 			}
 		}
 		return true;

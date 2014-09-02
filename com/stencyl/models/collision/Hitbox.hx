@@ -4,6 +4,7 @@ import com.stencyl.models.Actor;
 import com.stencyl.models.Region;
 
 import nme.geom.Point;
+import nme.geom.Rectangle;
 
 
 /** Uses parent's hitbox to determine collision.
@@ -21,8 +22,8 @@ class Hitbox extends Mask
 	public function new(width:Int = 1, height:Int = 1, x:Int = 0, y:Int = 0, solid:Bool=true)
 	{
 		super();
-		_width = width;
-		_height = height;
+		lastBounds.width = _width = width;
+		lastBounds.height = _height = height;
 		_x = x;
 		_y = y;
 		this.solid = solid;
@@ -37,11 +38,14 @@ class Hitbox extends Mask
 	/** @private Collides against an Entity. */
 	override private function collideMask(other:Mask):Bool
 	{
-		if (parent.colX + _x + _width >= other.parent.colX
-			&& parent.colY + _y + _height >= other.parent.colY
-			&& parent.colX + _x <= other.parent.colX + other.parent.cacheWidth
-			&& parent.colY + _y <= other.parent.colY + other.parent.cacheHeight)
-		{						
+		if (parent.colX + _x + _width > other.parent.colX
+			&& parent.colY + _y + _height > other.parent.colY
+			&& parent.colX + _x < other.parent.colX + other.parent.cacheWidth
+			&& parent.colY + _y < other.parent.colY + other.parent.cacheHeight)
+		{	
+			lastBounds.x = parent.colX + parent.cacheWidth;
+			lastBounds.y = parent.colY + parent.cacheHeight;
+			
 			return true;	
 		}
 		
@@ -51,11 +55,14 @@ class Hitbox extends Mask
 	/** @private Collides against a Hitbox. */
 	private function collideHitbox(other:Hitbox):Bool
 	{		
-		if (parent.colX + _x + _width >= other.parent.colX + other._x
-			&& parent.colY + _y + _height >= other.parent.colY + other._y
-			&& parent.colX + _x <= other.parent.colX + other._x + other._width
-			&& parent.colY + _y <= other.parent.colY + other._y + other._height)
-		{									
+		if (parent.colX + _x + _width > other.parent.colX + other._x
+			&& parent.colY + _y + _height > other.parent.colY + other._y
+			&& parent.colX + _x < other.parent.colX + other._x + other._width
+			&& parent.colY + _y < other.parent.colY + other._y + other._height)
+		{			
+			lastBounds.x = parent.colX + _x;
+			lastBounds.y = parent.colY + _y;
+		
 			return true;
 		}
 		

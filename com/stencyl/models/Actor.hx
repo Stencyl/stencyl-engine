@@ -800,6 +800,7 @@ class Actor extends Sprite
 			if(physicsMode > 0)
 			{
 				shapeMap.set(name, new Masklist(arr));
+				
 			}
 			
 			else
@@ -4570,12 +4571,12 @@ class Actor extends Sprite
 								{
 									if (sign > 0)
 									{
-										realX = solidCollision.bounds.x - (cacheWidth/2);
+										realX = solidCollision.bounds.x - Math.ceil(cacheWidth/2);
 									}
 									
 									else
 									{
-										realX = solidCollision.bounds.x + solidCollision.bounds.width + (cacheWidth/2);
+										realX = solidCollision.bounds.x + solidCollision.bounds.width + Math.floor(cacheWidth/2);
 									}
 								}
 								
@@ -4596,8 +4597,7 @@ class Actor extends Sprite
 				clearCollidedList();
 				
 				if (collidable && (sweep || collideTypes(solidType, realX, next) != null))
-				{		
-					//trace("Figure it out " + y);
+				{
 					clearCollidedList();
 					while (y != 0)
 					{
@@ -4619,16 +4619,17 @@ class Actor extends Sprite
 							{
 								ySpeed = 0;
 								
+								
 								if (solidCollision.useBounds)
 								{
 									if (sign > 0)
 									{
-										realY = solidCollision.bounds.y - (cacheHeight/2);
+										realY = solidCollision.bounds.y - Math.ceil(cacheHeight/2);
 									}
 									
 									else
 									{
-										realY = solidCollision.bounds.y + solidCollision.bounds.height + (cacheHeight/2);
+										realY = solidCollision.bounds.y + solidCollision.bounds.height + Math.floor(cacheHeight/2);
 									}
 								}
 								
@@ -4713,15 +4714,13 @@ class Actor extends Sprite
 		info.maskB = colMask;
 		info.solidCollision = _mask.solid && colMask.solid;
 		
-		if (colMask != null && Std.is(colMask, Grid))
-		{
-			var grid:Grid = cast(colMask, Grid);
-			
+		if (colMask != null)
+		{			
 			info.useBounds = true;
-			info.bounds.x = grid.lastBounds.x;
-			info.bounds.y = grid.lastBounds.y;
-			info.bounds.width = grid.lastBounds.width;
-			info.bounds.height = grid.lastBounds.height;
+			info.bounds.x = colMask.lastBounds.x;
+			info.bounds.y = colMask.lastBounds.y;
+			info.bounds.width = colMask.lastBounds.width;
+			info.bounds.height = colMask.lastBounds.height;
 		}
 					
 		if(xDir != 0)

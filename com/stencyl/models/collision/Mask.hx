@@ -3,6 +3,7 @@ package com.stencyl.models.collision;
 import com.stencyl.models.Actor;
 import nme.display.Graphics;
 import nme.geom.Point;
+import nme.geom.Rectangle;
 
 typedef MaskCallback = Dynamic -> Bool;
 
@@ -20,6 +21,7 @@ class Mask
 	 * The parent Masklist of the mask.
 	 */
 	public var list:Masklist;
+	public var lastBounds:Rectangle;
 	
 	public var solid:Bool;
 
@@ -33,6 +35,8 @@ class Mask
 		_check = new Map<String,MaskCallback>();
 		_check.set(Type.getClassName(Mask), collideMask);
 		_check.set(Type.getClassName(Masklist), collideMasklist);	
+		
+		lastBounds = new Rectangle();
 	}
 
 	/**
@@ -59,11 +63,16 @@ class Mask
 	/** @private Collide against an Entity. */
 	private function collideMask(other:Mask):Bool
 	{
-		if (parent.colX + parent.cacheWidth >= other.parent.colX
-			&& parent.colY + parent.cacheHeight >= other.parent.colY
-			&& parent.colX <= other.parent.colX + other.parent.cacheWidth
-			&& parent.colY <= other.parent.colY + other.parent.cacheHeight)
+		if (parent.colX + parent.cacheWidth > other.parent.colX
+			&& parent.colY + parent.cacheHeight > other.parent.colY
+			&& parent.colX < other.parent.colX + other.parent.cacheWidth
+			&& parent.colY < other.parent.colY + other.parent.cacheHeight)
 		{			
+			lastBounds.x = parent.colX;
+			lastBounds.y = parent.colY;
+			lastBounds.width = parent.cacheWidth;
+			lastBounds.height = parent.cacheHeight;
+			
 			return true;				
 		}
 		

@@ -20,7 +20,7 @@ class Grid extends Hitbox
 	 * If x/y positions should be used instead of columns/rows.
 	 */
 	public var usePositions:Bool;
-	public var lastBounds:Rectangle;
+	
 
 
 	/**
@@ -40,9 +40,7 @@ class Grid extends Hitbox
 		if (width == 0 || height == 0 || tileWidth == 0 || tileHeight == 0)
 		{
 			throw "Illegal Grid, sizes cannot be 0.";
-		}
-		
-		lastBounds = new Rectangle();
+		}				
 
 		_rect = Utils.rect;
 		_point = Utils.point;
