@@ -208,10 +208,12 @@ class Data
 		resourceMap = new Map<String,Resource>();
 		for(r in resources)
 		{
-			if(r == null || Std.is(r, Sprite))
+			if(r == null)
 				continue;
-
-			resourceMap.set(r.name, r);
+			if(Std.is(r, Sprite))
+				resourceMap.set("Sprite_" + r.name, r);
+			else
+				resourceMap.set(r.name, r);
 		}
 	}
 	
