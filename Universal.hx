@@ -212,6 +212,16 @@ class Universal extends Sprite
 				Engine.isExtendedIOS = true;
 			}	
 			
+			else if(smaller == 750 && larger == 1334)
+			{
+				Engine.isIPhone6 = true;
+			}	
+			
+			else if(smaller == 1242 && larger == 2208)
+			{
+				Engine.isIPhone6Plus = true;
+			}	
+			
 			else if(smaller == 768 && larger == 1024)
 			{
 				Engine.isTabletIOS = true;

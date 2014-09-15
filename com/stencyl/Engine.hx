@@ -130,6 +130,8 @@ class Engine
 	
 	public static var isStandardIOS:Bool = false;
 	public static var isExtendedIOS:Bool = false;
+	public static var isIPhone6:Bool = false;
+	public static var isIPhone6Plus:Bool = false;
 	public static var isTabletIOS:Bool = false;
 	
 	
