@@ -713,6 +713,7 @@ class Engine
 			
 		//Display List
 		colorLayer = new Shape();
+		colorLayer.cacheAsBitmap = true;
 		root.addChild(colorLayer);
 
 		master = new Sprite();
