@@ -31,9 +31,10 @@ class ColorBackground extends Resource implements Background
 	{
 		if(bgColor != TRANSPARENT)
 		{
+			g.clear();
 			g.beginFill(bgColor);
 			g.drawRect(0, 0, screenWidth, screenHeight);
-			g.endFill();
+			g.endFill();			
 		}
 	}
 }

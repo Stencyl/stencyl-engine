@@ -31,6 +31,7 @@ class GradientBackground extends Resource implements Background
 		matr.createGradientBox(screenWidth, screenHeight, Math.PI/2, 0, 0);
 		var sprMethod = SpreadMethod.PAD;
 	
+		g.clear();
 		g.beginGradientFill(GradientType.LINEAR, colors, alphas, ratios, matr, sprMethod);
 		g.drawRect(0, 0, screenWidth, screenHeight);
 		g.endFill();
