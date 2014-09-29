@@ -173,6 +173,7 @@ class SoundChannel
 			
 			position = 0;
 			currentSource = null;
+			currentSound = null;
 		}			
 	}	
 	
