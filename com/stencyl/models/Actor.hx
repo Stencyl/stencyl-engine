@@ -1742,7 +1742,15 @@ class Actor extends Sprite
 			transformMatrix.rotate(realAngle * Utils.RAD);
 		}
 		
-		transformMatrix.translate(drawX * Engine.SCALE, drawY * Engine.SCALE);
+		if (scripts.MyAssets.pixelsnap)
+		{
+			transformMatrix.translate(Math.round(drawX) * Engine.SCALE, Math.round(drawY) * Engine.SCALE);
+		}
+		
+		else
+		{
+			transformMatrix.translate(drawX * Engine.SCALE, drawY * Engine.SCALE);
+		}
 		
 						
 		if(transformObj == null)
