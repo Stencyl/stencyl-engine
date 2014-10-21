@@ -1872,18 +1872,21 @@ class Actor extends Sprite
   				var verts:Array<B2Vec2> = cast(poly, B2PolygonShape).m_vertices;
 				var newVerts:Array<B2Vec2> = new Array<B2Vec2>();
 
+				var horiChange:Bool = (bodyScale.x > 0 && width < 0) || (bodyScale.x < 0 && width > 0);
+				var vertChange:Bool = (bodyScale.y > 0 && height < 0) || (bodyScale.y < 0 && height > 0);
+				
 				for (v in verts)
 				{
 					v.subtract(center);
 					v.x = v.x * (1 / Math.abs(bodyScale.x)) * Math.abs(width);
 					v.y = v.y * (1 / Math.abs(bodyScale.y)) * Math.abs(height);	
 					
-					if ((bodyScale.x > 0 && width < 0) || (bodyScale.x < 0 && width > 0))
+					if (horiChange)
 					{
 						v.x = -v.x;
 					}
 					
-					if ((bodyScale.y > 0 && height < 0) || (bodyScale.y < 0 && height > 0))
+					if (vertChange)
 					{
 						v.y = -v.y;
 					}
@@ -1894,7 +1897,7 @@ class Actor extends Sprite
 					newVerts.push(newVert);
 				}
 				
-				if ((bodyScale.x > 0 && width < 0) || (bodyScale.x < 0 && width > 0) || (bodyScale.y > 0 && height < 0) || (bodyScale.y < 0 && height > 0))
+				if (!(horiChange && vertChange) && (horiChange || vertChange))
 				{
 					newVerts.reverse();
 				}
