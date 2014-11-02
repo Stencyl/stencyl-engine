@@ -210,7 +210,7 @@ class Data
 		{
 			if(r == null)
 				continue;
-			if(Std.is(r, Sprite))
+			if(Std.is(r, com.stencyl.models.actor.Sprite))
 				resourceMap.set("Sprite_" + r.name, r);
 			else
 				resourceMap.set(r.name, r);
