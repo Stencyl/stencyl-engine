@@ -701,8 +701,8 @@ class Engine
 		cameraX = 0;
 		cameraY = 0;
 		
-		cameraOldX = -1;
-		cameraOldY = -1;
+		cameraOldX = 1;
+		cameraOldY = 1;
 
 		acc = 0;
 		lastTime = Lib.getTimer();
@@ -1210,8 +1210,8 @@ class Engine
 		camera.isCamera = true;
 		
 		cameraMoved = true;
-		cameraOldX = -1;
-		cameraOldY = -1;
+		cameraOldX = 1;
+		cameraOldY = 1;
 	}
 	
 	private function loadRegions()
