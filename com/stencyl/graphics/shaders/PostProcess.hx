@@ -92,16 +92,31 @@ class PostProcess extends OpenGLView
 
 		else
 		{
-			shader = new Shader([
-				{ src: vertexShader, fragment: false },
-				{ src: Assets.getText(fragmentShader), fragment: true }
-			]);
+			if(fragmentShader.length > 6 && fragmentShader.substr(-6) == ".glslx")
+			{
+				var shaderXml:haxe.xml.Fast = new haxe.xml.Fast(Xml.parse(Assets.getText(fragmentShader)).firstElement());
+				var vertexData:String = (shaderXml.hasNode.vertex) ? shaderXml.node.vertex.innerData : vertexShader;
+				var fragmentData:String = shaderXml.node.fragment.innerData;
+
+				shader = new Shader([
+					{ src: vertexData, fragment: false },
+					{ src: fragmentData, fragment: true }
+				]);
+			}
+			else
+			{
+				shader = new Shader([
+					{ src: vertexShader, fragment: false },
+					{ src: Assets.getText(fragmentShader), fragment: true }
+				]);
+			}
 		}
 		
 		// default shader variables
 		imageUniform = shader.uniform("uImage0");
 		timeUniform = shader.uniform("uTime");
 		resolutionUniform = shader.uniform("uResolution");
+		resolutionUsUniform = shader.uniform("uResolutionUs");
 
 		vertexSlot = shader.attribute("aVertex");
 		texCoordSlot = shader.attribute("aTexCoord");
@@ -273,6 +288,7 @@ class PostProcess extends OpenGLView
 		GL.uniform1i(imageUniform, 0);
 		GL.uniform1f(timeUniform, time);
 		GL.uniform2f(resolutionUniform, Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
+		GL.uniform2f(resolutionUsUniform, Std.int(nme.Lib.current.stage.stageWidth / scripts.MyAssets.gameScale), Std.int(nme.Lib.current.stage.stageHeight / scripts.MyAssets.gameScale));
 
 		//for (u in uniforms) GL.uniform1f(u.id, u.value);
 		var it = uniforms.iterator();
@@ -318,6 +334,7 @@ class PostProcess extends OpenGLView
 	private var texCoordSlot:Int;
 	private var imageUniform:Int;
 	private var resolutionUniform:Int;
+	private var resolutionUsUniform:Int;
 	private var timeUniform:Int;
 	private var uniforms:Map<String, Uniform>;
 
