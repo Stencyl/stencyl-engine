@@ -12,6 +12,7 @@ import nme.geom.Rectangle;
 class Collision 
 {
 	private static var recycledCollisions:Array<Collision> = new Array<Collision>();
+	public static var collisionResponses:Map < Int, Map < Int, String >> = new Map < Int, Map < Int, String >> ();
 	
 	public var thisFromTop:Bool;
 	public var thisFromLeft:Bool;
@@ -56,7 +57,21 @@ class Collision
 	public var linkedCollision:Collision;
 	
 	
-	
+	public static function addResponse(firstActor:Actor, secondActor:Actor, response:String)
+	{
+		if (collisionResponses.get(firstActor.ID) == null)
+		{
+			collisionResponses.set(firstActor.ID, new Map<Int,String>());
+		}
+		
+		if (collisionResponses.get(secondActor.ID) == null)
+		{
+			collisionResponses.set(secondActor.ID, new Map<Int,String>());
+		}
+		
+		collisionResponses.get(firstActor.ID).set(secondActor.ID, response);
+		collisionResponses.get(secondActor.ID).set(firstActor.ID, response);
+	}
 	
 	public function new()
 	{

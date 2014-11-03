@@ -4724,6 +4724,25 @@ class Actor extends Sprite
 		info.maskA = _mask;
 		info.maskB = colMask;
 		info.solidCollision = _mask.solid && colMask.solid;
+		 
+		var responseMap:Map<Int, String> = Collision.collisionResponses.get(ID);
+		var overrideSensor:Bool = false;
+		var overridePhysical:Bool = false;
+		
+		if (responseMap != null && responseMap.get(a.ID) != null)
+		{
+			if (responseMap.get(a.ID) == "sensor")
+			{
+				info.solidCollision = false;
+				overrideSensor = true;
+			}
+			
+			else 
+			{
+				info.solidCollision = true;
+				overridePhysical = true;
+			}
+		}
 		
 		if (colMask != null)
 		{			
@@ -4782,7 +4801,7 @@ class Actor extends Sprite
 		
 		if(info != null)
 		{
-			info.thisCollidedWithSensor = !info.maskB.solid;
+			info.thisCollidedWithSensor = overrideSensor || !overridePhysical && !info.maskB.solid;
 		}
 		
 		else
