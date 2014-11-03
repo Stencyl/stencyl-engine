@@ -57,20 +57,20 @@ class Collision
 	public var linkedCollision:Collision;
 	
 	
-	public static function addResponse(firstActor:Actor, secondActor:Actor, response:String)
+	public static function addResponse(firstActor:ActorType, secondActor:ActorType, response:String)
 	{
-		if (collisionResponses.get(firstActor.ID) == null)
+		if (collisionResponses.get(firstActor.groupID) == null)
 		{
-			collisionResponses.set(firstActor.ID, new Map<Int,String>());
+			collisionResponses.set(firstActor.groupID, new Map<Int,String>());
 		}
 		
-		if (collisionResponses.get(secondActor.ID) == null)
+		if (collisionResponses.get(secondActor.groupID) == null)
 		{
-			collisionResponses.set(secondActor.ID, new Map<Int,String>());
+			collisionResponses.set(secondActor.groupID, new Map<Int,String>());
 		}
 		
-		collisionResponses.get(firstActor.ID).set(secondActor.ID, response);
-		collisionResponses.get(secondActor.ID).set(firstActor.ID, response);
+		collisionResponses.get(firstActor.groupID).set(secondActor.groupID, response);
+		collisionResponses.get(secondActor.groupID).set(firstActor.groupID, response);
 	}
 	
 	public function new()
