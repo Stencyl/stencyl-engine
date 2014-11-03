@@ -4725,13 +4725,13 @@ class Actor extends Sprite
 		info.maskB = colMask;
 		info.solidCollision = _mask.solid && colMask.solid;
 		 
-		var responseMap:Map<Int, String> = Collision.collisionResponses.get(ID);
+		var responseMap:Map<Int, String> = Collision.collisionResponses.get(getGroupID());
 		var overrideSensor:Bool = false;
 		var overridePhysical:Bool = false;
 		
-		if (responseMap != null && responseMap.get(a.ID) != null)
+		if (responseMap != null && responseMap.get(a.getGroupID()) != null)
 		{
-			if (responseMap.get(a.ID) == "sensor")
+			if (responseMap.get(a.getGroupID()) == "sensor")
 			{
 				info.solidCollision = false;
 				overrideSensor = true;
