@@ -600,18 +600,18 @@ class Engine
 	#if flash
 	function uncaughtErrorHandler(event:UncaughtErrorEvent):Void
 	{
-	   if (Std.is(event.error, Error))
-	   {
-	       trace(cast(event.error, Error).message);
-	   }
-	   else if (Std.is(event.error,ErrorEvent))
-	   {
-	       trace(cast(event.error, ErrorEvent).text);
-	   }
-	   else
-	   {
-	       trace(event.error.toString());
-	   }
+		if (Std.is(event.error, Error))
+		{
+			trace(cast(event.error, Error).message);
+		}
+		else if (Std.is(event.error,ErrorEvent))
+		{
+			trace(cast(event.error, ErrorEvent).text);
+		}
+		else
+		{
+			trace(event.error.toString());
+		}
 	}
 	#end
 	
@@ -2862,20 +2862,23 @@ class Engine
 	{
 		var sc:SoundChannel = cast(channels[channelNum], SoundChannel);
 		
-		var channelListeners = soundListeners.get(channelNum);
-		var clipListeners = soundListeners.get(sc.currentClip);
-		
-		//trace(soundListeners.keys);
-		//trace(channelListeners);
-		
-		if(channelListeners != null)
+		if(soundListeners != null)
 		{
-			invokeListeners(channelListeners);
-		}
-		
-		if(clipListeners != null)
-		{
-			invokeListeners(clipListeners);
+			var channelListeners = soundListeners.get(channelNum);
+			var clipListeners = soundListeners.get(sc.currentClip);
+			
+			//trace(soundListeners.keys);
+			//trace(channelListeners);
+			
+			if(channelListeners != null)
+			{
+				invokeListeners(channelListeners);
+			}
+			
+			if(clipListeners != null)
+			{
+				invokeListeners(clipListeners);
+			}
 		}
 		
 		sc.currentSound = null;
