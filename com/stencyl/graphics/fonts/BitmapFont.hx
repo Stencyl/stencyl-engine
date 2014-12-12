@@ -565,7 +565,6 @@ class BitmapFont
 	{
 		if(overrideFlags)
 		{
-			trace(drawData);
 			_tileSheet.drawTiles(graphics, drawData, scripts.MyAssets.antialias, altFlags);
 		}
 		
