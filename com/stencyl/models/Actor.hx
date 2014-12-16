@@ -3979,24 +3979,30 @@ class Actor extends Sprite
 	
 	public function makeAlwaysSimulate(alterBody:Bool = true)
 	{
-		if(physicsMode == 0 && alterBody)
+		if (!alwaysSimulate)
 		{
-			body.setAlwaysActive(true);
+			if(physicsMode == 0 && alterBody)
+			{
+				body.setAlwaysActive(true);
+			}
+			
+			alwaysSimulate = true;			
+			engine.addHUDActor(this);
 		}
-		
-		alwaysSimulate = true;			
-		engine.addHUDActor(this);
 	}
 	
 	public function makeSometimesSimulate(alterBody:Bool = true)
 	{
-		if(physicsMode == 0 && alterBody)
+		if (alwaysSimulate)
 		{
-			body.setAlwaysActive(false);
+			if(physicsMode == 0 && alterBody)
+			{
+				body.setAlwaysActive(false);
+			}
+			
+			alwaysSimulate = false;			
+			engine.removeHUDActor(this);
 		}
-		
-		alwaysSimulate = false;			
-		engine.removeHUDActor(this);
 	}
 	
 	public function alwaysSimulates():Bool
