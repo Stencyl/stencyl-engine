@@ -3281,42 +3281,46 @@ class Script
 		}
 	}
 
-	public function getTileForCollision(actor:Actor, event:Collision, point:CollisionPoint):Tile
+	public function getTileForCollision(event:Collision, point:CollisionPoint):Tile
 	{
-		var xNormal:Int = Math.round(Engine.toPixelUnits(point.normalX));
-		var yNormal:Int = Math.round(Engine.toPixelUnits(point.normalY));
-		var x:Int = Math.round(Engine.toPixelUnits(point.x));
-		var y:Int = Math.round(Engine.toPixelUnits(point.y));
-
-		if(event.actorA != actor)
+		if (event.thisCollidedWithTile || event.otherCollidedWithTile)
 		{
-			xNormal = -xNormal;
-			yNormal = -yNormal;
-		}
-
-		if(xNormal < 0 && (x % engine.scene.tileWidth == 0))
-			x -= 1;
-		if(yNormal < 0 && (y % engine.scene.tileHeight == 0))
-			y -= 1;
-
-		x = getTilePosition(0, x);
-		y = getTilePosition(1, y);
-
-		for(layer in engine.interactiveLayers)
-		{
-			var tile = layer.tiles.getTileAt(y, x);
-			if((tile == null) || (tile.collisionID == -1))
-				continue;
-			return tile;
+			var xNormal:Int = Math.round(Engine.toPixelUnits(point.normalX));
+			var yNormal:Int = Math.round(Engine.toPixelUnits(point.normalY));
+			var x:Int = Math.round(Engine.toPixelUnits(point.x));
+			var y:Int = Math.round(Engine.toPixelUnits(point.y));
+		
+			if(event.thisCollidedWithTile)
+			{
+				xNormal = -xNormal;
+				yNormal = -yNormal;
+			}
+	
+			if(xNormal < 0 && (x % engine.scene.tileWidth == 0))
+				x -= 1;
+			if(yNormal < 0 && (y % engine.scene.tileHeight == 0))
+				y -= 1;
+	
+			x = getTilePosition(0, x);
+			y = getTilePosition(1, y);
+	
+			for(layer in engine.interactiveLayers)
+			{
+				var tile = layer.tiles.getTileAt(y, x);
+				if((tile == null) || (tile.collisionID == -1))
+					continue;
+				return tile;
+			}
 		}
 		return null;
 	}
 
-	public function getTileDataForCollision(actor:Actor, event:Collision, point:CollisionPoint):String
+	public function getTileDataForCollision(event:Collision, point:CollisionPoint):String
 	{
-		var t:Tile = getTileForCollision(actor, event, point);
+		var t:Tile = getTileForCollision(event, point);
+		trace(t);
 		if(t != null)
-			return  t.metadata;
+			return t.metadata;
 		else
 			return "";
 	}
