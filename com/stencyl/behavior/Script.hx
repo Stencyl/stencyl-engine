@@ -3318,7 +3318,6 @@ class Script
 	public function getTileDataForCollision(event:Collision, point:CollisionPoint):String
 	{
 		var t:Tile = getTileForCollision(event, point);
-		trace(t);
 		if(t != null)
 			return t.metadata;
 		else
