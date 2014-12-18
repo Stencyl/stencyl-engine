@@ -207,6 +207,7 @@ class Universal extends Sprite
 				Engine.isStandardIOS = true;
 			}
 			
+			//iPhone 5, 5s, or iPhone 6 with Display Zoom
 			else if(smaller == 640 && larger == 1136)
 			{
 				Engine.isExtendedIOS = true;
@@ -218,6 +219,12 @@ class Universal extends Sprite
 			}	
 			
 			else if(smaller == 1242 && larger == 2208)
+			{
+				Engine.isIPhone6Plus = true;
+			}
+			
+			//iPhone 6+ with Display Zoom
+			else if(smaller == 1125 && larger == 2001)
 			{
 				Engine.isIPhone6Plus = true;
 			}	
