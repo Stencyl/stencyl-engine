@@ -164,7 +164,7 @@ class Utils
 	{
 		var toReturn:Array<Dynamic> = new Array<Dynamic>();
 		
-		if (type == "key")
+		if (type == "keys")
 		{
 			for (item in map.keys())
 			{
