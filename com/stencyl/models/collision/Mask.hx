@@ -22,6 +22,7 @@ class Mask
 	 */
 	public var list:Masklist;
 	public var lastBounds:Rectangle;
+	public var lastCheckedMask:Mask;
 	
 	public var solid:Bool;
 
@@ -73,6 +74,8 @@ class Mask
 			lastBounds.width = parent.cacheWidth;
 			lastBounds.height = parent.cacheHeight;
 			
+			lastCheckedMask = this;
+			
 			return true;				
 		}
 		
@@ -80,7 +83,7 @@ class Mask
 	}
 
 	private function collideMasklist(other:Masklist):Bool
-	{
+	{		
 		return other.collide(this);
 	}
 

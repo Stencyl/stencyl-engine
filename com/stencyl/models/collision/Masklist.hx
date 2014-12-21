@@ -39,6 +39,8 @@ class Masklist extends Hitbox
 				lastBounds.width = m.lastBounds.width;
 				lastBounds.height = m.lastBounds.height;				
 				
+				lastCheckedMask = m;
+				
 				return true;
 			}
 		}
@@ -61,6 +63,8 @@ class Masklist extends Hitbox
 					other.lastBounds.y = b.lastBounds.y;
 					other.lastBounds.width = b.lastBounds.width;
 					other.lastBounds.height = b.lastBounds.height;
+					
+					other.lastCheckedMask = b;
 					
 					return true;
 				}

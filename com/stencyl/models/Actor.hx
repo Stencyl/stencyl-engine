@@ -4510,6 +4510,46 @@ class Actor extends Sprite
 		colY = realY - Math.floor(cacheHeight / 2) - currOffset.y;
 	}
 	
+	private function adjustByWidth(posDir:Bool):Float
+	{
+		if (_mask != null && _mask.lastCheckedMask != null)
+		{
+			if (Std.is(_mask.lastCheckedMask, Hitbox))
+			{
+				var box:Hitbox = cast(_mask.lastCheckedMask, Hitbox);
+				
+				if (posDir)
+				{
+					return (cacheWidth / 2) - (cacheWidth - (box._x + box._width));
+				}
+				
+				return (cacheWidth / 2) - box._x;
+			}
+		}
+		
+		return cacheWidth / 2;
+	}
+	
+	private function adjustByHeight(posDir:Bool):Float
+	{
+		if (_mask != null && _mask.lastCheckedMask != null)
+		{
+			if (Std.is(_mask.lastCheckedMask, Hitbox))
+			{
+				var box:Hitbox = cast(_mask.lastCheckedMask, Hitbox);
+				
+				if (posDir)
+				{
+					return (cacheHeight / 2) - (cacheHeight - (box._y + box._height));
+				}
+				
+				return (cacheHeight / 2) - box._y;
+			}
+		}
+		
+		return cacheHeight/ 2;
+	}
+	
 	private function getAllCollisionInfo(xDir:Float, yDir:Float):Collision
 	{		
 		var solidCollision:Collision = null;
@@ -4588,12 +4628,12 @@ class Actor extends Sprite
 								{
 									if (sign > 0)
 									{
-										realX = solidCollision.bounds.x - Math.ceil(cacheWidth/2);
+										realX = solidCollision.bounds.x - Math.ceil(adjustByWidth(true));
 									}
 									
 									else
 									{
-										realX = solidCollision.bounds.x + solidCollision.bounds.width + Math.floor(cacheWidth/2);
+										realX = solidCollision.bounds.x + solidCollision.bounds.width + Math.floor(adjustByWidth(false));
 									}
 								}
 								
@@ -4641,12 +4681,12 @@ class Actor extends Sprite
 								{
 									if (sign > 0)
 									{
-										realY = solidCollision.bounds.y - Math.ceil(cacheHeight/2);
+										realY = solidCollision.bounds.y - Math.ceil(adjustByHeight(true));
 									}
 									
 									else
 									{
-										realY = solidCollision.bounds.y + solidCollision.bounds.height + Math.floor(cacheHeight/2);
+										realY = solidCollision.bounds.y + solidCollision.bounds.height + Math.floor(adjustByHeight(false));
 									}
 								}
 								
