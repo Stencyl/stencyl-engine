@@ -1,11 +1,11 @@
 package com.stencyl.models.scene;
 
-import nme.display.Sprite;
-import nme.geom.ColorTransform;
+import openfl.display.Sprite;
+import openfl.geom.ColorTransform;
 
-import nme.display.Bitmap;
-import nme.display.BitmapData;
-import nme.display.BlendMode;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.BlendMode;
 
 import com.stencyl.models.scene.layers.RegularLayer;
 

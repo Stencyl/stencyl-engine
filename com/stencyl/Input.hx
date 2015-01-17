@@ -2,26 +2,26 @@ package com.stencyl;
 
 import com.stencyl.utils.Utils;
 
-import nme.events.Event;
+import openfl.events.Event;
 #if desktop
-import nme.events.JoystickEvent;
+import openfl.events.JoystickEvent;
 #end
-import nme.events.KeyboardEvent;
-import nme.events.MouseEvent;
-import nme.display.DisplayObject;
-import nme.geom.Point;
+import openfl.events.KeyboardEvent;
+import openfl.events.MouseEvent;
+import openfl.display.DisplayObject;
+import openfl.geom.Point;
 
 #if !js
-import nme.events.TouchEvent;
-import nme.ui.Multitouch;
+import openfl.events.TouchEvent;
+import openfl.ui.Multitouch;
 #end
 
 #if cpp
-import nme.ui.Accelerometer;
+import openfl.ui.Accelerometer;
 #end
 
-import nme.ui.Keyboard;
-import nme.Lib;
+import openfl.ui.Keyboard;
+import openfl.Lib;
 
 
 class Input
@@ -303,7 +303,7 @@ class Input
 			if(multiTouchEnabled)
 	        {
 	        	multiTouchPoints = new Map<String,TouchEvent>();
-	        	Multitouch.inputMode = nme.ui.MultitouchInputMode.TOUCH_POINT;
+	        	Multitouch.inputMode = openfl.ui.MultitouchInputMode.TOUCH_POINT;
 	        	Engine.stage.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
 	        	Engine.stage.addEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
          		Engine.stage.addEventListener(TouchEvent.TOUCH_END, onTouchEnd);
@@ -394,7 +394,7 @@ class Input
 		}
 		
 		#if cpp
-		if(nme.sensors.Accelerometer.isSupported)
+		if(openfl.sensors.Accelerometer.isSupported)
 		{
 			var data = Accelerometer.get();
 			

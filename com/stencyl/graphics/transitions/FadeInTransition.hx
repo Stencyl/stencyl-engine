@@ -1,8 +1,8 @@
 package com.stencyl.graphics.transitions;
 
-import nme.display.BitmapData;
-import nme.geom.ColorTransform;
-import nme.display.Shape;
+import openfl.display.BitmapData;
+import openfl.geom.ColorTransform;
+import openfl.display.Shape;
 
 import com.stencyl.Engine;
 

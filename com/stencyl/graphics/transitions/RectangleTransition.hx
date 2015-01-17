@@ -1,10 +1,10 @@
 package com.stencyl.graphics.transitions;
 
-import nme.display.BlendMode;
-import nme.display.Sprite;
-import nme.display.Graphics;
-import nme.display.BitmapData;
-import nme.display.Shape;
+import openfl.display.BlendMode;
+import openfl.display.Sprite;
+import openfl.display.Graphics;
+import openfl.display.BitmapData;
+import openfl.display.Shape;
 
 import com.stencyl.Engine;
 

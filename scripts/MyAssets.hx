@@ -1,7 +1,7 @@
 package scripts;
 
 import haxe.xml.Fast;
-import nme.Assets;
+import openfl.Assets;
 import com.stencyl.AssetLoader;
 import com.stencyl.Engine;
 

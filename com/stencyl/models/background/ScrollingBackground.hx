@@ -1,7 +1,7 @@
 package com.stencyl.models.background;
 
-import nme.display.Graphics;
-import nme.display.BitmapData;
+import openfl.display.Graphics;
+import openfl.display.BitmapData;
 
 class ScrollingBackground extends ImageBackground implements Background 
 {

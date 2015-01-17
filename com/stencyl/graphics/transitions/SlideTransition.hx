@@ -1,11 +1,11 @@
 package com.stencyl.graphics.transitions;
 
-import nme.geom.Matrix;
-import nme.geom.Point;
-import nme.display.Sprite;
-import nme.display.Graphics;
-import nme.display.BitmapData;
-import nme.display.Shape;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.display.Sprite;
+import openfl.display.Graphics;
+import openfl.display.BitmapData;
+import openfl.display.Shape;
 
 import com.stencyl.Engine;
 

@@ -6,7 +6,7 @@ import com.stencyl.models.collision.Mask;
 import box2D.common.math.B2Vec2;
 import box2D.dynamics.B2Fixture;
 
-import nme.geom.Rectangle;
+import openfl.geom.Rectangle;
 
 
 class Collision 

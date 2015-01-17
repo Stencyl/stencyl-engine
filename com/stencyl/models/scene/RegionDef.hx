@@ -1,7 +1,7 @@
 package com.stencyl.models.scene;
 
 import box2D.collision.shapes.B2Shape;
-import nme.geom.Rectangle;
+import openfl.geom.Rectangle;
 
 class RegionDef
 {

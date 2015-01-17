@@ -1,6 +1,6 @@
 package com.stencyl.graphics;
 
-import nme.display.BitmapData;
+import openfl.display.BitmapData;
 
 interface AbstractAnimation 
 {

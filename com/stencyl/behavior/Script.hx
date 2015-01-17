@@ -1,30 +1,30 @@
 package com.stencyl.behavior;
 
-import nme.net.SharedObject;
+import openfl.net.SharedObject;
 
-import nme.ui.Mouse;
-import nme.events.Event;
-import nme.events.IOErrorEvent;
-import nme.net.URLLoader;
-import nme.net.URLRequest;
-import nme.net.URLRequestMethod;
-import nme.net.URLVariables;
-import nme.Lib;
-import nme.filters.BitmapFilter;
-import nme.text.TextField;
+import openfl.ui.Mouse;
+import openfl.events.Event;
+import openfl.events.IOErrorEvent;
+import openfl.net.URLLoader;
+import openfl.net.URLRequest;
+import openfl.net.URLRequestMethod;
+import openfl.net.URLVariables;
+import openfl.Lib;
+import openfl.filters.BitmapFilter;
+import openfl.text.TextField;
 
-import nme.display.DisplayObject;
-import nme.display.Loader;
-import nme.display.LoaderInfo;
-import nme.display.Graphics;
-import nme.display.BitmapData;
-import nme.display.Bitmap;
-import nme.display.Sprite;
-import nme.display.BlendMode;
-import nme.geom.ColorTransform;
-import nme.geom.Point;
-import nme.geom.Matrix;
-import nme.geom.Rectangle;
+import openfl.display.DisplayObject;
+import openfl.display.Loader;
+import openfl.display.LoaderInfo;
+import openfl.display.Graphics;
+import openfl.display.BitmapData;
+import openfl.display.Bitmap;
+import openfl.display.Sprite;
+import openfl.display.BlendMode;
+import openfl.geom.ColorTransform;
+import openfl.geom.Point;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 import com.stencyl.graphics.G;
 import com.stencyl.models.scene.ScrollingBitmap;
@@ -84,7 +84,7 @@ import flash.filters.ColorMatrixFilter;
 
 import scripts.MyAssets;
 
-//XXX: For some reason, it wasn't working by importing nme.net.SharedObjectFlushedStatus
+//XXX: For some reason, it wasn't working by importing openfl.net.SharedObjectFlushedStatus
 #if js
 //typedef JeashSharedObjectFlushStatus = flash.net.SharedObjectFlushedStatus;
 #end
@@ -1442,7 +1442,7 @@ class Script
     	return engine.getLayer(refType, ref);
     }
     
-    public function setBlendModeForLayer(refType:Int, ref:String, mode:nme.display.BlendMode)
+    public function setBlendModeForLayer(refType:Int, ref:String, mode:openfl.display.BlendMode)
     {
     	var layer = getLayer(refType, ref);
 		#if cpp
@@ -2271,7 +2271,7 @@ class Script
 	public function captureScreenshot():BitmapData
 	{
 		var img:BitmapData = new BitmapData(Std.int(getScreenWidth() * Engine.SCALE) , Std.int(getScreenHeight() * Engine.SCALE));
-		img.draw(nme.Lib.current.stage);
+		img.draw(openfl.Lib.current.stage);
 		return img;
 	}
 	
@@ -2284,7 +2284,7 @@ class Script
 	//Example path: "sample.png" - stick into the "extras" folder for your game - see: http://community.stencyl.com/index.php/topic,24729.0.html
 	public function getExternalImage(path:String):BitmapData
 	{
-		return nme.Assets.getBitmapData("assets/data/" + path, false);
+		return openfl.Assets.getBitmapData("assets/data/" + path, false);
 	}
 	
 	//TODO: See - http://www.onegiantmedia.com/as3--load-a-remote-image-from-any-url--domain-with-no-stupid-security-sandbox-errors
@@ -2646,7 +2646,7 @@ class Script
       	dummyPoint.x = x;
       	dummyPoint.y = y;
       
-      	dest.copyChannel(mask, dummyRect, dummyPoint, nme.display.BitmapDataChannel.ALPHA, nme.display.BitmapDataChannel.ALPHA);
+      	dest.copyChannel(mask, dummyRect, dummyPoint, openfl.display.BitmapDataChannel.ALPHA, openfl.display.BitmapDataChannel.ALPHA);
 	}
 	
 	public function fillImage(img:BitmapData, color:Int)
@@ -3517,7 +3517,7 @@ class Script
 		#if flash
 		var flushStatus:String = null;
 		#else
-		var flushStatus:nme.net.SharedObjectFlushStatus = null;
+		var flushStatus:openfl.net.SharedObjectFlushStatus = null;
 		#end
 		
 		try 
@@ -3537,12 +3537,12 @@ class Script
 		
 		if(flushStatus != null) 
 		{
-			if(flushStatus == nme.net.SharedObjectFlushStatus.PENDING)
+			if(flushStatus == openfl.net.SharedObjectFlushStatus.PENDING)
 			{
 				//trace('requesting permission to save');
 			}
 			
-			else if(flushStatus == nme.net.SharedObjectFlushStatus.FLUSHED)
+			else if(flushStatus == openfl.net.SharedObjectFlushStatus.FLUSHED)
 			{
 				trace("Saved Game: " + fileName);
 		        onComplete(true);
@@ -3862,7 +3862,7 @@ class Script
 			scoreBrowser.x = Engine.screenWidth/2*Engine.SCALE*Engine.screenScaleX - scoreBrowser.width/2;
 			scoreBrowser.y = Engine.screenHeight/2*Engine.SCALE*Engine.screenScaleY - scoreBrowser.height/2;
 			
-			var button = new nme.display.Sprite();
+			var button = new openfl.display.Sprite();
 			button.x = 8;
 			button.y = scoreBrowser.height - 31;
 			
@@ -3888,7 +3888,7 @@ class Script
 			
 			clickArea.addEventListener
 			(
-				nme.events.MouseEvent.CLICK,
+				openfl.events.MouseEvent.CLICK,
 				newgroundsHelper
 			);
 		}
@@ -3897,7 +3897,7 @@ class Script
 		#end
 	}
 		
-	private function newgroundsHelper(event:nme.events.MouseEvent)
+	private function newgroundsHelper(event:openfl.events.MouseEvent)
 	{
 		#if(flash)
 		Engine.engine.root.parent.removeChild(scoreBrowser);

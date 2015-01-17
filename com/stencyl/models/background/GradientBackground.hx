@@ -1,17 +1,17 @@
 package com.stencyl.models.background;
 
-import nme.display.Graphics;
-import nme.geom.Matrix;
-import nme.display.GradientType;
-import nme.display.SpreadMethod;
+import openfl.display.Graphics;
+import openfl.geom.Matrix;
+import openfl.display.GradientType;
+import openfl.display.SpreadMethod;
 
 class GradientBackground extends Resource implements Background 
 {	
-	private var topColor:Int;
-	private var bottomColor:Int;
+	private var topColor:UInt;
+	private var bottomColor:UInt;
 
-	public function new(topColor:Int, bottomColor:Int) 
-	{	
+	public function new(topColor:UInt, bottomColor:UInt) 
+	{
 		super(0, "Gradient Background", -1);
 		
 		this.topColor = topColor;

@@ -1,14 +1,14 @@
 package;
 
-import nme.Lib;
-import nme.display.Sprite;
-import nme.events.Event;
-import nme.ui.Keyboard;
-import nme.events.KeyboardEvent;
-import nme.display.StageAlign;
-import nme.display.StageScaleMode;
-import nme.display.Shape;
-import nme.system.Capabilities;
+import openfl.Lib;
+import openfl.display.Sprite;
+import openfl.events.Event;
+import openfl.ui.Keyboard;
+import openfl.events.KeyboardEvent;
+import openfl.display.StageAlign;
+import openfl.display.StageScaleMode;
+import openfl.display.Shape;
+import openfl.system.Capabilities;
 import com.stencyl.Engine;
 
 class Universal extends Sprite 
@@ -44,7 +44,7 @@ class Universal extends Sprite
 		
 		if(scripts.MyAssets.startInFullScreen)
 		{
-			Lib.current.stage.displayState = nme.display.StageDisplayState.FULL_SCREEN_INTERACTIVE;
+			Lib.current.stage.displayState = openfl.display.StageDisplayState.FULL_SCREEN_INTERACTIVE;
 			initScreen(true);
 			Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
 		}
@@ -62,7 +62,7 @@ class Universal extends Sprite
 		/*if(e.keyCode == Keyboard.ESCAPE)
 		{
 			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			nme.system.System.exit(0);
+			openfl.system.System.exit(0);
 		}*/
 	}
 	
@@ -103,8 +103,8 @@ class Universal extends Sprite
 		#if desktop
 		if(isFullScreen)
 		{
-			stageWidth = Std.int(nme.system.Capabilities.screenResolutionX);
-			stageHeight = Std.int(nme.system.Capabilities.screenResolutionY);
+			stageWidth = Std.int(openfl.system.Capabilities.screenResolutionX);
+			stageHeight = Std.int(openfl.system.Capabilities.screenResolutionY);
 		}
 		
 		else if(scripts.MyAssets.stageWidth != Lib.current.stage.stageWidth)
@@ -136,8 +136,8 @@ class Universal extends Sprite
 		
 		//NME Bug: If waking from sleep, the dimensions can be flipped on Android.
 		#if android
-		stageWidth = Std.int(nme.system.Capabilities.screenResolutionX);
-		stageHeight = Std.int(nme.system.Capabilities.screenResolutionY);
+		stageWidth = Std.int(openfl.system.Capabilities.screenResolutionX);
+		stageHeight = Std.int(openfl.system.Capabilities.screenResolutionY);
 		
 		if(stageWidth < stageHeight && scripts.MyAssets.landscape)
 		{
@@ -148,8 +148,8 @@ class Universal extends Sprite
 		
 		//NME Bug: If waking from sleep, the dimensions can be flipped on iOS.
 		#if (mobile && !android)
-		stageWidth = Std.int(nme.system.Capabilities.screenResolutionX);
-		stageHeight = Std.int(nme.system.Capabilities.screenResolutionY);
+		stageWidth = Std.int(openfl.system.Capabilities.screenResolutionX);
+		stageHeight = Std.int(openfl.system.Capabilities.screenResolutionY);
 		
 		if(stageWidth < stageHeight && scripts.MyAssets.landscape)
 		{
@@ -391,13 +391,13 @@ class Universal extends Sprite
 		{
 			if(!usingFullScreen && !stretchToFit)
 			{
-				var screenW = Std.int(nme.system.Capabilities.screenResolutionX);
-				var screenH = Std.int(nme.system.Capabilities.screenResolutionY);
+				var screenW = Std.int(openfl.system.Capabilities.screenResolutionX);
+				var screenH = Std.int(openfl.system.Capabilities.screenResolutionY);
 				
 				if(screenW < screenH && scripts.MyAssets.landscape)
 				{
-					screenH = Std.int(nme.system.Capabilities.screenResolutionX);
-					screenW = Std.int(nme.system.Capabilities.screenResolutionY);
+					screenH = Std.int(openfl.system.Capabilities.screenResolutionX);
+					screenW = Std.int(openfl.system.Capabilities.screenResolutionY);
 				}
 				
 				var screenLandscape = Lib.current.stage.width > Lib.current.stage.height;
@@ -672,12 +672,12 @@ class Universal extends Sprite
 		#if(mobile)
 		if(!usingFullScreen && !stretchToFit)
 		{
-			scrollRect = new nme.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
+			scrollRect = new openfl.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
 		}
 		#end
 		
 		#if(flash || js || (cpp && !mobile))
-		scrollRect = new nme.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
+		scrollRect = new openfl.geom.Rectangle(0, 0, scripts.MyAssets.stageWidth, scripts.MyAssets.stageHeight);
 		#end
 		
 		scripts.MyAssets.stageWidth = originalWidth;

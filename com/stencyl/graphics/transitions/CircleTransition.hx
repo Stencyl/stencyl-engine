@@ -1,14 +1,14 @@
 package com.stencyl.graphics.transitions;
 
-import nme.display.Graphics;
-import nme.display.Bitmap;
-import nme.display.BitmapData;
-import nme.geom.ColorTransform;
-import nme.display.Shape;
-import nme.display.BlendMode;
-import nme.display.Shape;
-import nme.geom.Point;
-import nme.geom.Rectangle;
+import openfl.display.Graphics;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.geom.ColorTransform;
+import openfl.display.Shape;
+import openfl.display.BlendMode;
+import openfl.display.Shape;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 import com.stencyl.Engine;
 import com.stencyl.utils.Utils;

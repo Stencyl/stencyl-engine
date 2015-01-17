@@ -1,6 +1,6 @@
 package com.stencyl.utils;
 
-import nme.geom.Point;
+import openfl.geom.Point;
 import box2D.common.math.B2Math;
 
 /*

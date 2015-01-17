@@ -3,7 +3,7 @@ package com.stencyl.models.collision;
 import com.stencyl.models.Actor;
 import com.stencyl.utils.Utils;
 
-import nme.geom.Rectangle;
+import openfl.geom.Rectangle;
 
 /**
  * A Mask that can contain multiple Masks of one or various types.

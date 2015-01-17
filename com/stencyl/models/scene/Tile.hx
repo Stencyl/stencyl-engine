@@ -1,11 +1,11 @@
 package com.stencyl.models.scene;
 
-import nme.display.Bitmap;
-import nme.display.BitmapData;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
 #if !js
-import nme.display.Tilesheet;
+import openfl.display.Tilesheet;
 #end
-import nme.geom.Rectangle;
+import openfl.geom.Rectangle;
 
 class Tile
 {

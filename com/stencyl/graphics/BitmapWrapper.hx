@@ -1,7 +1,7 @@
 package com.stencyl.graphics;
 
-import nme.display.Bitmap;
-import nme.display.Sprite;
+import openfl.display.Bitmap;
+import openfl.display.Sprite;
 
 class BitmapWrapper extends Sprite
 {

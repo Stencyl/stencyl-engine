@@ -9,8 +9,8 @@ import com.stencyl.io.SoundReader;
 import com.stencyl.io.SpriteReader;
 import com.stencyl.io.TilesetReader;
 
-import nme.Assets;
-import nme.Lib;
+import openfl.Assets;
+import openfl.Lib;
 import haxe.xml.Fast;
 
 import com.stencyl.behavior.Behavior;
@@ -20,7 +20,7 @@ import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.Atlas;
 import com.stencyl.models.Sound;
-import nme.display.Sprite;
+import openfl.display.Sprite;
 
 class Data
 {

@@ -1,6 +1,6 @@
 package com.stencyl.behavior;
 
-import nme.display.Graphics;
+import openfl.display.Graphics;
 import haxe.ds.StringMap;
 
 class Behavior 

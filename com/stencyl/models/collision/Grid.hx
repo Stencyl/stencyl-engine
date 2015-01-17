@@ -1,10 +1,10 @@
 package com.stencyl.models.collision;
 
-import nme.display.Bitmap;
-import nme.display.BitmapData;
-import nme.display.Graphics;
-import nme.geom.Point;
-import nme.geom.Rectangle;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.Graphics;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 import com.stencyl.models.actor.Collision;
 
@@ -292,7 +292,7 @@ class Grid extends Hitbox
 			_tile.y += _tile.height;
 		}
 #else
-		trace('Pixelmasks will not work in targets other than flash due to hittest not being implemented in NME.');
+		trace('Pixelmasks will not work in targets other than flash due to hittest not being implemented in openfl.');
 #end
 		return false;
 	}

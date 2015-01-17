@@ -1,7 +1,7 @@
 package com.stencyl.models;
 
-import nme.media.SoundChannel;
-import nme.Assets;
+import openfl.media.SoundChannel;
+import openfl.Assets;
 import com.stencyl.behavior.Script;
 
 //TODO: don't load a sound upfront - tie to atlas (remove loading from init)
@@ -22,7 +22,7 @@ class Sound extends Resource
 	
 	public var ext:String;
 	
-	public var src:nme.media.Sound;
+	public var src:openfl.media.Sound;
 
 	public function new(ID:Int, name:String, streaming:Bool, looping:Bool, panning:Float, volume:Float, ext:String) 
 	{

@@ -1,19 +1,19 @@
 package com.stencyl.models;
 
-import nme.events.Event;
+import openfl.events.Event;
 import com.stencyl.Engine;
 import com.stencyl.models.Sound;
 import motion.Actuate;
 
-import nme.media.SoundTransform;
+import openfl.media.SoundTransform;
 
 class SoundChannel 
 {	
 	public static var muted:Bool = false;
 	public static var masterVolume:Float = 1;
 	
-	public var currentSource:nme.media.Sound;
-	public var currentSound:nme.media.SoundChannel;
+	public var currentSource:openfl.media.Sound;
+	public var currentSound:openfl.media.SoundChannel;
 	public var currentClip:com.stencyl.models.Sound;
 	public var volume:Float;
 	public var channelNum:Int;
@@ -39,7 +39,7 @@ class SoundChannel
 		transform = new SoundTransform();
 	}
 	
-	public function playSound(clip:Sound):nme.media.SoundChannel
+	public function playSound(clip:Sound):openfl.media.SoundChannel
 	{			
 		if(currentSound != null)
 		{
@@ -75,7 +75,7 @@ class SoundChannel
 		return currentSound;
 	}
 	
-	public function loopSound(clip:Sound):nme.media.SoundChannel
+	public function loopSound(clip:Sound):openfl.media.SoundChannel
 	{
 		if(currentSound != null)
 		{

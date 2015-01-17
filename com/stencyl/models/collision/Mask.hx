@@ -1,9 +1,9 @@
 package com.stencyl.models.collision;
 
 import com.stencyl.models.Actor;
-import nme.display.Graphics;
-import nme.geom.Point;
-import nme.geom.Rectangle;
+import openfl.display.Graphics;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 typedef MaskCallback = Dynamic -> Bool;
 

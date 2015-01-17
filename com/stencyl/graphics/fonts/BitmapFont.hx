@@ -1,15 +1,15 @@
 package com.stencyl.graphics.fonts;
 
-import nme.display.BitmapData;
-import nme.display.BitmapInt32;
-import nme.display.Graphics;
-import nme.geom.ColorTransform;
-import nme.geom.Matrix;
-import nme.geom.Point;
-import nme.geom.Rectangle;
+import openfl.display.BitmapData;
+import openfl.display.Graphics;
+import openfl.geom.ColorTransform;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import haxe.Int32;
 
 #if (cpp || neko)
-import nme.display.Tilesheet;
+import openfl.display.Tilesheet;
 #end
 
 /**
@@ -281,12 +281,12 @@ class BitmapFont
 		#if flash
 		var pixelColor:UInt;
 		var bgColor32:UInt = pBitmapData.getPixel(0, 0);
-		#elseif js
+		#elseif (!flash && !html5 && !openfl_next)
+		var pixelColor:Int32;
+		var bgColor32:Int32 = pBitmapData.getPixel32(0, 0);
+		#else
 		var pixelColor:Int;
 		var bgColor32:Int = pBitmapData.getPixel(0, 0);
-		#else
-		var pixelColor:BitmapInt32;
-		var bgColor32:BitmapInt32 = pBitmapData.getPixel32(0, 0);
 		#end
 		
 		cy = 0;

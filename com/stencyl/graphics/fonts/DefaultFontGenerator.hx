@@ -1,6 +1,6 @@
 package com.stencyl.graphics.fonts;
 
-import nme.display.BitmapData;
+import openfl.display.BitmapData;
 
 class DefaultFontGenerator 
 {	

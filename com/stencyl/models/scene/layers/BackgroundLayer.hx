@@ -1,11 +1,11 @@
 package com.stencyl.models.scene.layers;
 
-import nme.display.Sprite;
-import nme.display.BlendMode;
-import nme.display.Bitmap;
-import nme.display.BitmapData;
-import nme.display.DisplayObject;
-import nme.display.PixelSnapping;
+import openfl.display.Sprite;
+import openfl.display.BlendMode;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.DisplayObject;
+import openfl.display.PixelSnapping;
 
 import com.stencyl.models.scene.ScrollingBitmap;
 import com.stencyl.models.background.ImageBackground;
@@ -230,11 +230,11 @@ class BackgroundLayer extends RegularLayer
 \*************************************/
 
 /*
-import nme.display.Sprite;
-import nme.display.Bitmap;
-import nme.display.BitmapData;
-import nme.display.DisplayObject;
-import nme.display.PixelSnapping;
+import openfl.display.Sprite;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.DisplayObject;
+import openfl.display.PixelSnapping;
 
 import com.stencyl.models.background.ImageBackground;
 
@@ -246,7 +246,7 @@ import com.stencyl.models.background.ImageBackground;
 #if(flash || js || cpp)
 
 #else
-import nme.display.Tilesheet;
+import openfl.display.Tilesheet;
 #end
 
 #if(flash || js || cpp)

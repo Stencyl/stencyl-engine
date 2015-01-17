@@ -1,11 +1,11 @@
 package com.stencyl.graphics;
 
 import com.stencyl.models.actor.Animation;
-import nme.display.Sprite;
-import nme.display.BitmapData;
+import openfl.display.Sprite;
+import openfl.display.BitmapData;
 
 #if !js
-import nme.display.Tilesheet;
+import openfl.display.Tilesheet;
 #end
 
 import com.stencyl.Engine;
@@ -273,7 +273,7 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 		return null;
 		#else
 		var img = new BitmapData(Std.int(width) , Std.int(height), true, 0x00ffffff);
-		img.copyPixels(tilesheet.__bitmap, new nme.geom.Rectangle((frameIndex % framesAcross) * width, Math.floor(frameIndex / framesAcross) * height, Std.int(width), Std.int(height)), new nme.geom.Point(0, 0), null, null, false);
+		img.copyPixels(tilesheet.__bitmap, new openfl.geom.Rectangle((frameIndex % framesAcross) * width, Math.floor(frameIndex / framesAcross) * height, Std.int(width), Std.int(height)), new openfl.geom.Point(0, 0), null, null, false);
 		return img;
 		#end
 		

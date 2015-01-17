@@ -1,20 +1,20 @@
 package com.stencyl.models.scene;
 
-import nme.display.Bitmap;
-import nme.display.BitmapData;
-import nme.display.PixelSnapping;
-import nme.geom.ColorTransform;
-import nme.geom.Matrix;
-import nme.geom.Point;
-import nme.geom.Rectangle;
-import nme.display.Sprite;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.PixelSnapping;
+import openfl.geom.ColorTransform;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.display.Sprite;
 
 import com.stencyl.models.Scene;
 import com.stencyl.utils.Utils;
 import com.stencyl.models.collision.Grid;
 
 #if cpp
-import nme.display.Tilesheet;
+import openfl.display.Tilesheet;
 #end
 
 class TileLayer extends Sprite

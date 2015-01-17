@@ -1,6 +1,6 @@
 package com.stencyl.models.background;
 
-import nme.display.Graphics;
+import openfl.display.Graphics;
 
 class ColorBackground extends Resource implements Background 
 {	

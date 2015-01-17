@@ -1,6 +1,6 @@
 package com.stencyl.graphics.transitions;
 
-import nme.display.Graphics;
+import openfl.display.Graphics;
 
 class Transition
 {

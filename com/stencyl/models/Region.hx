@@ -13,7 +13,7 @@ import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2CircleShape;
 import box2D.collision.shapes.B2PolygonShape;
 
-import nme.geom.Rectangle;
+import openfl.geom.Rectangle;
 
 class Region extends Actor
 {

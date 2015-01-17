@@ -13,25 +13,25 @@ import com.stencyl.behavior.BehaviorManager;
 import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.behavior.Script;
 
-import nme.geom.Point;
-import nme.geom.Rectangle;
-import nme.display.DisplayObject;
-import nme.display.Bitmap;
-import nme.display.BitmapData;
-import nme.display.Sprite;
-import nme.display.Stage;
-import nme.display.Shape;
-import nme.display.Graphics;
-import nme.display.MovieClip;
-import nme.display.StageDisplayState;
-import nme.text.TextField;
-import nme.display.DisplayObjectContainer;
-import nme.events.Event;
-import nme.events.KeyboardEvent;
-import nme.events.MouseEvent;
-import nme.Assets;
-import nme.Lib;
-import nme.ui.Keyboard;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.display.DisplayObject;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.Sprite;
+import openfl.display.Stage;
+import openfl.display.Shape;
+import openfl.display.Graphics;
+import openfl.display.MovieClip;
+import openfl.display.StageDisplayState;
+import openfl.text.TextField;
+import openfl.display.DisplayObjectContainer;
+import openfl.events.Event;
+import openfl.events.KeyboardEvent;
+import openfl.events.MouseEvent;
+import openfl.Assets;
+import openfl.Lib;
+import openfl.ui.Keyboard;
 
 #if flash
 import flash.events.UncaughtErrorEvent;
@@ -463,7 +463,7 @@ class Engine
 			
 			if(stats != null)
 			{
-				stats.x = Std.int(nme.system.Capabilities.screenResolutionX) - stats.width;
+				stats.x = Std.int(openfl.system.Capabilities.screenResolutionX) - stats.width;
 				stats.y = 0;
 			}
 			
@@ -1526,7 +1526,7 @@ class Engine
 		//For scenes with no scene data
 		if(defaultGroup == null)
 		{
-			defaultGroup = new RegularLayer(0, "", 0, 1, 1, 1, nme.display.BlendMode.NORMAL);
+			defaultGroup = new RegularLayer(0, "", 0, 1, 1, 1, openfl.display.BlendMode.NORMAL);
 			master.addChild(defaultGroup);
 		}
 	}

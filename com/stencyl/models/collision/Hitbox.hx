@@ -3,8 +3,8 @@ package com.stencyl.models.collision;
 import com.stencyl.models.Actor;
 import com.stencyl.models.Region;
 
-import nme.geom.Point;
-import nme.geom.Rectangle;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 
 /** Uses parent's hitbox to determine collision.

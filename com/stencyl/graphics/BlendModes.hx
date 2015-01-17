@@ -1,6 +1,6 @@
 package com.stencyl.graphics;
 
-import nme.display.BlendMode;
+import openfl.display.BlendMode;
 
 class BlendModes
 {

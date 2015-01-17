@@ -1,21 +1,21 @@
 package com.stencyl.utils;
 
-import nme.display.BitmapData;
-import nme.display.Bitmap;
-import nme.display.Graphics;
-import nme.display.Sprite;
-import nme.display.Stage;
-import nme.geom.Matrix;
-import nme.geom.Point;
-import nme.geom.Rectangle;
+import openfl.display.BitmapData;
+import openfl.display.Bitmap;
+import openfl.display.Graphics;
+import openfl.display.Sprite;
+import openfl.display.Stage;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 #if flash
 import flash.media.SoundMixer;
 #end
-import nme.media.SoundTransform;
-import nme.net.SharedObject;
-import nme.system.System;
+import openfl.media.SoundTransform;
+import openfl.net.SharedObject;
+import openfl.system.System;
 import haxe.Timer;
-import nme.display.DisplayObjectContainer;
+import openfl.display.DisplayObjectContainer;
 import com.stencyl.models.Actor;
 import com.stencyl.models.actor.Collision;
 
@@ -797,7 +797,7 @@ class Utils
 		#if flash
 		var flushStatus:String = null;
 		#else
-		var flushStatus:nme.net.SharedObjectFlushStatus = null;
+		var flushStatus:openfl.net.SharedObjectFlushStatus = null;
 		#end
 		
 		try 
@@ -818,12 +818,12 @@ class Utils
 		
 		if(flushStatus != null) 
 		{
-			if(flushStatus == nme.net.SharedObjectFlushStatus.PENDING)
+			if(flushStatus == openfl.net.SharedObjectFlushStatus.PENDING)
 			{
 				//trace('requesting permission to save');
 			}
 			
-			else if(flushStatus == nme.net.SharedObjectFlushStatus.FLUSHED)
+			else if(flushStatus == openfl.net.SharedObjectFlushStatus.FLUSHED)
 			{
 				trace("Saved Map: " + fileName);
 				if(onComplete != null)
@@ -896,7 +896,7 @@ class Utils
 	/**
 	 * Currently only one tilesheet for simplicity, should probably be a list later on (and not static?)
 	 */
-	public static var tilesheet:nme.display.Tilesheet;
+	public static var tilesheet:openfl.display.Tilesheet;
 
 	/**
 	 * Stores the x, y, ID, flags... which are then passed through NME
@@ -927,7 +927,7 @@ class Utils
 	public static var previousLength = 0;
 
 	/**
-	 * Flags that are copied over from the nme.display.Tilesheet class for easier access
+	 * Flags that are copied over from the openfl.display.Tilesheet class for easier access
 	 */
 	public static inline var TILE_SCALE = 0x0001;
 	public static inline var TILE_ROTATION = 0x0002;

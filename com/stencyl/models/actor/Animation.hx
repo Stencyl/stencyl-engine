@@ -1,6 +1,6 @@
 package com.stencyl.models.actor;
 
-import nme.display.BitmapData;
+import openfl.display.BitmapData;
 import box2D.dynamics.B2FixtureDef;
 
 class Animation

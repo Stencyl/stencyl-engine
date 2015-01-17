@@ -1,9 +1,9 @@
 package com.stencyl.models.collision;
 
-import nme.display.Graphics;
-import nme.geom.Point;
-import nme.geom.Rectangle;
-import nme.display.BitmapData;
+import openfl.display.Graphics;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.display.BitmapData;
 
 import com.stencyl.utils.Utils;
 

@@ -1,11 +1,11 @@
 package com.stencyl.models.background;
 
-import nme.display.DisplayObject;
-import nme.display.Graphics;
-import nme.display.Bitmap;
-import nme.display.BitmapData;
-import nme.geom.Rectangle;
-import nme.geom.Point;
+import openfl.display.DisplayObject;
+import openfl.display.Graphics;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.geom.Rectangle;
+import openfl.geom.Point;
 
 import com.stencyl.Engine;
 import com.stencyl.models.scene.layers.BackgroundLayer;

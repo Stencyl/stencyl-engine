@@ -1,11 +1,11 @@
 package scripts;
 
-import nme.display.Sprite;
-import nme.events.Event;
-import nme.Assets;
-import nme.display.Bitmap;
-import nme.display.BitmapData;
-import nme.events.MouseEvent;
+import openfl.display.Sprite;
+import openfl.events.Event;
+import openfl.Assets;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.events.MouseEvent;
 
 /*
 
@@ -94,7 +94,7 @@ class Preloader extends NMEPreloader
 	public function onMouseDown(e:MouseEvent)
 	{
 		trace("Visiting URL!");
-		nme.Lib.getURL(new nme.net.URLRequest("http://www.google.com"));
+		openfl.Lib.getURL(new openfl.net.URLRequest("http://www.google.com"));
 	}
 	
 	override public function getBackgroundColor():Int

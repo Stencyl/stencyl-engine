@@ -1,7 +1,7 @@
 package com.stencyl.models.scene;
 
-import nme.display.Sprite;
-import nme.display.Bitmap;
+import openfl.display.Sprite;
+import openfl.display.Bitmap;
 import com.stencyl.Engine;
 
 class ScrollingBitmap extends Sprite

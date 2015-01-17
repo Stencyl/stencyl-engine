@@ -1,16 +1,16 @@
 package com.stencyl.graphics;
 
-import nme.display.BitmapData;
-import nme.display.BitmapDataChannel;
-import nme.display.Graphics;
-import nme.display.Shape;
-import nme.display.BlendMode;
-import nme.display.DisplayObject;
-import nme.display.Tilesheet;
+import openfl.display.BitmapData;
+import openfl.display.BitmapDataChannel;
+import openfl.display.Graphics;
+import openfl.display.Shape;
+import openfl.display.BlendMode;
+import openfl.display.DisplayObject;
+import openfl.display.Tilesheet;
 
-import nme.geom.Rectangle;
-import nme.geom.Point;
-import nme.geom.Matrix;
+import openfl.geom.Rectangle;
+import openfl.geom.Point;
+import openfl.geom.Matrix;
 
 import com.stencyl.Engine;
 import com.stencyl.models.Actor;

@@ -189,8 +189,8 @@ class PostProcess extends OpenGLView
 		#if(desktop)
 		if(Engine.engine.isInFullScreen())
 		{
-			createTexture(Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
-			createRenderbuffer(Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
+			createTexture(Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
+			createRenderbuffer(Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
 		}
 		
 		else
@@ -199,8 +199,8 @@ class PostProcess extends OpenGLView
 			createRenderbuffer(Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale), Std.int(scripts.MyAssets.stageHeight * scripts.MyAssets.gameScale));
 		}
 		#else
-		createTexture(Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
-		createRenderbuffer(Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
+		createTexture(Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
+		createRenderbuffer(Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
 		#end
 
 		GL.bindFramebuffer(GL.FRAMEBUFFER, null);
@@ -242,7 +242,7 @@ class PostProcess extends OpenGLView
 		GL.bindFramebuffer(GL.FRAMEBUFFER, framebuffer);
 		
 		//These seem to have no effect.
-		GL.viewport(0, 0, Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
+		GL.viewport(0, 0, Std.int(openfl.Lib.current.stage.stageWidth), Std.int(openfl.Lib.current.stage.stageHeight));
 		GL.clear(GL.DEPTH_BUFFER_BIT | GL.COLOR_BUFFER_BIT);
 	}
 
@@ -258,7 +258,7 @@ class PostProcess extends OpenGLView
 		#if(desktop)
 		if(Engine.engine.isInFullScreen())
 		{
-			GL.viewport(0, 0, Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
+			GL.viewport(0, 0, Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
 		}
 		
 		else
@@ -266,7 +266,7 @@ class PostProcess extends OpenGLView
 			GL.viewport(0, 0, Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale), Std.int(scripts.MyAssets.stageHeight * scripts.MyAssets.gameScale));
 		}
 		#else
-		GL.viewport(0, 0, Std.int(nme.system.Capabilities.screenResolutionX), Std.int(nme.system.Capabilities.screenResolutionY));
+		GL.viewport(0, 0, Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
 		#end
 
 
@@ -287,8 +287,8 @@ class PostProcess extends OpenGLView
 
 		GL.uniform1i(imageUniform, 0);
 		GL.uniform1f(timeUniform, time);
-		GL.uniform2f(resolutionUniform, Std.int(nme.Lib.current.stage.stageWidth), Std.int(nme.Lib.current.stage.stageHeight));
-		GL.uniform2f(resolutionUsUniform, Std.int(nme.Lib.current.stage.stageWidth / scripts.MyAssets.gameScale), Std.int(nme.Lib.current.stage.stageHeight / scripts.MyAssets.gameScale));
+		GL.uniform2f(resolutionUniform, Std.int(openfl.Lib.current.stage.stageWidth), Std.int(openfl.Lib.current.stage.stageHeight));
+		GL.uniform2f(resolutionUsUniform, Std.int(openfl.Lib.current.stage.stageWidth / scripts.MyAssets.gameScale), Std.int(openfl.Lib.current.stage.stageHeight / scripts.MyAssets.gameScale));
 
 		//for (u in uniforms) GL.uniform1f(u.id, u.value);
 		var it = uniforms.iterator();

@@ -1,9 +1,9 @@
 package com.stencyl.models.scene.layers;
 
-import nme.display.BlendMode;
-import nme.display.Sprite;
+import openfl.display.BlendMode;
+import openfl.display.Sprite;
 
-import nme.display.BlendMode;
+import openfl.display.BlendMode;
 
 class RegularLayer extends Sprite 
 {

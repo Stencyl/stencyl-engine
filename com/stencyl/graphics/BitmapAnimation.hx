@@ -1,10 +1,10 @@
 package com.stencyl.graphics;
 
 import com.stencyl.models.actor.Animation;
-import nme.display.Bitmap;
-import nme.display.BitmapData;
-import nme.geom.Rectangle;
-import nme.geom.Point;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.geom.Rectangle;
+import openfl.geom.Point;
 import com.stencyl.Engine;
 
 //TODO: It would be better to pass in the frames, broken up and swap between the frames.

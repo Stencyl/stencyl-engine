@@ -7,21 +7,21 @@ import com.stencyl.behavior.TimedTask;
 import com.stencyl.models.collision.CollisionInfo;
 import com.stencyl.models.collision.Masklist;
 import flash.geom.Transform;
-import nme.display.Sprite;
-import nme.display.Bitmap;
-import nme.display.BitmapData;
-import nme.display.Tilesheet;
-import nme.display.DisplayObject;
-import nme.display.DisplayObjectContainer;
-import nme.Assets;
-import nme.display.Graphics;
-import nme.geom.Matrix;
-import nme.geom.Point;
-import nme.geom.Rectangle;
-import nme.utils.ByteArray;
+import openfl.display.Sprite;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.Tilesheet;
+import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectContainer;
+import openfl.Assets;
+import openfl.display.Graphics;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.utils.ByteArray;
 
 #if (flash || cpp)
-import nme.Memory;
+import openfl.Memory;
 #end
 
 import com.stencyl.Input;
@@ -80,7 +80,7 @@ import com.stencyl.models.collision.Mask;
 import com.stencyl.models.collision.Hitbox;
 import com.stencyl.models.collision.Grid;
 
-import nme.filters.BitmapFilter;
+import openfl.filters.BitmapFilter;
 
 #if flash
 import flash.filters.ColorMatrixFilter;
@@ -827,7 +827,7 @@ class Actor extends Sprite
 				
 		for(i in 0...frameCount)
 		{			
-			tilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * (i % framesAcross), Math.floor(i / framesAcross) * frameHeight, frameWidth, frameHeight));
+			tilesheet.addTileRect(new openfl.geom.Rectangle(frameWidth * (i % framesAcross), Math.floor(i / framesAcross) * frameHeight, frameWidth, frameHeight));
 			// trace("x: " + (frameWidth * (i % framesAcross)) + " y: " + (Math.floor(i / framesAcross) * frameHeight) + " w: " + (frameWidth) + " h: " + (frameHeight));
 		}
 		 	
@@ -3476,7 +3476,7 @@ class Actor extends Sprite
 						
 						while (i < anim.numFrames)
 						{
-							tempTilesheet.addTileRect(new nme.geom.Rectangle(frameWidth * (i % anim.framesAcross), Math.floor(i / anim.framesAcross) * frameHeight, frameWidth, frameHeight));
+							tempTilesheet.addTileRect(new openfl.geom.Rectangle(frameWidth * (i % anim.framesAcross), Math.floor(i / anim.framesAcross) * frameHeight, frameWidth, frameHeight));
 							i++;
 						}
 						

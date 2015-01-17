@@ -23,8 +23,8 @@ import com.stencyl.models.collision.Mask;
 import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.graphics.BlendModes;
 
-import nme.display.BlendMode;
-import nme.geom.Point;
+import openfl.display.BlendMode;
+import openfl.geom.Point;
 import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2EdgeShape;
 import box2D.collision.shapes.B2CircleShape;
@@ -41,8 +41,8 @@ import haxe.xml.Fast;
 import com.stencyl.Engine;
 import com.stencyl.utils.Utils;
 
-import nme.geom.Rectangle;
-import nme.utils.ByteArray;
+import openfl.geom.Rectangle;
+import openfl.utils.ByteArray;
 import com.stencyl.utils.PolyDecompBayazit;
 
 class Scene
@@ -86,7 +86,7 @@ class Scene
 	
 	public function load()
 	{
-		var xml:Fast = new Fast(Xml.parse(nme.Assets.getText("assets/data/scene-" + ID + ".xml")).firstElement());
+		var xml:Fast = new Fast(Xml.parse(openfl.Assets.getText("assets/data/scene-" + ID + ".xml")).firstElement());
 		
 		var numTileLayers:Int = Std.parseInt(xml.att.depth);
 		
@@ -132,11 +132,11 @@ class Scene
 		wireframes = readWireframes(xml.node.terrain.elements);
 		
 		#if js
-		var rawLayers = readRawLayers(nme.Assets.getText("assets/data/scene-" + ID + ".txt"), numTileLayers);
+		var rawLayers = readRawLayers(openfl.Assets.getText("assets/data/scene-" + ID + ".txt"), numTileLayers);
 		#end
 		
 		#if !js
-		var rawLayers = readRawLayers(nme.Assets.getBytes("assets/data/scene-" + ID + ".scn"), numTileLayers);
+		var rawLayers = readRawLayers(openfl.Assets.getBytes("assets/data/scene-" + ID + ".scn"), numTileLayers);
 		#end
 
 		layers = readAllLayers(xml.node.layers.elements, rawLayers);

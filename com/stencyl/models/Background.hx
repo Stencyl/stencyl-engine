@@ -1,6 +1,6 @@
 package com.stencyl.models;
 
-import nme.display.Graphics;
+import openfl.display.Graphics;
 
 interface Background 
 {

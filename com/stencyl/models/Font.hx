@@ -1,6 +1,6 @@
 package com.stencyl.models;
 
-import nme.Assets;
+import openfl.Assets;
 import com.stencyl.graphics.fonts.BitmapFont;
 
 import com.stencyl.graphics.fonts.Label;
