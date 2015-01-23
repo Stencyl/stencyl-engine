@@ -2417,30 +2417,8 @@ class Script
 				a.addChild(img);
 			}
 
-			//XXX: Awful, but it works. Clean this up.
-			if(Engine.SCALE == 1)
-			{
-				img.imgX = x - (a.getWidth()/2);
-				img.imgY = y - (a.getHeight()/2);
-			}
-			
-			else if(Engine.SCALE == 2)
-			{
-				img.imgX = x - (Engine.SCALE * a.getWidth());
-				img.imgY = y - (Engine.SCALE * a.getHeight());
-			}
-			
-			else if(Engine.SCALE == 4)
-			{
-				img.imgX = x - (Engine.SCALE * a.getWidth() * 2);
-				img.imgY = y - (Engine.SCALE * a.getHeight() * 2);
-			}
-			
-			else
-			{
-				img.imgX = x - (Engine.SCALE * a.getWidth() * 0.75);
-				img.imgY = y - (Engine.SCALE * a.getHeight() * 0.75);
-			}
+			img.imgX = x - (Engine.SCALE * a.getWidth() * (Engine.SCALE / 2));
+			img.imgY = y - (Engine.SCALE * a.getHeight() * (Engine.SCALE / 2));
 			
 			img.smoothing = scripts.MyAssets.antialias;
 
