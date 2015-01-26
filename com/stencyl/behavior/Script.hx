@@ -4243,6 +4243,14 @@ class Script
 		#end	
 	}
 	
+	//For V3 Google IAP
+	public function purchasesGoogleConsume(productID:String):Void 
+	{
+		#if (mobile && cpp && !air)
+			Purchases.consume(productID);
+		#end	
+	}
+	
 	public function purchasesGetQuantity(productID:String):Int 
 	{
 		#if (mobile && cpp && !air)
