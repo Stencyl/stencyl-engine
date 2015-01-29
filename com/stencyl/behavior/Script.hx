@@ -2886,7 +2886,7 @@ class Script
 		
 		var bytes = img.getPixels(dummyRect);
 		
-		#if(cpp)
+		#if(cpp || neko)
 		var b = Bytes.alloc(bytes.length);
 		
 		for(i in 0...bytes.length)

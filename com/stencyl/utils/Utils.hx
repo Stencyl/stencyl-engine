@@ -37,13 +37,9 @@ class Utils
 #end
 
 	/**
-	 * The color black defined for neko (BitmapInt32) or flash (Int)
+	 * The color black
 	 */
-#if neko
-	public static inline var blackColor = { rgb: 0x000000, a: 1 }; // BitmapInt32
-#else
 	public static inline var blackColor = 0xFF000000;
-#end
 
 	/**
 	 * Width of the game.

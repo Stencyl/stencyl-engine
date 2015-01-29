@@ -296,17 +296,10 @@ class BitmapFont
 			while (cx < pBitmapData.width)
 			{
 				pixelColor = pBitmapData.getPixel32(cx, cy);
-				#if neko
-				if (pixelColor.rgb == bgColor32.rgb && pixelColor.a == bgColor32.a)
-				{
-					resultBitmapData.setPixel32(cx, cy, {rgb: 0x000000, a: 0x00});
-				}
-				#else
 				if (pixelColor == bgColor32)
 				{
 					resultBitmapData.setPixel32(cx, cy, 0x00000000);
 				}
-				#end
 				cx++;
 			}
 			cy++;

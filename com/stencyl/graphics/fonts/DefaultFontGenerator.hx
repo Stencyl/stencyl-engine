@@ -9,11 +9,7 @@ class DefaultFontGenerator
 	public static function generateAndStoreDefaultFont():Void 
 	{
 		var letters:String = "";
-		#if neko
-		var bd:BitmapData = new BitmapData(700, 9, true, {rgb: 0x888888, a: 0xFF});
-		#else
 		var bd:BitmapData = new BitmapData(700, 9, true, 0xFF888888);
-		#end
 		
 		var letterPos:Int = 0;
 		var i:Int = 0;
@@ -33,20 +29,12 @@ class DefaultFontGenerator
 					
 					if (fontData.substr(i, 1) == "1") 
 					{
-						#if neko
-						bd.setPixel32(1 + letterPos * 7 + px, 1 + py, { rgb: 0xFFFFFF, a: 0xFF } );
-						#else
 						bd.setPixel32(1 + letterPos * 7 + px, 1 + py, 0xFFFFFFFF);
-						#end
 					}
 					
 					else 
 					{
-						#if neko
-						bd.setPixel32(1 + letterPos * 7 + px, 1 + py, { rgb: 0x000000, a: 0x00 } );
-						#else
 						bd.setPixel32(1 + letterPos * 7 + px, 1 + py, 0x00000000);
-						#end
 					}
 				}
 			}
