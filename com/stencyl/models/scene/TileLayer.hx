@@ -13,7 +13,7 @@ import com.stencyl.models.Scene;
 import com.stencyl.utils.Utils;
 import com.stencyl.models.collision.Grid;
 
-#if cpp
+#if (cpp || neko)
 import openfl.display.Tilesheet;
 #end
 
@@ -68,7 +68,7 @@ class TileLayer extends Sprite
 	
 	public function reset()
 	{
-		#if !cpp
+		#if (!cpp && !neko)
 		if(noTiles)
 		{
 		}
@@ -94,7 +94,7 @@ class TileLayer extends Sprite
 	
 	public function clearBitmap()
 	{
-		#if !cpp		
+		#if (!cpp && !neko)
 		while(numChildren > 0)
 		{
 			removeChildAt(0);
@@ -117,7 +117,7 @@ class TileLayer extends Sprite
 		this.y = y - y % (scene.tileHeight * Engine.SCALE);
 		#end
 		
-		#if cpp
+		#if (cpp || neko)
 		//this.x = x;
 		//this.y = y;
 		#end
@@ -173,7 +173,7 @@ class TileLayer extends Sprite
 		{
 			noTiles = false;
 
-			#if !cpp
+			#if (!cpp && !neko)
 			if(bitmapData == null)
 				reset();
 			#end
@@ -201,11 +201,11 @@ class TileLayer extends Sprite
 			return;
 		}
 		
-		#if cpp
+		#if (cpp || neko)
 		graphics.clear();
 		#end
 		
-		#if !cpp
+		#if (!cpp && !neko)
 		if(bitmapData == null)
 		{
 			return;
@@ -299,7 +299,7 @@ class TileLayer extends Sprite
 						}
 						#end
 						
-						#if cpp		
+						#if (cpp || neko)
 						flashPoint.x = x * tw * Engine.SCALE;
 						flashPoint.y = y * th * Engine.SCALE;
 						

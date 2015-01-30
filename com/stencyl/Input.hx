@@ -16,7 +16,7 @@ import openfl.events.TouchEvent;
 import openfl.ui.Multitouch;
 #end
 
-#if cpp
+#if (cpp || neko)
 import openfl.ui.Accelerometer;
 #end
 
@@ -393,7 +393,7 @@ class Input
 			swipeDirection = -1;
 		}
 		
-		#if cpp
+		#if (cpp || neko)
 		if(openfl.sensors.Accelerometer.isSupported)
 		{
 			var data = Accelerometer.get();

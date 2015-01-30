@@ -88,7 +88,7 @@ class Utils
 	}*/
 	
 	public static inline function clear(arr:Array<Dynamic>){
-        #if (cpp||php)
+        #if (cpp || php)
            arr.splice(0,arr.length);           
         #else
            untyped arr.length = 0;

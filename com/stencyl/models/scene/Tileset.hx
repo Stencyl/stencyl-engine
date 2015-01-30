@@ -5,7 +5,7 @@ import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 import openfl.geom.Point;
 
-#if cpp
+#if (cpp || neko)
 import openfl.display.Tilesheet;
 #end
 
@@ -20,7 +20,7 @@ class Tileset extends Resource
 	public var pixels:BitmapData;
 	public static var temp:Rectangle;
 	
-	#if cpp
+	#if (cpp || neko)
 	public var tilesheet:Tilesheet;
 	public var data:Array<Float>;
 	
@@ -48,7 +48,7 @@ class Tileset extends Resource
 	
 	public function setupTilesheet()
 	{
-		#if cpp
+		#if (cpp || neko)
 		sheetMap = new Map<Int,Int>();
 		data = [0.0,0.0,0];
 		
@@ -103,7 +103,7 @@ class Tileset extends Resource
 			var row:Int = Math.floor(tile.frameIndex / framesAcross);
 			var col:Int = Math.floor(tile.frameIndex % framesAcross);
 			
-			#if cpp
+			#if (cpp || neko)
 			// The tile line fix now affects all scale modes.  Set to false if this causes any problems.
 			if(true)
 			{
@@ -156,7 +156,7 @@ class Tileset extends Resource
 	{
 		pixels = null;
 	
-		#if cpp
+		#if (cpp || neko)
 		tilesheet = null;
 		#end
 		

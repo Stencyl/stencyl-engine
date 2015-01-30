@@ -21,8 +21,11 @@ class Layer extends RegularLayer
 	//Custom Drawing (graphics)
 	public var overlay:Sprite;
 	//More custom Drawing (canvas)
-	public var bitmapOverlay:Dynamic;
-	
+	#if (js)
+	public var bitmapOverlay:Bitmap;
+	#else
+	public var bitmapOverlay:Sprite;
+	#end
 
 	public var color:Int; //???
 
@@ -43,12 +46,10 @@ class Layer extends RegularLayer
 
 		#if (js)
 		bitmapOverlay = new Bitmap(new BitmapData(Engine.screenWidth, Engine.screenHeight, true, 0));
-		#end
-		
-		#if (cpp || flash)
+		#else
 		bitmapOverlay = new Sprite();
 		#end
-
+		
 		addChild(tiles);
 		addChild(underActors);
 		addChild(actorContainer);

@@ -1445,7 +1445,7 @@ class Script
     public function setBlendModeForLayer(refType:Int, ref:String, mode:openfl.display.BlendMode)
     {
     	var layer = getLayer(refType, ref);
-		#if cpp
+		#if (cpp || neko)
 		//only implemented for tilelayers on cpp
 		if(Std.is(layer, Layer))
 		{
@@ -3364,7 +3364,7 @@ class Script
 	
 	public function toggleFullScreen()
 	{
-		#if((flash && !air) || (cpp && !mobile))
+		#if((flash && !air) || (cpp && !mobile) || neko)
 		Engine.engine.toggleFullscreen();
 		#end
 	}
@@ -4334,7 +4334,7 @@ class Script
 	//* Utilities
 	//*-----------------------------------------------
 	
-	#if (cpp || js)
+	#if (cpp || js || neko)
 	public function createGrayscaleFilter():Array<Dynamic>
 	{
 		var matrix = new Array<Dynamic>();

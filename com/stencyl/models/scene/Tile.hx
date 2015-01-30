@@ -103,7 +103,7 @@ class Tile
 		
 		pixels = imgData;
 		
-		#if cpp		
+		#if (cpp || neko)
 		if(imgData != null)
 		{
 			data = new Tilesheet(imgData);

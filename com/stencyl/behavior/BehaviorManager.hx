@@ -183,9 +183,7 @@ class BehaviorManager
 			//XXX: Flash works slightly differently from the rest on this... :(
 			#if flash
 			if(Reflect.hasField(item.script, msg))
-			#end
-			
-			#if (cpp || js)
+			#else
 			try
 			#end
 			{
@@ -204,9 +202,7 @@ class BehaviorManager
 			
 			#if flash
 			else
-			#end
-			
-			#if (cpp || js)
+			#else
 			catch(e:String)
 			#end
 			{
@@ -237,9 +233,7 @@ class BehaviorManager
 			//XXX: Flash works slightly differently from the rest on this... :(
 			#if flash
 			if(Reflect.hasField(item.script, msg))
-			#end
-			
-			#if (cpp || js)
+			#else
 			try
 			#end
 			{
@@ -258,9 +252,7 @@ class BehaviorManager
 			
 			#if flash
 			else
-			#end
-			
-			#if (cpp || js)
+			#else
 			catch(e:String)
 			#end
 			{

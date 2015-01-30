@@ -23,7 +23,7 @@ class RegularLayer extends Sprite
 		this.scrollFactorX = scrollFactorX;
 		this.scrollFactorY = scrollFactorY;
 		alpha = opacity;
-		#if cpp
+		#if (cpp || neko)
 		//blendName is implemented in Layer.hx
 		#elseif flash
 		this.blendMode = blendMode;

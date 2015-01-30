@@ -4,6 +4,7 @@ import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.Graphics;
 import openfl.display.Shape;
+import openfl.display.Sprite;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.Tilesheet;
@@ -26,8 +27,12 @@ class G
 	private var defaultFont:Font;
 
 	public var graphics:Graphics;
-	public var canvas:Dynamic; //Sprite for cpp, flash targets, BitmapData for js
-	
+	#if (js)
+	public var canvas:BitmapData;
+	#else
+	public var canvas:Sprite;
+	#end
+
 	public var x:Float;
 	public var y:Float;
 	public var scaleX:Float; //[1]
@@ -300,7 +305,7 @@ class G
 			drawY = this.y + y * scaleY;
 		}
 		
-		#if(cpp)
+		#if(cpp || neko)
 		drawData.splice(0, drawData.length);
 		font.font.render(drawData, s, 0x000000, alpha, Std.int(drawX), Std.int(drawY), font.letterSpacing, font.fontScale, 0, false);
 		font.font.drawText(graphics, drawData);
@@ -657,7 +662,7 @@ class G
 		
 		//TODO: Very wasteful to make a new tilesheet each time!
 		//Actually, this isn't used as much as we think. For actor drawing, it's done in SheetAnimation.
-		#if (cpp)
+		#if (cpp || neko)
 		var sheet = new Tilesheet(img);
 		sheet.addTileRect(rect, point2);
 		data[0] = point.x;
