@@ -700,18 +700,6 @@ class Utils
 	}
 
 	/**
-	 * Converts a color to platform specific type (BitmapInt32)
-	 */
-	public static inline function convertColor(color:Int):Dynamic
-	{
-#if neko
-		return { rgb: color, a: 1 };
-#else
-		return color; // do nothing
-#end
-	}
-
-	/**
 	 * Sets a time flag.
 	 * @return	Time elapsed (in milliseconds) since the last time flag was set.
 	 */

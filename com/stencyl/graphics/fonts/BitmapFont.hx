@@ -6,7 +6,6 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import haxe.Int32;
 
 #if (cpp || neko)
 import openfl.display.Tilesheet;
@@ -272,21 +271,14 @@ class BitmapFont
 			cy += (rowHeight + 1);
 		}
 		
-		#if neko
 		var resultBitmapData:BitmapData = pBitmapData.clone();
-		#else
-		var resultBitmapData:BitmapData = pBitmapData.clone();
-		#end
 		
 		#if flash
 		var pixelColor:UInt;
-		var bgColor32:UInt = pBitmapData.getPixel(0, 0);
-		#elseif (!flash && !html5 && !openfl_next)
-		var pixelColor:Int32;
-		var bgColor32:Int32 = pBitmapData.getPixel32(0, 0);
+		var bgColor32:UInt = pBitmapData.getPixel32(0, 0);
 		#else
 		var pixelColor:Int;
-		var bgColor32:Int = pBitmapData.getPixel(0, 0);
+		var bgColor32:Int = pBitmapData.getPixel32(0, 0);
 		#end
 		
 		cy = 0;
