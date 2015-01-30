@@ -20,7 +20,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 
-#if (flash || cpp)
+#if (flash || cpp || neko)
 import openfl.Memory;
 #end
 
@@ -91,6 +91,11 @@ import com.stencyl.utils.ColorMatrix;
 //import jeash.filters.ColorMatrixFilter;
 #end
 
+#if (cpp || neko)
+typedef ActorAnimation = SheetAnimation;
+#else
+typedef ActorAnimation = BitmapAnimation;
+#end
 
 class Actor extends Sprite 
 {	
@@ -189,14 +194,16 @@ class Actor extends Sprite
 	//* Sprite-Based Animation
 	//*-----------------------------------------------
 	
-	public var currAnimationAsAnim:Dynamic;
-	public var currAnimation:DisplayObject;
+	public var currAnimation:ActorAnimation;
 	public var currAnimationName:String;
-	public var animationMap:Map<String,Dynamic>;
-	public var backupAnimationMap:Map<String,Dynamic>;
+	public var animationMap:Map<String,ActorAnimation>;
+
+	#if (cpp || neko)
+	public var backupAnimationMap:Map<String,BitmapData>;
 	public var animsBackedUp:Bool = false;
 	public var tint:Bool = false;
-	
+	#end
+
 	public var sprite:com.stencyl.models.actor.Sprite;
 	
 	public var shapeMap:Map<String,Dynamic>;
@@ -479,7 +486,7 @@ class Actor extends Sprite
 		//---
 		
 		currAnimationName = "";
-		animationMap = new Map<String,Dynamic>();
+		animationMap = new Map<String,ActorAnimation>();
 		shapeMap = new Map<String,Dynamic>();
 		originMap = new Map<String,B2Vec2>();
 		
@@ -662,7 +669,6 @@ class Actor extends Sprite
 		originMap = null;
 		defaultAnim = null;
 		animationMap = null;
-		currAnimationAsAnim = null;
 		currAnimation = null;
 		currOffset = null;
 		currOrigin = null;
@@ -813,13 +819,20 @@ class Actor extends Sprite
 		{
 			//animationMap.set(name, new Sprite());
 			
-			//XXX: Did some work on cases where image dta is missing. It's still an error but won't crash anymore.
+			//XXX: Did some work on cases where image data is missing. It's still an error but won't crash anymore.
+			//XXX: This ends up being the case for the recyclingDefault animation.
+			#if (cpp || neko)
+			var tilesheet = new Tilesheet(new BitmapData(16, 16));
+			tilesheet.addTileRect(new openfl.geom.Rectangle(0, 0, 16, 16));
+			animationMap.set(name, new SheetAnimation(tilesheet, [1000000], 16, 16, false, null));
+			#elseif flash
 			animationMap.set(name, new BitmapAnimation(new BitmapData(16, 16), 1, 1, 1, [1000000], false, null));
+			#end
 			originMap.set(name, new B2Vec2(originX, originY));
 			return;
 		}
 	
-		#if cpp
+		#if (cpp || neko)
 		var tilesheet = new Tilesheet(imgData);
 				
 		frameWidth = Std.int(imgData.width/framesAcross);
@@ -985,7 +998,7 @@ class Actor extends Sprite
 	//* Animation
 	//*-----------------------------------------------
    	
-	public function addAnimation(name:String, sprite:DisplayObject)
+	public function addAnimation(name:String, sprite:ActorAnimation)
 	{
 		animationMap.set(name, sprite);
 	}
@@ -1192,8 +1205,6 @@ class Actor extends Sprite
 			
 			currAnimationName = name;
 			currAnimation = newAnimation;
-			
-			currAnimationAsAnim = cast(currAnimation, AbstractAnimation);
 							
 			addChild(newAnimation);			
 			
@@ -1584,10 +1595,10 @@ class Actor extends Sprite
 		lastScale.x = realScaleX;
 		lastScale.y = realScaleY;
 		
-		if(doAll && currAnimationAsAnim != null)
+		if(doAll && currAnimation != null)
 		{
    			//This may be a slowdown on iOS by 3-5 FPS due to clear and redraw?
-   			currAnimationAsAnim.update(elapsedTime);
+   			currAnimation.update(elapsedTime);
 		}
 			
 		updateTweenProperties();		
@@ -3333,7 +3344,7 @@ class Actor extends Sprite
 			var x:Float = 0;
 			var y:Float = 0;
 			
-			#if cpp
+			#if (cpp || neko)
 			if(g.drawActor)
 			{
 				x = g.x + Engine.cameraX;
@@ -3434,7 +3445,7 @@ class Actor extends Sprite
 	#end
 	
 	
-	#if cpp
+	#if (cpp || neko)
 	public function setFilter(filter:Array<Array<Dynamic>>)
 	{	
 		var filterName:String;
@@ -3457,7 +3468,7 @@ class Actor extends Sprite
 			// Backup the default animations so the filters can be undone later.
 			if (!animsBackedUp)
 			{
-				backupAnimationMap = new Map<String,Dynamic>();
+				backupAnimationMap = new Map<String,BitmapData>();
 			
 				for (key in animationMap.keys())
 				{
@@ -3708,7 +3719,7 @@ class Actor extends Sprite
 		filters = [];
 		#end
 		
-		#if (cpp)
+		#if (cpp || neko)
 		if (animsBackedUp)
 		{
 			var pt:Point = new Point(0,0);
@@ -3742,7 +3753,7 @@ class Actor extends Sprite
 	
 	public function setBlendMode(blendName:Dynamic)
 	{
-		#if cpp
+		#if (cpp || neko)
 		for (anim in animationMap)
 		{
 			if (Type.getClass(anim) == SheetAnimation)
@@ -3758,7 +3769,7 @@ class Actor extends Sprite
 	
 	public function resetBlendMode()
 	{
-		#if cpp
+		#if (cpp || neko)
 		for (anim in animationMap)
 		{
 			if (Type.getClass(anim) == SheetAnimation)

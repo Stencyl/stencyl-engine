@@ -2,6 +2,8 @@ package com.stencyl;
 
 #if cpp
 import cpp.vm.Gc;
+#elseif neko
+import neko.vm.Gc;
 #end
 
 import de.polygonal.ds.IntHashTable;
@@ -236,7 +238,14 @@ class Engine
 	public var colorLayer:Shape;
 	public var master:Sprite; // the root of the main node
 	public var hudLayer:Sprite; //Shows above everything else
-	public var transitionBitmapLayer:DisplayObject; //Shows above everything else
+
+	//Shows above everything else
+	#if (js)
+	public var transitionBitmapLayer:Bitmap;
+	#else
+	public var transitionBitmapLayer:Sprite;
+	#end
+
 	public var transitionLayer:Sprite; //Shows above everything else
 	public var debugLayer:Sprite;
 	
@@ -652,7 +661,7 @@ class Engine
 		Data.get();
 		GameModel.get().loadScenes();
 
-		#if cpp
+		#if (cpp || neko)
 		{
 			for(atlas in GameModel.get().atlases)
 			{
@@ -726,9 +735,7 @@ class Engine
 		
 		#if (js)
 		transitionBitmapLayer = new Bitmap(new BitmapData(1, 1, true, 0));
-		#end
-		
-		#if (cpp || flash)
+		#else
 		transitionBitmapLayer = new Sprite();
 		#end
 		
@@ -871,7 +878,7 @@ class Engine
 				}
 			}
 
-			#if cpp
+			#if (cpp || neko)
 			Gc.run(true);
 			#end
 			
@@ -982,7 +989,7 @@ class Engine
 		initBehaviors(behaviors, scene.behaviorValues, this, this, true);			
 		initActorScripts();
 		
-		#if cpp
+		#if (cpp || neko)
 		Gc.run(true);
 		#end
 	}
@@ -2646,9 +2653,9 @@ class Engine
 					continue;
 				}
 				
-				if(a.currAnimationAsAnim != null && a.currAnimationAsAnim.needsBitmapUpdate())
+				if(a.currAnimation != null && a.currAnimation.needsBitmapUpdate())
 				{
-					a.currAnimationAsAnim.updateBitmap();
+					a.currAnimation.updateBitmap();
 				}
 				
 				if(a.dead || a.dying)
@@ -3023,16 +3030,18 @@ class Engine
 			l.overlay.graphics.clear();
 			
 			#if (js)
+
 			if (l.drawnOn)
 			{
 				l.overlay.graphics.__invalidate();
 				l.bitmapOverlay.bitmapData.fillRect(l.bitmapOverlay.bitmapData.rect, 0);
 				l.drawnOn = false;
 			}
-			#end
 			
-			#if (cpp || flash)
+			#else
+			
 			l.bitmapOverlay.graphics.clear();
+			
 			#end
 		}
 		
@@ -3068,7 +3077,7 @@ class Engine
 						g.canvas = layer.bitmapOverlay.bitmapData;
 						#end
 						
-						#if (cpp || flash)
+						#if (cpp || flash || neko)
 						g.canvas = layer.bitmapOverlay;
 						#end		
 						
@@ -3098,10 +3107,8 @@ class Engine
      	g.graphics = transitionLayer.graphics;
      	
      	#if (js)
-     	g.canvas = cast(transitionBitmapLayer, Bitmap).bitmapData;
-     	#end
-     	
-     	#if (cpp || flash)
+     	g.canvas = transitionBitmapLayer.bitmapData;
+     	#else
      	g.canvas = transitionBitmapLayer;
      	#end
      	
@@ -3112,7 +3119,7 @@ class Engine
      	g.canvas.fillRect(g.canvas.rect, 0);
      	#end
      	
-     	#if (cpp || flash)
+     	#if (cpp || flash || neko)
      	g.canvas.graphics.clear();
      	#end
      	
