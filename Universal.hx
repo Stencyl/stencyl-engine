@@ -137,11 +137,8 @@ class Universal extends Sprite
 		//NME Bug: If waking from sleep, the dimensions can be flipped on Android.
 		#if android
 		
-		//stageWidth = Std.int(openfl.system.Capabilities.screenResolutionX);
-		//stageHeight = Std.int(openfl.system.Capabilities.screenResolutionY);
-		
-		stageWidth = Lib.current.stage.stageWidth;
-		stageHeight = Lib.current.stage.stageHeight;
+		stageWidth = Std.int(openfl.system.Capabilities.screenResolutionX);
+		stageHeight = Std.int(openfl.system.Capabilities.screenResolutionY);
 		
 		if(stageWidth < stageHeight && scripts.MyAssets.landscape)
 		{
@@ -153,11 +150,8 @@ class Universal extends Sprite
 		//NME Bug: If waking from sleep, the dimensions can be flipped on iOS.
 		#if (mobile && !android)
 		
-		//stageWidth = Std.int(openfl.system.Capabilities.screenResolutionX);
-		//stageHeight = Std.int(openfl.system.Capabilities.screenResolutionY);
-		
-		stageWidth = Lib.current.stage.stageWidth;
-		stageHeight = Lib.current.stage.stageHeight;
+		stageWidth = Std.int(openfl.system.Capabilities.screenResolutionX);
+		stageHeight = Std.int(openfl.system.Capabilities.screenResolutionY);
 		
 		if(stageWidth < stageHeight && scripts.MyAssets.landscape)
 		{
@@ -690,7 +684,7 @@ class Universal extends Sprite
 		
 		scripts.MyAssets.stageWidth = originalWidth;
 		scripts.MyAssets.stageHeight = originalHeight;
-		
+
 		trace("Scale X: " + scaleX);
 		trace("Scale Y: " + scaleY);
 	}
