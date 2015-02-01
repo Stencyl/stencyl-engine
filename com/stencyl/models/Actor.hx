@@ -822,13 +822,21 @@ class Actor extends Sprite
 			//XXX: Did some work on cases where image data is missing. It's still an error but won't crash anymore.
 			//XXX: This ends up being the case for the recyclingDefault animation.
 			#if (cpp || neko)
+
 			var tilesheet = new Tilesheet(new BitmapData(16, 16));
 			tilesheet.addTileRect(new openfl.geom.Rectangle(0, 0, 16, 16));
-			animationMap.set(name, new SheetAnimation(tilesheet, [1000000], 16, 16, false, null));
+			var tempSprite = new SheetAnimation(tilesheet, [1000000], 16, 16, false, null);
+			tempSprite.framesAcross = 1;
+			animationMap.set(name, tempSprite);
+			
 			#elseif flash
+			
 			animationMap.set(name, new BitmapAnimation(new BitmapData(16, 16), 1, 1, 1, [1000000], false, null));
+			
 			#end
+			
 			originMap.set(name, new B2Vec2(originX, originY));
+			
 			return;
 		}
 	
