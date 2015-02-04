@@ -94,6 +94,11 @@ class Universal extends Sprite
 	//isFullScreen is used on Web/Desktop for full screen mode
 	public function initScreen(isFullScreen:Bool = false)
 	{
+		Lib.current.x = 0;
+		Lib.current.y = 0;
+		Lib.current.scaleX = 1;
+		Lib.current.scaleY = 1;
+		
 		com.stencyl.Engine.stage = Lib.current.stage;
 	
 		var skipScaling = false;
@@ -402,7 +407,7 @@ class Universal extends Sprite
 					screenW = Std.int(openfl.system.Capabilities.screenResolutionY);
 				}
 				
-				var screenLandscape = openfl.system.Capabilities.screenResolutionX > openfl.system.Capabilities.screenResolutionY;
+				var screenLandscape = Lib.current.stage.width > Lib.current.stage.height;
 				
 				trace(screenW);
 				trace(screenH);
@@ -470,7 +475,7 @@ class Universal extends Sprite
 							scaleY = stageHeight / scripts.MyAssets.stageHeight;
 							
 							//Height's scale causes width to spill over. Clamp to width instead.
-							if(openfl.system.Capabilities.screenResolutionX * Engine.SCALE * scaleY > screenW)
+							if(Lib.current.stage.width * Engine.SCALE * scaleY > screenW)
 							{
 								scaleY = stageWidth / scripts.MyAssets.stageWidth;
 							}
@@ -483,7 +488,7 @@ class Universal extends Sprite
 							scaleX = stageWidth / scripts.MyAssets.stageWidth;
 							
 							//Width's scale causes width to spill over. Clamp to height instead.
-							if(openfl.system.Capabilities.screenResolutionY * Engine.SCALE * scaleX > screenH)
+							if(Lib.current.stage.height * Engine.SCALE * scaleX > screenH)
 							{
 								scaleX = stageHeight / scripts.MyAssets.stageHeight;
 							}
@@ -585,7 +590,7 @@ class Universal extends Sprite
 							scaleY = stageHeight / scripts.MyAssets.stageHeight;
 							
 							//Height's scale causes width to spill over. Clamp to width instead.
-							if(openfl.system.Capabilities.screenResolutionX * Engine.SCALE * scaleY > screenW)
+							if(Lib.current.stage.width * Engine.SCALE * scaleY > screenW)
 							{
 								scaleY = stageWidth / scripts.MyAssets.stageWidth;
 							}
@@ -598,7 +603,7 @@ class Universal extends Sprite
 							scaleX = stageWidth / scripts.MyAssets.stageWidth;
 							
 							//Width's scale causes width to spill over. Clamp to height instead.
-							if(openfl.system.Capabilities.screenResolutionY * Engine.SCALE * scaleX > screenH)
+							if(Lib.current.stage.height * Engine.SCALE * scaleX > screenH)
 							{
 								scaleX = stageHeight / scripts.MyAssets.stageHeight;
 							}
@@ -642,6 +647,23 @@ class Universal extends Sprite
 				if(scripts.MyAssets.scaleToFit3)
 				{
 					//Disabled - this defeats the purpose of full screen?
+					//If the scaled game is less than the screen's size, we need to apply an offset to it.
+					//For example, native res of (544 x 320) on an iPad (1024 x 768) will be (1088 x 640) at a 2x scale. It will sit high and have black space below.
+					
+					/*var realX = Lib.current.stage.width * (Engine.SCALE * scaleX);
+					var realY = Lib.current.stage.height * (Engine.SCALE * scaleY);
+					
+					if(screenW > realX)
+					{
+						x += (screenW - realX) / 2;
+						trace("Offset X by: " + ((screenW - realX) / 2));
+					}
+					
+					if(screenH > realY)
+					{
+						y += (screenH - realY) / 2;
+						trace("Offset Y by: " + ((screenH - realY) / 2));
+					}*/
 				}
 				
 				else
