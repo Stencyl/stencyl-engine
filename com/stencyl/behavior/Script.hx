@@ -321,12 +321,19 @@ class Script
 	}
 	
 	//Physics = Pass in event.~Shape (a b2Shape)
-	//No-Physics = Pass in the actor
-	public function internalGetGroup(arg:Dynamic, arg2:Dynamic):Group
+	//No-Physics = Pass in the actor and event
+	public function internalGetGroup(arg:Dynamic, arg2:Dynamic, arg3:Dynamic):Group
 	{
 		if(Engine.NO_PHYSICS)
 		{
-			return cast(arg, Actor).getGroup();
+			var event:Collision = cast(arg3, Collision);
+			
+			if (arg == event.actorA)
+			{
+				return engine.getGroup(event.groupA);
+			}
+			
+			return engine.getGroup(event.groupB);
 		}
 		
 		else

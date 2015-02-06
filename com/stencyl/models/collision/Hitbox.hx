@@ -2,6 +2,7 @@ package com.stencyl.models.collision;
 
 import com.stencyl.models.Actor;
 import com.stencyl.models.Region;
+import com.stencyl.models.GameModel;
 
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -19,7 +20,7 @@ class Hitbox extends Mask
 	 * @param	x			X offset of the hitbox.
 	 * @param	y			Y offset of the hitbox.
 	 */
-	public function new(width:Int = 1, height:Int = 1, x:Int = 0, y:Int = 0, solid:Bool=true)
+	public function new(width:Int = 1, height:Int = 1, x:Int = 0, y:Int = 0, solid:Bool=true, groupID:Int = 0)
 	{
 		super();
 		lastBounds.width = _width = width;
@@ -27,12 +28,13 @@ class Hitbox extends Mask
 		_x = x;
 		_y = y;
 		this.solid = solid;
+		this.groupID = groupID;
 		_check.set(Type.getClassName(Hitbox), collideHitbox);
 	}
 	
 	public function clone():Hitbox
 	{
-		return new Hitbox(_width, _height, _x, _y, solid);
+		return new Hitbox(_width, _height, _x, _y, solid, groupID);
 	}
 
 	/** @private Collides against an Entity. */
@@ -57,8 +59,9 @@ class Hitbox extends Mask
 
 	/** @private Collides against a Hitbox. */
 	private function collideHitbox(other:Hitbox):Bool
-	{		
-		if (parent.colX + _x + _width > other.parent.colX + other._x
+	{			
+		if (groupID == other.groupID
+			&& parent.colX + _x + _width > other.parent.colX + other._x
 			&& parent.colY + _y + _height > other.parent.colY + other._y
 			&& parent.colX + _x < other.parent.colX + other._x + other._width
 			&& parent.colY + _y < other.parent.colY + other._y + other._height)

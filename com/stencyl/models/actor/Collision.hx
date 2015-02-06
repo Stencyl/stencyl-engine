@@ -49,6 +49,9 @@ class Collision
 	public var maskA:Mask;
 	public var maskB:Mask;
 	
+	public var groupA:Int;
+	public var groupB:Int;
+	
 	public var bounds:Rectangle;
 	public var useBounds:Bool;
 	public var remove:Bool;
@@ -178,6 +181,9 @@ class Collision
 		c.maskA = maskA;
 		c.maskB = maskB;		
 		c.solidCollision = solidCollision;
+		
+		c.groupA = groupA;
+		c.groupB = groupB;
 		
 		c.linkedCollision = this;
 		this.linkedCollision = c;		

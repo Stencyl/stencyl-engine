@@ -1,6 +1,7 @@
 package com.stencyl.models.collision;
 
 import com.stencyl.models.Actor;
+import com.stencyl.models.GameModel;
 import com.stencyl.utils.Utils;
 
 import openfl.geom.Rectangle;
@@ -32,7 +33,9 @@ class Masklist extends Hitbox
 		var m:Mask;
 		for (m in _masks)
 		{
-			if (m.collide(mask)) 
+			m.groupID = (m.groupID == GameModel.INHERIT_ID ? m.parent.groupID : m.groupID);
+			
+			if ((Std.is(mask, Masklist) || m.groupID == mask.groupID) && m.collide(mask)) 
 			{
 				lastBounds.x = m.lastBounds.x;
 				lastBounds.y = m.lastBounds.y;
@@ -40,6 +43,7 @@ class Masklist extends Hitbox
 				lastBounds.height = m.lastBounds.height;				
 				
 				lastCheckedMask = m;
+				lastColID = mask.groupID;
 				
 				return true;
 			}
@@ -49,13 +53,17 @@ class Masklist extends Hitbox
 	
 	/** @private Collide against a Masklist. */
 	override private function collideMasklist(other:Masklist):Bool 
-	{
+	{		
 		var a:Mask;
 		var b:Mask;
 		for (a in _masks)
 		{
+			a.groupID = (a.groupID == GameModel.INHERIT_ID ? a.parent.groupID : a.groupID);
+			
 			for (b in other._masks)
 			{
+				b.groupID = (b.groupID == GameModel.INHERIT_ID ? b.parent.groupID : b.groupID);
+				
 				if (a.collide(b)) 
 				{
 					//Readjust since dealing with two masks?
@@ -65,6 +73,7 @@ class Masklist extends Hitbox
 					other.lastBounds.height = b.lastBounds.height;
 					
 					other.lastCheckedMask = b;
+					other.lastColID = a.groupID;
 					
 					return true;
 				}

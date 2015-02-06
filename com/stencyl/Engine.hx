@@ -2733,8 +2733,8 @@ class Engine
 		
 		if(NO_PHYSICS)
 		{
-			group1 = event.thisActor.groupID;
-			group2 = event.otherActor.groupID;
+			group1 = event.groupA;
+			group2 = event.groupB;
 		}
 		
 		else

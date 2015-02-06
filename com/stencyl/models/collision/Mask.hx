@@ -16,6 +16,7 @@ class Mask
 	 * The parent Entity of this mask.
 	 */
 	public var parent:Actor;
+	public var groupID:Int;
 
 	/**
 	 * The parent Masklist of the mask.
@@ -23,6 +24,7 @@ class Mask
 	public var list:Masklist;
 	public var lastBounds:Rectangle;
 	public var lastCheckedMask:Mask;
+	public var lastColID:Int;
 	
 	public var solid:Bool;
 
@@ -38,6 +40,7 @@ class Mask
 		_check.set(Type.getClassName(Masklist), collideMasklist);	
 		
 		lastBounds = new Rectangle();
+		lastColID = -1;
 	}
 
 	/**

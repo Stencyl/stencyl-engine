@@ -152,9 +152,9 @@ class SpriteReader implements AbstractReader
 				}
 							
 				var w:Int = x1 - x0;
-				var h:Int = y1 - y0;
+				var h:Int = y1 - y0;			
 				
-				shapes.set(shapeID, new Hitbox(w, h, x, y, !sensor));
+				shapes.set(shapeID, new Hitbox(w, h, x, y, !sensor, groupID));
 			}				
 		}
 		

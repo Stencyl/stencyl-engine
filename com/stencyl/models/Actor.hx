@@ -4789,6 +4789,9 @@ class Actor extends Sprite
 		info.maskA = _mask;
 		info.maskB = colMask;
 		info.solidCollision = _mask.solid && colMask.solid;
+		
+		info.groupA = _mask.lastCheckedMask.groupID;
+		info.groupB = _mask.lastCheckedMask.lastColID;	
 		 
 		var responseMap:Map<Int, String> = Collision.collisionResponses.get(getGroupID());
 		var overrideSensor:Bool = false;
