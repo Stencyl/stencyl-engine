@@ -131,7 +131,7 @@ class GameModel
 				groupsCollidesWith.set(g2, new Array<Int>());
 			}
 			
-			if(!Engine.NO_PHYSICS)
+			if(!Engine.NO_PHYSICS || (g1 >= 0 && g2 >= 0))
 			{
 				collisionMap[g1][g2] = true;
 				collisionMap[g2][g1] = true;

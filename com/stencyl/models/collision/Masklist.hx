@@ -35,7 +35,7 @@ class Masklist extends Hitbox
 		{
 			m.groupID = (m.groupID == GameModel.INHERIT_ID ? m.parent.groupID : m.groupID);
 			
-			if ((Std.is(mask, Masklist) || m.groupID == mask.groupID) && m.collide(mask)) 
+			if ((Std.is(mask, Masklist) || GameModel.collisionMap[m.groupID][mask.groupID]) && m.collide(mask)) 
 			{
 				lastBounds.x = m.lastBounds.x;
 				lastBounds.y = m.lastBounds.y;
