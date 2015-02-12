@@ -349,7 +349,7 @@ class Actor extends Sprite
 		
 		if(Std.is(this, Region) && Engine.NO_PHYSICS)
 		{
-			shape = HITBOX = new Hitbox(Std.int(width), Std.int(height), 0, 0, false);
+			shape = HITBOX = new Hitbox(Std.int(width), Std.int(height), 0, 0, false, -2);
 			set_shape(shape);
 		}
 		
@@ -805,7 +805,7 @@ class Actor extends Sprite
 			
 			if(physicsMode > 0)
 			{
-				shapeMap.set(name, new Masklist(arr));
+				shapeMap.set(name, new Masklist(arr, this));
 				
 			}
 			
@@ -4312,6 +4312,7 @@ class Actor extends Sprite
 	{
 		var cc:Int = collidedList.length;
 		
+		//Mike: Do we need this?
 		if (Std.is(types, String))
 		{
 			collideInto(types, x, y, collidedList);
@@ -4322,10 +4323,8 @@ class Actor extends Sprite
 			}
 		}
 		else
-		{
-			
-			
-			var a:Array<Int> = cast types;
+		{			
+			var a:Array<Int> = HITBOX.collideTypes;
 			if (a != null)
 			{
 				var e:Actor;

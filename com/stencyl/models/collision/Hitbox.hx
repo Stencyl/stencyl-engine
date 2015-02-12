@@ -60,8 +60,7 @@ class Hitbox extends Mask
 	/** @private Collides against a Hitbox. */
 	private function collideHitbox(other:Hitbox):Bool
 	{			
-		if (groupID == other.groupID
-			&& parent.colX + _x + _width > other.parent.colX + other._x
+		if (parent.colX + _x + _width > other.parent.colX + other._x
 			&& parent.colY + _y + _height > other.parent.colY + other._y
 			&& parent.colX + _x < other.parent.colX + other._x + other._width
 			&& parent.colY + _y < other.parent.colY + other._y + other._height)

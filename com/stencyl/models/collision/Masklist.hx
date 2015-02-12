@@ -15,13 +15,14 @@ class Masklist extends Hitbox
 	 * Constructor.
 	 * @param	...mask		Masks to add to the list.
 	 */
-	public function new(masks:Array<Dynamic>) 
+	public function new(masks:Array<Dynamic>, par:Actor) 
 	{
 		super();
 		_masks = new Array<Mask>();
 		_temp = new Array<Mask>();
 		
 		solid = false;
+		parent = par;
 		
 		var m:Mask;
 		for (m in masks) add(m);
@@ -35,7 +36,7 @@ class Masklist extends Hitbox
 		{
 			m.groupID = (m.groupID == GameModel.INHERIT_ID ? m.parent.groupID : m.groupID);
 			
-			if ((Std.is(mask, Masklist) || GameModel.collisionMap[m.groupID][mask.groupID]) && m.collide(mask)) 
+			if ((Std.is(mask, Masklist) || mask.groupID == -2 || GameModel.collisionMap[m.groupID][mask.groupID]) && m.collide(mask)) 
 			{
 				lastBounds.x = m.lastBounds.x;
 				lastBounds.y = m.lastBounds.y;
@@ -94,6 +95,20 @@ class Masklist extends Hitbox
 		mask.parent = parent;		
 		solid = solid || mask.solid;
 		update();
+		
+		mask.groupID = (mask.groupID == GameModel.INHERIT_ID ? parent.groupID : mask.groupID);
+		
+		var colList:Array<Int> = GameModel.get().groupsCollidesWith.get(mask.groupID);		
+		var i:Int;
+		
+		for (i in colList)
+		{
+			if (!Utils.contains(collideTypes, i))
+			{
+				collideTypes.push(i);
+			}
+		}
+		
 		return mask;
 	}
 	

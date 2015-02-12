@@ -27,12 +27,14 @@ class Mask
 	public var lastColID:Int;
 	
 	public var solid:Bool;
+	public var collideTypes:Array<Int>;
 
 	/**
 	 * Constructor.
 	 */
 	public function new()
 	{
+		collideTypes = new Array<Int>();
 		solid = true;
 		_class = Type.getClassName(Type.getClass(this));
 		_check = new Map<String,MaskCallback>();
