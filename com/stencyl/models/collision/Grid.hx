@@ -7,6 +7,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 import com.stencyl.models.actor.Collision;
+import com.stencyl.models.GameModel;
 
 import com.stencyl.utils.Utils;
 
@@ -56,6 +57,7 @@ class Grid extends Hitbox
 		_width = width;
 		_height = height;
 		usePositions = false;
+		groupID = GameModel.TERRAIN_ID;
 
 		// set callback functions
 		_check.set(Type.getClassName(Mask), collideMask);
