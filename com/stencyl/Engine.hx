@@ -3806,9 +3806,9 @@ class Engine
 	
 	public function addRegion(r:Region)
 	{
-		var nextID = nextRegionID();
-		r.ID = nextID;
-		regions.set(nextID, r);
+		if(r.ID == Region.UNSET_ID)
+			r.ID = nextRegionID();
+		regions.set(r.ID, r);
 		
 		if(NO_PHYSICS)
 		{
@@ -3916,9 +3916,9 @@ class Engine
 	
 	public function addTerrainRegion(r:Terrain)
 	{
-		var nextID = nextTerrainRegionID();
-		r.ID = nextID;
-		terrainRegions.set(nextID, r);
+		if(r.ID == Terrain.UNSET_ID)
+			r.ID = nextTerrainRegionID();
+		terrainRegions.set(r.ID, r);
 	}
 	
 	public function removeTerrainRegion(ID:Int)
