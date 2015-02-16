@@ -3640,7 +3640,7 @@ class Script
 			#if flash
 			loader.addEventListener(IOErrorEvent.NETWORK_ERROR, defaultURLError);
 			loader.addEventListener(IOErrorEvent.IO_ERROR, defaultURLError);
-			#elseif android
+			#else
 			//making sure the connection closes after 0.5 secs so the game doesn't freeze
 		    runLater(500, function(timeTask:TimedTask):Void
 			{
