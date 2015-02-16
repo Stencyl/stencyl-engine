@@ -1981,6 +1981,27 @@ class Actor extends Sprite
 				
 				if(collisions.get(key) != null)
 				{
+					//need to update points for pre-existing contacts.
+
+					var d:Collision = collisions.get(key);
+					d.points = [];
+					
+					p.getWorldManifold(manifold);
+
+					for (point in manifold.m_points)
+					{
+						if (point.x != 0 && point.y != 0)
+						{
+							d.points.push(new CollisionPoint
+							(
+								point.x, 
+								point.y, 
+								manifold.m_normal.x,
+								manifold.m_normal.y
+							));
+						}
+					}
+
 					continue;
 				}
 				
