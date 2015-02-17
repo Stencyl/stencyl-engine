@@ -305,9 +305,6 @@ class Engine
 	public var layersToDraw:Map<Int,RegularLayer>; //Map order -> Layer/BackgroundLayer
 
 	public var tileUpdated:Bool;
-	public var cameraMoved:Bool;
-	public var cameraOldX:Float;
-	public var cameraOldY:Float;	
 	
 	public var loadedAtlases:Map<Int,Int>;
 	public var atlasesToLoad:Map<Int,Int>;
@@ -693,7 +690,6 @@ class Engine
 		//---
 			
 		started = true;
-		cameraMoved = false;
 		tileUpdated = false;
 		
 		//---
@@ -710,9 +706,6 @@ class Engine
 		cameraX = 0;
 		cameraY = 0;
 		
-		cameraOldX = 1;
-		cameraOldY = 1;
-
 		acc = 0;
 		lastTime = Lib.getTimer();
 
@@ -1215,10 +1208,6 @@ class Engine
 		camera = new Actor(this, -1, GameModel.DOODAD_ID, 0, 0, getTopLayer(), 2, 2, null, null, null, null, true, false, true, false, null, 0, true, false);
 		camera.name = "Camera";
 		camera.isCamera = true;
-		
-		cameraMoved = true;
-		cameraOldX = 1;
-		cameraOldY = 1;
 	}
 	
 	private function loadRegions()
@@ -2687,17 +2676,9 @@ class Engine
 		
 		//Drawing
 		
-		var tempX = Std.int(cameraX / (scene.tileWidth * Engine.SCALE));
-		var tempY = Std.int(cameraY / (scene.tileHeight * Engine.SCALE));
-		
-		cameraMoved = !(cameraOldX == tempX && cameraOldY == tempY);
-		
-		cameraOldX = tempX;
-		cameraOldY = tempY;
-		
 		draw();
 	}
-	
+
 	//*-----------------------------------------------
 	//* Events Finished
 	//*-----------------------------------------------
@@ -3094,9 +3075,10 @@ class Engine
      	//Only if camera changed? Or tile updated
      	for(layer in interactiveLayers)
 	    {
-	    	if(cameraMoved || tileUpdated)
+	    	if(layer.cameraMoved || tileUpdated)
      		{
 	     		layer.tiles.draw(Std.int(cameraX * layer.scrollFactorX), Std.int(cameraY * layer.scrollFactorY));
+	     		layer.cameraMoved = false;
 	     	}
 	    }
      	

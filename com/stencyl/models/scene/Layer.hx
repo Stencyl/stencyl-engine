@@ -30,6 +30,10 @@ class Layer extends RegularLayer
 	public var color:Int; //???
 
 	public var drawnOn:Bool;
+
+	public var cameraMoved:Bool = true;
+	public var cameraOldX:Int = 1;
+	public var cameraOldY:Int = 1;
 	
 	public function new(ID:Int, name:String, order:Int, scrollFactorX:Float, scrollFactorY:Float, opacity:Float, blendMode:BlendMode, tileLayer:TileLayer)
 	{
@@ -74,5 +78,13 @@ class Layer extends RegularLayer
 		bitmapOverlay.x = -x;
 		bitmapOverlay.y = -y;
 		tiles.setPosition(-xScrolled, -yScrolled);
+
+		var tempX = Std.int(xScrolled / (Engine.engine.scene.tileWidth * Engine.SCALE));
+		var tempY = Std.int(yScrolled / (Engine.engine.scene.tileHeight * Engine.SCALE));
+		
+		cameraMoved = cameraMoved || cameraOldX != tempX || cameraOldY != tempY;
+		
+		cameraOldX = tempX;
+		cameraOldY = tempY;
 	}
 }
