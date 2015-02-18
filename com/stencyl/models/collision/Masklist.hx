@@ -101,11 +101,14 @@ class Masklist extends Hitbox
 		var colList:Array<Int> = GameModel.get().groupsCollidesWith.get(mask.groupID);		
 		var i:Int;
 		
-		for (i in colList)
+		if(colList != null)
 		{
-			if (!Utils.contains(collideTypes, i))
+			for (i in colList)
 			{
-				collideTypes.push(i);
+				if (!Utils.contains(collideTypes, i))
+				{
+					collideTypes.push(i);
+				}
 			}
 		}
 		
