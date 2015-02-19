@@ -70,18 +70,18 @@ class Behavior
 		if(cls == null)
 		{
 			trace("Could not init Behavior: " + name + " with " + classname);
-			script = new SceneScript(engine);
+			script = new SceneScript();
 			return;
 		}
 		
 		if(type == "actor")
 		{
-			script = Type.createInstance(cls, [0, parent, engine]);
+			script = Type.createInstance(cls, [0, parent, null]);
 		}
 		
 		else
 		{
-			script = Type.createInstance(cls, [0, engine]);
+			script = Type.createInstance(cls, [0, null]);
 		}
 		
 		script.wrapper = this;

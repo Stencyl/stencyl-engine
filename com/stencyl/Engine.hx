@@ -502,6 +502,7 @@ class Engine
 		}
 		
 		Engine.engine = this;
+		Script.engine = this;
 		this.root = root;
 		
 		Engine.screenScaleX = root.scaleX;

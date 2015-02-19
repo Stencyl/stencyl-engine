@@ -93,19 +93,11 @@ import scripts.MyAssets;
 class Script 
 {
 	//*-----------------------------------------------
-	//* Data
+	//* Global
 	//*-----------------------------------------------
 	
-	public var wrapper:Behavior;
+	public static var engine:Engine;
 	
-	public var engine:Engine;
-	public var scene:Engine; //for compatibility - we'll remove it later
-	
-	public var propertyChangeListeners:Map<String,Dynamic>;
-	public var equalityPairs:ObjectMap<Dynamic, Dynamic>; //hashmap does badly on some platforms when checking key equality (for primitives) - beware
-	
-	public var checkProperties:Bool;
-		
 	//*-----------------------------------------------
 	//* Constants
 	//*-----------------------------------------------
@@ -115,7 +107,6 @@ class Script
 	public static var BACK:Int = 2;
 	
 	public static var CHANNELS:Int = 32;
-	
 	
 	//*-----------------------------------------------
 	//* Data
@@ -135,46 +126,53 @@ class Script
 	
 	private static var drawData:Array<Float> = new Array<Float>();
 	private static var ma:Matrix = new Matrix();
+
+	//*-----------------------------------------------
+	//* Behavior
+	//*-----------------------------------------------
+
+	public var wrapper:Behavior;
+
+	// Property Change Support
 	
-		
-	//*-----------------------------------------------
-	//* Display Names
-	//*-----------------------------------------------
+	public var propertyChangeListeners:Map<String,Dynamic>;
+	public var equalityPairs:ObjectMap<Dynamic, Dynamic>; //hashmap does badly on some platforms when checking key equality (for primitives) - beware
+	
+	public var checkProperties:Bool;
+	
+	// Display Names
 	
 	public var nameMap:Map<String,Dynamic>;
-		
-		
+	
 	//*-----------------------------------------------
 	//* Init
 	//*-----------------------------------------------
 	public var scriptInit:Bool;
 	
-	public function new(engine:Engine) 
+	public function new()
 	{
-		this.engine = this.scene = engine;
-		
 		scriptInit = false;
 		checkProperties = false;
 		nameMap = new Map<String,Dynamic>();	
 		propertyChangeListeners = new Map<String,Dynamic>();
 		equalityPairs = new ObjectMap<Dynamic, Dynamic>();
-	}		
+	}
 
 	//*-----------------------------------------------
 	//* Internals
 	//*-----------------------------------------------
 	
-	public inline function sameAs(o:Dynamic, o2:Dynamic):Bool
+	public static inline function sameAs(o:Dynamic, o2:Dynamic):Bool
 	{
 		return o == o2;
 	}
 	
-	public inline function sameAsAny(o:Dynamic, one:Dynamic, two:Dynamic):Bool
+	public static inline function sameAsAny(o:Dynamic, one:Dynamic, two:Dynamic):Bool
 	{
 		return (o == one) || (o == two);
 	}
 	
-	public inline function asBoolean(o:Dynamic):Bool
+	public static inline function asBoolean(o:Dynamic):Bool
 	{
 		return (o == true || o == "true");
 	}
@@ -202,7 +200,7 @@ class Script
 		return(a > b);
 	} 
 	
-	public inline function asNumber(o:Dynamic):Float
+	public static inline function asNumber(o:Dynamic):Float
 	{
 		if(o == null)
 		{
@@ -237,7 +235,7 @@ class Script
 		}
 	}
 	
-	public inline function hasValue(o:Dynamic):Bool
+	public static inline function hasValue(o:Dynamic):Bool
 	{
 		if(Std.is(o, Bool))
 		{
@@ -265,7 +263,7 @@ class Script
 		}
 	}
 	
-	public function isPrimitive(o:Dynamic):Bool
+	public static function isPrimitive(o:Dynamic):Bool
 	{
 		if(Std.is(o, Bool))
 		{
@@ -285,7 +283,7 @@ class Script
 		return false;
 	}
 
-	public inline function getDefaultValue(o:Dynamic):Dynamic
+	public static inline function getDefaultValue(o:Dynamic):Dynamic
 	{
 		return null;
 	}
@@ -367,7 +365,7 @@ class Script
 		}
 	}
 	
-	public function getGroupByName(groupName:String):Group
+	public static function getGroupByName(groupName:String):Group
 	{
 		return engine.getGroupByName(groupName);
 	}
@@ -940,12 +938,12 @@ class Script
 	//* Regions
 	//*-----------------------------------------------
 	
-	public function getLastCreatedRegion():Region
+	public static function getLastCreatedRegion():Region
 	{
 		return lastCreatedRegion;
 	}
 	
-	public function getAllRegions():Array<Region>
+	public static function getAllRegions():Array<Region>
 	{
 		var regions = new Array<Region>();
 		
@@ -958,32 +956,32 @@ class Script
 		return regions;
 	}
 	
-	public function getRegion(regionID:Int):Region
+	public static function getRegion(regionID:Int):Region
 	{
 		return engine.getRegion(regionID);
 	}
 	
-	public function removeRegion(regionID:Int)
+	public static function removeRegion(regionID:Int)
 	{
 		engine.removeRegion(regionID);
 	}
 		
-	public function createBoxRegion(x:Float, y:Float, w:Float, h:Float):Region
+	public static function createBoxRegion(x:Float, y:Float, w:Float, h:Float):Region
 	{
 		return lastCreatedRegion = engine.createBoxRegion(x, y, w, h);
 	}
 			
-	public function createCircularRegion(x:Float, y:Float, r:Float):Region
+	public static function createCircularRegion(x:Float, y:Float, r:Float):Region
 	{
 		return lastCreatedRegion = engine.createCircularRegion(x, y, r);
 	}
 			
-	public function isInRegion(a:Actor, r:Region):Bool
+	public static function isInRegion(a:Actor, r:Region):Bool
 	{
 		return engine.isInRegion(a, r);
 	}
 	
-	public function getActorsInRegion(r:Region):Array<Actor>
+	public static function getActorsInRegion(r:Region):Array<Actor>
 	{
 		var ids = r.getContainedActors();
 		
@@ -1014,7 +1012,7 @@ class Script
 	 * 
 	 * @return	True if the scene contains the Behavior
 	 */
-	public function sceneHasBehavior(behaviorName:String):Bool
+	public static function sceneHasBehavior(behaviorName:String):Bool
 	{
 		return engine.behaviors.hasBehavior(behaviorName);
 	}
@@ -1024,7 +1022,7 @@ class Script
 	 *
 	 * @param	behaviorName	The display name of the <code>Behavior</code>
 	 */
-	public function enableBehaviorForScene(behaviorName:String)
+	public static function enableBehaviorForScene(behaviorName:String)
 	{
 		engine.behaviors.enableBehavior(behaviorName);
 	}
@@ -1034,7 +1032,7 @@ class Script
 	 *
 	 * @param	behaviorName	The display name of the <code>Behavior</code>
 	 */
-	public function disableBehaviorForScene(behaviorName:String)
+	public static function disableBehaviorForScene(behaviorName:String)
 	{
 		engine.behaviors.disableBehavior(behaviorName);
 	}
@@ -1046,7 +1044,7 @@ class Script
 	 * 
 	 * @return	True if the scene contains the Behavior AND said behavior is enabled
 	 */
-	public function isBehaviorEnabledForScene(behaviorName:String):Bool
+	public static function isBehaviorEnabledForScene(behaviorName:String):Bool
 	{
 		return engine.behaviors.isBehaviorEnabled(behaviorName);
 	}
@@ -1068,7 +1066,7 @@ class Script
 	/**
 	 * Get the attribute value for a behavior attached to the scene.
 	 */
-	public function getValueForScene(behaviorName:String, attributeName:String):Dynamic
+	public static function getValueForScene(behaviorName:String, attributeName:String):Dynamic
 	{
 		return engine.getValue(behaviorName, attributeName);
 	}
@@ -1076,7 +1074,7 @@ class Script
 	/**
 	 * Set the value for an attribute of a behavior in the scene.
 	 */
-	public function setValueForScene(behaviorName:String, attributeName:String, value:Dynamic)
+	public static function setValueForScene(behaviorName:String, attributeName:String, value:Dynamic)
 	{
 		engine.setValue(behaviorName, attributeName, value);
 	}
@@ -1084,7 +1082,7 @@ class Script
 	/**
 	 * Send a messege to this scene with optional arguments.
 	 */
-	public function shoutToScene(msg:String, args:Array<Dynamic> = null):Dynamic
+	public static function shoutToScene(msg:String, args:Array<Dynamic> = null):Dynamic
 	{
 		return engine.shout(msg, args);
 	}
@@ -1092,7 +1090,7 @@ class Script
 	/**
 	 * Send a messege to a behavior in this scene with optional arguments.
 	 */		
-	public function sayToScene(behaviorName:String, msg:String, args:Array<Dynamic> = null):Dynamic
+	public static function sayToScene(behaviorName:String, msg:String, args:Array<Dynamic> = null):Dynamic
 	{
 		return engine.say(behaviorName, msg, args);
 	}
@@ -1104,7 +1102,7 @@ class Script
 	/**
 	 * Set a game attribute (pass a Number/Text/Boolean/List)
 	 */		
-	public function setGameAttribute(name:String, value:Dynamic)
+	public static function setGameAttribute(name:String, value:Dynamic)
 	{
 		engine.setGameAttribute(name, value);
 	}
@@ -1112,7 +1110,7 @@ class Script
 	/**
 	 * Get a game attribute (Returns a Number/Text/Boolean/List)
 	 */	
-	public function getGameAttribute(name:String):Dynamic
+	public static function getGameAttribute(name:String):Dynamic
 	{
 		return engine.getGameAttribute(name);
 	}
@@ -1127,7 +1125,7 @@ class Script
 	 * @param	delay		Delay in execution (in milliseconds)
 	 * @param	toExecute	The function to execute after the delay
 	 */
-	public function runLater(delay:Float, toExecute:TimedTask->Void, actor:Actor = null):TimedTask
+	public static function runLater(delay:Float, toExecute:TimedTask->Void, actor:Actor = null):TimedTask
 	{
 		var t:TimedTask = new TimedTask(toExecute, Std.int(delay), false, actor);
 		engine.addTask(t);
@@ -1141,7 +1139,7 @@ class Script
 	 * @param	interval	How frequently to execute (in milliseconds)
 	 * @param	toExecute	The function to execute after the delay
 	 */
-	public function runPeriodically(interval:Float, toExecute:TimedTask->Void, actor:Actor = null):TimedTask
+	public static function runPeriodically(interval:Float, toExecute:TimedTask->Void, actor:Actor = null):TimedTask
 	{
 		var t:TimedTask = new TimedTask(toExecute, Std.int(interval), true, actor);
 		engine.addTask(t);
@@ -1149,7 +1147,7 @@ class Script
 		return t;
 	}
 	
-	public function getStepSize():Int
+	public static function getStepSize():Int
 	{
 		return Engine.STEP_SIZE;
 	}
@@ -1163,7 +1161,7 @@ class Script
 	 *
 	 * @return The current scene
 	 */
-	public function getScene():Scene
+	public static function getScene():Scene
 	{
 		return engine.scene;
 	}
@@ -1173,7 +1171,7 @@ class Script
 	 *
 	 * @return The ID current scene
 	 */
-	public function getCurrentScene():Int
+	public static function getCurrentScene():Int
 	{
 		return getScene().ID;
 	}
@@ -1183,7 +1181,7 @@ class Script
 	 *
 	 * @return The ID current scene or 0 if it doesn't exist.
 	 */
-	public function getIDForScene(sceneName:String):Int
+	public static function getIDForScene(sceneName:String):Int
 	{
 		for(s in GameModel.get().scenes)
 		{
@@ -1201,7 +1199,7 @@ class Script
 	 *
 	 * @return The name of the current scene
 	 */
-	public function getCurrentSceneName():String
+	public static function getCurrentSceneName():String
 	{
 		return getScene().name;
 	}
@@ -1211,7 +1209,7 @@ class Script
 	 *
 	 * @return width (in pixels) of the current scene
 	 */
-	public function getSceneWidth():Int
+	public static function getSceneWidth():Int
 	{
 		return getScene().sceneWidth;
 	}
@@ -1221,7 +1219,7 @@ class Script
 	 *
 	 * @return height (in pixels) of the current scene
 	 */
-	public function getSceneHeight():Int
+	public static function getSceneHeight():Int
 	{
 		return getScene().sceneHeight;
 	}
@@ -1231,7 +1229,7 @@ class Script
 	 *
 	 * @return width (in tiles) of the current scene
 	 */
-	public function getTileWidth():Int
+	public static function getTileWidth():Int
 	{
 		return getScene().tileWidth;
 	}
@@ -1241,7 +1239,7 @@ class Script
 	 *
 	 * @return height (in tiles) of the current scene
 	 */
-	public function getTileHeight():Int
+	public static function getTileHeight():Int
 	{
 		return getScene().tileHeight;
 	}
@@ -1256,7 +1254,7 @@ class Script
 	 * @param	leave	exit transition
 	 * @param	enter	enter transition
 	 */
-	public function reloadCurrentScene(leave:Transition=null, enter:Transition=null)
+	public static function reloadCurrentScene(leave:Transition=null, enter:Transition=null)
 	{
 		engine.switchScene(getCurrentScene(), leave, enter);
 	}
@@ -1268,7 +1266,7 @@ class Script
 	 * @param	leave		exit transition
 	 * @param	enter		enter transition
 	 */
-	public function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)
+	public static function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)
 	{
 		engine.switchScene(sceneID, leave, enter);
 	}
@@ -1281,7 +1279,7 @@ class Script
 	 *
 	 * @return Pixelize out transition that you pass into reloadScene and switchScene
 	 */
-	public function createPixelizeOut(duration:Float, pixelSize:Int = 15):Transition
+	public static function createPixelizeOut(duration:Float, pixelSize:Int = 15):Transition
 	{
 		return new com.stencyl.graphics.transitions.PixelizeTransition(duration, 1, pixelSize);
 	}
@@ -1294,7 +1292,7 @@ class Script
 	 *
 	 * @return Pixelize in transition that you pass into reloadScene and switchScene
 	 */
-	public function createPixelizeIn(duration:Float, pixelSize:Int = 15):Transition
+	public static function createPixelizeIn(duration:Float, pixelSize:Int = 15):Transition
 	{
 		return new com.stencyl.graphics.transitions.PixelizeTransition(duration, pixelSize, 1);
 	}
@@ -1307,7 +1305,7 @@ class Script
 	 *
 	 * @return Bubbles out transition that you pass into reloadScene and switchScene
 	 */
-	public function createBubblesOut(duration:Float, color:Int=0xff000000):Transition
+	public static function createBubblesOut(duration:Float, color:Int=0xff000000):Transition
 	{
 		return new com.stencyl.graphics.transitions.BubblesTransition(Transition.OUT, duration, 50, color);
 	}
@@ -1320,7 +1318,7 @@ class Script
 	 *
 	 * @return Bubble in transition that you pass into reloadScene and switchScene
 	 */
-	public function createBubblesIn(duration:Float, color:Int=0xff000000):Transition
+	public static function createBubblesIn(duration:Float, color:Int=0xff000000):Transition
 	{
 		return new com.stencyl.graphics.transitions.BubblesTransition(Transition.IN, duration, 50, color);
 	}
@@ -1333,7 +1331,7 @@ class Script
 	 *
 	 * @return Blinds out transition that you pass into reloadScene and switchScene
 	 */
-	public function createBlindsOut(duration:Float, color:Int=0xff000000):Transition
+	public static function createBlindsOut(duration:Float, color:Int=0xff000000):Transition
 	{
 		return new com.stencyl.graphics.transitions.BlindsTransition(Transition.OUT, duration, 10, color);
 	}
@@ -1346,7 +1344,7 @@ class Script
 	 *
 	 * @return Blinds in transition that you pass into reloadScene and switchScene
 	 */
-	public function createBlindsIn(duration:Float, color:Int=0xff000000):Transition
+	public static function createBlindsIn(duration:Float, color:Int=0xff000000):Transition
 	{
 		return new com.stencyl.graphics.transitions.BlindsTransition(Transition.IN, duration, 10, color);
 	}
@@ -1359,7 +1357,7 @@ class Script
 	 *
 	 * @return Rectangle out transition that you pass into reloadScene and switchScene
 	 */
-	public function createRectangleOut(duration:Float, color:Int=0xff000000):Transition
+	public static function createRectangleOut(duration:Float, color:Int=0xff000000):Transition
 	{
 		return new com.stencyl.graphics.transitions.RectangleTransition(Transition.OUT, duration, color);
 	}
@@ -1372,7 +1370,7 @@ class Script
 	 *
 	 * @return Rectangle in transition that you pass into reloadScene and switchScene
 	 */
-	public function createRectangleIn(duration:Float, color:Int=0xff000000):Transition
+	public static function createRectangleIn(duration:Float, color:Int=0xff000000):Transition
 	{
 		return new com.stencyl.graphics.transitions.RectangleTransition(Transition.IN, duration, color);
 	}
@@ -1385,53 +1383,53 @@ class Script
 	 *
 	 * @return Slide transition that you pass into reloadScene and switchScene
 	 */
-	public function createSlideTransition(duration:Float, direction:String):Transition
+	public static function createSlideTransition(duration:Float, direction:String):Transition
 	{
 		return new com.stencyl.graphics.transitions.SlideTransition(engine.master, duration, direction);
 	}
 		
 	//These are for SW's convenience.		
-	public function createSlideUpTransition(duration:Float):Transition
+	public static function createSlideUpTransition(duration:Float):Transition
 	{
 		return createSlideTransition(duration, com.stencyl.graphics.transitions.SlideTransition.SLIDE_UP);
 	}
 		
-	public function createSlideDownTransition(duration:Float):Transition
+	public static function createSlideDownTransition(duration:Float):Transition
 	{
 		return createSlideTransition(duration, com.stencyl.graphics.transitions.SlideTransition.SLIDE_DOWN);
 	}
 		
-	public function createSlideLeftTransition(duration:Float):Transition
+	public static function createSlideLeftTransition(duration:Float):Transition
 	{
 		return createSlideTransition(duration, com.stencyl.graphics.transitions.SlideTransition.SLIDE_LEFT);
 	}
 		
-	public function createSlideRightTransition(duration:Float):Transition
+	public static function createSlideRightTransition(duration:Float):Transition
 	{
 		return createSlideTransition(duration, com.stencyl.graphics.transitions.SlideTransition.SLIDE_RIGHT);
 	}
 		
-	public function createCrossfadeTransition(duration:Float):Transition
+	public static function createCrossfadeTransition(duration:Float):Transition
 	{
 		return new com.stencyl.graphics.transitions.CrossfadeTransition(engine.root, duration);
 	}
 	
-	public function createFadeOut(duration:Float, color:Int=0xff000000):Transition
+	public static function createFadeOut(duration:Float, color:Int=0xff000000):Transition
 	{
 		return new com.stencyl.graphics.transitions.FadeOutTransition(duration, color);
 	}
 	
-	public function createFadeIn(duration:Float, color:Int=0xff000000):Transition
+	public static function createFadeIn(duration:Float, color:Int=0xff000000):Transition
 	{
 		return new com.stencyl.graphics.transitions.FadeInTransition(duration, color);
 	}
 	
-	public function createCircleOut(duration:Float, color:Int=0xff000000):Transition
+	public static function createCircleOut(duration:Float, color:Int=0xff000000):Transition
 	{
 		return new com.stencyl.graphics.transitions.CircleTransition(Transition.OUT, duration, color);
 	}
 		
-	public function createCircleIn(duration:Float, color:Int=0xff000000):Transition
+	public static function createCircleIn(duration:Float, color:Int=0xff000000):Transition
 	{
 		return new com.stencyl.graphics.transitions.CircleTransition(Transition.IN, duration, color);
 	}
@@ -1444,12 +1442,12 @@ class Script
      * @param	refType		0 to get layer by ID, 1 for name
      * @param	ref			The ID or name of the layer as a String
      */
-    public function getLayer(refType:Int, ref:String):RegularLayer
+    public static function getLayer(refType:Int, ref:String):RegularLayer
     {
     	return engine.getLayer(refType, ref);
     }
     
-    public function setBlendModeForLayer(refType:Int, ref:String, mode:openfl.display.BlendMode)
+    public static function setBlendModeForLayer(refType:Int, ref:String, mode:openfl.display.BlendMode)
     {
     	var layer = getLayer(refType, ref);
 		#if (cpp || neko)
@@ -1471,7 +1469,7 @@ class Script
 	 * @param	refType		0 to get layer by ID, 1 for name
 	 * @param	ref			The ID or name of the layer as a String
 	 */
-	public function showTileLayer(refType:Int, ref:String)
+	public static function showTileLayer(refType:Int, ref:String)
 	{
 		engine.getLayer(refType, ref).alpha = 1;
 	}
@@ -1482,7 +1480,7 @@ class Script
 	 * @param	refType		0 to get layer by ID, 1 for name
 	 * @param	ref			The ID or name of the layer as a String
 	 */
-	public function hideTileLayer(refType:Int, ref:String)
+	public static function hideTileLayer(refType:Int, ref:String)
 	{
 		engine.getLayer(refType, ref).alpha = 0;
 	}
@@ -1496,7 +1494,7 @@ class Script
 	 * @param	duration		the duration of the fading (in milliseconds)
 	 * @param	easing			easing function to apply. Linear (no smoothing) is the default.
 	 */
-	public function fadeTileLayerTo(layerRefType:Int, layerRef:String, alphaPct:Float, duration:Float, easing:Dynamic = null)
+	public static function fadeTileLayerTo(layerRefType:Int, layerRef:String, alphaPct:Float, duration:Float, easing:Dynamic = null)
 	{
 		if(easing == null)
 		{
@@ -1515,7 +1513,7 @@ class Script
 	 *
 	 * @return The x-position of the camera
 	 */
-	public function getScreenX():Float
+	public static function getScreenX():Float
 	{
 		return Math.abs(Engine.cameraX / Engine.SCALE);
 	}
@@ -1525,7 +1523,7 @@ class Script
 	 *
 	 * @return The y-position of the camera
 	 */
-	public function getScreenY():Float
+	public static function getScreenY():Float
 	{
 		return Math.abs(Engine.cameraY / Engine.SCALE);
 	}
@@ -1535,7 +1533,7 @@ class Script
 	 *
 	 * @return The x-position of the camera
 	 */
-	public function getScreenXCenter():Float
+	public static function getScreenXCenter():Float
 	{
 		return Math.abs(Engine.cameraX / Engine.SCALE) + Engine.screenWidth / 2;
 	}
@@ -1545,7 +1543,7 @@ class Script
 	 *
 	 * @return The y-position of the camera
 	 */
-	public function getScreenYCenter():Float
+	public static function getScreenYCenter():Float
 	{
 		return Math.abs(Engine.cameraY / Engine.SCALE) + Engine.screenHeight / 2;
 	}
@@ -1555,7 +1553,7 @@ class Script
 	 *
 	 * @return The actor representing the camera
 	 */
-	public function getCamera():Actor
+	public static function getCamera():Actor
 	{
 		return engine.camera;
 	}
@@ -1567,112 +1565,112 @@ class Script
 	//Programmers: Use the Input class directly. It's much nicer.
 	//We're keeping this API around for compatibility for now.
 	
-	public function isCtrlDown():Bool
+	public static function isCtrlDown():Bool
 	{
 		return Input.check(Engine.INTERNAL_CTRL);
 	}
 	
-	public function isShiftDown():Bool
+	public static function isShiftDown():Bool
 	{
 		return Input.check(Engine.INTERNAL_SHIFT);
 	}
 	
-	public function simulateKeyPress(abstractKey:String)
+	public static function simulateKeyPress(abstractKey:String)
 	{
 		Input.simulateKeyPress(abstractKey);
 	}
 	
-	public function simulateKeyRelease(abstractKey:String)
+	public static function simulateKeyRelease(abstractKey:String)
 	{
 		Input.simulateKeyRelease(abstractKey);
 	}
 
-	public function isKeyDown(abstractKey:String):Bool
+	public static function isKeyDown(abstractKey:String):Bool
 	{
 		return Input.check(abstractKey);
 	}
 
-	public function isKeyPressed(abstractKey:String):Bool
+	public static function isKeyPressed(abstractKey:String):Bool
 	{
 		return Input.pressed(abstractKey);
 	}
 	
-	public function isKeyReleased(abstractKey:String):Bool
+	public static function isKeyReleased(abstractKey:String):Bool
 	{
 		return Input.released(abstractKey);
 	}
 	
-	public function isMouseDown():Bool
+	public static function isMouseDown():Bool
 	{
 		return Input.mouseDown;
 	}
 	
-	public function isMousePressed():Bool
+	public static function isMousePressed():Bool
 	{
 		return Input.mousePressed;
 	}
 
-	public function isMouseReleased():Bool
+	public static function isMouseReleased():Bool
 	{
 		return Input.mouseReleased;
 	}
 	
-	public function getMouseX():Float
+	public static function getMouseX():Float
 	{
 		return Input.mouseX / Engine.SCALE;
 	}
 
-	public function getMouseY():Float
+	public static function getMouseY():Float
 	{
 		return Input.mouseY / Engine.SCALE;
 	}
 	
-	public function getMouseWorldX():Float
+	public static function getMouseWorldX():Float
 	{
 		return Input.mouseX / Engine.SCALE + Engine.cameraX;
 	}
 	
-	public function getMouseWorldY():Float
+	public static function getMouseWorldY():Float
 	{
 		return Input.mouseY / Engine.SCALE + Engine.cameraY;
 	}
 	
-	public function getMousePressedX():Float
+	public static function getMousePressedX():Float
 	{
 		return mpx;
 	}
 	
-	public function getMousePressedY():Float
+	public static function getMousePressedY():Float
 	{
 		return mpy;
 	}
 
-	public function getMouseReleasedX():Float
+	public static function getMouseReleasedX():Float
 	{
 		return mrx;
 	}
 	
-	public function getMouseReleasedY():Float
+	public static function getMouseReleasedY():Float
 	{
 		return mry;
 	}
 	
-	/*public function setCursor(graphic:Class=null, xOffset:int=0, yOffset:int=0);
+	/*public static function setCursor(graphic:Class=null, xOffset:int=0, yOffset:int=0);
 	{
 		FlxG.mouse.show(graphic, xOffset, yOffset);
 	}*/
 
-	public function showCursor()
+	public static function showCursor()
 	{
 		Mouse.show();
 	}
 
-	public function hideCursor()
+	public static function hideCursor()
 	{
 		Mouse.hide();
 	}
 	
-	public function charFromCharCode(code:Int):String
+	public static function charFromCharCode(code:Int):String
 	{
 		if (code < 32 || (code > 126 && code < 160))
 		{
@@ -1688,38 +1686,38 @@ class Script
 	//* Actor Creation
 	//*-----------------------------------------------
 	
-	public function getLastCreatedActor():Actor
+	public static function getLastCreatedActor():Actor
 	{
 		return lastCreatedActor;
 	}
 	
-	public function createActor(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
+	public static function createActor(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
 	{
 		var a:Actor = engine.createActorOfType(type, x, y, layerConst);
-		Script.lastCreatedActor = a;
+		lastCreatedActor = a;
 		return a;
 	}
 	
-	public function createRecycledActor(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
+	public static function createRecycledActor(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
 	{
 		var a:Actor = engine.getRecycledActorOfType(type, x, y, layerConst);
-		Script.lastCreatedActor = a;
+		lastCreatedActor = a;
 		return a;
 	}
 
-	public function createRecycledActorOnLayer(type:ActorType, x:Float, y:Float, layerRefType:Int, layerRef:String):Actor
+	public static function createRecycledActorOnLayer(type:ActorType, x:Float, y:Float, layerRefType:Int, layerRef:String):Actor
 	{
 		var a:Actor = engine.getRecycledActorOfTypeOnLayer(type, x, y, engine.getLayer(layerRefType, layerRef).ID);
-		Script.lastCreatedActor = a;
+		lastCreatedActor = a;
 		return a;
 	}
 	
-	public function recycleActor(a:Actor)
+	public static function recycleActor(a:Actor)
 	{
 		engine.recycleActor(a);
 	}
 	
-	public function createActorInNextScene(type:ActorType, x:Float, y:Float, layerConst:Int)
+	public static function createActorInNextScene(type:ActorType, x:Float, y:Float, layerConst:Int)
 	{
 		engine.createActorInNextScene(type, x, y, layerConst);
 	}
@@ -1731,7 +1729,7 @@ class Script
 	/**
 	 * Returns an ActorType by name
 	 */
-	public function getActorTypeByName(typeName:String):ActorType
+	public static function getActorTypeByName(typeName:String):ActorType
 	{
 		var types = getAllActorTypes();
 		
@@ -1749,7 +1747,7 @@ class Script
 	/**
 	* Returns an ActorType by ID
 	*/
-	public function getActorType(actorTypeID:Int):ActorType
+	public static function getActorType(actorTypeID:Int):ActorType
 	{
 		return cast(Data.get().resources.get(actorTypeID), ActorType);
 	}
@@ -1757,7 +1755,7 @@ class Script
 	/**
 	* Returns an array of all ActorTypes in the game
 	*/
-	public function getAllActorTypes():Array<ActorType>
+	public static function getAllActorTypes():Array<ActorType>
 	{
 		return Data.get().getAllActorTypes();
 	}
@@ -1765,7 +1763,7 @@ class Script
 	/**
 	* Returns an array of all Actors of the given type in the scene
 	*/
-	public function getActorsOfType(type:ActorType):Array<Actor>
+	public static function getActorsOfType(type:ActorType):Array<Actor>
 	{
 		return engine.getActorsOfType(type);
 	}
@@ -1773,7 +1771,7 @@ class Script
 	/**
 	* Returns an actor in the scene by ID
 	*/
-	public function getActor(actorID:Int):Actor
+	public static function getActor(actorID:Int):Actor
 	{
 		return engine.getActor(actorID);
 	}
@@ -1781,7 +1779,7 @@ class Script
 	/**
 	* Returns an ActorGroup by ID
 	*/
-	public function getActorGroup(groupID:Int):Group
+	public static function getActorGroup(groupID:Int):Group
 	{
 		return engine.getGroup(groupID);
 	}
@@ -1798,7 +1796,7 @@ class Script
 	
 	//wait for Box2D
 	
-	public function setGravity(x:Float, y:Float)
+	public static function setGravity(x:Float, y:Float)
 	{
 		if(engine.world == null)
 		{
@@ -1812,7 +1810,7 @@ class Script
 		}
 	}
 
-	public function getGravity():B2Vec2
+	public static function getGravity():B2Vec2
 	{
 		if(engine.world == null)
 		{
@@ -1828,22 +1826,22 @@ class Script
 		}
 	}
 
-	public function enableContinuousCollisions()
+	public static function enableContinuousCollisions()
 	{
 		B2World.m_continuousPhysics = true;
 	}
 		
-	public function toPhysicalUnits(value:Float):Float
+	public static function toPhysicalUnits(value:Float):Float
 	{
 		return Engine.toPhysicalUnits(value);
 	}
 
-	public function toPixelUnits(value:Float):Float
+	public static function toPixelUnits(value:Float):Float
 	{
 		return Engine.toPixelUnits(value);
 	}
 	
-	public function makeActorNotPassThroughTerrain(actor:Actor)
+	public static function makeActorNotPassThroughTerrain(actor:Actor)
 	{
 		if (Engine.NO_PHYSICS)
 		{
@@ -1866,12 +1864,12 @@ class Script
 	//* Sounds
 	//*-----------------------------------------------
 	
-	public function mute()
+	public static function mute()
 	{
 		//FlxG.mute = true;
 	}
 	
-	public function unmute()
+	public static function unmute()
 	{
 		//FlxG.mute = false;
 	}
@@ -1879,7 +1877,7 @@ class Script
 	/**
 	* Returns a SoundClip resource by ID
 	*/
-	public function getSound(soundID:Int):Sound
+	public static function getSound(soundID:Int):Sound
 	{
 		var temp = Data.get().resources.get(soundID);
 		
@@ -1894,7 +1892,7 @@ class Script
 	/**
 	* Returns a SoundClip resource by Name
 	*/
-	public function getSoundByName(soundName:String):Sound
+	public static function getSoundByName(soundName:String):Sound
 	{
 		var sounds = Data.get().getResourcesOfType(Sound);
 		
@@ -1912,7 +1910,7 @@ class Script
 	/**
 	* Play a specific SoundClip resource once (use loopSound() to play a looped version)
 	*/
-	public function playSound(clip:Sound)
+	public static function playSound(clip:Sound)
 	{
 		if(clip != null)
 		{				
@@ -1935,7 +1933,7 @@ class Script
 	/**
 	* Loop a specific SoundClip resource (use playSound() to play only once)
 	*/
-	public function loopSound(clip:Sound)
+	public static function loopSound(clip:Sound)
 	{
 		if(clip != null)
 		{				
@@ -1958,7 +1956,7 @@ class Script
 	/**
 	* Play a specific SoundClip resource once on a specific channel (use loopSoundOnChannel() to play a looped version)
 	*/
-	public function playSoundOnChannel(clip:Sound, channelNum:Int)
+	public static function playSoundOnChannel(clip:Sound, channelNum:Int)
 	{
 		var sc:SoundChannel = engine.channels[channelNum];		
 		sc.playSound(clip);			
@@ -1967,7 +1965,7 @@ class Script
 	/**
 	* Play a specific SoundClip resource looped on a specific channel (use playSoundOnChannel() to play once)
 	*/
-	public function loopSoundOnChannel(clip:Sound, channelNum:Int)
+	public static function loopSoundOnChannel(clip:Sound, channelNum:Int)
 	{		
 		var sc:SoundChannel = engine.channels[channelNum];	
 		sc.loopSound(clip);			
@@ -1976,7 +1974,7 @@ class Script
 	/**
 	* Stop all sound on a specific channel (use pauseSoundOnChannel() to just pause)
 	*/
-	public function stopSoundOnChannel(channelNum:Int)
+	public static function stopSoundOnChannel(channelNum:Int)
 	{					
 		var sc:SoundChannel = engine.channels[channelNum];
 		sc.stopSound();
@@ -1985,7 +1983,7 @@ class Script
 	/**
 	* Pause all sound on a specific channel (use stopSoundOnChannel() to stop it)
 	*/
-	public function pauseSoundOnChannel(channelNum:Int)
+	public static function pauseSoundOnChannel(channelNum:Int)
 	{					
 		var sc:SoundChannel = engine.channels[channelNum];	
 		sc.setPause(true);			
@@ -1994,7 +1992,7 @@ class Script
 	/**
 	* Resume all sound on a specific channel (must have been paused with pauseSoundOnChannel())
 	*/
-	public function resumeSoundOnChannel(channelNum:Int)
+	public static function resumeSoundOnChannel(channelNum:Int)
 	{					
 		var sc:SoundChannel = engine.channels[channelNum];		
 		sc.setPause(false);			
@@ -2003,7 +2001,7 @@ class Script
 	/**
 	* Set the volume of all sound on a specific channel (use decimal volume such as .5)
 	*/
-	public function setVolumeForChannel(volume:Float, channelNum:Int)
+	public static function setVolumeForChannel(volume:Float, channelNum:Int)
 	{			
 		var sc:SoundChannel = engine.channels[channelNum];		
 		sc.setVolume(volume);
@@ -2012,7 +2010,7 @@ class Script
 	/**
 	* Stop all the sounds currently playing (use mute() to mute the game).
 	*/
-	public function stopAllSounds()
+	public static function stopAllSounds()
 	{			
 		for(i in 0...CHANNELS)
 		{
@@ -2024,7 +2022,7 @@ class Script
 	/**
 	* Set the volume for the game
 	*/
-	public function setVolumeForAllSounds(volume:Float)
+	public static function setVolumeForAllSounds(volume:Float)
 	{
 		SoundChannel.masterVolume = volume;
 		
@@ -2038,7 +2036,7 @@ class Script
 	/**
 	* Fade a specific channel's audio in over time (milliseconds)
 	*/
-	public function fadeInSoundOnChannel(channelNum:Int, time:Float)
+	public static function fadeInSoundOnChannel(channelNum:Int, time:Float)
 	{						
 		var sc:SoundChannel = engine.channels[channelNum];
 		sc.fadeInSound(time);			
@@ -2047,7 +2045,7 @@ class Script
 	/**
 	* Fade a specific channel's audio out over time (milliseconds)
 	*/
-	public function fadeOutSoundOnChannel(channelNum:Int, time:Float)
+	public static function fadeOutSoundOnChannel(channelNum:Int, time:Float)
 	{						
 		var sc:SoundChannel = engine.channels[channelNum];
 		sc.fadeOutSound(time);			
@@ -2056,7 +2054,7 @@ class Script
 	/**
 	* Fade all audio in over time (milliseconds)
 	*/
-	public function fadeInForAllSounds(time:Float)
+	public static function fadeInForAllSounds(time:Float)
 	{
 		for(i in 0...CHANNELS)
 		{
@@ -2068,7 +2066,7 @@ class Script
 	/**
 	* Fade all audio out over time (milliseconds)
 	*/
-	public function fadeOutForAllSounds(time:Float)
+	public static function fadeOutForAllSounds(time:Float)
 	{
 		for(i in 0...CHANNELS)
 		{
@@ -2081,7 +2079,7 @@ class Script
 	* Gets the current position for the given channel in milliseconds.
 	* If not playing, will return the last point it was played at.
 	*/
-	public function getPositionForChannel(channelNum:Int)
+	public static function getPositionForChannel(channelNum:Int)
 	{			
 		var sc:SoundChannel = engine.channels[channelNum];	
 		
@@ -2099,7 +2097,7 @@ class Script
 	/**
 	* Gets the length for the given channel in milliseconds.
 	*/
-	public function getSoundLengthForChannel(channelNum:Int)
+	public static function getSoundLengthForChannel(channelNum:Int)
 	{			
 		var sc:SoundChannel = engine.channels[channelNum];		
 		
@@ -2121,7 +2119,7 @@ class Script
 	/**
 	* Gets the length of the given sound in milliseconds.
 	*/
-	public function getSoundLength(clip:Sound)
+	public static function getSoundLength(clip:Sound)
 	{			
 		if(clip != null && clip.src != null)
 		{
@@ -2146,7 +2144,7 @@ class Script
 	/**
 	* Set the solid or gradient color background
 	*/
-	public function setColorBackground(c:Int, c2:Int = -2 /*ColorBackground.TRANSPARENT*/)
+	public static function setColorBackground(c:Int, c2:Int = -2 /*ColorBackground.TRANSPARENT*/)
 	{
 		engine.colorLayer.graphics.clear();
 
@@ -2166,7 +2164,7 @@ class Script
 	/**
 	* Set the speed of all scrolling backgrounds (Backgrounds must already be set to scrolling)
 	*/
-	public function setScrollSpeedForBackground(refType:Int, ref:String, xSpeed:Float, ySpeed:Float)
+	public static function setScrollSpeedForBackground(refType:Int, ref:String, xSpeed:Float, ySpeed:Float)
 	{
 		var allBackgrounds:Bool = (refType == 0 && ref == "-1");
 
@@ -2190,7 +2188,7 @@ class Script
 	/**
 	* Set the parallax factor of a background or tilelayer
 	*/
-	public function setScrollFactorForLayer(refType:Int, ref:String, scrollFactorX:Float, scrollFactorY:Float)
+	public static function setScrollFactorForLayer(refType:Int, ref:String, scrollFactorX:Float, scrollFactorY:Float)
 	{
 		var layer = Engine.engine.getLayer(refType, ref);
 		if(Std.is(layer, BackgroundLayer))
@@ -2207,7 +2205,7 @@ class Script
 	/**
 	* Switches one background for another
 	*/
-	public function changeBackground(layerRefType:Int, layerRef:String, newBackName:String)
+	public static function changeBackground(layerRefType:Int, layerRef:String, newBackName:String)
 	{
 		var types = Data.get().getResourcesOfType(ImageBackground);
 		
@@ -2234,7 +2232,7 @@ class Script
 	/**
 	* Change a background's image
 	*/
-	public function changeBackgroundImage(layerRefType:Int, layerRef:String, newImg:BitmapData)
+	public static function changeBackgroundImage(layerRefType:Int, layerRef:String, newImg:BitmapData)
 	{
 		if(newImg == null)
 			return;
@@ -2246,7 +2244,7 @@ class Script
 		}
 	}
 
-	public function addBackground(backgroundName:String, layerName:String, order:Int)
+	public static function addBackground(backgroundName:String, layerName:String, order:Int)
 	{
 		var bg = Data.get().resourceMap.get(backgroundName);
 		var layer = new BackgroundLayer(engine.getNextLayerID(), layerName, order, 0, 0, 1, BlendMode.NORMAL, bg.ID, false);
@@ -2254,14 +2252,14 @@ class Script
 		engine.insertLayer(layer, order);
 	}
 
-	public function addBackgroundFromImage(image:BitmapData, tiled:Bool, layerName:String, order:Int)
+	public static function addBackgroundFromImage(image:BitmapData, tiled:Bool, layerName:String, order:Int)
 	{
 		var layer = new BackgroundLayer(engine.getNextLayerID(), layerName, order, 0, 0, 1, BlendMode.NORMAL, -1, false);
 		layer.loadFromImg(image, tiled);
 		engine.insertLayer(layer, order);
 	}
 	
-	public function removeBackground(layerRefType:Int, layerRef:String)
+	public static function removeBackground(layerRefType:Int, layerRef:String)
 	{
 		var layer = engine.getLayer(layerRefType, layerRef);
 		if(Std.is(layer, BackgroundLayer))
@@ -2275,27 +2273,27 @@ class Script
 	public static var dummyRect = new flash.geom.Rectangle(0, 0, 1, 1);
 	public static var dummyPoint = new flash.geom.Point(0, 0);
 	
-	public function captureScreenshot():BitmapData
+	public static function captureScreenshot():BitmapData
 	{
 		var img:BitmapData = new BitmapData(Std.int(getScreenWidth() * Engine.SCALE) , Std.int(getScreenHeight() * Engine.SCALE));
 		img.draw(openfl.Lib.current.stage);
 		return img;
 	}
 	
-	public function getImageForActor(a:Actor):BitmapData
+	public static function getImageForActor(a:Actor):BitmapData
 	{
 		var original:BitmapData = a.getCurrentImage();
 		return original.clone();
 	}
 	
 	//Example path: "sample.png" - stick into the "extras" folder for your game - see: http://community.stencyl.com/index.php/topic,24729.0.html
-	public function getExternalImage(path:String):BitmapData
+	public static function getExternalImage(path:String):BitmapData
 	{
 		return openfl.Assets.getBitmapData("assets/data/" + path, false);
 	}
 	
 	//TODO: See - http://www.onegiantmedia.com/as3--load-a-remote-image-from-any-url--domain-with-no-stupid-security-sandbox-errors
-	public function loadImageFromURL(URL:String, onComplete:BitmapData->Void)
+	public static function loadImageFromURL(URL:String, onComplete:BitmapData->Void)
 	{
 		#if flash
 		var lc = new flash.system.LoaderContext();
@@ -2325,7 +2323,7 @@ class Script
     	#end
 	}
 	
-	public function getSubImage(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapData
+	public static function getSubImage(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapData
 	{
 		x = Std.int(x * Engine.SCALE);
 		y = Std.int(y * Engine.SCALE);
@@ -2352,7 +2350,7 @@ class Script
 		return new BitmapData(1, 1);
 	}
 	
-	public function setOrderForImage(img:BitmapWrapper, order:Int)
+	public static function setOrderForImage(img:BitmapWrapper, order:Int)
 	{
 		if(img != null && img.parent != null)
 		{
@@ -2363,7 +2361,7 @@ class Script
 		}
 	}
 
-	public function getOrderForImage(img:BitmapWrapper)
+	public static function getOrderForImage(img:BitmapWrapper)
 	{
 		if(img != null && img.parent != null)
 		{
@@ -2373,7 +2371,7 @@ class Script
 		return -1;
 	}
 	
-	public function bringImageBack(img:BitmapWrapper)
+	public static function bringImageBack(img:BitmapWrapper)
 	{
 		if(img != null && img.parent != null)
 		{
@@ -2381,7 +2379,7 @@ class Script
 		}
 	}
 	
-	public function bringImageForward(img:BitmapWrapper)
+	public static function bringImageForward(img:BitmapWrapper)
 	{
 		if(img != null && img.parent != null)
 		{
@@ -2389,7 +2387,7 @@ class Script
 		}
 	}
 	
-	public function bringImageToBack(img:BitmapWrapper)
+	public static function bringImageToBack(img:BitmapWrapper)
 	{
 		if(img != null && img.parent != null)
 		{
@@ -2397,7 +2395,7 @@ class Script
 		}
 	}
 	
-	public function bringImagetoFront(img:BitmapWrapper)
+	public static function bringImagetoFront(img:BitmapWrapper)
 	{
 		if(img != null && img.parent != null)
 		{
@@ -2405,7 +2403,7 @@ class Script
 		}
 	}
 	
-	public function attachImageToActor(img:BitmapWrapper, a:Actor, x:Int, y:Int, pos:Int = 1)
+	public static function attachImageToActor(img:BitmapWrapper, a:Actor, x:Int, y:Int, pos:Int = 1)
 	{
 		x = Std.int(x * Engine.SCALE);
 		y = Std.int(y * Engine.SCALE);
@@ -2434,7 +2432,7 @@ class Script
 	}
 	
 	//Will be "fixed" like an HUD
-	public function attachImageToHUD(img:BitmapWrapper, x:Int, y:Int)
+	public static function attachImageToHUD(img:BitmapWrapper, x:Int, y:Int)
 	{
 		x = Std.int(x * Engine.SCALE);
 		y = Std.int(y * Engine.SCALE);
@@ -2448,7 +2446,7 @@ class Script
 		}
 	}
 	
-	public function attachImageToLayer(img:BitmapWrapper, layerRefType:Int, layerRef:String, x:Int, y:Int, pos:Int = 1)
+	public static function attachImageToLayer(img:BitmapWrapper, layerRefType:Int, layerRef:String, x:Int, y:Int, pos:Int = 1)
 	{
 		x = Std.int(x * Engine.SCALE);
 		y = Std.int(y * Engine.SCALE);
@@ -2473,7 +2471,7 @@ class Script
 		}
 	}
 	
-	public function removeImage(img:BitmapWrapper)
+	public static function removeImage(img:BitmapWrapper)
 	{
 		if(img != null)
 		{
@@ -2484,7 +2482,7 @@ class Script
 	}
 	
 	//This returns a new BitmapData. It isn't possible to actually resize a BitmapData without creating a new one.
-	public function resizeImage(img:BitmapData, xScale:Float = 1.0, yScale:Float = 1.0, smoothing:Bool = true):BitmapData
+	public static function resizeImage(img:BitmapData, xScale:Float = 1.0, yScale:Float = 1.0, smoothing:Bool = true):BitmapData
 	{
 		var matrix:Matrix = new Matrix();
 		matrix.scale(xScale, yScale);
@@ -2495,7 +2493,7 @@ class Script
 		return toReturn;
 	}
 	
-	public function drawImageOnImage(source:BitmapData, dest:BitmapData, x:Int, y:Int, blendMode:BlendMode)
+	public static function drawImageOnImage(source:BitmapData, dest:BitmapData, x:Int, y:Int, blendMode:BlendMode)
 	{
 		x = Std.int(x * Engine.SCALE);
 		y = Std.int(y * Engine.SCALE);
@@ -2525,7 +2523,7 @@ class Script
 		}
 	}
 	
-	public function drawTextOnImage(img:BitmapData, text:String, x:Int, y:Int, font:Font)
+	public static function drawTextOnImage(img:BitmapData, text:String, x:Int, y:Int, font:Font)
 	{
 		x = Std.int(x * Engine.SCALE);
 		y = Std.int(y * Engine.SCALE);
@@ -2556,7 +2554,7 @@ class Script
 		}
 	}
 	
-	public function clearImagePartially(img:BitmapData, x:Int, y:Int, width:Int, height:Int)
+	public static function clearImagePartially(img:BitmapData, x:Int, y:Int, width:Int, height:Int)
 	{
 		x = Std.int(x * Engine.SCALE);
 		y = Std.int(y * Engine.SCALE);
@@ -2574,7 +2572,7 @@ class Script
 		}
 	}
 	
-	public function clearImage(img:BitmapData)
+	public static function clearImage(img:BitmapData)
 	{
 		if(img != null)
 		{
@@ -2587,7 +2585,7 @@ class Script
 		}
 	}
 	
-	public function clearImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
+	public static function clearImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
 		x = Std.int(x * Engine.SCALE);
 		y = Std.int(y * Engine.SCALE);
@@ -2617,7 +2615,7 @@ class Script
 		dest.copyPixels(final, dummyRect, dummyPoint);
 	}
 	
-	public function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
+	public static function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
 		x = Std.int(x * Engine.SCALE);
       	y = Std.int(y * Engine.SCALE);
@@ -2634,7 +2632,7 @@ class Script
       	dest.copyChannel(mask, dummyRect, dummyPoint, openfl.display.BitmapDataChannel.ALPHA, openfl.display.BitmapDataChannel.ALPHA);
 	}
 	
-	public function fillImage(img:BitmapData, color:Int)
+	public static function fillImage(img:BitmapData, color:Int)
 	{
 		if(img != null)
 		{
@@ -2649,7 +2647,7 @@ class Script
 	
 	#if flash
 	//Takes ONE filter at a time.
-	public function filterImage(img:BitmapData, filter:BitmapFilter)
+	public static function filterImage(img:BitmapData, filter:BitmapFilter)
 	{
 		if(img != null)
 		{
@@ -2666,7 +2664,7 @@ class Script
 	}
 	#else
 	//Takes ONE filter at a time.
-	public function filterImage(img:BitmapData, filter:Array<Dynamic>)
+	public static function filterImage(img:BitmapData, filter:Array<Dynamic>)
 	{
 		if(img != null)
 		{
@@ -2675,7 +2673,7 @@ class Script
 	}
 	#end
 	
-	public function imageSetPixel(img:BitmapData, x:Int, y:Int, color:Int)
+	public static function imageSetPixel(img:BitmapData, x:Int, y:Int, color:Int)
 	{
 		if(img != null)
 		{
@@ -2703,7 +2701,7 @@ class Script
 		}
 	}
 	
-	public function imageGetPixel(img:BitmapData, x:Int, y:Int):Int
+	public static function imageGetPixel(img:BitmapData, x:Int, y:Int):Int
 	{
 		if(img != null)
 		{
@@ -2716,7 +2714,7 @@ class Script
 		return 0;
 	}
 	
-	public function imageSwapColor(img:BitmapData, originalColor:Int, newColor:Int)
+	public static function imageSwapColor(img:BitmapData, originalColor:Int, newColor:Int)
 	{
 		if(img != null)
 		{
@@ -2736,7 +2734,7 @@ class Script
 	}
 	
 	//TODO: Can we do this "in place" without the extra objects?
-	public function flipImageHorizontal(img:BitmapData)
+	public static function flipImageHorizontal(img:BitmapData)
 	{
 		var matrix:Matrix = new Matrix();
 		matrix.scale(-1, 1);
@@ -2757,7 +2755,7 @@ class Script
 	}
 	
 	//TODO: Can we do this "in place" without the extra objects?
-	public function flipImageVertical(img:BitmapData)
+	public static function flipImageVertical(img:BitmapData)
 	{
 		var matrix:Matrix = new Matrix();
 		matrix.scale(1, -1);
@@ -2777,7 +2775,7 @@ class Script
 		img.copyPixels(final, dummyRect, dummyPoint);
 	}
 	
-	public function setXForImage(img:BitmapWrapper, value:Float)
+	public static function setXForImage(img:BitmapWrapper, value:Float)
 	{
 		if(img != null)
 		{
@@ -2785,7 +2783,7 @@ class Script
 		}
 	}
 	
-	public function setYForImage(img:BitmapWrapper, value:Float)
+	public static function setYForImage(img:BitmapWrapper, value:Float)
 	{
 		if(img != null)
 		{
@@ -2793,7 +2791,7 @@ class Script
 		}
 	}
 	
-	public function fadeImageTo(img:BitmapWrapper, value:Float, duration:Float = 1, easing:Dynamic = null)
+	public static function fadeImageTo(img:BitmapWrapper, value:Float, duration:Float = 1, easing:Dynamic = null)
 	{
 		if(easing == null)
 		{
@@ -2803,12 +2801,12 @@ class Script
 		Actuate.tween(img, duration, {alpha:value}).ease(easing);
 	}
 
-	public function setOriginForImage(img:BitmapWrapper, x:Float, y:Float)
+	public static function setOriginForImage(img:BitmapWrapper, x:Float, y:Float)
 	{
 		img.setOrigin(x, y);
 	}
 	
-	public function growImageTo(img:BitmapWrapper, scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:Dynamic = null)
+	public static function growImageTo(img:BitmapWrapper, scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:Dynamic = null)
 	{
 		if(easing == null)
 		{
@@ -2819,7 +2817,7 @@ class Script
 	}
 	
 	//In degrees
-	public function spinImageTo(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:Dynamic = null)
+	public static function spinImageTo(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:Dynamic = null)
 	{
 		if(easing == null)
 		{
@@ -2829,7 +2827,7 @@ class Script
 		Actuate.tween(img, duration, {rotation:angle}).ease(easing);
 	}
 
-	public function moveImageTo(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
+	public static function moveImageTo(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
 	{
 		x = (x * Engine.SCALE);
 		y = (y * Engine.SCALE);
@@ -2850,18 +2848,18 @@ class Script
 	}
 	
 	//In degrees
-	public function spinImageBy(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:Dynamic = null)
+	public static function spinImageBy(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:Dynamic = null)
 	{
 		spinImageTo(img, img.rotation + angle, duration, easing);
 	}
 	
-	public function moveImageBy(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
+	public static function moveImageBy(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
 	{
 		moveImageTo(img, (img.imgX / Engine.SCALE) + x, (img.imgY / Engine.SCALE) + y, duration, easing);
 	}
 	
 	#if flash
-	public function setFilterForImage(img:BitmapWrapper, filter:BitmapFilter)
+	public static function setFilterForImage(img:BitmapWrapper, filter:BitmapFilter)
 	{
 		if(img != null)
 		{
@@ -2869,13 +2867,13 @@ class Script
 		}
 	}
 	#else
-	public function setFilterForImage(img:BitmapWrapper, filter:Array<Dynamic>)
+	public static function setFilterForImage(img:BitmapWrapper, filter:Array<Dynamic>)
 	{			
 		//TODO: Reuse Actor's setFilter if possible.
 	}
 	#end
 	
-	public function clearFiltersForImage(img:BitmapWrapper)
+	public static function clearFiltersForImage(img:BitmapWrapper)
 	{
 		if(img != null)
 		{
@@ -2884,7 +2882,7 @@ class Script
 	}
 	
 	//Base64 encodes raw image data. Does NOT convert to a PNG.
-	public function imageToText(img:BitmapData):String
+	public static function imageToText(img:BitmapData):String
 	{
 		dummyRect.x = 0;
 		dummyRect.y = 0;
@@ -2909,7 +2907,7 @@ class Script
 	
 	//This is extremely slow. Tried this (https://github.com/underscorediscovery/gameapi-haxe/blob/master/playtomic/Encode.hx) 
 	//but that didn't work. May try again in the future.
-	public function imageFromText(text:String):BitmapData
+	public static function imageFromText(text:String):BitmapData
 	{
 		var parts = text.split(";");
 		var width = Std.parseInt(parts[0]);
@@ -2987,7 +2985,7 @@ class Script
 	/**
 	* Begin screen shake
 	*/
-	public function startShakingScreen(intensity:Float=0.05, duration:Float=0.5)
+	public static function startShakingScreen(intensity:Float=0.05, duration:Float=0.5)
 	{
 		engine.shakeScreen(intensity, duration);
 	}
@@ -2995,7 +2993,7 @@ class Script
 	/**
 	* End screen shake
 	*/
-	public function stopShakingScreen()
+	public static function stopShakingScreen()
 	{
 		engine.stopShakingScreen();
 	}
@@ -3007,7 +3005,7 @@ class Script
 	/**
 	* Get the top terrain layer
 	*/
-	public function getTopLayer():Int
+	public static function getTopLayer():Int
 	{
 		return engine.getTopLayer();
 	}
@@ -3015,7 +3013,7 @@ class Script
 	/**
 	* Get the bottom terrain layer
 	*/
-	public function getBottomLayer():Int
+	public static function getBottomLayer():Int
 	{
 		return engine.getBottomLayer();
 	}
@@ -3023,12 +3021,12 @@ class Script
 	/**
 	* Get the middle terrain layer
 	*/
-	public function getMiddleLayer():Int
+	public static function getMiddleLayer():Int
 	{
 		return engine.getMiddleLayer();
 	}
 
-	public function getTileLayerAt(refType:Int, ref:String):TileLayer
+	public static function getTileLayerAt(refType:Int, ref:String):TileLayer
 	{
 		var layer = engine.getLayer(refType, ref);
 		if(layer == null || !Std.is(layer, Layer))
@@ -3036,7 +3034,7 @@ class Script
 		return cast(layer, Layer).tiles;
 	}
 
-	public function getTilesetIDByName(tilesetName:String):Int
+	public static function getTilesetIDByName(tilesetName:String):Int
 	{
 		var r = Data.get().resourceMap.get(tilesetName);
 		if(Std.is(r, Tileset))
@@ -3046,7 +3044,7 @@ class Script
 		return -1;
 	}
 
-	public function setTileAt(row:Dynamic, col:Dynamic, refType:Int, ref:String, tilesetID:Dynamic, tileID:Dynamic)
+	public static function setTileAt(row:Dynamic, col:Dynamic, refType:Int, ref:String, tilesetID:Dynamic, tileID:Dynamic)
 	{
 		row = Std.int(row);
 		col = Std.int(col);
@@ -3107,14 +3105,14 @@ class Script
 		engine.tileUpdated = true;
 	}
 	
-	public function tileExistsAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Bool
+	public static function tileExistsAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Bool
 	{
 		return getTileAt(Std.int(row), Std.int(col), refType, ref) != null;
 	}
 	
 	//tileCollisionAt function added to return True if ANY collision shape exists, or False for no tile or collision shape
 	//if the user gives it a negative value for the layer, it will loop through all layers instead of a specific one
-	public function tileCollisionAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Bool
+	public static function tileCollisionAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Bool
 	{
 		if(refType == 0 && Std.parseInt(ref) < 0)
 		{
@@ -3147,7 +3145,7 @@ class Script
 	}
 
 	//to easily get a column or row coordinate at a given X or Y coordinate
-	public function getTilePosition(axis:Dynamic, val:Dynamic):Int
+	public static function getTilePosition(axis:Dynamic, val:Dynamic):Int
 	{
 		var tileH = engine.scene.tileHeight;
 		var tileW = engine.scene.tileWidth;
@@ -3161,7 +3159,7 @@ class Script
 		}
 	}
 
-	public function getTileIDAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Int
+	public static function getTileIDAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Int
 	{
 		var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
 		
@@ -3173,7 +3171,7 @@ class Script
 		return tile.tileID;
 	}
 	
-	public function getTileColIDAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Int
+	public static function getTileColIDAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Int
     {
     	var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
                        
@@ -3185,7 +3183,7 @@ class Script
         return tile.collisionID;
     }
 
-	public function getTileDataAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):String
+	public static function getTileDataAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):String
     {
     	var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
         
@@ -3197,7 +3195,7 @@ class Script
         return tile.metadata;
     }
 	
-	public function getTilesetIDAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Int
+	public static function getTilesetIDAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Int
 	{
 		var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
 		
@@ -3209,7 +3207,7 @@ class Script
 		return tile.parent.ID;
 	}
 	
-	public function getTileAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Tile
+	public static function getTileAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Tile
 	{
 		var tlayer = getTileLayerAt(refType, ref);
 		
@@ -3221,7 +3219,7 @@ class Script
 		return tlayer.getTileAt(Std.int(row), Std.int(col));
 	}
 	
-	public function removeTileAt(row:Dynamic, col:Dynamic, refType:Int, ref:String)
+	public static function removeTileAt(row:Dynamic, col:Dynamic, refType:Int, ref:String)
 	{
 		row = Std.int(row);
 		col = Std.int(col);
@@ -3266,7 +3264,7 @@ class Script
 		}
 	}
 
-	public function getTileForCollision(event:Collision, point:CollisionPoint):Tile
+	public static function getTileForCollision(event:Collision, point:CollisionPoint):Tile
 	{
 		if (event.thisCollidedWithTile || event.otherCollidedWithTile)
 		{
@@ -3300,7 +3298,7 @@ class Script
 		return null;
 	}
 
-	public function getTileDataForCollision(event:Collision, point:CollisionPoint):String
+	public static function getTileDataForCollision(event:Collision, point:CollisionPoint):String
 	{
 		var t:Tile = getTileForCollision(event, point);
 		if(t != null)
@@ -3310,7 +3308,7 @@ class Script
 	}
 	
 	//TODO: For simple physics, we stick in either a box or nothing at all - maybe it autohandles this?
-	private function createDynamicTile(shape:B2Shape, x:Float, y:Float, layerID:Int, width:Float, height:Float)
+	private static function createDynamicTile(shape:B2Shape, x:Float, y:Float, layerID:Int, width:Float, height:Float)
 	{
 		var a:Actor = new Actor
 		(
@@ -3350,7 +3348,7 @@ class Script
 	//* Fonts
 	//*-----------------------------------------------
 	
-	public function getFont(fontID:Int):Font
+	public static function getFont(fontID:Int):Font
 	{
 		return cast(Data.get().resources.get(fontID), Font);
 	}
@@ -3359,17 +3357,17 @@ class Script
 	//* Global
 	//*-----------------------------------------------
 	
-	public function pause()
+	public static function pause()
 	{
 		engine.pause();
 	}
 	
-	public function unpause()
+	public static function unpause()
 	{
 		engine.unpause();
 	}
 	
-	public function toggleFullScreen()
+	public static function toggleFullScreen()
 	{
 		#if((flash && !air) || (cpp && !mobile) || neko)
 		Engine.engine.toggleFullscreen();
@@ -3379,7 +3377,7 @@ class Script
 	/**
 	* Pause the game
 	*/
-	public function pauseAll()
+	public static function pauseAll()
 	{
 		Engine.paused = true;
 	}
@@ -3387,7 +3385,7 @@ class Script
 	/**
 	* Unpause the game
 	*/
-	public function unpauseAll()
+	public static function unpauseAll()
 	{
 		Engine.paused = false;
 	}
@@ -3395,7 +3393,7 @@ class Script
 	/**
 	* Get the screen width in pixels
 	*/
-	public function getScreenWidth()
+	public static function getScreenWidth()
 	{
 		return Engine.screenWidth;
 	}
@@ -3403,7 +3401,7 @@ class Script
 	/**
 	* Get the screen height in pixels
 	*/
-	public function getScreenHeight()
+	public static function getScreenHeight()
 	{
 		return Engine.screenHeight;
 	}
@@ -3411,7 +3409,7 @@ class Script
 	/**
 	* Sets the distance an actor can travel offscreen before being deleted.
 	*/
-	public function setOffscreenTolerance(top:Float, left:Float, bottom:Float, right:Float)
+	public static function setOffscreenTolerance(top:Float, left:Float, bottom:Float, right:Float)
 	{
 		Engine.paddingTop = Std.int(top);
 		Engine.paddingLeft = Std.int(left);
@@ -3422,7 +3420,7 @@ class Script
 	/**
 	* Returns true if the scene is transitioning
 	*/
-	public function isTransitioning():Bool
+	public static function isTransitioning():Bool
 	{
 		return engine.isTransitioning();
 	}
@@ -3430,7 +3428,7 @@ class Script
 	/**
 	* Adjust how fast or slow time should pass in the game; default is 1.0. 
 	*/
-	public function setTimeScale(scale:Float)
+	public static function setTimeScale(scale:Float)
 	{
 		Engine.timeScale = scale;
 	}
@@ -3438,7 +3436,7 @@ class Script
 	/**
 	 * Generates a random number. Deterministic, meaning safe to use if you want to record replays in random environments
 	 */
-	public function randomFloat():Float
+	public static function randomFloat():Float
 	{
 		return Math.random();
 	}
@@ -3446,7 +3444,7 @@ class Script
 	/**
 	 * Generates a random number. Set the lowest and highest values.
 	 */
-	public function randomInt(low:Float, high:Float):Int
+	public static function randomInt(low:Float, high:Float):Int
 	{
 		if (low <= high)
 		{
@@ -3490,7 +3488,7 @@ class Script
 	 *
 	 * Callback = function(success:Boolean):void
 	 */
-	public function saveGame(fileName:String, onComplete:Bool->Void=null)
+	public static function saveGame(fileName:String, onComplete:Bool->Void=null)
 	{
 		var so = SharedObject.getLocal(fileName);
 		
@@ -3541,7 +3539,7 @@ class Script
 	 *
 	 * Callback = function(success:Boolean):void
 	 */
-	public function loadGame(fileName:String, onComplete:Bool->Void=null)
+	public static function loadGame(fileName:String, onComplete:Bool->Void=null)
 	{
 		var data = SharedObject.getLocal(fileName);
 		
@@ -3560,20 +3558,20 @@ class Script
 	//* Web Services
 	//*-----------------------------------------------
 	
-	private function defaultURLHandler(event:Event)
+	private static function defaultURLHandler(event:Event)
 	{
 		var loader:URLLoader = new URLLoader(event.target);
 		trace("Visited URL: " + loader.data);
 	}
 	
 	#if flash
-	private function defaultURLError(event:IOErrorEvent)
+	private static function defaultURLError(event:IOErrorEvent)
 	{
 		trace("Could not visit URL");
 	}
 	#end
 	
-	public function openURLInBrowser(URL:String)
+	public static function openURLInBrowser(URL:String)
 	{
 		Lib.getURL(new URLRequest(URL));
 	}
@@ -3581,7 +3579,7 @@ class Script
 	/**
 	* Attempts to connect to a URL
 	*/
-	public function visitURL(URL:String, fn:Event->Void = null)
+	public static function visitURL(URL:String, fn:Event->Void = null)
 	{
 		if(fn == null)
 		{
@@ -3617,7 +3615,7 @@ class Script
 	/**
 	* Attempts to POST data to a URL
 	*/
-	public function postToURL(URL:String, data:String = null, fn:Event->Void = null)
+	public static function postToURL(URL:String, data:String = null, fn:Event->Void = null)
 	{
 		if(fn == null)
 		{
@@ -3658,7 +3656,7 @@ class Script
 	//Purpose: Support Unicode in downloaded text or text from external files.
 	//Author: out2lunch
 	//http://community.stencyl.com/index.php/topic,30954.0.html
-	public function convertToPseudoUnicode(internationalText:String):String
+	public static function convertToPseudoUnicode(internationalText:String):String
 	{
 		#if flash
 		// Not needed in Flash, just return it
@@ -3772,7 +3770,7 @@ class Script
 	/**
 	* Send a Tweet (GameURL is the twitter account that it will be posted to)
 	*/
-	public function simpleTweet(message:String, gameURL:String)
+	public static function simpleTweet(message:String, gameURL:String)
 	{
 		openURLInBrowser("http://twitter.com/home?status=" + StringTools.urlEncode(message + " " + gameURL));
 	}
@@ -3788,7 +3786,7 @@ class Script
 	private static var scoreBrowser:com.newgrounds.components.ScoreBrowser = null;
 	#end
 	
-	public function newgroundsShowAd()
+	public static function newgroundsShowAd()
 	{
 		#if(flash)
 		var flashAd = new com.newgrounds.components.FlashAd();
@@ -3800,7 +3798,7 @@ class Script
 		#end
 	}
 	
-	public function newgroundsSetMedalPosition(x:Int, y:Int)
+	public static function newgroundsSetMedalPosition(x:Int, y:Int)
 	{
 		#if(flash)
 		if(medalPopup == null)
@@ -3814,7 +3812,7 @@ class Script
 		#end
 	}
 	
-	public function newgroundsUnlockMedal(medalName:String)
+	public static function newgroundsUnlockMedal(medalName:String)
 	{
 		#if(flash)
 		if(medalPopup == null)
@@ -3827,14 +3825,14 @@ class Script
 		#end
 	}
 	
-	public function newgroundsSubmitScore(boardName:String, value:Float)
+	public static function newgroundsSubmitScore(boardName:String, value:Float)
 	{
 		#if(flash)
 		com.newgrounds.API.API.postScore(boardName, value);
 		#end
 	}
 	
-	public function newgroundsShowScore(boardName:String)
+	public static function newgroundsShowScore(boardName:String)
 	{
 		#if(flash)
 		if(scoreBrowser == null)
@@ -3882,7 +3880,7 @@ class Script
 		#end
 	}
 		
-	private function newgroundsHelper(event:openfl.events.MouseEvent)
+	private static function newgroundsHelper(event:openfl.events.MouseEvent)
 	{
 		#if(flash)
 		Engine.engine.root.parent.removeChild(scoreBrowser);
@@ -3893,21 +3891,21 @@ class Script
 	//* Kongregate
 	//*-----------------------------------------------
 
-	public function kongregateInitAPI()
+	public static function kongregateInitAPI()
 	{
 		#if(flash && !air)
 		com.stencyl.utils.Kongregate.initAPI();
 		#end
 	}
 	
-	public function kongregateSubmitStat(name:String, stat:Float) 
+	public static function kongregateSubmitStat(name:String, stat:Float) 
 	{
 		#if(flash && !air)
 		com.stencyl.utils.Kongregate.submitStat(name, stat);
 		#end
 	}
 	
-	public function kongregateIsGuest():Bool
+	public static function kongregateIsGuest():Bool
 	{
 		#if(flash && !air)
 		return com.stencyl.utils.Kongregate.isGuest();
@@ -3916,7 +3914,7 @@ class Script
 		#end
 	}
 	
-	public function kongregateGetUsername():String
+	public static function kongregateGetUsername():String
 	{
 		#if(flash && !air)
 		return com.stencyl.utils.Kongregate.getUsername();
@@ -3925,7 +3923,7 @@ class Script
 		#end
 	}
 	
-	public function kongregateGetUserID():Int
+	public static function kongregateGetUserID():Int
 	{
 		#if(flash && !air)
 		return com.stencyl.utils.Kongregate.getUserID();
@@ -3938,7 +3936,7 @@ class Script
 	//* Mochi
 	//*-----------------------------------------------
 	
-	public function mochiShowAd(width:Int, height:Int, startFunc:Void->Void = null, endFunc:Void->Void = null)
+	public static function mochiShowAd(width:Int, height:Int, startFunc:Void->Void = null, endFunc:Void->Void = null)
 	{
 		#if(flash && !air)
 		mochi.as3.MochiAd.showInterLevelAd
@@ -3974,7 +3972,7 @@ class Script
 		#end
 	}
 	
-	public function mochiShowScores(boardID:String, startFunc:Void->Void = null, endFunc:Void->Void = null)
+	public static function mochiShowScores(boardID:String, startFunc:Void->Void = null, endFunc:Void->Void = null)
 	{
 		#if(flash && !air)
 		mochi.as3.MochiScores.showLeaderboard
@@ -4004,7 +4002,7 @@ class Script
 		#end
 	}
 	
-	public function mochiSubmitScore(boardID:String, score:Float, startFunc:Void->Void = null, endFunc:Void->Void = null)
+	public static function mochiSubmitScore(boardID:String, score:Float, startFunc:Void->Void = null, endFunc:Void->Void = null)
 	{
 		#if(flash && !air)
 		mochi.as3.MochiScores.showLeaderboard
@@ -4043,21 +4041,21 @@ class Script
 	
 	//Like the prior implementation, this is a HINT to the engine to load a new atlas UPON CHANGING SCENES
 	//Does not happen immediately.
-	public function loadAtlas(atlasID:Int)
+	public static function loadAtlas(atlasID:Int)
 	{
 		//#if mobile
 		engine.atlasesToLoad.set(atlasID, atlasID);
 		//#end
 	}
 	
-	public function unloadAtlas(atlasID:Int)
+	public static function unloadAtlas(atlasID:Int)
 	{
 		//#if mobile
 		engine.atlasesToUnload.set(atlasID, atlasID);
 		//#end
 	}
 	
-	public function atlasIsLoaded(atlasID:Int):Bool
+	public static function atlasIsLoaded(atlasID:Int):Bool
 	{
 		#if flash
 		return true;
@@ -4069,7 +4067,7 @@ class Script
 	
 	//Ads
 	
-	public function showMobileAd()
+	public static function showMobileAd()
 	{
 		#if (mobile && !android && !air)
 		Ads.initialize();
@@ -4081,7 +4079,7 @@ class Script
 		#end
 	}
 	
-	public function hideMobileAd()
+	public static function hideMobileAd()
 	{
 		#if (mobile && !android && !air)
 		Ads.initialize();
@@ -4095,14 +4093,14 @@ class Script
 	
 	//Game Center
 	
-	public function gameCenterInitialize():Void 
+	public static function gameCenterInitialize():Void 
 	{
 		#if (mobile && !android && !air)
 			GameCenter.initialize();
 		#end	
 	}
 	
-	public function gameCenterIsAuthenticated():Bool 
+	public static function gameCenterIsAuthenticated():Bool 
 	{
 		#if (mobile && !android && !air)
 			return GameCenter.isAuthenticated();
@@ -4111,7 +4109,7 @@ class Script
 		#end
 	}
 	
-	public function gameCenterGetPlayerName():String 
+	public static function gameCenterGetPlayerName():String 
 	{
 		#if (mobile && !android && !air)
 			return GameCenter.getPlayerName();
@@ -4120,7 +4118,7 @@ class Script
 		#end
 	}
 	
-	public function gameCenterGetPlayerID():String 
+	public static function gameCenterGetPlayerID():String 
 	{
 		#if (mobile && !android && !air)
 			return GameCenter.getPlayerID();
@@ -4129,42 +4127,42 @@ class Script
 		#end
 	}
 	
-	public function gameCenterShowLeaderboard(categoryID:String):Void 
+	public static function gameCenterShowLeaderboard(categoryID:String):Void 
 	{
 		#if (mobile && !android && !air)
 			GameCenter.showLeaderboard(categoryID);
 		#end	
 	}
 	
-	public function gameCenterShowAchievements():Void 
+	public static function gameCenterShowAchievements():Void 
 	{
 		#if (mobile && !android && !air)
 			GameCenter.showAchievements();
 		#end	
 	}
 	
-	public function gameCenterSubmitScore(score:Float, categoryID:String):Void 
+	public static function gameCenterSubmitScore(score:Float, categoryID:String):Void 
 	{
 		#if (mobile && !android && !air)
 			GameCenter.reportScore(categoryID, Std.int(score));
 		#end	
 	}
 	
-	public function gameCenterSubmitAchievement(achievementID:String, percent:Float):Void 
+	public static function gameCenterSubmitAchievement(achievementID:String, percent:Float):Void 
 	{
 		#if (mobile && !android && !air)
 			GameCenter.reportAchievement(achievementID, percent);
 		#end	
 	}
 	
-	public function gameCenterResetAchievements():Void 
+	public static function gameCenterResetAchievements():Void 
 	{
 		#if (mobile && !android && !air)
 			GameCenter.resetAchievements();
 		#end	
 	}
 	
-	public function gameCenterShowBanner(title:String, msg:String):Void 
+	public static function gameCenterShowBanner(title:String, msg:String):Void 
 	{
 		#if (mobile && !android && !air)
 			GameCenter.showAchievementBanner(title, msg);
@@ -4173,7 +4171,7 @@ class Script
 	
 	//Purchases
 	
-	public function purchasesAreInitialized():Bool 
+	public static function purchasesAreInitialized():Bool 
 	{
 		#if (mobile && cpp && !air)
 			return Purchases.canBuy();
@@ -4182,21 +4180,21 @@ class Script
 		#end
 	}
 	
-	public function purchasesRestore():Void 
+	public static function purchasesRestore():Void 
 	{
 		#if (mobile && cpp && !air)
 			Purchases.restorePurchases();
 		#end	
 	}
 	
-	public function purchasesBuy(productID:String):Void 
+	public static function purchasesBuy(productID:String):Void 
 	{
 		#if (mobile && cpp)
 			Purchases.buy(productID);
 		#end	
 	}
 	
-	public function purchasesHasBought(productID:String):Bool 
+	public static function purchasesHasBought(productID:String):Bool 
 	{
 		#if (mobile && cpp && !air)
 			return Purchases.hasBought(productID);
@@ -4205,7 +4203,7 @@ class Script
 		#end
 	}
 	
-	public function purchasesGetTitle(productID:String):String 
+	public static function purchasesGetTitle(productID:String):String 
 	{
 		#if (mobile && cpp && !air)
 			return Purchases.getTitle(productID);
@@ -4214,7 +4212,7 @@ class Script
 		#end
 	}
 	
-	public function purchasesGetDescription(productID:String):String 
+	public static function purchasesGetDescription(productID:String):String 
 	{
 		#if (mobile && cpp && !air)
 			return Purchases.getDescription(productID);
@@ -4223,7 +4221,7 @@ class Script
 		#end
 	}
 	
-	public function purchasesGetPrice(productID:String):String 
+	public static function purchasesGetPrice(productID:String):String 
 	{
 		#if (mobile && cpp && !air)
 			return Purchases.getPrice(productID);
@@ -4232,7 +4230,7 @@ class Script
 		#end
 	}
 	
-	public function purchasesRequestProductInfo(productIDlist:Array<Dynamic>):Void 
+	public static function purchasesRequestProductInfo(productIDlist:Array<Dynamic>):Void 
   	{
     	#if (mobile && cpp && !air)
       		Purchases.requestProductInfo(productIDlist);
@@ -4243,7 +4241,7 @@ class Script
 	
 	//Consumables
 	
-	public function purchasesUse(productID:String):Void 
+	public static function purchasesUse(productID:String):Void 
 	{
 		#if (mobile && cpp && !air)
 			Purchases.use(productID);
@@ -4251,14 +4249,14 @@ class Script
 	}
 	
 	//For V3 Google IAP
-	public function purchasesGoogleConsume(productID:String):Void 
+	public static function purchasesGoogleConsume(productID:String):Void 
 	{
 		#if (mobile && cpp && !air)
 			Purchases.consume(productID);
 		#end	
 	}
 	
-	public function purchasesGetQuantity(productID:String):Int 
+	public static function purchasesGetQuantity(productID:String):Int 
 	{
 		#if (mobile && cpp && !air)
 			return Purchases.getQuantity(productID);
@@ -4271,42 +4269,42 @@ class Script
 	//* Native
 	//*-----------------------------------------------
 	
-	public function showAlert(title:String, msg:String)
+	public static function showAlert(title:String, msg:String)
 	{
 		#if(mobile && !air)
 		Native.showAlert(title, msg);
 		#end
 	}
 	
-	public function vibrate(time:Float = 1)
+	public static function vibrate(time:Float = 1)
 	{
 		#if(mobile && !air)
 		Native.vibrate(time);
 		#end
 	}
 	
-	public function showKeyboard()
+	public static function showKeyboard()
 	{
 		#if(mobile && !air)
 		Native.showKeyboard();
 		#end
 	}
 	
-	public function hideKeyboard()
+	public static function hideKeyboard()
 	{
 		#if(mobile && !air)
 		Native.hideKeyboard();
 		#end
 	}
 	
-	public function setKeyboardText(text:String)
+	public static function setKeyboardText(text:String)
 	{
 		#if(mobile && !air)
 		Native.setKeyboardText(text);
 		#end
 	}
 	
-	public function setIconBadgeNumber(n:Int)
+	public static function setIconBadgeNumber(n:Int)
 	{
 		#if(mobile && !air)
 		Native.setIconBadgeNumber(n);
@@ -4317,7 +4315,7 @@ class Script
 	//* Debug
 	//*-----------------------------------------------
 	
-	public function enableDebugDrawing()
+	public static function enableDebugDrawing()
 	{
 		Engine.DEBUG_DRAW = true;
 		
@@ -4327,7 +4325,7 @@ class Script
 		}
 	}
 
-	public function disableDebugDrawing()
+	public static function disableDebugDrawing()
 	{
 		Engine.DEBUG_DRAW = false;
 		
@@ -4342,14 +4340,14 @@ class Script
 	//*-----------------------------------------------
 	
 	#if (cpp || js || neko)
-	public function createGrayscaleFilter():Array<Dynamic>
+	public static function createGrayscaleFilter():Array<Dynamic>
 	{
 		var matrix = new Array<Dynamic>();
 		matrix[0] = "GrayscaleFilter";
 		return matrix;
 	}
 	
-	public function createSepiaFilter():Array<Dynamic>
+	public static function createSepiaFilter():Array<Dynamic>
 	{
 		var matrix = new Array<Dynamic>();
 		matrix = matrix.concat([0.34, 0.33, 0.33, 0.00, 30.00]);
@@ -4361,14 +4359,14 @@ class Script
 		return matrix;
 	}
 	
-	public function createNegativeFilter():Array<Dynamic>
+	public static function createNegativeFilter():Array<Dynamic>
 	{
 		var matrix = new Array<Dynamic>();
 		matrix[0] = "NegativeFilter";
 		return matrix;
 	}
 	
-	public function createTintFilter(color:Int, amount:Float = 1):Array<Dynamic>
+	public static function createTintFilter(color:Int, amount:Float = 1):Array<Dynamic>
 	{
 		var matrix = new Array<Dynamic>();
 		matrix[0] = "TintFilter";
@@ -4379,7 +4377,7 @@ class Script
 		return matrix;
 	}
 	
-	public function createHueFilter(h:Float):Array<Dynamic>
+	public static function createHueFilter(h:Float):Array<Dynamic>
 	{
 		var cm:ColorMatrix = new ColorMatrix();
 		cm.adjustHue(h);
@@ -4389,7 +4387,7 @@ class Script
 		return matrix;
 	}
 
-	public function createSaturationFilter(s:Float):Array<Dynamic>
+	public static function createSaturationFilter(s:Float):Array<Dynamic>
 	{
 		var cm:ColorMatrix = new ColorMatrix();
 		cm.adjustSaturation(s/100);
@@ -4398,7 +4396,7 @@ class Script
 		return matrix;
 	}
 
-	public function createBrightnessFilter(b:Float):Array<Dynamic>
+	public static function createBrightnessFilter(b:Float):Array<Dynamic>
 	{
 		var cm:ColorMatrix = new ColorMatrix();
 		cm.adjustBrightness(b/100);
@@ -4409,7 +4407,7 @@ class Script
 	#end
 	
 	#if flash
-	public function createGrayscaleFilter():ColorMatrixFilter
+	public static function createGrayscaleFilter():ColorMatrixFilter
 	{
 		var matrix:Array<Dynamic> = new Array<Dynamic>();
 		
@@ -4424,7 +4422,7 @@ class Script
 	/**
 	* Returns a ColorMatrixFilter that is sepia colored 
 	*/
-	public function createSepiaFilter():ColorMatrixFilter
+	public static function createSepiaFilter():ColorMatrixFilter
 	{
 		var matrix:Array<Dynamic> = new Array<Dynamic>();
 		
@@ -4439,7 +4437,7 @@ class Script
 	/**
 	* Returns a ColorMatrixFilter that is a negative
 	*/
-	public function createNegativeFilter():ColorMatrixFilter
+	public static function createNegativeFilter():ColorMatrixFilter
 	{
 		var matrix:Array<Dynamic> = new Array<Dynamic>();
 		
@@ -4454,7 +4452,7 @@ class Script
 	/**
 	* Returns a ColorMatrixFilter that is a specific color
 	*/
-	public function createTintFilter(color:Int, amount:Float = 1):ColorMatrixFilter
+	public static function createTintFilter(color:Int, amount:Float = 1):ColorMatrixFilter
 	{
 		var cm:ColorMatrix = new ColorMatrix();
 		
@@ -4471,7 +4469,7 @@ class Script
 	/**
 	* Returns a ColorMatrixFilter that adjusts hue (in relative degrees) 
 	*/
-	public function createHueFilter(h:Float):ColorMatrixFilter
+	public static function createHueFilter(h:Float):ColorMatrixFilter
 	{
 		var cm:ColorMatrix = new ColorMatrix();
 		
@@ -4484,7 +4482,7 @@ class Script
 	/**
 	* Returns a ColorMatrixFilter that adjusts saturation (measured 0 - 2 with 1 being normal) 
 	*/
-	public function createSaturationFilter(s:Float):ColorMatrixFilter
+	public static function createSaturationFilter(s:Float):ColorMatrixFilter
 	{
 		var cm:ColorMatrix = new ColorMatrix();
 		
@@ -4496,7 +4494,7 @@ class Script
 	/**
 	* Returns a ColorMatrixFilter that adjusts brightness (in relative degrees) 
 	*/
-	public function createBrightnessFilter(b:Float):ColorMatrixFilter
+	public static function createBrightnessFilter(b:Float):ColorMatrixFilter
 	{
 		var cm:ColorMatrix = new ColorMatrix();
 		
