@@ -2425,15 +2425,12 @@ class Engine
 		{
 			disableCollisionList.pop();
 		}
-		
-		if(!NO_PHYSICS)
+				
+		if(!collisionPairs.isEmpty())
 		{
-			if(!collisionPairs.isEmpty())
+			for(pair in collisionPairs.keys())
 			{
-				for(pair in collisionPairs.keys())
-				{
-					collisionPairs.clr(pair);
-				}
+				collisionPairs.clr(pair);
 			}
 		}
 		
@@ -2715,8 +2712,8 @@ class Engine
 		
 		if(NO_PHYSICS)
 		{
-			group1 = event.groupA;
-			group2 = event.groupB;
+			group1 = Actor.GROUP_OFFSET + event.groupA;
+			group2 = Actor.GROUP_OFFSET + event.groupB;
 		}
 		
 		else

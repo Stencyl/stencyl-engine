@@ -862,6 +862,7 @@ class Script
 		
 		if(Std.is(this, ActorScript))
 		{
+			cast(this, ActorScript).actor.collisionListenerCount++;
 			cast(this, ActorScript).actor.registerListener(listeners, func);
 		}
 	}

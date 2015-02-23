@@ -319,7 +319,7 @@ class Region extends Actor
 			{
 				var a = Engine.engine.getActor(id);
 
-				if(!HITBOX.collide(a.HITBOX))
+				if(HITBOX != null && a != null && !HITBOX.collide(a.HITBOX))
 				{
 					removeActor(a);
 				}
