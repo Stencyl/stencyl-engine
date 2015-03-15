@@ -14,6 +14,8 @@ class GameModel
 {
 	public static var instance:GameModel;
 	
+	public var name:String;
+
 	public var width:Int;
 	public var height:Int;
 	public var actualWidth:Int;
@@ -51,6 +53,8 @@ class GameModel
 	
 	public function new(xml:Fast)
 	{
+		name = xml.att.name;
+
 		width = Std.parseInt(xml.att.width);
 		height = Std.parseInt(xml.att.height);
 		actualWidth = Std.parseInt(xml.att.awidth);
