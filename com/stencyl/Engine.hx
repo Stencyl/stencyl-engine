@@ -2904,7 +2904,7 @@ class Engine
 
 		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
 		cameraX = Math.max(cameraX, -sceneWidth + screenWidth);
-		cameraY = Math.max(cameraX, -sceneHeight + screenHeight);
+		cameraY = Math.max(cameraY, -sceneHeight + screenHeight);
 
 		cameraX *= SCALE;
 		cameraY *= SCALE;
