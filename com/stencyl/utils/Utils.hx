@@ -178,6 +178,18 @@ class Utils
 		
 		return toReturn;
 	}
+
+	public static function copyMap(map:Map<String, Dynamic>):Map<String, Dynamic>
+	{
+		var newMap = new Map<String, Dynamic>();
+		
+		for(key in map.keys())
+		{
+			newMap.set(key, map.get(key));
+		}
+		
+		return newMap;
+	}
 	
 	public static function removeAllChildren(container:DisplayObjectContainer)
 	{
