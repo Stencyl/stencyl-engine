@@ -440,10 +440,10 @@ class Engine
 			root.x = 0.0;
 			root.y = 0.0;
 			
-			Engine.screenScaleX = root.scaleX;
-			Engine.screenScaleY = root.scaleY;
-			Engine.screenOffsetX = Std.int(root.x);
-			Engine.screenOffsetY = Std.int(root.y);
+			screenScaleX = root.scaleX;
+			screenScaleY = root.scaleY;
+			screenOffsetX = Std.int(root.x);
+			screenOffsetY = Std.int(root.y);
 					
 			if(stats != null)
 			{
@@ -462,10 +462,10 @@ class Engine
 			
 			cast(root, Universal).initScreen(true);
 			
-			Engine.screenScaleX = root.scaleX;
-			Engine.screenScaleY = root.scaleY;
-			Engine.screenOffsetX = Std.int(root.x);
-			Engine.screenOffsetY = Std.int(root.y);
+			screenScaleX = root.scaleX;
+			screenScaleY = root.scaleY;
+			screenOffsetX = Std.int(root.x);
+			screenOffsetY = Std.int(root.y);
 			
 			if(stats != null)
 			{
@@ -501,14 +501,14 @@ class Engine
 			DEBUG_DRAW = true;
 		}
 		
-		Engine.engine = this;
+		engine = this;
 		Script.engine = this;
 		this.root = root;
 		
-		Engine.screenScaleX = root.scaleX;
-		Engine.screenScaleY = root.scaleY;
-		Engine.screenOffsetX = Std.int(root.x);
-		Engine.screenOffsetY = Std.int(root.y);
+		screenScaleX = root.scaleX;
+		screenScaleY = root.scaleY;
+		screenOffsetX = Std.int(root.x);
+		screenOffsetY = Std.int(root.y);
 		
 		NO_PHYSICS = scripts.MyAssets.physicsMode == 1;
 		
@@ -632,19 +632,19 @@ class Engine
 		Input.define(INTERNAL_SHIFT, [Key.SHIFT]);
 		Input.define(INTERNAL_CTRL, [Key.CONTROL]);
 		
-		Engine.landscape = scripts.MyAssets.landscape;
+		landscape = scripts.MyAssets.landscape;
 		var stageWidth = scripts.MyAssets.stageWidth;
 		var stageHeight = scripts.MyAssets.stageHeight;
 		
-		Engine.screenWidth = Std.int(stageWidth);
-		Engine.screenHeight = Std.int(stageHeight);
-		Engine.screenWidthHalf = Std.int(stageWidth/2);
-		Engine.screenHeightHalf = Std.int(stageHeight/2);
+		screenWidth = Std.int(stageWidth);
+		screenHeight = Std.int(stageHeight);
+		screenWidthHalf = Std.int(stageWidth/2);
+		screenHeightHalf = Std.int(stageHeight/2);
 		
 		#if (mobile && !air)
 		if(!scripts.MyAssets.autorotate)
 		{
-			if(Engine.landscape)
+			if(landscape)
 			{
 				Stage.setFixedOrientation(Stage.OrientationLandscapeLeft);
 			}
@@ -711,8 +711,8 @@ class Engine
 		lastTime = Lib.getTimer();
 
 		//Constants
-		Engine.sceneWidth = stageWidth; //Overriden once scene loads
-		Engine.sceneHeight = stageHeight; //Overriden once scene loads
+		sceneWidth = stageWidth; //Overriden once scene loads
+		sceneHeight = stageHeight; //Overriden once scene loads
 			
 		//Display List
 		colorLayer = new Shape();
@@ -890,8 +890,8 @@ class Engine
 		}
 		#end
 		
-		Engine.sceneWidth = scene.sceneWidth;
-		Engine.sceneHeight = scene.sceneHeight;
+		sceneWidth = scene.sceneWidth;
+		sceneHeight = scene.sceneHeight;
 		
 		behaviors = new BehaviorManager();
 		
@@ -1128,14 +1128,14 @@ class Engine
 		var aabb:B2AABB = new B2AABB();
 		aabb.lowerBound.x = 0;
 		aabb.lowerBound.y = 0;
-		aabb.upperBound.x = Engine.screenWidth / physicsScale;
-		aabb.upperBound.y = Engine.screenHeight / physicsScale;
+		aabb.upperBound.x = screenWidth / physicsScale;
+		aabb.upperBound.y = screenHeight / physicsScale;
 		world.setScreenBounds(aabb);
 		
 		debugDrawer = new B2DebugDraw();
 		debugDrawer.setSprite(debugLayer);
 		debugDrawer.setLineThickness(3);
-		debugDrawer.setDrawScale(10 * Engine.SCALE);
+		debugDrawer.setDrawScale(10 * SCALE);
 		debugDrawer.setFillAlpha(0);
 		debugDrawer.setFlags(B2DebugDraw.e_shapeBit | B2DebugDraw.e_jointBit);
 		world.setDebugDraw(debugDrawer);
@@ -1209,6 +1209,8 @@ class Engine
 		camera = new Actor(this, -1, GameModel.DOODAD_ID, 0, 0, getTopLayer(), 2, 2, null, null, null, null, true, false, true, false, null, 0, true, false);
 		camera.name = "Camera";
 		camera.isCamera = true;
+		cameraX = 0;
+		cameraY = 0;
 	}
 	
 	private function loadRegions()
@@ -1223,8 +1225,8 @@ class Engine
 			
 			if(!NO_PHYSICS)
 			{
-				region.setX(Engine.toPixelUnits(r.x) + (region.regionWidth / 2));
-				region.setY(Engine.toPixelUnits(r.y) + (region.regionHeight / 2));
+				region.setX(toPixelUnits(r.x) + (region.regionWidth / 2));
+				region.setY(toPixelUnits(r.y) + (region.regionHeight / 2));
 			}
 			
 			region.ID = r.ID;
@@ -1247,8 +1249,8 @@ class Engine
 			var region = new Terrain(this, r.x, r.y, r.shapes, r.groupID, r.fillColor);
 			region.name = r.name;
 			
-			region.setX(Engine.toPixelUnits(r.x) + (region.regionWidth / 2));
-			region.setY(Engine.toPixelUnits(r.y) + (region.regionHeight / 2));
+			region.setX(toPixelUnits(r.x) + (region.regionWidth / 2));
+			region.setY(toPixelUnits(r.y) + (region.regionHeight / 2));
 			
 			region.ID = r.ID;
 			
@@ -1288,8 +1290,8 @@ class Engine
 				var r = cast(jd, B2RevoluteJointDef);
 				pt = getActor(a1).body.getLocalCenter().copy();
 				
-				pt.x = Engine.toPixelUnits(pt.x);
-				pt.y = Engine.toPixelUnits(pt.y);
+				pt.x = toPixelUnits(pt.x);
+				pt.y = toPixelUnits(pt.y);
 				
 				one = getActor(a1).body;
 				two = null;
@@ -1326,8 +1328,8 @@ class Engine
 				var s = cast(jd, B2LineJointDef);
 				pt = getActor(a1).body.getLocalCenter().copy();
 				
-				pt.x = Engine.toPixelUnits(pt.x);
-				pt.y = Engine.toPixelUnits(pt.y);
+				pt.x = toPixelUnits(pt.x);
+				pt.y = toPixelUnits(pt.y);
 				
 				one = getActor(a1).body;
 				two = null;
@@ -1530,7 +1532,7 @@ class Engine
 
 	public function setColorBackground(bg:Background)
 	{
-		bg.draw(colorLayer.graphics, 0, 0, Std.int(screenWidth * Engine.SCALE), Std.int(screenHeight * Engine.SCALE));
+		bg.draw(colorLayer.graphics, 0, 0, Std.int(screenWidth * SCALE), Std.int(screenHeight * SCALE));
 	}
 
 	//*-----------------------------------------------
@@ -2010,16 +2012,16 @@ class Engine
 		var l1 = engine.whenTypeGroupDiesListeners.get(a.getType());
 		var l2 = engine.whenTypeGroupDiesListeners.get(a.getGroup());
 	
-		Engine.invokeListeners(a.whenKilledListeners);
+		invokeListeners(a.whenKilledListeners);
 
 		if(l1 != null)
 		{
-			Engine.invokeListeners2(l1, a);
+			invokeListeners2(l1, a);
 		}
 		
 		if(l2 != null)
 		{
-			Engine.invokeListeners2(l2, a);
+			invokeListeners2(l2, a);
 		}
 				
 		if(a.isHUD)
@@ -2067,7 +2069,7 @@ class Engine
 			
 			while(contact != null)
 			{	
-				Engine.engine.world.m_contactManager.m_contactListener.endContact(contact.contact);
+				engine.world.m_contactManager.m_contactListener.endContact(contact.contact);
 				contact = contact.next;
 			}
 		}
@@ -2314,14 +2316,14 @@ class Engine
 		if(!NO_PHYSICS)
 		{
 			var aabb = world.getScreenBounds();
-			aabb.lowerBound.x = (Math.abs(cameraX / Engine.SCALE) - paddingLeft) / physicsScale;
-			aabb.lowerBound.y = (Math.abs(cameraY / Engine.SCALE) - paddingTop) / physicsScale;
-			aabb.upperBound.x = aabb.lowerBound.x + ((Engine.screenWidth + paddingRight + paddingLeft) / physicsScale);
-			aabb.upperBound.y = aabb.lowerBound.y + ((Engine.screenHeight + paddingBottom + paddingTop) / physicsScale);
+			aabb.lowerBound.x = (Math.abs(cameraX / SCALE) - paddingLeft) / physicsScale;
+			aabb.lowerBound.y = (Math.abs(cameraY / SCALE) - paddingTop) / physicsScale;
+			aabb.upperBound.x = aabb.lowerBound.x + ((screenWidth + paddingRight + paddingLeft) / physicsScale);
+			aabb.upperBound.y = aabb.lowerBound.y + ((screenHeight + paddingBottom + paddingTop) / physicsScale);
 		}
 		
-		var inputx = Std.int(Input.mouseX / Engine.SCALE);
-		var inputy = Std.int(Input.mouseY / Engine.SCALE);
+		var inputx = Std.int(Input.mouseX / SCALE);
+		var inputy = Std.int(Input.mouseY / SCALE);
 						
 		if(Input.mousePressed)
 		{
@@ -2393,10 +2395,10 @@ class Engine
 		for(n in 0...nativeListeners.length)
 		{
 			var listener = nativeListeners[n];
-			listener.checkEvents(Engine.events);
+			listener.checkEvents(events);
 		}
 		
-		Engine.events.clear();
+		events.clear();
 		#end
 		
 		invokeListeners2(whenUpdatedListeners, elapsedTime);
@@ -2443,11 +2445,12 @@ class Engine
 				if(a != null && !a.dead && !a.recycled) 
 				{
 					//--- HAND INLINED THIS SINCE ITS CALLED SO MUCH
-					var isOnScreen = (a.physicsMode > 0 || a.body.isActive()) && 
-					a.colX + a.cacheWidth >= -Engine.cameraX / Engine.SCALE - Engine.paddingLeft && 
-					a.colY + a.cacheHeight >= -Engine.cameraY / Engine.SCALE - Engine.paddingTop &&
-					a.colX < -Engine.cameraX / Engine.SCALE + Engine.screenWidth + Engine.paddingRight &&
-					a.colY < -Engine.cameraY / Engine.SCALE + Engine.screenHeight + Engine.paddingBottom;
+					var isOnScreen =
+						(a.physicsMode > 0 || a.body.isActive()) && 
+						a.colX + a.cacheWidth >= -cameraX / SCALE - paddingLeft && 
+						a.colY + a.cacheHeight >= -cameraY / SCALE - paddingTop &&
+						a.colX < -cameraX / SCALE + screenWidth + paddingRight &&
+						a.colY < -cameraY / SCALE + screenHeight + paddingBottom;
 					
 					a.isOnScreenCache = isOnScreen;
 					
@@ -2516,31 +2519,6 @@ class Engine
 
 		//---
 		
-		//Camera Control
-		cameraX = -Math.abs(camera.realX) + screenWidthHalf;
-		cameraY = -Math.abs(camera.realY) + screenHeightHalf;
-
-		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
-		var maxCamX = -Engine.sceneWidth + screenWidth;
-		var maxCamY = -Engine.sceneHeight + screenHeight;
-		
-		if(cameraX < maxCamX)
-		{
-			cameraX = maxCamX;
-		} 
-		
-		if(cameraY < maxCamY)
-		{
-			cameraY = maxCamY;
-		}
-		
-		cameraX *= Engine.SCALE;
-		cameraY *= Engine.SCALE;
-		
-		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
-		cameraX = Math.min(0, cameraX);
-		cameraY = Math.min(0, cameraY);
-		
 		for(layer in layers)
 		{
 			layer.updatePosition(cameraX, cameraY, elapsedTime);
@@ -2563,11 +2541,11 @@ class Engine
 	            return;
 	        }
 	        
-	        var randX = (-shakeIntensity * Engine.screenWidth + Math.random() * (2 * shakeIntensity * Engine.screenWidth));
-	        var randY = (-shakeIntensity * Engine.screenHeight + Math.random() * (2 * shakeIntensity * Engine.screenHeight));
+	        var randX = (-shakeIntensity * screenWidth + Math.random() * (2 * shakeIntensity * screenWidth));
+	        var randY = (-shakeIntensity * screenHeight + Math.random() * (2 * shakeIntensity * screenHeight));
 	        
-	        master.x = randX * Engine.SCALE;
-	        master.y = randY * Engine.SCALE;
+	        master.x = randX * SCALE;
+	        master.y = randY * SCALE;
 		}
 	}
 	
@@ -2910,13 +2888,32 @@ class Engine
 	
 	public function cameraFollow(actor:Actor, lockX:Bool=true, lockY:Bool=true)
 	{	
-		camera.setLocation
+		moveCamera
 		(
 			actor.colX + actor.cacheWidth / 2,
 			actor.colY + actor.cacheHeight / 2
 		);
 	}
 	
+	public function moveCamera(x:Float, y:Float)
+	{
+		camera.setLocation(x, y);
+
+		cameraX = -Math.abs(camera.realX) + screenWidthHalf;
+		cameraY = -Math.abs(camera.realY) + screenHeightHalf;
+
+		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
+		cameraX = Math.max(cameraX, -sceneWidth + screenWidth);
+		cameraY = Math.max(cameraX, -sceneHeight + screenHeight);
+
+		cameraX *= SCALE;
+		cameraY *= SCALE;
+		
+		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
+		cameraX = Math.min(0, cameraX);
+		cameraY = Math.min(0, cameraY);
+	}
+
 	//*-----------------------------------------------
 	//* Pausing
 	//*-----------------------------------------------
@@ -3062,7 +3059,7 @@ class Engine
 						
 						g.translateToActor(a);
 						g.resetGraphicsSettings();
-						Engine.invokeListeners4(a.whenDrawingListeners, g, 0, 0);
+						invokeListeners4(a.whenDrawingListeners, g, 0, 0);
 					}
 				}
 			}
@@ -3104,7 +3101,7 @@ class Engine
      	#end
      	
      	g.resetGraphicsSettings();
-     	Engine.invokeListeners4(whenDrawingListeners, g, 0, 0);
+     	invokeListeners4(whenDrawingListeners, g, 0, 0);
 		
 		//Draw Transitions
 		if(leave != null && leave.isActive())
@@ -3563,10 +3560,10 @@ class Engine
 		var v1 = new B2Vec2(x1, y1);
 		var v2 = new B2Vec2(x2, y2);
 		
-		v1.x = Engine.toPhysicalUnits(v1.x);
-		v1.y = Engine.toPhysicalUnits(v1.y);
-		v2.x = Engine.toPhysicalUnits(v2.x);
-		v2.y = Engine.toPhysicalUnits(v2.y);
+		v1.x = toPhysicalUnits(v1.x);
+		v1.y = toPhysicalUnits(v1.y);
+		v2.x = toPhysicalUnits(v2.x);
+		v2.y = toPhysicalUnits(v2.y);
 		
 		v1 = one.getWorldPoint(v1);
 		v2 = two.getWorldPoint(v2);
@@ -3612,8 +3609,8 @@ class Engine
 		jd.bodyA = one;
 		jd.bodyB = two;
 		
-		pt.x = Engine.toPhysicalUnits(pt.x);
-		pt.y = Engine.toPhysicalUnits(pt.y);
+		pt.x = toPhysicalUnits(pt.x);
+		pt.y = toPhysicalUnits(pt.y);
 		
 		jd.localAnchorA = pt;
 		jd.localAnchorB = two.getLocalPoint(one.getWorldPoint(pt));
@@ -3733,8 +3730,8 @@ class Engine
 		
 		if(offset)
 		{
-			region.setX(Engine.toPixelUnits(x) + region.regionWidth / 2);
-			region.setY(Engine.toPixelUnits(y) + region.regionHeight / 2);
+			region.setX(toPixelUnits(x) + region.regionWidth / 2);
+			region.setY(toPixelUnits(y) + region.regionHeight / 2);
 		}
 		
 		addRegion(region);
@@ -3743,10 +3740,10 @@ class Engine
 	
 	public function createBoxRegion(x:Float, y:Float, w:Float, h:Float):Region
 	{
-		x = Engine.toPhysicalUnits(x);
-		y = Engine.toPhysicalUnits(y);
-		w = Engine.toPhysicalUnits(w);
-		h = Engine.toPhysicalUnits(h);
+		x = toPhysicalUnits(x);
+		y = toPhysicalUnits(y);
+		w = toPhysicalUnits(w);
+		h = toPhysicalUnits(h);
 	
 		if(NO_PHYSICS)
 		{
@@ -3765,9 +3762,9 @@ class Engine
 	
 	public function createCircularRegion(x:Float, y:Float, r:Float):Region
 	{
-		x = Engine.toPhysicalUnits(x);
-		y = Engine.toPhysicalUnits(y);
-		r = Engine.toPhysicalUnits(r);
+		x = toPhysicalUnits(x);
+		y = toPhysicalUnits(y);
+		r = toPhysicalUnits(r);
 		
 		if(NO_PHYSICS)
 		{
@@ -3861,8 +3858,8 @@ class Engine
 		
 		if(offset)
 		{
-			region.setX(Engine.toPixelUnits(x) + region.regionWidth / 2);
-			region.setY(Engine.toPixelUnits(y) + region.regionHeight / 2);
+			region.setX(toPixelUnits(x) + region.regionWidth / 2);
+			region.setY(toPixelUnits(y) + region.regionHeight / 2);
 		}
 		
 		addTerrainRegion(region);
@@ -3871,10 +3868,10 @@ class Engine
 	
 	public function createBoxTerrainRegion(x:Float, y:Float, w:Float, h:Float, groupID:Int=1):Terrain
 	{
-		x = Engine.toPhysicalUnits(x);
-		y = Engine.toPhysicalUnits(y);
-		w = Engine.toPhysicalUnits(w);
-		h = Engine.toPhysicalUnits(h);
+		x = toPhysicalUnits(x);
+		y = toPhysicalUnits(y);
+		w = toPhysicalUnits(w);
+		h = toPhysicalUnits(h);
 	
 		var p = new B2PolygonShape();
 		p.setAsBox(w/2, h/2);
@@ -3884,9 +3881,9 @@ class Engine
 	
 	public function createCircularTerrainRegion(x:Float, y:Float, r:Float, groupID:Int = 1):Terrain
 	{
-		x = Engine.toPhysicalUnits(x);
-		y = Engine.toPhysicalUnits(y);
-		r = Engine.toPhysicalUnits(r);
+		x = toPhysicalUnits(x);
+		y = toPhysicalUnits(y);
+		r = toPhysicalUnits(r);
 		
 		var cShape = new B2CircleShape();
 		cShape.m_radius = r;
@@ -3951,10 +3948,10 @@ class Engine
 	
 	public inline function setOffscreenTolerance(top:Int, left:Int, bottom:Int, right:Int)
 	{
-		Engine.paddingTop = top;
-		Engine.paddingLeft = left;
-		Engine.paddingBottom = bottom;
-		Engine.paddingRight = right;
+		paddingTop = top;
+		paddingLeft = left;
+		paddingBottom = bottom;
+		paddingRight = right;
 	}
 	
 	//*-----------------------------------------------
