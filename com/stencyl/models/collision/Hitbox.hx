@@ -50,6 +50,7 @@ class Hitbox extends Mask
 			lastBounds.width = parent.cacheWidth;
 			lastBounds.height = parent.cacheHeight;			
 			lastCheckedMask = this;
+			lastColMask = other;
 			
 			return true;	
 		}
@@ -70,6 +71,7 @@ class Hitbox extends Mask
 			lastBounds.width = _width;
 			lastBounds.height = _height;
 			lastCheckedMask = this;
+			lastColMask = other;
 		
 			return true;
 		}

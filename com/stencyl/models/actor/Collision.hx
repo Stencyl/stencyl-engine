@@ -54,7 +54,7 @@ class Collision
 	
 	public var bounds:Rectangle;
 	public var useBounds:Bool;
-	public var remove:Bool;
+	public var remove:Bool = false;
 	
 	public var solidCollision:Bool;
 	public var linkedCollision:Collision;
@@ -173,17 +173,17 @@ class Collision
 		c.otherCollidedWithSensor = thisCollidedWithSensor;
 		c.otherCollidedWithTerrain = thisCollidedWithTerrain;						
 		
-		c.actorA = actorA;
-		c.actorB = actorB;
+		c.actorA = actorB;
+		c.actorB = actorA;
 		c.points = points;
 		
 		c.useBounds = useBounds;
-		c.maskA = maskA;
-		c.maskB = maskB;		
+		c.maskA = maskB;
+		c.maskB = maskA;		
 		c.solidCollision = solidCollision;
 		
-		c.groupA = groupA;
-		c.groupB = groupB;
+		c.groupA = groupB;
+		c.groupB = groupA;
 		
 		c.linkedCollision = this;
 		this.linkedCollision = c;		

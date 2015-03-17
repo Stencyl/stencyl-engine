@@ -24,7 +24,7 @@ class Mask
 	public var list:Masklist;
 	public var lastBounds:Rectangle;
 	public var lastCheckedMask:Mask;
-	public var lastColID:Int;
+	public var lastColMask:Mask;
 	
 	public var solid:Bool;
 	public var collideTypes:Array<Int>;
@@ -42,7 +42,7 @@ class Mask
 		_check.set(Type.getClassName(Masklist), collideMasklist);	
 		
 		lastBounds = new Rectangle();
-		lastColID = -1;
+		lastColMask = null;
 	}
 
 	/**
