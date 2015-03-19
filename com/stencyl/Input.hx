@@ -452,14 +452,17 @@ class Input
 		
 		Input.onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, v, v));
 		
-		//Due to order of execution, events will never get thrown since the
-		//pressed/released flag is reset before the event checker sees it. So
-		//throw the event immediately.
-		var listeners = Engine.engine.whenKeyPressedListeners.get(key);
-		
-		if(listeners != null)
+		if(Engine.engine.keyPollOccurred)
 		{
-			Engine.invokeListeners3(listeners, true, false);
+			//Due to order of execution, events will never get thrown since the
+			//pressed/released flag is reset before the event checker sees it. So
+			//throw the event immediately.
+			var listeners = Engine.engine.whenKeyPressedListeners.get(key);
+			
+			if(listeners != null)
+			{
+				Engine.invokeListeners3(listeners, true, false);
+			}
 		}
 	}
 	
@@ -469,14 +472,17 @@ class Input
 		
 		Input.onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, v, v));
 		
-		//Due to order of execution, events will never get thrown since the
-		//pressed/released flag is reset before the event checker sees it. So
-		//throw the event immediately.
-		var listeners = Engine.engine.whenKeyPressedListeners.get(key);
-		
-		if(listeners != null)
+		if(Engine.engine.keyPollOccurred)
 		{
-			Engine.invokeListeners3(listeners, false, true);
+			//Due to order of execution, events will never get thrown since the
+			//pressed/released flag is reset before the event checker sees it. So
+			//throw the event immediately.
+			var listeners = Engine.engine.whenKeyPressedListeners.get(key);
+			
+			if(listeners != null)
+			{
+				Engine.invokeListeners3(listeners, false, true);
+			}
 		}
 	}
 
@@ -488,6 +494,8 @@ class Input
 		{
 			return;
 		}
+
+		// Update keyString
 		
 		if(code == Key.BACKSPACE) 
 		{
@@ -504,6 +512,8 @@ class Input
 			#end
 			keyString += char;
 		}
+
+		// Update key state
 
 		if(!_key[code])
 		{
@@ -524,6 +534,8 @@ class Input
 			return;
 		}
 		
+		// Update key state
+
 		if(_key[code])
 		{
 			_key[code] = false;

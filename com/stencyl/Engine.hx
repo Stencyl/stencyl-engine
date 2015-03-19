@@ -355,9 +355,11 @@ class Engine
 	
 	private var mx:Float;
 	private var my:Float;
-	
+
 	private var collisionPairs:IntHashTable<Map<Int,Bool>>;
 	private var disableCollisionList:Array<Actor>;
+
+	public var keyPollOccurred:Bool = false;
 	
 	public var whenKeyPressedListeners:Map<String, Dynamic>;
 	public var hasKeyPressedListeners:Bool;
@@ -2350,7 +2352,7 @@ class Engine
 			{
 				invokeListeners(whenMouseDraggedListeners);
 			}
-		}				
+		}
 		
 		//Update Timed Tasks
 		var i = 0;
@@ -2388,6 +2390,8 @@ class Engine
 					invokeListeners3(listeners, pressed, released);
 				}				
 			}
+
+			keyPollOccurred = true;
 		}
 		
 		//Native
@@ -2489,6 +2493,8 @@ class Engine
 				}
 			}
 		}
+
+		keyPollOccurred = false;
 			
 		for(n in 0...disableCollisionList.length)
 		{
@@ -2887,7 +2893,7 @@ class Engine
 	//*-----------------------------------------------
 	
 	public function cameraFollow(actor:Actor, lockX:Bool=true, lockY:Bool=true)
-	{	
+	{
 		moveCamera
 		(
 			actor.colX + actor.cacheWidth / 2,
@@ -3997,12 +4003,12 @@ class Engine
 	public static inline function invokeListeners2(listeners:Array<Dynamic>, value:Dynamic)
 	{
 		var r = 0;
-		
+
 		while(r < listeners.length)
 		{
 			try
 			{
-				var f:Dynamic->Array<Dynamic>->Void = listeners[r];			
+				var f:Dynamic->Array<Dynamic>->Void = listeners[r];
 				f(value, listeners);
 				
 				if(Utils.indexOf(listeners, f) == -1)
