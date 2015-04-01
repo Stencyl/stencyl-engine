@@ -13,6 +13,8 @@ import openfl.Lib;
 import openfl.filters.BitmapFilter;
 import openfl.text.TextField;
 
+import openfl.system.Capabilities;
+import openfl.display.Stage;
 import openfl.display.DisplayObject;
 import openfl.display.Loader;
 import openfl.display.LoaderInfo;
@@ -2276,7 +2278,12 @@ class Script
 	
 	public static function captureScreenshot():BitmapData
 	{
-		var img:BitmapData = new BitmapData(Std.int(getScreenWidth() * Engine.SCALE) , Std.int(getScreenHeight() * Engine.SCALE));
+		//var img:BitmapData = new BitmapData(Std.int(getScreenWidth() * Engine.SCALE) , Std.int(getScreenHeight() * Engine.SCALE));
+
+		// The old method seems to just be grabbing the SCENE width and height and multiplying it by the scale
+		// The new method grabs the actual screen height and width and goes from there.
+
+		var img:BitmapData = new BitmapData(Std.int(getStageWidth()) , Std.int(getStageHeight()));
 		img.draw(openfl.Lib.current.stage);
 		return img;
 	}
@@ -3398,7 +3405,7 @@ class Script
 	{
 		return Engine.screenWidth;
 	}
-	
+
 	/**
 	* Get the screen height in pixels
 	*/
@@ -3406,7 +3413,25 @@ class Script
 	{
 		return Engine.screenHeight;
 	}
-	
+
+	/**
+	* Get the stage width in pixels
+	*/
+    public static function getStageWidth()
+	{
+    	//return openfl.system.Capabilities.screenResolutionX;
+		return Engine.stage.stageWidth;
+	}
+
+	/**
+	* Get the stage height in pixels
+	*/
+	public static function getStageHeight()
+	{
+		//return openfl.system.Capabilities.screenResolutionY;
+		return Engine.stage.stageHeight;
+	}
+		
 	/**
 	* Sets the distance an actor can travel offscreen before being deleted.
 	*/
