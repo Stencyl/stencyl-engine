@@ -35,12 +35,6 @@ import openfl.Assets;
 import openfl.Lib;
 import openfl.ui.Keyboard;
 
-#if flash
-import flash.events.UncaughtErrorEvent;
-import flash.events.ErrorEvent;
-import flash.errors.Error;
-#end
-
 import com.stencyl.graphics.transitions.Transition;
 import com.stencyl.graphics.transitions.FadeInTransition;
 import com.stencyl.graphics.transitions.FadeOutTransition;
@@ -606,24 +600,6 @@ class Engine
 	}
 	#end
 	
-	#if flash
-	function uncaughtErrorHandler(event:UncaughtErrorEvent):Void
-	{
-		if (Std.is(event.error, Error))
-		{
-			trace("Stencyl:" + cast(event.error, Error).message);
-		}
-		else if (Std.is(event.error,ErrorEvent))
-		{
-			trace("Stencyl:" + cast(event.error, ErrorEvent).text);
-		}
-		else
-		{
-			trace("Stencyl:" + event.error.toString());
-		}
-	}
-	#end
-	
 	public function begin(initSceneID:Int)
 	{
 		loadedAtlases = new Map<Int,Int>();
@@ -771,8 +747,6 @@ class Engine
 		movieClip.mouseEnabled = false;
 		movieClip.mouseChildren = false;
 		root.parent.addChild(movieClip);
-		
-		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler); 
 		#end
 		
 		//GA's

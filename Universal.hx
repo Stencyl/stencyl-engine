@@ -11,6 +11,12 @@ import openfl.events.KeyboardEvent;
 import openfl.system.Capabilities;
 import openfl.ui.Keyboard;
 
+#if flash
+import flash.events.UncaughtErrorEvent;
+import flash.events.ErrorEvent;
+import flash.errors.Error;
+#end
+
 import com.stencyl.Engine;
 
 import scripts.MyAssets;
@@ -29,12 +35,32 @@ class Universal extends Sprite
         	#else
        		haxe.Log.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
         	#end
+        	
+        	Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
 		}
 		#end
 
 		addEventListener(Event.ADDED_TO_STAGE, onAdded);
 	}
 
+	#if flash
+	function uncaughtErrorHandler(event:UncaughtErrorEvent):Void
+	{
+		if (Std.is(event.error, Error))
+		{
+			trace(cast(event.error, Error).message);
+		}
+		else if (Std.is(event.error,ErrorEvent))
+		{
+			trace(cast(event.error, ErrorEvent).text);
+		}
+		else
+		{
+			trace(event.error.toString());
+		}
+	}
+	#end
+	
 	private function onAdded(event:Event):Void 
 	{
 		init();	
