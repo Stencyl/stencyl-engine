@@ -611,15 +611,15 @@ class Engine
 	{
 		if (Std.is(event.error, Error))
 		{
-			trace(cast(event.error, Error).message);
+			trace("Stencyl:" + cast(event.error, Error).message);
 		}
 		else if (Std.is(event.error,ErrorEvent))
 		{
-			trace(cast(event.error, ErrorEvent).text);
+			trace("Stencyl:" + cast(event.error, ErrorEvent).text);
 		}
 		else
 		{
-			trace(event.error.toString());
+			trace("Stencyl:" + event.error.toString());
 		}
 	}
 	#end

@@ -12,6 +12,7 @@ import openfl.net.URLVariables;
 import openfl.Lib;
 import openfl.filters.BitmapFilter;
 import openfl.text.TextField;
+import openfl.errors.SecurityError;
 
 import openfl.system.Capabilities;
 import openfl.display.Stage;
@@ -3502,7 +3503,7 @@ class Script
 	*/
 	public static function abortTween(target:Dynamic)
 	{
-		
+		//TODO
 	}
 	
 	//*-----------------------------------------------
@@ -4360,6 +4361,37 @@ class Script
 			Engine.debugDrawer.m_sprite.graphics.clear();
 		}
 	}
+	
+	
+	//*-----------------------------------------------
+	//* Advanced
+	//*-----------------------------------------------
+	
+	public static function gameURL():String
+	{
+		#if flash
+		return Lib.current.loaderInfo.url;
+		#else
+		return "";
+		#end
+	}
+	
+	public static function exitGame()
+	{
+		#if flash
+		try
+		{
+			Lib.fscommand("exit");
+		}
+		catch(e:SecurityError)
+		{
+			trace("Could not exit game: " + e.message); 
+		}
+		#else
+		Lib.exit();
+		#end
+	}
+	
 	
 	//*-----------------------------------------------
 	//* Utilities
