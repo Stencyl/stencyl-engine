@@ -4379,14 +4379,14 @@ class Script
 	public static function exitGame()
 	{
 		#if flash
-		/*try
-		{*/
+		try
+		{
 			Lib.fscommand("exit");
-		/*}
+		}
 		catch(e:SecurityError)
 		{
 			trace("Could not exit game: " + e.message); 
-		}*/
+		}
 		#else
 		Lib.exit();
 		#end
