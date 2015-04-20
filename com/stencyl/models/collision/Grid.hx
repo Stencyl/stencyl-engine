@@ -243,8 +243,7 @@ class Grid extends Hitbox
 					lastBounds.width = _tile.width;
 					lastBounds.height = _tile.height;
 			
-					lastCheckedMask = this;
-					other.lastColMask = this;
+					other.lastColID = groupID;
 					
 					return true;
 				}

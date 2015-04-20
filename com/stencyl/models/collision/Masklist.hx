@@ -44,7 +44,7 @@ class Masklist extends Hitbox
 				lastBounds.height = m.lastBounds.height;				
 				
 				lastCheckedMask = m;
-				lastColMask = mask;
+				lastColID = mask.groupID;
 				
 				return true;
 			}
@@ -74,7 +74,7 @@ class Masklist extends Hitbox
 					other.lastBounds.height = b.lastBounds.height;
 					
 					other.lastCheckedMask = b;
-					other.lastColMask = a;
+					other.lastColID = a.groupID;
 					
 					return true;
 				}

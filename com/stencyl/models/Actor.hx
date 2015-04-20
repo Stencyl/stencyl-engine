@@ -463,7 +463,6 @@ class Actor extends Sprite
 		groupsToCollideWith = GameModel.get().groupsCollidesWith.get(groupID);
 		
 		collidedList = new Array<Actor>();
-		listInfo = new Array<CollisionInfo>();
 		
 		collisions = new IntHashTable<Collision>(16);
 		simpleCollisions = new IntHashTable<Collision>(16);
@@ -1506,6 +1505,8 @@ class Actor extends Sprite
 			}
 		}
 		
+		internalUpdate(elapsedTime, true);		
+		
 		if (physicsMode == 1)
 		{
 			if(collisionListenerCount > 0 || 
@@ -1515,8 +1516,6 @@ class Actor extends Sprite
 				handleCollisionsSimple();
 			}
 		}
-		
-		internalUpdate(elapsedTime, true);				
 		
 		if(physicsMode < 2)
 		{
@@ -4332,25 +4331,38 @@ class Actor extends Sprite
 	 */
 	public function collideTypes(types:Dynamic, x:Float, y:Float):Actor
 	{
-		var cc:Int = collidedList.length;			
-		var a:Array<Int> = HITBOX.collideTypes;
+		var cc:Int = collidedList.length;
 		
-		if (a != null)
+		//Mike: Do we need this?
+		if (Std.is(types, String))
 		{
-			var e:Actor;
-			var type:Int;
-			for (type in a)
-			{
-				if (type == GameModel.REGION_ID) continue;
-				
-				collideInto(type, x, y, collidedList);
-			}
+			collideInto(types, x, y, collidedList);
 			
 			if (collidedList.length > cc)
-			{					
+			{
 				return collidedList[collidedList.length - 1];
 			}
-		}		
+		}
+		else
+		{			
+			var a:Array<Int> = HITBOX.collideTypes;
+			if (a != null)
+			{
+				var e:Actor;
+				var type:Int;
+				for (type in a)
+				{
+					if (type == GameModel.REGION_ID) continue;
+					
+					collideInto(type, x, y, collidedList);
+				}
+				
+				if (collidedList.length > cc)
+				{					
+					return collidedList[collidedList.length - 1];
+				}
+			}
+		}
 
 		return null;
 	}
@@ -4454,12 +4466,7 @@ class Actor extends Sprite
 				{
 					if (!Utils.contains(array, e))
 					{
-						array[n] = e;						
-						
-						listInfo[n] = CollisionInfo.getCollisionInfo();						
-						listInfo[n].maskA = _mask.lastCheckedMask;
-						listInfo[n].maskB = _mask.lastColMask.lastCheckedMask;
-						n++;						
+						array[n++] = e;
 					}
 				}
 			};
@@ -4491,12 +4498,6 @@ class Actor extends Sprite
 			collidedList.pop();
 		}
 		
-		while (listInfo.length > 0)
-		{
-			CollisionInfo.recycle(listInfo[listInfo.length - 1]);
-			listInfo.pop();
-		}
-		
 		listChecked = 0;
 	}
 	
@@ -4505,11 +4506,9 @@ class Actor extends Sprite
 		var check:Int;
 		
 		if ((check = alreadyCollided(info.maskA, info.maskB)) != -1) {			
-			var oldInfo:Collision = simpleCollisions.get(check);			
+			var oldInfo:Collision = simpleCollisions.get(check);
 			
-			info.linkedCollision = oldInfo.linkedCollision;
-			info.linkedCollision.linkedCollision = info;
-			
+			info.switchData(oldInfo.linkedCollision);
 			info.linkedCollision.remove = false;
 			info.remove = false;
 			
@@ -4523,8 +4522,8 @@ class Actor extends Sprite
 		
 		simpleCollisions.clr(collisionsCount);
 		simpleCollisions.set(collisionsCount, info);
-		
 		collisionsCount++;		
+		
 		return info;
 	}
 	
@@ -4598,16 +4597,16 @@ class Actor extends Sprite
 		{
 			var lastCollisionInfo:Collision = Collision.get();
 			
-			colMask = listInfo[listChecked].maskB;			
-						
-			fillCollisionInfo(lastCollisionInfo, collidedList[listChecked], listInfo[listChecked], xDir, yDir);			
+			colMask = collidedList[listChecked]._mask;			
+			
+			fillCollisionInfo(lastCollisionInfo, collidedList[listChecked], xDir, yDir);
 			addCollision(lastCollisionInfo);
 							
 			if (lastCollisionInfo.linkedCollision == null)
 			{
 				var linked:Collision = Collision.get();
 								
-				lastCollisionInfo.switchData(linked);				
+				lastCollisionInfo.switchData(linked);
 				collidedList[listChecked].addCollision(linked);
 			}
 			
@@ -4795,7 +4794,7 @@ class Actor extends Sprite
 	{
 	}
 	
-	private function fillCollisionInfo(info:Collision, a:Actor, masks:CollisionInfo, xDir:Float, yDir:Float)
+	private function fillCollisionInfo(info:Collision, a:Actor, xDir:Float, yDir:Float)
 	{
 		if(Std.is(a, Region))
 		{
@@ -4807,12 +4806,12 @@ class Actor extends Sprite
 		info.thisActor = info.actorA = this;
 		info.otherActor = info.actorB = a;
 		
-		info.maskA = masks.maskA;
-		info.maskB = masks.maskB;
-		info.solidCollision = info.maskA.solid && info.maskB.solid;
+		info.maskA = _mask;
+		info.maskB = colMask;
+		info.solidCollision = _mask.solid && colMask.solid;
 		
-		info.groupA = info.maskA.groupID;
-		info.groupB = info.maskB.groupID;	
+		info.groupA = _mask.lastCheckedMask.groupID;
+		info.groupB = _mask.lastCheckedMask.lastColID;	
 		 
 		var responseMap:Map<Int, String> = Collision.collisionResponses.get(getGroupID());
 		var overrideSensor:Bool = false;
@@ -4941,6 +4940,5 @@ class Actor extends Sprite
 	private var _point:Point;
 	private var simpleCollisions:IntHashTable<Collision>;
 	private var collidedList:Array<Actor>;
-	private var listInfo:Array<CollisionInfo>;
 	private var listChecked:Int;
 }
