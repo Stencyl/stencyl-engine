@@ -4137,6 +4137,8 @@ class Script
 	{
 		#if android
 		return GooglePlayGames.getConnectionInfo(info);
+		#else
+		return false;
 		#end
 	}
 	
@@ -4200,6 +4202,8 @@ class Script
 	{
 		#if android
 		return GooglePlayGames.getCompletedQuestList();
+		#else
+		return new Array<String>();
 		#end
 	}
 	
