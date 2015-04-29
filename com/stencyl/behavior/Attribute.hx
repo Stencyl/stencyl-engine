@@ -44,7 +44,7 @@ class Attribute
 				realValue = Std.parseFloat(value);
 			}
 			
-			else if(type == "boolean")
+			else if(type == "bool" || type == "boolean")
 			{
 				realValue = (value == "true") ? true : false;
 			}
