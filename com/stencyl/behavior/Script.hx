@@ -3521,7 +3521,7 @@ class Script
 		
 		for(key in engine.gameAttributes.keys())
 		{
-			Reflect.setField(so.data, key, engine.gameAttributes.get(key));
+			Reflect.setField(so.data, key, haxe.Serializer.run(engine.gameAttributes.get(key)));
 		}	
 
 		#if flash
@@ -3574,8 +3574,9 @@ class Script
 		
 		for(key in Reflect.fields(data.data))
 		{
-			trace(key + " - " + Reflect.field(data.data, key));		
-			engine.gameAttributes.set(key, Reflect.field(data.data, key));
+			trace(key + " - " + Reflect.field(data.data, key));
+			
+			engine.gameAttributes.set(key, haxe.Unserializer.run(Reflect.field(data.data, key)));
 		}
 		
 		onComplete(true);
