@@ -3519,6 +3519,8 @@ class Script
 	{
 		var so = SharedObject.getLocal(fileName);
 		
+		Reflect.setField(so.data, "serialized", true);
+		
 		for(key in engine.gameAttributes.keys())
 		{
 			Reflect.setField(so.data, key, haxe.Serializer.run(engine.gameAttributes.get(key)));
@@ -3572,13 +3574,23 @@ class Script
 		
 		trace("Loaded Save: " + fileName);
 		
+		var serialized:Bool = Reflect.hasField(data.data, "serialized") && Reflect.field(data.data, "serialized") == true;
+
 		for(key in Reflect.fields(data.data))
 		{
 			trace(key + " - " + Reflect.field(data.data, key));
 			
-			engine.gameAttributes.set(key, haxe.Unserializer.run(Reflect.field(data.data, key)));
+			if (serialized)
+			{
+				engine.gameAttributes.set(key, haxe.Unserializer.run(Reflect.field(data.data, key)));
+			}
+			
+			else
+			{
+				engine.gameAttributes.set(key, Reflect.field(data.data, key));
+			}
 		}
-		
+			
 		onComplete(true);
 	}
 	
