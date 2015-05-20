@@ -4211,6 +4211,24 @@ class Script
 		#end
 	}
 	
+	public static function hasNewGPGQuestCompleted():Bool
+	{
+		#if android
+		return GooglePlayGames.hasNewQuestCompleted();
+		#else
+		return false;
+		#end
+	}
+	
+	public static function getGPGQuestReward(id:String):String
+	{
+		#if android
+		return GooglePlayGames.getQuestReward(id);
+		#else
+		return "";
+		#end
+	}
+	
 	public static function getCompletedGPGQuests():Array<String>
 	{
 		#if android
