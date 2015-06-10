@@ -139,25 +139,25 @@ class ActorTypeReader implements AbstractReader
 			var index:Int = Std.parseInt(e.att.order);
 			var type:String = e.name;
 						
-			if(type == "number")
+			if(type.toLowerCase() == "number")
 			{
 				var num:Float = Std.parseFloat(e.att.value);
 				map.insert(index, num);
 			}
 				
-			else if(type == "text")
+			else if(type.toLowerCase() == "text")
 			{
 				var str:String = e.att.value;
 				map.insert(index, str);
 			}
 				
-			else if(type == "bool")
+			else if(type.toLowerCase() == "bool")
 			{
 				var bool:Bool = Utils.toBoolean(e.att.value);
 				map.insert(index, bool);
 			}
 				
-			else if(type == "list")
+			else if(type.toLowerCase() == "list")
 			{
 				var value:Array<Dynamic> = new Array<Dynamic>();
 				
@@ -170,7 +170,7 @@ class ActorTypeReader implements AbstractReader
 				map.insert(index, value);
 			}
 			
-			else if(type == "map")
+			else if(type.toLowerCase() == "map")
 			{
 				var value:Map<String,Dynamic> = new Map<String,Dynamic>();
 				
@@ -196,25 +196,25 @@ class ActorTypeReader implements AbstractReader
 			var key:String = e.att.key;
 			var type:String = e.name;
 						
-			if(type == "number")
+			if(type.toLowerCase() == "number")
 			{
 				var num:Float = Std.parseFloat(e.att.value);
 				map.set(key, num);
 			}
 				
-			else if(type == "text")
+			else if(type.toLowerCase() == "text")
 			{
 				var str:String = e.att.value;
 				map.set(key, str);
 			}
 				
-			else if(type == "bool")
+			else if(type.toLowerCase() == "bool")
 			{
 				var bool:Bool = Utils.toBoolean(e.att.value);
 				map.set(key, bool);
 			}
 				
-			else if(type == "list")
+			else if(type.toLowerCase() == "list")
 			{
 				var value:Array<Dynamic> = new Array<Dynamic>();
 				
@@ -227,7 +227,7 @@ class ActorTypeReader implements AbstractReader
 				map.set(key, value);
 			}
 			
-			else if(type == "map")
+			else if(type.toLowerCase() == "map")
 			{
 				var value:Map<String,Dynamic> = new Map<String,Dynamic>();
 				
