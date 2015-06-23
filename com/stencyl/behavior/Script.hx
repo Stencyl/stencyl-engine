@@ -3521,7 +3521,17 @@ class Script
 		
 		for(key in engine.gameAttributes.keys())
 		{
-			Reflect.setField(so.data, key, engine.gameAttributes.get(key));
+			var value = engine.gameAttributes.get(key);
+			
+			#if flash
+			//serialize maps
+			if (Std.is(value, haxe.ds.StringMap))
+			{
+				value = "[SerializedStringMap]" + haxe.Serializer.run(value);
+			}
+			#end
+			
+			Reflect.setField(so.data, key, value);
 		}	
 
 		#if flash
@@ -3568,14 +3578,29 @@ class Script
 	 */
 	public static function loadGame(fileName:String, onComplete:Bool->Void=null)
 	{
-		var data = SharedObject.getLocal(fileName);
+		var so = SharedObject.getLocal(fileName);
 		
 		trace("Loaded Save: " + fileName);
 		
-		for(key in Reflect.fields(data.data))
+		for(key in Reflect.fields(so.data))
 		{
-			trace(key + " - " + Reflect.field(data.data, key));		
-			engine.gameAttributes.set(key, Reflect.field(data.data, key));
+			var value = Reflect.field(so.data, key);
+			trace(key + " - " + value);
+			
+			#if flash
+			//unserialize maps
+			if (StringTools.startsWith(value, "[SerializedStringMap]"))
+			{
+				var smap:haxe.ds.StringMap<Dynamic> = haxe.Unserializer.run(value.substr("[SerializedStringMap]".length));
+				engine.gameAttributes.set(key, smap);
+			}
+			else
+			{
+				engine.gameAttributes.set(key, value);
+			}
+			#else
+			engine.gameAttributes.set(key, value);
+			#end
 		}
 		
 		onComplete(true);
