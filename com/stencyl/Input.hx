@@ -786,9 +786,6 @@ class Input
 
 			var highestPressure:Float = 0;
 			
-			if(check(control))
-				return 1;
-
 			for(b in buttons)
 			{
 				if(!_joyControllerReady[b.a[0]])
@@ -807,6 +804,9 @@ class Input
 							return 1;
 				}
 			}
+
+			if(highestPressure == 0 && check(control))
+				return 1;
 
 			return highestPressure;
 		}
