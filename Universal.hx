@@ -295,8 +295,11 @@ class Universal extends Sprite
 				y1 = temp;
 			}
 			
-			var x15 = x1 * 3 / 2;
-			var y15 = y1 * 3 / 2;
+			var x3 = x1 * 3;
+			var y3 = y1 * 3;
+			
+			var x15 = x3 / 2;
+			var y15 = y3 / 2;
 			
 			var x2 = x1 * 2;
 			var y2 = y1 * 2;
@@ -307,6 +310,11 @@ class Universal extends Sprite
 			if(larger >= x4 && smaller >= y4)
 			{
 				theoreticalScale = 4;
+			}
+			
+			else if(larger >= x3 && smaller >= y3)
+			{
+				theoreticalScale = 3;
 			}
 			
 			else if(larger >= x2 && smaller >= y2)
@@ -331,6 +339,12 @@ class Universal extends Sprite
 			{
 				Engine.SCALE = 4;
 				Engine.IMG_BASE = "4x";
+			}
+			
+			else if(larger >= x3 && smaller >= y3 && MyAssets.maxScale >= 3)
+			{
+				Engine.SCALE = 3;
+				Engine.IMG_BASE = "3x";
 			}
 			
 			else if(larger >= x2 && smaller >= y2 && MyAssets.maxScale >= 2)
