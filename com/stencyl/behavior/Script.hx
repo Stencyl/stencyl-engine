@@ -3521,17 +3521,14 @@ class Script
 		
 		for(key in engine.gameAttributes.keys())
 		{
-			var value = engine.gameAttributes.get(key);
+			Reflect.setField(so.data, key, engine.gameAttributes.get(key));
 			
 			#if flash
-			//serialize maps
-			if (Std.is(value, haxe.ds.StringMap))
+			if (Std.is(engine.gameAttributes.get(key), haxe.ds.StringMap))
 			{
-				value = "[SerializedStringMap]" + haxe.Serializer.run(value);
+				Reflect.setField(so.data, key, "[SerializedStringMap]" + haxe.Serializer.run(engine.gameAttributes.get(key)));
 			}
 			#end
-			
-			Reflect.setField(so.data, key, value);
 		}	
 
 		#if flash
@@ -3578,28 +3575,26 @@ class Script
 	 */
 	public static function loadGame(fileName:String, onComplete:Bool->Void=null)
 	{
-		var so = SharedObject.getLocal(fileName);
+		var data = SharedObject.getLocal(fileName);
 		
 		trace("Loaded Save: " + fileName);
 		
-		for(key in Reflect.fields(so.data))
+		for(key in Reflect.fields(data.data))
 		{
-			var value = Reflect.field(so.data, key);
-			trace(key + " - " + value);
-			
+			trace(key + " - " + Reflect.field(data.data, key));
 			#if flash
 			//unserialize maps
-			if (StringTools.startsWith(value, "[SerializedStringMap]"))
+			if (StringTools.startsWith(Reflect.field(data.data, key), "[SerializedStringMap]"))
 			{
-				var smap:haxe.ds.StringMap<Dynamic> = haxe.Unserializer.run(value.substr("[SerializedStringMap]".length));
+				var smap:haxe.ds.StringMap<Dynamic> = haxe.Unserializer.run(Reflect.field(data.data, key).substr("[SerializedStringMap]".length));
 				engine.gameAttributes.set(key, smap);
 			}
 			else
 			{
-				engine.gameAttributes.set(key, value);
+				engine.gameAttributes.set(key, Reflect.field(data.data, key));
 			}
 			#else
-			engine.gameAttributes.set(key, value);
+			engine.gameAttributes.set(key, Reflect.field(data.data, key));
 			#end
 		}
 		
@@ -4220,24 +4215,6 @@ class Script
 	{
 		#if android
 		GooglePlayGames.updateEvent(id, amount);
-		#end
-	}
-	
-	public static function hasNewGPGQuestCompleted():Bool
-	{
-		#if android
-		return GooglePlayGames.hasNewQuestCompleted();
-		#else
-		return false;
-		#end
-	}
-	
-	public static function getGPGQuestReward(id:String):String
-	{
-		#if android
-		return GooglePlayGames.getQuestReward(id);
-		#else
-		return "";
 		#end
 	}
 	
