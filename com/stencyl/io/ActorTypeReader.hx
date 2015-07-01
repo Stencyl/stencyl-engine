@@ -151,7 +151,7 @@ class ActorTypeReader implements AbstractReader
 				map.insert(index, str);
 			}
 				
-			else if(type.toLowerCase() == "bool")
+			else if(type.toLowerCase() == "bool" || type.toLowerCase() == "boolean")
 			{
 				var bool:Bool = Utils.toBoolean(e.att.value);
 				map.insert(index, bool);
@@ -208,7 +208,7 @@ class ActorTypeReader implements AbstractReader
 				map.set(key, str);
 			}
 				
-			else if(type.toLowerCase() == "bool")
+			else if(type.toLowerCase() == "bool" || type.toLowerCase() == "boolean")
 			{
 				var bool:Bool = Utils.toBoolean(e.att.value);
 				map.set(key, bool);

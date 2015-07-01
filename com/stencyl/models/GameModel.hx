@@ -279,7 +279,7 @@ class GameModel
 				map.set(e.att.name, str);
 			}
 			
-			else if(type == "bool")
+			else if(type == "bool" || type == "boolean")
 			{
 				var bool:Bool = Utils.toBoolean(e.att.value);
 				map.set(e.att.name, bool);
