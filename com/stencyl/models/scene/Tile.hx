@@ -219,8 +219,8 @@ class Tile
 	private static var rect = new Rectangle();
 	private inline function sourceRect(p:Point, srcFrameOffset:Int):Rectangle
 	{
-		rect.x = srcFrameOffset + corners.tl.x * rect.width;
-		rect.y = corners.tl.y * rect.height;
+		rect.x = srcFrameOffset + p.x * rect.width;
+		rect.y = p.y * rect.height;
 		return rect;
 	}
 }
