@@ -4,11 +4,15 @@ import haxe.xml.Fast;
 
 import com.stencyl.io.SpriteReader;
 import com.stencyl.utils.Utils;
+import com.stencyl.models.scene.Autotile;
+import com.stencyl.models.scene.AutotileFormat;
 
 import box2D.common.math.B2Vec2;
 import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2PolygonShape;
 import box2D.collision.shapes.B2CircleShape;
+
+import openfl.geom.Point;
 
 class GameModel
 {
@@ -33,6 +37,7 @@ class GameModel
 	public var shapes:Map<Int,B2PolygonShape>;
 	public var atlases:Map<Int,Atlas>;
 	public var scenes:Map<Int,Scene>;
+	public var autotileFormats:Map<Int, AutotileFormat>;
 	
 	public static var INHERIT_ID:Int = -1000;
 	public static var REGION_ID:Int = -2;
@@ -75,7 +80,8 @@ class GameModel
 		
 		shapes = readShapes(xml.node.collisions.elements);
 		atlases = readAtlases(xml.node.atlases.elements);
-		
+		autotileFormats = readAutotileFormats(xml.node.autotileFormats.elements);
+
 		groups = readGroups(xml.node.groups.elements);
 		groups.push(new GroupDef(REGION_ID, "Regions"));
 		groups.push(new GroupDef(PLAYER_ID, "Players"));
@@ -233,6 +239,61 @@ class GameModel
 		}
 		
 		return map;
+	}
+
+	public function readAutotileFormats(list:Iterator<Fast>):Map<Int, AutotileFormat>
+	{
+		var map = new Map<Int, AutotileFormat>();
+
+		for(e in list)
+		{
+			var name = e.att.name;
+			var id = Std.parseInt(e.att.id);
+			var across = Std.parseInt(e.att.across);
+			var down = Std.parseInt(e.att.down);
+
+			var allCorners = new Array<Corners>();
+			
+			for(autotile in e.elements)
+			{
+				var cornerStrings = autotile.att.corners.split(" ");
+				var corners = new Corners
+				(
+					readPoint(cornerStrings[0]),
+					readPoint(cornerStrings[1]),
+					readPoint(cornerStrings[2]),
+					readPoint(cornerStrings[3])
+				);
+				
+				for(range in autotile.att.flag.split(","))
+				{
+					if(range.indexOf("-") != -1)
+					{
+						var low = Std.parseInt(range.split("-")[0]);
+						var high = Std.parseInt(range.split("-")[1]);
+						
+						for(k in low...high + 1)
+						{
+							allCorners[k] = corners;
+						}
+						
+						continue;
+					}
+					
+					allCorners[Std.parseInt(range)] = corners;
+				}
+			}
+			
+			map.set(id, new AutotileFormat(name, id, across, down, allCorners));
+		}
+
+		return map;
+	}
+
+	private function readPoint(s:String):Point
+	{
+		var coords = s.split(",");
+		return new Point(Std.parseInt(coords[0]), Std.parseInt(coords[1]));
 	}
 	
 	public function readGroups(list:Iterator<Fast>):Array<GroupDef>

@@ -3,7 +3,9 @@ package com.stencyl.io;
 import haxe.xml.Fast;
 import com.stencyl.utils.Utils;
 
+import com.stencyl.models.GameModel;
 import com.stencyl.models.Resource;
+import com.stencyl.models.scene.AutotileFormat;
 import com.stencyl.models.scene.Tileset;
 import com.stencyl.models.scene.Tile;
 
@@ -53,13 +55,10 @@ class TilesetReader implements AbstractReader
 		var durations:Array<Int> = new Array<Int>();
 		var counter:Int = 0;
 		
-		var s:String = xml.att.durations;
-		var frames:Array<String> = s.split(",");
-		
-		for(f in frames)
+		for(frame in xml.att.durations.split(","))
 		{
 			//Round to the nearest 10ms - there's no more granularity than this and makes it much easier for me.
-			durations[counter] = Std.parseInt(f);
+			durations[counter] = Std.parseInt(frame);
 			
 			durations[counter] =  Math.floor(durations[counter] / 10);
 			durations[counter] *= 10;
@@ -67,6 +66,20 @@ class TilesetReader implements AbstractReader
 			counter++;
 		}
 
-		return new Tile(tileID, collisionID, metadata, frameID, durations, parent);
+		var autotileFormat:AutotileFormat = null;
+		if(xml.has.autotile)
+			autotileFormat = GameModel.get().autotileFormats.get(Std.parseInt(xml.att.autotile));
+
+		var autotileMergeSet:Map<Int, Int> = null;
+		if(xml.has.autotileMerge)
+		{
+			autotileMergeSet = new Map<Int, Int>();
+			for(mergeID in xml.att.autotileMerge.split(","))
+			{
+				autotileMergeSet.set(Std.parseInt(mergeID), Std.parseInt(mergeID));
+			}
+		}
+
+		return new Tile(tileID, collisionID, metadata, frameID, durations, autotileFormat, autotileMergeSet, parent);
 	}
 }

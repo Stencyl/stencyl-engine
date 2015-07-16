@@ -652,7 +652,7 @@ class Scene
 			}
 			
 			var item = split[i].split(",");
-		
+			
 			var tilesetID:Int = Std.parseInt(item[0]);
 			var tileID:Int = Std.parseInt(item[1]);
 			var runLength:Int = Std.parseInt(item[2]);
@@ -682,7 +682,7 @@ class Scene
 
 					var tile = tset.tiles[tileID];
 					
-					if(tile != null && tile.pixels != null)
+					if(tile != null && tile.durations.length > 1)
 					{
 						var inList:Bool = false;
 						
@@ -768,9 +768,7 @@ class Scene
 		
 		for(i in 0...numChunks)
 		{
-			//Unused value we have to keep for compatibility reasons.
-			bytes.readShort();
-			
+			var autotileFlag:Int = bytes.readShort();
 			var tilesetID:Int = bytes.readShort();
 			var tileID:Int = bytes.readShort();
 			var runLength:Int = bytes.readShort();
@@ -779,19 +777,17 @@ class Scene
 			
 			if(tilesetID != -1)
 			{
-				var temp = Data.get().resources.get(tilesetID);
-				
-				if(temp != null)
-				{
-					tset = cast(Data.get().resources.get(tilesetID), Tileset);
-				}
+				tset = cast Data.get().resources.get(tilesetID);
 			}
 			
+			if(autotileFlag < 0)
+				autotileFlag = Std.int(Math.abs(autotileFlag + 1));
+
 			for(runIndex in 0...runLength)
 			{
 				if(tset == null || tileID < 0)
 				{
-					layer.setTileAt(row, col, null);
+					layer.setTileAt(row, col, null, false);
 				}
 				
 				else
@@ -800,19 +796,20 @@ class Scene
 					
 					if(tile == null)
 					{
-						layer.setTileAt(row, col, null);
+						layer.setTileAt(row, col, null, false);
 					}
 					
 					else
 					{
-						layer.setTileAt(row, col, tile);
-
+						layer.setTileAt(row, col, tile, false);
+						layer.autotileData[row][col] = autotileFlag;
+						
 						if(tile.collisionID > 0)
 						{
 							grid.setTile(col, row, true);
 						}
 						
-						if(tile.pixels != null)
+						if(tile.durations.length > 1)
 						{
 							var inList:Bool = false;
 							
@@ -839,7 +836,7 @@ class Scene
 				}
 			}
 		}
-		
+
 		return layer;
 	}
 	#end

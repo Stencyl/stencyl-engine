@@ -24,6 +24,7 @@ class TileLayer extends Sprite
 		
 	//Data
 	public var rows:Array<Array<Tile>>;
+	public var autotileData:Array<Array<Int>>;
 	public var grid:Grid;
 	
 	public var scene:Scene;
@@ -37,6 +38,7 @@ class TileLayer extends Sprite
 	private var flashPoint:Point;
 	private var noTiles:Bool;
 	
+	private static var TILESET_CACHE_MULTIPLIER = 1000000;
 	private static var cacheSource = new Map<Int,Rectangle>();
 	
 	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
@@ -51,17 +53,20 @@ class TileLayer extends Sprite
 		this.numCols = numCols;
 		this.noTiles = true;
 
-		rows = new Array<Array<Tile>>();
-		
+		rows = [];
+		autotileData = [];
+
 		for(row in 0...numRows)
 		{
-			rows[row] = new Array<Tile>();
-			
+			rows[row] = [];
+			autotileData[row] = [];
+
 			for(col in 0...numCols)
 			{
 				rows[row][col] = null;
+				autotileData[row][col] = 0;
 			}
-		}	
+		}
 		
 		flashPoint = new Point();
 	}
@@ -162,7 +167,7 @@ class TileLayer extends Sprite
 		Engine.engine.getGroup(GameModel.TERRAIN_ID).addChild(a);
 	}
 	
-	public function setTileAt(row:Int, col:Int, tile:Tile)
+	public function setTileAt(row:Int, col:Int, tile:Tile, ?updateAutotile:Bool = true)
 	{
 		if(col < 0 || row < 0 || col >= numCols || row >= numRows)
 		{
@@ -179,7 +184,21 @@ class TileLayer extends Sprite
 			#end
 		}
 
-		rows[row][col] = tile;			
+		var old:Tile = rows[row][col];
+		if(updateAutotile)
+		{
+			updateAutotile =
+	        	(old != null && old.autotiles != null) ||
+	        	(tile != null && tile.autotiles != null);
+        }
+
+        rows[row][col] = tile;
+		autotileData[row][col] = 0;
+
+		if(updateAutotile)
+        {
+        	updateAutotilesNear(row, col);
+        }
 	}
 	
 	public function getTileAt(row:Int, col:Int):Tile
@@ -191,6 +210,68 @@ class TileLayer extends Sprite
 		
 		return rows[row][col];
 	}
+
+	public function updateAutotilesNear(yc:Int, xc:Int):Void
+	{
+		//trace('update near $xc, $yc');
+		for(y in yc - 1...yc + 2)
+		{
+			for (x in xc - 1...xc + 2)
+			{
+				if(x < 0 || y < 0 || x >= numCols || y >= numRows)
+					continue;
+
+				updateAutotile(y, x);
+			}
+		}
+	}
+
+	private static var autotileFlagPointMap:Map<Int, Point> = 
+	[
+		Autotile.CORNER_TL => new Point(-1, -1),
+		Autotile.CORNER_TR => new Point(1, -1),
+		Autotile.CORNER_BL => new Point(-1, 1),
+		Autotile.CORNER_BR => new Point(1, 1),
+		Autotile.SIDE_T => new Point(0, -1),
+		Autotile.SIDE_B => new Point(0, 1),
+		Autotile.SIDE_L => new Point(-1, 0),
+		Autotile.SIDE_R => new Point(1, 0)
+	];
+
+	public function updateAutotile(y:Int, x:Int):Void
+    {
+    	var t:Tile = rows[y][x];
+    	
+		//No need for contextual update if this isn't an autotile, or it's an autotile with an explicitly chosen pattern.
+    	if(t == null || t.autotiles == null)
+		{
+			return;
+		}
+		
+		//trace('Update autotile: $x, $y');
+
+    	var autotileFlags = 0;
+    	
+    	for(flag in autotileFlagPointMap.keys())
+    	{
+    		var point = autotileFlagPointMap.get(flag);
+    		var col = Std.int(x + point.x);
+    		var row = Std.int(y + point.y);
+    		
+    		//If the surrounding tile is outside bounds, or equal to this tile, don't add an obstruction flag
+    		//TODO: this is where to add a case for autotile merge IDs.
+    		if(col < 0 || row < 0 || col >= numCols || row >= numRows || rows[row][col] == t)
+    		{
+    			continue;
+    		}
+    		
+    		autotileFlags |= flag;
+    	}
+    	
+    	//trace('Adding flags: $autotileFlags');
+
+    	autotileData[y][x] = t.autotileFormat.animIndex[autotileFlags];
+    }
 	
 	//We're directly drawing since pre-rendering the layer might not be so memory friendly on large levels 
 	//and I don't know if it clips.
@@ -213,7 +294,7 @@ class TileLayer extends Sprite
 		
 		bitmapData.fillRect(bitmapData.rect, 0);
 		#end
-	
+		
 		viewX = Math.floor(Math.abs(viewX));
 		viewY = Math.floor(Math.abs(viewY));
 		
@@ -250,23 +331,23 @@ class TileLayer extends Sprite
 					px += tw;
 					continue;
 				}
-													
-				if(cacheSource.get(t.parent.ID * 1000000 + t.tileID) == null || t.updateSource)
+
+				if(cacheSource.get(t.parent.ID * TILESET_CACHE_MULTIPLIER + t.tileID) == null || t.updateSource)
 				{
-					if(t.pixels == null)
+					if(t.pixels == null && t.autotiles == null)
 					{
-						cacheSource.set(t.parent.ID * 1000000 + t.tileID, t.parent.getImageSourceForTile(t.tileID, tw, th));
+						cacheSource.set(t.parent.ID * TILESET_CACHE_MULTIPLIER + t.tileID, t.parent.getImageSourceForTile(t.tileID, tw, th));
 					}
 					
 					else
-					{						
-						cacheSource.set(t.parent.ID * 1000000 + t.tileID, t.getSource(tw, th));
+					{
+						cacheSource.set(t.parent.ID * TILESET_CACHE_MULTIPLIER + t.tileID, t.getSource(tw, th));
 						t.updateSource = false;
 					}						
 				}
 				
-				var source:Rectangle = cacheSource.get(t.parent.ID * 1000000 + t.tileID);
-														
+				var source:Rectangle = cacheSource.get(t.parent.ID * TILESET_CACHE_MULTIPLIER + t.tileID);
+				
 				if(source == null)
 				{
 					x++;
@@ -274,87 +355,67 @@ class TileLayer extends Sprite
 					continue;
 				}
 				
+				//If an autotile, swap out the tileset tile for the desired generated tile.
+				if(t.autotiles != null)
+				{
+					t = t.autotiles[autotileData[y][x]];
+				}
+				
+				//If animated or an autotile, used animated tile pixels
+				if(t.pixels == null)
+				{
+					pixels = t.parent.pixels;
+				}
 				else
-				{					
-					//If animated, used animated tile pixels
-					if(t.pixels == null)
-					{
-						pixels = t.parent.pixels;
-					}
+				{
+					pixels = t.pixels;
+				}
+				
+				#if (flash || js)
+				flashPoint.x = px * Engine.SCALE;
+				flashPoint.y = py * Engine.SCALE;
+				
+				if(pixels != null)
+				{
+					bitmapData.copyPixels(pixels, source, flashPoint, null, null, true);
+				}
+				#end
+				
+				#if (cpp || neko)
+				flashPoint.x = x * tw * Engine.SCALE;
+				flashPoint.y = y * th * Engine.SCALE;
+				
+				t.parent.data[0] = flashPoint.x;
+				t.parent.data[1] = flashPoint.y;
+				
+				if(t.data == null)
+				{
+					t.parent.data[2] = t.parent.sheetMap.get(t.tileID);
 					
-					else 
+					if(t.parent.tilesheet != null)
 					{
-						pixels = t.pixels;
-					}
-					
-					if(source != null)
-					{
-						#if (flash || js)
-						flashPoint.x = px * Engine.SCALE;
-						flashPoint.y = py * Engine.SCALE;
-						
-						if(pixels != null)
+						t.parent.tilesheet.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, switch(blendName)
 						{
-							bitmapData.copyPixels(pixels, source, flashPoint, null, null, true);
-						}
-						#end
-						
-						#if (cpp || neko)
-						flashPoint.x = x * tw * Engine.SCALE;
-						flashPoint.y = y * th * Engine.SCALE;
-						
-						t.parent.data[0] = flashPoint.x;
-						t.parent.data[1] = flashPoint.y;
-						
-						if(t.data == null)
-						{
-							t.parent.data[2] = t.parent.sheetMap.get(t.tileID);
-							
-							if(t.parent.tilesheet != null)
-							{
-								if (blendName == "ADD")
-								{
-									t.parent.tilesheet.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_ADD);
-								}
-								else if (blendName == "MULTIPLY")
-								{
-									t.parent.tilesheet.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_MULTIPLY);
-								}
-								else if (blendName == "SCREEN")
-								{
-									t.parent.tilesheet.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_SCREEN);
-								}
-								else
-								{
-									t.parent.tilesheet.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_NORMAL);
-								}
-							}
-						}
-						
-						else
-						{
-							t.parent.data[2] = t.currFrame;
-							
-							if (blendName == "ADD")
-							{
-								t.data.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_ADD);
-							}
-							else if (blendName == "MULTIPLY")
-							{
-								t.data.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_MULTIPLY);
-							}
-							else if (blendName == "SCREEN")
-							{
-								t.data.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_SCREEN);
-							}
-							else
-							{
-								t.data.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, Tilesheet.TILE_BLEND_NORMAL);
-							}
-						}						
-				  		#end
+							case "ADD": Tilesheet.TILE_BLEND_ADD;
+							case "MULTIPLY": Tilesheet.TILE_BLEND_MULTIPLY;
+							case "SCREEN": Tilesheet.TILE_BLEND_SCREEN;
+							default: Tilesheet.TILE_BLEND_NORMAL;	
+						});
 					}
 				}
+				else
+				{
+					t.parent.data[2] = t.currFrame;
+					
+					t.data.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, switch(blendName)
+					{
+						case "ADD": Tilesheet.TILE_BLEND_ADD;
+						case "MULTIPLY": Tilesheet.TILE_BLEND_MULTIPLY;
+						case "SCREEN": Tilesheet.TILE_BLEND_SCREEN;
+						default: Tilesheet.TILE_BLEND_NORMAL;	
+					});
+				}
+		  		#end
 				
 				x++;
 				px += tw;
