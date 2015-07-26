@@ -267,6 +267,7 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 		}
 	}
 	
+	@:access(openfl.display.Tilesheet.__bitmap)
 	public function getCurrentImage():BitmapData
 	{
 		#if flash

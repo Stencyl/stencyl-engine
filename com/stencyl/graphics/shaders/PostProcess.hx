@@ -53,6 +53,10 @@ class PostProcess extends OpenGLView
 	public function new(fragmentShader:String, literalText:Bool = false)
 	{
 		super();
+		#if !openfl_legacy
+		render = _render;
+		#end
+
 		uniforms = new Map<String, Uniform>();
 
 #if ios
@@ -249,7 +253,11 @@ class PostProcess extends OpenGLView
 	/**
 	 * Renders to a framebuffer or the screen every frame
 	 */
+	#if openfl_legacy
 	override public function render(rect:Rectangle)
+	#else
+	public function _render(rect:Rectangle)
+	#end
 	{
 		time += Engine.elapsedTime * timeScale;
 		GL.bindFramebuffer(GL.FRAMEBUFFER, renderTo);

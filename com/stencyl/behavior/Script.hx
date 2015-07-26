@@ -4500,8 +4500,10 @@ class Script
 		{
 			trace("Could not exit game: " + e.message); 
 		}
-		#else
+		#elseif openfl_legacy
 		Lib.exit();
+		#else
+		Sys.exit (0);
 		#end
 	}
 	

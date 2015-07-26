@@ -3475,6 +3475,7 @@ class Actor extends Sprite
 	
 	
 	#if (cpp || neko)
+	@:access(openfl.display.Tilesheet.__bitmap)
 	public function setFilter(filter:Array<Array<Dynamic>>)
 	{	
 		var filterName:String;
@@ -3742,6 +3743,7 @@ class Actor extends Sprite
 	}
 	#end
 	
+	@:access(openfl.display.Tilesheet.__bitmap)
 	public function clearFilters()
 	{
 		#if flash

@@ -393,7 +393,7 @@ class Input
 			swipeDirection = -1;
 		}
 		
-		#if (cpp || neko)
+		#if (openfl_legacy && (cpp || neko))
 		if(openfl.sensors.Accelerometer.isSupported)
 		{
 			var data = Accelerometer.get();
