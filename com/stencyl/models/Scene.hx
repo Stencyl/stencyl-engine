@@ -675,7 +675,7 @@ class Scene
 				{
 					layer.setTileAt(row, col, tset.tiles[tileID]);
 					
-					if(tset.tiles[tileID].collisionID > 0)
+					if(tset.tiles[tileID].collisionID >= 0)
 					{
 						grid.setTile(col, row, true);
 					}
@@ -804,7 +804,7 @@ class Scene
 						layer.setTileAt(row, col, tile, false);
 						layer.autotileData[row][col] = autotileFlag;
 						
-						if(tile.collisionID > 0)
+						if(tile.collisionID >= 0)
 						{
 							grid.setTile(col, row, true);
 						}
