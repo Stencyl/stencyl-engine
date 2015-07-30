@@ -1389,7 +1389,7 @@ class Script
 	 */
 	public static function createSlideTransition(duration:Float, direction:String):Transition
 	{
-		return new com.stencyl.graphics.transitions.SlideTransition(engine.master, duration, direction);
+		return new com.stencyl.graphics.transitions.SlideTransition(engine.master, engine.colorLayer, duration, direction);
 	}
 		
 	//These are for SW's convenience.		

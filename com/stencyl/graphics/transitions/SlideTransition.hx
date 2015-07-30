@@ -15,6 +15,7 @@ import motion.easing.Linear;
 class SlideTransition extends Transition
 {
 	private var sceneSpr:Sprite;
+	private var sceneCol:Shape;
 	private var oldBitmap:BitmapData;
 	private var newBitmap:BitmapData;
 	private var drawBitmap:BitmapData;
@@ -32,11 +33,12 @@ class SlideTransition extends Transition
 	
 	public var rect:Shape;
 	
-	public function new(sceneSpr:Sprite, duration:Float, slideDirection:String) 
+	public function new(sceneSpr:Sprite, sceneCol:Shape, duration:Float, slideDirection:String) 
 	{
 		super(duration);
 		
 		this.sceneSpr = sceneSpr;
+		this.sceneCol = sceneCol;
 		
 		oldSceneMatrix = new Matrix();
 		newSceneMatrix = new Matrix();
@@ -75,6 +77,7 @@ class SlideTransition extends Transition
 		active = true;
 		
 		oldBitmap = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
+		oldBitmap.draw(sceneCol);
 		oldBitmap.draw(sceneSpr);
 		
 		newBitmap = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
@@ -96,6 +99,7 @@ class SlideTransition extends Transition
 	{
 		graphics.clear();			
 		
+		newBitmap.draw(sceneCol);
 		newBitmap.draw(sceneSpr);		
 		drawBitmap.draw(newBitmap, newSceneMatrix);
 		drawBitmap.draw(oldBitmap, oldSceneMatrix);
