@@ -195,7 +195,23 @@ class BackgroundLayer extends RegularLayer
 				currIndex = 0;
 			}
 			
-			bitmap.bitmapData = model.frames[currIndex];
+			if (Std.is(bgChild, ScrollingBitmap))
+			{
+				bgChild.image1.bitmapData = model.frames[currIndex];
+				bgChild.image2.bitmapData = model.frames[currIndex];
+				bgChild.image3.bitmapData = model.frames[currIndex]; 
+				bgChild.image4.bitmapData = model.frames[currIndex];
+				bgChild.image5.bitmapData = model.frames[currIndex];
+				bgChild.image6.bitmapData = model.frames[currIndex];
+				bgChild.image7.bitmapData = model.frames[currIndex];
+				bgChild.image8.bitmapData = model.frames[currIndex];
+				bgChild.image9.bitmapData = model.frames[currIndex];				
+			}
+			
+			else
+			{
+				bitmap.bitmapData = model.frames[currIndex];
+			}			
 		}
 	}
 
@@ -211,11 +227,11 @@ class BackgroundLayer extends RegularLayer
 		{
 			this.x = Std.int(x * scrollFactorX);
 			this.y = Std.int(y * scrollFactorY);
-			
-			if(isAnimated)
-			{
-				updateAnimation(elapsedTime);
-			}
+		}
+		
+		if(isAnimated)
+		{
+			updateAnimation(elapsedTime);
 		}
 	}
 
