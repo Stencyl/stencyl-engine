@@ -3475,7 +3475,6 @@ class Actor extends Sprite
 	
 	
 	#if (cpp || neko)
-	@:access(openfl.display.Tilesheet.__bitmap)
 	public function setFilter(filter:Array<Array<Dynamic>>)
 	{	
 		var filterName:String;
@@ -3506,11 +3505,11 @@ class Actor extends Sprite
 					
 					if (Type.getClass(anim) == SheetAnimation)
 					{
-						backupAnimationMap.set(key, anim.tilesheet.__bitmap.clone());
+						backupAnimationMap.set(key, anim.getBitmap().clone());
 						
 						var frameWidth = anim.frameWidth;
 						var frameHeight = anim.frameHeight;
-						var tempData:BitmapData = anim.tilesheet.__bitmap.clone();
+						var tempData:BitmapData = anim.getBitmap().clone();
 						var tempTilesheet = new Tilesheet(tempData);
 						
 						var i = 0;
@@ -3535,7 +3534,7 @@ class Actor extends Sprite
 			{
 				if (Type.getClass(anim) == SheetAnimation)
 				{
-					var imageData:BitmapData = anim.tilesheet.__bitmap;
+					var imageData:BitmapData = anim.getBitmap();
 					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
 					var len:Int = byteArray.length;
 
@@ -3596,7 +3595,7 @@ class Actor extends Sprite
 			{
 				if (Type.getClass(anim) == SheetAnimation)
 				{
-					var imageData:BitmapData = anim.tilesheet.__bitmap;
+					var imageData:BitmapData = anim.getBitmap();
 					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
 					var len:Int = byteArray.length;
 					var greyResult:Int;
@@ -3666,7 +3665,7 @@ class Actor extends Sprite
 			{
 				if (Type.getClass(anim) == SheetAnimation)
 				{
-					var imageData:BitmapData = anim.tilesheet.__bitmap;
+					var imageData:BitmapData = anim.getBitmap();
 					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
 					var len:Int = byteArray.length;
 
@@ -3743,7 +3742,6 @@ class Actor extends Sprite
 	}
 	#end
 	
-	@:access(openfl.display.Tilesheet.__bitmap)
 	public function clearFilters()
 	{
 		#if flash
@@ -3759,7 +3757,7 @@ class Actor extends Sprite
 			{
 				var imageData = backupAnimationMap.get(key);
 				var sheetValue = animationMap.get(key);
-				sheetValue.tilesheet.__bitmap.copyPixels(imageData, imageData.rect, pt);
+				sheetValue.getBitmap().copyPixels(imageData, imageData.rect, pt);
 				sheetValue.tint = false;
 				sheetValue.updateBitmap();
 			}	

@@ -267,16 +267,27 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 		}
 	}
 	
-	@:access(openfl.display.Tilesheet.__bitmap)
 	public function getCurrentImage():BitmapData
 	{
 		#if flash
 		return null;
 		#else
 		var img = new BitmapData(Std.int(width) , Std.int(height), true, 0x00ffffff);
-		img.copyPixels(tilesheet.__bitmap, new openfl.geom.Rectangle((frameIndex % framesAcross) * width, Math.floor(frameIndex / framesAcross) * height, Std.int(width), Std.int(height)), new openfl.geom.Point(0, 0), null, null, false);
+		img.copyPixels(getBitmap(), new openfl.geom.Rectangle((frameIndex % framesAcross) * width, Math.floor(frameIndex / framesAcross) * height, Std.int(width), Std.int(height)), new openfl.geom.Point(0, 0), null, null, false);
 		return img;
 		#end
 		
 	}
+
+	#if !flash
+	#if (!nme && !openfl_legacy) @:access(openfl.display.Tilesheet.__bitmap) #end
+	public inline function getBitmap():BitmapData
+	{
+		#if nme
+			return tilesheet.nmeBitmap;
+		#else
+			return tilesheet.__bitmap;
+		#end
+	}
+	#end
 }
