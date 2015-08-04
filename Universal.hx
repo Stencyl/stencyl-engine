@@ -738,8 +738,17 @@ class Universal extends Sprite
 		trace("Scale Y: " + scaleY);
 	}
 	
+	#if (scriptable && openfl_legacy) @:access(openfl._legacy.Assets.initialized) #end
 	public static function main() 
 	{
+		#if scriptable
+		var cppia = Type.resolveClass("scripts.CppiaAssets");
+		Reflect.callMethod(cppia, Reflect.field(cppia, "setAssets"), []);
+
+		openfl.Assets.registerLibrary("default", Type.createInstance(Type.resolveClass("CppiaAssetLibrary"), []));
+		openfl.Assets.initialized = true;
+		#end
+
 		var stage = Lib.current.stage;
 		
 		stage.align = StageAlign.TOP_LEFT;

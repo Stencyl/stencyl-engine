@@ -37,11 +37,21 @@ class Data
 	{
 		if(instance == null)
 		{
-			instance = new Data();			
+			#if scriptable
+
+			Type.createInstance(Type.resolveClass("scripts.CppiaAssets"), []);
+			
+			#else
+			
+			instance = new Data();
 			instance.loader = theLoader = Type.createInstance(Type.resolveClass("scripts.MyAssets"), []);
 			
+			#end
+
 			#if(mobile && !air)
+			
 			instance.preloader = Type.createInstance(Type.resolveClass("scripts.StencylPreloader"), []);
+			
 			#end
 			
 			instance.loadAll();
