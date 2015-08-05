@@ -5,6 +5,10 @@ class BehaviorManager
 	public var behaviors:Array<Behavior>;
 
 	public var cache:Map<String,Behavior>;
+
+	#if scriptable
+	private static var noArgs:Array<Dynamic> = [];
+	#end
 	
 	//*-----------------------------------------------
 	//* Init
@@ -52,7 +56,11 @@ class BehaviorManager
 			{
 				try
 				{
+					#if scriptable
+					Reflect.callMethod(bObj.script, Reflect.field(bObj.script, "init"), noArgs);
+					#else
 					bObj.script.init();
+					#end
 					bObj.script.scriptInit = true;
 				}
 			
@@ -161,13 +169,20 @@ class BehaviorManager
 			trace("Warning: Behavior does not exist - " + behaviorName);	
 		}
 	}
-	
+
 	public function call(msg:String, args:Array<Dynamic>):Dynamic
 	{
 		if(cache == null)
 		{
 			return null;
 		}
+
+		#if scriptable
+		if(args == null)
+		{
+			args = noArgs;
+		}
+		#end
 		
 		var toReturn:Dynamic = null;
 		
@@ -219,6 +234,13 @@ class BehaviorManager
 		{
 			return null;
 		}
+
+		#if scriptable
+		if(args == null)
+		{
+			args = noArgs;
+		}
+		#end
 		
 		var toReturn:Dynamic = null;
 		var item:Behavior = cache.get(behaviorName);

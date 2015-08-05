@@ -91,7 +91,11 @@ class Behavior
 		{
 			try
 			{
+				#if scriptable
+				Reflect.callMethod(script, Reflect.field(script, "init"), []);
+				#else
 				script.init();
+				#end
 				script.scriptInit = true;
 			}
 			

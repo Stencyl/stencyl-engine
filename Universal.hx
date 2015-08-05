@@ -745,6 +745,9 @@ class Universal extends Sprite
 		var cppia = Type.resolveClass("scripts.CppiaAssets");
 		Reflect.callMethod(cppia, Reflect.field(cppia, "setAssets"), []);
 
+		if(StencylCppia.gamePath != null)
+			Sys.setCwd(StencylCppia.gamePath);
+
 		openfl.Assets.registerLibrary("default", Type.createInstance(Type.resolveClass("CppiaAssetLibrary"), []));
 		openfl.Assets.initialized = true;
 		#end
