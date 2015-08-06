@@ -24,6 +24,7 @@ class PostProcess
 	public function capture() { }
 	public function rebuild() { }
 	public function setUniform(variable:String, value:Float) { }
+	public function getUniform(variable:String):Float { return -1; }
 	public function tweenUniform(name:String, targetValue:Float, duration:Float = 1, easing:Dynamic = null) { }
 }
 
@@ -143,6 +144,21 @@ class PostProcess extends OpenGLView
 			var id:Int = shader.uniform(uniform);
 			if (id != -1) uniforms.set(uniform, {id: id, value: value});
 		}
+	}
+	
+	/**
+	 * Gets a uniform value in the shader
+	 * @param uniform  The uniform name within the shader source
+	 */
+	public function getUniform(uniform:String):Float
+	{
+		if (uniforms.exists(uniform))
+		{
+			var uniform = uniforms.get(uniform);
+			return uniform.value;
+		}
+		
+		return -1;
 	}
 	
 	public function tweenUniform(name:String, targetValue:Float, duration:Float = 1, easing:Dynamic = null)

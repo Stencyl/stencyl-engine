@@ -15,6 +15,11 @@ class BasicShader
 		model.setUniform(name, value);
 	}
 	
+	public function getProperty(name:String):Float
+	{
+		return model.getUniform(name);
+	}
+	
 	public function tweenProperty(name:String, targetValue:Float, duration:Float = 1, easing:Dynamic = null)
 	{
 		model.tweenUniform(name, targetValue, duration, easing);
