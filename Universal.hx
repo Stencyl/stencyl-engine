@@ -98,14 +98,13 @@ class Universal extends Sprite
 	
 	public function initServices()
 	{
-		//Mochi, Newgrounds and other APIs
+		//Newgrounds and other APIs
 		
 		#if(mobile)
 		Ads.initialize(MyAssets.whirlID);
 		#end
 		
 		#if(flash)
-		var mochiID = MyAssets.mochiID;
 		var newgroundsID = MyAssets.newgroundsID;
 		var newgroundsKey = MyAssets.newgroundsKey;
 		
@@ -114,10 +113,6 @@ class Universal extends Sprite
         	com.newgrounds.API.API.connect(root, newgroundsID, newgroundsKey);
         }
         
-        if(mochiID != "")
-        {
-            mochi.as3.MochiServices.connect(mochiID, root);
-        }
         #end
 	}
 	

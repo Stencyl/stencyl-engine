@@ -186,7 +186,6 @@ class Engine
 	//* Online / API Values
 	//*-----------------------------------------------
 	
-	public static var mochiID:String;
 	public static var ngID:String;
 	public static var ngKey:String;
 	//public static var medalPopup:MedalPopup;

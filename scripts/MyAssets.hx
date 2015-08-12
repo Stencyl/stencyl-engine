@@ -26,7 +26,6 @@ class MyAssets implements AssetLoader
 	//APIs
 	public static var adPositionBottom:Bool = true;
 	public static var whirlID:String = "";
-	public static var mochiID:String = "";
 	public static var cpmstarID:String = "";
 	public static var newgroundsID:String = "";
 	public static var newgroundsKey:String = "";
