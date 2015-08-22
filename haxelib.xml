@@ -1,0 +1,7 @@
+<project name="Stencyl" url="http://www.stencyl.com" license="Private. All Rights Reserved.">
+    <user name="Stencyl"/>
+    <tag v="flash"/>
+    <tag v="cpp"/>
+    <description>Stencyl.</description>
+    <version name="1.00">First Release</version>
+</project>
