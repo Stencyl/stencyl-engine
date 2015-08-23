@@ -209,7 +209,7 @@ class Universal extends Sprite
 			var larger = Math.max(stageWidth, stageHeight);
 			var smaller = Math.min(stageWidth, stageHeight);
 			var aspectRatio:Float = larger / smaller;
-			widescreen = aspectRatio > 1.5;
+			widescreen = aspectRatio > (Math.max(MyAssets.stageWidth, MyAssets.stageHeight) / Math.min(MyAssets.stageWidth, MyAssets.stageHeight));
 			
 			//Scale to fit algorithms reverse on widescreen setups.
 			if(widescreen)
