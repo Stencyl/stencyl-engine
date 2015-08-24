@@ -2107,11 +2107,7 @@ class Script
 		
 		if(sc != null && sc.currentSource != null)
 		{
-			#if flash
 			return sc.currentSource.length;
-			#else
-			return sc.currentSource.length * 1000;
-			#end
 		}
 		
 		else
@@ -2127,11 +2123,7 @@ class Script
 	{			
 		if(clip != null && clip.src != null)
 		{
-			#if flash
 			return clip.src.length;
-			#else
-			return clip.src.length * 1000;
-			#end
 		}
 		
 		else
