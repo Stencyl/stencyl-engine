@@ -197,15 +197,24 @@ class BackgroundLayer extends RegularLayer
 			
 			if (Std.is(bgChild, ScrollingBitmap))
 			{
-				bgChild.image1.bitmapData = model.frames[currIndex];
-				bgChild.image2.bitmapData = model.frames[currIndex];
-				bgChild.image3.bitmapData = model.frames[currIndex]; 
-				bgChild.image4.bitmapData = model.frames[currIndex];
-				bgChild.image5.bitmapData = model.frames[currIndex];
-				bgChild.image6.bitmapData = model.frames[currIndex];
-				bgChild.image7.bitmapData = model.frames[currIndex];
-				bgChild.image8.bitmapData = model.frames[currIndex];
-				bgChild.image9.bitmapData = model.frames[currIndex];				
+				var b:Bitmap = bgChild.image1;
+				b.bitmapData = model.frames[currIndex];				
+				b = bgChild.image2;
+				b.bitmapData = model.frames[currIndex];		
+				b = bgChild.image3;
+				b.bitmapData = model.frames[currIndex];
+				b = bgChild.image4;
+				b.bitmapData = model.frames[currIndex];
+				b = bgChild.image5;
+				b.bitmapData = model.frames[currIndex];
+				b = bgChild.image6;
+				b.bitmapData = model.frames[currIndex];
+				b = bgChild.image7;
+				b.bitmapData = model.frames[currIndex];
+				b = bgChild.image8;
+				b.bitmapData = model.frames[currIndex];
+				b = bgChild.image9;
+				b.bitmapData = model.frames[currIndex];				
 			}
 			
 			else
