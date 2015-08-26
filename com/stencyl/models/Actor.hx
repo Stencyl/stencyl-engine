@@ -265,7 +265,8 @@ class Actor extends Sprite
 	public var collisionListeners:Array<Dynamic>;
 	
 	public var positionListenerCount:Int;
-	public var collisionListenerCount:Int;
+	//Fixed for html5
+	public var collisionListenerCount:Int = 0;
 	
 	public var mouseState:Int;
 	public var lastScreenState:Bool;
