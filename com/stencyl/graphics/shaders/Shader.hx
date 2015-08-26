@@ -97,7 +97,7 @@ class Shader
 	 * Return the uniform location in this shader
 	 * @param a  The uniform name to find
 	 */
-	public inline function uniform(u:String):Int
+	public inline function uniform(u:String):#if js Int #else lime.graphics.opengl.GLUniformLocation #end
 	{
 		return GL.getUniformLocation(program, u);
 	}
