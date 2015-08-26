@@ -36,7 +36,11 @@ import openfl.utils.Float32Array;
 import openfl.display.OpenGLView;
 
 typedef Uniform = {
+	#if js
+	var id:lime.graphics.opengl.GLUniformLocation;
+	#else
 	var id:Int;
+	#end
 	var value:Float;
 };
 
@@ -141,8 +145,13 @@ class PostProcess extends OpenGLView
 		}
 		else
 		{
+			#if js
+			var id:lime.graphics.opengl.GLUniformLocation = shader.uniform(uniform);
+			uniforms.set(uniform, {id: id, value: value});
+			#else
 			var id:Int = shader.uniform(uniform);
 			if (id != -1) uniforms.set(uniform, {id: id, value: value});
+			#end
 		}
 	}
 	
@@ -356,10 +365,17 @@ class PostProcess extends OpenGLView
 
 	private var vertexSlot:Int;
 	private var texCoordSlot:Int;
+	#if js
+	private var imageUniform:lime.graphics.opengl.GLUniformLocation;
+	private var resolutionUniform:lime.graphics.opengl.GLUniformLocation;
+	private var resolutionUsUniform:lime.graphics.opengl.GLUniformLocation;
+	private var timeUniform:lime.graphics.opengl.GLUniformLocation;
+	#else
 	private var imageUniform:Int;
 	private var resolutionUniform:Int;
 	private var resolutionUsUniform:Int;
 	private var timeUniform:Int;
+	#end
 	private var uniforms:Map<String, Uniform>;
 
 	/* @private Simple full screen vertex shader */
