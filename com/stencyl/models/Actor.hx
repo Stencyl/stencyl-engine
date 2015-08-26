@@ -1780,9 +1780,9 @@ class Actor extends Sprite
 		transformObj.matrix = transformMatrix;		
 		
 		//Temp until jeash handles on their end?
-		#if js
-		currAnimation.__invalidateMatrix();
-		#end
+		//#if js
+		//currAnimation.__invalidateMatrix();
+		//#end
 	}
 	
 	private function updateTweenProperties()
