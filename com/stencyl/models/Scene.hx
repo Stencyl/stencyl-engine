@@ -653,6 +653,11 @@ class Scene
 			
 			var item = split[i].split(",");
 			
+			if (item.length > 3)
+			{
+				item.splice(0, 1);
+			}
+			
 			var tilesetID:Int = Std.parseInt(item[0]);
 			var tileID:Int = Std.parseInt(item[1]);
 			var runLength:Int = Std.parseInt(item[2]);
