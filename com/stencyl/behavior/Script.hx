@@ -2892,7 +2892,17 @@ class Script
 		
 		var bytes = img.getPixels(dummyRect);
 		
-		#if(cpp || neko)
+		#if js
+		var byteArray = bytes;
+		byteArray.position = 0;
+		var bytes:Bytes = Bytes.alloc(byteArray.length);
+		while (byteArray.bytesAvailable > 0) 
+		{
+		var position = byteArray.position;
+		bytes.set(position, byteArray.readByte()); 
+		}
+		return img.width + ";" + img.height + ";" + toBase64(bytes);
+		#elseif(cpp || neko)
 		var b = Bytes.alloc(bytes.length);
 		
 		for(i in 0...bytes.length)
@@ -4393,7 +4403,7 @@ class Script
 		}
 		#elseif openfl_legacy
 		Lib.exit();
-		#else
+		#elseif !js
 		Sys.exit (0);
 		#end
 	}

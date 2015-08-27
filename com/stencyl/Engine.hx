@@ -2988,7 +2988,7 @@ class Engine
 
 			if (l.drawnOn)
 			{
-				l.overlay.graphics.__invalidate();
+				//l.overlay.graphics.__invalidate(); Seems to be obselete - unsure what replaced it
 				l.bitmapOverlay.bitmapData.fillRect(l.bitmapOverlay.bitmapData.rect, 0);
 				l.drawnOn = false;
 			}

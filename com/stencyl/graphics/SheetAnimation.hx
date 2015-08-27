@@ -4,9 +4,7 @@ import com.stencyl.models.actor.Animation;
 import openfl.display.Sprite;
 import openfl.display.BitmapData;
 
-#if !js
 import openfl.display.Tilesheet;
-#end
 
 import com.stencyl.Engine;
 
@@ -28,10 +26,8 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	public var frameWidth:Int;
 	public var frameHeight:Int;
 	
-	#if !js
 	public var tilesheet:Tilesheet;
-	#end
-	
+
 	private var durations:Array<Int>;
 	private var individualDurations:Bool;
 	public var numFrames:Int;
@@ -40,12 +36,8 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	
 	private var model:Animation;
 	
-	#if !js
 	public function new(tilesheet:Tilesheet, durations:Array<Int>, width:Int, height:Int, looping:Bool, model:Animation) 
-	#end
-	#if js
-	public function new(tilesheet:Dynamic, durations:Array<Int>, width:Int, height:Int, looping:Bool, model:Animation) 
-	#end
+
 	{
 		super();
 		
@@ -59,9 +51,7 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 		this.frameWidth = width;
 		this.frameHeight = height;
 		this.looping = looping;
-		#if !js
 		this.tilesheet = tilesheet;
-		#end
 		this.durations = durations;
 		
 		numFrames = durations.length;
@@ -168,7 +158,7 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	
 	public inline function updateBitmap()
 	{
-		#if !js
+		//#if js
 		data[0] = 0;
 		data[1] = 0;
 		data[2] = frameIndex;
@@ -213,12 +203,12 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 		}
 		
 		needsUpdate = false;
-  		#end
+		//#end
 	}
 	
 	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
-		#if !js
+		//#if !js
 		data[0] = x;
 		data[1] = y;
 		data[2] = frameIndex;
@@ -226,7 +216,7 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 		data[4] = alpha;
 		
   		tilesheet.drawTiles(g.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_ROTATION | Tilesheet.TILE_ALPHA);
-  		#end
+  		//#end
 	}
 	
 	public function getFrameDurations():Array<Int>
