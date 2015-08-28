@@ -15,7 +15,8 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	private var frameIndex:Int;
 	private var looping:Bool;
 	private var timer:Float;
-	private var sheet:BitmapData;
+	//Made public for html5 filters.
+	public var sheet:BitmapData;
 	private var durations:Array<Int>;
 	private var individualDurations:Bool;
 	private var numFrames:Int;
