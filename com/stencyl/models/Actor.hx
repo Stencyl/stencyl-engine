@@ -3475,8 +3475,8 @@ class Actor extends Sprite
 	#if js
 	public function setFilter(filter:Array<Array<Dynamic>>)
 	{
-		// setFilter() is being implemented for HTML5.
-		//trace(filter);
+		// setFilter() is not implemented for HTML5.
+		trace(filter);
 		
 		if (!animsBackedUp)
 		{
@@ -3495,15 +3495,35 @@ class Actor extends Sprite
 			for (key in animationMap.keys())
 			{
 				var anim = animationMap.get(key);
-				var r:Float = filter[0][1];//   / 255.0;
-				var g:Float = filter[0][2];// / 255.0;
-				var b:Float = filter[0][3];//  / 255.0;
-				var q:Float = 1 - filter[0][4];
-
-				var rA:Float = (1 - q) * r;
-				var gA:Float = (1 - q) * g;
-				var bA:Float = (1 - q) * b;
+				var bd:BitmapData = anim.sheet.clone();
 				
+				var x = filter[0];
+				x.remove('TintFilter');
+				var color:Int;
+				color = (Std.int(filter[0][0]*255) & 0xff) << 16 | (Std.int(filter[0][1]*255) & 0xff) << 8 | (Std.int(filter[0][2]*255) & 0xff);
+				var cm:ColorMatrix = new ColorMatrix();
+				cm.colorize(color, filter[0][3]);
+
+				var matrix:Array<Float> = cast(cm.toArray(cm.matrix));
+				//matrix = cast(x);
+				//for (item in x) matrix.push(x);
+				
+				bd.applyFilter(
+					bd,
+					bd.rect,
+					new Point(0, 0),
+					new ColorMatrixFilter(matrix)
+				);
+				anim.sheet = bd.clone();
+				anim.updateBitmap();
+			}
+		}
+		
+		if (filter[0][0] == 'NegativeFilter'){
+		
+			for (key in animationMap.keys())
+			{
+				var anim = animationMap.get(key);
 				var bd:BitmapData = anim.sheet.clone();
 				bd.applyFilter(
 					bd,
@@ -3511,10 +3531,10 @@ class Actor extends Sprite
 					new Point(0, 0),
 					new ColorMatrixFilter(
 						[
-							q + rA * 0.299, rA * 0.587, rA * 0.114, 0, 0,
-							gA * 0.299, q + gA * 0.587, gA * 0.114,	0, 0,
-							bA * 0.299, bA * 0.587,	q + bA * 0.114, 0, 0,
-							0, 0, 0, 1, 0
+							-1,  0,  0,  0, 255,
+                             0, -1,  0,  0, 255,
+                             0,  0, -1,  0, 255,
+                             0,  0,  0,  1,   0
 				
 						]
 					)
@@ -3523,6 +3543,131 @@ class Actor extends Sprite
 				anim.updateBitmap();
 			}
 		}
+		
+		if (filter[0][0] == 'SaturationFilter'){
+		
+			for (key in animationMap.keys())
+			{
+				var anim = animationMap.get(key);
+				var bd:BitmapData = anim.sheet.clone();
+				
+				//trace(filter[0][1]);
+				var x = filter[0];
+				x.remove('SaturationFilter');
+				var matrix:Array<Float> = cast(x);
+				//matrix = cast(x);
+				//for (item in x) matrix.push(x);
+				
+				bd.applyFilter(
+					bd,
+					bd.rect,
+					new Point(0, 0),
+					new ColorMatrixFilter(matrix)
+				);
+				anim.sheet = bd.clone();
+				anim.updateBitmap();
+			}
+		}
+		
+		if (filter[0][0] == 'BrightnessFilter'){
+		
+			for (key in animationMap.keys())
+			{
+				var anim = animationMap.get(key);
+				var bd:BitmapData = anim.sheet.clone();
+				//trace(filter[0][1]);
+				var x = filter[0];
+				x.remove('BrightnessFilter');
+				var matrix:Array<Float> = cast(x);
+				//matrix = cast(x);
+				//for (item in x) matrix.push(x);
+				
+				bd.applyFilter(
+					bd,
+					bd.rect,
+					new Point(0, 0),
+					new ColorMatrixFilter(matrix)
+				);
+				anim.sheet = bd.clone();
+				anim.updateBitmap();
+			}
+		}
+		
+		if (filter[0][0] == 'HueFilter'){
+		
+			for (key in animationMap.keys())
+			{
+				var anim = animationMap.get(key);
+				var bd:BitmapData = anim.sheet.clone();
+				
+				//trace(filter[0][1]);
+				var x = filter[0];
+				x.remove('HueFilter');
+				var matrix:Array<Float> = cast(x);
+				//matrix = cast(x);
+				//for (item in x) matrix.push(x);
+				
+				bd.applyFilter(
+					bd,
+					bd.rect,
+					new Point(0, 0),
+					new ColorMatrixFilter(matrix)
+				);
+				anim.sheet = bd.clone();
+				anim.updateBitmap();
+			}
+		}
+		
+		if (filter[0][0] == 'GrayscaleFilter'){
+		
+			for (key in animationMap.keys())
+			{
+				var anim = animationMap.get(key);
+				var bd:BitmapData = anim.sheet.clone();
+				
+				bd.applyFilter(
+					bd,
+					bd.rect,
+					new Point(0, 0),
+					new ColorMatrixFilter(
+						[
+							0.5,0.5,0.5,0,0,
+							0.5,0.5,0.5,0,0,
+							0.5,0.5,0.5,0,0,
+							0,0,0,1,0
+ 						]
+					)
+				);
+				anim.sheet = bd.clone();
+				anim.updateBitmap();
+			}
+		}
+		
+		if (filter[0][0] == 'SepiaFilter'){
+		
+			for (key in animationMap.keys())
+			{
+				var anim = animationMap.get(key);
+				var bd:BitmapData = anim.sheet.clone();
+				
+				bd.applyFilter(
+					bd,
+					bd.rect,
+					new Point(0, 0),
+					new ColorMatrixFilter(
+						[
+							0.34, 0.33, 0.33, 0.00, 30.00,
+							0.33, 0.34, 0.33, 0.00, 20.00,
+							0.33, 0.33, 0.34, 0.00, 0.00,
+							0.00, 0.00, 0.00, 1.00, 0.00
+ 						]
+					)
+				);
+				anim.sheet = bd.clone();
+				anim.updateBitmap();
+			}
+		}
+		
 	}
 	#end
 	
