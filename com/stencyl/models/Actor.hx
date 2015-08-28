@@ -20,7 +20,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 
-#if (flash || cpp || neko || js)
+#if (flash || cpp || neko)
 import openfl.Memory;
 #end
 
@@ -300,8 +300,6 @@ class Actor extends Sprite
 	//*-----------------------------------------------
 
 	public static var lastCollided:Actor;
-
-	//public var filters = [];
 	
 	//*-----------------------------------------------
 	//* Init
@@ -3470,20 +3468,15 @@ class Actor extends Sprite
 	#if (flash)
 	public function setFilter(filter:Array<BitmapFilter>)
 	{			
-		trace(filter);
-		
-		filters = filter;
-		trace(filters);
-		
-		trace (filters);
+		filters = filters.concat(filter);
 	}
 	#end
 	
 	#if js
 	public function setFilter(filter:Array<Array<Dynamic>>)
 	{
-		// setFilter() is not implemented for HTML5.
-		trace(filter);
+		// setFilter() is being implemented for HTML5.
+		//trace(filter);
 		
 		if (!animsBackedUp)
 		{
@@ -3595,44 +3588,37 @@ class Actor extends Sprite
 				if (Type.getClass(anim) == SheetAnimation)
 				{
 					var imageData:BitmapData = anim.getBitmap();
-					trace(imageData);
 					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
-					trace(byteArray);
-					//var len:Int = byteArray.length;
-					//trace(len);
+					var len:Int = byteArray.length;
+					// Using the Memory class with a ByteArray slightly increases performance.
+					Memory.select(byteArray);
 
-					if (byteArray != null){
-						var len:Int = byteArray.length;
-						// Using the Memory class with a ByteArray slightly increases performance.
-						Memory.select(byteArray);
-
-						i = 0;
-						while (i < len)
+					i = 0;
+					while (i < len)
+					{
+						srcA = Memory.getByte(i);
+						if (srcA == 0)
 						{
-							srcA = Memory.getByte(i);
-							if (srcA == 0)
-							{
-								// Ignore pixels with full transparency.
-								i = i + 4;
-								continue;
-							}
-
-							srcR = Memory.getByte(i + 1);
-							srcG = Memory.getByte(i + 2);
-							srcB = Memory.getByte(i + 3);
-						
-							Memory.setByte((i + 1), (255 - srcR));
-							Memory.setByte((i + 2), (255 - srcG));
-							Memory.setByte((i + 3), (255 - srcB));
-
+							// Ignore pixels with full transparency.
 							i = i + 4;
+							continue;
 						}
 
-						// Not setting the ByteArray position back to 0 will result in an end-of-file error.
-						byteArray.position = 0;
+						srcR = Memory.getByte(i + 1);
+						srcG = Memory.getByte(i + 2);
+						srcB = Memory.getByte(i + 3);
 					
-						imageData.setPixels(imageData.rect, byteArray);
+						Memory.setByte((i + 1), (255 - srcR));
+						Memory.setByte((i + 2), (255 - srcG));
+						Memory.setByte((i + 3), (255 - srcB));
+
+						i = i + 4;
 					}
+
+					// Not setting the ByteArray position back to 0 will result in an end-of-file error.
+					byteArray.position = 0;
+				
+					imageData.setPixels(imageData.rect, byteArray);
 				}
 
 			}
@@ -3663,52 +3649,49 @@ class Actor extends Sprite
 				{
 					var imageData:BitmapData = anim.getBitmap();
 					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
+					var len:Int = byteArray.length;
 					var greyResult:Int;
-					
-					if (byteArray != null){
-						var len:Int = byteArray.length;
-						// Using the Memory class with a ByteArray slightly increases performance.
-						Memory.select(byteArray);
+					// Using the Memory class with a ByteArray slightly increases performance.
+					Memory.select(byteArray);
 
-						i = 0;
-						while (i < len)
+					i = 0;
+					while (i < len)
+					{
+						srcA = Memory.getByte(i);
+						if (srcA == 0)
 						{
-							srcA = Memory.getByte(i);
-							if (srcA == 0)
-							{
-								// Ignore pixels with full transparency.
-								i = i + 4;
-								continue;
-							}
-
-							srcR = Memory.getByte(i + 1);
-							srcG = Memory.getByte(i + 2);
-							srcB = Memory.getByte(i + 3);
-							
-							// All color values are the same in greyscale, so just calculate one.
-							greyResult = Std.int((srcR * 0.5) + (srcG * 0.5) + (srcB * 0.5));
-
-							if (greyResult > 254)
-							{
-								greyResult = 255;
-							}
-							else if (greyResult < 1)
-							{
-								greyResult = 0;
-							}
-
-							Memory.setByte((i + 1), greyResult);
-							Memory.setByte((i + 2), greyResult);
-							Memory.setByte((i + 3), greyResult);
-							
+							// Ignore pixels with full transparency.
 							i = i + 4;
+							continue;
 						}
 
-						// Not setting the ByteArray position back to 0 will result in an end-of-file error.
-						byteArray.position = 0;
-					
-						imageData.setPixels(imageData.rect, byteArray);
+						srcR = Memory.getByte(i + 1);
+						srcG = Memory.getByte(i + 2);
+						srcB = Memory.getByte(i + 3);
+						
+						// All color values are the same in greyscale, so just calculate one.
+						greyResult = Std.int((srcR * 0.5) + (srcG * 0.5) + (srcB * 0.5));
+
+						if (greyResult > 254)
+						{
+							greyResult = 255;
+						}
+						else if (greyResult < 1)
+						{
+							greyResult = 0;
+						}
+
+						Memory.setByte((i + 1), greyResult);
+						Memory.setByte((i + 2), greyResult);
+						Memory.setByte((i + 3), greyResult);
+						
+						i = i + 4;
 					}
+
+					// Not setting the ByteArray position back to 0 will result in an end-of-file error.
+					byteArray.position = 0;
+				
+					imageData.setPixels(imageData.rect, byteArray);
 				}
 			}
 		}
@@ -3735,77 +3718,75 @@ class Actor extends Sprite
 				{
 					var imageData:BitmapData = anim.getBitmap();
 					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
+					var len:Int = byteArray.length;
+					
+					// Using the Memory class with a ByteArray slightly increases performance.
+					Memory.select(byteArray);
 
-					if (byteArray != null){
-						var len:Int = byteArray.length;
-						// Using the Memory class with a ByteArray slightly increases performance.
-						Memory.select(byteArray);
-
-						i = 0;
-						while (i < len)
+					i = 0;
+					while (i < len)
+					{
+						srcA = Memory.getByte(i);
+						if (srcA == 0)
 						{
-							srcA = Memory.getByte(i);
-							if (srcA == 0)
-							{
-								// Ignore pixels with full transparency.
-								i = i + 4;
-								continue;
-							}
-
-							srcR = Memory.getByte(i + 1);
-							srcG = Memory.getByte(i + 2);
-							srcB = Memory.getByte(i + 3);
-
-							redResult = ((matrix[0] * srcR) + (matrix[1] * srcG) + (matrix[2]  * srcB) + matrix[3]);
-							if (redResult > 254)
-							{
-								Memory.setByte((i + 1), 255);
-							}
-							else if (redResult < 1)
-							{
-								Memory.setByte((i + 1), 0);
-							}
-							else
-							{
-								Memory.setByte((i + 1), Std.int(redResult));
-							}
-						
-							greenResult = ((matrix[4] * srcR) + (matrix[5] * srcG) + (matrix[6]  * srcB) + matrix[7]);
-							if (greenResult > 254)
-							{
-								Memory.setByte((i + 2), 255);
-							}
-							else if (greenResult < 1)
-							{
-								Memory.setByte((i + 2), 0);
-							}
-							else
-							{
-								Memory.setByte((i + 2), Std.int(greenResult));
-							}
-						
-							blueResult = ((matrix[8] * srcR) + (matrix[9] * srcG) + (matrix[10] * srcB) + matrix[11]);
-							if (blueResult > 254)
-							{
-								Memory.setByte((i + 3), 255);
-							}
-							else if (blueResult < 1)
-							{
-								Memory.setByte((i + 3), 0);
-							}
-							else
-							{
-								Memory.setByte((i + 3), Std.int(blueResult));
-							}
-						
+							// Ignore pixels with full transparency.
 							i = i + 4;
+							continue;
 						}
 
-						// Not setting the ByteArray position back to 0 will result in an end-of-file error.
-						byteArray.position = 0;
+						srcR = Memory.getByte(i + 1);
+						srcG = Memory.getByte(i + 2);
+						srcB = Memory.getByte(i + 3);
+
+						redResult = ((matrix[0] * srcR) + (matrix[1] * srcG) + (matrix[2]  * srcB) + matrix[3]);
+						if (redResult > 254)
+						{
+							Memory.setByte((i + 1), 255);
+						}
+						else if (redResult < 1)
+						{
+							Memory.setByte((i + 1), 0);
+						}
+						else
+						{
+							Memory.setByte((i + 1), Std.int(redResult));
+						}
 					
-						imageData.setPixels(imageData.rect, byteArray);
+						greenResult = ((matrix[4] * srcR) + (matrix[5] * srcG) + (matrix[6]  * srcB) + matrix[7]);
+						if (greenResult > 254)
+						{
+							Memory.setByte((i + 2), 255);
+						}
+						else if (greenResult < 1)
+						{
+							Memory.setByte((i + 2), 0);
+						}
+						else
+						{
+							Memory.setByte((i + 2), Std.int(greenResult));
+						}
+					
+						blueResult = ((matrix[8] * srcR) + (matrix[9] * srcG) + (matrix[10] * srcB) + matrix[11]);
+						if (blueResult > 254)
+						{
+							Memory.setByte((i + 3), 255);
+						}
+						else if (blueResult < 1)
+						{
+							Memory.setByte((i + 3), 0);
+						}
+						else
+						{
+							Memory.setByte((i + 3), Std.int(blueResult));
+						}
+					
+						i = i + 4;
 					}
+
+					// Not setting the ByteArray position back to 0 will result in an end-of-file error.
+					byteArray.position = 0;
+				
+					imageData.setPixels(imageData.rect, byteArray);
 				}
 			}
 		}
