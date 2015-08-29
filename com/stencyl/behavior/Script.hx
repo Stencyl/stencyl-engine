@@ -81,9 +81,9 @@ import haxe.crypto.BaseCode;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 
-#if flash
-import flash.filters.ColorMatrixFilter;
-#end
+//#if flash
+import openfl.filters.ColorMatrixFilter;
+//#end
 
 import scripts.MyAssets;
 
@@ -4413,7 +4413,7 @@ class Script
 	//* Utilities
 	//*-----------------------------------------------
 	
-	#if (cpp || js || neko)
+	#if (cpp || neko)
 	public static function createGrayscaleFilter():Array<Dynamic>
 	{
 		var matrix = new Array<Dynamic>();
@@ -4480,10 +4480,14 @@ class Script
 	}
 	#end
 	
-	#if flash
+	#if (flash || js)
 	public static function createGrayscaleFilter():ColorMatrixFilter
 	{
+		#if js
+		var matrix:Array<Float> = new Array<Float>();
+		#else
 		var matrix:Array<Dynamic> = new Array<Dynamic>();
+		#end
 		
 		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
 		matrix = matrix.concat([0.5,0.5,0.5,0,0]);
@@ -4498,7 +4502,11 @@ class Script
 	*/
 	public static function createSepiaFilter():ColorMatrixFilter
 	{
+		#if js
+		var matrix:Array<Float> = new Array<Float>();
+		#else
 		var matrix:Array<Dynamic> = new Array<Dynamic>();
+		#end
 		
 		matrix = matrix.concat([0.34, 0.33, 0.33, 0.00, 30.00]);
 		matrix = matrix.concat([0.33, 0.34, 0.33, 0.00, 20.00]);
@@ -4513,7 +4521,11 @@ class Script
 	*/
 	public static function createNegativeFilter():ColorMatrixFilter
 	{
+		#if js
+		var matrix:Array<Float> = new Array<Float>();
+		#else
 		var matrix:Array<Dynamic> = new Array<Dynamic>();
+		#end
 		
 		matrix = matrix.concat([-1, 0, 0, 0, 255]);
 		matrix = matrix.concat([0, -1, 0, 0, 255]);

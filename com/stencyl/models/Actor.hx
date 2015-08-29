@@ -81,11 +81,13 @@ import com.stencyl.models.collision.Hitbox;
 import com.stencyl.models.collision.Grid;
 
 import openfl.filters.BitmapFilter;
-
-#if flash
-import flash.filters.ColorMatrixFilter;
+import openfl.filters.ColorMatrixFilter;
 import com.stencyl.utils.ColorMatrix;
-#end
+
+//#if flash
+//import flash.filters.ColorMatrixFilter;
+//import com.stencyl.utils.ColorMatrix;
+//#end
 
 #if js
 //import jeash.filters.ColorMatrixFilter;
@@ -198,7 +200,7 @@ class Actor extends Sprite
 	public var currAnimationName:String;
 	public var animationMap:Map<String,ActorAnimation>;
 
-	#if (cpp || neko)
+	#if (cpp || neko || js)
 	public var backupAnimationMap:Map<String,BitmapData>;
 	public var animsBackedUp:Bool = false;
 	public var tint:Bool = false;
@@ -298,7 +300,6 @@ class Actor extends Sprite
 	//*-----------------------------------------------
 
 	public static var lastCollided:Actor;
-
 	
 	//*-----------------------------------------------
 	//* Init
@@ -639,6 +640,10 @@ class Actor extends Sprite
 		{
 			return;
 		}
+		
+		#if js
+		clearFilters();
+		#end
 		
 		destroyed = true;
 		
@@ -3459,7 +3464,7 @@ class Actor extends Sprite
 	//* Filters
 	//*-----------------------------------------------
 
-	#if flash
+	#if (flash)
 	public function setFilter(filter:Array<BitmapFilter>)
 	{			
 		filters = filters.concat(filter);
@@ -3467,10 +3472,36 @@ class Actor extends Sprite
 	#end
 	
 	#if js
-	public function setFilter(filter:Array<Array<Dynamic>>)
+	public function setFilter(filter:Array<ColorMatrixFilter>)
 	{
-		// setFilter() is not implemented for HTML5.
-		return;
+		var matrix:Array<Float> = cast(filter[0].matrix);
+		
+		if (!animsBackedUp)
+		{
+			backupAnimationMap = new Map<String,BitmapData>();
+		
+			for (key in animationMap.keys())
+			{
+				var anim = animationMap.get(key);
+				backupAnimationMap.set(key, anim.sheet.clone());
+			}
+			animsBackedUp = true;
+		}
+			
+		for (key in animationMap.keys())
+		{
+			var anim = animationMap.get(key);
+			var bd:BitmapData = anim.sheet.clone();
+			
+			bd.applyFilter(
+				bd,
+				bd.rect,
+				new Point(0, 0),
+				new ColorMatrixFilter(matrix)
+			);
+			anim.sheet = bd.clone();
+			anim.updateBitmap();
+		}
 	}
 	#end
 	
@@ -3538,7 +3569,6 @@ class Actor extends Sprite
 					var imageData:BitmapData = anim.getBitmap();
 					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
 					var len:Int = byteArray.length;
-
 					// Using the Memory class with a ByteArray slightly increases performance.
 					Memory.select(byteArray);
 
@@ -3600,7 +3630,6 @@ class Actor extends Sprite
 					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
 					var len:Int = byteArray.length;
 					var greyResult:Int;
-
 					// Using the Memory class with a ByteArray slightly increases performance.
 					Memory.select(byteArray);
 
@@ -3669,7 +3698,7 @@ class Actor extends Sprite
 					var imageData:BitmapData = anim.getBitmap();
 					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
 					var len:Int = byteArray.length;
-
+					
 					// Using the Memory class with a ByteArray slightly increases performance.
 					Memory.select(byteArray);
 
@@ -3745,8 +3774,25 @@ class Actor extends Sprite
 	
 	public function clearFilters()
 	{
-		#if flash
+		#if (flash)
 		filters = [];
+		#end
+		
+		#if js
+		if (animsBackedUp)
+		{
+			//var pt:Point = new Point(0,0);
+			
+			for (key in backupAnimationMap.keys())
+			{
+				var imageData = backupAnimationMap.get(key);
+				var sheetValue = animationMap.get(key);
+				sheetValue.sheet = imageData.clone();
+				//sheetValue.tint = false;
+				sheetValue.updateBitmap();
+			}	
+			animsBackedUp = false;
+		}
 		#end
 		
 		#if (cpp || neko)
