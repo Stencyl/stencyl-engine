@@ -642,7 +642,6 @@ class Actor extends Sprite
 		}
 		
 		#if js
-		trace(animsBackedUp);
 		clearFilters();
 		#end
 		
@@ -3475,9 +3474,7 @@ class Actor extends Sprite
 	#if js
 	public function setFilter(filter:Array<ColorMatrixFilter>)
 	{
-		trace(filter);
 		var matrix:Array<Float> = cast(filter[0].matrix);
-		trace(matrix);
 		
 		if (!animsBackedUp)
 		{
