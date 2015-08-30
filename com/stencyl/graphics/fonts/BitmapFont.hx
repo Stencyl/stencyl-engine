@@ -488,9 +488,10 @@ class BitmapFont
 				
 				else
 				{
-					//TODO: This doesn't work on HTML5.
-					var temp = new BitmapData(pBitmapData.width, pBitmapData.height, true, toARGB(0x000000, Std.int(pAlpha * 255)));
-					pBitmapData.copyPixels(glyph, glyph.rect, _point, temp, null, true);
+					var colorTransformation = new ColorTransform(1,1,1,pAlpha,0,0,0,0);
+					var copy = glyph.clone();
+					copy.colorTransform(copy.rect, colorTransformation);
+					pBitmapData.copyPixels(copy, copy.rect, _point, null, null, true);
 				}
 				
 				_point.x += glyph.width + pLetterSpacing;
