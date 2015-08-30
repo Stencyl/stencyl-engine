@@ -42,8 +42,9 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		this.frameWidth = Std.int(sheet.width / across);
 		this.frameHeight = Std.int(sheet.height / down);
 		
-		this.x = -sheet.width/(2 * across) * Engine.SCALE;
-		this.y = -sheet.height/(2 * down) * Engine.SCALE;		
+		//html5 rounds strangely when pixel snapping
+		this.x = Math.round(-sheet.width/(2 * across) * Engine.SCALE);
+		this.y = Math.round(-sheet.height/(2 * down) * Engine.SCALE);			
 		
 		this.timer = 0;
 		this.frameIndex = 0;
