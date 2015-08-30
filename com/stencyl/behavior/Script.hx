@@ -92,7 +92,7 @@ import scripts.MyAssets;
 //typedef JeashSharedObjectFlushStatus = flash.net.SharedObjectFlushedStatus;
 #end
 
-//Actual scripts extend from this 
+//Actual scripts extend from this
 class Script 
 {
 	//*-----------------------------------------------
