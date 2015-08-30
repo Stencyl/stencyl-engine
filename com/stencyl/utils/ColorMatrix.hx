@@ -59,9 +59,8 @@ package com.stencyl.utils;
  * THE SOFTWARE.
  */
 
-#if flash
-import flash.filters.ColorMatrixFilter;
-#end
+import openfl.filters.ColorMatrixFilter;
+
 
 using com.stencyl.utils.RGB;
 
@@ -191,7 +190,7 @@ class ColorMatrix
 		matrix = new Array<Float>();
 	}
 	
-	#if flash
+	#if (flash || js)
 	public function getFilter():ColorMatrixFilter
 	{
 		toArray(matrix);
