@@ -262,6 +262,10 @@ class Input
 			Engine.stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 2);
 			Engine.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false,  2);
 			Engine.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 2);
+			#if js
+			Engine.stage.addEventListener(TouchEvent.TOUCH_BEGIN, onMouseDown);
+			Engine.stage.addEventListener(TouchEvent.TOUCH_END, onMouseUp);
+			#end
 			#if desktop
 			Engine.stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, onRightMouseDown, false, 2);
 			Engine.stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, onRightMouseUp, false, 2);
