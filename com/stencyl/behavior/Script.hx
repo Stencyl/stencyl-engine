@@ -3586,7 +3586,7 @@ class Script
 			trace(key + " - " + Reflect.field(data.data, key));
 			#if flash
 			//unserialize maps
-			if (StringTools.startsWith(Reflect.field(data.data, key), "[SerializedStringMap]"))
+			if (Reflect.field(data.data, key) != null && StringTools.startsWith(Reflect.field(data.data, key), "[SerializedStringMap]"))
 			{
 				var smap:haxe.ds.StringMap<Dynamic> = haxe.Unserializer.run(Reflect.field(data.data, key).substr("[SerializedStringMap]".length));
 				engine.gameAttributes.set(key, smap);
