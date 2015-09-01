@@ -11,10 +11,10 @@ import openfl.events.MouseEvent;
 import openfl.display.DisplayObject;
 import openfl.geom.Point;
 
-#if !js
+//#if !js
 import openfl.events.TouchEvent;
 import openfl.ui.Multitouch;
-#end
+//#end
 
 #if (cpp || neko)
 import openfl.ui.Accelerometer;
