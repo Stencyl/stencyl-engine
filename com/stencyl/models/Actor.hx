@@ -1583,15 +1583,8 @@ class Actor extends Sprite
 		{			
 			var p = body.getPosition();		
 						
-			#if js
-			realX = __x = p.x * Engine.physicsScale;
-			realY = __y = p.y * Engine.physicsScale;				
-			#end
-			
-			#if !js							
 			realX = p.x * Engine.physicsScale;
 			realY = p.y * Engine.physicsScale;				
-			#end
 			
 			resetReal(realX, realY);
 			
