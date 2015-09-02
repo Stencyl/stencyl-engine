@@ -78,7 +78,7 @@ class Animation
 			loadGraphics();
 		}
 		
-		if(framesAcross > 1 && looping)
+		if(frameCount > 1 && looping)
 		{
 			allAnimations.push(this);
 		}
@@ -98,7 +98,7 @@ class Animation
 	public function unloadGraphics()
 	{
 		//Graceful fallback - just a blank image that is numFrames across in px
-		imgData = new BitmapData(framesAcross, 1);
+		imgData = new BitmapData(framesAcross, framesDown);
 		Data.get().resourceAssets.remove(parentID + "-" + animID + ".png");
 	}
 	
@@ -114,7 +114,7 @@ class Animation
 	{
 		sharedTimer += elapsedTime;
 		
-		if(framesAcross > 1 && sharedTimer > durations[sharedFrameIndex])
+		if(frameCount > 1 && sharedTimer > durations[sharedFrameIndex])
 		{
 			var old = sharedFrameIndex;
 		
@@ -122,7 +122,7 @@ class Animation
 			
 			sharedFrameIndex++;
 			
-			if(sharedFrameIndex >= framesAcross)
+			if(sharedFrameIndex >= frameCount)
 			{
 				if(looping)
 				{
