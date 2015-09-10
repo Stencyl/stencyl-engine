@@ -2170,6 +2170,7 @@ class Engine
 					}
 					
 					actor.setAngle(0, false);
+					actor.setIgnoreGravity(actor.defaultGravity);
 					actor.alpha = 1;
 					actor.realScaleX = 1;
 					actor.realScaleY = 1;

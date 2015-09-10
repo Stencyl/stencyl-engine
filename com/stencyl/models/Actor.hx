@@ -152,6 +152,7 @@ class Actor extends Sprite
 	
 	public var fixedRotation:Bool;
 	public var ignoreGravity:Bool;
+	public var defaultGravity:Bool;
 	public var collidable:Bool;
 	public var solid:Bool; //for non Box2D collisions
 	public var resetOrigin:Bool; //fot HTML5 origin setting
@@ -434,6 +435,7 @@ class Actor extends Sprite
 
 		fixedRotation = false;
 		this.ignoreGravity = ignoreGravity;
+		defaultGravity = ignoreGravity;
 		resetOrigin = true;
 		
 		//---
