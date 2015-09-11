@@ -1,7 +1,7 @@
 #Stencyl
 http://www.stencyl.com
 
-Create Flash, iOS, Android, Mac, Windows and Linux games with no code with Stencyl. This is the source to Stencyl's Haxe-based game engine.
+Create Flash, HTML5, iOS, Android, Mac, Windows and Linux games with no code with Stencyl. This is the source to Stencyl's Haxe-based game engine.
 
 #Requirements
 - [Haxe 3.2.0](http://www.haxe.org/)
@@ -70,6 +70,8 @@ Stencyl's game engine is proudly built on top of [OpenFL](http://www.openfl.org/
 - Mike Morace
 - Simone Conia
 - Jason Irby
+- Robin Schaafsma
+- Chris Finn
 
 #MIT License
 
