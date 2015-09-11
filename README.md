@@ -15,6 +15,9 @@ Stencyl's engine is written in Haxe, a language similar to ActionScript 3. You c
 
 `chmod 777 build-stencyl`
 
+#Reporting Issues
+Report all bugs and enhancement requests on our [Issue Tracker](http://community.stencyl.com/index.php?project=1).
+
 #Developing alongside Stencyl
 To "build" the code, run build-stencyl, passing in the full (absolute) path to your Stencyl install as its argument. For example:
 
