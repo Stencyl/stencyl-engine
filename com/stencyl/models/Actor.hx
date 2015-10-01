@@ -2924,11 +2924,7 @@ class Actor extends Sprite
 		dummy.x = dirX;
 		dummy.y = dirY;
 		dummy.normalize();
-		
-		if(magnitude > 0)
-		{
-			dummy.multiply(magnitude);
-		}
+		dummy.multiply(magnitude);
 		
 		body.applyForce(dummy, body.getWorldCenter());
 	}
@@ -2968,11 +2964,7 @@ class Actor extends Sprite
 		dummy.x = dirX;
 		dummy.y = dirY;
 		dummy.normalize();
-		
-		if(magnitude > 0)
-		{
-			dummy.multiply(magnitude);
-		}
+		dummy.multiply(magnitude);
 		
 		body.applyImpulse(dummy, body.getWorldCenter());
 	}
