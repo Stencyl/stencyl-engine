@@ -25,7 +25,7 @@ class GradientBackground extends Resource implements Background
 	public function draw(g:Graphics, cameraX:Int, cameraY:Int, screenWidth:Int, screenHeight:Int)
 	{
 		var colors = [topColor, bottomColor];
-		var alphas = [100, 100];
+		var alphas = [100., 100.];
 		var ratios = [0, 0xFF];
 		var matr = new Matrix();
 		matr.createGradientBox(screenWidth, screenHeight, Math.PI/2, 0, 0);
