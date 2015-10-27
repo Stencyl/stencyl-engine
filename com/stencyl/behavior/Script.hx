@@ -4395,7 +4395,7 @@ class Script
 		#if flash
 		try
 		{
-			Lib.fscommand("exit");
+			Lib.fscommand("quit");
 		}
 		catch(e:SecurityError)
 		{
