@@ -371,6 +371,19 @@ class TileLayer extends Sprite
 					pixels = t.pixels;
 				}
 				
+				//Draw correctly if scene tile size and tileset tile size are different
+				if (tw != t.parent.tileWidth){		
+					var scaleX = tw/t.parent.tileWidth;
+					var scaleY = th/t.parent.tileHeight;
+					var data = new BitmapData(Std.int(t.parent.framesAcross * t.parent.tileWidth * scaleX),Std.int(t.parent.framesDown * t.parent.tileHeight * scaleY));
+					var matrix:Matrix = new Matrix();
+					
+					matrix.scale(scaleX, scaleY);
+					data.fillRect(bitmapData.rect, 0);
+					data.draw(pixels, matrix);
+					pixels = data.clone();
+				}
+				
 				#if (flash || js)
 				flashPoint.x = px * Engine.SCALE;
 				flashPoint.y = py * Engine.SCALE;
