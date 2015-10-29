@@ -370,7 +370,8 @@ class TileLayer extends Sprite
 				{
 					pixels = t.pixels;
 				}
-				
+
+				#if (flash || js)				
 				//Draw correctly if scene tile size and tileset tile size are different
 				if (tw != t.parent.tileWidth){		
 					var scaleX = tw/t.parent.tileWidth;
@@ -384,7 +385,6 @@ class TileLayer extends Sprite
 					pixels = data.clone();
 				}
 				
-				#if (flash || js)
 				flashPoint.x = px * Engine.SCALE;
 				flashPoint.y = py * Engine.SCALE;
 				
@@ -404,6 +404,28 @@ class TileLayer extends Sprite
 				if(t.data == null)
 				{
 					t.parent.data[2] = t.parent.sheetMap.get(t.tileID);
+					
+					if (tw != t.parent.tileWidth){		
+						var scaleX = tw/t.parent.tileWidth;
+						var scaleY = th/t.parent.tileHeight;
+						var data = new BitmapData(Std.int(t.parent.framesAcross * t.parent.tileWidth * scaleX),Std.int(t.parent.framesDown * t.parent.tileHeight * scaleY), true);
+						var matrix:Matrix = new Matrix();
+							
+						matrix.scale(scaleX, scaleY);
+						data.fillRect(data.rect, 0);
+						data.draw(pixels, matrix);
+						pixels = data.clone();
+						t.parent.tilesheet = new Tilesheet(pixels);
+						for(tile in t.parent.tiles)
+						{
+							if(tile == null)
+							{
+								continue;
+							}
+							var r = new Rectangle(Math.floor(tile.frameIndex % t.parent.framesAcross) * tw * Engine.SCALE, Math.floor(tile.frameIndex / t.parent.framesAcross) * th * Engine.SCALE, tw * Engine.SCALE, th * Engine.SCALE);
+							t.parent.tilesheet.addTileRect(r);
+						}
+					}
 					
 					if(t.parent.tilesheet != null)
 					{
