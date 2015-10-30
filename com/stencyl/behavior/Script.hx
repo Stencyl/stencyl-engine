@@ -4039,6 +4039,30 @@ class Script
 		#end
 	}
 	
+	public static function loadFullMobileAd()
+	{
+		#if (mobile && !android && !air)
+		Ads.initialize();
+		Ads.loadFullAd();
+		#end
+		
+		#if android
+		GoogleAdMob.loadFullAd();
+		#end
+	}
+	
+	public static function showFullMobileAd()
+	{
+		#if (mobile && !android && !air)
+		Ads.showFullAd();
+		#end
+		
+		#if android
+		GoogleAdMob.showFullAd();
+		#end
+	}
+	
+	
 	//Google Play Services
 	public static function initGooglePlayGames()
 	{
