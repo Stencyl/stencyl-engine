@@ -120,13 +120,12 @@ class BehaviorManager
 			
 			var field = Reflect.field(b.script, attributeName);
 
-			if(field == null)
-			{
-				if(!Reflect.hasField(b.script, attributeName))
+			#if !cpp
+			if(field == null && !Reflect.hasField(b.script, attributeName))
 				{
 					trace("Get Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
 				}
-			}
+			#end
 			
 			return field;
 		}
