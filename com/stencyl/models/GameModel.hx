@@ -94,9 +94,7 @@ class GameModel
 		groupsCollidesWith = new Map<Int,Array<Int>>();
 		
 		collisionGroups = readCollisionGroups(xml.node.cgroups.elements);
-		collisionGroups.push(new CollisionGroupDef(PLAYER_ID, TERRAIN_ID));
-		collisionGroups.push(new CollisionGroupDef(ACTOR_ID, TERRAIN_ID));
-		
+
 		collisionMap = new Array<Array<Bool>>();
 		
 		var groupCount = 0;
