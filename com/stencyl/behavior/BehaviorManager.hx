@@ -122,9 +122,9 @@ class BehaviorManager
 
 			#if !cpp
 			if(field == null && !Reflect.hasField(b.script, attributeName))
-				{
-					trace("Get Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
-				}
+			{
+				trace("Get Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
+			}
 			#end
 			
 			return field;
