@@ -8,21 +8,11 @@ Create Flash, HTML5, iOS, Android, Mac, Windows and Linux games with no code wit
 - [Stencyl 3.0](http://www.stencyl.com/)
 Stencyl's engine is written in Haxe, a language similar to ActionScript 3. You can edit Haxe directly from any text editor, or you can use something more complete such as FlashDevelop, Sublime Text, MonoDevelop or Eclipse.
 
-#Installing
-1) Check the code out anywhere you'd like.
-
-2) If on Mac/Linux, chmod build-stencyl to 777.
-
-`chmod 777 build-stencyl`
-
 #Reporting Issues
 Report all bugs and enhancement requests on our [Issue Tracker](http://community.stencyl.com/index.php?project=1).
 
 #Developing alongside Stencyl
-To "build" the code, run build-stencyl, passing in the full (absolute) path to your Stencyl install as its argument. For example:
-
-`./build-stencyl /Users/jon/stencyl/`
-That's it. Any time you modify the engine, run build-stencyl and then run a game from Stencyl. You don't have to restart Stencyl each time you build the engine.
+To make changes to the Stencyl engine, simply edit the files in your Stencyl installation directory under `plaf/haxe/lib/stencyl/1,00`. You don't have to restart Stencyl for the changes to take effect.
 
 #Developing Standalone
 For those who desire a more traditional workflow, the engine can be run standalone, outside of Stencyl.
