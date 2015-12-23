@@ -171,6 +171,9 @@ class ScrollingBitmap extends Sprite
 	
 	public function resetPositions()
 	{
+		cacheWidth = image1.width;
+		cacheHeight = image1.height;
+		
 		if (xPos < -cacheWidth)
 		{
 			xPos = xPos % cacheWidth;
