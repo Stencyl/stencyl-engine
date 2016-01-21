@@ -206,8 +206,6 @@ class Joystick extends Sprite
         x /= Engine.screenScaleX;
         y /= Engine.screenScaleY;
         
-        isPressed = false; 
-        
         var distance = Math.sqrt(Math.pow((center.x + viewOffsetX - x), 2) + Math.pow((center.y + viewOffsetY - y), 2));
         var radians = Math.atan2(center.y + viewOffsetY - y, center.x + viewOffsetX - x);
         
@@ -237,6 +235,7 @@ class Joystick extends Sprite
         
         joystickTouchID = -1;
 		
+        isPressed = false;
         
         outerImage.alpha = outerAlphaWhenReleased;
         innerImage.alpha = innerAlphaWhenReleased;
