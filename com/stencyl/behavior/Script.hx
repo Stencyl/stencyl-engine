@@ -1534,7 +1534,7 @@ class Script
 		transitionToLayer(layer);
 	} 
 	
-	public static function setDrawingLayer(a:Actor)
+	public static function setDrawingLayerToActorLayer(a:Actor)
 	{
 		if(a != null)
 		{
@@ -1543,7 +1543,7 @@ class Script
 		}
 	}
 	
-	public static function setDrawingLayer()
+	public static function setDrawingLayerToSceneLayer()
 	{
 		Engine.engine.g.graphics = Engine.engine.transitionLayer.graphics;
  	
