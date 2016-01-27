@@ -4059,55 +4059,6 @@ class Script
 		#end
 	}
 	
-	//Ads
-	
-	public static function showMobileAd()
-	{
-		#if (mobile && !android && !air)
-		Ads.initialize();
-		Ads.showAd(scripts.MyAssets.adPositionBottom);
-		#end
-		
-		#if android
-		GoogleAdMob.showAd(scripts.MyAssets.adPositionBottom);
-		#end
-	}
-	
-	public static function hideMobileAd()
-	{
-		#if (mobile && !android && !air)
-		Ads.initialize();
-		Ads.hideAd();
-		#end
-		
-		#if android
-		GoogleAdMob.hideAd();
-		#end
-	}
-	
-	public static function loadFullMobileAd()
-	{
-		#if (mobile && !android && !air)
-		Ads.initialize();
-		Ads.loadFullAd();
-		#end
-		
-		#if android
-		GoogleAdMob.loadFullAd();
-		#end
-	}
-	
-	public static function showFullMobileAd()
-	{
-		#if (mobile && !android && !air)
-		Ads.showFullAd();
-		#end
-		
-		#if android
-		GoogleAdMob.showFullAd();
-		#end
-	}
-	
 	
 	//Google Play Services
 	public static function initGooglePlayGames()

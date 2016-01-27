@@ -100,10 +100,6 @@ class Universal extends Sprite
 	{
 		//Newgrounds and other APIs
 		
-		#if(mobile)
-		Ads.initialize(MyAssets.whirlID);
-		#end
-		
 		#if(flash)
 		var newgroundsID = MyAssets.newgroundsID;
 		var newgroundsKey = MyAssets.newgroundsKey;
