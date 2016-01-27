@@ -1509,6 +1509,52 @@ class Script
 	}
 	
 	//*-----------------------------------------------
+	//* Drawing Layer
+	//*-----------------------------------------------
+	
+	private static function transitionToLayer(layer:Layer)
+	{
+		if(layer != null)
+		{
+			Engine.engine.g.graphics = layer.overlay.graphics;
+
+			#if (js)
+			Engine.engine.g.canvas = layer.bitmapOverlay.bitmapData;
+			#end
+									
+			#if (cpp || flash || neko)
+			Engine.engine.g.canvas = layer.bitmapOverlay;
+			#end
+		}
+	}
+	
+	public static function setDrawingLayer(refType:Int, ref:String)
+	{
+		var layer = cast(Engine.engine.getLayer(refType, ref), Layer);
+		transitionToLayer(layer);
+	} 
+	
+	public static function setDrawingLayer(a:Actor)
+	{
+		if(a != null)
+		{
+			var layer:Layer = cast(Engine.engine.layers.get(a.layerID), Layer);
+			transitionToLayer(layer);
+		}
+	}
+	
+	public static function setDrawingLayer()
+	{
+		Engine.engine.g.graphics = Engine.engine.transitionLayer.graphics;
+ 	
+		#if (js)
+		Engine.engine.g.canvas = Engine.engine.transitionBitmapLayer.bitmapData;
+		#else
+		Engine.engine.g.canvas = Engine.engine.transitionBitmapLayer;
+		#end
+	}
+	
+	//*-----------------------------------------------
 	//* Camera
 	//*-----------------------------------------------
 	
