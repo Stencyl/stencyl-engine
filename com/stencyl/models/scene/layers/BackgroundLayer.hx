@@ -211,44 +211,29 @@ class BackgroundLayer extends RegularLayer
 				var b:Bitmap = bgChild.image1;
 				b.bitmapData = model.img;	
 
-				var cacheWidth = b.width;
-				var cacheHeight = b.height;
-
 				b = bgChild.image2;
-				b.bitmapData = model.img;	
-				bgChild.image2.x = bgChild.image1.x-cacheWidth;	
+				b.bitmapData = bgChild.image1.bitmapData;			
 				
 				b = bgChild.image3;
-				b.bitmapData = model.img;
-				b.x = bgChild.image1.x+cacheWidth;
+				b.bitmapData = bgChild.image1.bitmapData;
 				
 				b = bgChild.image4;
-				b.bitmapData = model.img;
-			    b.x = bgChild.image1.x-cacheWidth;
-				b.y = bgChild.image1.y-cacheHeight;
+				b.bitmapData = bgChild.image1.bitmapData;
 				
 				b = bgChild.image5;
-				b.bitmapData = model.img;
-				b.y = bgChild.image1.y-cacheHeight;
+				b.bitmapData = bgChild.image1.bitmapData;
 				
 				b = bgChild.image6;
-				b.bitmapData = model.img;
-		        b.x = bgChild.image1.x+cacheWidth;
-				b.y = bgChild.image1.y-cacheHeight;
+				b.bitmapData = bgChild.image1.bitmapData;
 				
 				b = bgChild.image7;
-				b.bitmapData = model.img;
-		        b.x = bgChild.image1.x-cacheWidth;
-				b.y = bgChild.image1.y+cacheHeight;
+				b.bitmapData = bgChild.image1.bitmapData;
 				
 				b = bgChild.image8;
-				b.bitmapData = model.img;
-				b.y = bgChild.image1.y+cacheHeight;
+				b.bitmapData = bgChild.image1.bitmapData;
 				
 				b = bgChild.image9;
-				b.bitmapData = model.img;	
-		        b.x = bgChild.image1.x+cacheWidth;
-				b.y = bgChild.image1.y+cacheHeight;
+				b.bitmapData = bgChild.image1.bitmapData;	
 			}
 			
 			else
