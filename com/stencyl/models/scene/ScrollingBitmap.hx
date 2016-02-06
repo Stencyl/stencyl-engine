@@ -36,14 +36,16 @@ class ScrollingBitmap extends Sprite
 	public var parallaxY:Float;
 	
 	public var backgroundID:Int;
+	public var repeats:Bool;
 	
-	public function new(img:Dynamic, dx:Float, dy:Float, px:Float=0, py:Float=0, ID:Int=0) 
+	public function new(img:Dynamic, dx:Float, dy:Float, px:Float=0, py:Float=0, ID:Int=0, repeats:Bool = true) 
 	{
 		super();
 		
 		curStep = 0;
 	
 		running = true;
+		this.repeats = repeats;
 		
 		image1 = new Bitmap(img);
 		addChild(image1);
@@ -51,45 +53,48 @@ class ScrollingBitmap extends Sprite
 		cacheWidth = image1.width;
 		cacheHeight = image1.height;
         
-		image2 = new Bitmap(img);
-        image2.x = image1.x-cacheWidth;
-		addChild(image2);
-        
-        image3 = new Bitmap(img);
-        image3.x = image1.x+cacheWidth;
-		addChild(image3);
-        
-        //
-        
-        image4 = new Bitmap(img);
-        image4.x = image1.x-cacheWidth;
-        image4.y = image1.y-cacheHeight;
-		addChild(image4);
-        
-        image5 = new Bitmap(img);
-        image5.y = image1.y-cacheHeight;
-		addChild(image5);
-        
-        image6 = new Bitmap(img);
-        image6.x = image1.x+cacheWidth;
-        image6.y = image1.y-cacheHeight;
-		addChild(image6);
-        
-        //
-        
-        image7 = new Bitmap(img);
-        image7.x = image1.x-cacheWidth;
-        image7.y = image1.y+cacheHeight;
-		addChild(image7);
-        
-        image8 = new Bitmap(img);
-        image8.y = image1.y+cacheHeight;
-		addChild(image8);
-        
-        image9 = new Bitmap(img);
-        image9.x = image1.x+cacheWidth;
-        image9.y = image1.y+cacheHeight;
-		addChild(image9);
+		if (repeats)
+		{
+			image2 = new Bitmap(img);
+			image2.x = image1.x-cacheWidth;
+			addChild(image2);
+			
+			image3 = new Bitmap(img);
+			image3.x = image1.x+cacheWidth;
+			addChild(image3);
+			
+			//
+			
+			image4 = new Bitmap(img);
+			image4.x = image1.x-cacheWidth;
+			image4.y = image1.y-cacheHeight;
+			addChild(image4);
+			
+			image5 = new Bitmap(img);
+			image5.y = image1.y-cacheHeight;
+			addChild(image5);
+			
+			image6 = new Bitmap(img);
+			image6.x = image1.x+cacheWidth;
+			image6.y = image1.y-cacheHeight;
+			addChild(image6);
+			
+			//
+			
+			image7 = new Bitmap(img);
+			image7.x = image1.x-cacheWidth;
+			image7.y = image1.y+cacheHeight;
+			addChild(image7);
+			
+			image8 = new Bitmap(img);
+			image8.y = image1.y+cacheHeight;
+			addChild(image8);
+			
+			image9 = new Bitmap(img);
+			image9.x = image1.x+cacheWidth;
+			image9.y = image1.y+cacheHeight;
+			addChild(image9);
+		}
 		
 		xP = 0;
 		yP = 0;
@@ -139,15 +144,18 @@ class ScrollingBitmap extends Sprite
 			xP += xVelocity / 10.0 * Engine.SCALE;
 			yP += yVelocity / 10.0 * Engine.SCALE;
 			
-			if(xP < -width || xP > width)
-	        {
-	            xP = 0;
-	        }
-	        
-	        if(yP < -height || yP > height)
-	        {
-	            yP = 0;
-	        }
+			if (this.repeats)
+			{
+				if(xP < -width || xP > width)
+				{
+					xP = 0;
+				}
+				
+				if(yP < -height || yP > height)
+				{
+					yP = 0;
+				}
+			}
 	        
 	        xPos += Math.floor(xP);
 	        yPos += Math.floor(yP);
@@ -174,42 +182,48 @@ class ScrollingBitmap extends Sprite
 		cacheWidth = image1.width;
 		cacheHeight = image1.height;
 		
-		if (xPos < -cacheWidth)
+		if (this.repeats)
 		{
-			xPos = xPos % cacheWidth;
-		}
-		
-		if (yPos < -cacheHeight)
-		{
-			yPos = yPos % cacheHeight;
+			if (xPos < -cacheWidth)
+			{
+				xPos = xPos % cacheWidth;
+			}
+			
+			if (yPos < -cacheHeight)
+			{
+				yPos = yPos % cacheHeight;
+			}
 		}
 
 		image1.x = xPos;
 	    image1.y = yPos;
 	        
-	    image2.x = xPos - cacheWidth;
-	    image2.y = yPos;
-	        
-		image3.x = xPos + cacheWidth;
-		image3.y = yPos;
-	        
-		image4.x = xPos - cacheWidth;
-		image4.y = yPos - cacheHeight;
-	        
-		image5.x = xPos;
-		image5.y = yPos - cacheHeight;
-	        
-		image6.x = xPos + cacheWidth;
-		image6.y = yPos - cacheHeight;
-	        
-		image7.x = xPos - cacheWidth;
-		image7.y = yPos + cacheHeight;
-	        
-		image8.x = xPos;
-		image8.y = yPos + cacheHeight;
-	        
-		image9.x = xPos + cacheWidth;
-		image9.y = yPos + cacheHeight;
+		if (this.repeats)
+		{
+			image2.x = xPos - cacheWidth;
+			image2.y = yPos;
+				
+			image3.x = xPos + cacheWidth;
+			image3.y = yPos;
+				
+			image4.x = xPos - cacheWidth;
+			image4.y = yPos - cacheHeight;
+				
+			image5.x = xPos;
+			image5.y = yPos - cacheHeight;
+				
+			image6.x = xPos + cacheWidth;
+			image6.y = yPos - cacheHeight;
+				
+			image7.x = xPos - cacheWidth;
+			image7.y = yPos + cacheHeight;
+				
+			image8.x = xPos;
+			image8.y = yPos + cacheHeight;
+				
+			image9.x = xPos + cacheWidth;
+			image9.y = yPos + cacheHeight;
+		}
 	}
 	
 	public function start()
