@@ -29,6 +29,7 @@ class BackgroundLayer extends RegularLayer
 	
 	public var currIndex:Int;
 	public var currTime:Float;
+	public var cacheIndex:Int;
 	
 	public var cacheWidth:Float;
 	public var cacheHeight:Float;
@@ -98,7 +99,7 @@ class BackgroundLayer extends RegularLayer
 		{
 			var scroller = cast(model, ScrollingBackground);
 
-			var img = new ScrollingBitmap(model.img, scroller.xVelocity, scroller.yVelocity, parallaxX, parallaxY, resourceID);
+			var img = new ScrollingBitmap(model.img, scroller.xVelocity, scroller.yVelocity, parallaxX, parallaxY, resourceID, model.repeats);
 			addChild(bgChild = img);
 		}
 		else if(model.repeats)
@@ -197,9 +198,7 @@ class BackgroundLayer extends RegularLayer
 			
 			if (Std.is(bgChild, ScrollingBitmap))
 			{
-				
-				model.img = model.frames[currIndex];
-				var cacheIndex = currIndex;
+				cacheIndex = currIndex;
 				
 				if(model.repeats)
 				{
@@ -209,31 +208,35 @@ class BackgroundLayer extends RegularLayer
 				currIndex = cacheIndex;
 				
 				var b:Bitmap = bgChild.image1;
-				b.bitmapData = model.img;	
+				//b.bitmapData.dispose();
+				b.bitmapData = model.frames[currIndex];	
 
-				b = bgChild.image2;
-				b.bitmapData = bgChild.image1.bitmapData;			
-				
-				b = bgChild.image3;
-				b.bitmapData = bgChild.image1.bitmapData;
-				
-				b = bgChild.image4;
-				b.bitmapData = bgChild.image1.bitmapData;
-				
-				b = bgChild.image5;
-				b.bitmapData = bgChild.image1.bitmapData;
-				
-				b = bgChild.image6;
-				b.bitmapData = bgChild.image1.bitmapData;
-				
-				b = bgChild.image7;
-				b.bitmapData = bgChild.image1.bitmapData;
-				
-				b = bgChild.image8;
-				b.bitmapData = bgChild.image1.bitmapData;
-				
-				b = bgChild.image9;
-				b.bitmapData = bgChild.image1.bitmapData;	
+				if(model.repeats)
+				{
+					b = bgChild.image2;
+					b.bitmapData = model.frames[currIndex];			
+					
+					b = bgChild.image3;
+					b.bitmapData = model.frames[currIndex];	
+					
+					b = bgChild.image4;
+					b.bitmapData = model.frames[currIndex];	
+					
+					b = bgChild.image5;
+					b.bitmapData = model.frames[currIndex];	
+					
+					b = bgChild.image6;
+					b.bitmapData = model.frames[currIndex];	
+					
+					b = bgChild.image7;
+					b.bitmapData = model.frames[currIndex];	
+					
+					b = bgChild.image8;
+					b.bitmapData = model.frames[currIndex];	
+					
+					b = bgChild.image9;
+					b.bitmapData = model.frames[currIndex];		
+				}
 			}
 			
 			else
