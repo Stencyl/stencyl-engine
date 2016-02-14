@@ -63,7 +63,7 @@ class ImageBackground extends Resource implements Background
 	}		
 	
 	//TODO: drawTiles on CPP
-	public function drawRepeated(bitmap:BackgroundLayer, screenWidth:Int, screenHeight:Int)
+	public function drawRepeated(?bitmap:BackgroundLayer, screenWidth:Int, screenHeight:Int)
 	{
 		var tw:Float = img.width;
 		var th:Float = img.height;
@@ -96,7 +96,7 @@ class ImageBackground extends Resource implements Background
 			}
 		}
 		
-		bitmap.setImage(texture);
+		//bitmap.setImage(texture);
 		this.img = texture;
 		
 		repeated = true;
@@ -142,7 +142,17 @@ class ImageBackground extends Resource implements Background
 		
 		for(i in 0...frameData.length)
 		{
-			this.frames.push(frameData[i]);				
+			if(this.repeats)
+			{
+				this.img = frameData[i];
+				drawRepeated(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
+				this.frames.push(this.img);
+			} 
+			else 
+			{
+				this.frames.push(frameData[i]);			
+			}	
+		
 		}
 		
 		this.img = frames[0];
