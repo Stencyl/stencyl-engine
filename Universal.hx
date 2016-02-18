@@ -208,7 +208,7 @@ class Universal extends Sprite
 			widescreen = aspectRatio > (Math.max(MyAssets.stageWidth, MyAssets.stageHeight) / Math.min(MyAssets.stageWidth, MyAssets.stageHeight));
 			
 			//Scale to fit algorithms reverse on widescreen setups.
-			if(widescreen)
+			if(!Engine.checkedWideScreen && widescreen)
 			{
 				if(MyAssets.scaleToFit1)
 				{
@@ -221,6 +221,8 @@ class Universal extends Sprite
 					MyAssets.scaleToFit1 = true;
 					MyAssets.scaleToFit2 = false;
 				}
+				
+				Engine.checkedWideScreen = true;
 				
 				trace("Widescreen (Aspect Ratio > 1.5)");
 			}

@@ -124,6 +124,7 @@ class Engine
 	public static var IMG_BASE:String = "";
 	public static var SCALE:Float = 1;
 	
+	public static var checkedWideScreen:Bool = false;
 	public static var isStandardIOS:Bool = false;
 	public static var isExtendedIOS:Bool = false;
 	public static var isIPhone6:Bool = false;
@@ -500,6 +501,7 @@ class Engine
 		Script.engine = this;
 		this.root = root;
 		
+		isFullScreen = scripts.MyAssets.startInFullScreen;
 		screenScaleX = root.scaleX;
 		screenScaleY = root.scaleY;
 		screenOffsetX = Std.int(root.x);
