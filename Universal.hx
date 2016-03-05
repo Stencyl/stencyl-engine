@@ -18,6 +18,7 @@ import flash.errors.Error;
 #end
 
 import com.stencyl.Engine;
+import haxe.xml.Fast;
 
 import scripts.MyAssets;
 
@@ -119,8 +120,32 @@ class Universal extends Sprite
 		Lib.current.y = 0;
 		Lib.current.scaleX = 1;
 		Lib.current.scaleY = 1;
-		
+	
 		Engine.stage = stage;
+
+		var scales:Array<Bool> = new Array();		
+		
+		var xml = Xml.parse(openfl.Assets.getText("assets/data/game.xml"));
+		var fast = new haxe.xml.Fast(xml.firstElement());
+		
+		var scalesEnabled = fast.node.projectScales;
+		#if web
+		var scalesEnabled = fast.node.webScales;
+		#end
+		#if desktop
+		var scalesEnabled = fast.node.desktopScales;
+		#end
+		#if iOS
+		var scalesEnabled = fast.node.iOSScales;
+		#end
+		#if android
+		var scalesEnabled = fast.node.androidScales;
+		#end
+
+		for (scale in scalesEnabled.nodes.scale)
+		{
+			scales.push(scale.att.enabled == "true");
+		}
 
 		var skipScaling = false;
 		var stageWidth = stage.stageWidth;
@@ -328,26 +353,26 @@ class Universal extends Sprite
 			}
 			
 			//4 scale scheme
-			if(larger >= x4 && smaller >= y4 && MyAssets.maxScale >= 4)
+			if(larger >= x4 && smaller >= y4 && scales[4])
 			{
 				Engine.SCALE = 4;
 				Engine.IMG_BASE = "4x";
 			}
 			
-			else if(larger >= x3 && smaller >= y3 && MyAssets.maxScale >= 3)
+			else if(larger >= x3 && smaller >= y3 && scales[3])
 			{
 				Engine.SCALE = 3;
 				Engine.IMG_BASE = "3x";
 			}
 			
-			else if(larger >= x2 && smaller >= y2 && MyAssets.maxScale >= 2)
+			else if(larger >= x2 && smaller >= y2 && scales[2])
 			{
 				Engine.SCALE = 2;
 				Engine.IMG_BASE = "2x";
 			}
 			
 			#if(android || flash || desktop)
-			else if(larger >= x15 && smaller >= y15 && MyAssets.maxScale >= 1.5)
+			else if(larger >= x15 && smaller >= y15 && scales[1])
 			{
 				Engine.SCALE = 1.5;
 				Engine.IMG_BASE = "1.5x";
