@@ -447,7 +447,9 @@ class Engine
 				stats.y = 0;
 			}
 			
+			#if !desktop
 			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			#end
 			resetShaders();
 		} 
 		
@@ -469,7 +471,9 @@ class Engine
 				stats.y = 0;
 			}
 			
+			#if !desktop
 			Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
+			#end
 			resetShaders();
 		}
 	}
