@@ -209,15 +209,15 @@ class Script
 		{
 			return 0;
 		}
-		
+
 		else if(Std.is(o, Float))
 		{
-			return o;
+			return cast(o, Float);
 		}
 		
 		else if(Std.is(o, Int))
 		{
-			return o;
+			return cast(o, Int);
 		}
 		
 		else if(Std.is(o, Bool))
@@ -230,11 +230,9 @@ class Script
 			return Std.parseFloat(o);
 		}
 		
-		//Can't do it - return junk
 		else
 		{
-			trace(o + " is not a number!");
-			return 0;
+			return Std.parseFloat(Std.string(o));
 		}
 	}
 	
