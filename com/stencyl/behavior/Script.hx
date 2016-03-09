@@ -3507,15 +3507,30 @@ class Script
 	}
 	
 	/**
-	 * Generates a random number. Deterministic, meaning safe to use if you want to record replays in random environments
+	 * Generates a random float between 0 and 1. Deterministic, meaning safe to use if you want to record replays in random environments
 	 */
 	public static function randomFloat():Float
 	{
 		return Math.random();
 	}
-	
+
 	/**
-	 * Generates a random number. Set the lowest and highest values.
+	 * Generates a random float between the low and hig values.
+	 */
+	public static function randomFloatBetween(low:Float, high:Float):Float
+	{
+		if (low <= high)
+		{
+			return low + (randomFloat() * (high - low + 1));
+		}
+		else
+		{
+			return high + (randomFloat() * (low - high + 1));
+		}
+	}
+		
+	/**
+	 * Generates a random integer between the low and hig values.
 	 */
 	public static function randomInt(low:Float, high:Float):Int
 	{
