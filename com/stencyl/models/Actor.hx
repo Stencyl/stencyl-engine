@@ -2230,6 +2230,11 @@ class Actor extends Sprite
 		return layerID;
 	}
 	
+	public function getLayerName():String
+	{
+		return engine.layers.get(layerID).layerName;
+	}
+	
 	public function getLayerOrder():Int
 	{
 		return engine.layers.get(layerID).order;
