@@ -3515,32 +3515,32 @@ class Script
 	}
 
 	/**
-	 * Generates a random float between the low and hig values.
+	 * Generates a random float between the low and high values.
 	 */
 	public static function randomFloatBetween(low:Float, high:Float):Float
 	{
 		if (low <= high)
 		{
-			return low + (randomFloat() * (high - low + 1));
+			return low + Math.random() * (high - low);
 		}
 		else
 		{
-			return high + (randomFloat() * (low - high + 1));
+			return high + Math.random() * (low - high);
 		}
 	}
 		
 	/**
-	 * Generates a random integer between the low and hig values.
+	 * Generates a random integer between the low and high values.
 	 */
 	public static function randomInt(low:Float, high:Float):Int
 	{
 		if (low <= high)
 		{
-			return Std.int(low) + Math.floor(randomFloat() * (Std.int(high) - Std.int(low) + 1));
+			return Std.int(low) + Math.floor(Math.random() * (Std.int(high) - Std.int(low) + 1));
 		}
 		else
 		{
-			return Std.int(high) + Math.floor(randomFloat() * (Std.int(low) - Std.int(high) + 1));
+			return Std.int(high) + Math.floor(Math.random() * (Std.int(low) - Std.int(high) + 1));
 		}
 	}
 	
