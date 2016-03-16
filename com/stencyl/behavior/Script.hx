@@ -3576,26 +3576,89 @@ class Script
 	//*-----------------------------------------------
 	
 	/**
-	 * Saves a game to the "StencylSaves/[GameName]/[FileName]" location with an in-game displayTitle
+	 * Saves a game (i.e. save all game attributes to a SharedObject)
 	 *
 	 * Callback = function(success:Boolean):void
 	 */
-	public static function saveGame(fileName:String, onComplete:Bool->Void=null)
+	public static function saveGame(fileName:String, onComplete:Bool->Void=null):Void
 	{
 		var so = SharedObject.getLocal(fileName);
 		
 		for(key in engine.gameAttributes.keys())
 		{
-			Reflect.setField(so.data, key, engine.gameAttributes.get(key));
-			
-			#if flash
-			if (Std.is(engine.gameAttributes.get(key), haxe.ds.StringMap))
-			{
-				Reflect.setField(so.data, key, "[SerializedStringMap]" + haxe.Serializer.run(engine.gameAttributes.get(key)));
-			}
-			#end
+			saveToSharedObject(so, key, engine.gameAttributes.get(key));
 		}	
 
+		flushSharedObject(so);
+	}
+	
+	/**
+  	 * Load a saved game (i.e. load all values from the SharedObject as game attributes)
+	 *
+	 * Callback = function(success:Boolean):void
+	 */
+	public static function loadGame(fileName:String, onComplete:Bool->Void=null):Void
+	{
+		var so = SharedObject.getLocal(fileName);
+		
+		for(key in Reflect.fields(so.data))
+		{
+			engine.gameAttributes.set(key, loadFromSharedObject(so, key));
+		}
+		
+		onComplete(true);
+	}
+	
+	public static function saveData(fileName:String, name:String, value:Dynamic):Void
+	{
+		var so = SharedObject.getLocal(fileName);
+	
+		saveToSharedObject(so, name, value);
+		
+		flushSharedObject(so);
+	}
+
+	public static function loadData(fileName:String, name:String):Dynamic
+	{			
+		return loadFromSharedObject(SharedObject.getLocal(fileName), name);
+	}
+	
+	public static function checkData(fileName:String, name:String):Dynamic
+	{					
+		return Reflect.field(SharedObject.getLocal(fileName).data, name) != null;
+	}
+	
+	public static function saveToSharedObject(so:SharedObject, name:String, value:Dynamic):Void
+	{
+		Reflect.setField(so.data, name, value);
+
+		#if flash
+		if (Std.is(value, haxe.ds.StringMap))
+		{
+			Reflect.setField(so.data, name, "[SerializedStringMap]" + haxe.Serializer.run(value));
+		}
+		#end
+	}
+	
+	public static function loadFromSharedObject(so:SharedObject, name:String):Dynamic
+	{
+		#if flash
+		if (Reflect.field(so.data, name) != null && StringTools.startsWith(Reflect.field(so.data, name), "[SerializedStringMap]"))
+		{
+			var smap:haxe.ds.StringMap<Dynamic> = haxe.Unserializer.run(Reflect.field(so.data, name).substr("[SerializedStringMap]".length));
+			return smap;
+		}
+		else
+		{
+			return Reflect.field(so.data, name);
+		}
+		#else
+		return Reflect.field(so.data, name);
+		#end
+	}
+	
+	public static function flushSharedObject(so:SharedObject, onComplete:Bool->Void=null):Void
+	{
 		#if flash
 		var flushStatus:String = null;
 		#else
@@ -3609,61 +3672,15 @@ class Script
 		
 		catch(e:Dynamic) 
 		{
-			trace("Error: Failed to save - " + fileName +  " - " + e);
-			//TODO: Event
+			trace("Error: Failed to flush save file: " + e);
 			onComplete(false);
 			return;
 		}
 		
-		trace(flushStatus);
-		
-		if(flushStatus != null) 
+		if(flushStatus == openfl.net.SharedObjectFlushStatus.FLUSHED)
 		{
-			if(flushStatus == openfl.net.SharedObjectFlushStatus.PENDING)
-			{
-				//trace('requesting permission to save');
-			}
-			
-			else if(flushStatus == openfl.net.SharedObjectFlushStatus.FLUSHED)
-			{
-				trace("Saved Game: " + fileName);
-		        onComplete(true);
-		        //TODO: Event
-			}
+	        onComplete(true);
 		}
-	}
-	
-	/**
-  	 * Load a saved game
-	 *
-	 * Callback = function(success:Boolean):void
-	 */
-	public static function loadGame(fileName:String, onComplete:Bool->Void=null)
-	{
-		var data = SharedObject.getLocal(fileName);
-		
-		trace("Loaded Save: " + fileName);
-		
-		for(key in Reflect.fields(data.data))
-		{
-			trace(key + " - " + Reflect.field(data.data, key));
-			#if flash
-			//unserialize maps
-			if (Reflect.field(data.data, key) != null && StringTools.startsWith(Reflect.field(data.data, key), "[SerializedStringMap]"))
-			{
-				var smap:haxe.ds.StringMap<Dynamic> = haxe.Unserializer.run(Reflect.field(data.data, key).substr("[SerializedStringMap]".length));
-				engine.gameAttributes.set(key, smap);
-			}
-			else
-			{
-				engine.gameAttributes.set(key, Reflect.field(data.data, key));
-			}
-			#else
-			engine.gameAttributes.set(key, Reflect.field(data.data, key));
-			#end
-		}
-		
-		onComplete(true);
 	}
 	
 	//*-----------------------------------------------
