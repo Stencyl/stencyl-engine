@@ -243,11 +243,6 @@ class Script
 			return true;
 		}
 		
-		else if(Std.is(o, String))
-		{
-			return true;
-		}
-		
 		else if(Std.is(o, Float))
 		{
 			return true;
