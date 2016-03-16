@@ -3582,14 +3582,14 @@ class Script
 	 */
 	public static function saveGame(fileName:String, onComplete:Bool->Void=null):Void
 	{
-		var so = SharedObject.getLocal(fileName);
+		var so:SharedObject = SharedObject.getLocal(fileName);
 		
 		for(key in engine.gameAttributes.keys())
 		{
-			saveToSharedObject(so, key, engine.gameAttributes.get(key));
+			Utils.saveToSharedObject(so, key, engine.gameAttributes.get(key));
 		}	
 
-		flushSharedObject(so);
+		Utils.flushSharedObject(so, onComplete);
 	}
 	
 	/**
@@ -3599,88 +3599,43 @@ class Script
 	 */
 	public static function loadGame(fileName:String, onComplete:Bool->Void=null):Void
 	{
-		var so = SharedObject.getLocal(fileName);
+		var so:SharedObject = SharedObject.getLocal(fileName);
 		
 		for(key in Reflect.fields(so.data))
 		{
-			engine.gameAttributes.set(key, loadFromSharedObject(so, key));
+			engine.gameAttributes.set(key, Utils.loadFromSharedObject(so, key));
 		}
 		
-		onComplete(true);
+		if (onComplete != null)
+			onComplete(true);
 	}
 	
-	public static function saveData(fileName:String, name:String, value:Dynamic):Void
+	public static function saveData(fileName:String, name:String, value:Dynamic, onComplete:Bool->Void=null):Void
 	{
-		var so = SharedObject.getLocal(fileName);
+		var so:SharedObject = SharedObject.getLocal(fileName);
 	
-		saveToSharedObject(so, name, value);
+		Utils.saveToSharedObject(so, name, value);
 		
-		flushSharedObject(so);
+		Utils.flushSharedObject(so, onComplete);
 	}
 
-	public static function loadData(fileName:String, name:String):Dynamic
+	public static function loadData(fileName:String, name:String, onComplete:Bool->Void=null):Dynamic
 	{			
-		return loadFromSharedObject(SharedObject.getLocal(fileName), name);
+		var so:SharedObject = SharedObject.getLocal(fileName);
+	
+		var value:Dynamic = Utils.loadFromSharedObject(so, name);
+		
+		if (onComplete != null)
+			onComplete(true);
+		
+		return value;
 	}
 	
 	public static function checkData(fileName:String, name:String):Dynamic
-	{					
-		return Reflect.field(SharedObject.getLocal(fileName).data, name) != null;
-	}
-	
-	public static function saveToSharedObject(so:SharedObject, name:String, value:Dynamic):Void
-	{
-		Reflect.setField(so.data, name, value);
-
-		#if flash
-		if (Std.is(value, haxe.ds.StringMap))
-		{
-			Reflect.setField(so.data, name, "[SerializedStringMap]" + haxe.Serializer.run(value));
-		}
-		#end
-	}
-	
-	public static function loadFromSharedObject(so:SharedObject, name:String):Dynamic
-	{
-		#if flash
-		if (Reflect.field(so.data, name) != null && StringTools.startsWith(Reflect.field(so.data, name), "[SerializedStringMap]"))
-		{
-			var smap:haxe.ds.StringMap<Dynamic> = haxe.Unserializer.run(Reflect.field(so.data, name).substr("[SerializedStringMap]".length));
-			return smap;
-		}
-		else
-		{
-			return Reflect.field(so.data, name);
-		}
-		#else
-		return Reflect.field(so.data, name);
-		#end
-	}
-	
-	public static function flushSharedObject(so:SharedObject, onComplete:Bool->Void=null):Void
-	{
-		#if flash
-		var flushStatus:String = null;
-		#else
-		var flushStatus:openfl.net.SharedObjectFlushStatus = null;
-		#end
-		
-		try 
-		{
-		    flushStatus = so.flush();
-		} 
-		
-		catch(e:Dynamic) 
-		{
-			trace("Error: Failed to flush save file: " + e);
-			onComplete(false);
-			return;
-		}
-		
-		if(flushStatus == openfl.net.SharedObjectFlushStatus.FLUSHED)
-		{
-	        onComplete(true);
-		}
+	{	
+		var so:SharedObject = SharedObject.getLocal(fileName);
+					
+		return Reflect.field(so.data, name) != null;
 	}
 	
 	//*-----------------------------------------------

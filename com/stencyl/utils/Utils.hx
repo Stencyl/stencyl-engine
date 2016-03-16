@@ -776,20 +776,40 @@ class Utils
 		return _time;
 	}
 	
-	/**
-	 * Saves an arbitrary map to the "StencylSaves/[GameName]/[FileName]" location
-	 *
-	 * Callback = function(success:Boolean):void
-	 */
-	public static function saveMap(map:Map<String, Dynamic>, fileName:String, onComplete:Bool->Void=null)
+	/** Saves a key/value pair in a SharedObject (does not flush the SharedObject) */
+	public static function saveToSharedObject(so:SharedObject, name:String, value:Dynamic):Void
 	{
-		var so = SharedObject.getLocal(fileName);
-		
-		for(key in map.keys())
-		{
-			Reflect.setField(so.data, key, map.get(key));
-		}
+		Reflect.setField(so.data, name, value);
 
+		#if flash
+		if (Std.is(value, haxe.ds.StringMap))
+		{
+			Reflect.setField(so.data, name, "[SerializedStringMap]" + haxe.Serializer.run(value));
+		}
+		#end
+	}
+
+	/** Loads a key from a SharedObject */
+	public static function loadFromSharedObject(so:SharedObject, name:String):Dynamic
+	{
+		#if flash
+		if (Reflect.field(so.data, name) != null && StringTools.startsWith(Reflect.field(so.data, name), "[SerializedStringMap]"))
+		{
+			var smap:haxe.ds.StringMap<Dynamic> = haxe.Unserializer.run(Reflect.field(so.data, name).substr("[SerializedStringMap]".length));
+			return smap;
+		}
+		else
+		{
+			return Reflect.field(so.data, name);
+		}
+		#else
+		return Reflect.field(so.data, name);
+		#end
+	}
+	
+	/** Flushes a SharedObject */
+	public static function flushSharedObject(so:SharedObject, onComplete:Bool->Void=null):Void
+	{
 		#if flash
 		var flushStatus:String = null;
 		#else
@@ -803,30 +823,34 @@ class Utils
 		
 		catch(e:Dynamic) 
 		{
-			trace("Error: Failed to save - " + fileName +  " - " + e);
-			//TODO: Event
-			if(onComplete != null)
+			trace("Error: Failed to flush save file: " + e);
+			if (onComplete != null)
 				onComplete(false);
 			return;
 		}
 		
-		trace(flushStatus);
-		
-		if(flushStatus != null) 
+		if(flushStatus == openfl.net.SharedObjectFlushStatus.FLUSHED)
 		{
-			if(flushStatus == openfl.net.SharedObjectFlushStatus.PENDING)
-			{
-				//trace('requesting permission to save');
-			}
-			
-			else if(flushStatus == openfl.net.SharedObjectFlushStatus.FLUSHED)
-			{
-				trace("Saved Map: " + fileName);
-				if(onComplete != null)
-		        	onComplete(true);
-		        //TODO: Event
-			}
+			if (onComplete != null)
+	        	onComplete(true);
 		}
+	}
+	
+	/**
+	 * Saves an arbitrary map
+	 *
+	 * Callback = function(success:Boolean):void
+	 */
+	public static function saveMap(map:Map<String, Dynamic>, fileName:String, onComplete:Bool->Void=null):Void
+	{
+		var so:SharedObject = SharedObject.getLocal(fileName);
+		
+		for(key in map.keys())
+		{
+			Reflect.setField(so.data, key, map.get(key));
+		}
+
+		flushSharedObject(so, onComplete);
 	}
 	
 	/**
@@ -834,18 +858,17 @@ class Utils
 	 *
 	 * Callback = function(success:Boolean):void
 	 */
-	public static function loadMap(map:Map<String, Dynamic>, fileName:String, onComplete:Bool->Void=null)
+	public static function loadMap(map:Map<String, Dynamic>, fileName:String, onComplete:Bool->Void=null):Void
 	{
-		var data = SharedObject.getLocal(fileName);
+		var so:SharedObject = SharedObject.getLocal(fileName);
 		
-		trace("Loaded Map: " + fileName);
-		
-		for(key in Reflect.fields(data.data))
+		for(key in Reflect.fields(so.data))
 		{
-			map.set(key, Reflect.field(data.data, key));
+			map.set(key, Reflect.field(so.data, key));
 		}
 		
-		onComplete(true);
+		if (onComplete != null)
+			onComplete(true);
 	}
 
 	// Time information.
