@@ -998,12 +998,6 @@ class Script
 	}
 	
 	//*-----------------------------------------------
-	//* Terrain
-	//*-----------------------------------------------
-	
-	//wait for Box2D
-	
-	//*-----------------------------------------------
 	//* Behavior Status
 	//*-----------------------------------------------
 	
@@ -1703,11 +1697,6 @@ class Script
 		return mry;
 	}
 	
-	/*public static function setCursor(graphic:Class=null, xOffset:int=0, yOffset:int=0);
-	{
-		FlxG.mouse.show(graphic, xOffset, yOffset);
-	}*/
-
 	public static function showCursor()
 	{
 		Mouse.show();
@@ -4168,76 +4157,76 @@ class Script
 	public static function gameCenterInitialize():Void 
 	{
 		#if (mobile && !android && !air)
-			GameCenter.initialize();
+		GameCenter.initialize();
 		#end	
 	}
 	
 	public static function gameCenterIsAuthenticated():Bool 
 	{
 		#if (mobile && !android && !air)
-			return GameCenter.isAuthenticated();
+		return GameCenter.isAuthenticated();
 		#else
-			return false;
+		return false;
 		#end
 	}
 	
 	public static function gameCenterGetPlayerName():String 
 	{
 		#if (mobile && !android && !air)
-			return GameCenter.getPlayerName();
+		return GameCenter.getPlayerName();
 		#else
-			return "None";
+		return "None";
 		#end
 	}
 	
 	public static function gameCenterGetPlayerID():String 
 	{
 		#if (mobile && !android && !air)
-			return GameCenter.getPlayerID();
+		return GameCenter.getPlayerID();
 		#else
-			return "None";
+		return "None";
 		#end
 	}
 	
 	public static function gameCenterShowLeaderboard(categoryID:String):Void 
 	{
 		#if (mobile && !android && !air)
-			GameCenter.showLeaderboard(categoryID);
+		GameCenter.showLeaderboard(categoryID);
 		#end	
 	}
 	
 	public static function gameCenterShowAchievements():Void 
 	{
 		#if (mobile && !android && !air)
-			GameCenter.showAchievements();
+		GameCenter.showAchievements();
 		#end	
 	}
 	
 	public static function gameCenterSubmitScore(score:Float, categoryID:String):Void 
 	{
 		#if (mobile && !android && !air)
-			GameCenter.reportScore(categoryID, Std.int(score));
+		GameCenter.reportScore(categoryID, Std.int(score));
 		#end	
 	}
 	
 	public static function gameCenterSubmitAchievement(achievementID:String, percent:Float):Void 
 	{
 		#if (mobile && !android && !air)
-			GameCenter.reportAchievement(achievementID, percent);
+		GameCenter.reportAchievement(achievementID, percent);
 		#end	
 	}
 	
 	public static function gameCenterResetAchievements():Void 
 	{
 		#if (mobile && !android && !air)
-			GameCenter.resetAchievements();
+		GameCenter.resetAchievements();
 		#end	
 	}
 	
 	public static function gameCenterShowBanner(title:String, msg:String):Void 
 	{
 		#if (mobile && !android && !air)
-			GameCenter.showAchievementBanner(title, msg);
+		GameCenter.showAchievementBanner(title, msg);
 		#end	
 	}
 	
@@ -4249,68 +4238,66 @@ class Script
 	public static function purchasesAreInitialized():Bool 
 	{
 		#if (mobile && cpp && !air)
-			return Purchases.canBuy();
+		return Purchases.canBuy();
 		#else
-			return false;
+		return false;
 		#end
 	}
 	
 	public static function purchasesRestore():Void 
 	{
 		#if (mobile && cpp && !air)
-			Purchases.restorePurchases();
+		Purchases.restorePurchases();
 		#end	
 	}
 	
 	public static function purchasesBuy(productID:String):Void 
 	{
 		#if (mobile && cpp)
-			Purchases.buy(productID);
+		Purchases.buy(productID);
 		#end	
 	}
 	
 	public static function purchasesHasBought(productID:String):Bool 
 	{
 		#if (mobile && cpp && !air)
-			return Purchases.hasBought(productID);
+		return Purchases.hasBought(productID);
 		#else
-			return false;
+		return false;
 		#end
 	}
 	
 	public static function purchasesGetTitle(productID:String):String 
 	{
 		#if (mobile && cpp && !air)
-			return Purchases.getTitle(productID);
+		return Purchases.getTitle(productID);
 		#else
-			return "";
+		return "";
 		#end
 	}
 	
 	public static function purchasesGetDescription(productID:String):String 
 	{
 		#if (mobile && cpp && !air)
-			return Purchases.getDescription(productID);
+		return Purchases.getDescription(productID);
 		#else
-			return "";
+		return "";
 		#end
 	}
 	
 	public static function purchasesGetPrice(productID:String):String 
 	{
 		#if (mobile && cpp && !air)
-			return Purchases.getPrice(productID);
+		return Purchases.getPrice(productID);
 		#else
-			return "";
+		return "";
 		#end
 	}
 	
 	public static function purchasesRequestProductInfo(productIDlist:Array<Dynamic>):Void 
   	{
     	#if (mobile && cpp && !air)
-      		Purchases.requestProductInfo(productIDlist);
-    	#else
-      		//Nothing
+      	Purchases.requestProductInfo(productIDlist);
     	#end
 	}
 	
@@ -4319,7 +4306,7 @@ class Script
 	public static function purchasesUse(productID:String):Void 
 	{
 		#if (mobile && cpp && !air)
-			Purchases.use(productID);
+		Purchases.use(productID);
 		#end	
 	}
 	
@@ -4327,16 +4314,16 @@ class Script
 	public static function purchasesGoogleConsume(productID:String):Void 
 	{
 		#if (mobile && cpp && !air)
-			Purchases.consume(productID);
+		Purchases.consume(productID);
 		#end	
 	}
 	
 	public static function purchasesGetQuantity(productID:String):Int 
 	{
 		#if (mobile && cpp && !air)
-			return Purchases.getQuantity(productID);
+		return Purchases.getQuantity(productID);
 		#else
-			return 0;
+		return 0;
 		#end
 	}
 	
@@ -4438,7 +4425,7 @@ class Script
 		#elseif openfl_legacy
 		Lib.exit();
 		#elseif !js
-		Sys.exit (0);
+		Sys.exit(0);
 		#end
 	}
 	
@@ -4581,11 +4568,6 @@ class Script
 		return cm.getFilter();
 	}
 	
-	/*
-	h is in degrees (RELATIVE)
-	s is [0-2 where 1 is reset] (ABSOLUTE)
-	b is [0-100] (RELATIVE)
-	*/
 	/**
 	* Returns a ColorMatrixFilter that adjusts hue (in relative degrees) 
 	*/
@@ -4612,7 +4594,7 @@ class Script
 	}
 	
 	/**
-	* Returns a ColorMatrixFilter that adjusts brightness (in relative degrees) 
+	* Returns a ColorMatrixFilter that adjusts brightness (in relative degrees, 0-100) 
 	*/
 	public static function createBrightnessFilter(b:Float):ColorMatrixFilter
 	{
