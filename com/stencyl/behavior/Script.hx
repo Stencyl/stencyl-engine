@@ -284,8 +284,28 @@ class Script
 		return false;
 	}
 
-	public static inline function getDefaultValue(o:Dynamic):Dynamic
+	public static function getDefaultValue(o:Dynamic):Dynamic
 	{
+		if(Std.is(o, Bool))
+		{
+			return false;
+		}
+		
+		else if(Std.is(o, Float))
+		{
+			return 0.0;
+		}
+		
+		else if(Std.is(o, Int))
+		{
+			return 0;
+		}
+		
+		else if(Std.is(o, String))
+		{
+			return "";
+		}
+		
 		return null;
 	}
 		
