@@ -4254,6 +4254,15 @@ class Actor extends Sprite
 			fixture.SetUserData(this);
 		}
 	}
+
+	public function getLastCreatedFixture():B2Fixture
+	{
+		if(physicsMode == 0)
+		{
+			return body.getFixtureList();
+		}
+		return null;
+	}
 	
 	//*-----------------------------------------------
 	//* Camera-Only
