@@ -238,19 +238,14 @@ class Script
 	
 	public static inline function hasValue(o:Dynamic):Bool
 	{
-		if(Std.is(o, Bool))
+		if(isPrimitive(o))
 		{
 			return true;
 		}
 		
-		else if(Std.is(o, Float))
+		else if(Std.is(o, String))
 		{
-			return true;
-		}
-		
-		else if(Std.is(o, Int))
-		{
-			return true;
+			return cast(o, String) != "";
 		}
 		
 		else
