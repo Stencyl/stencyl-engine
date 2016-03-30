@@ -66,19 +66,21 @@ class Layer extends RegularLayer
 
 	override public function updatePosition(x:Float, y:Float, elapsedTime:Float)
 	{
-		x = Std.int(x);
-		y = Std.int(y);
 		var xScrolled = Std.int(x * scrollFactorX);
 		var yScrolled = Std.int(y * scrollFactorY);
 
-		this.x = xScrolled;
-		this.y = yScrolled;
 		overlay.x = -x;
 		overlay.y = -y;
 		bitmapOverlay.x = -x;
 		bitmapOverlay.y = -y;
 		tiles.setPosition(-xScrolled, -yScrolled);
 
+		x = Math.round(x);
+		y = Math.round(y); 
+		
+		this.x = Std.int(x * scrollFactorX);
+		this.y = Std.int(y * scrollFactorY);
+		
 		var tempX = Std.int(xScrolled / (Engine.engine.scene.tileWidth * Engine.SCALE));
 		var tempY = Std.int(yScrolled / (Engine.engine.scene.tileHeight * Engine.SCALE));
 		
