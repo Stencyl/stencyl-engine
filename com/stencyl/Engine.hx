@@ -431,8 +431,8 @@ class Engine
 			var screenWidth = Lib.current.stage.stageWidth;
 			var screenHeight = Lib.current.stage.stageHeight;
 			
-			root.scaleX = 1.0;
-			root.scaleY = 1.0;
+			root.scaleX = scripts.MyAssets.gameScale;
+			root.scaleY = scripts.MyAssets.gameScale;
 			root.x = 0.0;
 			root.y = 0.0;
 			
