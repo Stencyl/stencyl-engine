@@ -2088,6 +2088,15 @@ class Engine
 		a.rSpeed = 0;
 		a.continuousCollision = false;
 		
+		for (item in tasks)
+		{
+			if (item.actor == a)
+			{
+				removeTask(item);
+				item = null;
+			}
+		}
+		
 		allActors.clr(a.ID);
 	}
 	
