@@ -3280,6 +3280,17 @@ class Actor extends Sprite
 		Actuate.unloadForTarget(tweenAngle);
 		Actuate.unloadForTarget(tweenLoc);
 	}
+
+	@:access(motion.Actuate.targetLibraries)
+	public static function actuateUnloadForTarget(target:Dynamic):Void
+	{
+		var targetLibraries = Actuate.targetLibraries;
+		
+		if(targetLibraries.exists (target))
+		{
+			targetLibraries.remove(target);
+		}
+	}
 	
 	public function fadeTo(value:Float, duration:Float = 1, easing:Dynamic = null)
 	{	

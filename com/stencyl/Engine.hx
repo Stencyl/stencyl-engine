@@ -2288,7 +2288,8 @@ class Engine
 	//*-----------------------------------------------
 	//* Update Loop
 	//*-----------------------------------------------
-					
+	
+	@:access(motion.actuators.SimpleActuator.stage_onEnterFrame)
 	public function update(elapsedTime:Float)
 	{
 		if(scene == null)
@@ -2541,6 +2542,7 @@ class Engine
 	}
 	
 	//Game Loop
+	@:access(motion.actuators.SimpleActuator.stage_onEnterFrame)
 	private function onUpdate(event:Event):Void 
 	{
 		var currTime:Float = Lib.getTimer();
