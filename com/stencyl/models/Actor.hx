@@ -3276,9 +3276,9 @@ class Actor extends Sprite
 		activePositionTweens = 0;
 		activeAngleTweens = 0;
 		
-		Actuate.unloadForTarget(this);
-		Actuate.unloadForTarget(tweenAngle);
-		Actuate.unloadForTarget(tweenLoc);
+		actuateUnloadForTarget(this);
+		actuateUnloadForTarget(tweenAngle);
+		actuateUnloadForTarget(tweenLoc);
 	}
 
 	@:access(motion.Actuate.targetLibraries)
