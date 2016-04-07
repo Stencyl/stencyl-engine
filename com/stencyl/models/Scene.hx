@@ -136,7 +136,7 @@ class Scene
 		#end
 		
 		#if !js
-		var bytes = openfl.Assets.getBytes("assets/data/scene-0.scn");
+		var bytes = openfl.Assets.getBytes("assets/data/scene-" + ID + ".scn");
 		bytes.endian = openfl.utils.Endian.BIG_ENDIAN;
 		var rawLayers = readRawLayers(bytes, numTileLayers);
 		#end
