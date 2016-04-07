@@ -480,7 +480,7 @@ class Universal extends Sprite
 					//Scale to Fit: Letterboxed
 					if(MyAssets.scaleToFit1)
 					{
-						scaleX *= Math.min(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
+						scaleX *= Math.max(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
 						scaleY = scaleX;
 						
 						if(widescreen || (screenLandscape && screenW < screenH) || (!screenLandscape && screenW > screenH))
@@ -497,7 +497,7 @@ class Universal extends Sprite
 					//Scale to Fit: Fill/Cropped
 					else if(MyAssets.scaleToFit2)
 					{
-						scaleX *= Math.max(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
+						scaleX *= Math.min(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
 						scaleY = scaleX;
 						
 						if(widescreen || (screenLandscape && screenW < screenH) || (!screenLandscape && screenW > screenH))
