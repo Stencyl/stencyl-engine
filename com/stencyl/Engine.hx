@@ -2462,7 +2462,7 @@ class Engine
 						a.colY < -cameraY / SCALE + screenHeight + paddingBottom;
 					
 					a.isOnScreenCache = isOnScreen;
-					
+
 					//---
 				
 					if(a.physicsMode == 0 && a.body != null)

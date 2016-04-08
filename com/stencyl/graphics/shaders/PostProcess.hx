@@ -4,6 +4,8 @@ import flash.geom.Rectangle;
 import com.stencyl.Engine;
 import motion.Actuate;
 
+import com.stencyl.graphics.shaders.Shader in FullScreenShader;
+
 #if flash
 
 /**
@@ -16,7 +18,7 @@ class PostProcess
 	public var parent:Dynamic;
 	public var to:Dynamic;
 
-	public function new(shader:String, literalText:Bool = false)
+	public function new(fullScreenShader:String, literalText:Bool = false)
 	{
 		#if debug trace("Post processing not supported on Flash"); #end
 	}
@@ -46,7 +48,7 @@ typedef Uniform = {
 
 /**
  * Fullscreen post processing class
- * Uses glsl shaders to produce post processing effects
+ * Uses glsl fullScreenShaders to produce post processing effects
  */
 class PostProcess extends OpenGLView
 {
@@ -93,7 +95,7 @@ class PostProcess extends OpenGLView
 
 		if(literalText)
 		{
-			shader = new Shader([
+			fullScreenShader = new FullScreenShader([
 				{ src: vertexShader, fragment: false },
 				{ src: fragmentShader, fragment: true }
 			]);
@@ -103,37 +105,37 @@ class PostProcess extends OpenGLView
 		{
 			if(fragmentShader.length > 6 && fragmentShader.substr(-6) == ".glslx")
 			{
-				var shaderXml:haxe.xml.Fast = new haxe.xml.Fast(Xml.parse(Assets.getText(fragmentShader)).firstElement());
-				var vertexData:String = (shaderXml.hasNode.vertex) ? shaderXml.node.vertex.innerData : vertexShader;
-				var fragmentData:String = shaderXml.node.fragment.innerData;
+				var fullScreenShaderXml:haxe.xml.Fast = new haxe.xml.Fast(Xml.parse(Assets.getText(fragmentShader)).firstElement());
+				var vertexData:String = (fullScreenShaderXml.hasNode.vertex) ? fullScreenShaderXml.node.vertex.innerData : vertexShader;
+				var fragmentData:String = fullScreenShaderXml.node.fragment.innerData;
 
-				shader = new Shader([
+				fullScreenShader = new FullScreenShader([
 					{ src: vertexData, fragment: false },
 					{ src: fragmentData, fragment: true }
 				]);
 			}
 			else
 			{
-				shader = new Shader([
+				fullScreenShader = new FullScreenShader([
 					{ src: vertexShader, fragment: false },
 					{ src: Assets.getText(fragmentShader), fragment: true }
 				]);
 			}
 		}
 		
-		// default shader variables
-		imageUniform = shader.uniform("uImage0");
-		timeUniform = shader.uniform("uTime");
-		resolutionUniform = shader.uniform("uResolution");
-		resolutionUsUniform = shader.uniform("uResolutionUs");
+		// default fullScreenShader variables
+		imageUniform = fullScreenShader.uniform("uImage0");
+		timeUniform = fullScreenShader.uniform("uTime");
+		resolutionUniform = fullScreenShader.uniform("uResolution");
+		resolutionUsUniform = fullScreenShader.uniform("uResolutionUs");
 
-		vertexSlot = shader.attribute("aVertex");
-		texCoordSlot = shader.attribute("aTexCoord");
+		vertexSlot = fullScreenShader.attribute("aVertex");
+		texCoordSlot = fullScreenShader.attribute("aTexCoord");
 	}
 
 	/**
-	 * Set a uniform value in the shader
-	 * @param uniform  The uniform name within the shader source
+	 * Set a uniform value in the fullScreenShader
+	 * @param uniform  The uniform name within the fullScreenShader source
 	 * @param value    Value to set the uniform to
 	 */
 	public function setUniform(uniform:String, value:Float):Void
@@ -146,18 +148,18 @@ class PostProcess extends OpenGLView
 		else
 		{
 			#if js
-			var id:lime.graphics.opengl.GLUniformLocation = shader.uniform(uniform);
+			var id:lime.graphics.opengl.GLUniformLocation = fullScreenShader.uniform(uniform);
 			uniforms.set(uniform, {id: id, value: value});
 			#else
-			var id:Int = shader.uniform(uniform);
+			var id:Int = fullScreenShader.uniform(uniform);
 			if (id != -1) uniforms.set(uniform, {id: id, value: value});
 			#end
 		}
 	}
 	
 	/**
-	 * Gets a uniform value in the shader
-	 * @param uniform  The uniform name within the shader source
+	 * Gets a uniform value in the fullScreenShader
+	 * @param uniform  The uniform name within the fullScreenShader source
 	 */
 	public function getUniform(uniform:String):Float
 	{
@@ -305,7 +307,7 @@ class PostProcess extends OpenGLView
 
 		GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 
-		shader.bind();
+		fullScreenShader.bind();
 
 		GL.enableVertexAttribArray(vertexSlot);
 		GL.enableVertexAttribArray(texCoordSlot);
@@ -354,12 +356,12 @@ class PostProcess extends OpenGLView
 	private var renderbuffer:GLRenderbuffer;
 	private var texture:GLTexture;
 
-	private var shader:Shader;
+	private var fullScreenShader:Shader;
 	private var buffer:GLBuffer;
 	public var renderTo:GLFramebuffer;
 	private var defaultFramebuffer:GLFramebuffer = null;
 
-	/* @private Time accumulator passed to the shader */
+	/* @private Time accumulator passed to the fullScreenShader */
 	private var time:Float = 0;
 	public var timeScale:Float = 1;
 
@@ -378,7 +380,7 @@ class PostProcess extends OpenGLView
 	#end
 	private var uniforms:Map<String, Uniform>;
 
-	/* @private Simple full screen vertex shader */
+	/* @private Simple full screen vertex fullScreenShader */
 	private static inline var vertexShader:String = "
 #ifdef GL_ES
 	precision mediump float;
