@@ -41,6 +41,10 @@ class TileLayer extends Sprite
 	private static var TILESET_CACHE_MULTIPLIER = 1000000;
 	private static var cacheSource = new Map<Int,Rectangle>();
 	
+	#if openfl_next
+	private var tilesets:Array<Tileset> = new Array();
+	#end
+	
 	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
 	{
 		super();
@@ -385,11 +389,23 @@ class TileLayer extends Sprite
 				flashPoint.x = x * tw * Engine.SCALE;
 				flashPoint.y = y * th * Engine.SCALE;
 				
+				#if openfl_legacy
 				t.parent.data[0] = flashPoint.x;
 				t.parent.data[1] = flashPoint.y;
+				#else
+				if (tilesets.indexOf(t.parent) == -1)
+				{
+					tilesets.push(t.parent);
+					t.parent.data = new Array();
+				}
+				
+				t.parent.data.push(flashPoint.x);
+				t.parent.data.push(flashPoint.y);
+				#end
 				
 				if(t.data == null)
 				{
+					#if openfl_legacy
 					t.parent.data[2] = t.parent.sheetMap.get(t.tileID);
 					
 					if(t.parent.tilesheet != null)
@@ -402,12 +418,20 @@ class TileLayer extends Sprite
 							default: Tilesheet.TILE_BLEND_NORMAL;	
 						});
 					}
+					#else
+					t.parent.data.push(t.parent.sheetMap.get(t.tileID));
+					#end
 				}
 				else
 				{
+					#if openfl_legacy
 					t.parent.data[2] = t.currFrame;
+					#else
+					t.parent.data.pop();
+					t.parent.data.pop();
+					#end
 					
-					t.data.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, switch(blendName)
+					t.data.drawTiles(graphics, #if openfl_legacy t.parent.data #else [flashPoint.x, flashPoint.y, t.currFrame] #end, scripts.MyAssets.antialias, switch(blendName)
 					{
 						case "ADD": Tilesheet.TILE_BLEND_ADD;
 						case "MULTIPLY": Tilesheet.TILE_BLEND_MULTIPLY;
@@ -426,5 +450,24 @@ class TileLayer extends Sprite
 			
 			y++;
 		}		
+		
+		#if (cpp || neko)
+		#if openfl_next
+		for (tileset in tilesets)
+		{
+			if(tileset.tilesheet != null)
+			{
+				tileset.tilesheet.drawTiles(graphics, tileset.data, scripts.MyAssets.antialias, switch(blendName)
+				{
+					case "ADD": Tilesheet.TILE_BLEND_ADD;
+					case "MULTIPLY": Tilesheet.TILE_BLEND_MULTIPLY;
+					case "SCREEN": Tilesheet.TILE_BLEND_SCREEN;
+					default: Tilesheet.TILE_BLEND_NORMAL;	
+				});
+			}
+		}
+		tilesets = new Array();
+		#end
+		#end
 	}
 }
