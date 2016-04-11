@@ -458,6 +458,9 @@ class Engine
 			isFullScreen = true;
 			Lib.current.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 			
+			root.scaleX = 1;
+			root.scaleY = 1;
+			
 			cast(root, Universal).initScreen(true);
 			
 			screenScaleX = root.scaleX;
