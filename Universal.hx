@@ -230,27 +230,6 @@ class Universal extends Sprite
 			var larger = Math.max(stageWidth, stageHeight);
 			var smaller = Math.min(stageWidth, stageHeight);
 			var aspectRatio:Float = larger / smaller;
-			widescreen = aspectRatio > (Math.max(MyAssets.stageWidth, MyAssets.stageHeight) / Math.min(MyAssets.stageWidth, MyAssets.stageHeight));
-			
-			//Scale to fit algorithms reverse on widescreen setups.
-			if(!Engine.checkedWideScreen && widescreen)
-			{
-				if(MyAssets.scaleToFit1)
-				{
-					MyAssets.scaleToFit1 = false;
-					MyAssets.scaleToFit2 = true;
-				}
-				
-				else if(MyAssets.scaleToFit2)
-				{
-					MyAssets.scaleToFit1 = true;
-					MyAssets.scaleToFit2 = false;
-				}
-				
-				Engine.checkedWideScreen = true;
-				
-				trace("Widescreen (Aspect Ratio > 1.5)");
-			}
 			
 			if(smaller == 320 && larger == 480)
 			{
@@ -480,35 +459,19 @@ class Universal extends Sprite
 					//Scale to Fit: Letterboxed
 					if(MyAssets.scaleToFit1)
 					{
-						scaleX *= Math.max(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
+						scaleX *= Math.min(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
 						scaleY = scaleX;
 						
-						if(widescreen || (screenLandscape && screenW < screenH) || (!screenLandscape && screenW > screenH))
-						{
-							trace("Algorithm: Scale to Fit (Fill)");
-						}
-						
-						else
-						{
-							trace("Algorithm: Scale to Fit (Letterbox)");
-						}
+						trace("Algorithm: Scale to Fit (Letterbox)");
 					}
 					
 					//Scale to Fit: Fill/Cropped
 					else if(MyAssets.scaleToFit2)
 					{
-						scaleX *= Math.min(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
+						scaleX *= Math.max(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
 						scaleY = scaleX;
 						
-						if(widescreen || (screenLandscape && screenW < screenH) || (!screenLandscape && screenW > screenH))
-						{
-							trace("Algorithm: Scale to Fit (Letterbox)");
-						}
-						
-						else
-						{
-							trace("Algorithm: Scale to Fit (Fill)");
-						}
+						trace("Algorithm: Scale to Fit (Fill)");
 					}
 					
 					//Scale to Fit: Full Screen
@@ -577,53 +540,19 @@ class Universal extends Sprite
 					//Scale to Fit: Letterboxed
 					if(MyAssets.scaleToFit1)
 					{
-						if(MyAssets.landscape)
-						{
-							scaleX *= stageWidth / MyAssets.stageWidth;
-							scaleY = scaleX;
-						}
+						scaleX *= Math.min(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
+						scaleY = scaleX;
 						
-						else
-						{
-							scaleY = stageHeight / MyAssets.stageHeight;
-							scaleX = scaleY;
-						}
-						
-						if(widescreen || (screenLandscape && screenW < screenH) || (!screenLandscape && screenW > screenH))
-						{
-							trace("Algorithm: Scale to Fit (Fill)");
-						}
-						
-						else
-						{
-							trace("Algorithm: Scale to Fit (Letterbox)");
-						}
+						trace("Algorithm: Scale to Fit (Letterbox)");
 					}
 					
 					//Scale to Fit: Fill/Cropped
 					else if(MyAssets.scaleToFit2)
 					{
-						if(MyAssets.landscape)
-						{
-							scaleY = stageHeight / MyAssets.stageHeight;
-							scaleX = scaleY;
-						}
+						scaleX *= Math.max(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
+						scaleY = scaleX;
 						
-						else
-						{
-							scaleX *= stageWidth / MyAssets.stageWidth;
-							scaleY = scaleX;
-						}
-						
-						if(widescreen || (screenLandscape && screenW < screenH) || (!screenLandscape && screenW > screenH))
-						{
-							trace("Algorithm: Scale to Fit (Letterbox)");
-						}
-						
-						else
-						{
-							trace("Algorithm: Scale to Fit (Fill)");
-						}
+						trace("Algorithm: Scale to Fit (Fill)");
 					}
 					
 					//Scale to Fit: Full Screen
