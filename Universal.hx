@@ -454,167 +454,60 @@ class Universal extends Sprite
 				trace(screenH);
 				trace(screenLandscape);
 				
-				if(MyAssets.maxScale < 4)
+				//Scale to Fit: Letterboxed
+				if(MyAssets.scaleToFit1)
 				{
-					//Scale to Fit: Letterboxed
-					if(MyAssets.scaleToFit1)
-					{
-						scaleX *= Math.min(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
-						scaleY = scaleX;
-						
-						trace("Algorithm: Scale to Fit (Letterbox)");
-					}
+					scaleX *= Math.min(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
+					scaleY = scaleX;
 					
-					//Scale to Fit: Fill/Cropped
-					else if(MyAssets.scaleToFit2)
-					{
-						scaleX *= Math.max(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
-						scaleY = scaleX;
-						
-						trace("Algorithm: Scale to Fit (Fill)");
-					}
-					
-					//Scale to Fit: Full Screen
-					else if(MyAssets.scaleToFit3)
-					{
-						if(MyAssets.landscape)
-						{
-							scaleY = stageHeight / MyAssets.stageHeight;
-							
-							//Height's scale causes width to spill over. Clamp to width instead.
-							if(originalWidth * Engine.SCALE * scaleY > screenW)
-							{
-								scaleY = stageWidth / MyAssets.stageWidth;
-							}
-							
-							scaleX = scaleY;
-						}
-						
-						else
-						{
-							scaleX = stageWidth / MyAssets.stageWidth;
-							
-							//Width's scale causes width to spill over. Clamp to height instead.
-							if(originalHeight * Engine.SCALE * scaleX > screenH)
-							{
-								scaleX = stageHeight / MyAssets.stageHeight;
-							}
-							
-							scaleY = scaleX;
-						}
-						
-						trace("Algorithm: Scale to Fit (Full Screen)");
-						
-						MyAssets.stageWidth = stageWidth;
-                        MyAssets.stageHeight = stageHeight;
-					
-                        originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
-                        originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
-
-                        stageWidth = Std.int(stageWidth / theoreticalScale);
-                        stageHeight = Std.int(stageHeight / theoreticalScale);
-					}
-					
-					//"No Scaling" (Only integer scales)
-					else
-					{
-						if(MyAssets.landscape)
-						{
-							scaleX *= Std.int(stageWidth / MyAssets.stageWidth);
-							scaleY = scaleX;
-						}
-						
-						else
-						{
-							scaleY = Std.int(stageHeight / MyAssets.stageHeight);
-							scaleX = scaleY;
-						}
-	
-						trace("Algorithm: No Scaling (Integer Scaling)");
-					}
+					trace("Algorithm: Scale to Fit (Letterbox)");
 				}
 				
-				//TODO: I think the above and below are identical, clean this up later.
+				//Scale to Fit: Fill/Cropped
+				else if(MyAssets.scaleToFit2)
+				{
+					scaleX *= Math.max(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
+					scaleY = scaleX;
+					
+					trace("Algorithm: Scale to Fit (Fill)");
+				}
+				
+				//Scale to Fit: Full Screen
+				else if(MyAssets.scaleToFit3)
+				{
+					scaleX *= Math.min(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
+					scaleY = scaleX;
+					
+					trace("Algorithm: Scale to Fit (Full Screen)");
+							
+		                        originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
+		                        originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
+		
+		                        stageWidth = Std.int(stageWidth / theoreticalScale);
+		                        stageHeight = Std.int(stageHeight / theoreticalScale);
+		                        
+					MyAssets.stageWidth = originalWidth;
+		                        MyAssets.stageHeight = originalHeight;
+				}
+				
+				//"No Scaling" (Only integer scales)
 				else
 				{
-					//Scale to Fit: Letterboxed
-					if(MyAssets.scaleToFit1)
+					//Is the game width > device width? Adjust scaleX, then scaleY.
+					if(MyAssets.stageWidth > stageWidth)
 					{
-						scaleX *= Math.min(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
+						scaleX *= stageWidth / MyAssets.stageWidth;
 						scaleY = scaleX;
-						
-						trace("Algorithm: Scale to Fit (Letterbox)");
 					}
 					
-					//Scale to Fit: Fill/Cropped
-					else if(MyAssets.scaleToFit2)
+					//If the game height * scaleY > device height? Adjust scaleY, then scaleX.
+					if(MyAssets.stageHeight * scaleY > stageHeight)
 					{
-						scaleX *= Math.max(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
-						scaleY = scaleX;
-						
-						trace("Algorithm: Scale to Fit (Fill)");
+						scaleY = stageHeight / MyAssets.stageHeight;
+						scaleX = scaleY;
 					}
 					
-					//Scale to Fit: Full Screen
-					else if(MyAssets.scaleToFit3)
-					{
-						if(MyAssets.landscape)
-						{
-							scaleY = stageHeight / MyAssets.stageHeight;
-							
-							//Height's scale causes width to spill over. Clamp to width instead.
-							if(originalWidth * Engine.SCALE * scaleY > screenW)
-							{
-								scaleY = stageWidth / MyAssets.stageWidth;
-							}
-							
-							scaleX = scaleY;
-						}
-						
-						else
-						{
-							scaleX = stageWidth / MyAssets.stageWidth;
-							
-							//Width's scale causes width to spill over. Clamp to height instead.
-							if(originalHeight * Engine.SCALE * scaleX > screenH)
-							{
-								scaleX = stageHeight / MyAssets.stageHeight;
-							}
-							
-							scaleY = scaleX;
-						}
-						
-						trace("Algorithm: Scale to Fit (Full Screen)");
-						
-						MyAssets.stageWidth = stageWidth;
-                        MyAssets.stageHeight = stageHeight;
-					
-                        originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
-                        originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
-
-                        stageWidth = Std.int(stageWidth / theoreticalScale);
-                        stageHeight = Std.int(stageHeight / theoreticalScale);
-					}
-					
-					//"No Scaling" (Only integer scales)
-					else
-					{
-						//Is the game width > device width? Adjust scaleX, then scaleY.
-						if(MyAssets.stageWidth > stageWidth)
-						{
-							scaleX *= stageWidth / MyAssets.stageWidth;
-							scaleY = scaleX;
-						}
-						
-						//If the game height * scaleY > device height? Adjust scaleY, then scaleX.
-						if(MyAssets.stageHeight * scaleY > stageHeight)
-						{
-							scaleY = stageHeight / MyAssets.stageHeight;
-							scaleX = scaleY;
-						}
-						
-						trace("Algorithm: No Scaling (Integer Scaling)");
-					}
+					trace("Algorithm: No Scaling (Integer Scaling)");
 				}
 				
 				if(MyAssets.scaleToFit3)
