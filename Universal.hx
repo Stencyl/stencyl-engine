@@ -483,11 +483,11 @@ class Universal extends Sprite
 		                        originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
 		                        originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
 		
+					MyAssets.stageWidth = Std.int(stageWidth/scaleX);
+		            		MyAssets.stageHeight = Std.int(stageHeight/scaleY);
+					
 		                        stageWidth = Std.int(stageWidth / theoreticalScale);
 		                        stageHeight = Std.int(stageHeight / theoreticalScale);
-		                        
-					MyAssets.stageWidth = originalWidth;
-		                        MyAssets.stageHeight = originalHeight;
 				}
 				
 				//"No Scaling" (Only integer scales)
