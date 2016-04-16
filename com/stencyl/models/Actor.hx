@@ -3236,7 +3236,7 @@ class Actor extends Sprite
 			my = myNew;
 		}
 
-                if(isHUD && Engine.engine.isHUDZoomable)
+                if(isHUD && !Engine.engine.isHUDZoomable)
 		{
 			return (mx >= xPos/Engine.engine.zoomMultiplier && 
 		   		my >= yPos/Engine.engine.zoomMultiplier && 
