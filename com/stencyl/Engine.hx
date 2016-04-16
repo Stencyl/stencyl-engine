@@ -447,7 +447,9 @@ class Engine
 			root.y = 0.0;
 			
 			screenScaleX = root.scaleX;
+			originalScaleX = screenScaleX;
 			screenScaleY = root.scaleY;
+			originalScaleY = screenScaleY;
 			screenOffsetX = Std.int(root.x);
 			screenOffsetY = Std.int(root.y);
 					
@@ -474,7 +476,9 @@ class Engine
 			cast(root, Universal).initScreen(true);
 			
 			screenScaleX = root.scaleX;
+			originalScaleX = screenScaleX;
 			screenScaleY = root.scaleY;
+			originalScaleY = screenScaleY;
 			screenOffsetX = Std.int(root.x);
 			screenOffsetY = Std.int(root.y);
 			
@@ -520,7 +524,9 @@ class Engine
 		
 		isFullScreen = scripts.MyAssets.startInFullScreen;
 		screenScaleX = root.scaleX;
+		originalScaleX = screenScaleX;
 		screenScaleY = root.scaleY;
+		originalScaleY = screenScaleY;
 		screenOffsetX = Std.int(root.x);
 		screenOffsetY = Std.int(root.y);
 		
