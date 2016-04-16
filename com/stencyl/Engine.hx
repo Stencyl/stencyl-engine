@@ -2928,8 +2928,8 @@ class Engine
 		// Moving the HUD Layer when zoom is activated
 		if (zoomMultiplier != 1 )
 		{
-			hudLayer.x = -getScreenX();
-			hudLayer.y = -getScreenY();
+			hudLayer.x = -Script.getScreenX();
+			hudLayer.y = -Script.getScreenY();
 		}
 	}
 	
@@ -2954,13 +2954,12 @@ class Engine
 		root.scrollRect = new openfl.geom.Rectangle(0,0,Engine.screenWidth,Engine.screenHeight);
 	        moveCamera(Engine.engine.camera.realX, Engine.engine.camera.realY);
 	        
-	        if (!HUDisZoomable)
+	        if (!isHUDZoomable)
 	        {
 	        	hudLayer.scaleX = 1 / m;
                         hudLayer.scaleY = 1 / m;
 	        }
-	        
-	        return m;
+
 	}
 
 	//*-----------------------------------------------
