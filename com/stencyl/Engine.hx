@@ -2926,7 +2926,7 @@ class Engine
 		cameraY = Math.min(0, cameraY);
 		
 		// Moving the HUD Layer when zoom is activated
-		if (zoomMultiplier != 1 )
+		if ((zoomMultiplier != 1.0 ) && isHUDZoomable))
 		{
 			hudLayer.x = -Script.getScreenX();
 			hudLayer.y = -Script.getScreenY();
@@ -2940,6 +2940,8 @@ class Engine
 			trace("You cannot set Zoom to less than 1"); 
 			return ;
 		}
+		
+		zooomMultiplier = m;
 		
 		root.scaleX = m * originalScaleX;
 		root.scaleY = m * originalScaleY;
