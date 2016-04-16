@@ -145,6 +145,10 @@ class Engine
 	
 	public static var screenScaleX:Float;
 	public static var screenScaleY:Float;
+	
+	public static var originalScaleX:Float;
+	public static var originalScaleY:Float;
+	
 	public static var screenOffsetX:Int;
 	public static var screenOffsetY:Int;
 	
@@ -162,6 +166,12 @@ class Engine
 	
 	public static var events:EventMaster = new EventMaster();
 	
+	//*-----------------------------------------------
+	//* Zooming
+	//*-----------------------------------------------
+	
+	public var zoomMultiplier:Float = 1;
+	public var isHUDZoomable:Bool = false;
 
 	//*-----------------------------------------------
 	//* Physics
@@ -437,7 +447,9 @@ class Engine
 			root.y = 0.0;
 			
 			screenScaleX = root.scaleX;
+			originalScaleX = screenScaleX;
 			screenScaleY = root.scaleY;
+			originalScaleY = screenScaleY;
 			screenOffsetX = Std.int(root.x);
 			screenOffsetY = Std.int(root.y);
 					
@@ -464,7 +476,9 @@ class Engine
 			cast(root, Universal).initScreen(true);
 			
 			screenScaleX = root.scaleX;
+			originalScaleX = screenScaleX;
 			screenScaleY = root.scaleY;
+			originalScaleY = screenScaleY;
 			screenOffsetX = Std.int(root.x);
 			screenOffsetY = Std.int(root.y);
 			
@@ -510,7 +524,9 @@ class Engine
 		
 		isFullScreen = scripts.MyAssets.startInFullScreen;
 		screenScaleX = root.scaleX;
+		originalScaleX = screenScaleX;
 		screenScaleY = root.scaleY;
+		originalScaleY = screenScaleY;
 		screenOffsetX = Std.int(root.x);
 		screenOffsetY = Std.int(root.y);
 		
@@ -2879,7 +2895,7 @@ class Engine
 	}
 	
 	//*-----------------------------------------------
-	//* Camera
+	//* Camera & Zoom
 	//*-----------------------------------------------
 	
 	public function cameraFollow(actor:Actor, lockX:Bool=true, lockY:Bool=true)
@@ -2908,6 +2924,42 @@ class Engine
 		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
 		cameraX = Math.min(0, cameraX);
 		cameraY = Math.min(0, cameraY);
+		
+		// Moving the HUD Layer when zoom is activated
+		if (zoomMultiplier != 1 )
+		{
+			hudLayer.x = -Script.getScreenX();
+			hudLayer.y = -Script.getScreenY();
+		}
+	}
+	
+	public function setZoom(m:Float)
+	{
+		if (m <= 1)
+		{
+			trace("You cannot set Zoom to less than 1"); 
+			return ;
+		}
+		
+		root.scaleX = m * originalScaleX;
+		root.scaleY = m * originalScaleY;
+		screenScaleX = m * originalScaleX;
+		screenScaleY = m * originalScaleY;
+		
+		screenWidth = (Std.int(scripts.MyAssets.stageWidth * (1 / m)));
+		screenWidthHalf = Std.int(Engine.screenWidth/2);
+		screenHeight = (Std.int(scripts.MyAssets.stageHeight * (1 / m)));
+		screenHeightHalf = Std.int(screenHeight/2);
+		setColorBackground(scene.colorBackground);
+		root.scrollRect = new openfl.geom.Rectangle(0,0,Engine.screenWidth,Engine.screenHeight);
+	        moveCamera(Engine.engine.camera.realX, Engine.engine.camera.realY);
+	        
+	        if (!isHUDZoomable)
+	        {
+	        	hudLayer.scaleX = 1 / m;
+                        hudLayer.scaleY = 1 / m;
+	        }
+
 	}
 
 	//*-----------------------------------------------
