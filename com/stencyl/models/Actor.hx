@@ -3202,8 +3202,8 @@ class Actor extends Sprite
 		
 		if(isHUD)
 		{
-			mx = Input.mouseX / Engine.SCALE;
-		 	my = Input.mouseY / Engine.SCALE;
+			mx = (Input.mouseX - Engine.engine.hudLayer.x) / Engine.SCALE;
+		 	my = (Input.mouseY - Engine.engine.hudLayer.y) / Engine.SCALE;
 		}
 		
 		else
@@ -3236,10 +3236,20 @@ class Actor extends Sprite
 			my = myNew;
 		}
 
-		return (mx >= xPos && 
-		   		my >= yPos && 
-		   		mx < xPos + cacheWidth + offsetX * 2 && 
-		   		my < yPos + cacheHeight + offsetY * 2);
+                if(isHUD && Engine.engine.isHUDZoomable)
+		{
+			return (mx >= xPos/Engine.engine.zoomMultiplier && 
+		   		my >= yPos/Engine.engine.zoomMultiplier && 
+		   		mx < (xPos + cacheWidth + offsetX * 2)/Engine.engine.zoomMultiplier && 
+		   		my < (yPos + cacheHeight + offsetY * 2)/Engine.engine.zoomMultiplier);	
+		}
+		else
+		{
+			return (mx >= xPos && 
+			   		my >= yPos && 
+			   		mx < xPos + cacheWidth + offsetX * 2 && 
+			   		my < yPos + cacheHeight + offsetY * 2);
+		}
 	}
 	
 	public function isMouseHover():Bool
