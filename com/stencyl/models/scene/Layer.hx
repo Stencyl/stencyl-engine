@@ -65,13 +65,13 @@ class Layer extends RegularLayer
 	}
 
 	override public function updatePosition(x:Float, y:Float, elapsedTime:Float)
-	{
-		if(scripts.MyAssets.pixelsnap) x = Math.round(x);
-		if(scripts.MyAssets.pixelsnap) y = Math.round(y);
-		
+	{	
 		var xScrolled = Std.int(x * scrollFactorX);
 		var yScrolled = Std.int(y * scrollFactorY);
 
+		if(scripts.MyAssets.pixelsnap) x = Math.round(x);
+		if(scripts.MyAssets.pixelsnap) y = Math.round(y);	
+		
 		overlay.x = -x;
 		overlay.y = -y;
 		bitmapOverlay.x = -x;
