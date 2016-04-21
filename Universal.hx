@@ -174,8 +174,11 @@ class Universal extends Sprite
 		#if flash
 		if(isFullScreen || MyAssets.gameScale > MyAssets.maxScale)
 		{
-			stageWidth = stage.stageWidth;
-			stageHeight = stage.stageHeight;
+			if (MyAssets.gameScale > MyAssets.maxScale && !isFullScreen)
+			{
+				stageWidth = Std.int(MyAssets.stageWidth * MyAssets.gameScale);
+				stageHeight = Std.int(MyAssets.stageHeight * MyAssets.gameScale);				
+			}
 			isFullScreen = true;
 		}
 		
@@ -382,8 +385,11 @@ class Universal extends Sprite
 		var originalWidth = MyAssets.stageWidth;
 		var originalHeight = MyAssets.stageHeight;
 		
-		MyAssets.stageWidth = Std.int(MyAssets.stageWidth * Engine.SCALE);
-		MyAssets.stageHeight = Std.int(MyAssets.stageHeight * Engine.SCALE);
+		MyAssets.stageWidth = Std.int(MyAssets.stageWidth * MyAssets.gameScale * Engine.SCALE);
+		MyAssets.stageHeight = Std.int(MyAssets.stageHeight * MyAssets.gameScale * Engine.SCALE);
+		
+		scaleX = MyAssets.gameScale;
+		scaleY = MyAssets.gameScale;
 
 		var usingFullScreen = false;
 		var stretchToFit = false;
@@ -457,8 +463,11 @@ class Universal extends Sprite
 				//Scale to Fit: Letterboxed
 				if(MyAssets.scaleToFit1)
 				{
-					scaleX *= Math.min(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
+					scaleX = Math.min(stageWidth*MyAssets.gameScale / MyAssets.stageWidth, stageHeight*MyAssets.gameScale / MyAssets.stageHeight);
 					scaleY = scaleX;
+					
+					MyAssets.stageWidth = Std.int(MyAssets.stageWidth/MyAssets.gameScale);
+					MyAssets.stageHeight = Std.int(MyAssets.stageHeight/MyAssets.gameScale);
 					
 					trace("Algorithm: Scale to Fit (Letterbox)");
 				}
@@ -468,6 +477,9 @@ class Universal extends Sprite
 				{
 					scaleX *= Math.max(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
 					scaleY = scaleX;
+					
+					MyAssets.stageWidth = Std.int(MyAssets.stageWidth/MyAssets.gameScale);
+					MyAssets.stageHeight = Std.int(MyAssets.stageHeight/MyAssets.gameScale);
 					
 					trace("Algorithm: Scale to Fit (Fill)");
 				}
@@ -480,32 +492,25 @@ class Universal extends Sprite
 					
 					trace("Algorithm: Scale to Fit (Full Screen)");
 							
-		                        originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
-		                        originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
-		
-					MyAssets.stageWidth = Std.int(stageWidth/scaleX);
-		            		MyAssets.stageHeight = Std.int(stageHeight/scaleY);
+					originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
+					originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
 					
-		                        stageWidth = Std.int(stageWidth / theoreticalScale);
-		                        stageHeight = Std.int(stageHeight / theoreticalScale);
+					MyAssets.stageWidth = Std.int(stageWidth/scaleX);
+					MyAssets.stageHeight = Std.int(stageHeight/scaleY);
+					
+					stageWidth = Std.int(stageWidth / theoreticalScale);
+					stageHeight = Std.int(stageHeight / theoreticalScale);
+		                      
 				}
 				
 				//"No Scaling" (Only integer scales)
 				else
 				{
-					//Is the game width > device width? Adjust scaleX, then scaleY.
-					if(MyAssets.stageWidth > stageWidth)
-					{
-						scaleX *= stageWidth / MyAssets.stageWidth;
-						scaleY = scaleX;
-					}
-					
-					//If the game height * scaleY > device height? Adjust scaleY, then scaleX.
-					if(MyAssets.stageHeight * scaleY > stageHeight)
-					{
-						scaleY = stageHeight / MyAssets.stageHeight;
-						scaleX = scaleY;
-					}
+					scaleX = Math.max(1, Std.int(Math.min(stageWidth*MyAssets.gameScale / MyAssets.stageWidth, stageHeight*MyAssets.gameScale / MyAssets.stageHeight)));
+					scaleY = scaleX;
+
+					MyAssets.stageWidth = Std.int(MyAssets.stageWidth/MyAssets.gameScale);
+					MyAssets.stageHeight = Std.int(MyAssets.stageHeight/MyAssets.gameScale);					
 					
 					trace("Algorithm: No Scaling (Integer Scaling)");
 				}
