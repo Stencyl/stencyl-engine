@@ -69,17 +69,14 @@ class Layer extends RegularLayer
 		var xScrolled = Std.int(x * scrollFactorX);
 		var yScrolled = Std.int(y * scrollFactorY);
 
-		if(scripts.MyAssets.pixelsnap) x = Math.round(x);
-		if(scripts.MyAssets.pixelsnap) y = Math.round(y);	
+		if(scripts.MyAssets.pixelsnap) x = Math.round(x) else x = Std.int(x);
+		if(scripts.MyAssets.pixelsnap) y = Math.round(y) else y = Std.int(y);	
 		
 		overlay.x = -x;
 		overlay.y = -y;
 		bitmapOverlay.x = -x;
 		bitmapOverlay.y = -y;
 		tiles.setPosition(-xScrolled, -yScrolled);
-
-		x = Std.int(x);
-		y = Std.int(y); 
 		
 		this.x = Std.int(x * scrollFactorX);
 		this.y = Std.int(y * scrollFactorY);
