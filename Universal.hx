@@ -142,10 +142,17 @@ class Universal extends Sprite
 		var scalesEnabled = fast.node.androidScales;
 		#end
 
+		var maxScale = 1.0;
+		var count = 0;
+		var multipliers = [1, 1.5, 2, 3, 4];
 		for (scale in scalesEnabled.nodes.scale)
 		{
 			scales.push(scale.att.enabled == "true");
-		}
+			if (scale.att.enabled == "true") maxScale = multipliers[count];
+			count += 1;
+		}		
+		
+		MyAssets.maxScale = maxScale;
 
 		var skipScaling = false;
 		var stageWidth = stage.stageWidth;
@@ -491,9 +498,6 @@ class Universal extends Sprite
 					scaleY = scaleX;
 					
 					trace("Algorithm: Scale to Fit (Full Screen)");
-							
-					originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
-					originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
 					
 					MyAssets.stageWidth = Std.int(stageWidth/scaleX);
 					MyAssets.stageHeight = Std.int(stageHeight/scaleY);

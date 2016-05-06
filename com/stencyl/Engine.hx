@@ -441,8 +441,8 @@ class Engine
 			var screenWidth = Lib.current.stage.stageWidth;
 			var screenHeight = Lib.current.stage.stageHeight;
 			
-			root.scaleX = scripts.MyAssets.gameScale;
-			root.scaleY = scripts.MyAssets.gameScale;
+			root.scaleX = scripts.MyAssets.gameScale/Engine.SCALE;
+			root.scaleY = scripts.MyAssets.gameScale/Engine.SCALE;
 			root.x = 0.0;
 			root.y = 0.0;
 			
@@ -452,10 +452,20 @@ class Engine
 			originalScaleY = screenScaleY;
 			screenOffsetX = Std.int(root.x);
 			screenOffsetY = Std.int(root.y);
+			
+			if (scripts.MyAssets.scaleToFit3)
+			{
+				Engine.screenWidth = Std.int(scripts.MyAssets.stageWidth);
+				Engine.screenWidthHalf = Std.int(Engine.screenWidth / 2);
+				Engine.screenHeight = Std.int(scripts.MyAssets.stageHeight);
+				Engine.screenHeightHalf = Std.int(Engine.screenHeight / 2);
+			}	
 					
+			var toSCALE = scripts.MyAssets.gameScale;
+			
 			if(stats != null)
 			{
-				stats.x = Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale) - stats.width;
+				stats.x = Std.int(Engine.screenWidth * scripts.MyAssets.gameScale) - stats.width;
 				stats.y = 0;
 			}
 			
@@ -473,7 +483,24 @@ class Engine
 			root.scaleX = 1;
 			root.scaleY = 1;
 			
+			var cacheScale = Engine.SCALE;
+			
 			cast(root, Universal).initScreen(true);
+			
+			root.scaleX = root.scaleX * (Engine.SCALE / cacheScale);
+			root.scaleY = root.scaleY * (Engine.SCALE / cacheScale);
+			
+			
+			if (scripts.MyAssets.scaleToFit3)
+			{
+				Engine.screenWidth = Std.int(engine.root.scrollRect.width/Engine.SCALE);
+				Engine.screenWidthHalf = Std.int(Engine.screenWidth / 2);
+				Engine.screenHeight = Std.int(engine.root.scrollRect.height/Engine.SCALE);
+				Engine.screenHeightHalf = Std.int(Engine.screenHeight / 2);
+			}		
+			
+			var toSCALE = Engine.SCALE;
+			Engine.SCALE = cacheScale;
 			
 			screenScaleX = root.scaleX;
 			originalScaleX = screenScaleX;
