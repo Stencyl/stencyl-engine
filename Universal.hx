@@ -24,6 +24,7 @@ import scripts.MyAssets;
 
 class Universal extends Sprite 
 {
+	public var graphicsScale:Float = 0;
 	public function new() 
 	{
 		super();
@@ -392,6 +393,8 @@ class Universal extends Sprite
 		var originalWidth = MyAssets.stageWidth;
 		var originalHeight = MyAssets.stageHeight;
 		
+		if (graphicsScale == 0) graphicsScale = Engine.SCALE;
+		Engine.SCALE = graphicsScale;
 		MyAssets.stageWidth = Std.int(MyAssets.stageWidth * MyAssets.gameScale * Engine.SCALE);
 		MyAssets.stageHeight = Std.int(MyAssets.stageHeight * MyAssets.gameScale * Engine.SCALE);
 		
@@ -473,8 +476,8 @@ class Universal extends Sprite
 					scaleX = Math.min(stageWidth*MyAssets.gameScale / MyAssets.stageWidth, stageHeight*MyAssets.gameScale / MyAssets.stageHeight);
 					scaleY = scaleX;
 					
-					MyAssets.stageWidth = Std.int(MyAssets.stageWidth/MyAssets.gameScale);
-					MyAssets.stageHeight = Std.int(MyAssets.stageHeight/MyAssets.gameScale);
+					MyAssets.stageWidth = Std.int(MyAssets.stageWidth / MyAssets.gameScale);
+					MyAssets.stageHeight = Std.int(MyAssets.stageHeight / MyAssets.gameScale);
 					
 					trace("Algorithm: Scale to Fit (Letterbox)");
 				}
