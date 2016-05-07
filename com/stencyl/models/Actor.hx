@@ -2276,6 +2276,11 @@ class Actor extends Sprite
 	{
 		if(isPausable())
 		{
+			Actuate.pause(this);		
+
+			Actuate.pause(tweenAngle);
+			Actuate.pause(tweenLoc);
+			
 			this.paused = true;
 			
 			if(physicsMode == 0)
@@ -2289,6 +2294,11 @@ class Actor extends Sprite
 	{
 		if(isPausable())
 		{
+			Actuate.resume(this);		
+
+			Actuate.resume(tweenAngle);
+			Actuate.resume(tweenLoc);
+			
 			this.paused = false;
 			
 			if(physicsMode == 0)
