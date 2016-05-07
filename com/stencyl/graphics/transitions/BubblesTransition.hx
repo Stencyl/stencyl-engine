@@ -105,6 +105,7 @@ class BubblesTransition extends Transition
 			
 		if(direction == Transition.IN)
 		{
+			drawBitmap.draw(Engine.engine.colorLayer);
 			drawBitmap.draw(Engine.engine.master);
 			
 			graphics.beginFill(color);

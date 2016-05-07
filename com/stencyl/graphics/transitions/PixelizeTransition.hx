@@ -63,6 +63,7 @@ class PixelizeTransition extends Transition
 		}
 		
 		graphics.clear();
+		srcImg.draw(Engine.engine.colorLayer);
 		srcImg.draw(Engine.engine.master);
 		
 		c = Math.ceil((Engine.screenWidth * Engine.SCALE) / pixelSize);

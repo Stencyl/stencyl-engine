@@ -88,6 +88,7 @@ class RectangleTransition extends Transition
 		graphics.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 		graphics.endFill();
 		
+		rectangleImg.draw(Engine.engine.colorLayer);
 		rectangleImg.draw(Engine.engine.master);
 		graphics.beginBitmapFill(rectangleImg);
 		graphics.drawRect((Engine.screenWidth * Engine.SCALE - width) / 2, (Engine.screenHeight * Engine.SCALE - height) / 2, width, height);

@@ -77,6 +77,7 @@ class CircleTransition extends Transition
 		s.graphics.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 		s.graphics.endFill();
 		
+		circleImg.draw(Engine.engine.colorLayer);
 		circleImg.draw(Engine.engine.master);
 		s.graphics.beginBitmapFill(circleImg);
 		s.graphics.drawCircle(Engine.screenWidthHalf * Engine.SCALE, Engine.screenHeightHalf * Engine.SCALE, radius);
