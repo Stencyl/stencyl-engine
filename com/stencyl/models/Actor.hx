@@ -3218,8 +3218,8 @@ class Actor extends Sprite
 		
 		else
 		{
-			mx = (Input.mouseX - Engine.cameraX) / Engine.SCALE;
-		 	my = (Input.mouseY - Engine.cameraY) / Engine.SCALE;
+			mx = (Input.mouseX - Engine.cameraX * engine.layers.get(layerID).scrollFactorX) / Engine.SCALE;
+		 	my = (Input.mouseY - Engine.cameraY * engine.layers.get(layerID).scrollFactorY) / Engine.SCALE;
 		}
 		
 		//TODO: Mike - Make this work with arbitrary origin points
