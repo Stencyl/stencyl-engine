@@ -387,9 +387,6 @@ class Universal extends Sprite
 		
 		MyAssets.stageWidth = Std.int(MyAssets.stageWidth * MyAssets.gameScale * Engine.SCALE);
 		MyAssets.stageHeight = Std.int(MyAssets.stageHeight * MyAssets.gameScale * Engine.SCALE);
-		
-		scaleX = MyAssets.gameScale;
-		scaleY = MyAssets.gameScale;
 
 		var usingFullScreen = false;
 		var stretchToFit = false;
