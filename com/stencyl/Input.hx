@@ -974,18 +974,21 @@ class Input
 		joyData = new Map<String, Dynamic>();
 		Utils.loadMap(joyData, "_jc-" + filename, function(success:Bool):Void
 		{
-			_joyControlMap = joyData.get("_joyControlMap");
-			_controlButtonMap = new Map<String,Array<JoystickButton>>();
-			for(k in _joyControlMap.keys())
+			if (Utils.mapCount(joyData) > 0)
 			{
-				var control:String = _joyControlMap.get(k);
-				var button:JoystickButton = JoystickButton.fromID(k);
+				_joyControlMap = joyData.get("_joyControlMap");
+				_controlButtonMap = new Map<String,Array<JoystickButton>>();
+				for(k in _joyControlMap.keys())
+				{
+					var control:String = _joyControlMap.get(k);
+					var button:JoystickButton = JoystickButton.fromID(k);
 
-				if(!_controlButtonMap.exists(control))
-					_controlButtonMap.set(control, new Array<JoystickButton>());
-				_controlButtonMap.get(control).push(button);
+					if(!_controlButtonMap.exists(control))
+						_controlButtonMap.set(control, new Array<JoystickButton>());
+					_controlButtonMap.get(control).push(button);
+				}
+				joySensitivity = joyData.get("joySensitivity");
 			}
-			joySensitivity = joyData.get("joySensitivity");
 			joyData = null;
 		});
 		#end
