@@ -78,23 +78,27 @@ class Tile
 			return;
 		}
 		
-		currTime += Math.floor(elapsedTime);
-		
-		if(currTime > Std.int(durations[currFrame]))
+		if (!Engine.paused)
 		{
-			currTime -= Std.int(durations[currFrame]);
+			currTime += Math.floor(elapsedTime);
 			
-			if(currFrame + 1 < durations.length)
+			if(currTime > Std.int(durations[currFrame]))
 			{
-				currFrame++;					
-			}
+				currTime -= Std.int(durations[currFrame]);
+				
+				if(currFrame + 1 < durations.length)
+				{
+					currFrame++;					
+				}
+				
+				else
+				{
+					currFrame = 0;
+				}
+				
+				updateSource = true;
 			
-			else
-			{
-				currFrame = 0;
-			}
-			
-			updateSource = true;
+			}	
 		}
 	}
 	
