@@ -229,5 +229,5 @@ class Masklist extends Hitbox
 	// List information.
 	private var _masks:Array<Mask>;
 	private var _temp:Array<Mask>;
-	private var _count:Int;
+	private var _count:Int = 0;
 }
