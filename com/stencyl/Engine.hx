@@ -2935,7 +2935,7 @@ class Engine
 	
 	public function setZoom(m:Float)
 	{
-		if (m <= 1)
+		if (m < 1)
 		{
 			trace("You cannot set Zoom to less than 1"); 
 			return ;
