@@ -150,6 +150,7 @@ class BehaviorManager
 			{
 				//trace("Set Attribute " + attributeName + " for " + behaviorName + " to " + value);
 				Reflect.setField(b.script, attributeName, value);
+				b.script.propertyChanged(attributeName, value);
 			}
 			
 			else
@@ -157,6 +158,7 @@ class BehaviorManager
 				//Just insist on doing it
 				#if cpp
 				Reflect.setField(b.script, attributeName, value);
+				b.script.propertyChanged(attributeName, value);
 				#else
 				trace("Set Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
 				#end
