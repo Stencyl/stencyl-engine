@@ -1496,7 +1496,7 @@ class Script
 	 *
 	 * @param	layerRefType	0 to get layer by ID, 1 for name
 	 * @param	layerRef		The ID or name of the layer as a String
-	 * @param	alphaPct		the opacity (0-255) to fade to
+	 * @param	alphaPct		the opacity (0-1) to fade to
 	 * @param	duration		the duration of the fading (in milliseconds)
 	 * @param	easing			easing function to apply. Linear (no smoothing) is the default.
 	 */
@@ -1508,6 +1508,17 @@ class Script
 		}
 		
 		Actuate.tween(getLayer(layerRefType, layerRef), duration, {alpha:alphaPct}).ease(easing);
+	}
+
+	/**
+	 * Get the opacity of the given layer.
+	 *
+	 * @param	refType		0 to get layer by ID, 1 for name
+	 * @param	ref			The ID or name of the layer as a String
+	 */
+	public static function getTileLayerOpacity(refType:Int, ref:String):Float
+	{
+		return engine.getLayer(refType, ref).alpha * 100;
 	}
 	
 	//*-----------------------------------------------
