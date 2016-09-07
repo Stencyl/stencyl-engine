@@ -1444,6 +1444,7 @@ class Engine
 			{
 				tile.currFrame = 0;
 				tile.currTime = 0;
+				tile.updateSource = true;
 			}
 		}
 
