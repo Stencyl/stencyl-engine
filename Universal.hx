@@ -138,14 +138,11 @@ class Universal extends Sprite
 		var scalesEnabled = fast.node.projectScales;
 		#if web
 		var scalesEnabled = fast.node.webScales;
-		#end
-		#if desktop
+		#elseif desktop
 		var scalesEnabled = fast.node.desktopScales;
-		#end
-		#if iOS
+		#elseif (mobile && !android)
 		var scalesEnabled = fast.node.iOSScales;
-		#end
-		#if android
+		#elseif android
 		var scalesEnabled = fast.node.androidScales;
 		#end
 
