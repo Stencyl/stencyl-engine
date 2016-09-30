@@ -68,6 +68,7 @@ import com.stencyl.models.Background;
 import com.stencyl.models.background.ImageBackground;
 import com.stencyl.models.background.ScrollingBackground;
 
+import scripts.MyAssets;
 //Do not remove - forces your behaviors to be included
 import scripts.MyScripts;
 import com.stencyl.models.collision.Mask;
@@ -441,8 +442,8 @@ class Engine
 			var screenWidth = Lib.current.stage.stageWidth;
 			var screenHeight = Lib.current.stage.stageHeight;
 			
-			root.scaleX = scripts.MyAssets.gameScale;
-			root.scaleY = scripts.MyAssets.gameScale;
+			root.scaleX = MyAssets.gameScale;
+			root.scaleY = MyAssets.gameScale;
 			root.x = 0.0;
 			root.y = 0.0;
 			
@@ -455,7 +456,7 @@ class Engine
 					
 			if(stats != null)
 			{
-				stats.x = Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale) - stats.width;
+				stats.x = Std.int(MyAssets.stageWidth * MyAssets.gameScale) - stats.width;
 				stats.y = 0;
 			}
 			
@@ -513,7 +514,7 @@ class Engine
 		root.mouseEnabled = false;
 		//root.stage.mouseChildren = false;
 
-		if(scripts.MyAssets.debugDraw)
+		if(MyAssets.debugDraw)
 		{
 			DEBUG_DRAW = true;
 		}
@@ -522,7 +523,7 @@ class Engine
 		Script.engine = this;
 		this.root = root;
 		
-		isFullScreen = scripts.MyAssets.startInFullScreen;
+		isFullScreen = MyAssets.startInFullScreen;
 		screenScaleX = root.scaleX;
 		originalScaleX = screenScaleX;
 		screenScaleY = root.scaleY;
@@ -530,12 +531,12 @@ class Engine
 		screenOffsetX = Std.int(root.x);
 		screenOffsetY = Std.int(root.y);
 		
-		NO_PHYSICS = scripts.MyAssets.physicsMode == 1;
+		NO_PHYSICS = MyAssets.physicsMode == 1;
 		
 		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
 		stage.addEventListener(Event.DEACTIVATE, onFocusLost);
 		stage.addEventListener(Event.ACTIVATE, onFocus);
-		begin(scripts.MyAssets.initSceneID);
+		begin(MyAssets.initSceneID);
 		
 		#if(desktop || iphone || android)
 		if(openfl.display.OpenGLView.isSupported)
@@ -634,9 +635,9 @@ class Engine
 		Input.define(INTERNAL_SHIFT, [Key.SHIFT]);
 		Input.define(INTERNAL_CTRL, [Key.CONTROL]);
 		
-		landscape = scripts.MyAssets.landscape;
-		var stageWidth = scripts.MyAssets.stageWidth;
-		var stageHeight = scripts.MyAssets.stageHeight;
+		landscape = MyAssets.landscape;
+		var stageWidth = MyAssets.stageWidth;
+		var stageHeight = MyAssets.stageHeight;
 		
 		screenWidth = Std.int(stageWidth);
 		screenHeight = Std.int(stageHeight);
@@ -644,7 +645,7 @@ class Engine
 		screenHeightHalf = Std.int(stageHeight/2);
 		
 		#if (mobile && !air)
-		if(!scripts.MyAssets.autorotate)
+		if(!MyAssets.autorotate)
 		{
 			if(landscape)
 			{
@@ -746,16 +747,16 @@ class Engine
 		
 		//Profiler
 		#if !js
-		//if(!scripts.MyAssets.releaseMode)
+		//if(!MyAssets.releaseMode)
 		{
-			if(scripts.MyAssets.showConsole)
+			if(MyAssets.showConsole)
 			{
 				stats = new com.nmefermmmtools.debug.Stats();
 				stage.addChild(stats);
 			}
 		}
 		
-		/*if(scripts.MyAssets.showConsole)
+		/*if(MyAssets.showConsole)
 		{
 			pgr.gconsole.GameConsole.init();
 			pgr.GameConsole.setConsoleFont('./path/to/your/font.ttf');
@@ -793,7 +794,7 @@ class Engine
 		#end	
 		
 		#if (mobile && android)
-		Purchases.initialize(scripts.MyAssets.androidPublicKey);
+		Purchases.initialize(MyAssets.androidPublicKey);
 		#end	
 		
 		//Now, let's start
@@ -2949,20 +2950,19 @@ class Engine
 		screenScaleX = m * originalScaleX;
 		screenScaleY = m * originalScaleY;
 		
-		screenWidth = (Std.int(scripts.MyAssets.stageWidth * (1 / m)));
-		screenWidthHalf = Std.int(Engine.screenWidth/2);
-		screenHeight = (Std.int(scripts.MyAssets.stageHeight * (1 / m)));
-		screenHeightHalf = Std.int(screenHeight/2);
+		screenWidth = Std.int(MyAssets.stageWidth * (1 / m));
+		screenWidthHalf = Std.int(screenWidth / 2);
+		screenHeight = Std.int(MyAssets.stageHeight * (1 / m));
+		screenHeightHalf = Std.int(screenHeight / 2);
 		setColorBackground(scene.colorBackground);
-		root.scrollRect = new openfl.geom.Rectangle(0,0,Engine.screenWidth,Engine.screenHeight);
-	        moveCamera(Engine.engine.camera.realX, Engine.engine.camera.realY);
-	        
-	        if (!isHUDZoomable)
-	        {
-	        	hudLayer.scaleX = 1 / m;
-                        hudLayer.scaleY = 1 / m;
-	        }
+		root.scrollRect = new Rectangle(0, 0, screenWidth, screenHeight);
+		moveCamera(camera.realX, camera.realY);
 
+		if (!isHUDZoomable)
+		{
+			hudLayer.scaleX = 1 / m;
+			hudLayer.scaleY = 1 / m;
+		}
 	}
 
 	//*-----------------------------------------------
