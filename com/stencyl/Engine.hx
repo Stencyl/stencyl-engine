@@ -2937,10 +2937,10 @@ class Engine
 	
 	public function setZoom(m:Float)
 	{
-		if (m < 1)
+		if (m <= 0)
 		{
-			trace("You cannot set Zoom to less than 1"); 
-			return ;
+			trace("You cannot set Zoom less than or equal to 0"); 
+			return;
 		}
 		
 		zoomMultiplier = m;
