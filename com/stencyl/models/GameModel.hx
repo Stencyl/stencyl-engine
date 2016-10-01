@@ -71,7 +71,7 @@ class GameModel
 
 		try
 		{
-			defaultSceneID = IdUtils.parseXmlId(xml.att.defaultSceneID);
+			defaultSceneID = IdUtils.parseId(xml.att.defaultSceneID);
 		}
 		
 		catch(e:String)
@@ -172,7 +172,7 @@ class GameModel
 		
 		for(e in list.elements)
 		{
-			var sceneID = IdUtils.parseXmlId(e.att.id);
+			var sceneID = IdUtils.parseId(e.att.id);
 
 			map.set(sceneID, new Scene(sceneID, e.att.name));
 		}

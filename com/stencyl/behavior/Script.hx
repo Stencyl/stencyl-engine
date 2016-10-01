@@ -1187,7 +1187,7 @@ class Script
 	/**
 	 * Get the ID of a scene by name.
 	 *
-	 * @return The ID current scene or "" if it doesn't exist.
+	 * @return The ID current scene or IdUtils.INVALID_ID if it doesn't exist.
 	 */
 	public static function getIDForScene(sceneName:String):IdType
 	{
