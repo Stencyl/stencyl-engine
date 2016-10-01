@@ -9,6 +9,8 @@ import com.stencyl.io.SoundReader;
 import com.stencyl.io.SpriteReader;
 import com.stencyl.io.TilesetReader;
 
+import com.stencyl.models.IdType;
+
 import openfl.Assets;
 import openfl.Lib;
 import haxe.xml.Fast;
@@ -83,7 +85,7 @@ class Data
 	//*-----------------------------------------------
 	
 	//Map of each [sceneID].xml by ID
-	public var scenesXML:Map<Int,String>;
+	public var scenesXML:Map<IdType,String>;
 	
 	//Map of each [sceneID].scn by ID
 	//public var scenesTerrain:Map<Int,Dynamic>;
@@ -151,7 +153,7 @@ class Data
 		
 		updatePreloader(90);
 		
-		scenesXML = new Map<Int,String>();
+		scenesXML = new Map<IdType,String>();
 		
 		loader.loadScenes(scenesXML);
 		

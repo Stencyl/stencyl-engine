@@ -64,6 +64,8 @@ import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
 import com.stencyl.io.SpriteReader;
 
+import com.stencyl.models.IdType;
+
 import motion.Actuate;
 import motion.easing.Linear;
 
@@ -1177,7 +1179,7 @@ class Script
 	 *
 	 * @return The ID current scene
 	 */
-	public static function getCurrentScene():Int
+	public static function getCurrentScene():IdType
 	{
 		return getScene().ID;
 	}
@@ -1185,9 +1187,9 @@ class Script
 	/**
 	 * Get the ID of a scene by name.
 	 *
-	 * @return The ID current scene or 0 if it doesn't exist.
+	 * @return The ID current scene or "" if it doesn't exist.
 	 */
-	public static function getIDForScene(sceneName:String):Int
+	public static function getIDForScene(sceneName:String):IdType
 	{
 		for(s in GameModel.get().scenes)
 		{
@@ -1197,7 +1199,7 @@ class Script
 			}
 		}
 		
-		return 0;
+		return IdUtils.INVALID_ID;
 	}
 	
 	/**
@@ -1272,7 +1274,7 @@ class Script
 	 * @param	leave		exit transition
 	 * @param	enter		enter transition
 	 */
-	public static function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)
+	public static function switchScene(sceneID:IdType, leave:Transition=null, enter:Transition=null)
 	{
 		engine.switchScene(sceneID, leave, enter);
 	}

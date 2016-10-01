@@ -15,6 +15,9 @@ import com.stencyl.behavior.BehaviorManager;
 import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.behavior.Script;
 
+import com.stencyl.models.IdType;
+import com.stencyl.models.IdType.IdUtils;
+
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.display.DisplayObject;
@@ -209,7 +212,7 @@ class Engine
 	
 	private var leave:Transition;
 	private var enter:Transition;
-	private var sceneToEnter:Int;	
+	private var sceneToEnter:IdType;
 	
 	
 	//*-----------------------------------------------
@@ -625,7 +628,7 @@ class Engine
 	}
 	#end
 	
-	public function begin(initSceneID:Int)
+	public function begin(initSceneID:IdType)
 	{
 		loadedAtlases = new Map<Int,Int>();
 		atlasesToLoad = new Map<Int,Int>();
@@ -805,7 +808,7 @@ class Engine
 		loadScene(initSceneID);
 	}	
 	
-	public function loadScene(sceneID:Int)
+	public function loadScene(sceneID:IdType)
 	{
 		collisionPairs = new IntHashTable<Map<Int,Bool>>(32);
 		
@@ -817,7 +820,7 @@ class Engine
 		
 		scene = GameModel.get().scenes.get(sceneID);
 		
-		if(sceneID == -1 || scene == null)
+		if(sceneID == IdUtils.INVALID_ID || scene == null)
 		{
 			scene = GameModel.get().scenes.get(GameModel.get().defaultSceneID);
 			
@@ -1719,7 +1722,7 @@ class Engine
 		world = null;
 	}
 	
-	public function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)
+	public function switchScene(sceneID:IdType, leave:Transition=null, enter:Transition=null)
 	{
 		// trace("Request to switch to Scene " + sceneID);
 

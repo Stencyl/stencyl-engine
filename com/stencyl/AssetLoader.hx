@@ -1,9 +1,9 @@
 package com.stencyl;
 
-import haxe.xml.Fast;
+import com.stencyl.models.IdType;
 
 interface AssetLoader
 {
 	function loadResources(resourceMap:Map<String,Dynamic>):Void;
-	function loadScenes(scenesXML:Map<Int,String>):Void;
+	function loadScenes(scenesXML:Map<IdType,String>):Void;
 }
