@@ -14,6 +14,8 @@ Report all bugs and enhancement requests on our [Issue Tracker](http://community
 #Developing alongside Stencyl
 To make changes to the Stencyl engine, simply edit the files in your Stencyl installation directory under `plaf/haxe/lib/stencyl/1,00`. You don't have to restart Stencyl for the changes to take effect.
 
+If you have the engine files elsewhere (a fork of this repository, for example), you can direct haxelib to use that alternate copy (including when compiling from within Stencyl). Use the command `haxelib dev stencyl [alternate stencyl-engine path]` to set this, and later `haxelib dev stencyl` to revert to the Stencyl-installed engine. This could be useful to permit use of an engine version that's under active development without altering the original, installed copy.
+
 #Developing Standalone
 For those who desire a more traditional workflow, the engine can be run standalone, outside of Stencyl.
 
