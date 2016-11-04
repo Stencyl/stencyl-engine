@@ -24,6 +24,7 @@ class StencylEvent
 	public static var PURCHASE_RESTORE:Int = 203;
 	public static var PURCHASE_CANCEL:Int = 204;
 	public static var PURCHASE_PRODUCTS_VERIFIED:Int = 205;
+	public static var PURCHASE_PRODUCT_VALIDATED:Int = 206;
 	
 	//Game Center
 	public static var GAME_CENTER_READY:Int = 300;

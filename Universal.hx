@@ -24,6 +24,13 @@ import scripts.MyAssets;
 
 class Universal extends Sprite 
 {
+	public static inline var NO_SCALING = 0;
+	public static inline var FULLSCREEN = 1;
+	public static inline var STRETCH_TO_FIT = 2;
+	public static inline var SCALE_TO_FIT_LETTERBOX = 3;
+	public static inline var SCALE_TO_FIT_FILL = 4;
+	public static inline var SCALE_TO_FIT_FULLSCREEN = 5;
+
 	public function new() 
 	{
 		super();
@@ -131,14 +138,11 @@ class Universal extends Sprite
 		var scalesEnabled = fast.node.projectScales;
 		#if web
 		var scalesEnabled = fast.node.webScales;
-		#end
-		#if desktop
+		#elseif desktop
 		var scalesEnabled = fast.node.desktopScales;
-		#end
-		#if iOS
+		#elseif (mobile && !android)
 		var scalesEnabled = fast.node.iOSScales;
-		#end
-		#if android
+		#elseif android
 		var scalesEnabled = fast.node.androidScales;
 		#end
 
@@ -388,31 +392,21 @@ class Universal extends Sprite
 		MyAssets.stageWidth = Std.int(MyAssets.stageWidth * MyAssets.gameScale * Engine.SCALE);
 		MyAssets.stageHeight = Std.int(MyAssets.stageHeight * MyAssets.gameScale * Engine.SCALE);
 
-		var usingFullScreen = false;
-		var stretchToFit = false;
-		
-		//Stretch To Fit
 		#if(flash || mobile || desktop)
 		if(!skipScaling)
 		{
-			if(MyAssets.stretchToFit)
+			//Stretch To Fit
+			if(MyAssets.scaleMode == STRETCH_TO_FIT)
 			{
-				stretchToFit = true;
-				
 				scaleX *= stageWidth / MyAssets.stageWidth;
 				scaleY *= stageHeight / MyAssets.stageHeight;
 				
 				trace("Algorithm: Stretch to Fit");
 			}
-		}
-		#end
 		
-		//Full Screen Mode
-		#if(flash || mobile || desktop)
-		if(!skipScaling)
-		{
-			if(originalWidth == -1 || originalHeight == -1)
-			{					
+			//Full Screen Mode
+			else if(MyAssets.scaleMode == FULLSCREEN)
+			{
 				//Max Scale: set the scale to what it would have been
 				if(MyAssets.maxScale < theoreticalScale)
 				{
@@ -428,19 +422,12 @@ class Universal extends Sprite
 				originalWidth = Std.int(stageWidth / Engine.SCALE);
 				originalHeight = Std.int(stageHeight / Engine.SCALE);
 				
-				usingFullScreen = true;
-				
 				trace("Algorithm: Full Screen");
 				stageWidth = Std.int(stageWidth / theoreticalScale);
 				stageHeight = Std.int(stageHeight / theoreticalScale);
 			}
-		}
-		#end
-	
-		#if(flash || mobile || desktop)
-		if(!skipScaling)
-		{
-			if(!usingFullScreen && !stretchToFit)
+			
+			else
 			{
 				var screenW = Std.int(Capabilities.screenResolutionX);
 				var screenH = Std.int(Capabilities.screenResolutionY);
@@ -458,7 +445,7 @@ class Universal extends Sprite
 				trace(screenLandscape);
 				
 				//Scale to Fit: Letterboxed
-				if(MyAssets.scaleToFit1)
+				if(MyAssets.scaleMode == SCALE_TO_FIT_LETTERBOX)
 				{
 					scaleX = Math.min(stageWidth*MyAssets.gameScale / MyAssets.stageWidth, stageHeight*MyAssets.gameScale / MyAssets.stageHeight);
 					scaleY = scaleX;
@@ -470,7 +457,7 @@ class Universal extends Sprite
 				}
 				
 				//Scale to Fit: Fill/Cropped
-				else if(MyAssets.scaleToFit2)
+				else if(MyAssets.scaleMode == SCALE_TO_FIT_FILL)
 				{
 					scaleX *= Math.max(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
 					scaleY = scaleX;
@@ -482,7 +469,7 @@ class Universal extends Sprite
 				}
 				
 				//Scale to Fit: Full Screen
-				else if(MyAssets.scaleToFit3)
+				else if(MyAssets.scaleMode == SCALE_TO_FIT_FULLSCREEN)
 				{
 					scaleX *= Math.min(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
 					scaleY = scaleX;
@@ -512,29 +499,7 @@ class Universal extends Sprite
 					trace("Algorithm: No Scaling (Integer Scaling)");
 				}
 				
-				if(MyAssets.scaleToFit3)
-				{
-					//Disabled - this defeats the purpose of full screen?
-					//If the scaled game is less than the screen's size, we need to apply an offset to it.
-					//For example, native res of (544 x 320) on an iPad (1024 x 768) will be (1088 x 640) at a 2x scale. It will sit high and have black space below.
-					
-					/*var realX = Lib.current.stage.width * (Engine.SCALE * scaleX);
-					var realY = Lib.current.stage.height * (Engine.SCALE * scaleY);
-					
-					if(screenW > realX)
-					{
-						x += (screenW - realX) / 2;
-						trace("Offset X by: " + ((screenW - realX) / 2));
-					}
-					
-					if(screenH > realY)
-					{
-						y += (screenH - realY) / 2;
-						trace("Offset Y by: " + ((screenH - realY) / 2));
-					}*/
-				}
-				
-				else
+				if(MyAssets.scaleMode != SCALE_TO_FIT_FULLSCREEN)
 				{
 					x += (stageWidth - MyAssets.stageWidth * scaleX)/2;
 					y += (stageHeight - MyAssets.stageHeight * scaleY)/2;
@@ -545,7 +510,7 @@ class Universal extends Sprite
 		
 		//Clip the view
 		#if(mobile)
-		if(!usingFullScreen && !stretchToFit)
+		if(MyAssets.scaleMode != FULLSCREEN && MyAssets.scaleMode != STRETCH_TO_FIT)
 		{
 			scrollRect = new openfl.geom.Rectangle(0, 0, MyAssets.stageWidth, MyAssets.stageHeight);
 		}
