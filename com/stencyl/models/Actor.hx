@@ -3228,6 +3228,16 @@ class Actor extends Sprite
 		var offsetX = (scaleX - 1) * Math.floor(cacheWidth/2);
 		var offsetY = (scaleY - 1) * Math.floor(cacheHeight/2);
 		
+		// Added to fix this issue -- http://community.stencyl.com/index.php?issue=488.0
+		if(physicsMode > 0)
+		{
+			// Check if the origin point is something other than center.
+			if((currOrigin.x != cacheWidth / 2) || (currOrigin.y != cacheHeight / 2))
+			{
+				resetReal(realX, realY);
+			}
+		}
+		
 		var xPos = colX - offsetX;
 		var yPos = colY - offsetY;
 
