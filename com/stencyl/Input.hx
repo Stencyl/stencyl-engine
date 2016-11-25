@@ -903,7 +903,16 @@ class Input
 			}
 		}
 		
-		if(!_controlButtonMap.exists(control))
+		// Added to avoid duplicate control mapping
+		for(k in _joyControlMap.keys())
+		{
+			if (_joyControlMap.get(k) == control)
+			{
+				_joyControlMap.remove(k);
+			}
+		}
+		
+		// if(!_controlButtonMap.exists(control)) // Commented out to avoid duplicate control mapping
 			_controlButtonMap.set(control, new Array<JoystickButton>());
 		_controlButtonMap.get(control).push(button);
 
