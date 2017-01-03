@@ -3386,7 +3386,7 @@ class Actor extends Sprite
 	public function onTweenAngleComplete()
 	{
 		updateTweenProperties();
-		activeAngleTweens--;
+		activeAngleTweens = 0;
 	}
 	
 	public function onTweenPositionComplete()
