@@ -323,7 +323,7 @@ class PostProcess extends OpenGLView
 		GL.uniform1i(imageUniform, 0);
 		GL.uniform1f(timeUniform, time);
 		GL.uniform2f(resolutionUniform, Std.int(openfl.Lib.current.stage.stageWidth), Std.int(openfl.Lib.current.stage.stageHeight));
-		GL.uniform2f(resolutionUsUniform, Std.int(openfl.Lib.current.stage.stageWidth / scripts.MyAssets.gameScale), Std.int(openfl.Lib.current.stage.stageHeight / scripts.MyAssets.gameScale));
+		GL.uniform2f(resolutionUsUniform, Std.int(openfl.Lib.current.stage.stageWidth / (Engine.SCALE * Engine.screenScaleX)), Std.int(openfl.Lib.current.stage.stageHeight / (Engine.SCALE * Engine.screenScaleY)));
 
 		//for (u in uniforms) GL.uniform1f(u.id, u.value);
 		var it = uniforms.iterator();
