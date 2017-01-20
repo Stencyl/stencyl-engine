@@ -137,6 +137,7 @@ class BackgroundLayer extends RegularLayer
 			var bmp = cast(bgChild, ScrollingBitmap);
 			bmp.parallaxX = x;
 			bmp.parallaxY = y;
+			bmp.parallax = (x  != 0 || y != 0);
 		}
 	}
 
@@ -148,6 +149,7 @@ class BackgroundLayer extends RegularLayer
 			
 			bg.xVelocity = x;
 			bg.yVelocity = y;
+			bg.scrolling = (x  != 0 || y != 0);
 		}
 
 		else
