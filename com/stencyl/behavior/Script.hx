@@ -1287,6 +1287,7 @@ class Script
 	 */
 	public static function createPixelizeOut(duration:Float, pixelSize:Int = 15):Transition
 	{
+		pixelSize = 15; // added because color is being sent as pixel size
 		return new com.stencyl.graphics.transitions.PixelizeTransition(duration, 1, pixelSize);
 	}
 		
@@ -1300,6 +1301,7 @@ class Script
 	 */
 	public static function createPixelizeIn(duration:Float, pixelSize:Int = 15):Transition
 	{
+		pixelSize = 15; // added because color is being sent as pixel size
 		return new com.stencyl.graphics.transitions.PixelizeTransition(duration, pixelSize, 1);
 	}
 	
