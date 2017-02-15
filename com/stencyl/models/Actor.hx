@@ -1260,7 +1260,7 @@ class Actor extends Sprite
 				//SECRET/showthread.php?tid=9773&page=3
 				for(k in collisions.keys()) 
 				{
-					collisions.clr(k);
+					collisions.unset(k);
 				}
 				
 				collisions = new IntHashTable<Collision>(16);
@@ -2156,7 +2156,7 @@ class Actor extends Sprite
 			contacts.set(point.key, point);
 			contactCount++;
 			
-			if(collisions.clr(point.key))
+			if(collisions.unset(point.key))
 			{
 				collisionsCount--;
 			}
@@ -2167,7 +2167,7 @@ class Actor extends Sprite
 	{
 		if(collisions != null)
 		{
-			if(collisions.clr(point.key))
+			if(collisions.unset(point.key))
 			{
 				collisionsCount--;
 			}
@@ -2175,7 +2175,7 @@ class Actor extends Sprite
 		
 		if(contacts != null)
 		{
-			if(contacts.clr(point.key))
+			if(contacts.unset(point.key))
 			{
 				contactCount--;
 			}
@@ -2194,7 +2194,7 @@ class Actor extends Sprite
 	{
 		if(regionContacts != null)
 		{
-			regionContacts.clr(point.key);
+			regionContacts.unset(point.key);
 		}
 	}
 	
@@ -4603,13 +4603,13 @@ class Actor extends Sprite
 			
 			Collision.recycle(oldInfo);
 			
-			simpleCollisions.clr(check);
+			simpleCollisions.unset(check);
 			simpleCollisions.set(check, info);
 			
 			return info;
 		}
 		
-		simpleCollisions.clr(collisionsCount);
+		simpleCollisions.unset(collisionsCount);
 		simpleCollisions.set(collisionsCount, info);
 		collisionsCount++;		
 		

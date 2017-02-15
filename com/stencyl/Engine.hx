@@ -1647,7 +1647,7 @@ class Engine
 		{
 			for(key in allActors.keys())
 			{
-				allActors.clr(key);
+				allActors.unset(key);
 			}
 		}
 		
@@ -1935,7 +1935,7 @@ class Engine
 	
 	public function removeActor(a:Actor)
 	{
-		allActors.clr(a.ID);
+		allActors.unset(a.ID);
 
 		//Remove from the layer group
 		removeActorFromLayer(a, a.layerID);
@@ -1945,7 +1945,7 @@ class Engine
 		
 		if(a.isHUD || a.alwaysSimulate)
 		{
-			hudActors.clr(a.ID);
+			hudActors.unset(a.ID);
 		}
 		
 		a.destroy();
@@ -2118,7 +2118,7 @@ class Engine
 			}
 		}
 		
-		allActors.clr(a.ID);
+		allActors.unset(a.ID);
 	}
 	
 	public function getRecycledActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
@@ -2443,7 +2443,7 @@ class Engine
 		{
 			for(pair in collisionPairs.keys())
 			{
-				collisionPairs.clr(pair);
+				collisionPairs.unset(pair);
 			}
 		}
 		
@@ -3079,7 +3079,7 @@ class Engine
 			{
 				if(a.dead || a.recycled)
 				{
-					hudActors.clr(a.ID);
+					hudActors.unset(a.ID);
 				}
 			}
 		}
@@ -3241,7 +3241,7 @@ class Engine
 	
 	public function removeHUDActor(a:Actor)
 	{
-		hudActors.clr(a.ID);
+		hudActors.unset(a.ID);
 	}
 	
 	
@@ -3390,7 +3390,7 @@ class Engine
 			backgroundLayers.remove(cast(layer, BackgroundLayer));
 		else if(Std.is(layer, Layer))
 			interactiveLayers.remove(cast(layer, Layer));
-		layers.clr(layer.ID);
+		layers.unset(layer.ID);
 		layersByName.remove(layer.layerName);
 
 		refreshLayers();
@@ -3847,7 +3847,7 @@ class Engine
 	public function removeRegion(ID:Int)
 	{
 		var r = getRegion(ID);	
-		regions.clr(r.ID);
+		regions.unset(r.ID);
 		r.destroy();
 		
 		if(NO_PHYSICS)
