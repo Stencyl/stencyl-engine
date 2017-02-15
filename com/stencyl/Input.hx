@@ -1060,18 +1060,18 @@ class Input
 
 class JoystickButton
 {
-	public static var DEVICE:Int = 0;
-	public static var TYPE:Int = 1;
+	public static inline var DEVICE:Int = 0;
+	public static inline var TYPE:Int = 1;
 
-	public static var UP:Int = 0;
-	public static var DOWN:Int = 1;
-	public static var LEFT:Int = 2;
-	public static var RIGHT:Int = 3;
+	public static inline var UP:Int = 0;
+	public static inline var DOWN:Int = 1;
+	public static inline var LEFT:Int = 2;
+	public static inline var RIGHT:Int = 3;
 
-	public static var AXIS:Int = 0;
-	public static var HAT:Int = 1;
-	public static var BUTTON:Int = 2;
-	public static var BALL:Int = 3;
+	public static inline var AXIS:Int = 0;
+	public static inline var HAT:Int = 1;
+	public static inline var BUTTON:Int = 2;
+	public static inline var BALL:Int = 3;
 
 	public static function fromID(id:String):JoystickButton
 	{
