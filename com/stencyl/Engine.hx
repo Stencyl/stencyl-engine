@@ -798,8 +798,8 @@ class Engine
 		#end	
 		
 		//Now, let's start
-		enter = new FadeInTransition(0.5);
-		enter.start();
+		//enter = new FadeInTransition(0.5);
+		//enter.start();
 		sceneToEnter = initSceneID;
 		
 		loadScene(initSceneID);
