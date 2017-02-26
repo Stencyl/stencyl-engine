@@ -114,6 +114,11 @@ class Utils
 	
 	public static function contains(arr:Array<Dynamic>, value:Dynamic):Bool
 	{
+		if (arr == null)
+		{
+			return false;
+		}
+	
 		var len:Int = arr.length;
 		
 		var i:Int = len - 1;
