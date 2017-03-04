@@ -1901,6 +1901,7 @@ class Script
 		return Engine.toPixelUnits(value);
 	}
 	
+	// Enable continuous collision detection
 	public static function makeActorNotPassThroughTerrain(actor:Actor)
 	{
 		if (Engine.NO_PHYSICS)
@@ -1917,6 +1918,24 @@ class Script
 		if(actor != null && actor.physicsMode == 0)
 		{
 			actor.body.setBullet(true);
+		}
+	}
+	
+	// Disable continuous collision detection
+	public static function makeActorPassThroughTerrain(actor:Actor)
+	{
+		if (Engine.NO_PHYSICS)
+		{
+			if (actor != null && actor.physicsMode == 1)
+			{
+				actor.continuousCollision = false;
+			}
+			return;
+		}
+		
+		if(actor != null && actor.physicsMode == 0)
+		{
+			actor.body.setBullet(false);
 		}
 	}
 	
