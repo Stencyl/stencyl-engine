@@ -4136,6 +4136,7 @@ class Actor extends Sprite
 			if(physicsMode == 0 && alterBody)
 			{
 				body.setAlwaysActive(true);
+				body.setActive(true);
 			}
 			
 			alwaysSimulate = true;			
@@ -4150,6 +4151,7 @@ class Actor extends Sprite
 			if(physicsMode == 0 && alterBody)
 			{
 				body.setAlwaysActive(false);
+				body.setActive(false);
 			}
 			
 			alwaysSimulate = false;			
