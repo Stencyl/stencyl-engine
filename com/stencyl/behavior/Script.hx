@@ -1936,6 +1936,22 @@ class Script
 		if(actor != null && actor.physicsMode == 0)
 		{
 			actor.body.setBullet(false);
+			
+			// If no actors have CCD enabled, set global CCD to false too.
+			var actorCCD = false;
+			for (a in engine.allActors)
+			{
+				if (a.body.isBullet())
+				{
+					actorCCD = true;
+					break;
+				}
+			}
+			
+			if (!actorCCD)
+			{
+				B2World.m_continuousPhysics = false;
+			}
 		}
 	}
 	
