@@ -84,15 +84,6 @@ import openfl.filters.BitmapFilter;
 import openfl.filters.ColorMatrixFilter;
 import com.stencyl.utils.ColorMatrix;
 
-//#if flash
-//import flash.filters.ColorMatrixFilter;
-//import com.stencyl.utils.ColorMatrix;
-//#end
-
-#if js
-//import jeash.filters.ColorMatrixFilter;
-#end
-
 #if (cpp || neko)
 typedef ActorAnimation = SheetAnimation;
 #else

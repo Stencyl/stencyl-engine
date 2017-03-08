@@ -30,23 +30,15 @@ class Data
 	
 	public static var instance:Data;
 	private var loader:AssetLoader;
-	public static var theLoader:AssetLoader;
 	private var preloader:Sprite;
 
 	public static function get():Data
 	{
 		if(instance == null)
 		{
-			#if scriptable
-
-			Type.createInstance(Type.resolveClass("scripts.CppiaAssets"), []);
-			
-			#else
-			
+			var assetLoaderClass = #if scriptable "scripts.CppiaAssets" #else "scripts.MyAssets" #end;
 			instance = new Data();
-			instance.loader = theLoader = Type.createInstance(Type.resolveClass("scripts.MyAssets"), []);
-			
-			#end
+			instance.loader = Type.createInstance(Type.resolveClass(assetLoaderClass), []);
 
 			#if(mobile && !air)
 			

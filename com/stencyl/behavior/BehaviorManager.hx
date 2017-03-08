@@ -6,10 +6,6 @@ class BehaviorManager
 
 	public var cache:Map<String,Behavior>;
 
-	#if scriptable
-	private static var noArgs:Array<Dynamic> = [];
-	#end
-	
 	//*-----------------------------------------------
 	//* Init
 	//*-----------------------------------------------
@@ -56,11 +52,7 @@ class BehaviorManager
 			{
 				try
 				{
-					#if scriptable
-					Reflect.callMethod(bObj.script, Reflect.field(bObj.script, "init"), noArgs);
-					#else
 					bObj.script.init();
-					#end
 					bObj.script.scriptInit = true;
 				}
 			
@@ -178,13 +170,6 @@ class BehaviorManager
 			return null;
 		}
 
-		#if scriptable
-		if(args == null)
-		{
-			args = noArgs;
-		}
-		#end
-		
 		var toReturn:Dynamic = null;
 		
 		for(i in 0...behaviors.length)
@@ -236,13 +221,6 @@ class BehaviorManager
 			return null;
 		}
 
-		#if scriptable
-		if(args == null)
-		{
-			args = noArgs;
-		}
-		#end
-		
 		var toReturn:Dynamic = null;
 		var item:Behavior = cache.get(behaviorName);
 		
