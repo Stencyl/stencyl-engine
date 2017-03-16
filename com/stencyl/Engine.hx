@@ -227,6 +227,7 @@ class Engine
 	
 	public var scene:Scene;
 	public var camera:Actor;
+	private var sceneInitialized = false;
 	
 	public var channels:Array<SoundChannel>;
 	public var tasks:Array<TimedTask>;
@@ -396,7 +397,7 @@ class Engine
 	
 	
 	//*-----------------------------------------------
-	//* Full Screen Shaders - EXPERIMENTAL - C++
+	//* Full Screen Shaders - C++
 	//*-----------------------------------------------
 	
 	#if(desktop || iphone || android)
@@ -803,6 +804,7 @@ class Engine
 		sceneToEnter = initSceneID;
 		
 		loadScene(initSceneID);
+		sceneInitialized = true;
 	}	
 	
 	public function loadScene(sceneID:Int)
@@ -1773,8 +1775,10 @@ class Engine
 		
 		//trace("Entering Scene " + sceneToEnter);
 		
+		sceneInitialized = false;
 		cleanup();
 		loadScene(sceneToEnter);
+		sceneInitialized = true;
 	}
 	
 	public function isTransitioning():Bool
@@ -2591,7 +2595,7 @@ class Engine
 				enterScene();
 			}
 			
-			postUpdate(currTime);			
+			postUpdate(currTime);
 			
 			return;
 		}
@@ -2608,7 +2612,10 @@ class Engine
 			
 		//---
 		
-		postUpdate(currTime);
+		if(sceneInitialized)
+		{
+			postUpdate(currTime);
+		}
 	}
 	
 	private function postUpdate(currTime:Float)
