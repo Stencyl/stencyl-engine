@@ -4,12 +4,8 @@ import com.stencyl.utils.Utils;
 
 import openfl.events.Event;
 #if desktop
-#if openfl_legacy
-import openfl.events.JoystickEvent;
-#else
 import lime.ui.Joystick;
 import lime.ui.JoystickHatPosition;
-#end
 #end
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
@@ -22,7 +18,7 @@ import openfl.ui.Multitouch;
 //#end
 
 #if (cpp || neko)
-import openfl.ui.Accelerometer;
+import openfl.sensors.Accelerometer;
 #end
 
 import openfl.ui.Keyboard;
@@ -246,13 +242,6 @@ class Input
 		{
 			_joystickEnabled = true;
 			#if desktop
-			#if openfl_legacy
-			Engine.stage.addEventListener(JoystickEvent.AXIS_MOVE, onJoyAxisMove, false, 2);
-			Engine.stage.addEventListener(JoystickEvent.BALL_MOVE, onJoyBallMove, false, 2);
-			Engine.stage.addEventListener(JoystickEvent.HAT_MOVE, onJoyHatMove, false, 2);
-			Engine.stage.addEventListener(JoystickEvent.BUTTON_DOWN, onJoyButtonDown, false, 2);
-			Engine.stage.addEventListener(JoystickEvent.BUTTON_UP, onJoyButtonUp, false, 2);
-			#else
 			Joystick.onConnect.add (function (joystick) {
 				trace ("Connected Joystick: " + joystick.name);
 
@@ -286,9 +275,6 @@ class Input
 				});
 
 			});
-			#end
-			//for(i in 0...16)
-			//	_joyControllerReady[i] = false;
 			#end
 		}
 	}
@@ -408,6 +394,7 @@ class Input
         }
 	}
 
+	@:access(openfl.sensors.Accelerometer)
 	public static function update()
 	{
 		swipedLeft = false;
@@ -437,14 +424,12 @@ class Input
 			swipeDirection = -1;
 		}
 		
-		#if (openfl_legacy && (cpp || neko))
-		if(openfl.sensors.Accelerometer.isSupported)
+		#if (cpp || neko)
+		if(Accelerometer.isSupported)
 		{
-			var data = Accelerometer.get();
-			
-			accelX = data.x;
-			accelY = data.y;
-			accelZ = data.z;
+			accelX = Accelerometer.currentX;
+			accelY = Accelerometer.currentY;
+			accelZ = Accelerometer.currentZ;
 		}
 		#end
 		
@@ -663,118 +648,6 @@ class Input
 
 	#if desktop
 	
-	#if openfl_legacy
-
-	private static function initJoyController(e:JoystickEvent)
-	{
-		_joyControllerReady[e.device] = true;
-
-		var a:Array<Int> = [];
-		for(f in e.axis)
-			a.push(0);
-		_joyAxisState.set(e.device, a);
-		_joyHatState.set(e.device, [0, 0]);
-		_joyButtonState.set(e.device, []);
-	}
-	
-	private static function onJoyAxisMove(e:JoystickEvent)
-	{
-		if(!_joyControllerReady[e.device])
-			initJoyController(e);
-
-		var oldState:Array<Int> = _joyAxisState.get(e.device);
-		
-		var cur:Int;
-		var old:Int;
-
-		for(i in 0...e.axis.length)
-		{
-			if(e.axis[i] < -joySensitivity)
-				cur = -1;
-			else if(e.axis[i] > joySensitivity)
-				cur = 1;
-			else
-				cur = 0;
-
-			old = oldState[i];
-
-			if(cur != old)
-			{
-				if(old == -1)
-					joyRelease(e.device + ", -axis " + i);
-				else if(old == 1)
-					joyRelease(e.device + ", +axis " + i);
-				if(cur == -1)
-					joyPress(e.device + ", -axis " + i);
-				else if(cur == 1)
-					joyPress(e.device + ", +axis " + i);
-			}
-
-			oldState[i] = cur;
-		}
-
-		_joyAxisPressure.set(e.device, e.axis);
-	}
-
-	private static function onJoyBallMove(e:JoystickEvent)
-	{
-		//not sure what to do with this
-	}
-
-	private static function onJoyHatMove(e:JoystickEvent)
-	{
-		if(!_joyControllerReady[e.device])
-			initJoyController(e);
-		
-		var oldX:Int = _joyHatState.get(e.device)[0];
-		var oldY:Int = _joyHatState.get(e.device)[1];
-
-		if(e.x != oldX)
-		{
-			if(oldX == -1)
-				joyRelease(e.device + ", left hat");
-			else if(oldX == 1)
-				joyRelease(e.device + ", right hat");
-			if(e.x == -1)
-				joyPress(e.device + ", left hat");
-			else if(e.x == 1)
-				joyPress(e.device + ", right hat");
-		}
-		if(e.y != oldY)
-		{
-			if(oldY == -1)
-				joyRelease(e.device + ", up hat");
-			else if(oldY == 1)
-				joyRelease(e.device + ", down hat");
-			if(e.y == -1)
-				joyPress(e.device + ", up hat");
-			else if(e.y == 1)
-				joyPress(e.device + ", down hat");
-		}
-
-		_joyHatState.set(e.device, [Std.int(e.x), Std.int(e.y)]);
-	}
-
-	private static function onJoyButtonDown(e:JoystickEvent)
-	{
-		if(!_joyControllerReady[e.device])
-			initJoyController(e);
-
-		_joyButtonState.get(e.device)[e.id] = true;
-		joyPress(e.device + ", " + e.id);
-	}
-
-	private static function onJoyButtonUp(e:JoystickEvent)
-	{
-		if(!_joyControllerReady[e.device])
-			initJoyController(e);
-
-		_joyButtonState.get(e.device)[e.id] = false;
-		joyRelease(e.device + ", " + e.id);
-	}
-
-	#else
-
 	private static function onJoyAxisMove(joystick:Joystick, axis:Int, value:Float)
 	{
 		var oldState:Array<Int> = _joyAxisState.get(joystick.id);
@@ -858,8 +731,6 @@ class Input
 		_joyButtonState.get(joystick.id)[button] = false;
 		joyRelease(joystick.id + ", " + button);
 	}
-
-	#end
 
 	private static function joyPress(id:String)
 	{

@@ -2,12 +2,9 @@ package com.stencyl.models.scene;
 
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
+import openfl.display.Tileset as FLTileset;
 import openfl.geom.Rectangle;
 import openfl.geom.Point;
-
-#if (cpp || neko)
-import openfl.display.Tilesheet;
-#end
 
 class Tileset extends Resource
 {
@@ -21,7 +18,7 @@ class Tileset extends Resource
 	public static var temp:Rectangle;
 	
 	#if (cpp || neko)
-	public var tilesheet:Tilesheet;
+	public var flTileset:FLTileset;
 	public var data:Array<Float>;
 	
 	//tileID -> sheetID
@@ -46,7 +43,7 @@ class Tileset extends Resource
 		temp = new Rectangle();
 	}
 	
-	public function setupTilesheet()
+	public function setupFLTileset()
 	{
 		#if (cpp || neko)
 		sheetMap = new Map<Int,Int>();
@@ -57,15 +54,13 @@ class Tileset extends Resource
 			// The tile line fix now affects all scale modes.  Set to false if this causes any problems.
 			if(true)
 			{
-				// The tilesheet needs to be modified to avoid pixel bleeding when stretching.
-				tilesheet = new Tilesheet(convertPixels(pixels));
+				// The tileset needs to be modified to avoid pixel bleeding when stretching.
+				flTileset = new FLTileset(convertPixels(pixels));
 			}
 			else
 			{
-				tilesheet = new Tilesheet(pixels);
+				flTileset = new FLTileset(pixels);
 			}
-			
-			var counter = 0;
 			
 			for(tile in tiles)
 			{
@@ -75,10 +70,8 @@ class Tileset extends Resource
 				}
 				
 				var r = getImageSourceForTile(tile.tileID, Std.int(tileWidth), Std.int(tileHeight));
-				tilesheet.addTileRect(r);
 				
-				sheetMap.set(tile.tileID, counter);
-				counter++;
+				sheetMap.set(tile.tileID, flTileset.addRect(r));
 			}
 		}
 		#end
@@ -148,7 +141,7 @@ class Tileset extends Resource
 		//On a first read, this won't be ready to do, and we'll load when we're OK
 		if(tiles.length > 0)
 		{
-			setupTilesheet();
+			setupFLTileset();
 		}
 	}
 	
@@ -157,7 +150,7 @@ class Tileset extends Resource
 		pixels = null;
 	
 		#if (cpp || neko)
-		tilesheet = null;
+		flTileset = null;
 		#end
 		
 		for (tile in tiles)

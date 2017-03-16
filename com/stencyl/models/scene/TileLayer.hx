@@ -3,19 +3,18 @@ package com.stencyl.models.scene;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.PixelSnapping;
+import openfl.display.Sprite;
+import openfl.display.Tile as FLTile;
+import openfl.display.Tilemap;
+import openfl.display.Tileset as FLTileset;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.display.Sprite;
 
 import com.stencyl.models.Scene;
 import com.stencyl.utils.Utils;
 import com.stencyl.models.collision.Grid;
-
-#if (cpp || neko)
-import openfl.display.Tilesheet;
-#end
 
 class TileLayer extends Sprite
 {
@@ -30,20 +29,18 @@ class TileLayer extends Sprite
 	public var scene:Scene;
 	public var numRows:Int;
 	public var numCols:Int;
-	public var blendName:String = "NORMAL";
 
 	//Internal/Temporary stuff
+	#if(flash || js)
 	public var bitmapData:BitmapData;
-	private var pixels:BitmapData;
 	private var flashPoint:Point;
+	#else
+	private var tilemaps:Map<FLTileset, Tilemap>;
+	#end
 	private var noTiles:Bool;
 	
 	private static var TILESET_CACHE_MULTIPLIER = 1000000;
 	private static var cacheSource = new Map<Int,Rectangle>();
-	
-	#if openfl_next
-	private var tilesets:Array<Tileset> = new Array();
-	#end
 	
 	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
 	{
@@ -72,17 +69,17 @@ class TileLayer extends Sprite
 			}
 		}
 		
+		#if(flash || js)
 		flashPoint = new Point();
+		#else
+		tilemaps = new Map<FLTileset, Tilemap>();
+		#end
 	}
 	
 	public function reset()
 	{
-		#if (!cpp && !neko)
-		if(noTiles)
-		{
-		}
-		
-		else
+		#if (flash || js)
+		if(!noTiles)
 		{
 			bitmapData = new BitmapData
 			(
@@ -103,7 +100,7 @@ class TileLayer extends Sprite
 	
 	public function clearBitmap()
 	{
-		#if (!cpp && !neko)
+		#if (flash || js)
 		while(numChildren > 0)
 		{
 			removeChildAt(0);
@@ -182,7 +179,7 @@ class TileLayer extends Sprite
 		{
 			noTiles = false;
 
-			#if (!cpp && !neko)
+			#if (flash || js)
 			if(bitmapData == null)
 				reset();
 			#end
@@ -287,16 +284,18 @@ class TileLayer extends Sprite
 		}
 		
 		#if (cpp || neko)
-		graphics.clear();
-		#end
 		
-		#if (!cpp && !neko)
+		for(tm in tilemaps)
+			tm.removeTiles();
+		
+		#else
+		
 		if(bitmapData == null)
 		{
 			return;
 		}
-		
 		bitmapData.fillRect(bitmapData.rect, 0);
+
 		#end
 		
 		viewX = Math.floor(Math.abs(viewX));
@@ -365,17 +364,10 @@ class TileLayer extends Sprite
 					t = t.autotiles[autotileData[y][x]];
 				}
 				
-				//If animated or an autotile, used animated tile pixels
-				if(t.pixels == null)
-				{
-					pixels = t.parent.pixels;
-				}
-				else
-				{
-					pixels = t.pixels;
-				}
-				
 				#if (flash || js)
+				//If animated or an autotile, used animated tile pixels
+				var pixels = (t.pixels == null) ? t.parent.pixels : t.pixels;
+				
 				flashPoint.x = px * Engine.SCALE;
 				flashPoint.y = py * Engine.SCALE;
 				
@@ -383,61 +375,18 @@ class TileLayer extends Sprite
 				{
 					bitmapData.copyPixels(pixels, source, flashPoint, null, null, true);
 				}
-				#end
 				
-				#if (cpp || neko)
-				flashPoint.x = x * tw * Engine.SCALE;
-				flashPoint.y = y * th * Engine.SCALE;
-				
-				#if openfl_legacy
-				t.parent.data[0] = flashPoint.x;
-				t.parent.data[1] = flashPoint.y;
 				#else
-				if (tilesets.indexOf(t.parent) == -1)
-				{
-					tilesets.push(t.parent);
-					t.parent.data = new Array();
-				}
-				
-				t.parent.data.push(flashPoint.x);
-				t.parent.data.push(flashPoint.y);
-				#end
-				
+
 				if(t.data == null)
 				{
-					#if openfl_legacy
-					t.parent.data[2] = t.parent.sheetMap.get(t.tileID);
-					
-					if(t.parent.tilesheet != null)
-					{
-						t.parent.tilesheet.drawTiles(graphics, t.parent.data, scripts.MyAssets.antialias, switch(blendName)
-						{
-							case "ADD": Tilesheet.TILE_BLEND_ADD;
-							case "MULTIPLY": Tilesheet.TILE_BLEND_MULTIPLY;
-							case "SCREEN": Tilesheet.TILE_BLEND_SCREEN;
-							default: Tilesheet.TILE_BLEND_NORMAL;	
-						});
-					}
-					#else
-					t.parent.data.push(t.parent.sheetMap.get(t.tileID));
-					#end
+					var tileID = t.parent.sheetMap.get(t.tileID);
+					getTilemap(t.parent.flTileset).addTile(new FLTile(tileID, x * tw * Engine.SCALE, y * th * Engine.SCALE));
 				}
 				else
 				{
-					#if openfl_legacy
-					t.parent.data[2] = t.currFrame;
-					#else
-					t.parent.data.pop();
-					t.parent.data.pop();
-					#end
-					
-					t.data.drawTiles(graphics, #if openfl_legacy t.parent.data #else [flashPoint.x, flashPoint.y, t.currFrame] #end, scripts.MyAssets.antialias, switch(blendName)
-					{
-						case "ADD": Tilesheet.TILE_BLEND_ADD;
-						case "MULTIPLY": Tilesheet.TILE_BLEND_MULTIPLY;
-						case "SCREEN": Tilesheet.TILE_BLEND_SCREEN;
-						default: Tilesheet.TILE_BLEND_NORMAL;	
-					});
+					var tileID = t.currFrame;
+					getTilemap(t.data).addTile(new FLTile(tileID, x * tw * Engine.SCALE, y * th * Engine.SCALE));
 				}
 		  		#end
 				
@@ -449,25 +398,24 @@ class TileLayer extends Sprite
 			py += th;
 			
 			y++;
-		}		
-		
-		#if (cpp || neko)
-		#if openfl_next
-		for (tileset in tilesets)
-		{
-			if(tileset.tilesheet != null)
-			{
-				tileset.tilesheet.drawTiles(graphics, tileset.data, scripts.MyAssets.antialias, switch(blendName)
-				{
-					case "ADD": Tilesheet.TILE_BLEND_ADD;
-					case "MULTIPLY": Tilesheet.TILE_BLEND_MULTIPLY;
-					case "SCREEN": Tilesheet.TILE_BLEND_SCREEN;
-					default: Tilesheet.TILE_BLEND_NORMAL;	
-				});
-			}
 		}
-		tilesets = new Array();
-		#end
-		#end
 	}
+
+	#if (cpp || neko)
+	private function getTilemap(fltileset:FLTileset):Tilemap
+	{
+		if(!tilemaps.exists(fltileset))
+		{
+			var tm = new Tilemap(
+				Std.int((Engine.screenWidth * Engine.SCALE) + (scene.tileWidth * Engine.SCALE)),
+				Std.int((Engine.screenHeight * Engine.SCALE) + (scene.tileHeight * Engine.SCALE)),
+				fltileset,
+				scripts.MyAssets.antialias
+			);
+			tilemaps.set(fltileset, tm);
+			addChild(tm);
+		}
+		return tilemaps.get(fltileset);
+	}
+	#end
 }

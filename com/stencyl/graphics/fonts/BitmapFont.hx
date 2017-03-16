@@ -2,14 +2,13 @@ package com.stencyl.graphics.fonts;
 
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
+import openfl.display.Tilemap;
+import openfl.display.Tileset;
+import openfl.display.Tile;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-
-#if (cpp || neko)
-import openfl.display.Tilesheet;
-#end
 
 /**
  * Holds information and bitmap glpyhs for a bitmap font.
@@ -26,9 +25,7 @@ class BitmapFont
 	#else
 	private var _glyphs:Map<Int,FontSymbol>;
 	private var _num_letters:Int;
-	private var _tileSheet:Tilesheet;
-	private static var _flags = Tilesheet.TILE_SCALE | Tilesheet.TILE_ROTATION | Tilesheet.TILE_ALPHA | Tilesheet.TILE_RGB;
-	public static var skipFlags = false;
+	private var _tileset:Tileset;
 	#end
 	private var _glyphString:String;
 	private var _maxHeight:Int;
@@ -77,7 +74,7 @@ class BitmapFont
 			var currRect:Rectangle;
 			
 			#if (cpp || neko)
-			_tileSheet = new Tilesheet(result);
+			_tileset = new Tileset(result);
 			#end
 			
 			for (letterID in 0...(tileRects.length))
@@ -121,7 +118,7 @@ class BitmapFont
 			var charString:String;
 			
 			#if (cpp || neko)
-			_tileSheet = new Tilesheet(pBitmapData);
+			_tileset = new Tileset(pBitmapData);
 			#end
 			
 			var chars:Xml = null;
@@ -356,7 +353,7 @@ class BitmapFont
 			}
 		}
 		#else
-		_tileSheet = null;
+		_tileset = null;
 		_num_letters = 0;
 		#end
 		_glyphs = null;
@@ -407,7 +404,7 @@ class BitmapFont
 	#else
 	private function setGlyph(pCharID:Int, pRect:Rectangle, pGlyphID:Int, ?pOffsetX:Int = 0, ?pOffsetY:Int = 0, ?pAdvanceX:Int = 0):Void 
 	{
-		_tileSheet.addTileRect(pRect);
+		_tileset.addRect(pRect);
 		
 		var symbol:FontSymbol = new FontSymbol();
 		symbol.tileID = pGlyphID;
@@ -438,7 +435,7 @@ class BitmapFont
 	#elseif js
 	public function render(pBitmapData:BitmapData, pFontData:Array<BitmapData>, pText:String, pColor:Int, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, ?pAngle:Float = 0):Void 
 	#else
-	public function render(drawData:Array<Float>, pText:String, pColor:Int, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0, ?pUseColorTransform:Bool = true):Void 
+	public function render(tilemap:Tilemap, pText:String, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0):Void 
 	#end
 	{
 		_point.x = pOffsetX;
@@ -451,7 +448,7 @@ class BitmapFont
 		#end
 		
 		var realCount = 0;
-		
+
 		for (i in 0...(pText.length)) 
 		{
 			if(i < realCount)
@@ -497,32 +494,13 @@ class BitmapFont
 				_point.x += glyph.width + pLetterSpacing;
 				#else
 				glyphWidth = glyph.xadvance;
-				var red:Float = (pColor >> 16 & 0xFF) / 255;
-				var green:Float = (pColor >> 8 & 0xFF) / 255;
-				var blue:Float = (pColor & 0xFF) / 255;
-				// x, y, tile_ID, scale, rotation, red, green, blue, alpha
-				drawData.push(_point.x + glyph.xoffset * pScale);			// x
-				drawData.push(_point.y + glyph.yoffset * pScale);			// y
-				drawData.push(glyph.tileID);								// tile_ID
+				var tile = new Tile(glyph.tileID, _point.x + glyph.xoffset * pScale, _point.y + glyph.yoffset * pScale);
 				
-				if(!skipFlags)
-				{
-					drawData.push(pScale);										// scale
-					drawData.push(0);											// rotation
-					if (pUseColorTransform)
-					{
-						drawData.push(red);			
-						drawData.push(green);
-						drawData.push(blue);
-					}
-					else
-					{
-						drawData.push(1);			
-						drawData.push(1);
-						drawData.push(1);
-					}
-					drawData.push(pAlpha);										// alpha
-				}
+				tile.scaleX = pScale;
+				tile.scaleY = pScale;
+				tile.alpha = pAlpha;
+
+				tilemap.addTile(tile);
 				
 				_point.x += glyphWidth * pScale + pLetterSpacing;
 				#end
@@ -531,7 +509,31 @@ class BitmapFont
 			realCount++;
 		}
 	}
-	
+
+	#if (!flash && !js)
+	public function renderToImg(pBitmapData:BitmapData, pText:String, pColor:Int, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0, ?pUseColorTransform:Bool = true):Void 
+	{
+		var tilemap = new Tilemap(pBitmapData.width, pBitmapData.height, _tileset);
+
+		render(tilemap, pText, pAlpha, pOffsetX, pOffsetY, pLetterSpacing, pScale, pAngle);
+
+		if (pUseColorTransform)
+		{
+			var red:Float = (pColor >> 16 & 0xFF) / 255;
+			var green:Float = (pColor >> 8 & 0xFF) / 255;
+			var blue:Float = (pColor & 0xFF) / 255;
+
+			pBitmapData.draw(tilemap, null, new ColorTransform(red, green, blue));
+		}
+		else
+		{
+			pBitmapData.draw(tilemap);
+		}
+
+		tilemap.removeTiles();
+	}
+	#end
+
 	private function toARGB(rgb:Int, newAlpha:Int):Int
 	{
 		var argb = 0; 
@@ -540,26 +542,6 @@ class BitmapFont
 		
 		return argb; 
 	}
-	
-	#if (cpp || neko)
-	/**
-	 * Internal method for actually drawing text on cpp and neko targets
-	 * @param	graphics
-	 * @param	drawData
-	 */
-	public function drawText(graphics:Graphics, drawData:Array<Float>, overrideFlags:Bool = false, altFlags:Int = 0):Void
-	{
-		if(overrideFlags)
-		{
-			_tileSheet.drawTiles(graphics, drawData, scripts.MyAssets.antialias, altFlags);
-		}
-		
-		else
-		{
-			_tileSheet.drawTiles(graphics, drawData, scripts.MyAssets.antialias, _flags);
-		}
-	}
-	#end
 	
 	/**
 	 * Returns the width of a certain test string.
@@ -669,4 +651,11 @@ class BitmapFont
 	{
 		return _glyphString.indexOf(char) >= 0;
 	}
+
+	#if (cpp || neko)
+	public function getTileset():Tileset
+	{
+		return _tileset;
+	}
+	#end
 }

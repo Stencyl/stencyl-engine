@@ -909,48 +909,4 @@ class Utils
 	public static var sprite:Sprite = new Sprite();
 	
 	public static var collision:Collision = new Collision();
-
-
-	#if hardware
-	/**
-	 * Currently only one tilesheet for simplicity, should probably be a list later on (and not static?)
-	 */
-	public static var tilesheet:openfl.display.Tilesheet;
-
-	/**
-	 * Stores the x, y, ID, flags... which are then passed through NME
-	 */
-	public static var tileData:Array<Float> = new Array<Float>();
-
-	/**
-	 * Stores the rectangles in an array where the index is the respective ID that the rectangle has in the tilesheet
-	 */
-	static public var sheetRectangles:Array<Rectangle> = new Array<Rectangle>();
-
-	/**
-	 * Flags are added with
-	 * flags = TILE_SCALE | TILE_ROTATION | TILE_RGB;
-	 */
-	public static var tilesheetFlags:Int = 0;
-
-	static private var _bitmapIndex:Hash<Int> = new Hash<Int>();
-
-	/**
-	 * @private Used internally, used to determine which index to set the data in tileData
-	 */
-	public static var currentPos:Int = 0;
-	/**
-	 * Used to determine if there are less objects to render, ïf there are then we need to splice the array so that we dont render any
-	 * entities which have been removed
-	 */
-	public static var previousLength = 0;
-
-	/**
-	 * Flags that are copied over from the openfl.display.Tilesheet class for easier access
-	 */
-	public static inline var TILE_SCALE = 0x0001;
-	public static inline var TILE_ROTATION = 0x0002;
-	public static inline var TILE_RGB = 0x0004;
-	public static inline var TILE_ALPHA = 0x0008;
-	#end
 }

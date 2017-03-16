@@ -7,7 +7,6 @@ import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
-import openfl.display.Tilesheet;
 
 import openfl.geom.Rectangle;
 import openfl.geom.Point;
@@ -97,15 +96,13 @@ class G
 		
 		font = defaultFont = new Font(-1, 0, "", true); 
 		
-		drawData = [];
+		mtx = new Matrix();
 		
 		#if (flash || js)
 		if(fontCache == null)
 		{
 			fontCache = new Map<Int,Array<BitmapData>>();
 		}
-		
-		mtx = new Matrix();
 		
 		var temp = fontCache.get(-1);
 		
@@ -271,8 +268,6 @@ class G
 			}
 		}
 	}
-	
-	private var drawData:Array<Float>;
 		
 	public inline function drawString(s:String, x:Float, y:Float)
 	{
@@ -305,41 +300,27 @@ class G
 			drawY = this.y + y * scaleY;
 		}
 		
-		#if(cpp || neko)
-		drawData.splice(0, drawData.length);
-		font.font.render(drawData, s, 0x000000, alpha, Std.int(drawX), Std.int(drawY), font.letterSpacing, font.fontScale, 0, false);
-		font.font.drawText(graphics, drawData);
-		#end
-		
-		#if(flash || js)
 		mtx.identity();
- 	 	mtx.translate(drawX, drawY);
- 	 	
- 	 	var w = font.font.getTextWidth(s, font.letterSpacing, font.fontScale);
- 	 	var h = Std.int(font.font.getFontHeight() * font.fontScale);
- 	 	
- 	 	if(w > 0 && h > 0)
- 	 	{
- 	 		var bitmapData = new BitmapData(w, h, true, 0);
-			font.font.render(bitmapData, fontData, s, 0x000000, alpha, 0, 0, font.letterSpacing, 0);
-		#end
+		mtx.translate(drawX, drawY);
 		
-			//TODO: This approach is really, really slow!
-			#if (flash)
-			graphics.beginBitmapFill(bitmapData, mtx);
-			graphics.drawRect(drawX, drawY, w, h);
-	 	 	graphics.endFill();
+		var w = font.font.getTextWidth(s, font.letterSpacing, font.fontScale);
+		var h = Std.int(font.font.getFontHeight() * font.fontScale);
+		
+		if(w > 0 && h > 0)
+		{
+			var bitmapData = new BitmapData(w, h, true, 0);
+			
+			#if (flash || js)
+			font.font.render(bitmapData, fontData, s, 0x000000, alpha, 0, 0, font.letterSpacing, 0);
+			#else
+			font.font.renderToImg(bitmapData, s, 0x000000, alpha, 0, 0, font.letterSpacing, font.fontScale, 0, false); //0, false
 			#end
 			
-			#if (js)
+			//TODO: This approach is really, really slow!
 			graphics.beginBitmapFill(bitmapData, mtx);
 			graphics.drawRect(drawX, drawY, w, h);
-	 	 	graphics.endFill();
-			#end
-		
-		#if(flash || js)
+			graphics.endFill();
 		}
-		#end
 	}
 	
 	public inline function drawLine(x1:Float, y1:Float, x2:Float, y2:Float)
@@ -350,11 +331,11 @@ class G
 		y2 *= scaleY;
 		
 		startGraphics();
-		 
-     	graphics.moveTo(this.x + x1, this.y + y1);
-     	graphics.lineTo(this.x + x2, this.y + y2);
-     	
-     	endGraphics();
+		
+		graphics.moveTo(this.x + x1, this.y + y1);
+		graphics.lineTo(this.x + x2, this.y + y2);
+		
+		endGraphics();
 	}
 	
 	public inline function fillPixel(x:Float, y:Float)
@@ -588,9 +569,9 @@ class G
 				canvas.copyPixels(img, rect, point);
 			}
 		}
-		#end
+
+		#else
 		
-		#if (flash)
 		var newImg:BitmapData = null;
 		var imgSize = 0;
 		mtx.identity();
@@ -654,34 +635,6 @@ class G
 		}
 		
 		graphics.endFill();
-		#end
-		
-		//TODO: Can't get alpha to work in this setup.
-		//USe some print statements to probe if the tilesheet is actually picking up the alpha values.
-		//also check on what a valid alpha value would be
-		
-		//TODO: Very wasteful to make a new tilesheet each time!
-		//Actually, this isn't used as much as we think. For actor drawing, it's done in SheetAnimation.
-		#if (cpp || neko)
-		var sheet = new Tilesheet(img);
-		sheet.addTileRect(rect, point2);
-		data[0] = point.x;
-		data[1] = point.y;
-		data[2] = 0;
-		
-		//TODO: Dynamic scaling?
-		if (angle != 0)
-		{
-			data[3] = angle;
-			data[4] = toARGB(0x000000, Std.int(alpha * 255));
-			sheet.drawTiles(canvas.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_ROTATION | Tilesheet.TILE_ALPHA);
-		}
-		
-		else
-		{
-			data[3] = toARGB(0x000000, Std.int(alpha * 255));
-			sheet.drawTiles(canvas.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_ALPHA);
-		}
 		#end
 	}
 	

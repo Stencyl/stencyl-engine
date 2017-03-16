@@ -1,21 +1,18 @@
 package com.stencyl.graphics;
 
 import com.stencyl.models.actor.Animation;
-import openfl.display.Sprite;
 import openfl.display.BitmapData;
 
-import openfl.display.Tilesheet;
+import openfl.display.Tile;
+import openfl.display.Tilemap;
+import openfl.display.Tileset;
+
+import openfl.geom.Matrix;
 
 import com.stencyl.Engine;
 
-class SheetAnimation extends Sprite implements AbstractAnimation
+class SheetAnimation extends Tilemap implements AbstractAnimation
 {
-	public var tint:Bool = false;
-	public var redValue:Float;
-	public var greenValue:Float;
-	public var blueValue:Float;
-	public var blendName:String = "NORMAL";
-
 	private var frameIndex:Int;
 	private var looping:Bool;
 	private var timer:Float;
@@ -26,8 +23,6 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	public var frameWidth:Int;
 	public var frameHeight:Int;
 	
-	public var tilesheet:Tilesheet;
-
 	private var durations:Array<Int>;
 	private var individualDurations:Bool;
 	public var numFrames:Int;
@@ -36,10 +31,10 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	
 	private var model:Animation;
 	
-	public function new(tilesheet:Tilesheet, durations:Array<Int>, width:Int, height:Int, looping:Bool, model:Animation) 
+	public function new(tileset:Tileset, durations:Array<Int>, width:Int, height:Int, looping:Bool, model:Animation) 
 
 	{
-		super();
+		super(width, height, tileset, scripts.MyAssets.antialias);
 		
 		this.model = model;
 		
@@ -51,15 +46,15 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 		this.frameWidth = width;
 		this.frameHeight = height;
 		this.looping = looping;
-		this.tilesheet = tilesheet;
 		this.durations = durations;
 		
 		numFrames = durations.length;
 
 		data = [0.0, 0.0, 0];
-		
+
+		addTile(new Tile());
 		updateBitmap();
-	}		
+	}
 
 	public inline function update(elapsedTime:Float)
 	{
@@ -163,66 +158,21 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	
 	public inline function updateBitmap()
 	{
-		//#if js
-		data[0] = 0;
-		data[1] = 0;
-		data[2] = frameIndex;
-		
-		if (tint)
-		{
-			data[3] = redValue;
-			data[4] = greenValue;
-			data[5] = blueValue;
-			
-			graphics.clear();
-			tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_RGB);
-		}
-		else
-		{
-			data[3] = 1;
-			data[4] = 1;
-			data[5] = 1;
-			
-			graphics.clear();
-			
-			#if flash
-			tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias);
-			#else
-			if (blendName == "ADD")
-			{
-				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_RGB | Tilesheet.TILE_BLEND_ADD);
-			}
-			else if (blendName == "MULTIPLY")
-			{
-				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_RGB | Tilesheet.TILE_BLEND_MULTIPLY);
-			}
-			else if (blendName == "SCREEN")
-			{
-				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_RGB | Tilesheet.TILE_BLEND_SCREEN);
-			}
-			else
-			{
-				tilesheet.drawTiles(graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_RGB | Tilesheet.TILE_BLEND_NORMAL);
-			}
-			#end
-		}
-		
+		getTileAt(0).id = frameIndex;
 		needsUpdate = false;
-		//#end
 	}
-	
+
 	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
-		//#if !js
-		data[0] = x;
-		data[1] = y;
-		data[2] = frameIndex;
-		data[3] = angle;
-		data[4] = alpha;
-		
-  		tilesheet.drawTiles(g.graphics, data, scripts.MyAssets.antialias, Tilesheet.TILE_ROTATION | Tilesheet.TILE_ALPHA);
-  		//#end
-	}
+		//TODO: Are angle and alpha reflected here?
+		//should they be?
+		var bitmapData = new BitmapData(frameWidth, frameHeight, true, 0);
+		bitmapData.draw(this);
+
+		g.graphics.beginBitmapFill(bitmapData, new Matrix(1, 0, 0, 1, x, y));
+		g.graphics.drawRect(x, y, frameWidth, frameHeight);
+ 	 	g.graphics.endFill();
+  	}
 	
 	public function getFrameDurations():Array<Int>
 	{
@@ -275,14 +225,9 @@ class SheetAnimation extends Sprite implements AbstractAnimation
 	}
 
 	#if !flash
-	#if (!nme && !openfl_legacy) @:access(openfl.display.Tilesheet.__bitmap) #end
 	public inline function getBitmap():BitmapData
 	{
-		#if nme
-			return tilesheet.nmeBitmap;
-		#else
-			return tilesheet.__bitmap;
-		#end
+		return tileset.bitmapData;
 	}
 	#end
 }

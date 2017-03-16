@@ -60,9 +60,7 @@ class PostProcess extends OpenGLView
 	public function new(fragmentShader:String, literalText:Bool = false)
 	{
 		super();
-		#if !openfl_legacy
 		render = _render;
-		#end
 
 		uniforms = new Map<String, Uniform>();
 
@@ -90,7 +88,8 @@ class PostProcess extends OpenGLView
 
 		buffer = GL.createBuffer();
 		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
-		GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(cast vertices), GL.STATIC_DRAW);
+		var data = new Float32Array(vertices);
+		GL.bufferData(GL.ARRAY_BUFFER, data.byteLength, data, GL.STATIC_DRAW);
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 
 		if(literalText)
@@ -254,7 +253,7 @@ class PostProcess extends OpenGLView
 	{
 		texture = GL.createTexture();
 		GL.bindTexture(GL.TEXTURE_2D, texture);
-		GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB,  width, height,  0,  GL.RGB, GL.UNSIGNED_BYTE, null);
+		GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB,  width, height,  0,  GL.RGB, GL.UNSIGNED_BYTE, 0);
 
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
@@ -280,11 +279,7 @@ class PostProcess extends OpenGLView
 	/**
 	 * Renders to a framebuffer or the screen every frame
 	 */
-	#if openfl_legacy
-	override public function render(rect:Rectangle)
-	#else
 	public function _render(rect:Rectangle)
-	#end
 	{
 		time += Engine.elapsedTime * timeScale;
 		GL.bindFramebuffer(GL.FRAMEBUFFER, renderTo);

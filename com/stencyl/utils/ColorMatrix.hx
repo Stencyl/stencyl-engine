@@ -190,13 +190,11 @@ class ColorMatrix
 		matrix = new Array<Float>();
 	}
 	
-	#if (flash || js)
 	public function getFilter():ColorMatrixFilter
 	{
 		toArray(matrix);
 		return new ColorMatrixFilter(matrix);
 	}
-	#end
 	
 	public function identity():ColorMatrix
 	{

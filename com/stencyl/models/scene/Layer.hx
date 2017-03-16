@@ -41,7 +41,7 @@ class Layer extends RegularLayer
 		
 		tiles = tileLayer;
 		tiles.reset();
-		tiles.blendName = Std.string(blendMode);
+		tiles.blendMode = blendMode;
 
 		underActors = new Sprite();
 		actorContainer = new Sprite();
