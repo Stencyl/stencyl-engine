@@ -648,7 +648,8 @@ class Engine
 		#if (mobile && !air)
 		if(!MyAssets.autorotate)
 		{
-			if(landscape)
+			//These are no longer implemented in OpenFL.
+			/*if(landscape)
 			{
 				Stage.setFixedOrientation(Stage.OrientationLandscapeLeft);
 			}
@@ -656,7 +657,7 @@ class Engine
 			else
 			{
 				Stage.setFixedOrientation(Stage.OrientationPortrait);
-			}
+			}*/
 		}
 		#end
 
