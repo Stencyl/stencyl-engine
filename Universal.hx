@@ -527,18 +527,14 @@ class Universal extends Sprite
 		trace("Scale Y: " + scaleY);
 	}
 	
-	#if (scriptable && openfl_legacy) @:access(openfl._legacy.Assets.initialized) #end
 	public static function main() 
 	{
 		#if scriptable
 		var cppia = Type.resolveClass("scripts.CppiaAssets");
 		Reflect.callMethod(cppia, Reflect.field(cppia, "setAssets"), []);
-
+		
 		if(StencylCppia.gamePath != null)
 			Sys.setCwd(StencylCppia.gamePath);
-
-		openfl.Assets.registerLibrary("default", Type.createInstance(Type.resolveClass("CppiaAssetLibrary"), []));
-		openfl.Assets.initialized = true;
 		#end
 
 		var stage = Lib.current.stage;
@@ -549,7 +545,6 @@ class Universal extends Sprite
 		#if(mobile && !air)
 		stage.opaqueBackground = 0x000000;
 		#end
-
 		Lib.current.addChild(new Universal());
 	}
 }
