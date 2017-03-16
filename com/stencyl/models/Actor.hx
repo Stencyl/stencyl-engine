@@ -2442,7 +2442,6 @@ class Actor extends Sprite
 		return round ? Math.round(toReturn) : toReturn;
 	}
 	
-	//TODO: Eliminate?
 	public function getXCenter():Float
 	{
 		if(physicsMode == 0)
@@ -2456,7 +2455,6 @@ class Actor extends Sprite
 		}
 	}
 	
-	//TODO: Eliminate?
 	public function getYCenter():Float
 	{
 		if(physicsMode == 0)
@@ -2580,6 +2578,40 @@ class Actor extends Sprite
 		}
 		
 		updateMatrix = true;
+	}
+	
+	public function setXCenter(x:Float)
+	{
+		setX(x - (getWidth() / 2));
+	}
+	
+	public function setYCenter(y:Float)
+	{
+		setY(y - (getHeight() / 2));
+	}
+	
+	public function setScreenX(x:Float)
+	{
+		if(isHUD)
+		{
+			setX(x);
+		}
+		else
+		{
+			setX(x - (Engine.cameraX / Engine.SCALE));
+		}
+	}
+	
+	public function setScreenY(y:Float)
+	{
+		if(isHUD)
+		{
+			setY(y);
+		}
+		else
+		{
+			setY(y - (Engine.cameraY / Engine.SCALE));
+		}
 	}
 	
 	public function follow(a:Actor)
@@ -3702,6 +3734,7 @@ class Actor extends Sprite
 			if(physicsMode == 0 && alterBody)
 			{
 				body.setAlwaysActive(true);
+				body.setActive(true);
 			}
 			
 			alwaysSimulate = true;			
@@ -3716,6 +3749,7 @@ class Actor extends Sprite
 			if(physicsMode == 0 && alterBody)
 			{
 				body.setAlwaysActive(false);
+				body.setActive(false);
 			}
 			
 			alwaysSimulate = false;			
