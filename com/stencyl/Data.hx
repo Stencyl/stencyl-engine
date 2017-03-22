@@ -9,10 +9,6 @@ import com.stencyl.io.SoundReader;
 import com.stencyl.io.SpriteReader;
 import com.stencyl.io.TilesetReader;
 
-import openfl.Assets;
-import openfl.Lib;
-import haxe.xml.Fast;
-
 import com.stencyl.behavior.Behavior;
 import com.stencyl.models.Scene;
 import com.stencyl.models.Resource;
@@ -20,7 +16,12 @@ import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.Atlas;
 import com.stencyl.models.Sound;
+
+import openfl.Assets;
+import openfl.Lib;
 import openfl.display.Sprite;
+import openfl.events.ProgressEvent;
+import haxe.xml.Fast;
 
 class Data
 {
@@ -112,7 +113,8 @@ class Data
 		#if(mobile && !air)
 		if(preloader != null)
 		{
-			Reflect.callMethod(preloader, Reflect.field(preloader, "onUpdate"), [pct, 100]);
+			var event = new ProgressEvent(ProgressEvent.PROGRESS, false, false, pct, 100);
+			Reflect.callMethod(preloader, Reflect.field(preloader, "onUpdate"), [event]);
 		}
 		#end
 	}
