@@ -493,22 +493,22 @@ class Joystick extends Sprite
 
             if(Engine.SCALE == 1)
             {
-                image = Assets.getBitmapData("assets/data/" + imageName + ".png");
+                image = Assets.getBitmapData("stencyl:assets/data/" + imageName + ".png");
             }
             
             else if(Engine.SCALE == 1.5)
             {
-                image = Assets.getBitmapData("assets/data/" + imageName + "@1.5x.png");
+                image = Assets.getBitmapData("stencyl:assets/data/" + imageName + "@1.5x.png");
             }
             
             else if(Engine.SCALE == 2)
             {
-                image = Assets.getBitmapData("assets/data/" + imageName + "@2x.png");
+                image = Assets.getBitmapData("stencyl:assets/data/" + imageName + "@2x.png");
             }
             
             else
             {
-                image = Assets.getBitmapData("assets/data/" + imageName + "@4x.png");
+                image = Assets.getBitmapData("stencyl:assets/data/" + imageName + "@4x.png");
             }
             
             if (outerImage)

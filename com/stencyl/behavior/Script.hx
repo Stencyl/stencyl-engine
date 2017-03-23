@@ -2370,7 +2370,7 @@ class Script
 	//Example path: "sample.png" - stick into the "extras" folder for your game - see: http://community.stencyl.com/index.php/topic,24729.0.html
 	public static function getExternalImage(path:String):BitmapData
 	{
-		return openfl.Assets.getBitmapData("assets/data/" + path, false);
+		return openfl.Assets.getBitmapData("stencyl:assets/data/" + path, false);
 	}
 	
 	//TODO: See - http://www.onegiantmedia.com/as3--load-a-remote-image-from-any-url--domain-with-no-stupid-security-sandbox-errors

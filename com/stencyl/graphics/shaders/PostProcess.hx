@@ -104,7 +104,7 @@ class PostProcess extends OpenGLView
 		{
 			if(fragmentShader.length > 6 && fragmentShader.substr(-6) == ".glslx")
 			{
-				var fullScreenShaderXml:haxe.xml.Fast = new haxe.xml.Fast(Xml.parse(Assets.getText(fragmentShader)).firstElement());
+				var fullScreenShaderXml:haxe.xml.Fast = new haxe.xml.Fast(Xml.parse(Assets.getText('stencyl:$fragmentShader')).firstElement());
 				var vertexData:String = (fullScreenShaderXml.hasNode.vertex) ? fullScreenShaderXml.node.vertex.innerData : vertexShader;
 				var fragmentData:String = fullScreenShaderXml.node.fragment.innerData;
 
@@ -117,7 +117,7 @@ class PostProcess extends OpenGLView
 			{
 				fullScreenShader = new FullScreenShader([
 					{ src: vertexShader, fragment: false },
-					{ src: Assets.getText(fragmentShader), fragment: true }
+					{ src: Assets.getText('stencyl:$fragmentShader'), fragment: true }
 				]);
 			}
 		}

@@ -153,7 +153,7 @@ class BitmapFont extends Bitmap
 		customSpacingY = 0;
     
 		//	Take a copy of the font for internal use
-		fontSet = Assets.getBitmapData(fontURL);
+		fontSet = Assets.getBitmapData('stencyl:$fontURL');
 		
 		characterWidth = width;
 		characterHeight = height;

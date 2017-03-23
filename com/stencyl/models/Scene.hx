@@ -86,7 +86,7 @@ class Scene
 	
 	public function load()
 	{
-		var xml:Fast = new Fast(Xml.parse(openfl.Assets.getText("assets/data/scene-" + ID + ".xml")).firstElement());
+		var xml:Fast = new Fast(Xml.parse(openfl.Assets.getText("stencyl:assets/data/scene-" + ID + ".xml")).firstElement());
 		
 		var numTileLayers:Int = Std.parseInt(xml.att.depth);
 		
@@ -132,11 +132,11 @@ class Scene
 		wireframes = readWireframes(xml.node.terrain.elements);
 		
 		#if js
-		var rawLayers = readRawLayers(openfl.Assets.getText("assets/data/scene-" + ID + ".txt"), numTileLayers);
+		var rawLayers = readRawLayers(openfl.Assets.getText("stencyl:assets/data/scene-" + ID + ".txt"), numTileLayers);
 		#end
 		
 		#if !js
-		var bytes = openfl.Assets.getBytes("assets/data/scene-" + ID + ".scn");
+		var bytes = openfl.Assets.getBytes("stencyl:assets/data/scene-" + ID + ".scn");
 		bytes.endian = openfl.utils.Endian.BIG_ENDIAN;
 		var rawLayers = readRawLayers(bytes, numTileLayers);
 		#end

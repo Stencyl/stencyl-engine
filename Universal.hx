@@ -132,7 +132,7 @@ class Universal extends Sprite
 
 		var scales:Array<Bool> = new Array();		
 		
-		var xml = Xml.parse(openfl.Assets.getText("assets/data/game.xml"));
+		var xml = Xml.parse(openfl.Assets.getText("stencyl:assets/data/game.xml"));
 		var fast = new haxe.xml.Fast(xml.firstElement());
 		
 		var scalesEnabled = fast.node.projectScales;
@@ -529,9 +529,12 @@ class Universal extends Sprite
 	
 	public static function main() 
 	{
+		var assetsClassname = #if scriptable "scripts.CppiaAssets" #else "scripts.MyAssets" #end;
+		var assetsClass = Type.resolveClass(assetsClassname);
+		Reflect.callMethod(assetsClass, Reflect.field(assetsClass, "defineKeys"), []);
+
 		#if scriptable
-		var cppia = Type.resolveClass("scripts.CppiaAssets");
-		Reflect.callMethod(cppia, Reflect.field(cppia, "setAssets"), []);
+		Reflect.callMethod(assetsClass, Reflect.field(assetsClass, "setAssets"), []);
 		
 		if(StencylCppia.gamePath != null)
 			Sys.setCwd(StencylCppia.gamePath);

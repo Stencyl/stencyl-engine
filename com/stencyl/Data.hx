@@ -16,6 +16,7 @@ import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.Atlas;
 import com.stencyl.models.Sound;
+import com.stencyl.models.Font;
 
 import openfl.Assets;
 import openfl.Lib;
@@ -30,23 +31,12 @@ class Data
 	//*-----------------------------------------------
 	
 	public static var instance:Data;
-	private var loader:AssetLoader;
-	private var preloader:Sprite;
 
 	public static function get():Data
 	{
 		if(instance == null)
 		{
-			var assetLoaderClass = #if scriptable "scripts.CppiaAssets" #else "scripts.MyAssets" #end;
 			instance = new Data();
-			instance.loader = Type.createInstance(Type.resolveClass(assetLoaderClass), []);
-
-			#if(mobile && !air)
-			
-			instance.preloader = Type.createInstance(Type.resolveClass("scripts.StencylPreloader"), []);
-			
-			#end
-			
 			instance.loadAll();
 		}
 		
@@ -75,9 +65,6 @@ class Data
 	//* Data
 	//*-----------------------------------------------
 	
-	//Map of each [sceneID].xml by ID
-	public var scenesXML:Map<Int,String>;
-	
 	//Map of each [sceneID].scn by ID
 	//public var scenesTerrain:Map<Int,Dynamic>;
 
@@ -100,60 +87,23 @@ class Data
 	
 	public function new()
 	{
-		if(Assets.getText("assets/data/game.xml") == "")
+		if(Assets.getText("stencyl:assets/data/game.xml") == "")
 		{
 			throw "Data.hx - Could not load game. Check your logs for a possible cause (likely a bad MP3 file).";
 		}
 	}
 	
-	public function updatePreloader(pct:Int)
-	{
-		//trace(pct);
-		
-		#if(mobile && !air)
-		if(preloader != null)
-		{
-			var event = new ProgressEvent(ProgressEvent.PROGRESS, false, false, pct, 100);
-			Reflect.callMethod(preloader, Reflect.field(preloader, "onUpdate"), [event]);
-		}
-		#end
-	}
-	
 	public function loadAll()
 	{
-		#if(mobile && !air)
-		if(preloader != null)
-		{
-			Lib.current.addChild(preloader);
-		}
-		updatePreloader(0);
-		#end
-		
-		gameXML = new Fast(Xml.parse(Assets.getText("assets/data/game.xml")).firstElement());
-		resourceListXML = new Fast(Xml.parse(Assets.getText("assets/data/resources.xml")).firstElement());
-		sceneListXML = new Fast(Xml.parse(Assets.getText("assets/data/scenes.xml")).firstElement());
-		behaviorListXML = new Fast(Xml.parse(Assets.getText("assets/data/behaviors.xml")).firstElement());
-
-		updatePreloader(5);
+		gameXML = new Fast(Xml.parse(Assets.getText("stencyl:assets/data/game.xml")).firstElement());
+		resourceListXML = new Fast(Xml.parse(Assets.getText("stencyl:assets/data/resources.xml")).firstElement());
+		sceneListXML = new Fast(Xml.parse(Assets.getText("stencyl:assets/data/scenes.xml")).firstElement());
+		behaviorListXML = new Fast(Xml.parse(Assets.getText("stencyl:assets/data/behaviors.xml")).firstElement());
 
 		loadReaders();
 		loadBehaviors();
 		
-		updatePreloader(15);
-		
 		loadResources();
-		
-		updatePreloader(90);
-		
-		scenesXML = new Map<Int,String>();
-		
-		loader.loadScenes(scenesXML);
-		
-		updatePreloader(100);
-		
-		#if(mobile && !air)
-		Lib.current.removeChild(instance.preloader);
-		#end
 		
 		resourceListXML = null;
 		behaviorListXML = null;		
@@ -174,39 +124,18 @@ class Data
 	{
 		behaviors = new Map<Int,Behavior>();
 		
-		#if(mobile && !air)
-		var numParts = 0;
-		
-		for(e in behaviorListXML.elements)
-		{
-			numParts++;
-		}
-		
-		var i = 0;
-		var increment = 10.0 / numParts;
-		#end
-		
 		for(e in behaviorListXML.elements)
 		{
 			//trace("Reading Behavior: " + e.att.name);
 			
-			#if(mobile && !air)
-			updatePreloader(5 + Std.int(increment * i));
-			#end
-			
 			behaviors.set(Std.parseInt(e.att.id), BehaviorReader.readBehavior(e));
-			
-			#if(mobile && !air)
-			i++;
-			#end
 		}
 	}
 	
 	private function loadResources()
 	{
 		resourceAssets = new Map<String,Dynamic>();	
-		loader.loadResources(resourceAssets);
-		updatePreloader(65);	
+		
 		readResourceXML(resourceListXML);
 
 		resourceMap = new Map<String,Resource>();
@@ -225,25 +154,9 @@ class Data
 	{
 		resources = new Map<Int,Resource>();
 		
-		#if(mobile && !air)
-		var numParts = 0;
-		
-		for(e in list.elements)
-		{
-			numParts++;
-		}
-		
-		var i = 0;
-		var increment = 10.0 / numParts;
-		#end
-		
 		for(e in list.elements)
 		{
 			//trace("Reading: " + e.att.name);
-			
-			#if(mobile && !air)
-			updatePreloader(65 + Std.int(increment * i));
-			#end
 			
 			var atlasID = 0;
 			
@@ -253,10 +166,6 @@ class Data
 			}
 			
 			resources.set(Std.parseInt(e.att.id), readResource(Std.parseInt(e.att.id), atlasID, e.name, e.att.name, e));
-			
-			#if(mobile && !air)
-			i++;
-			#end
 		}
 	}
 	
@@ -307,7 +216,7 @@ class Data
 	{
 		if(resourceAssets.get(url) == null)
 		{
-			resourceAssets.set(url, Assets.getBitmapData(diskURL, false));
+			resourceAssets.set(url, Assets.getBitmapData('stencyl:$diskURL', false));
 		}
 		
 		return resourceAssets.get(url);

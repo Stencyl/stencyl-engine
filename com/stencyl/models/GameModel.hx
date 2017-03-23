@@ -175,7 +175,6 @@ class GameModel
 			map.set(Std.parseInt(e.att.id), new Scene(sceneID, e.att.name));
 		}
 		
-		Data.get().scenesXML = null;
 		Data.get().sceneListXML = null;
 		
 		return map;
