@@ -1,3 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
+	
+	<haxeflag name="--remap" value="nme:openfl" />
+	
+	<haxelib name="openfl" />
+	<haxelib name="actuate" />
+	<haxelib name="console" />
+	<haxelib name="polygonal-ds" />
+	<haxelib name="box2d" />
+
+	<section if="flash">
+	
+		<haxeflag name="-D network-sandbox" />
+		<haxeflag name="-D as3_native" />
+		<haxeflag name="-D swf-directblit" />
+		<haxeflag name="-swf-lib" value="flashlib/newgrounds.swf" />
+		<haxeflag name="-swf-lib" value="flashlib/cpmstar.swf" />
+		
+	</section>
+
+	<section if="cppia">
+			
+		<target name="cppia" handler="stencyl-cppia" />
+		<haxelib name="stencyl-cppia" />
+		
+	</section>
+
 </project>
