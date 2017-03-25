@@ -5,6 +5,7 @@ import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 import openfl.geom.Point;
+import com.stencyl.Config;
 import com.stencyl.Engine;
 
 //TODO: It would be better to pass in the frames, broken up and swap between the frames.
@@ -58,7 +59,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		this.durations = durations;
 		this.individualDurations = false;
 		this.numFrames = numFrames;
-		this.smoothing = scripts.MyAssets.antialias;
+		this.smoothing = Config.antialias;
 		
 		region = new Rectangle(0, 0, frameWidth* Engine.SCALE, frameHeight* Engine.SCALE);
 		pt = new Point(0, 0);

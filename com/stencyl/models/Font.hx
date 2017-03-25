@@ -43,16 +43,16 @@ class Font extends Resource
 	{
 		if(isDefault)
 		{
-			var textBytes = Assets.getText("stencyl:assets/graphics/default-font.fnt");
+			var textBytes = Assets.getText("assets/graphics/default-font.fnt");
 			var xml = Xml.parse(textBytes);
-			defaultFont = font = new BitmapFont().loadAngelCode(Assets.getBitmapData("stencyl:assets/graphics/default-font.png"), xml);
+			defaultFont = font = new BitmapFont().loadAngelCode(Assets.getBitmapData("assets/graphics/default-font.png"), xml);
 			fontScale = 1 * Engine.SCALE;
 			letterSpacing = 0;
 		}
 		
 		else
 		{
-			var textBytes = Assets.getText('stencyl:assets/graphics/${Engine.IMG_BASE}/font-$ID.fnt');
+			var textBytes = Assets.getText('assets/graphics/${Engine.IMG_BASE}/font-$ID.fnt');
 			var xml = Xml.parse(textBytes);
 			var img = Data.get().getGraphicAsset
 			(

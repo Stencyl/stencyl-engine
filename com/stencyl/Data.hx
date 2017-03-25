@@ -87,7 +87,7 @@ class Data
 	
 	public function new()
 	{
-		if(Assets.getText("stencyl:assets/data/game.xml") == "")
+		if(Assets.getText("assets/data/game.xml") == "")
 		{
 			throw "Data.hx - Could not load game. Check your logs for a possible cause (likely a bad MP3 file).";
 		}
@@ -95,10 +95,10 @@ class Data
 	
 	public function loadAll()
 	{
-		gameXML = new Fast(Xml.parse(Assets.getText("stencyl:assets/data/game.xml")).firstElement());
-		resourceListXML = new Fast(Xml.parse(Assets.getText("stencyl:assets/data/resources.xml")).firstElement());
-		sceneListXML = new Fast(Xml.parse(Assets.getText("stencyl:assets/data/scenes.xml")).firstElement());
-		behaviorListXML = new Fast(Xml.parse(Assets.getText("stencyl:assets/data/behaviors.xml")).firstElement());
+		gameXML = new Fast(Xml.parse(Assets.getText("assets/data/game.xml")).firstElement());
+		resourceListXML = new Fast(Xml.parse(Assets.getText("assets/data/resources.xml")).firstElement());
+		sceneListXML = new Fast(Xml.parse(Assets.getText("assets/data/scenes.xml")).firstElement());
+		behaviorListXML = new Fast(Xml.parse(Assets.getText("assets/data/behaviors.xml")).firstElement());
 
 		loadReaders();
 		loadBehaviors();
@@ -216,7 +216,7 @@ class Data
 	{
 		if(resourceAssets.get(url) == null)
 		{
-			resourceAssets.set(url, Assets.getBitmapData('stencyl:$diskURL', false));
+			resourceAssets.set(url, Assets.getBitmapData(diskURL, false));
 		}
 		
 		return resourceAssets.get(url);

@@ -27,6 +27,7 @@ import openfl.utils.ByteArray;
 import openfl.Memory;
 #end
 
+import com.stencyl.Config;
 import com.stencyl.Input;
 import com.stencyl.Engine;
 
@@ -1724,7 +1725,7 @@ class Actor extends Sprite
 			transformMatrix.rotate(realAngle * Utils.RAD);
 		}
 		
-		if (scripts.MyAssets.pixelsnap)
+		if (Config.pixelsnap)
 		{
 			transformMatrix.translate(Math.round(drawX) * Engine.SCALE, Math.round(drawY) * Engine.SCALE);
 		}

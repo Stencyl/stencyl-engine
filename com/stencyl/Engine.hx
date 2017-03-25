@@ -8,13 +8,6 @@ import neko.vm.Gc;
 
 import de.polygonal.ds.IntHashTable;
 
-import com.stencyl.behavior.Attribute;
-import com.stencyl.behavior.Behavior;
-import com.stencyl.behavior.TimedTask;
-import com.stencyl.behavior.BehaviorManager;
-import com.stencyl.behavior.BehaviorInstance;
-import com.stencyl.behavior.Script;
-
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.display.DisplayObject;
@@ -35,48 +28,49 @@ import openfl.Assets;
 import openfl.Lib;
 import openfl.ui.Keyboard;
 
-import com.stencyl.graphics.transitions.Transition;
+import com.stencyl.behavior.Attribute;
+import com.stencyl.behavior.Behavior;
+import com.stencyl.behavior.BehaviorInstance;
+import com.stencyl.behavior.BehaviorManager;
+import com.stencyl.behavior.Script;
+import com.stencyl.behavior.TimedTask;
+import com.stencyl.event.EventMaster;
+import com.stencyl.event.NativeListener;
+import com.stencyl.graphics.G;
+import com.stencyl.graphics.BitmapFont;
+import com.stencyl.graphics.shaders.PostProcess;
+import com.stencyl.graphics.shaders.Shader;
+import com.stencyl.graphics.transitions.CircleTransition;
 import com.stencyl.graphics.transitions.FadeInTransition;
 import com.stencyl.graphics.transitions.FadeOutTransition;
-import com.stencyl.graphics.transitions.CircleTransition;
-import com.stencyl.graphics.BitmapFont;
-import com.stencyl.graphics.G;
-
-import com.stencyl.models.scene.layers.BackgroundLayer;
-import com.stencyl.models.scene.layers.RegularLayer;
+import com.stencyl.graphics.transitions.Transition;
+import com.stencyl.utils.Utils;
 
 import com.stencyl.models.Actor;
-import com.stencyl.models.scene.DeferredActor;
+import com.stencyl.models.Background;
+import com.stencyl.models.GameModel;
+import com.stencyl.models.Region;
+import com.stencyl.models.Scene;
+import com.stencyl.models.Sound;
+import com.stencyl.models.SoundChannel;
+import com.stencyl.models.Terrain;
 import com.stencyl.models.actor.Group;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.actor.Collision;
-import com.stencyl.models.scene.ActorInstance;
-import com.stencyl.models.GameModel;
-import com.stencyl.models.Scene;
-import com.stencyl.models.SoundChannel;
-import com.stencyl.models.Region;
-import com.stencyl.models.Terrain;
-import com.stencyl.models.Sound;
-
-import com.stencyl.models.scene.DeferredActor;
-import com.stencyl.models.scene.Tile;
-import com.stencyl.models.scene.Layer;
-import com.stencyl.models.scene.TileLayer;
-import com.stencyl.models.scene.ScrollingBitmap;
-
-import com.stencyl.models.Background;
 import com.stencyl.models.background.ImageBackground;
 import com.stencyl.models.background.ScrollingBackground;
+import com.stencyl.models.collision.Mask;
+import com.stencyl.models.scene.ActorInstance;
+import com.stencyl.models.scene.DeferredActor;
+import com.stencyl.models.scene.Layer;
+import com.stencyl.models.scene.Tile;
+import com.stencyl.models.scene.TileLayer;
+import com.stencyl.models.scene.ScrollingBitmap;
+import com.stencyl.models.scene.layers.BackgroundLayer;
+import com.stencyl.models.scene.layers.RegularLayer;
 
-import scripts.MyAssets;
 //Do not remove - forces your behaviors to be included
 import scripts.MyScripts;
-import com.stencyl.models.collision.Mask;
-
-import com.stencyl.utils.Utils;
-
-import com.stencyl.event.EventMaster;
-import com.stencyl.event.NativeListener;
 
 import motion.Actuate;
 import motion.easing.Elastic;
@@ -103,8 +97,6 @@ import box2D.dynamics.contacts.B2Contact;
 import box2D.dynamics.contacts.B2ContactEdge;
 
 import haxe.ds.ObjectMap;
-import com.stencyl.graphics.shaders.PostProcess;
-import com.stencyl.graphics.shaders.Shader;
 
 //import com.nmefermmmtools.debug.Console;
 
@@ -443,8 +435,8 @@ class Engine
 			var screenWidth = Lib.current.stage.stageWidth;
 			var screenHeight = Lib.current.stage.stageHeight;
 			
-			root.scaleX = MyAssets.gameScale;
-			root.scaleY = MyAssets.gameScale;
+			root.scaleX = Config.gameScale;
+			root.scaleY = Config.gameScale;
 			root.x = 0.0;
 			root.y = 0.0;
 			
@@ -457,7 +449,7 @@ class Engine
 					
 			if(stats != null)
 			{
-				stats.x = Std.int(MyAssets.stageWidth * MyAssets.gameScale) - stats.width;
+				stats.x = Std.int(Config.stageWidth * Config.gameScale) - stats.width;
 				stats.y = 0;
 			}
 			
@@ -515,7 +507,7 @@ class Engine
 		root.mouseEnabled = false;
 		//root.stage.mouseChildren = false;
 
-		if(MyAssets.debugDraw)
+		if(Config.debugDraw)
 		{
 			DEBUG_DRAW = true;
 		}
@@ -524,7 +516,7 @@ class Engine
 		Script.engine = this;
 		this.root = root;
 		
-		isFullScreen = MyAssets.startInFullScreen;
+		isFullScreen = Config.startInFullScreen;
 		screenScaleX = root.scaleX;
 		originalScaleX = screenScaleX;
 		screenScaleY = root.scaleY;
@@ -532,12 +524,12 @@ class Engine
 		screenOffsetX = Std.int(root.x);
 		screenOffsetY = Std.int(root.y);
 		
-		NO_PHYSICS = MyAssets.physicsMode == 1;
+		NO_PHYSICS = Config.physicsMode == 1;
 		
 		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
 		stage.addEventListener(Event.DEACTIVATE, onFocusLost);
 		stage.addEventListener(Event.ACTIVATE, onFocus);
-		begin(MyAssets.initSceneID);
+		begin(Config.initSceneID);
 		
 		#if(desktop || iphone || android)
 		if(openfl.display.OpenGLView.isSupported)
@@ -636,9 +628,9 @@ class Engine
 		Input.define(INTERNAL_SHIFT, [Key.SHIFT]);
 		Input.define(INTERNAL_CTRL, [Key.CONTROL]);
 		
-		landscape = MyAssets.landscape;
-		var stageWidth = MyAssets.stageWidth;
-		var stageHeight = MyAssets.stageHeight;
+		landscape = Config.landscape;
+		var stageWidth = Config.stageWidth;
+		var stageHeight = Config.stageHeight;
 		
 		screenWidth = Std.int(stageWidth);
 		screenHeight = Std.int(stageHeight);
@@ -646,7 +638,7 @@ class Engine
 		screenHeightHalf = Std.int(stageHeight/2);
 		
 		#if (mobile && !air)
-		if(!MyAssets.autorotate)
+		if(!Config.autorotate)
 		{
 			//These are no longer implemented in OpenFL.
 			/*if(landscape)
@@ -749,16 +741,16 @@ class Engine
 		
 		//Profiler
 		#if !js
-		//if(!MyAssets.releaseMode)
+		//if(!Config.releaseMode)
 		{
-			if(MyAssets.showConsole)
+			if(Config.showConsole)
 			{
 				stats = new com.nmefermmmtools.debug.Stats();
 				stage.addChild(stats);
 			}
 		}
 		
-		/*if(MyAssets.showConsole)
+		/*if(Config.showConsole)
 		{
 			pgr.gconsole.GameConsole.init();
 			pgr.GameConsole.setConsoleFont('./path/to/your/font.ttf');
@@ -791,13 +783,9 @@ class Engine
 		}
 		
 		//Purchases
-		#if (mobile && !android)
-		Purchases.initialize();
-		#end	
-		
-		#if (mobile && android)
-		Purchases.initialize(MyAssets.androidPublicKey);
-		#end	
+		#if (mobile)
+		Purchases.initialize(#if android APIKeys.androidPublicKey #end);
+		#end
 		
 		//Now, let's start
 		//enter = new FadeInTransition(0.5);
@@ -2958,9 +2946,9 @@ class Engine
 		screenScaleX = m * originalScaleX;
 		screenScaleY = m * originalScaleY;
 		
-		screenWidth = Std.int(MyAssets.stageWidth * (1 / m));
+		screenWidth = Std.int(Config.stageWidth * (1 / m));
 		screenWidthHalf = Std.int(screenWidth / 2);
-		screenHeight = Std.int(MyAssets.stageHeight * (1 / m));
+		screenHeight = Std.int(Config.stageHeight * (1 / m));
 		screenHeightHalf = Std.int(screenHeight / 2);
 		setColorBackground(scene.colorBackground);
 		root.scrollRect = new Rectangle(0, 0, screenWidth, screenHeight);

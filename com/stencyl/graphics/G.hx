@@ -12,6 +12,7 @@ import openfl.geom.Rectangle;
 import openfl.geom.Point;
 import openfl.geom.Matrix;
 
+import com.stencyl.Config;
 import com.stencyl.Engine;
 import com.stencyl.models.Actor;
 import com.stencyl.models.Font;
@@ -628,7 +629,7 @@ class G
 			var destPt = new Point(1,1);
 			newImg.copyPixels(img, srcRect, destPt);
 			
-			graphics.beginBitmapFill(newImg, mtx, false, scripts.MyAssets.antialias);
+			graphics.beginBitmapFill(newImg, mtx, false, Config.antialias);
 			var rectX = ((imgSize - img.width) / 2);
 			var rectY = ((imgSize - img.height) / 2);
 			graphics.drawRect(this.x - rectX, this.y - rectY, imgSize, imgSize);

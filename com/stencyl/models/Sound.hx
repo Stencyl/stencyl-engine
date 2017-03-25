@@ -52,7 +52,7 @@ class Sound extends Resource
 		if(!streaming)
 		{
 			//trace("Loading sound: " + ID);
-			src = Assets.getSound("stencyl:assets/sfx/sound-" + ID + "." + this.ext, false);
+			src = Assets.getSound("assets/sfx/sound-" + ID + "." + this.ext, false);
 		}
 	}
 	
@@ -74,7 +74,7 @@ class Sound extends Resource
 	{
 		if(streaming)
 		{
-			src = Assets.getSound("stencyl:assets/music/sound-" + ID + "." + ext, false);
+			src = Assets.getSound("assets/music/sound-" + ID + "." + ext, false);
 		}
 		
 		if(src == null)
@@ -90,7 +90,7 @@ class Sound extends Resource
 	{
 		if(streaming)
 		{
-			src = Assets.getSound("stencyl:assets/music/sound-" + ID + "." + ext, false);
+			src = Assets.getSound("assets/music/sound-" + ID + "." + ext, false);
 		}
 		
 		if(src == null)

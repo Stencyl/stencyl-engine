@@ -1,14 +1,24 @@
 package com.stencyl.utils;
 
+import lime.app.Future;
+import lime.app.Promise;
+import lime.graphics.Image;
+import lime.utils.Bytes;
 import openfl.display.BitmapData;
 import openfl.display.Bitmap;
+import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.Sprite;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.utils.ByteArray;
 #if flash
+import flash.display.Loader;
+import flash.events.Event;
+import flash.events.IOErrorEvent;
+import flash.events.ProgressEvent;
 import flash.media.SoundMixer;
 #end
 import openfl.media.SoundTransform;
@@ -874,6 +884,115 @@ class Utils
 		
 		if (onComplete != null)
 			onComplete(true);
+	}
+
+	#if (flash || js)
+	private static function getFlatName(path:String):String
+	{
+		path = StringTools.replace(path, "/", "_");
+		path = StringTools.replace(path, ".", "_");
+		path = StringTools.replace(path, "-", "_");
+		return path;
+	}
+
+	private static function getAssetClass(path:String):Class<Dynamic>
+	{
+		return Type.resolveClass("__ASSET__" + getFlatName(path));
+	}
+	#end
+
+	public static function getConfigBytes(path:String):Bytes
+	{
+		#if (flash || html5)
+
+		return haxe.Resource.getBytes(getFlatName(path));
+
+		#else
+
+		return loadBytes(path);
+
+		#end
+	}
+
+	public static function getConfigText(path:String):String
+	{
+		#if (flash || html5)
+
+		return haxe.Resource.getString(getFlatName(path));
+
+		#else
+
+		return loadText(path);
+
+		#end
+	}
+
+	//Because this is passed through a loader on the flash target, it returns a Future instead.
+	public static function getConfigBitmap(path:String):Future<DisplayObject>
+	{
+		#if flash
+
+		var promise = new Promise<DisplayObject> ();
+		
+		var data = haxe.Resource.getBytes(getFlatName(path));
+		var loader = new Loader();
+		loader.loadBytes(data.getData());
+		return Future.withValue((loader : DisplayObject));
+		
+		#elseif html5
+
+		try
+		{
+			var path = getFlatName(StringTools.replace(path, ".png", ".txt"));
+			var data = haxe.Resource.getString(path);
+			return BitmapData.loadFromBase64(data, "png")
+				.then(function (bmp) return Future.withValue((new Bitmap(bmp) : DisplayObject)));
+		}
+		catch(msg:String)
+		{
+			trace("(You probably have a old browser) Error occurred: " + msg);
+		}
+
+		#else
+
+		return BitmapData.loadFromFile(path)
+			.then(function (bmp) return Future.withValue((new Bitmap(bmp) : DisplayObject)));
+
+		#end
+	}
+
+	public static function loadBytes(path:String):Bytes
+	{
+		#if (flash || html5)
+
+		var byteArray:ByteArray = cast Type.createInstance(getAssetClass(path), []);
+		return Bytes.ofData(byteArray);
+
+		#else
+
+		return Bytes.fromFile(path);
+
+		#end
+	}
+
+	public static function loadText(path:String):String
+	{
+		var bytes = loadBytes(path);
+		return bytes.getString(0, bytes.length);
+	}
+
+	public static function loadBitmapData(path:String):BitmapData
+	{
+		#if (flash)
+
+		return cast Type.createInstance(getAssetClass(path), []);
+
+		#else
+
+		var image = Image.fromFile(path);
+		return BitmapData.fromImage(image);
+
+		#end
 	}
 
 	// Time information.

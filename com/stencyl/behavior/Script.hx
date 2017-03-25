@@ -32,6 +32,7 @@ import openfl.geom.Rectangle;
 import com.stencyl.graphics.G;
 import com.stencyl.models.scene.ScrollingBitmap;
 
+import com.stencyl.Config;
 import com.stencyl.models.Actor;
 import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.CollisionPoint;
@@ -84,8 +85,6 @@ import haxe.io.BytesData;
 //#if flash
 import openfl.filters.ColorMatrixFilter;
 //#end
-
-import scripts.MyAssets;
 
 //XXX: For some reason, it wasn't working by importing openfl.net.SharedObjectFlushedStatus
 #if js
@@ -2370,7 +2369,7 @@ class Script
 	//Example path: "sample.png" - stick into the "extras" folder for your game - see: http://community.stencyl.com/index.php/topic,24729.0.html
 	public static function getExternalImage(path:String):BitmapData
 	{
-		return openfl.Assets.getBitmapData("stencyl:assets/data/" + path, false);
+		return openfl.Assets.getBitmapData("assets/data/" + path, false);
 	}
 	
 	//TODO: See - http://www.onegiantmedia.com/as3--load-a-remote-image-from-any-url--domain-with-no-stupid-security-sandbox-errors
@@ -2506,7 +2505,7 @@ class Script
 			img.imgX = x - (Engine.SCALE * a.getWidth() * (Engine.SCALE / 2));
 			img.imgY = y - (Engine.SCALE * a.getHeight() * (Engine.SCALE / 2));
 			
-			img.smoothing = scripts.MyAssets.antialias;
+			img.smoothing = Config.antialias;
 
 			a.attachedImages.push(img);
 		}
@@ -2523,7 +2522,7 @@ class Script
 			engine.hudLayer.addChild(img);
 			img.imgX = x;
 			img.imgY = y;
-			img.smoothing = scripts.MyAssets.antialias;
+			img.smoothing = Config.antialias;
 		}
 	}
 	
@@ -2548,7 +2547,7 @@ class Script
 			
 			img.imgX = x;
 			img.imgY = y;
-			img.smoothing = scripts.MyAssets.antialias;
+			img.smoothing = Config.antialias;
 		}
 	}
 	

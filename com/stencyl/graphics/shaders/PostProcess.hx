@@ -1,6 +1,7 @@
 package com.stencyl.graphics.shaders;
 
 import flash.geom.Rectangle;
+import com.stencyl.Config;
 import com.stencyl.Engine;
 import motion.Actuate;
 
@@ -104,7 +105,7 @@ class PostProcess extends OpenGLView
 		{
 			if(fragmentShader.length > 6 && fragmentShader.substr(-6) == ".glslx")
 			{
-				var fullScreenShaderXml:haxe.xml.Fast = new haxe.xml.Fast(Xml.parse(Assets.getText('stencyl:$fragmentShader')).firstElement());
+				var fullScreenShaderXml:haxe.xml.Fast = new haxe.xml.Fast(Xml.parse(Assets.getText(fragmentShader)).firstElement());
 				var vertexData:String = (fullScreenShaderXml.hasNode.vertex) ? fullScreenShaderXml.node.vertex.innerData : vertexShader;
 				var fragmentData:String = fullScreenShaderXml.node.fragment.innerData;
 
@@ -117,7 +118,7 @@ class PostProcess extends OpenGLView
 			{
 				fullScreenShader = new FullScreenShader([
 					{ src: vertexShader, fragment: false },
-					{ src: Assets.getText('stencyl:$fragmentShader'), fragment: true }
+					{ src: Assets.getText(fragmentShader), fragment: true }
 				]);
 			}
 		}
@@ -225,8 +226,8 @@ class PostProcess extends OpenGLView
 		
 		else
 		{
-			createTexture(Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale), Std.int(scripts.MyAssets.stageHeight * scripts.MyAssets.gameScale));
-			createRenderbuffer(Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale), Std.int(scripts.MyAssets.stageHeight * scripts.MyAssets.gameScale));
+			createTexture(Std.int(Config.stageWidth * Config.gameScale), Std.int(Config.stageHeight * Config.gameScale));
+			createRenderbuffer(Std.int(Config.stageWidth * Config.gameScale), Std.int(Config.stageHeight * Config.gameScale));
 		}
 		#else
 		createTexture(Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
@@ -293,7 +294,7 @@ class PostProcess extends OpenGLView
 		
 		else
 		{
-			GL.viewport(0, 0, Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale), Std.int(scripts.MyAssets.stageHeight * scripts.MyAssets.gameScale));
+			GL.viewport(0, 0, Std.int(Config.stageWidth * Config.gameScale), Std.int(Config.stageHeight * Config.gameScale));
 		}
 		#else
 		GL.viewport(0, 0, Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));

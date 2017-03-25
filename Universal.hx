@@ -2,6 +2,7 @@ package;
 
 import openfl.Lib;
 import openfl.display.Sprite;
+import openfl.display.Stage;
 import openfl.display.StageAlign;
 import openfl.display.StageScaleMode;
 import openfl.display.StageDisplayState;
@@ -11,76 +12,41 @@ import openfl.events.KeyboardEvent;
 import openfl.system.Capabilities;
 import openfl.ui.Keyboard;
 
-#if flash
-import flash.events.UncaughtErrorEvent;
-import flash.events.ErrorEvent;
-import flash.errors.Error;
-#end
-
+import com.stencyl.APIKeys;
+import com.stencyl.Config;
 import com.stencyl.Engine;
+import com.stencyl.Input;
+import com.stencyl.graphics.Scale;
+import com.stencyl.graphics.ScaleMode;
+import com.stencyl.utils.Utils;
 import haxe.xml.Fast;
-
-import scripts.MyAssets;
 
 class Universal extends Sprite 
 {
-	public static inline var NO_SCALING = 0;
-	public static inline var FULLSCREEN = 1;
-	public static inline var STRETCH_TO_FIT = 2;
-	public static inline var SCALE_TO_FIT_LETTERBOX = 3;
-	public static inline var SCALE_TO_FIT_FILL = 4;
-	public static inline var SCALE_TO_FIT_FULLSCREEN = 5;
+	public static function initStage(stage:Stage):Void
+	{
+		stage.align = StageAlign.TOP_LEFT;
+		stage.scaleMode = StageScaleMode.NO_SCALE;
+		
+		#if(mobile && !air)
+		stage.opaqueBackground = 0x000000;
+		#end
+	}
 
 	public function new() 
 	{
 		super();
 
-		#if flash
-		if(!MyAssets.releaseMode)
-		{
-			#if (flash9 || flash10)
-        	haxe.Log.trace = function(v,?pos) { untyped __global__["trace"]("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"):",v); }
-        	#else
-       		haxe.Log.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
-        	#end
-        	
-        	Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
-		}
-		#end
-
 		addEventListener(Event.ADDED_TO_STAGE, onAdded);
 	}
-
-	#if flash
-	function uncaughtErrorHandler(event:UncaughtErrorEvent):Void
-	{
-		if (Std.is(event.error, Error))
-		{
-			trace(cast(event.error, Error).message);
-		}
-		else if (Std.is(event.error,ErrorEvent))
-		{
-			trace(cast(event.error, ErrorEvent).text);
-		}
-		else
-		{
-			trace(event.error.toString());
-		}
-	}
-	#end
 	
 	private function onAdded(event:Event):Void 
 	{
-		init();	
-	}
-	
-	public function init()
-	{        
-        initServices();
-        
 		removeEventListener(Event.ADDED_TO_STAGE, onAdded);
-		
-		if(MyAssets.startInFullScreen)
+
+		initServices();
+
+		if(Config.startInFullScreen)
 		{
 			stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 			initScreen(true);
@@ -91,8 +57,6 @@ class Universal extends Sprite
 		{
 			initScreen();
 		}
-		
-		new Engine(this);
 	}
 	
 	private function onKeyDown(e:KeyboardEvent = null)
@@ -109,17 +73,15 @@ class Universal extends Sprite
 		//Newgrounds and other APIs
 		
 		#if(flash)
-		var newgroundsID = MyAssets.newgroundsID;
-		var newgroundsKey = MyAssets.newgroundsKey;
 		
-		if(newgroundsID != "")
+		if(APIKeys.newgroundsID != "")
         {
-        	com.newgrounds.API.API.connect(root, newgroundsID, newgroundsKey);
+        	com.newgrounds.API.API.connect(root, APIKeys.newgroundsID, APIKeys.newgroundsKey);
         }
         
         #end
 	}
-	
+
 	//isFullScreen is used on Web/Desktop for full screen mode
 	public function initScreen(isFullScreen:Bool = false)
 	{
@@ -130,25 +92,21 @@ class Universal extends Sprite
 	
 		Engine.stage = stage;
 
-		var scales:Array<Bool> = new Array();		
-		
-		var xml = Xml.parse(openfl.Assets.getText("stencyl:assets/data/game.xml"));
-		var fast = new haxe.xml.Fast(xml.firstElement());
-		
-		var scalesEnabled = fast.node.projectScales;
+		var enabledScales:Array<Scale> = Config.scales.get("project");
 		#if web
-		var scalesEnabled = fast.node.webScales;
+		enabledScales = Config.scales.get("web");
 		#elseif desktop
-		var scalesEnabled = fast.node.desktopScales;
+		enabledScales = Config.scales.get("desktop");
 		#elseif (mobile && !android)
-		var scalesEnabled = fast.node.iOSScales;
+		enabledScales = Config.scales.get("ios");
 		#elseif android
-		var scalesEnabled = fast.node.androidScales;
+		enabledScales = Config.scales.get("android");
 		#end
 
-		for (scale in scalesEnabled.nodes.scale)
+		var scales = new Map<String,Bool>();
+		for(scale in enabledScales)
 		{
-			scales.push(scale.att.enabled == "true");
+			scales.set(scale, true);
 		}
 
 		var skipScaling = false;
@@ -162,7 +120,7 @@ class Universal extends Sprite
 			stageHeight = Std.int(Capabilities.screenResolutionY);
 		}
 		
-		else if(MyAssets.stageWidth != stage.stageWidth)
+		else if(Config.stageWidth != stage.stageWidth)
 		{
 			stageWidth = stage.stageWidth;
 			stageHeight = stage.stageHeight;
@@ -176,12 +134,12 @@ class Universal extends Sprite
 		#end
 		
 		#if flash
-		if(isFullScreen || MyAssets.gameScale > MyAssets.maxScale)
+		if(isFullScreen || Config.gameScale > Config.maxScale)
 		{
-			if (MyAssets.gameScale > MyAssets.maxScale && !isFullScreen)
+			if (Config.gameScale > Config.maxScale && !isFullScreen)
 			{
-				stageWidth = Std.int(MyAssets.stageWidth * MyAssets.gameScale);
-				stageHeight = Std.int(MyAssets.stageHeight * MyAssets.gameScale);				
+				stageWidth = Std.int(Config.stageWidth * Config.gameScale);
+				stageHeight = Std.int(Config.stageHeight * Config.gameScale);				
 			}
 			isFullScreen = true;
 		}
@@ -198,7 +156,7 @@ class Universal extends Sprite
 		stageWidth = Std.int(Capabilities.screenResolutionX);
 		stageHeight = Std.int(Capabilities.screenResolutionY);
 		
-		if(stageWidth < stageHeight && MyAssets.landscape)
+		if(stageWidth < stageHeight && Config.landscape)
 		{
 			stageHeight = stage.stageWidth;
 			stageWidth = stage.stageHeight;
@@ -211,7 +169,7 @@ class Universal extends Sprite
 		stageWidth = Std.int(Capabilities.screenResolutionX);
 		stageHeight = Std.int(Capabilities.screenResolutionY);
 		
-		if(stageWidth < stageHeight && MyAssets.landscape)
+		if(stageWidth < stageHeight && Config.landscape)
 		{
 			var temp = stageHeight;
 			stageHeight = stageWidth;
@@ -219,8 +177,8 @@ class Universal extends Sprite
 		}
 		#end
 
-		trace("Stage Width: " + MyAssets.stageWidth);
-		trace("Stage Height: " + MyAssets.stageHeight);
+		trace("Stage Width: " + Config.stageWidth);
+		trace("Stage Height: " + Config.stageHeight);
 		trace("Screen Width: " + stageWidth);
 		trace("Screen Height: " + stageHeight);
 		trace("Screen DPI: " + Capabilities.screenDPI);
@@ -281,8 +239,8 @@ class Universal extends Sprite
 			}		
 			
 			//Generalized this from 320 x 480 to work with any resolution
-			var x1 = MyAssets.stageWidth;
-			var y1 = MyAssets.stageHeight;
+			var x1 = Config.stageWidth;
+			var y1 = Config.stageHeight;
 			
 			//TODO: Draw from the game's width/height instead. Games not close to 480x320 may act differently than expected.
 			//Can't do today because editor doesn't pass this info in full screen mode.
@@ -292,7 +250,7 @@ class Universal extends Sprite
 				y1 = 320;
 			}
 			
-			else if(!MyAssets.landscape)
+			else if(!Config.landscape)
 			{
 				var temp = x1;
 				x1 = y1;
@@ -339,26 +297,26 @@ class Universal extends Sprite
 			}
 			
 			//4 scale scheme
-			if(larger >= x4 && smaller >= y4 && scales[4])
+			if(larger >= x4 && smaller >= y4 && scales.exists(Scale._4X))
 			{
 				Engine.SCALE = 4;
 				Engine.IMG_BASE = "4x";
 			}
 			
-			else if(larger >= x3 && smaller >= y3 && scales[3])
+			else if(larger >= x3 && smaller >= y3 && scales.exists(Scale._3X))
 			{
 				Engine.SCALE = 3;
 				Engine.IMG_BASE = "3x";
 			}
 			
-			else if(larger >= x2 && smaller >= y2 && scales[2])
+			else if(larger >= x2 && smaller >= y2 && scales.exists(Scale._2X))
 			{
 				Engine.SCALE = 2;
 				Engine.IMG_BASE = "2x";
 			}
 			
 			#if(android || flash || desktop)
-			else if(larger >= x15 && smaller >= y15 && scales[1])
+			else if(larger >= x15 && smaller >= y15 && scales.exists(Scale._1_5X))
 			{
 				Engine.SCALE = 1.5;
 				Engine.IMG_BASE = "1.5x";
@@ -378,37 +336,37 @@ class Universal extends Sprite
 		#if(!mobile)
 		if(!isFullScreen)
 		{
-			Engine.SCALE = MyAssets.gameScale;
-			Engine.IMG_BASE = MyAssets.gameImageBase;
+			Engine.SCALE = Config.gameScale;
+			Engine.IMG_BASE = Config.gameImageBase;
 		}
 		#end
 
-		trace("Max Scale: " + MyAssets.maxScale);
+		trace("Max Scale: " + Config.maxScale);
 		trace("Engine Scale: " + Engine.IMG_BASE);
 
-		var originalWidth = MyAssets.stageWidth;
-		var originalHeight = MyAssets.stageHeight;
+		var originalWidth = Config.stageWidth;
+		var originalHeight = Config.stageHeight;
 		
-		MyAssets.stageWidth = Std.int(MyAssets.stageWidth * MyAssets.gameScale * Engine.SCALE);
-		MyAssets.stageHeight = Std.int(MyAssets.stageHeight * MyAssets.gameScale * Engine.SCALE);
+		Config.stageWidth = Std.int(Config.stageWidth * Config.gameScale * Engine.SCALE);
+		Config.stageHeight = Std.int(Config.stageHeight * Config.gameScale * Engine.SCALE);
 
 		#if(flash || mobile || desktop)
 		if(!skipScaling)
 		{
 			//Stretch To Fit
-			if(MyAssets.scaleMode == STRETCH_TO_FIT)
+			if(Config.scaleMode == ScaleMode.STRETCH_TO_FIT)
 			{
-				scaleX *= stageWidth / MyAssets.stageWidth;
-				scaleY *= stageHeight / MyAssets.stageHeight;
+				scaleX *= stageWidth / Config.stageWidth;
+				scaleY *= stageHeight / Config.stageHeight;
 				
 				trace("Algorithm: Stretch to Fit");
 			}
 		
 			//Full Screen Mode
-			else if(MyAssets.scaleMode == FULLSCREEN)
+			else if(Config.scaleMode == ScaleMode.FULLSCREEN)
 			{
 				//Max Scale: set the scale to what it would have been
-				if(MyAssets.maxScale < theoreticalScale)
+				if(Config.maxScale < theoreticalScale)
 				{
 					scaleX = theoreticalScale;
 					scaleY = theoreticalScale;
@@ -416,8 +374,8 @@ class Universal extends Sprite
 					stageHeight = Std.int(stageHeight / theoreticalScale);
 				}
 				
-				MyAssets.stageWidth = stageWidth;
-				MyAssets.stageHeight = stageHeight;
+				Config.stageWidth = stageWidth;
+				Config.stageHeight = stageHeight;
 					
 				originalWidth = Std.int(stageWidth / Engine.SCALE);
 				originalHeight = Std.int(stageHeight / Engine.SCALE);
@@ -432,7 +390,7 @@ class Universal extends Sprite
 				var screenW = Std.int(Capabilities.screenResolutionX);
 				var screenH = Std.int(Capabilities.screenResolutionY);
 				
-				if(screenW < screenH && MyAssets.landscape)
+				if(screenW < screenH && Config.landscape)
 				{
 					screenH = Std.int(Capabilities.screenResolutionX);
 					screenW = Std.int(Capabilities.screenResolutionY);
@@ -445,33 +403,33 @@ class Universal extends Sprite
 				trace(screenLandscape);
 				
 				//Scale to Fit: Letterboxed
-				if(MyAssets.scaleMode == SCALE_TO_FIT_LETTERBOX)
+				if(Config.scaleMode == ScaleMode.SCALE_TO_FIT_LETTERBOX)
 				{
-					scaleX = Math.min(stageWidth*MyAssets.gameScale / MyAssets.stageWidth, stageHeight*MyAssets.gameScale / MyAssets.stageHeight);
+					scaleX = Math.min(stageWidth*Config.gameScale / Config.stageWidth, stageHeight*Config.gameScale / Config.stageHeight);
 					scaleY = scaleX;
 					
-					MyAssets.stageWidth = Std.int(MyAssets.stageWidth/MyAssets.gameScale);
-					MyAssets.stageHeight = Std.int(MyAssets.stageHeight/MyAssets.gameScale);
+					Config.stageWidth = Std.int(Config.stageWidth/Config.gameScale);
+					Config.stageHeight = Std.int(Config.stageHeight/Config.gameScale);
 					
 					trace("Algorithm: Scale to Fit (Letterbox)");
 				}
 				
 				//Scale to Fit: Fill/Cropped
-				else if(MyAssets.scaleMode == SCALE_TO_FIT_FILL)
+				else if(Config.scaleMode == ScaleMode.SCALE_TO_FIT_FILL)
 				{
-					scaleX *= Math.max(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
+					scaleX *= Math.max(stageWidth / Config.stageWidth, stageHeight / Config.stageHeight);
 					scaleY = scaleX;
 					
-					MyAssets.stageWidth = Std.int(MyAssets.stageWidth/MyAssets.gameScale);
-					MyAssets.stageHeight = Std.int(MyAssets.stageHeight/MyAssets.gameScale);
+					Config.stageWidth = Std.int(Config.stageWidth/Config.gameScale);
+					Config.stageHeight = Std.int(Config.stageHeight/Config.gameScale);
 					
 					trace("Algorithm: Scale to Fit (Fill)");
 				}
 				
 				//Scale to Fit: Full Screen
-				else if(MyAssets.scaleMode == SCALE_TO_FIT_FULLSCREEN)
+				else if(Config.scaleMode == ScaleMode.SCALE_TO_FIT_FULLSCREEN)
 				{
-					scaleX *= Math.min(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
+					scaleX *= Math.min(stageWidth / Config.stageWidth, stageHeight / Config.stageHeight);
 					scaleY = scaleX;
 					
 					trace("Algorithm: Scale to Fit (Full Screen)");
@@ -479,8 +437,8 @@ class Universal extends Sprite
 					originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
 					originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
 					
-					MyAssets.stageWidth = Std.int(stageWidth/scaleX);
-					MyAssets.stageHeight = Std.int(stageHeight/scaleY);
+					Config.stageWidth = Std.int(stageWidth/scaleX);
+					Config.stageHeight = Std.int(stageHeight/scaleY);
 					
 					stageWidth = Std.int(stageWidth / theoreticalScale);
 					stageHeight = Std.int(stageHeight / theoreticalScale);
@@ -490,19 +448,19 @@ class Universal extends Sprite
 				//"No Scaling" (Only integer scales)
 				else
 				{
-					scaleX = Math.max(1, Std.int(Math.min(stageWidth*MyAssets.gameScale / MyAssets.stageWidth, stageHeight*MyAssets.gameScale / MyAssets.stageHeight)));
+					scaleX = Math.max(1, Std.int(Math.min(stageWidth*Config.gameScale / Config.stageWidth, stageHeight*Config.gameScale / Config.stageHeight)));
 					scaleY = scaleX;
 
-					MyAssets.stageWidth = Std.int(MyAssets.stageWidth/MyAssets.gameScale);
-					MyAssets.stageHeight = Std.int(MyAssets.stageHeight/MyAssets.gameScale);					
+					Config.stageWidth = Std.int(Config.stageWidth/Config.gameScale);
+					Config.stageHeight = Std.int(Config.stageHeight/Config.gameScale);					
 					
 					trace("Algorithm: No Scaling (Integer Scaling)");
 				}
 				
-				if(MyAssets.scaleMode != SCALE_TO_FIT_FULLSCREEN)
+				if(Config.scaleMode != ScaleMode.SCALE_TO_FIT_FULLSCREEN)
 				{
-					x += (stageWidth - MyAssets.stageWidth * scaleX)/2;
-					y += (stageHeight - MyAssets.stageHeight * scaleY)/2;
+					x += (stageWidth - Config.stageWidth * scaleX)/2;
+					y += (stageHeight - Config.stageHeight * scaleY)/2;
 				}
 			}
 		}
@@ -510,44 +468,50 @@ class Universal extends Sprite
 		
 		//Clip the view
 		#if(mobile)
-		if(MyAssets.scaleMode != FULLSCREEN && MyAssets.scaleMode != STRETCH_TO_FIT)
+		if(Config.scaleMode != ScaleMode.FULLSCREEN && Config.scaleMode != ScaleMode.STRETCH_TO_FIT)
 		{
-			scrollRect = new openfl.geom.Rectangle(0, 0, MyAssets.stageWidth, MyAssets.stageHeight);
+			scrollRect = new openfl.geom.Rectangle(0, 0, Config.stageWidth, Config.stageHeight);
 		}
 		#end
 		
 		#if(flash || js || (cpp && !mobile))
-		scrollRect = new openfl.geom.Rectangle(0, 0, MyAssets.stageWidth, MyAssets.stageHeight);
+		scrollRect = new openfl.geom.Rectangle(0, 0, Config.stageWidth, Config.stageHeight);
 		#end
 		
-		MyAssets.stageWidth = originalWidth;
-		MyAssets.stageHeight = originalHeight;
+		Config.stageWidth = originalWidth;
+		Config.stageHeight = originalHeight;
 
 		trace("Scale X: " + scaleX);
 		trace("Scale Y: " + scaleY);
 	}
-	
-	public static function main() 
+
+	@:access(openfl.display.Stage)
+	public function preloaderComplete():Void
 	{
-		var assetsClassname = #if scriptable "scripts.CppiaAssets" #else "scripts.MyAssets" #end;
-		var assetsClass = Type.resolveClass(assetsClassname);
-		Reflect.callMethod(assetsClass, Reflect.field(assetsClass, "defineKeys"), []);
+		#if flash
+		
+		new Engine(this);
+		
+		#else
+		
+		try {
+			
+			new Engine(this);
+			
+		} catch (e:Dynamic) {
+			
+			stage.__handleError (e);
+			
+		}
+		
+		stage.dispatchEvent (new openfl.events.Event (openfl.events.Event.RESIZE, false, false));
+		
+		if (stage.window.fullscreen) {
+			
+			stage.dispatchEvent (new openfl.events.FullScreenEvent (openfl.events.FullScreenEvent.FULL_SCREEN, false, false, true, true));
+			
+		}
 
-		#if scriptable
-		Reflect.callMethod(assetsClass, Reflect.field(assetsClass, "setAssets"), []);
-		
-		if(StencylCppia.gamePath != null)
-			Sys.setCwd(StencylCppia.gamePath);
 		#end
-
-		var stage = Lib.current.stage;
-		
-		stage.align = StageAlign.TOP_LEFT;
-		stage.scaleMode = StageScaleMode.NO_SCALE;
-		
-		#if(mobile && !air)
-		stage.opaqueBackground = 0x000000;
-		#end
-		Lib.current.addChild(new Universal());
 	}
 }

@@ -12,6 +12,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
+import com.stencyl.Config;
 import com.stencyl.models.Scene;
 import com.stencyl.utils.Utils;
 import com.stencyl.models.collision.Grid;
@@ -90,7 +91,7 @@ class TileLayer extends Sprite
 			);
 			
 			var bmp = new Bitmap(bitmapData);
-			bmp.smoothing = scripts.MyAssets.antialias;
+			bmp.smoothing = Config.antialias;
 			addChild(bmp);
 		}
 		#end
@@ -410,7 +411,7 @@ class TileLayer extends Sprite
 				Std.int((Engine.screenWidth * Engine.SCALE) + (scene.tileWidth * Engine.SCALE)),
 				Std.int((Engine.screenHeight * Engine.SCALE) + (scene.tileHeight * Engine.SCALE)),
 				fltileset,
-				scripts.MyAssets.antialias
+				Config.antialias
 			);
 			tilemaps.set(fltileset, tm);
 			addChild(tm);

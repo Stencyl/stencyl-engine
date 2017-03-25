@@ -9,8 +9,10 @@
 	<haxelib name="polygonal-ds" />
 	<haxelib name="box2d" />
 
-	<library handler="stencyl" type="stencyl-assets" />
-	<library name="stencyl" type="stencyl-assets" preload="true" />
+	<template path="templates" />
+
+	<!--<library handler="stencyl" type="stencyl-assets" />
+	<library name="stencyl" type="stencyl-assets" preload="true" />-->
 
 	<section if="flash">
 	

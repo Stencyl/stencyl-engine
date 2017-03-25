@@ -7,6 +7,7 @@ import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.PixelSnapping;
 
+import com.stencyl.Config;
 import com.stencyl.models.scene.ScrollingBitmap;
 import com.stencyl.models.background.ImageBackground;
 import com.stencyl.models.background.ScrollingBackground;
@@ -49,7 +50,7 @@ class BackgroundLayer extends RegularLayer
 		}
 
 		bitmap = new Bitmap(model.img, PixelSnapping.AUTO, true);
-		bitmap.smoothing = scripts.MyAssets.antialias;
+		bitmap.smoothing = Config.antialias;
 		
 		currIndex = 0;
 		currTime = 0;

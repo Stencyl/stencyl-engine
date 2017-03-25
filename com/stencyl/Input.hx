@@ -1,5 +1,6 @@
 package com.stencyl;
 
+import com.stencyl.Config;
 import com.stencyl.utils.Utils;
 
 import openfl.events.Event;
@@ -301,7 +302,7 @@ class Input
 
 			//Disable default behavior for Android Back Button
 			#if(mobile && android)
-			if(scripts.MyAssets.disableBackButton)
+			if(Config.disableBackButton)
 			{
 				Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, function(event) 
 				{
@@ -879,6 +880,17 @@ class Input
 		_joyControlMap = new Map<String,String>();
 		_controlButtonMap = new Map<String,Array<JoystickButton>>();
 		joySensitivity = .12;
+	}
+
+	public static function loadInputConfig():Void
+	{
+		for(stencylControl in Config.keys.keys())
+		{
+			var value = Config.keys.get(stencylControl);
+			var keyboardConstList = [for (keyname in value) Key.keyFromName(keyname)];
+			
+			define(stencylControl, keyboardConstList);
+		}
 	}
 
 	#if !js

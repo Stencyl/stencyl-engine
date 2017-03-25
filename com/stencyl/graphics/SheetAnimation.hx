@@ -9,6 +9,7 @@ import openfl.display.Tileset;
 
 import openfl.geom.Matrix;
 
+import com.stencyl.Config;
 import com.stencyl.Engine;
 
 class SheetAnimation extends Tilemap implements AbstractAnimation
@@ -34,7 +35,7 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 	public function new(tileset:Tileset, durations:Array<Int>, width:Int, height:Int, looping:Bool, model:Animation) 
 
 	{
-		super(width, height, tileset, scripts.MyAssets.antialias);
+		super(width, height, tileset, Config.antialias);
 		
 		this.model = model;
 		
