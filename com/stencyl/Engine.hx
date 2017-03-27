@@ -100,7 +100,7 @@ import haxe.ds.ObjectMap;
 
 //import com.nmefermmmtools.debug.Console;
 
-class Engine 
+class Engine
 {
 	//*-----------------------------------------------
 	//* Constants
@@ -343,7 +343,6 @@ class Engine
 	//*-----------------------------------------------
 	
 	public static var debug:Bool = false;
-	public static var debugDraw:Bool = false;
 	public static var debugDrawer:B2DebugDraw;
 	
 	

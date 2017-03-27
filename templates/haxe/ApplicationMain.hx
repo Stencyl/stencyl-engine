@@ -112,6 +112,8 @@ using StringTools;
 		telemetry.app_name = config.name;
 		Reflect.setField (config, "telemetry", telemetry);
 		#end
+
+		new com.stencyl.utils.ToolsetInterface();
 		
 		#if (js && html5)
 		#if (munit || utest)

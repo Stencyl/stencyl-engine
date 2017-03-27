@@ -3,6 +3,7 @@ package com.stencyl;
 import lime.utils.Bytes;
 import haxe.Json;
 import haxe.Resource;
+import com.stencyl.Engine;
 import com.stencyl.graphics.Scale;
 import com.stencyl.graphics.ScaleMode;
 import com.stencyl.utils.Utils;
@@ -25,6 +26,10 @@ class Config
 	public static var keys:Map<String,Array<String>>;
 	public static var scales:Map<String,Array<Scale>>;
 
+	public static var toolsetInterfaceHost:String;
+	public static var toolsetInterfacePort:Null<Int>;
+	public static var toolsetInterfaceClientID:Null<Int>;
+
 	//Other
 	public static var adPositionBottom:Bool;
 	public static var testAds:Bool;
@@ -40,7 +45,11 @@ class Config
 	public static function load():Void
 	{
 		var text = Utils.getConfigText("config/game-config.json");
+		loadFromString(text);
+	}
 
+	public static function loadFromString(text:String):Void
+	{
 		if(data == null)
 		{
 			data = Json.parse(text);
@@ -51,7 +60,7 @@ class Config
 			var oldData = data;
 			data = Json.parse(text);
 			setStaticFields();
-			
+
 			for(key in Reflect.fields(oldData))
 			{
 				var oldValue = Reflect.field(oldData, key);
@@ -60,6 +69,19 @@ class Config
 				if(oldValue != newValue)
 				{
 					trace('value of $key changed: $oldValue -> $newValue');
+
+					switch(key)
+					{
+						/*case "scaleMode", "stageWidth", "stageHeight",
+							"gameScale", "gameImageBase", "startInFullScreen",
+							"always1x", "maxScale", "physicsMode", "antialias",
+							"releaseMode":
+							reloadGame();*/
+						case "debugDraw": Engine.DEBUG_DRAW = debugDraw;
+							if(!debugDraw)
+								if(Engine.debugDrawer != null && Engine.debugDrawer.m_sprite != null)
+									Engine.debugDrawer.m_sprite.graphics.clear();
+					}
 				}
 			}
 		}
@@ -89,6 +111,9 @@ class Config
 		disableBackButton = data.disableBackButton;
 		keys = asMap(data.keys);
 		scales = asMap(data.scales);
+		toolsetInterfaceHost = data.toolsetInterfaceHost;
+		toolsetInterfacePort = data.toolsetInterfacePort;
+		toolsetInterfaceClientID = data.toolsetInterfaceClientID;
 	}
 
 	private static function asMap<T>(anon:Dynamic):Map<String,T>
