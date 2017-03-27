@@ -951,6 +951,7 @@ class Utils
 		catch(msg:String)
 		{
 			trace("(You probably have a old browser) Error occurred: " + msg);
+			return cast Future.withError("(You probably have a old browser) Error occurred: " + msg);
 		}
 
 		#else
