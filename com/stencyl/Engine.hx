@@ -446,11 +446,7 @@ class Engine
 			screenOffsetX = Std.int(root.x);
 			screenOffsetY = Std.int(root.y);
 					
-			if(stats != null)
-			{
-				stats.x = Std.int(Config.stageWidth * Config.gameScale) - stats.width;
-				stats.y = 0;
-			}
+			refreshStatsPosition();
 			
 			#if !desktop
 			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
@@ -475,11 +471,7 @@ class Engine
 			screenOffsetX = Std.int(root.x);
 			screenOffsetY = Std.int(root.y);
 			
-			if(stats != null)
-			{
-				stats.x = Std.int(openfl.system.Capabilities.screenResolutionX) - stats.width;
-				stats.y = 0;
-			}
+			refreshStatsPosition();
 			
 			#if !desktop
 			Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
@@ -739,26 +731,7 @@ class Engine
 		gameAttributes = new Map<String,Dynamic>();
 		
 		//Profiler
-		#if !js
-		//if(!Config.releaseMode)
-		{
-			if(Config.showConsole)
-			{
-				stats = new com.nmefermmmtools.debug.Stats();
-				stage.addChild(stats);
-			}
-		}
-		
-		/*if(Config.showConsole)
-		{
-			pgr.gconsole.GameConsole.init();
-			pgr.GameConsole.setConsoleFont('./path/to/your/font.ttf');
-        	pgr.GameConsole.setPromptFont('./remember/to/make/it/relative.ttf');
-        	pgr.GameConsole.setMonitorFont('./or/you/will/be/confused.ttf');   
-		}*/
-		#end
-		
-		//Console.create();
+		setStatsVisible(Config.showConsole);
 		
 		#if (flash)
 		movieClip = new MovieClip();
@@ -794,6 +767,43 @@ class Engine
 		loadScene(initSceneID);
 		sceneInitialized = true;
 	}	
+
+	public function setStatsVisible(value:Bool):Void
+	{
+		#if !js
+		if(value == (stats != null))
+			return;
+
+		if(value)
+		{
+			stats = new com.nmefermmmtools.debug.Stats();
+			stage.addChild(stats);
+			refreshStatsPosition();
+		}
+		else
+		{
+			stage.removeChild(stats);
+			stats = null;
+		}
+		#end
+	}
+
+	public function refreshStatsPosition():Void
+	{
+		if(stats != null)
+		{
+			if(isFullScreen)
+			{
+				stats.x = Std.int(Config.stageWidth * Config.gameScale) - stats.width;
+				stats.y = 0;
+			}
+			else
+			{
+				stats.x = Std.int(openfl.system.Capabilities.screenResolutionX) - stats.width;
+				stats.y = 0;
+			}
+		}
+	}
 	
 	public function loadScene(sceneID:Int)
 	{

@@ -4,6 +4,7 @@ import lime.utils.Bytes;
 import haxe.Json;
 import haxe.Resource;
 import com.stencyl.Engine;
+import com.stencyl.Input;
 import com.stencyl.graphics.Scale;
 import com.stencyl.graphics.ScaleMode;
 import com.stencyl.utils.Utils;
@@ -61,6 +62,10 @@ class Config
 			data = Json.parse(text);
 			setStaticFields();
 
+			var needsScaleReload = false;
+			var needsScreenReload = false;
+			var needsGameReload = false;
+
 			for(key in Reflect.fields(oldData))
 			{
 				var oldValue = Reflect.field(oldData, key);
@@ -72,17 +77,43 @@ class Config
 
 					switch(key)
 					{
-						/*case "scaleMode", "stageWidth", "stageHeight",
-							"gameScale", "gameImageBase", "startInFullScreen",
-							"always1x", "maxScale", "physicsMode", "antialias",
-							"releaseMode":
-							reloadGame();*/
-						case "debugDraw": Engine.DEBUG_DRAW = debugDraw;
+						case "scaleMode", "gameImageBase", "maxScale", "scales":
+							needsScaleReload = true;
+
+						case "stageWidth", "stageHeight", "gameScale", "antialias":
+							needsScreenReload = true;
+
+						case "debugDraw":
+							Engine.DEBUG_DRAW = debugDraw;
 							if(!debugDraw)
 								if(Engine.debugDrawer != null && Engine.debugDrawer.m_sprite != null)
 									Engine.debugDrawer.m_sprite.graphics.clear();
+
+						case "keys":
+							Input.loadInputConfig();
+
+						case "physicsMode":
+							needsGameReload = true;
+
+						case "releaseMode":
+							ApplicationMain.setupTracing(!releaseMode);
+
+						case "showConsole":
+							Engine.engine.setStatsVisible(showConsole);
 					}
 				}
+			}
+			if(needsScaleReload && ! needsScreenReload)
+			{
+				ApplicationMain.reloadScales(oldData, data);
+			}
+			if(needsScreenReload)
+			{
+				ApplicationMain.reloadScreen(oldData, data);
+			}
+			if(needsGameReload)
+			{
+				ApplicationMain.reloadGame(oldData, data);
 			}
 		}
 	}

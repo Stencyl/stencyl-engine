@@ -1,6 +1,7 @@
 package;
 
 import com.stencyl.Config;
+import com.stencyl.Data;
 import com.stencyl.Engine;
 import com.stencyl.Input;
 import com.stencyl.utils.Utils;
@@ -14,6 +15,7 @@ import lime.utils.Log in LimeLog;
 import openfl.Lib;
 import openfl.display.Application;
 import openfl.display.Preloader;
+import openfl.display.StageDisplayState;
 
 import scripts.StencylPreloader;
 
@@ -31,6 +33,9 @@ using StringTools;
 
 @:dox(hide) class ApplicationMain
 {
+	private static var app:Application;
+	private static var universal:Universal;
+
 	public static function main ()
 	{
 		#if scriptable
@@ -38,30 +43,12 @@ using StringTools;
 			Sys.setCwd(StencylCppia.gamePath);
 		#end
 
-		#if flash
-		var oldTrace = HaxeLog.trace;
-		
-		#if (flash9 || flash10)
-		HaxeLog.trace = function(v,?pos) { untyped __global__["trace"]("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"):",v); }
-		#else
-		HaxeLog.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
-		#end
+		setupTracing(true);
 
-		#end
-		
 		Config.load();
 		Input.loadInputConfig();
 		
-		#if flash
-		if(Config.releaseMode)
-		{
-			HaxeLog.trace = oldTrace;
-		}
-		else
-		{
-			LimeLog.level = VERBOSE;
-		}
-		#end
+		setupTracing(!Config.releaseMode);
 
 		var projectName = "::APP_FILE::";
 		
@@ -124,10 +111,68 @@ using StringTools;
 		#end
 		
 	}
+
+	private static var oldTrace;
+
+	public static function setupTracing(enable:Bool):Void
+	{
+		if(oldTrace == null)
+			oldTrace = HaxeLog.trace;
+
+		if(enable)
+		{
+			#if (flash9 || flash10)
+			HaxeLog.trace = function(v,?pos) { untyped __global__["trace"]("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"):",v); }
+			#elseif flash
+			HaxeLog.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
+			#else
+			HaxeLog.trace = oldTrace;
+			#end
+
+			LimeLog.level = VERBOSE;
+		}
+		else
+		{
+			HaxeLog.trace = function(v,?pos) { };
+			LimeLog.level = NONE;
+		}
+	}
+
+	public static function reloadScales(oldConfig:Dynamic, newConfig:Dynamic)
+	{
+		//"scaleMode", "gameImageBase", "maxScale", "scales"
+		//All are only used in Universal.
+		var oldImgBase = Engine.IMG_BASE;
+
+		var fs = Config.startInFullScreen;
+		app.window.stage.displayState = fs ? StageDisplayState.FULL_SCREEN_INTERACTIVE : StageDisplayState.NORMAL;
+		universal.initScreen(fs);
+
+		if(oldImgBase != Engine.IMG_BASE)
+		{
+			Data.get().reloadScaledResources();
+		}
+		Engine.engine.g.scaleX = Engine.engine.g.scaleY = Engine.SCALE;
+	}
+
+	public static function reloadScreen(oldConfig:Dynamic, newConfig:Dynamic)
+	{
+		//"stageWidth", "stageHeight", "gameScale", "antialias"
+		//only used in Engine, PostProcess, Universal: stageWidth, stageHeight, gameScale
+		
+		app.window.resize(Std.int(Config.stageWidth * Config.gameScale), Std.int(Config.stageHeight * Config.gameScale));
+		reloadScales(oldConfig, newConfig);
+	}
+
+	public static function reloadGame(oldConfig:Dynamic, newConfig:Dynamic)
+	{
+		//"physicsMode"
+
+	}
 	
 	public static function create (config:LimeConfig):Void
 	{
-		var app = new Application ();
+		app = new Application ();
 		app.create (config);
 		
 		#if flash
@@ -140,7 +185,7 @@ using StringTools;
 		ManifestResources.init (config);
 
 		Universal.initStage(app.window.stage);
-		var universal = new Universal();
+		universal = new Universal();
 		Lib.current.addChild(universal);
 		var imgBase = Engine.IMG_BASE;
 

@@ -49,23 +49,9 @@ class Universal extends Sprite
 		if(Config.startInFullScreen)
 		{
 			stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
-			initScreen(true);
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
 		}
-		
-		else
-		{
-			initScreen();
-		}
-	}
-	
-	private function onKeyDown(e:KeyboardEvent = null)
-	{
-		/*if(e.keyCode == Keyboard.ESCAPE)
-		{
-			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			openfl.system.System.exit(0);
-		}*/
+
+		initScreen(Config.startInFullScreen);
 	}
 	
 	public function initServices()
@@ -83,7 +69,7 @@ class Universal extends Sprite
 	}
 
 	//isFullScreen is used on Web/Desktop for full screen mode
-	public function initScreen(isFullScreen:Bool = false)
+	public function initScreen(isFullScreen:Bool)
 	{
 		Lib.current.x = 0;
 		Lib.current.y = 0;
@@ -122,8 +108,6 @@ class Universal extends Sprite
 		
 		else if(Config.stageWidth != stage.stageWidth)
 		{
-			stageWidth = stage.stageWidth;
-			stageHeight = stage.stageHeight;
 			isFullScreen = true;
 		}
 		

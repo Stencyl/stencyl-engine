@@ -12,16 +12,14 @@ import com.stencyl.io.TilesetReader;
 import com.stencyl.behavior.Behavior;
 import com.stencyl.models.Scene;
 import com.stencyl.models.Resource;
-import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.Atlas;
 import com.stencyl.models.Sound;
 import com.stencyl.models.Font;
+import com.stencyl.models.actor.ActorType;
+import com.stencyl.models.actor.Sprite;
 
 import openfl.Assets;
-import openfl.Lib;
-import openfl.display.Sprite;
-import openfl.events.ProgressEvent;
 import haxe.xml.Fast;
 
 class Data
@@ -143,7 +141,7 @@ class Data
 		{
 			if(r == null)
 				continue;
-			if(Std.is(r, com.stencyl.models.actor.Sprite))
+			if(Std.is(r, Sprite))
 				resourceMap.set("Sprite_" + r.name, r);
 			else
 				resourceMap.set(r.name, r);
@@ -266,5 +264,20 @@ class Data
 			}
 		}
 		#end
+	}
+
+	public function reloadScaledResources():Void
+	{
+		for(r in resources)
+		{
+			if(r == null)
+				continue;
+			if(Std.is(r, Sound) || Std.is(r, ActorType))
+				continue;
+			if(!r.isAtlasActive())
+				continue;
+			r.unloadGraphics();
+			r.loadGraphics();
+		}
 	}
 }
