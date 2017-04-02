@@ -29,7 +29,7 @@ class Config
 
 	public static var toolsetInterfaceHost:String;
 	public static var toolsetInterfacePort:Null<Int>;
-	public static var toolsetInterfaceClientID:Null<Int>;
+	public static var buildConfig:Dynamic;
 
 	//Other
 	public static var adPositionBottom:Bool;
@@ -144,7 +144,7 @@ class Config
 		scales = asMap(data.scales);
 		toolsetInterfaceHost = data.toolsetInterfaceHost;
 		toolsetInterfacePort = data.toolsetInterfacePort;
-		toolsetInterfaceClientID = data.toolsetInterfaceClientID;
+		buildConfig = data.buildConfig;
 	}
 
 	private static function asMap<T>(anon:Dynamic):Map<String,T>

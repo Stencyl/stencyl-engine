@@ -42,7 +42,10 @@ class ToolsetInterface
 	private function connectHandler(event:Event):Void
 	{
 		trace("connectHandler: " + event);
-		socket.writeUTFBytes("Client-Registration: " + Config.toolsetInterfaceClientID);
+		if(Config.buildConfig != null)
+		{
+			socket.writeUTFBytes("Client-Registration: \r\n\r\n" + haxe.Json.stringify(Config.buildConfig));
+		}
 	}
 
 	private function ioErrorHandler(event:IOErrorEvent):Void
