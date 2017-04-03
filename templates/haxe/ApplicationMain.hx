@@ -167,9 +167,6 @@ using StringTools;
 	public static function reloadGame()
 	{
 		//"physicsMode"
-		com.stencyl.Data.resetStatics();
-		com.stencyl.Engine.resetStatics();
-		com.stencyl.Input.resetStatics();
 		com.stencyl.behavior.Script.resetStatics();
 		com.stencyl.graphics.G.resetStatics();
 		com.stencyl.models.Actor.resetStatics();
@@ -183,8 +180,12 @@ using StringTools;
 		com.stencyl.models.scene.TileLayer.resetStatics();
 		com.stencyl.utils.Kongregate.resetStatics();
 		com.stencyl.utils.Utils.resetStatics();
-		
+		com.stencyl.Data.resetStatics();
+		com.stencyl.Input.resetStatics();
+		com.stencyl.Engine.resetStatics();
 		Lib.current.removeChild(universal);
+
+		Input.loadInputConfig();
 		universal = new Universal();
 		Lib.current.addChild(universal);
 		universal.preloaderComplete();
