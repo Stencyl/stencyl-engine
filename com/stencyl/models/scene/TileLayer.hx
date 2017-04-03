@@ -40,9 +40,14 @@ class TileLayer extends Sprite
 	#end
 	private var noTiles:Bool;
 	
-	private static var TILESET_CACHE_MULTIPLIER = 1000000;
+	private static inline var TILESET_CACHE_MULTIPLIER = 1000000;
 	private static var cacheSource = new Map<Int,Rectangle>();
-	
+
+	public static function resetStatics():Void
+	{
+		cacheSource = new Map<Int,Rectangle>();
+	}
+
 	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
 	{
 		super();

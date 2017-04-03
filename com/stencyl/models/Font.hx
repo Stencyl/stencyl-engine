@@ -11,6 +11,11 @@ class Font extends Resource
 {	
 	public static var defaultFont:BitmapFont = null;
 	
+	public static function resetStatics():Void
+	{
+		defaultFont = null;
+	}
+
 	public var font:BitmapFont;
 	public var fontScale:Float;
 	public var letterSpacing:Int;

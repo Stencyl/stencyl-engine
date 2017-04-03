@@ -5,6 +5,11 @@ class Kongregate
 {
 	private static var kongregate:Dynamic;
 	
+	public static function resetStatics():Void
+	{
+		kongregate = null;
+	}
+
 	public static function initAPI():Void
 	{
 		if(Kongregate.kongregate == null)

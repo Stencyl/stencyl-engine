@@ -185,8 +185,8 @@ class Tile
 		var half_tw:Int = Std.int(tw / 2);
 		var half_th:Int = Std.int(th / 2);
 
-		rect.width = half_tw;
-		rect.height = half_th;
+		dummyRect.width = half_tw;
+		dummyRect.height = half_th;
 
 		for(corners in format.animCorners)
 		{
@@ -210,11 +210,11 @@ class Tile
 		return allAnimations;
 	}
 
-	private static var rect = new Rectangle();
+	private static var dummyRect = new Rectangle();
 	private inline function sourceRect(p:Point, srcFrameOffset:Int):Rectangle
 	{
-		rect.x = srcFrameOffset + p.x * rect.width;
-		rect.y = p.y * rect.height;
-		return rect;
+		dummyRect.x = srcFrameOffset + p.x * dummyRect.width;
+		dummyRect.y = p.y * dummyRect.height;
+		return dummyRect;
 	}
 }

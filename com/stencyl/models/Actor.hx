@@ -103,6 +103,11 @@ class Actor extends Sprite
 	
 	private var engine:Engine;
 	
+	public static function resetStatics():Void
+	{
+		lastCollided = null;
+		manifold = new B2WorldManifold();
+	}
 
 	//*-----------------------------------------------
 	//* Properties
@@ -119,7 +124,7 @@ class Actor extends Sprite
 	
 	private var groupsToCollideWith:Array<Int>; //cached value
 	
-	public static var GROUP_OFFSET:Int = 1000000; //for collision reporting
+	public static inline var GROUP_OFFSET:Int = 1000000; //for collision reporting
 	
 	
 	//*-----------------------------------------------

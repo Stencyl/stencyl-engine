@@ -65,11 +65,93 @@ class Input
 	
 	public static var numTouches:Int;
 
+	private static var roxAgent:RoxGestureAgent;
 	private static var swipeDirection:Int;
 	public static var swipedUp:Bool;
 	public static var swipedDown:Bool;
 	public static var swipedLeft:Bool;
 	public static var swipedRight:Bool;
+
+	public static function resetStatics():Void
+	{
+		//global effects
+
+		Engine.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+		Engine.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+		Engine.stage.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+		Engine.stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+		Engine.stage.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+		#if js
+		Engine.stage.removeEventListener(TouchEvent.TOUCH_BEGIN, onMouseDown);
+		Engine.stage.removeEventListener(TouchEvent.TOUCH_END, onMouseUp);
+		#end
+		#if desktop
+		Engine.stage.removeEventListener(MouseEvent.RIGHT_MOUSE_DOWN, onRightMouseDown);
+		Engine.stage.removeEventListener(MouseEvent.RIGHT_MOUSE_UP, onRightMouseUp);
+		Engine.stage.removeEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, onMiddleMouseDown);
+		Engine.stage.removeEventListener(MouseEvent.MIDDLE_MOUSE_UP, onMiddleMouseUp);
+		#end
+
+		#if(mobile && android)
+		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, ignoreBackKey);
+		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_UP, ignoreBackKey);
+		#end
+		
+		#if !js
+		if(Multitouch.supportsTouchEvents)
+		{
+			Engine.stage.removeEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
+			Engine.stage.removeEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
+			Engine.stage.removeEventListener(TouchEvent.TOUCH_END, onTouchEnd);
+		}
+		#end
+
+		roxAgent.detach();
+		Engine.engine.root.removeEventListener(RoxGestureEvent.GESTURE_SWIPE, onSwipe);
+
+		//statics
+
+		keyString = "";
+		lastEvent = null;
+		lastKey = 0;
+		mouseX = 0; mouseY = 0;
+		mouseUp = mouseDown = mousePressed = mouseReleased = mouseWheel = false;
+		rightMouseUp = rightMouseDown = rightMousePressed = rightMouseReleased = false;
+		middleMouseUp = middleMouseDown = middleMousePressed = middleMouseReleased = false;
+		mouseWheelDelta = 0;
+		accelX = accelY = accelZ = 0;
+		joySensitivity = .12;
+		
+		#if !js
+		multiTouchEnabled = false;
+		multiTouchPoints = null;
+		#end
+
+		numTouches = 0;
+		swipeDirection = 0;
+		swipedUp = swipedDown = swipedRight = swipedLeft = false;
+		roxAgent = null;
+		
+		_joystickEnabled = false;
+		_enabled = false;
+		_key = new Array<Bool>();
+		_keyNum = 0;
+		_press = new Array<Int>();
+		_pressNum = 0;
+		_release = new Array<Int>();
+		_releaseNum = 0;
+		
+		_joyControllerReady = new Map<Int,Bool>();
+		_joyHatState = new Map<Int,Array<Int>>();
+		_joyAxisState = new Map<Int,Array<Int>>();
+		_joyAxisPressure = new Map<Int,Array<Float>>();
+		_joyButtonState = new Map<Int,Array<Bool>>();
+
+		_joyControlMap = new Map<String,String>();
+		_controlButtonMap = new Map<String,Array<JoystickButton>>();
+
+		_control = new Map<String,Array<Int>>();
+	}
 
 	/**
 	 * Returns the control->key map.
@@ -304,27 +386,8 @@ class Input
 			#if(mobile && android)
 			if(Config.disableBackButton)
 			{
-				Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, function(event) 
-				{
-				   	lastEvent = event;
-				   
-				   	if(lastEvent.keyCode == 27) 
-				   	{
-					  	lastEvent.stopImmediatePropagation();
-					  	lastEvent.stopPropagation();
-				   	}
-				});
-				
-				Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, function(event) 
-				{
-					lastEvent = event;
-
-				   	if(lastEvent.keyCode == 27) 
-				   	{
-					  	lastEvent.stopImmediatePropagation();
-					  	lastEvent.stopPropagation();
-				   	}
-				});
+				Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, ignoreBackKey);
+				Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, ignoreBackKey);
 			}
 			#end
 			
@@ -341,7 +404,7 @@ class Input
 	        }
 	        #end
 	        
-			var roxAgent = new RoxGestureAgent(Engine.engine.root, RoxGestureAgent.GESTURE);
+			roxAgent = new RoxGestureAgent(Engine.engine.root, RoxGestureAgent.GESTURE);
 			Engine.engine.root.addEventListener(RoxGestureEvent.GESTURE_SWIPE, onSwipe);
 			
 			swipeDirection = -1;
@@ -357,6 +420,17 @@ class Input
 	        accelZ = 0;
 	        numTouches = 0;
 	        _enabled = true;
+		}
+	}
+
+	private static function ignoreBackKey(event:KeyboardEvent = null)
+	{
+		lastEvent = event;
+
+		if(lastEvent.keyCode == 27) 
+		{
+			lastEvent.stopImmediatePropagation();
+			lastEvent.stopPropagation();
 		}
 	}
 	

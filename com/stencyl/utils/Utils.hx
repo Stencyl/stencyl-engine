@@ -34,7 +34,7 @@ import com.stencyl.models.actor.Collision;
  */
 class Utils
 {
-	public static var INTEGER_MAX:Int = 100000000;
+	public static inline var INTEGER_MAX:Int = 100000000;
 
 	/**
 	 * Flash equivalent: Number.MAX_VALUE
@@ -43,7 +43,7 @@ class Utils
 	public static var NUMBER_MAX_VALUE(get_NUMBER_MAX_VALUE,never):Float;
 	public static inline function get_NUMBER_MAX_VALUE(): Float { return untyped __global__["Number"].MAX_VALUE; }
 #else
-	public static var NUMBER_MAX_VALUE = 1.79769313486231e+308;
+	public static inline var NUMBER_MAX_VALUE = 1.79769313486231e+308;
 #end
 
 	/**
@@ -1034,4 +1034,33 @@ class Utils
 	public static var sprite:Sprite = new Sprite();
 	
 	public static var collision:Collision = new Collision();
+
+	public static function resetStatics():Void
+	{
+		width = 0;
+		height = 0;
+		elapsed = 0;
+		rate = 1;
+		bounds = null;
+		camera = new Point();
+		_time = 0;
+		_updateTime = 0;
+		_renderTime = 0;
+		_gameTime = 0;
+		_flashTime = 0;
+		_bitmap = new Map<String,BitmapData>();
+		_seed = 0;
+		_getSeed = 0;
+		_volume = 1;
+		_pan = 0;
+		_soundTransform = new SoundTransform();
+		stage = null;
+		point = new Point();
+		point2 = new Point();
+		zero = new Point();
+		rect = new Rectangle();
+		matrix = new Matrix();
+		sprite = new Sprite();
+		collision = new Collision();
+	}
 }

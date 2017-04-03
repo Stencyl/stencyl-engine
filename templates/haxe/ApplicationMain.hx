@@ -164,10 +164,30 @@ using StringTools;
 		reloadScales(oldConfig, newConfig);
 	}
 
-	public static function reloadGame(oldConfig:Dynamic, newConfig:Dynamic)
+	public static function reloadGame()
 	{
 		//"physicsMode"
-
+		com.stencyl.Data.resetStatics();
+		com.stencyl.Engine.resetStatics();
+		com.stencyl.Input.resetStatics();
+		com.stencyl.behavior.Script.resetStatics();
+		com.stencyl.graphics.G.resetStatics();
+		com.stencyl.models.Actor.resetStatics();
+		com.stencyl.models.Font.resetStatics();
+		com.stencyl.models.GameModel.resetStatics();
+		com.stencyl.models.Joystick.resetStatics();
+		com.stencyl.models.SoundChannel.resetStatics();
+		com.stencyl.models.actor.Animation.resetStatics();
+		com.stencyl.models.actor.Collision.resetStatics();
+		com.stencyl.models.collision.CollisionInfo.resetStatics();
+		com.stencyl.models.scene.TileLayer.resetStatics();
+		com.stencyl.utils.Kongregate.resetStatics();
+		com.stencyl.utils.Utils.resetStatics();
+		
+		Lib.current.removeChild(universal);
+		universal = new Universal();
+		Lib.current.addChild(universal);
+		universal.preloaderComplete();
 	}
 	
 	public static function create (config:LimeConfig):Void

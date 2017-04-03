@@ -66,6 +66,11 @@ class G
 	//Cache for speed
 	public static var fontCache:Map<Int,Array<BitmapData>> = null;
 	
+	public static function resetStatics():Void
+	{
+		fontCache = null;
+	}
+
 	public function new() 
 	{	
 		drawActor = false;

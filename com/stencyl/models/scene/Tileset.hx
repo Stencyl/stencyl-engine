@@ -15,7 +15,7 @@ class Tileset extends Resource
 	public var tiles:Array<Tile>;
 	
 	public var pixels:BitmapData;
-	public static var temp:Rectangle;
+	public static var temp:Rectangle = new Rectangle();
 	
 	#if (cpp || neko)
 	public var flTileset:FLTileset;
@@ -39,8 +39,6 @@ class Tileset extends Resource
 		{
 			loadGraphics();
 		}
-		
-		temp = new Rectangle();
 	}
 	
 	public function setupFLTileset()

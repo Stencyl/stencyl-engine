@@ -40,6 +40,11 @@ class Data
 		
 		return instance;
 	}
+
+	public static function resetStatics():Void
+	{
+		instance = null;
+	}
 	
 	
 	//*-----------------------------------------------

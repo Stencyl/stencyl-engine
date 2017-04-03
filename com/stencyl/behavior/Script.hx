@@ -11,6 +11,7 @@ import openfl.net.URLRequestMethod;
 import openfl.net.URLVariables;
 import openfl.Lib;
 import openfl.filters.BitmapFilter;
+import openfl.filters.ColorMatrixFilter;
 import openfl.text.TextField;
 import openfl.errors.SecurityError;
 
@@ -82,15 +83,6 @@ import haxe.crypto.BaseCode;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 
-//#if flash
-import openfl.filters.ColorMatrixFilter;
-//#end
-
-//XXX: For some reason, it wasn't working by importing openfl.net.SharedObjectFlushedStatus
-#if js
-//typedef JeashSharedObjectFlushStatus = flash.net.SharedObjectFlushedStatus;
-#end
-
 //Actual scripts extend from this
 class Script 
 {
@@ -104,11 +96,11 @@ class Script
 	//* Constants
 	//*-----------------------------------------------
 	
-	public static var FRONT:Int = 0;
-	public static var MIDDLE:Int = 1;
-	public static var BACK:Int = 2;
+	public static inline var FRONT:Int = 0;
+	public static inline var MIDDLE:Int = 1;
+	public static inline var BACK:Int = 2;
 	
-	public static var CHANNELS:Int = 32;
+	public static inline var CHANNELS:Int = 32;
 	
 	//*-----------------------------------------------
 	//* Data
@@ -126,8 +118,21 @@ class Script
 	
 	public static var dummyVec:B2Vec2 = new B2Vec2();
 	
-	private static var drawData:Array<Float> = new Array<Float>();
-	private static var ma:Matrix = new Matrix();
+	public static function resetStatics():Void
+	{
+		engine = null;
+		lastCreatedActor = null;
+		lastCreatedJoint = null;
+		lastCreatedRegion = null;
+		lastCreatedTerrainRegion = null;
+		mpx = 0; mpy = 0; mrx = 0; mry = 0;
+		
+		#if flash
+		medalPopup = null;
+		clickArea = null;
+		scoreBrowser = null;
+		#end
+	}
 
 	//*-----------------------------------------------
 	//* Behavior

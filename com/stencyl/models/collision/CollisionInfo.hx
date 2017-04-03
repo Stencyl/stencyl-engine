@@ -3,6 +3,12 @@ package com.stencyl.models.collision;
 class CollisionInfo 
 { 
 	private static var infoArray:Array<CollisionInfo> = new Array<CollisionInfo>();
+	
+	public static function resetStatics():Void
+	{
+		infoArray = new Array<CollisionInfo>();
+	}
+
 	public var max:Float;
 	public var min:Float;
 	

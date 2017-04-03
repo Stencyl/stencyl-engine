@@ -103,17 +103,17 @@ class Config
 					}
 				}
 			}
-			if(needsScaleReload && ! needsScreenReload)
+			if(needsGameReload)
 			{
-				ApplicationMain.reloadScales(oldData, data);
+				ApplicationMain.reloadGame();
 			}
-			if(needsScreenReload)
+			else if(needsScreenReload)
 			{
 				ApplicationMain.reloadScreen(oldData, data);
 			}
-			if(needsGameReload)
+			else if(needsScaleReload)
 			{
-				ApplicationMain.reloadGame(oldData, data);
+				ApplicationMain.reloadScales(oldData, data);
 			}
 		}
 	}

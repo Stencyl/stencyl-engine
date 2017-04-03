@@ -137,13 +137,27 @@ class ToolsetInterface
 	{
 		content.position = 0;
 		
-		if(header.get("Content-Type") == "Modified Asset")
+		var contentType = header.get("Content-Type");
+		switch(contentType)
 		{
-			if(header.get("Asset-ID") == "config/game-config.json")
-			{
-				var receivedText = content.readUTFBytes(content.length);
-				Config.loadFromString(receivedText);
-			}
+			case "Command":
+				var action = header.get("Command-Action");
+
+				if(action == "Reset")
+				{
+					ApplicationMain.reloadGame();
+				}
+
+			case "Modified Asset":
+				var assetID = header.get("Asset-ID");
+
+				if(assetID == "config/game-config.json")
+				{
+					var receivedText = content.readUTFBytes(content.length);
+					Config.loadFromString(receivedText);
+				}
+
+			default:
 		}
 	}
 }

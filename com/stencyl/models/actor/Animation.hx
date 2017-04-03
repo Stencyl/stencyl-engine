@@ -31,6 +31,11 @@ class Animation
 	
 	public static var allAnimations:Array<Animation> = new Array<Animation>();
 	
+	public static function resetStatics():Void
+	{
+		allAnimations = new Array<Animation>();
+	}
+
 	public function new
 	(
 		animID:Int,

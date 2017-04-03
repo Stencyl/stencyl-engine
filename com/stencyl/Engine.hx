@@ -106,11 +106,15 @@ class Engine
 	//* Constants
 	//*-----------------------------------------------
 		
-	public static var DOODAD:String = "";
+	public static inline var DOODAD:String = "";
 	
-	public static var INTERNAL_SHIFT:String = "iSHIFT";
-	public static var INTERNAL_CTRL:String = "iCTRL";
+	public static inline var INTERNAL_SHIFT:String = "iSHIFT";
+	public static inline var INTERNAL_CTRL:String = "iCTRL";
 	
+	//*-----------------------------------------------
+	//* Important Values
+	//*-----------------------------------------------
+
 	public static var NO_PHYSICS:Bool = false;
 	public static var DEBUG_DRAW:Bool = false; //!NO_PHYSICS && true;
 	
@@ -123,11 +127,6 @@ class Engine
 	public static var isIPhone6:Bool = false;
 	public static var isIPhone6Plus:Bool = false;
 	public static var isTabletIOS:Bool = false;
-	
-	
-	//*-----------------------------------------------
-	//* Important Values
-	//*-----------------------------------------------
 	
 	public static var engine:Engine = null;
 	
@@ -386,6 +385,96 @@ class Engine
 	public var whenFocusChangedListeners:Array<Dynamic>;
 	public var nativeListeners:Array<NativeListener>;
 	
+	//*-----------------------------------------------
+	//* Reloading
+	//*-----------------------------------------------
+	
+	public static function resetStatics():Void
+	{
+		//global effects
+		#if flash
+		engine.root.parent.removeChild(movieClip);
+		#end
+
+		stage.removeEventListener(Event.ENTER_FRAME, engine.onUpdate);
+		stage.removeEventListener(Event.DEACTIVATE, engine.onFocusLost);
+		stage.removeEventListener(Event.ACTIVATE, engine.onFocus);
+
+		#if !desktop
+		if(engine.isFullScreen)
+		{
+			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, engine.onKeyDown);
+		}
+		#end
+
+		//static cleanup
+
+		NO_PHYSICS = false;
+		DEBUG_DRAW = false;
+		
+		IMG_BASE = "";
+		SCALE = 1;
+		
+		checkedWideScreen = false;
+		isStandardIOS = false;
+		isExtendedIOS = false;
+		isIPhone6 = false;
+		isIPhone6Plus = false;
+		isTabletIOS = false;
+		
+		engine = null;
+		
+		landscape = false; //Only applies to mobile
+		
+		cameraX = 0;
+		cameraY = 0;
+		
+		screenScaleX = 0;
+		screenScaleY = 0;
+		
+		originalScaleX = 0;
+		originalScaleY = 0;
+		
+		screenOffsetX = 0;
+		screenOffsetY = 0;
+		
+		screenWidth = 0;
+		screenHeight = 0;
+		
+		sceneWidth = 0;
+		sceneHeight = 0;
+		
+		screenWidthHalf = 0;
+		screenHeightHalf = 0;
+		
+		paused = false;
+		started = false;
+		
+		events = new EventMaster();
+
+		ITERATIONS = 3;
+		physicsScale = 10.0;
+		
+		paddingLeft = 0;
+		paddingRight = 0;
+		paddingTop = 0;
+		paddingBottom = 0;
+		
+		ngID = "";
+		ngKey = "";
+
+		movieClip = null;
+		stage = null;
+
+		STEP_SIZE = 10;
+		MS_PER_SEC = 1000;
+		
+		elapsedTime = 0;
+		timeScale = 1;
+		
+		debug = false;
+		debugDrawer = null;
+	}
 	
 	//*-----------------------------------------------
 	//* Full Screen Shaders - C++
