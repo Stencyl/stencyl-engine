@@ -66,15 +66,19 @@ class ToolsetInterface
 
 	private function socketDataHandler(event:ProgressEvent):Void
 	{
-		trace("socketDataHandler: " + event);
+		//trace("socketDataHandler: " + event);
 		while(socket.bytesAvailable > 0)
 		{
 			//trace(socket.bytesAvailable + " bytes available on socket.");
 			if(waiting)
 			{
+				//throw it away if it's just a ping with no data.
+				bytesExpected = socket.readInt();
+				if(bytesExpected == 0)
+					continue;
+
 				waiting = false;
 				readingHeader = true;
-				bytesExpected = socket.readInt();
 				//trace("Header expects " + bytesExpected + " bytes.");
 				//trace(socket.bytesAvailable + " bytes available.");
 				bytes = new ByteArray(bytesExpected);
