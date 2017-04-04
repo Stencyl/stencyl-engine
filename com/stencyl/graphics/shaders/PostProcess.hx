@@ -217,23 +217,13 @@ class PostProcess extends OpenGLView
 		if (texture != null) GL.deleteTexture(texture);
 		if (renderbuffer != null) GL.deleteRenderbuffer(renderbuffer);
 
-		#if(desktop)
-		if(Engine.engine.isInFullScreen())
-		{
-			createTexture(Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
-			createRenderbuffer(Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
-		}
-		
-		else
-		{
-			createTexture(Std.int(Config.stageWidth * Config.gameScale), Std.int(Config.stageHeight * Config.gameScale));
-			createRenderbuffer(Std.int(Config.stageWidth * Config.gameScale), Std.int(Config.stageHeight * Config.gameScale));
-		}
-		#else
-		createTexture(Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
-		createRenderbuffer(Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
-		#end
+		var isFullScreen = Engine.engine.isInFullScreen();
+		var windowWidth = isFullScreen ? Engine.stage.fullScreenWidth : Config.stageWidth * Config.gameScale;
+		var windowHeight = isFullScreen ? Engine.stage.fullScreenHeight : Config.stageHeight * Config.gameScale;
 
+		createTexture(Std.int(windowWidth), Std.int(windowHeight));
+		createRenderbuffer(Std.int(windowWidth), Std.int(windowHeight));
+		
 		GL.bindFramebuffer(GL.FRAMEBUFFER, null);
 	}
 

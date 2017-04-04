@@ -138,30 +138,25 @@ using StringTools;
 		}
 	}
 
-	public static function reloadScales(oldConfig:Dynamic, newConfig:Dynamic)
+	public static function reloadScreen(oldConfig:Dynamic, newConfig:Dynamic)
 	{
-		//"scaleMode", "gameImageBase", "maxScale", "scales"
+		//"stageWidth", "stageHeight", "gameScale"
+		//used in Engine, PostProcess, and Universal.
+		
+		//"scaleMode", "gameImageBase", "scales"
 		//All are only used in Universal.
+
+		//"antialias" is all over the place.
+
 		var oldImgBase = Engine.IMG_BASE;
 
-		var fs = Config.startInFullScreen;
-		app.window.stage.displayState = fs ? StageDisplayState.FULL_SCREEN_INTERACTIVE : StageDisplayState.NORMAL;
-		universal.initScreen(fs);
+		universal.initScreen(Config.startInFullScreen);
 
 		if(oldImgBase != Engine.IMG_BASE)
 		{
 			Data.get().reloadScaledResources();
 		}
 		Engine.engine.g.scaleX = Engine.engine.g.scaleY = Engine.SCALE;
-	}
-
-	public static function reloadScreen(oldConfig:Dynamic, newConfig:Dynamic)
-	{
-		//"stageWidth", "stageHeight", "gameScale", "antialias"
-		//only used in Engine, PostProcess, Universal: stageWidth, stageHeight, gameScale
-		
-		app.window.resize(Std.int(Config.stageWidth * Config.gameScale), Std.int(Config.stageHeight * Config.gameScale));
-		reloadScales(oldConfig, newConfig);
 	}
 
 	public static function reloadGame()
@@ -178,7 +173,7 @@ using StringTools;
 		com.stencyl.models.actor.Collision.resetStatics();
 		com.stencyl.models.collision.CollisionInfo.resetStatics();
 		com.stencyl.models.scene.TileLayer.resetStatics();
-		com.stencyl.utils.Kongregate.resetStatics();
+		#if flash com.stencyl.utils.Kongregate.resetStatics(); #end
 		com.stencyl.utils.Utils.resetStatics();
 		com.stencyl.Data.resetStatics();
 		com.stencyl.Input.resetStatics();
@@ -205,7 +200,7 @@ using StringTools;
 
 		ManifestResources.init (config);
 
-		Universal.initStage(app.window.stage);
+		Universal.initWindow(app.window);
 		universal = new Universal();
 		Lib.current.addChild(universal);
 		var imgBase = Engine.IMG_BASE;

@@ -37,8 +37,6 @@ class Config
 	public static var releaseMode:Bool;
 	public static var showConsole:Bool;
 	public static var debugDraw:Bool;
-	public static var always1x:Bool;
-	public static var maxScale:Float;
 	public static var disableBackButton:Bool;
 	
 	private static var data:Dynamic;
@@ -62,7 +60,6 @@ class Config
 			data = Json.parse(text);
 			setStaticFields();
 
-			var needsScaleReload = false;
 			var needsScreenReload = false;
 			var needsGameReload = false;
 
@@ -77,10 +74,9 @@ class Config
 
 					switch(key)
 					{
-						case "scaleMode", "gameImageBase", "maxScale", "scales":
-							needsScaleReload = true;
-
-						case "stageWidth", "stageHeight", "gameScale", "antialias":
+						case "scaleMode", "gameImageBase", "scales",
+							 "stageWidth", "stageHeight", "gameScale",
+							 "antialias":
 							needsScreenReload = true;
 
 						case "debugDraw":
@@ -111,10 +107,6 @@ class Config
 			{
 				ApplicationMain.reloadScreen(oldData, data);
 			}
-			else if(needsScaleReload)
-			{
-				ApplicationMain.reloadScales(oldData, data);
-			}
 		}
 	}
 	
@@ -122,7 +114,7 @@ class Config
 	{
 		landscape = data.landscape;
 		autorotate = data.autorotate;
-		scaleMode = data.scaleMode;
+		scaleMode = (data.scaleMode : String);
 		stageWidth = data.stageWidth;
 		stageHeight = data.stageHeight;
 		initSceneID = data.initSceneID;
@@ -137,8 +129,6 @@ class Config
 		releaseMode = data.releaseMode;
 		showConsole = data.showConsole;
 		debugDraw = data.debugDraw;
-		always1x = data.always1x;
-		maxScale = data.maxScale;
 		disableBackButton = data.disableBackButton;
 		keys = asMap(data.keys);
 		scales = asMap(data.scales);

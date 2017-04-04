@@ -138,8 +138,8 @@ class Engine
 	public static var screenScaleX:Float;
 	public static var screenScaleY:Float;
 	
-	public static var originalScaleX:Float;
-	public static var originalScaleY:Float;
+	public static var unzoomedScaleX:Float;
+	public static var unzoomedScaleY:Float;
 	
 	public static var screenOffsetX:Int;
 	public static var screenOffsetY:Int;
@@ -394,18 +394,20 @@ class Engine
 		//global effects
 		#if flash
 		engine.root.parent.removeChild(movieClip);
+		if(engine.isFullScreen)
+		{
+			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, engine.onKeyDown);
+		}
 		#end
 
 		stage.removeEventListener(Event.ENTER_FRAME, engine.onUpdate);
 		stage.removeEventListener(Event.DEACTIVATE, engine.onFocusLost);
 		stage.removeEventListener(Event.ACTIVATE, engine.onFocus);
 
-		#if !desktop
-		if(engine.isFullScreen)
+		if(engine.stats != null)
 		{
-			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, engine.onKeyDown);
+			stage.removeChild(engine.stats);
 		}
-		#end
 
 		//static cleanup
 
@@ -432,8 +434,8 @@ class Engine
 		screenScaleX = 0;
 		screenScaleY = 0;
 		
-		originalScaleX = 0;
-		originalScaleY = 0;
+		unzoomedScaleX = 0;
+		unzoomedScaleY = 0;
 		
 		screenOffsetX = 0;
 		screenOffsetY = 0;
@@ -494,7 +496,7 @@ class Engine
 	private var isFullScreen:Bool = false;
 	private var stats:com.nmefermmmtools.debug.Stats;
 	
-	#if(!js && !mobile)
+	#if(flash || desktop)
 	private function onKeyDown(e:KeyboardEvent = null)
 	{
 		if(e.keyCode == Key.ESCAPE)
@@ -510,63 +512,43 @@ class Engine
 	
 	public function toggleFullscreen(forceOff:Bool = false):Void
 	{
+		isFullScreen = !isFullScreen;
+		
 		if(forceOff)
 		{
-			isFullScreen = true;
+			isFullScreen = false;
 		}
-	
+
+		trace("toggleFullscreen");
+		
+		var oldImgBase = IMG_BASE;
+		cast(root, Universal).initScreen(isFullScreen);
+		
+		if(oldImgBase != IMG_BASE)
+		{
+			Data.get().reloadScaledResources();
+		}
+		g.scaleX = g.scaleY = SCALE;
+
+		unzoomedScaleX = screenScaleX = root.scaleX;
+		unzoomedScaleY = screenScaleY = root.scaleY;
+		screenOffsetX = Std.int(root.x);
+		screenOffsetY = Std.int(root.y);
+		
+		stats.x = stage.stageWidth - stats.width;
+		stats.y = 0;
+		
+		#if flash
 		if(isFullScreen)
 		{
-			isFullScreen = false;
-			Lib.current.stage.displayState = StageDisplayState.NORMAL;
-			
-			var screenWidth = Lib.current.stage.stageWidth;
-			var screenHeight = Lib.current.stage.stageHeight;
-			
-			root.scaleX = Config.gameScale;
-			root.scaleY = Config.gameScale;
-			root.x = 0.0;
-			root.y = 0.0;
-			
-			screenScaleX = root.scaleX;
-			originalScaleX = screenScaleX;
-			screenScaleY = root.scaleY;
-			originalScaleY = screenScaleY;
-			screenOffsetX = Std.int(root.x);
-			screenOffsetY = Std.int(root.y);
-					
-			refreshStatsPosition();
-			
-			#if !desktop
-			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			#end
-			resetShaders();
-		} 
-		
-		else 
-		{
-			isFullScreen = true;
-			Lib.current.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
-			
-			root.scaleX = 1;
-			root.scaleY = 1;
-			
-			cast(root, Universal).initScreen(true);
-			
-			screenScaleX = root.scaleX;
-			originalScaleX = screenScaleX;
-			screenScaleY = root.scaleY;
-			originalScaleY = screenScaleY;
-			screenOffsetX = Std.int(root.x);
-			screenOffsetY = Std.int(root.y);
-			
-			refreshStatsPosition();
-			
-			#if !desktop
 			Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
-			#end
-			resetShaders();
 		}
+		else
+		{
+			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+		}
+		#end
+		resetShaders();
 	}
 	#end
 	
@@ -597,10 +579,8 @@ class Engine
 		this.root = root;
 		
 		isFullScreen = Config.startInFullScreen;
-		screenScaleX = root.scaleX;
-		originalScaleX = screenScaleX;
-		screenScaleY = root.scaleY;
-		originalScaleY = screenScaleY;
+		screenScaleX = unzoomedScaleX = root.scaleX;
+		screenScaleY = unzoomedScaleY = root.scaleY;
 		screenOffsetX = Std.int(root.x);
 		screenOffsetY = Std.int(root.y);
 		
@@ -615,6 +595,13 @@ class Engine
 		if(openfl.display.OpenGLView.isSupported)
 		{
 			root.addChild(shaderLayer);
+		}
+		#end
+
+		#if flash
+		if(isFullScreen)
+		{
+			Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
 		}
 		#end
 	}
@@ -709,9 +696,9 @@ class Engine
 		Input.define(INTERNAL_CTRL, [Key.CONTROL]);
 		
 		landscape = Config.landscape;
-		var stageWidth = Config.stageWidth;
-		var stageHeight = Config.stageHeight;
-		
+		var stageWidth = Universal.logicalWidth;
+		var stageHeight = Universal.logicalHeight;
+
 		screenWidth = Std.int(stageWidth);
 		screenHeight = Std.int(stageHeight);
 		screenWidthHalf = Std.int(stageWidth/2);
@@ -788,8 +775,8 @@ class Engine
 		lastTime = Lib.getTimer();
 
 		//Constants
-		sceneWidth = stageWidth; //Overriden once scene loads
-		sceneHeight = stageHeight; //Overriden once scene loads
+		sceneWidth = Std.int(stageWidth); //Overriden once scene loads
+		sceneHeight = Std.int(stageHeight); //Overriden once scene loads
 			
 		//Display List
 		colorLayer = new Shape();
@@ -867,7 +854,8 @@ class Engine
 		{
 			stats = new com.nmefermmmtools.debug.Stats();
 			stage.addChild(stats);
-			refreshStatsPosition();
+			stats.x = stage.stageWidth - stats.width;
+			stats.y = 0;
 		}
 		else
 		{
@@ -875,23 +863,6 @@ class Engine
 			stats = null;
 		}
 		#end
-	}
-
-	public function refreshStatsPosition():Void
-	{
-		if(stats != null)
-		{
-			if(isFullScreen)
-			{
-				stats.x = Std.int(Config.stageWidth * Config.gameScale) - stats.width;
-				stats.y = 0;
-			}
-			else
-			{
-				stats.x = Std.int(openfl.system.Capabilities.screenResolutionX) - stats.width;
-				stats.y = 0;
-			}
-		}
 	}
 	
 	public function loadScene(sceneID:Int)
@@ -3039,14 +3010,12 @@ class Engine
 		
 		zoomMultiplier = m;
 		
-		root.scaleX = m * originalScaleX;
-		root.scaleY = m * originalScaleY;
-		screenScaleX = m * originalScaleX;
-		screenScaleY = m * originalScaleY;
+		root.scaleX = screenScaleX = m * unzoomedScaleX;
+		root.scaleY = screenScaleY = m * unzoomedScaleY;
 		
-		screenWidth = Std.int(Config.stageWidth * (1 / m));
+		screenWidth = Std.int(Universal.logicalWidth * (1 / m));
 		screenWidthHalf = Std.int(screenWidth / 2);
-		screenHeight = Std.int(Config.stageHeight * (1 / m));
+		screenHeight = Std.int(Universal.logicalHeight * (1 / m));
 		screenHeightHalf = Std.int(screenHeight / 2);
 		setColorBackground(scene.colorBackground);
 		root.scrollRect = new Rectangle(0, 0, screenWidth, screenHeight);

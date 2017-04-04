@@ -9,7 +9,9 @@ package com.stencyl.graphics;
 	public var SCALE_TO_FIT_FILL = 4;
 	public var SCALE_TO_FIT_FULLSCREEN = 5;
 	
-	@:from private static function fromString (value:String):ScaleMode
+	public function new(value:Int) this = value;
+
+	@:from public static function fromString (value:String):ScaleMode
 	{
 		return switch (value)
 		{
@@ -23,16 +25,16 @@ package com.stencyl.graphics;
 		}
 	}
 	
-	@:to private static function toString (value:Int):String
+	@:to public function toString ():String
 	{
-		return switch (value)
+		return switch (this)
 		{
-			case ScaleMode.NO_SCALING: "NO_SCALING";
-			case ScaleMode.FULLSCREEN: "FULLSCREEN";
-			case ScaleMode.STRETCH_TO_FIT: "STRETCH_TO_FIT";
-			case ScaleMode.SCALE_TO_FIT_LETTERBOX: "SCALE_TO_FIT_LETTERBOX";
-			case ScaleMode.SCALE_TO_FIT_FILL: "SCALE_TO_FIT_FILL";
-			case ScaleMode.SCALE_TO_FIT_FULLSCREEN: "SCALE_TO_FIT_FULLSCREEN";
+			case NO_SCALING: "NO_SCALING";
+			case FULLSCREEN: "FULLSCREEN";
+			case STRETCH_TO_FIT: "STRETCH_TO_FIT";
+			case SCALE_TO_FIT_LETTERBOX: "SCALE_TO_FIT_LETTERBOX";
+			case SCALE_TO_FIT_FILL: "SCALE_TO_FIT_FILL";
+			case SCALE_TO_FIT_FULLSCREEN: "SCALE_TO_FIT_FULLSCREEN";
 			default: "NO_SCALING";
 		}
 	}

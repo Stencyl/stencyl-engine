@@ -273,6 +273,7 @@ class Data
 
 	public function reloadScaledResources():Void
 	{
+		#if(cpp || neko)
 		for(r in resources)
 		{
 			if(r == null)
@@ -284,5 +285,6 @@ class Data
 			r.unloadGraphics();
 			r.loadGraphics();
 		}
+		#end
 	}
 }
