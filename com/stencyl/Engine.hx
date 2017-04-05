@@ -496,7 +496,7 @@ class Engine
 	private var isFullScreen:Bool = false;
 	private var stats:com.nmefermmmtools.debug.Stats;
 	
-	#if(flash || desktop)
+	#if(flash || cpp)
 	private function onKeyDown(e:KeyboardEvent = null)
 	{
 		if(e.keyCode == Key.ESCAPE)
