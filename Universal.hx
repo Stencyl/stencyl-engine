@@ -135,7 +135,6 @@ class Universal extends Sprite
 		{
 			var larger = Math.max(windowWidth, windowHeight);
 			var smaller = Math.min(windowWidth, windowHeight);
-			var aspectRatio:Float = larger / smaller;
 			
 			if(smaller == 320 && larger == 480)
 			{
@@ -194,23 +193,23 @@ class Universal extends Sprite
 			var x15 = x3 / 2;
 			var y15 = y3 / 2;
 			
-			if(larger >= x4 && smaller >= y4)
+			if(windowWidth >= x4 && windowHeight >= y4)
 			{
 				theoreticalScale = 4;
 			}
 			
-			else if(larger >= x3 && smaller >= y3)
+			else if(windowWidth >= x3 && windowHeight >= y3)
 			{
 				theoreticalScale = 3;
 			}
 			
-			else if(larger >= x2 && smaller >= y2)
+			else if(windowWidth >= x2 && windowHeight >= y2)
 			{
 				theoreticalScale = 2;
 			}
 			
 			#if(android || flash || desktop)
-			else if(larger >= x15 && smaller >= y15)
+			else if(windowWidth >= x15 && windowHeight >= y15)
 			{
 				theoreticalScale = 1.5;
 			}
@@ -306,8 +305,8 @@ class Universal extends Sprite
 
 			if(Config.scaleMode != ScaleMode.SCALE_TO_FIT_FULLSCREEN && Config.scaleMode != ScaleMode.FULLSCREEN)
 			{
-				x += (windowWidth - Config.stageWidth * scaleX)/2;
-				y += (windowHeight - Config.stageHeight * scaleY)/2;
+				x += (windowWidth - Config.stageWidth * Engine.SCALE * scaleX) / 2;
+				y += (windowHeight - Config.stageHeight * Engine.SCALE * scaleY) / 2;
 			}
 		}
 
@@ -316,8 +315,8 @@ class Universal extends Sprite
 
 		if(isFullScreen && (Config.scaleMode == ScaleMode.SCALE_TO_FIT_FULLSCREEN || Config.scaleMode == ScaleMode.FULLSCREEN))
 		{
-			logicalWidth += (windowWidth - Config.stageWidth * scaleX);
-			logicalHeight += (windowHeight - Config.stageHeight * scaleY);
+			logicalWidth += (windowWidth - Config.stageWidth * Engine.SCALE * scaleX);
+			logicalHeight += (windowHeight - Config.stageHeight * Engine.SCALE * scaleY);
 		}
 
 		trace("Logical Width: " + logicalWidth);
