@@ -261,52 +261,60 @@ class Universal extends Sprite
 		
 		trace("Theoretical Scale: " + theoreticalScale);
 		trace("Asset Scale: " + Engine.IMG_BASE);
-		
+
+		//the dimensions of the game screen after being scaled up
+		//to the proper asset size.
+		var scaledStageWidth = Config.stageWidth * Engine.SCALE;
+		var scaledStageHeight = Config.stageHeight * Engine.SCALE;
+
+		//the remaining x/y scale needed to fit the game screen
+		//to the edges of the window.
+		var fitWidthScale = windowWidth / scaledStageWidth;
+		var fitHeightScale = windowHeight / scaledStageHeight;
+
 		if(needsScaling)
 		{
-			if(Config.scaleMode == ScaleMode.STRETCH_TO_FIT)
-			{
-				scaleX = windowWidth / Config.stageWidth;
-				scaleY = windowHeight / Config.stageHeight;
-			}
-		
-			else if(Config.scaleMode == ScaleMode.FULLSCREEN)
+			//after the basic assets scale, how do we fill out the rest of the screen?
+
+			//expand the playable area rather than further scaling it
+			if(Config.scaleMode == ScaleMode.FULLSCREEN)
 			{
 				//don't do anything
 				//stage width/height are already the size of the screen
 			}
-			
-			else
+
+			//exactly match the game size to the window size for both width and height
+			else if(Config.scaleMode == ScaleMode.STRETCH_TO_FIT)
 			{
-				if(Config.scaleMode == ScaleMode.SCALE_TO_FIT_LETTERBOX)
-				{
-					scaleX = Math.min(windowWidth / Config.stageWidth, windowHeight / Config.stageHeight);
-					scaleY = scaleX;
-				}
+				scaleX = fitWidthScale;
+				scaleY = fitHeightScale;
+			}
+			
+			//keeping aspect ration, stretch until either side of the game screen touches the window's edge
+			//for "Scale to fit (fullscreen)", the rest of the space is expanded
+			else if(Config.scaleMode == ScaleMode.SCALE_TO_FIT_LETTERBOX || Config.scaleMode == ScaleMode.SCALE_TO_FIT_FULLSCREEN)
+			{
+				scaleX = Math.min(fitWidthScale, fitHeightScale);
+				scaleY = scaleX;
+			}
+			
+			//keeping aspect ration, stretch until both sides of the game screen touch the window's edge
+			else if(Config.scaleMode == ScaleMode.SCALE_TO_FIT_FILL)
+			{
+				scaleX = Math.max(fitWidthScale, fitHeightScale);
+				scaleY = scaleX;
+			}
+			
+			//no additional scaling
+			else //(Config.scaleMode == ScaleMode.NO_SCALING)
+			{
 				
-				else if(Config.scaleMode == ScaleMode.SCALE_TO_FIT_FILL)
-				{
-					scaleX = Math.max(windowWidth / Config.stageWidth, windowHeight / Config.stageHeight);
-					scaleY = scaleX;
-				}
-				
-				else if(Config.scaleMode == ScaleMode.SCALE_TO_FIT_FULLSCREEN)
-				{
-					scaleX = Math.min(windowWidth / Config.stageWidth, windowHeight / Config.stageHeight);
-					scaleY = scaleX;          
-				}
-				
-				else //(Config.scaleMode == ScaleMode.NO_SCALING)
-				{
-					scaleX = Math.max(1, Std.int(Math.min(windowWidth / Config.stageWidth, windowHeight / Config.stageHeight)));
-					scaleY = scaleX;
-				}
 			}
 
 			if(Config.scaleMode != ScaleMode.SCALE_TO_FIT_FULLSCREEN && Config.scaleMode != ScaleMode.FULLSCREEN)
 			{
-				x += (windowWidth - Config.stageWidth * Engine.SCALE * scaleX) / 2;
-				y += (windowHeight - Config.stageHeight * Engine.SCALE * scaleY) / 2;
+				x += (windowWidth - scaledStageWidth * scaleX) / 2;
+				y += (windowHeight - scaledStageHeight * scaleY) / 2;
 			}
 		}
 
@@ -315,8 +323,8 @@ class Universal extends Sprite
 
 		if(isFullScreen && (Config.scaleMode == ScaleMode.SCALE_TO_FIT_FULLSCREEN || Config.scaleMode == ScaleMode.FULLSCREEN))
 		{
-			logicalWidth += (windowWidth - Config.stageWidth * Engine.SCALE * scaleX);
-			logicalHeight += (windowHeight - Config.stageHeight * Engine.SCALE * scaleY);
+			logicalWidth += (windowWidth - scaledStageWidth * scaleX);
+			logicalHeight += (windowHeight - scaledStageHeight * scaleY);
 		}
 
 		trace("Logical Width: " + logicalWidth);
