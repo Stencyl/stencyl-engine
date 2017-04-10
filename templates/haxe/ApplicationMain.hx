@@ -27,6 +27,7 @@ import flash.errors.Error;
 
 using StringTools;
 
+@:access(Universal)
 @:access(lime.app.Application)
 @:access(lime.system.System)
 @:access(lime.utils.AssetLibrary)
@@ -42,6 +43,7 @@ using StringTools;
 		if(StencylCppia.gamePath != null)
 			Sys.setCwd(StencylCppia.gamePath);
 		#end
+		Universal.am = ApplicationMain;
 
 		setupTracing(true);
 

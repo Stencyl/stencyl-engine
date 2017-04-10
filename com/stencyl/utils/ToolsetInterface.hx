@@ -149,7 +149,7 @@ class ToolsetInterface
 
 				if(action == "Reset")
 				{
-					ApplicationMain.reloadGame();
+					Universal.reloadGame();
 				}
 
 			case "Modified Asset":

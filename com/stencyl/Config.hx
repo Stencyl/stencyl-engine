@@ -92,7 +92,7 @@ class Config
 							needsGameReload = true;
 
 						case "releaseMode":
-							ApplicationMain.setupTracing(!releaseMode);
+							Universal.setupTracing(!releaseMode);
 
 						case "showConsole":
 							Engine.engine.setStatsVisible(showConsole);
@@ -101,11 +101,11 @@ class Config
 			}
 			if(needsGameReload)
 			{
-				ApplicationMain.reloadGame();
+				Universal.reloadGame();
 			}
 			else if(needsScreenReload)
 			{
-				ApplicationMain.reloadScreen(oldData, data);
+				Universal.reloadScreen(oldData, data);
 			}
 		}
 	}

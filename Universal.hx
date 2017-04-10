@@ -362,4 +362,23 @@ class Universal extends Sprite
 
 		#end
 	}
+
+	//for Cppia, don't directly call ApplicationMain functions
+
+	private static var am:Class<Dynamic>;
+		
+	public static function setupTracing(enable:Bool):Void
+	{
+		Reflect.callMethod(am, Reflect.field(am, "setupTracing"), [enable]);
+	}
+	
+	public static function reloadScreen(oldConfig:Dynamic, newConfig:Dynamic)
+	{
+		Reflect.callMethod(am, Reflect.field(am, "reloadScreen"), [oldConfig, newConfig]);
+	}
+
+	public static function reloadGame()
+	{
+		Reflect.callMethod(am, Reflect.field(am, "reloadGame"), []);
+	}
 }
