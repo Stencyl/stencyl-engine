@@ -39,7 +39,7 @@ using StringTools;
 
 	public static function main ()
 	{
-		#if scriptable
+		#if cppia
 		if(StencylCppia.gamePath != null)
 			Sys.setCwd(StencylCppia.gamePath);
 		#end
@@ -192,6 +192,12 @@ using StringTools;
 	{
 		app = new Application ();
 		app.create (config);
+		
+		//XXX: On mac, creating the application seems to reset the cwd to the programPath at some point.
+		#if cppia
+		if(StencylCppia.gamePath != null)
+			Sys.setCwd(StencylCppia.gamePath);
+		#end
 		
 		#if flash
 		if(!Config.releaseMode)
