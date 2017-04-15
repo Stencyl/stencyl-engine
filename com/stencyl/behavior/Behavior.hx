@@ -76,11 +76,22 @@ class Behavior
 		
 		if(type == "actor")
 		{
+			if (Type.getClass(parent) == Engine)
+			{
+				trace("Actor behavior " + name + " failed to init because parent is scene.  Open and save the scene to resolve this error.");
+				script = new SceneScript();
+				return;
+			}
 			script = Type.createInstance(cls, [0, parent, null]);
 		}
-		
 		else
 		{
+			if (Type.getClass(parent) == com.stencyl.models.Actor)
+			{
+				trace("Scene behavior " + name + " failed to init because parent is actor.  Open and save the actor to resolve this error.");
+				script = new SceneScript();
+				return;
+			}
 			script = Type.createInstance(cls, [0, null]);
 		}
 		
