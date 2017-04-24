@@ -2081,6 +2081,7 @@ class Engine
 		{
 			a.body.setActive(false);
 			a.body.setAwake(false);
+			a.body.setBullet(a.type.bodyDef.bullet); /////
 			
 			// Remove world body list.
 			if (a.body.m_prev != null)
