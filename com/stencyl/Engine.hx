@@ -2464,7 +2464,7 @@ class Engine
 						a.colX < -cameraX / SCALE + screenWidth + paddingRight &&
 						a.colY < -cameraY / SCALE + screenHeight + paddingBottom;
 					
-					a.isOnScreenCache = isOnScreen;
+					a.isOnScreenCache = (isOnScreen || a.isHUD);
 					
 					//---
 				
