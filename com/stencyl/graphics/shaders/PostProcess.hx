@@ -66,7 +66,7 @@ class PostProcess extends OpenGLView
 		uniforms = new Map<String, Uniform>();
 
 #if ios
-		defaultFramebuffer = new GLFramebuffer(GL.version, 1); // faked framebuffer
+		defaultFramebuffer = 1; // faked framebuffer
 #end
 
 		// create and bind the framebuffer
