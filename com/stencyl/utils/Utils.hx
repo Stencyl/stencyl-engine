@@ -956,6 +956,8 @@ class Utils
 
 		#else
 
+		#if ios path = 'assets/$path'; #end
+
 		return BitmapData.loadFromFile(path)
 			.then(function (bmp) return Future.withValue((new Bitmap(bmp) : DisplayObject)));
 
@@ -970,6 +972,8 @@ class Utils
 		return Bytes.ofData(byteArray);
 
 		#else
+
+		#if ios path = 'assets/$path'; #end
 
 		return Bytes.fromFile(path);
 
@@ -989,6 +993,8 @@ class Utils
 		return cast Type.createInstance(getAssetClass(path), []);
 
 		#else
+
+		#if ios path = 'assets/$path'; #end
 
 		var image = Image.fromFile(path);
 		return BitmapData.fromImage(image);

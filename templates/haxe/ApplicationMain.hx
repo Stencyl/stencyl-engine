@@ -142,14 +142,6 @@ using StringTools;
 
 	public static function reloadScreen(oldConfig:Dynamic, newConfig:Dynamic)
 	{
-		//"stageWidth", "stageHeight", "gameScale"
-		//used in Engine, PostProcess, and Universal.
-		
-		//"scaleMode", "gameImageBase", "scales"
-		//All are only used in Universal.
-
-		//"antialias" is all over the place.
-
 		var oldImgBase = Engine.IMG_BASE;
 
 		universal.initScreen(Config.startInFullScreen);
@@ -163,7 +155,6 @@ using StringTools;
 
 	public static function reloadGame()
 	{
-		//"physicsMode"
 		com.stencyl.behavior.Script.resetStatics();
 		com.stencyl.graphics.G.resetStatics();
 		com.stencyl.models.Actor.resetStatics();
