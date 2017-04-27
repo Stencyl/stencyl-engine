@@ -47,7 +47,7 @@ import com.stencyl.utils.PolyDecompBayazit;
 
 class Scene
 {
-	public var ID:Int;
+	public var ID:IdType;
 	public var name:String;
 	
 	public var sceneWidth:Int;
@@ -78,7 +78,7 @@ class Scene
 	
 	public var animatedTiles:Array<Tile>;
 	
-	public function new(ID:Int, name:String)
+	public function new(ID:IdType, name:String)
 	{
 		this.ID = ID;
 		this.name = name;
@@ -1026,7 +1026,7 @@ class Scene
 		return ai;
 	}
 	
-	public function getID():Int
+	public function getID():IdType
 	{
 		return ID;
 	}

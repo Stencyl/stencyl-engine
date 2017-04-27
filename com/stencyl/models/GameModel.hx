@@ -7,6 +7,8 @@ import com.stencyl.utils.Utils;
 import com.stencyl.models.scene.Autotile;
 import com.stencyl.models.scene.AutotileFormat;
 
+import com.stencyl.models.IdType.IdUtils;
+
 import box2D.common.math.B2Vec2;
 import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2PolygonShape;
@@ -26,7 +28,7 @@ class GameModel
 	public var actualHeight:Int;
 	public var scale:Int;
 	
-	public var defaultSceneID:Int;
+	public var defaultSceneID:IdType;
 	
 	public var groups:Array<GroupDef>;
 	public var groupsCollidesWith:Map<Int,Array<Int>>;
@@ -36,7 +38,7 @@ class GameModel
 	public var gameAttributes:Map<String,Dynamic>;
 	public var shapes:Map<Int,B2PolygonShape>;
 	public var atlases:Map<Int,Atlas>;
-	public var scenes:Map<Int,Scene>;
+	public var scenes:Map<IdType,Scene>;
 	public var autotileFormats:Map<Int, AutotileFormat>;
 	
 	public static var INHERIT_ID:Int = -1000;
@@ -65,11 +67,11 @@ class GameModel
 		actualWidth = Std.parseInt(xml.att.awidth);
 		actualHeight = Std.parseInt(xml.att.aheight);
 		scale = Std.parseInt(xml.att.scale);
-		defaultSceneID = 0;
-		
+		defaultSceneID = IdUtils.INVALID_ID;
+
 		try
 		{
-			defaultSceneID = Std.parseInt(xml.att.defaultSceneID);
+			defaultSceneID = IdUtils.parseId(xml.att.defaultSceneID);
 		}
 		
 		catch(e:String)
@@ -164,15 +166,15 @@ class GameModel
 		scenes = readScenes(Data.get().sceneListXML);
 	}
 	
-	public function readScenes(list:Fast):Map<Int,Scene>
+	public function readScenes(list:Fast):Map<IdType,Scene>
 	{
-		var map:Map<Int,Scene> = new Map<Int,Scene>();
+		var map = new Map<IdType,Scene>();
 		
 		for(e in list.elements)
 		{
-			var sceneID = Std.parseInt(e.att.id);
-			
-			map.set(Std.parseInt(e.att.id), new Scene(sceneID, e.att.name));
+			var sceneID = IdUtils.parseId(e.att.id);
+
+			map.set(sceneID, new Scene(sceneID, e.att.name));
 		}
 		
 		Data.get().scenesXML = null;
