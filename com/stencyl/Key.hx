@@ -1,5 +1,7 @@
 package com.stencyl;
 
+import openfl.ui.Keyboard;
+
 class Key
 {
 	public inline static var ANY = -1;
@@ -170,5 +172,116 @@ class Key
 				return String.fromCharCode(char);
 		}
 		return String.fromCharCode(char);
+	}
+	
+	private static var keyboardNameMap:Map<String, Int> = {
+		var m = new Map<String, Int>();
+		m.set("NUMBER_0", Keyboard.NUMBER_0);
+		m.set("NUMBER_1", Keyboard.NUMBER_1);
+		m.set("NUMBER_2", Keyboard.NUMBER_2);
+		m.set("NUMBER_3", Keyboard.NUMBER_3);
+		m.set("NUMBER_4", Keyboard.NUMBER_4);
+		m.set("NUMBER_5", Keyboard.NUMBER_5);
+		m.set("NUMBER_6", Keyboard.NUMBER_6);
+		m.set("NUMBER_7", Keyboard.NUMBER_7);
+		m.set("NUMBER_8", Keyboard.NUMBER_8);
+		m.set("NUMBER_9", Keyboard.NUMBER_9);
+		m.set("A", Keyboard.A);
+		m.set("B", Keyboard.B);
+		m.set("C", Keyboard.C);
+		m.set("D", Keyboard.D);
+		m.set("E", Keyboard.E);
+		m.set("F", Keyboard.F);
+		m.set("G", Keyboard.G);
+		m.set("H", Keyboard.H);
+		m.set("I", Keyboard.I);
+		m.set("J", Keyboard.J);
+		m.set("K", Keyboard.K);
+		m.set("L", Keyboard.L);
+		m.set("M", Keyboard.M);
+		m.set("N", Keyboard.N);
+		m.set("O", Keyboard.O);
+		m.set("P", Keyboard.P);
+		m.set("Q", Keyboard.Q);
+		m.set("R", Keyboard.R);
+		m.set("S", Keyboard.S);
+		m.set("T", Keyboard.T);
+		m.set("U", Keyboard.U);
+		m.set("V", Keyboard.V);
+		m.set("W", Keyboard.W);
+		m.set("X", Keyboard.X);
+		m.set("Y", Keyboard.Y);
+		m.set("Z", Keyboard.Z);
+		m.set("NUMPAD_0", Keyboard.NUMPAD_0);
+		m.set("NUMPAD_1", Keyboard.NUMPAD_1);
+		m.set("NUMPAD_2", Keyboard.NUMPAD_2);
+		m.set("NUMPAD_3", Keyboard.NUMPAD_3);
+		m.set("NUMPAD_4", Keyboard.NUMPAD_4);
+		m.set("NUMPAD_5", Keyboard.NUMPAD_5);
+		m.set("NUMPAD_6", Keyboard.NUMPAD_6);
+		m.set("NUMPAD_7", Keyboard.NUMPAD_7);
+		m.set("NUMPAD_8", Keyboard.NUMPAD_8);
+		m.set("NUMPAD_9", Keyboard.NUMPAD_9);
+		m.set("NUMPAD_MULTIPLY", Keyboard.NUMPAD_MULTIPLY);
+		m.set("NUMPAD_ADD", Keyboard.NUMPAD_ADD);
+		m.set("NUMPAD_ENTER", Keyboard.NUMPAD_ENTER);
+		m.set("NUMPAD_SUBTRACT", Keyboard.NUMPAD_SUBTRACT);
+		m.set("NUMPAD_DECIMAL", Keyboard.NUMPAD_DECIMAL);
+		m.set("NUMPAD_DIVIDE", Keyboard.NUMPAD_DIVIDE);
+		m.set("F1", Keyboard.F1);
+		m.set("F2", Keyboard.F2);
+		m.set("F3", Keyboard.F3);
+		m.set("F4", Keyboard.F4);
+		m.set("F5", Keyboard.F5);
+		m.set("F6", Keyboard.F6);
+		m.set("F7", Keyboard.F7);
+		m.set("F8", Keyboard.F8);
+		m.set("F9", Keyboard.F9);
+		m.set("F10", Keyboard.F10);
+		m.set("F11", Keyboard.F11);
+		m.set("F12", Keyboard.F12);
+		m.set("F13", Keyboard.F13);
+		m.set("F14", Keyboard.F14);
+		m.set("F15", Keyboard.F15);
+		m.set("BACKSPACE", Keyboard.BACKSPACE);
+		m.set("TAB", Keyboard.TAB);
+		m.set("ALTERNATE", Keyboard.ALTERNATE);
+		m.set("ENTER", Keyboard.ENTER);
+		m.set("COMMAND", Keyboard.COMMAND);
+		m.set("SHIFT", Keyboard.SHIFT);
+		m.set("CONTROL", Keyboard.CONTROL);
+		m.set("BREAK", Keyboard.BREAK);
+		m.set("CAPS_LOCK", Keyboard.CAPS_LOCK);
+		m.set("NUMPAD", Keyboard.NUMPAD);
+		m.set("ESCAPE", Keyboard.ESCAPE);
+		m.set("SPACE", Keyboard.SPACE);
+		m.set("PAGE_UP", Keyboard.PAGE_UP);
+		m.set("PAGE_DOWN", Keyboard.PAGE_DOWN);
+		m.set("END", Keyboard.END);
+		m.set("HOME", Keyboard.HOME);
+		m.set("LEFT", Keyboard.LEFT);
+		m.set("RIGHT", Keyboard.RIGHT);
+		m.set("UP", Keyboard.UP);
+		m.set("DOWN", Keyboard.DOWN);
+		m.set("INSERT", Keyboard.INSERT);
+		m.set("DELETE", Keyboard.DELETE);
+		m.set("NUMLOCK", Keyboard.NUMLOCK);
+		m.set("SEMICOLON", Keyboard.SEMICOLON);
+		m.set("EQUAL", Keyboard.EQUAL);
+		m.set("COMMA", Keyboard.COMMA);
+		m.set("MINUS", Keyboard.MINUS);
+		m.set("PERIOD", Keyboard.PERIOD);
+		m.set("SLASH", Keyboard.SLASH);
+		m.set("BACKQUOTE", Keyboard.BACKQUOTE);
+		m.set("LEFTBRACKET", Keyboard.LEFTBRACKET);
+		m.set("BACKSLASH", Keyboard.BACKSLASH);
+		m.set("RIGHTBRACKET", Keyboard.RIGHTBRACKET);
+		m.set("QUOTE", Keyboard.QUOTE);
+		m;
+	}
+
+	public static function keyFromName(k:String):Int
+	{
+		return keyboardNameMap.get(k);
 	}
 }

@@ -37,7 +37,7 @@ class TilesetReader implements AbstractReader
 			tiles[Std.parseInt(e.att.id)] = readTile(e, tset);
 		}
 		
-		tset.setupTilesheet();
+		tset.setupFLTileset();
 
 		return tset;
 	}

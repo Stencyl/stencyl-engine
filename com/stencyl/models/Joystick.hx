@@ -19,6 +19,15 @@ class Joystick extends Sprite
 {
     public static var joystickMap:Map<Int, Joystick>;
     
+    public static function resetStatics():Void
+    {
+        joystickMap = null;
+        fixedCenter = 0;
+        showWherePressed = 1;
+        viewOffsetX = viewOffsetY = 0;
+        initialized = false;
+    }
+
     public var center:Point;
     public var outerRadius:Float;
     public var innerRadius:Float;

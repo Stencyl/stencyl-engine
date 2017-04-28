@@ -1,5 +1,7 @@
 package com.stencyl.models.scene;
 
+import com.stencyl.Config;
+
 import openfl.display.Sprite;
 import openfl.geom.ColorTransform;
 
@@ -41,7 +43,7 @@ class Layer extends RegularLayer
 		
 		tiles = tileLayer;
 		tiles.reset();
-		tiles.blendName = Std.string(blendMode);
+		tiles.blendMode = blendMode;
 
 		underActors = new Sprite();
 		actorContainer = new Sprite();
@@ -69,8 +71,8 @@ class Layer extends RegularLayer
 		var xScrolled = Std.int(x * scrollFactorX);
 		var yScrolled = Std.int(y * scrollFactorY);
 
-		if(scripts.MyAssets.pixelsnap) x = Math.round(x) else x = Std.int(x);
-		if(scripts.MyAssets.pixelsnap) y = Math.round(y) else y = Std.int(y);	
+		if(Config.pixelsnap) x = Math.round(x) else x = Std.int(x);
+		if(Config.pixelsnap) y = Math.round(y) else y = Std.int(y);	
 		
 		overlay.x = -x;
 		overlay.y = -y;

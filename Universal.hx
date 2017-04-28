@@ -2,6 +2,7 @@ package;
 
 import openfl.Lib;
 import openfl.display.Sprite;
+import openfl.display.Stage;
 import openfl.display.StageAlign;
 import openfl.display.StageScaleMode;
 import openfl.display.StageDisplayState;
@@ -10,98 +11,51 @@ import openfl.events.Event;
 import openfl.events.KeyboardEvent;
 import openfl.system.Capabilities;
 import openfl.ui.Keyboard;
+import lime.ui.Window;
 
-#if flash
-import flash.events.UncaughtErrorEvent;
-import flash.events.ErrorEvent;
-import flash.errors.Error;
-#end
-
+import com.stencyl.APIKeys;
+import com.stencyl.Config;
 import com.stencyl.Engine;
+import com.stencyl.Input;
+import com.stencyl.graphics.Scale;
+import com.stencyl.graphics.ScaleMode;
+import com.stencyl.utils.Utils;
 import haxe.xml.Fast;
-
-import scripts.MyAssets;
 
 class Universal extends Sprite 
 {
-	public static inline var NO_SCALING = 0;
-	public static inline var FULLSCREEN = 1;
-	public static inline var STRETCH_TO_FIT = 2;
-	public static inline var SCALE_TO_FIT_LETTERBOX = 3;
-	public static inline var SCALE_TO_FIT_FILL = 4;
-	public static inline var SCALE_TO_FIT_FULLSCREEN = 5;
+	private static var window:Window;
+	public static var logicalWidth = 0.0;
+	public static var logicalHeight = 0.0;
+	public static var windowWidth = 0.0;
+	public static var windowHeight = 0.0;
+
+	public static function initWindow(window:Window):Void
+	{
+		Universal.window = window;
+
+		window.stage.align = StageAlign.TOP_LEFT;
+		window.stage.scaleMode = StageScaleMode.NO_SCALE;
+		
+		#if(mobile && !air)
+		window.stage.opaqueBackground = 0x000000;
+		#end
+	}
 
 	public function new() 
 	{
 		super();
 
-		#if flash
-		if(!MyAssets.releaseMode)
-		{
-			#if (flash9 || flash10)
-        	haxe.Log.trace = function(v,?pos) { untyped __global__["trace"]("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"):",v); }
-        	#else
-       		haxe.Log.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
-        	#end
-        	
-        	Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
-		}
-		#end
-
 		addEventListener(Event.ADDED_TO_STAGE, onAdded);
 	}
-
-	#if flash
-	function uncaughtErrorHandler(event:UncaughtErrorEvent):Void
-	{
-		if (Std.is(event.error, Error))
-		{
-			trace(cast(event.error, Error).message);
-		}
-		else if (Std.is(event.error,ErrorEvent))
-		{
-			trace(cast(event.error, ErrorEvent).text);
-		}
-		else
-		{
-			trace(event.error.toString());
-		}
-	}
-	#end
 	
 	private function onAdded(event:Event):Void 
 	{
-		init();	
-	}
-	
-	public function init()
-	{        
-        initServices();
-        
 		removeEventListener(Event.ADDED_TO_STAGE, onAdded);
-		
-		if(MyAssets.startInFullScreen)
-		{
-			stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
-			initScreen(true);
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
-		}
-		
-		else
-		{
-			initScreen();
-		}
-		
-		new Engine(this);
-	}
-	
-	private function onKeyDown(e:KeyboardEvent = null)
-	{
-		/*if(e.keyCode == Keyboard.ESCAPE)
-		{
-			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			openfl.system.System.exit(0);
-		}*/
+
+		initServices();
+
+		initScreen(Config.startInFullScreen);
 	}
 	
 	public function initServices()
@@ -109,134 +63,80 @@ class Universal extends Sprite
 		//Newgrounds and other APIs
 		
 		#if(flash)
-		var newgroundsID = MyAssets.newgroundsID;
-		var newgroundsKey = MyAssets.newgroundsKey;
 		
-		if(newgroundsID != "")
+		if(APIKeys.newgroundsID != "")
         {
-        	com.newgrounds.API.API.connect(root, newgroundsID, newgroundsKey);
+        	com.newgrounds.API.API.connect(root, APIKeys.newgroundsID, APIKeys.newgroundsKey);
         }
         
         #end
 	}
-	
+
 	//isFullScreen is used on Web/Desktop for full screen mode
-	public function initScreen(isFullScreen:Bool = false)
+	public function initScreen(isFullScreen:Bool)
 	{
+		trace("initScreen");
+
+		stage.displayState = isFullScreen ?
+			StageDisplayState.FULL_SCREEN_INTERACTIVE :
+			StageDisplayState.NORMAL;
+
+		#if desktop
+		if(!isFullScreen)
+		{
+			window.resize(Std.int(Config.stageWidth * Config.gameScale), Std.int(Config.stageHeight * Config.gameScale));
+		}
+		#end
+
 		Lib.current.x = 0;
 		Lib.current.y = 0;
 		Lib.current.scaleX = 1;
 		Lib.current.scaleY = 1;
+
+		x = 0;
+		y = 0;
+		scaleX = 1;
+		scaleY = 1;
 	
 		Engine.stage = stage;
 
-		var scales:Array<Bool> = new Array();		
-		
-		var xml = Xml.parse(openfl.Assets.getText("assets/data/game.xml"));
-		var fast = new haxe.xml.Fast(xml.firstElement());
-		
-		var scalesEnabled = fast.node.projectScales;
+		//enabled scales
+
+		var enabledScales:Array<Scale> = Config.scales.get("project");
 		#if web
-		var scalesEnabled = fast.node.webScales;
+		enabledScales = Config.scales.get("web");
 		#elseif desktop
-		var scalesEnabled = fast.node.desktopScales;
+		enabledScales = Config.scales.get("desktop");
 		#elseif (mobile && !android)
-		var scalesEnabled = fast.node.iOSScales;
+		enabledScales = Config.scales.get("ios");
 		#elseif android
-		var scalesEnabled = fast.node.androidScales;
+		enabledScales = Config.scales.get("android");
 		#end
 
-		for (scale in scalesEnabled.nodes.scale)
+		var scales = new Map<String,Bool>();
+		for(scale in enabledScales)
 		{
-			scales.push(scale.att.enabled == "true");
+			scales.set(scale, true);
 		}
 
-		var skipScaling = false;
-		var stageWidth = stage.stageWidth;
-		var stageHeight = stage.stageHeight;
-		
-		#if desktop
-		if(isFullScreen)
-		{
-			stageWidth = Std.int(Capabilities.screenResolutionX);
-			stageHeight = Std.int(Capabilities.screenResolutionY);
-		}
-		
-		else if(MyAssets.stageWidth != stage.stageWidth)
-		{
-			stageWidth = stage.stageWidth;
-			stageHeight = stage.stageHeight;
-			isFullScreen = true;
-		}
-		
-		else
-		{
-			skipScaling = true;
-		}
-		#end
-		
-		#if flash
-		if(isFullScreen || MyAssets.gameScale > MyAssets.maxScale)
-		{
-			if (MyAssets.gameScale > MyAssets.maxScale && !isFullScreen)
-			{
-				stageWidth = Std.int(MyAssets.stageWidth * MyAssets.gameScale);
-				stageHeight = Std.int(MyAssets.stageHeight * MyAssets.gameScale);				
-			}
-			isFullScreen = true;
-		}
-		
-		else
-		{
-			skipScaling = true;
-		}
-		#end
-		
-		//NME Bug: If waking from sleep, the dimensions can be flipped on Android.
-		#if android
-		
-		stageWidth = Std.int(Capabilities.screenResolutionX);
-		stageHeight = Std.int(Capabilities.screenResolutionY);
-		
-		if(stageWidth < stageHeight && MyAssets.landscape)
-		{
-			stageHeight = stage.stageWidth;
-			stageWidth = stage.stageHeight;
-		}
-		#end
-		
-		//NME Bug: If waking from sleep, the dimensions can be flipped on iOS.
-		#if (mobile && !android)
-		
-		stageWidth = Std.int(Capabilities.screenResolutionX);
-		stageHeight = Std.int(Capabilities.screenResolutionY);
-		
-		if(stageWidth < stageHeight && MyAssets.landscape)
-		{
-			var temp = stageHeight;
-			stageHeight = stageWidth;
-			stageWidth = temp;
-		}
-		#end
+		windowWidth = isFullScreen ? stage.fullScreenWidth * window.scale : Config.stageWidth * Config.gameScale;
+		windowHeight = isFullScreen ? stage.fullScreenHeight * window.scale : Config.stageHeight * Config.gameScale;
 
-		trace("Stage Width: " + MyAssets.stageWidth);
-		trace("Stage Height: " + MyAssets.stageHeight);
-		trace("Screen Width: " + stageWidth);
-		trace("Screen Height: " + stageHeight);
-		trace("Screen DPI: " + Capabilities.screenDPI);
+		trace("Game Width: " + Config.stageWidth);
+		trace("Game Height: " + Config.stageHeight);
+		trace("Game Scale: " + Config.gameScale);
+		trace("Window Width: " + windowWidth);
+		trace("Window Height: " + windowHeight);
+		trace("Enabled Scales: " + enabledScales);
+		trace("Scale Mode: " + Config.scaleMode);
 		
-		//Tablets and other high-res devices get to use 2x mode, (TODO: if it's not a tablet-only game.)
-		#if(flash || desktop || mobile)
+		var theoreticalScale:Float = 1;
+		var needsScaling = windowWidth != Config.stageWidth || windowHeight != Config.stageHeight;
 		
-		//Calculate the theoretical scale if no max scale were imposed
-		var theoreticalScale:Float = 0;
-		var widescreen:Bool = false;
-		
-		if(!skipScaling)
+		if(needsScaling)
 		{
-			var larger = Math.max(stageWidth, stageHeight);
-			var smaller = Math.min(stageWidth, stageHeight);
-			var aspectRatio:Float = larger / smaller;
+			var larger = Math.max(windowWidth, windowHeight);
+			var smaller = Math.min(windowWidth, windowHeight);
 			
 			if(smaller == 320 && larger == 480)
 			{
@@ -280,54 +180,38 @@ class Universal extends Sprite
 				Engine.isTabletIOS = true;
 			}		
 			
-			//Generalized this from 320 x 480 to work with any resolution
-			var x1 = MyAssets.stageWidth;
-			var y1 = MyAssets.stageHeight;
-			
-			//TODO: Draw from the game's width/height instead. Games not close to 480x320 may act differently than expected.
-			//Can't do today because editor doesn't pass this info in full screen mode.
-			if(x1 == -1 || y1 == -1)
-			{
-				x1 = 480;
-				y1 = 320;
-			}
-			
-			else if(!MyAssets.landscape)
-			{
-				var temp = x1;
-				x1 = y1;
-				y1 = temp;
-			}
-			
-			var x3 = x1 * 3;
-			var y3 = y1 * 3;
-			
-			var x15 = x3 / 2;
-			var y15 = y3 / 2;
+			var x1 = Config.stageWidth;
+			var y1 = Config.stageHeight;
 			
 			var x2 = x1 * 2;
 			var y2 = y1 * 2;
 			
+			var x3 = x1 * 3;
+			var y3 = y1 * 3;
+			
 			var x4 = x2 * 2;
 			var y4 = y2 * 2;
-	
-			if(larger >= x4 && smaller >= y4)
+			
+			var x15 = x3 / 2;
+			var y15 = y3 / 2;
+			
+			if(windowWidth >= x4 && windowHeight >= y4)
 			{
 				theoreticalScale = 4;
 			}
 			
-			else if(larger >= x3 && smaller >= y3)
+			else if(windowWidth >= x3 && windowHeight >= y3)
 			{
 				theoreticalScale = 3;
 			}
 			
-			else if(larger >= x2 && smaller >= y2)
+			else if(windowWidth >= x2 && windowHeight >= y2)
 			{
 				theoreticalScale = 2;
 			}
 			
 			#if(android || flash || desktop)
-			else if(larger >= x15 && smaller >= y15)
+			else if(windowWidth >= x15 && windowHeight >= y15)
 			{
 				theoreticalScale = 1.5;
 			}
@@ -339,26 +223,26 @@ class Universal extends Sprite
 			}
 			
 			//4 scale scheme
-			if(larger >= x4 && smaller >= y4 && scales[4])
+			if(theoreticalScale == 4 && scales.exists(Scale._4X))
 			{
 				Engine.SCALE = 4;
 				Engine.IMG_BASE = "4x";
 			}
 			
-			else if(larger >= x3 && smaller >= y3 && scales[3])
+			else if(theoreticalScale >= 3 && scales.exists(Scale._3X))
 			{
 				Engine.SCALE = 3;
 				Engine.IMG_BASE = "3x";
 			}
 			
-			else if(larger >= x2 && smaller >= y2 && scales[2])
+			else if(theoreticalScale >= 2 && scales.exists(Scale._2X))
 			{
 				Engine.SCALE = 2;
 				Engine.IMG_BASE = "2x";
 			}
 			
 			#if(android || flash || desktop)
-			else if(larger >= x15 && smaller >= y15 && scales[1])
+			else if(theoreticalScale >= 1.5 && scales.exists(Scale._1_5X))
 			{
 				Engine.SCALE = 1.5;
 				Engine.IMG_BASE = "1.5x";
@@ -370,186 +254,133 @@ class Universal extends Sprite
 				Engine.SCALE = 1;
 				Engine.IMG_BASE = "1x";
 			}
-			
-			trace("Theoretical Scale: " + theoreticalScale);
 		}
-		#end
-		
-		#if(!mobile)
-		if(!isFullScreen)
+		else
 		{
-			Engine.SCALE = MyAssets.gameScale;
-			Engine.IMG_BASE = MyAssets.gameImageBase;
+			Engine.SCALE = 1;
+			Engine.IMG_BASE = "1x";
 		}
-		#end
-
-		trace("Max Scale: " + MyAssets.maxScale);
-		trace("Engine Scale: " + Engine.IMG_BASE);
-
-		var originalWidth = MyAssets.stageWidth;
-		var originalHeight = MyAssets.stageHeight;
 		
-		MyAssets.stageWidth = Std.int(MyAssets.stageWidth * MyAssets.gameScale * Engine.SCALE);
-		MyAssets.stageHeight = Std.int(MyAssets.stageHeight * MyAssets.gameScale * Engine.SCALE);
+		trace("Theoretical Scale: " + theoreticalScale);
+		trace("Asset Scale: " + Engine.IMG_BASE);
 
-		#if(flash || mobile || desktop)
-		if(!skipScaling)
+		//the dimensions of the game screen after being scaled up
+		//to the proper asset size.
+		var scaledStageWidth = Config.stageWidth * Engine.SCALE;
+		var scaledStageHeight = Config.stageHeight * Engine.SCALE;
+
+		//the remaining x/y scale needed to fit the game screen
+		//to the edges of the window.
+		var fitWidthScale = windowWidth / scaledStageWidth;
+		var fitHeightScale = windowHeight / scaledStageHeight;
+
+		if(needsScaling)
 		{
-			//Stretch To Fit
-			if(MyAssets.scaleMode == STRETCH_TO_FIT)
+			//after the basic assets scale, how do we fill out the rest of the screen?
+
+			//expand the playable area rather than further scaling it
+			if(Config.scaleMode == ScaleMode.FULLSCREEN)
 			{
-				scaleX *= stageWidth / MyAssets.stageWidth;
-				scaleY *= stageHeight / MyAssets.stageHeight;
-				
-				trace("Algorithm: Stretch to Fit");
+				//don't do anything
+				//stage width/height are already the size of the screen
 			}
-		
-			//Full Screen Mode
-			else if(MyAssets.scaleMode == FULLSCREEN)
+
+			//exactly match the game size to the window size for both width and height
+			else if(Config.scaleMode == ScaleMode.STRETCH_TO_FIT)
 			{
-				//Max Scale: set the scale to what it would have been
-				if(MyAssets.maxScale < theoreticalScale)
-				{
-					scaleX = theoreticalScale;
-					scaleY = theoreticalScale;
-					stageWidth = Std.int(stageWidth / theoreticalScale);
-					stageHeight = Std.int(stageHeight / theoreticalScale);
-				}
-				
-				MyAssets.stageWidth = stageWidth;
-				MyAssets.stageHeight = stageHeight;
-					
-				originalWidth = Std.int(stageWidth / Engine.SCALE);
-				originalHeight = Std.int(stageHeight / Engine.SCALE);
-				
-				trace("Algorithm: Full Screen");
-				stageWidth = Std.int(stageWidth / theoreticalScale);
-				stageHeight = Std.int(stageHeight / theoreticalScale);
+				scaleX = fitWidthScale;
+				scaleY = fitHeightScale;
 			}
 			
-			else
+			//keeping aspect ration, stretch until either side of the game screen touches the window's edge
+			//for "Scale to fit (fullscreen)", the rest of the space is expanded
+			else if(Config.scaleMode == ScaleMode.SCALE_TO_FIT_LETTERBOX || Config.scaleMode == ScaleMode.SCALE_TO_FIT_FULLSCREEN)
 			{
-				var screenW = Std.int(Capabilities.screenResolutionX);
-				var screenH = Std.int(Capabilities.screenResolutionY);
+				scaleX = Math.min(fitWidthScale, fitHeightScale);
+				scaleY = scaleX;
+			}
+			
+			//keeping aspect ration, stretch until both sides of the game screen touch the window's edge
+			else if(Config.scaleMode == ScaleMode.SCALE_TO_FIT_FILL)
+			{
+				scaleX = Math.max(fitWidthScale, fitHeightScale);
+				scaleY = scaleX;
+			}
+			
+			//no additional scaling
+			else //(Config.scaleMode == ScaleMode.NO_SCALING)
+			{
 				
-				if(screenW < screenH && MyAssets.landscape)
-				{
-					screenH = Std.int(Capabilities.screenResolutionX);
-					screenW = Std.int(Capabilities.screenResolutionY);
-				}
-				
-				var screenLandscape = Capabilities.screenResolutionX > Capabilities.screenResolutionY;
-				
-				trace(screenW);
-				trace(screenH);
-				trace(screenLandscape);
-				
-				//Scale to Fit: Letterboxed
-				if(MyAssets.scaleMode == SCALE_TO_FIT_LETTERBOX)
-				{
-					scaleX = Math.min(stageWidth*MyAssets.gameScale / MyAssets.stageWidth, stageHeight*MyAssets.gameScale / MyAssets.stageHeight);
-					scaleY = scaleX;
-					
-					MyAssets.stageWidth = Std.int(MyAssets.stageWidth/MyAssets.gameScale);
-					MyAssets.stageHeight = Std.int(MyAssets.stageHeight/MyAssets.gameScale);
-					
-					trace("Algorithm: Scale to Fit (Letterbox)");
-				}
-				
-				//Scale to Fit: Fill/Cropped
-				else if(MyAssets.scaleMode == SCALE_TO_FIT_FILL)
-				{
-					scaleX *= Math.max(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
-					scaleY = scaleX;
-					
-					MyAssets.stageWidth = Std.int(MyAssets.stageWidth/MyAssets.gameScale);
-					MyAssets.stageHeight = Std.int(MyAssets.stageHeight/MyAssets.gameScale);
-					
-					trace("Algorithm: Scale to Fit (Fill)");
-				}
-				
-				//Scale to Fit: Full Screen
-				else if(MyAssets.scaleMode == SCALE_TO_FIT_FULLSCREEN)
-				{
-					scaleX *= Math.min(stageWidth / MyAssets.stageWidth, stageHeight / MyAssets.stageHeight);
-					scaleY = scaleX;
-					
-					trace("Algorithm: Scale to Fit (Full Screen)");
-							
-					originalWidth = Std.int(stageWidth / (Engine.SCALE * scaleY));
-					originalHeight = Std.int(stageHeight / (Engine.SCALE * scaleX));
-					
-					MyAssets.stageWidth = Std.int(stageWidth/scaleX);
-					MyAssets.stageHeight = Std.int(stageHeight/scaleY);
-					
-					stageWidth = Std.int(stageWidth / theoreticalScale);
-					stageHeight = Std.int(stageHeight / theoreticalScale);
-		                      
-				}
-				
-				//"No Scaling" (Only integer scales)
-				else
-				{
-					scaleX = Math.max(1, Std.int(Math.min(stageWidth*MyAssets.gameScale / MyAssets.stageWidth, stageHeight*MyAssets.gameScale / MyAssets.stageHeight)));
-					scaleY = scaleX;
+			}
 
-					MyAssets.stageWidth = Std.int(MyAssets.stageWidth/MyAssets.gameScale);
-					MyAssets.stageHeight = Std.int(MyAssets.stageHeight/MyAssets.gameScale);					
-					
-					trace("Algorithm: No Scaling (Integer Scaling)");
-				}
-				
-				if(MyAssets.scaleMode != SCALE_TO_FIT_FULLSCREEN)
-				{
-					x += (stageWidth - MyAssets.stageWidth * scaleX)/2;
-					y += (stageHeight - MyAssets.stageHeight * scaleY)/2;
-				}
+			if(Config.scaleMode != ScaleMode.SCALE_TO_FIT_FULLSCREEN && Config.scaleMode != ScaleMode.FULLSCREEN)
+			{
+				x += (windowWidth - scaledStageWidth * scaleX) / 2;
+				y += (windowHeight - scaledStageHeight * scaleY) / 2;
 			}
 		}
-		#end
-		
-		//Clip the view
-		#if(mobile)
-		if(MyAssets.scaleMode != FULLSCREEN && MyAssets.scaleMode != STRETCH_TO_FIT)
-		{
-			scrollRect = new openfl.geom.Rectangle(0, 0, MyAssets.stageWidth, MyAssets.stageHeight);
-		}
-		#end
-		
-		#if(flash || js || (cpp && !mobile))
-		scrollRect = new openfl.geom.Rectangle(0, 0, MyAssets.stageWidth, MyAssets.stageHeight);
-		#end
-		
-		MyAssets.stageWidth = originalWidth;
-		MyAssets.stageHeight = originalHeight;
 
+		logicalWidth = Config.stageWidth;
+		logicalHeight = Config.stageHeight;
+
+		if(isFullScreen && (Config.scaleMode == ScaleMode.SCALE_TO_FIT_FULLSCREEN || Config.scaleMode == ScaleMode.FULLSCREEN))
+		{
+			logicalWidth += (windowWidth - scaledStageWidth * scaleX);
+			logicalHeight += (windowHeight - scaledStageHeight * scaleY);
+		}
+
+		trace("Logical Width: " + logicalWidth);
+		trace("Logical Height: " + logicalHeight);
 		trace("Scale X: " + scaleX);
 		trace("Scale Y: " + scaleY);
 	}
-	
-	#if (scriptable && openfl_legacy) @:access(openfl._legacy.Assets.initialized) #end
-	public static function main() 
+
+	@:access(openfl.display.Stage)
+	public function preloaderComplete():Void
 	{
-		#if scriptable
-		var cppia = Type.resolveClass("scripts.CppiaAssets");
-		Reflect.callMethod(cppia, Reflect.field(cppia, "setAssets"), []);
-
-		if(StencylCppia.gamePath != null)
-			Sys.setCwd(StencylCppia.gamePath);
-
-		openfl.Assets.registerLibrary("default", Type.createInstance(Type.resolveClass("CppiaAssetLibrary"), []));
-		openfl.Assets.initialized = true;
-		#end
-
-		var stage = Lib.current.stage;
+		#if flash
 		
-		stage.align = StageAlign.TOP_LEFT;
-		stage.scaleMode = StageScaleMode.NO_SCALE;
+		new Engine(this);
 		
-		#if(mobile && !air)
-		stage.opaqueBackground = 0x000000;
-		#end
+		#else
+		
+		try {
+			
+			new Engine(this);
+			
+		} catch (e:Dynamic) {
+			
+			stage.__handleError (e);
+			
+		}
+		
+		stage.dispatchEvent (new openfl.events.Event (openfl.events.Event.RESIZE, false, false));
+		
+		if (stage.window.fullscreen) {
+			
+			stage.dispatchEvent (new openfl.events.FullScreenEvent (openfl.events.FullScreenEvent.FULL_SCREEN, false, false, true, true));
+			
+		}
 
-		Lib.current.addChild(new Universal());
+		#end
+	}
+
+	//for Cppia, don't directly call ApplicationMain functions
+
+	private static var am:Class<Dynamic>;
+		
+	public static function setupTracing(enable:Bool):Void
+	{
+		Reflect.callMethod(am, Reflect.field(am, "setupTracing"), [enable]);
+	}
+	
+	public static function reloadScreen(oldConfig:Dynamic, newConfig:Dynamic)
+	{
+		Reflect.callMethod(am, Reflect.field(am, "reloadScreen"), [oldConfig, newConfig]);
+	}
+
+	public static function reloadGame()
+	{
+		Reflect.callMethod(am, Reflect.field(am, "reloadGame"), []);
 	}
 }

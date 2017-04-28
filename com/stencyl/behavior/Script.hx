@@ -11,6 +11,7 @@ import openfl.net.URLRequestMethod;
 import openfl.net.URLVariables;
 import openfl.Lib;
 import openfl.filters.BitmapFilter;
+import openfl.filters.ColorMatrixFilter;
 import openfl.text.TextField;
 import openfl.errors.SecurityError;
 
@@ -32,6 +33,7 @@ import openfl.geom.Rectangle;
 import com.stencyl.graphics.G;
 import com.stencyl.models.scene.ScrollingBitmap;
 
+import com.stencyl.Config;
 import com.stencyl.models.Actor;
 import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.CollisionPoint;
@@ -81,17 +83,6 @@ import haxe.crypto.BaseCode;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 
-//#if flash
-import openfl.filters.ColorMatrixFilter;
-//#end
-
-import scripts.MyAssets;
-
-//XXX: For some reason, it wasn't working by importing openfl.net.SharedObjectFlushedStatus
-#if js
-//typedef JeashSharedObjectFlushStatus = flash.net.SharedObjectFlushedStatus;
-#end
-
 //Actual scripts extend from this
 class Script 
 {
@@ -105,11 +96,11 @@ class Script
 	//* Constants
 	//*-----------------------------------------------
 	
-	public static var FRONT:Int = 0;
-	public static var MIDDLE:Int = 1;
-	public static var BACK:Int = 2;
+	public static inline var FRONT:Int = 0;
+	public static inline var MIDDLE:Int = 1;
+	public static inline var BACK:Int = 2;
 	
-	public static var CHANNELS:Int = 32;
+	public static inline var CHANNELS:Int = 32;
 	
 	//*-----------------------------------------------
 	//* Data
@@ -127,8 +118,21 @@ class Script
 	
 	public static var dummyVec:B2Vec2 = new B2Vec2();
 	
-	private static var drawData:Array<Float> = new Array<Float>();
-	private static var ma:Matrix = new Matrix();
+	public static function resetStatics():Void
+	{
+		engine = null;
+		lastCreatedActor = null;
+		lastCreatedJoint = null;
+		lastCreatedRegion = null;
+		lastCreatedTerrainRegion = null;
+		mpx = 0; mpy = 0; mrx = 0; mry = 0;
+		
+		#if flash
+		medalPopup = null;
+		clickArea = null;
+		scoreBrowser = null;
+		#end
+	}
 
 	//*-----------------------------------------------
 	//* Behavior
@@ -1454,21 +1458,10 @@ class Script
     {
     	return engine.getLayer(refType, ref);
     }
-    
+
     public static function setBlendModeForLayer(refType:Int, ref:String, mode:openfl.display.BlendMode)
     {
-    	var layer = getLayer(refType, ref);
-		#if (cpp || neko)
-		//only implemented for tilelayers on cpp
-		if(Std.is(layer, Layer))
-		{
-			var tileLayer = cast(layer, Layer).tiles;
-			tileLayer.blendName = Std.string(mode);
-			tileLayer.draw(Std.int(Engine.cameraX * layer.scrollFactorX), Std.int(Engine.cameraY * layer.scrollFactorY));
-		}
-		#else
-		getLayer(refType, ref).blendMode = mode;
-		#end
+    	getLayer(refType, ref).blendMode = mode;
     }
 	
 	/**
@@ -2405,7 +2398,7 @@ class Script
 		#else
 		var handler = function(event:Event):Void
 		{
-			var bitmapData = cast(event.currentTarget.content, Bitmap).bitmapData;
+			var bitmapData = cast(cast(event.currentTarget, Loader).content, Bitmap).bitmapData;
     		onComplete(bitmapData);
 		}
 	
@@ -2517,7 +2510,7 @@ class Script
 			img.imgX = x - (Engine.SCALE * a.getWidth() * (Engine.SCALE / 2));
 			img.imgY = y - (Engine.SCALE * a.getHeight() * (Engine.SCALE / 2));
 			
-			img.smoothing = scripts.MyAssets.antialias;
+			img.smoothing = Config.antialias;
 
 			a.attachedImages.push(img);
 		}
@@ -2534,7 +2527,7 @@ class Script
 			engine.hudLayer.addChild(img);
 			img.imgX = x;
 			img.imgY = y;
-			img.smoothing = scripts.MyAssets.antialias;
+			img.smoothing = Config.antialias;
 		}
 	}
 	
@@ -2559,7 +2552,7 @@ class Script
 			
 			img.imgX = x;
 			img.imgY = y;
-			img.smoothing = scripts.MyAssets.antialias;
+			img.smoothing = Config.antialias;
 		}
 	}
 	
@@ -2592,17 +2585,12 @@ class Script
 		
 		if(source != null && dest != null)
 		{
-			dummyRect.x = 0;
-			dummyRect.y = 0;
-			dummyRect.width = source.width;
-			dummyRect.height = source.height;
-			
 			dummyPoint.x = x;
 			dummyPoint.y = y;
 			
 			if(blendMode == BlendMode.NORMAL)
 			{
-				dest.copyPixels(source, dummyRect, dummyPoint, null, null, true);
+				dest.copyPixels(source, source.rect, dummyPoint, null, null, true);
 			}
 			
 			else
@@ -2633,15 +2621,7 @@ class Script
 		
 			font.font.render(img, fontData, text, 0x000000, 1, x, y, 0, 0);
 			#else
-			BitmapFont.skipFlags = true;
-			drawData.splice(0, drawData.length);
-			font.font.render(drawData, text, 0x000000, 1, 0, 0, 0, font.fontScale, 0, false);
-			var temp = new Sprite();
-			font.font.drawText(temp.graphics, drawData, true, 0);
-			ma.tx = x;
-			ma.ty = y;
-			img.draw(temp, ma);
-			BitmapFont.skipFlags = false;
+			font.font.renderToImg(img, text, 0x000000, 1, x, y, 0, font.fontScale, 0, false);
 			#end
 		}
 	}
@@ -2668,12 +2648,7 @@ class Script
 	{
 		if(img != null)
 		{
-			dummyRect.x = 0;
-			dummyRect.y = 0;
-			dummyRect.width = img.width;
-			dummyRect.height = img.height;
-			
-			img.fillRect(dummyRect, 0x00000000);
+			img.fillRect(img.rect, 0x00000000);
 		}
 	}
 	
@@ -2696,74 +2671,43 @@ class Script
 		var final = new BitmapData(dest.width, dest.height, true, 0);
 		final.draw(temp);
 		
-		dummyRect.x = 0;
-		dummyRect.y = 0;
-		dummyRect.width = dest.width;
-		dummyRect.height = dest.height;
-		
 		dummyPoint.x = 0;
 		dummyPoint.y = 0;
 		
-		dest.copyPixels(final, dummyRect, dummyPoint);
+		dest.copyPixels(final, dest.rect, dummyPoint);
 	}
 	
 	public static function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
 		x = Std.int(x * Engine.SCALE);
       	y = Std.int(y * Engine.SCALE);
-      
-      	dummyRect.x = 0;
-      	dummyRect.y = 0;
-
-      	dummyRect.width = mask.width;
-      	dummyRect.height = mask.height;
-      
+        
       	dummyPoint.x = x;
       	dummyPoint.y = y;
       
-      	dest.copyChannel(mask, dummyRect, dummyPoint, openfl.display.BitmapDataChannel.ALPHA, openfl.display.BitmapDataChannel.ALPHA);
+      	dest.copyChannel(mask, mask.rect, dummyPoint, openfl.display.BitmapDataChannel.ALPHA, openfl.display.BitmapDataChannel.ALPHA);
 	}
 	
 	public static function fillImage(img:BitmapData, color:Int)
 	{
 		if(img != null)
 		{
-			dummyRect.x = 0;
-			dummyRect.y = 0;
-			dummyRect.width = img.width;
-			dummyRect.height = img.height;
-			
-			img.fillRect(dummyRect, (255 << 24) | color);
+			img.fillRect(img.rect, (255 << 24) | color);
 		}
 	}
 	
-	#if flash
-	//Takes ONE filter at a time.
 	public static function filterImage(img:BitmapData, filter:BitmapFilter)
 	{
+		#if flash
 		if(img != null)
 		{
-			dummyRect.x = 0;
-			dummyRect.y = 0;
-			dummyRect.width = img.width;
-			dummyRect.height = img.height;
-			
 			dummyPoint.x = 0;
 			dummyPoint.y = 0;
 		
-			img.applyFilter(img, dummyRect, dummyPoint, filter);
+			img.applyFilter(img, img.rect, dummyPoint, filter);
 		}
+		#end
 	}
-	#else
-	//Takes ONE filter at a time.
-	public static function filterImage(img:BitmapData, filter:Array<Dynamic>)
-	{
-		if(img != null)
-		{
-			//TODO: Reuse Actor's setFilter if possible.
-		}
-	}
-	#end
 	
 	public static function imageSetPixel(img:BitmapData, x:Int, y:Int, color:Int)
 	{
@@ -2810,18 +2754,13 @@ class Script
 	{
 		if(img != null)
 		{
-			dummyRect.x = 0;
-			dummyRect.y = 0;
-			dummyRect.width = img.width;
-			dummyRect.height = img.height;
-			
 			dummyPoint.x = 0;
 			dummyPoint.y = 0;
 			
 			originalColor = (255 << 24) | originalColor;
 			newColor = (255 << 24) | newColor;
 			
-			img.threshold(img, dummyRect, dummyPoint, "==", originalColor, newColor, 0xffffffff, true);
+			img.threshold(img, img.rect, dummyPoint, "==", originalColor, newColor, 0xffffffff, true);
 		}
 	}
 	
@@ -2835,15 +2774,10 @@ class Script
 		var final = new BitmapData(img.width, img.height, true, 0);
 		final.draw(img, matrix);
 		
-		dummyRect.x = 0;
-		dummyRect.y = 0;
-		dummyRect.width = final.width;
-		dummyRect.height = final.height;
-		
 		dummyPoint.x = 0;
 		dummyPoint.y = 0;
 		
-		img.copyPixels(final, dummyRect, dummyPoint);
+		img.copyPixels(final, final.rect, dummyPoint);
 	}
 	
 	//TODO: Can we do this "in place" without the extra objects?
@@ -2856,15 +2790,10 @@ class Script
 		var final = new BitmapData(img.width, img.height, true, 0);
 		final.draw(img, matrix);
 		
-		dummyRect.x = 0;
-		dummyRect.y = 0;
-		dummyRect.width = final.width;
-		dummyRect.height = final.height;
-		
 		dummyPoint.x = 0;
 		dummyPoint.y = 0;
 		
-		img.copyPixels(final, dummyRect, dummyPoint);
+		img.copyPixels(final, final.rect, dummyPoint);
 	}
 	
 	public static function setXForImage(img:BitmapWrapper, value:Float)
@@ -2950,38 +2879,26 @@ class Script
 		moveImageTo(img, (img.imgX / Engine.SCALE) + x, (img.imgY / Engine.SCALE) + y, duration, easing);
 	}
 	
-	#if flash
 	public static function setFilterForImage(img:BitmapWrapper, filter:BitmapFilter)
 	{
 		if(img != null)
 		{
-			img.filters = img.filters.concat([filter]);
+			img.img.filters = img.filters.concat([filter]);
 		}
 	}
-	#else
-	public static function setFilterForImage(img:BitmapWrapper, filter:Array<Dynamic>)
-	{			
-		//TODO: Reuse Actor's setFilter if possible.
-	}
-	#end
 	
 	public static function clearFiltersForImage(img:BitmapWrapper)
 	{
 		if(img != null)
 		{
-			img.filters = [];
+			img.img.filters = [];
 		}
 	}
 	
 	//Base64 encodes raw image data. Does NOT convert to a PNG.
 	public static function imageToText(img:BitmapData):String
 	{
-		dummyRect.x = 0;
-		dummyRect.y = 0;
-		dummyRect.width = img.width;
-		dummyRect.height = img.height;
-		
-		var bytes = img.getPixels(dummyRect);
+		var bytes = img.getPixels(img.rect);
 		
 		#if js
 		var byteArray = bytes;
@@ -3026,11 +2943,7 @@ class Script
 		data.position = 0;
 		
 		var img = new BitmapData(width, height, true, 0);
-		dummyRect.x = 0;
-		dummyRect.y = 0;
-		dummyRect.width = width;
-		dummyRect.height = height;
-		img.setPixels(dummyRect, data);
+		img.setPixels(img.rect, data);
 		return img;
 	}
 	
@@ -3687,7 +3600,7 @@ class Script
 	
 	private static function defaultURLHandler(event:Event)
 	{
-		var loader:URLLoader = new URLLoader(event.target);
+		var loader:URLLoader = new URLLoader(cast event.target);
 		trace("Visited URL: " + loader.data);
 	}
 	
@@ -4452,8 +4365,6 @@ class Script
 		{
 			trace("Could not exit game: " + e.message); 
 		}
-		#elseif openfl_legacy
-		Lib.exit();
 		#elseif !js
 		Sys.exit(0);
 		#end
@@ -4464,74 +4375,6 @@ class Script
 	//* Utilities
 	//*-----------------------------------------------
 	
-	#if (cpp || neko)
-	public static function createGrayscaleFilter():Array<Dynamic>
-	{
-		var matrix = new Array<Dynamic>();
-		matrix[0] = "GrayscaleFilter";
-		return matrix;
-	}
-	
-	public static function createSepiaFilter():Array<Dynamic>
-	{
-		var matrix = new Array<Dynamic>();
-		matrix = matrix.concat([0.34, 0.33, 0.33, 0.00, 30.00]);
-		matrix = matrix.concat([0.33, 0.34, 0.33, 0.00, 20.00]);
-		matrix = matrix.concat([0.33, 0.33, 0.34, 0.00, 0.00]);
-		matrix = matrix.concat([0.00, 0.00, 0.00, 1.00, 0.00]);
-		matrix.insert(0, "SepiaFilter");
-		
-		return matrix;
-	}
-	
-	public static function createNegativeFilter():Array<Dynamic>
-	{
-		var matrix = new Array<Dynamic>();
-		matrix[0] = "NegativeFilter";
-		return matrix;
-	}
-	
-	public static function createTintFilter(color:Int, amount:Float = 1):Array<Dynamic>
-	{
-		var matrix = new Array<Dynamic>();
-		matrix[0] = "TintFilter";
-		matrix[1] = ((color >> 16) & 0xFF) / 255.0;
-		matrix[2] = ((color >> 8) & 0xFF) / 255.0;
-		matrix[3] = ((color) & 0xFF) / 255.0;
-		matrix[4] = amount;
-		return matrix;
-	}
-	
-	public static function createHueFilter(h:Float):Array<Dynamic>
-	{
-		var cm:ColorMatrix = new ColorMatrix();
-		cm.adjustHue(h);
-		cm.adjustSaturation(1);
-		var matrix = cast((cm.toArray(cm.matrix)),(Array<Dynamic>));
-		matrix.insert(0, "HueFilter");
-		return matrix;
-	}
-
-	public static function createSaturationFilter(s:Float):Array<Dynamic>
-	{
-		var cm:ColorMatrix = new ColorMatrix();
-		cm.adjustSaturation(s/100);
-		var matrix = cast((cm.toArray(cm.matrix)),(Array<Dynamic>));
-		matrix.insert(0, "SaturationFilter");
-		return matrix;
-	}
-
-	public static function createBrightnessFilter(b:Float):Array<Dynamic>
-	{
-		var cm:ColorMatrix = new ColorMatrix();
-		cm.adjustBrightness(b/100);
-		var matrix = cast((cm.toArray(cm.matrix)),(Array<Dynamic>));
-		matrix.insert(0, "BrightnessFilter");
-		return matrix;
-	}
-	#end
-	
-	#if (flash || js)
 	public static function createGrayscaleFilter():ColorMatrixFilter
 	{
 		var matrix:Array<Float> = new Array<Float>();
@@ -4622,6 +4465,4 @@ class Script
 		
 		return cm.getFilter();
 	}
-		
-	#end	
 }

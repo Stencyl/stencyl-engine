@@ -1,14 +1,24 @@
 package com.stencyl.utils;
 
+import lime.app.Future;
+import lime.app.Promise;
+import lime.graphics.Image;
+import lime.utils.Bytes;
 import openfl.display.BitmapData;
 import openfl.display.Bitmap;
+import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.Sprite;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.utils.ByteArray;
 #if flash
+import flash.display.Loader;
+import flash.events.Event;
+import flash.events.IOErrorEvent;
+import flash.events.ProgressEvent;
 import flash.media.SoundMixer;
 #end
 import openfl.media.SoundTransform;
@@ -24,7 +34,7 @@ import com.stencyl.models.actor.Collision;
  */
 class Utils
 {
-	public static var INTEGER_MAX:Int = 100000000;
+	public static inline var INTEGER_MAX:Int = 100000000;
 
 	/**
 	 * Flash equivalent: Number.MAX_VALUE
@@ -33,7 +43,7 @@ class Utils
 	public static var NUMBER_MAX_VALUE(get_NUMBER_MAX_VALUE,never):Float;
 	public static inline function get_NUMBER_MAX_VALUE(): Float { return untyped __global__["Number"].MAX_VALUE; }
 #else
-	public static var NUMBER_MAX_VALUE = 1.79769313486231e+308;
+	public static inline var NUMBER_MAX_VALUE = 1.79769313486231e+308;
 #end
 
 	/**
@@ -876,6 +886,122 @@ class Utils
 			onComplete(true);
 	}
 
+	#if (flash || js)
+	private static function getFlatName(path:String):String
+	{
+		path = StringTools.replace(path, "/", "_");
+		path = StringTools.replace(path, ".", "_");
+		path = StringTools.replace(path, "-", "_");
+		return path;
+	}
+
+	private static function getAssetClass(path:String):Class<Dynamic>
+	{
+		return Type.resolveClass("__ASSET__" + getFlatName(path));
+	}
+	#end
+
+	public static function getConfigBytes(path:String):Bytes
+	{
+		#if (flash || html5)
+
+		return haxe.Resource.getBytes(getFlatName(path));
+
+		#else
+
+		return loadBytes(path);
+
+		#end
+	}
+
+	public static function getConfigText(path:String):String
+	{
+		#if (flash || html5)
+
+		return haxe.Resource.getString(getFlatName(path));
+
+		#else
+
+		return loadText(path);
+
+		#end
+	}
+
+	//Because this is passed through a loader on the flash target, it returns a Future instead.
+	public static function getConfigBitmap(path:String):Future<DisplayObject>
+	{
+		#if flash
+
+		var promise = new Promise<DisplayObject> ();
+		
+		var data = haxe.Resource.getBytes(getFlatName(path));
+		var loader = new Loader();
+		loader.loadBytes(data.getData());
+		return Future.withValue((loader : DisplayObject));
+		
+		#elseif html5
+
+		try
+		{
+			var path = getFlatName(StringTools.replace(path, ".png", ".txt"));
+			var data = haxe.Resource.getString(path);
+			return BitmapData.loadFromBase64(data, "png")
+				.then(function (bmp) return Future.withValue((new Bitmap(bmp) : DisplayObject)));
+		}
+		catch(msg:String)
+		{
+			trace("(You probably have a old browser) Error occurred: " + msg);
+			return cast Future.withError("(You probably have a old browser) Error occurred: " + msg);
+		}
+
+		#else
+
+		#if ios path = 'assets/$path'; #end
+
+		return BitmapData.loadFromFile(path)
+			.then(function (bmp) return Future.withValue((new Bitmap(bmp) : DisplayObject)));
+
+		#end
+	}
+
+	public static function loadBytes(path:String):Bytes
+	{
+		#if (flash || html5)
+
+		var byteArray:ByteArray = cast Type.createInstance(getAssetClass(path), []);
+		return Bytes.ofData(byteArray);
+
+		#else
+
+		#if ios path = 'assets/$path'; #end
+
+		return Bytes.fromFile(path);
+
+		#end
+	}
+
+	public static function loadText(path:String):String
+	{
+		var bytes = loadBytes(path);
+		return bytes.getString(0, bytes.length);
+	}
+
+	public static function loadBitmapData(path:String):BitmapData
+	{
+		#if (flash)
+
+		return cast Type.createInstance(getAssetClass(path), []);
+
+		#else
+
+		#if ios path = 'assets/$path'; #end
+
+		var image = Image.fromFile(path);
+		return BitmapData.fromImage(image);
+
+		#end
+	}
+
 	// Time information.
 	private static var _time:Float;
 	public static var _updateTime:Float;
@@ -915,47 +1041,32 @@ class Utils
 	
 	public static var collision:Collision = new Collision();
 
-
-	#if hardware
-	/**
-	 * Currently only one tilesheet for simplicity, should probably be a list later on (and not static?)
-	 */
-	public static var tilesheet:openfl.display.Tilesheet;
-
-	/**
-	 * Stores the x, y, ID, flags... which are then passed through NME
-	 */
-	public static var tileData:Array<Float> = new Array<Float>();
-
-	/**
-	 * Stores the rectangles in an array where the index is the respective ID that the rectangle has in the tilesheet
-	 */
-	static public var sheetRectangles:Array<Rectangle> = new Array<Rectangle>();
-
-	/**
-	 * Flags are added with
-	 * flags = TILE_SCALE | TILE_ROTATION | TILE_RGB;
-	 */
-	public static var tilesheetFlags:Int = 0;
-
-	static private var _bitmapIndex:Hash<Int> = new Hash<Int>();
-
-	/**
-	 * @private Used internally, used to determine which index to set the data in tileData
-	 */
-	public static var currentPos:Int = 0;
-	/**
-	 * Used to determine if there are less objects to render, ïf there are then we need to splice the array so that we dont render any
-	 * entities which have been removed
-	 */
-	public static var previousLength = 0;
-
-	/**
-	 * Flags that are copied over from the openfl.display.Tilesheet class for easier access
-	 */
-	public static inline var TILE_SCALE = 0x0001;
-	public static inline var TILE_ROTATION = 0x0002;
-	public static inline var TILE_RGB = 0x0004;
-	public static inline var TILE_ALPHA = 0x0008;
-	#end
+	public static function resetStatics():Void
+	{
+		width = 0;
+		height = 0;
+		elapsed = 0;
+		rate = 1;
+		bounds = null;
+		camera = new Point();
+		_time = 0;
+		_updateTime = 0;
+		_renderTime = 0;
+		_gameTime = 0;
+		_flashTime = 0;
+		_bitmap = new Map<String,BitmapData>();
+		_seed = 0;
+		_getSeed = 0;
+		_volume = 1;
+		_pan = 0;
+		_soundTransform = new SoundTransform();
+		stage = null;
+		point = new Point();
+		point2 = new Point();
+		zero = new Point();
+		rect = new Rectangle();
+		matrix = new Matrix();
+		sprite = new Sprite();
+		collision = new Collision();
+	}
 }

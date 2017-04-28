@@ -23,11 +23,7 @@ class RegularLayer extends Sprite
 		this.scrollFactorX = scrollFactorX;
 		this.scrollFactorY = scrollFactorY;
 		alpha = opacity;
-		#if (cpp || neko)
-		//blendName is implemented in Layer.hx
-		#elseif flash
 		this.blendMode = blendMode;
-		#end
 	}
 
 	public function updatePosition(x:Float, y:Float, elapsedTime:Float)

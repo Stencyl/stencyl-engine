@@ -12,6 +12,12 @@ class SoundChannel
 	public static var muted:Bool = false;
 	public static var masterVolume:Float = 1;
 	
+	public static function resetStatics():Void
+	{
+		muted = false;
+		masterVolume = 1;
+	}
+
 	public var currentSource:openfl.media.Sound;
 	public var currentSound:openfl.media.SoundChannel;
 	public var currentClip:com.stencyl.models.Sound;

@@ -14,6 +14,12 @@ class Collision
 	private static var recycledCollisions:Array<Collision> = new Array<Collision>();
 	public static var collisionResponses:Map < Int, Map < Int, String >> = new Map < Int, Map < Int, String >> ();
 	
+	public static function resetStatics():Void
+	{
+		recycledCollisions = new Array<Collision>();
+		collisionResponses = new Map < Int, Map < Int, String >> ();
+	}
+
 	public var thisFromTop:Bool;
 	public var thisFromLeft:Bool;
 	public var thisFromBottom:Bool;

@@ -4,8 +4,13 @@ import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.display.Graphics;
+import openfl.display.Tilemap;
+import openfl.display.Tileset;
+import openfl.display.Tile;
 
-class Label extends Sprite 
+import com.stencyl.utils.ColorMatrix;
+
+class Label extends Sprite
 {
 	private var _font:BitmapFont;
 	private var _text:String;
@@ -41,10 +46,10 @@ class Label extends Sprite
 	private var _preparedShadowGlyphs:Array<BitmapData>;
 	private var _preparedOutlineGlyphs:Array<BitmapData>;
 	#else
-	private var _drawData:Array<Float>;
+	public var _shadowTilemap:Tilemap;
+	public var _outlineTilemap:Tilemap;
+	public var _characterTilemap:Tilemap;
 	#end
-	
-	public var canvas:Graphics;
 	
 	/**
 	 * Constructs a new text field component.
@@ -53,8 +58,6 @@ class Label extends Sprite
 	public function new(?pFont:BitmapFont = null) 
 	{
 		super();
-		
-		canvas = graphics;
 		
 		_text = "";
 		_color = 0x0;
@@ -99,7 +102,7 @@ class Label extends Sprite
 		_bitmap = new Bitmap(bitmapData);
 		this.addChild(_bitmap);
 		#else
-		_drawData = [];
+		cacheAsBitmap = true;
 		#end
 		
 		_pendingTextChange = true;
@@ -121,6 +124,11 @@ class Label extends Sprite
 		clearPreparedGlyphs(_preparedTextGlyphs);
 		clearPreparedGlyphs(_preparedShadowGlyphs);
 		clearPreparedGlyphs(_preparedOutlineGlyphs);
+		#else
+		removeChildren();
+		_outlineTilemap = null;
+		_shadowTilemap = null;
+		_characterTilemap = null;
 		#end
 	}
 	
@@ -326,7 +334,25 @@ class Label extends Sprite
 			graphics.drawRect(0, 0, finalWidth, finalHeight);
 			graphics.endFill();
 		}
-		_drawData.splice(0, _drawData.length);
+		removeChildren();
+		if (_outline)
+		{
+			_outlineTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset());
+			tint(_outlineTilemap, _outlineColor);
+			addChild(_outlineTilemap);
+		}
+		if (_shadow)
+		{
+			_shadowTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset());
+			tint(_shadowTilemap, _shadowColor);
+			addChild(_shadowTilemap);
+		}
+		_characterTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset());
+		if(_useColor)
+		{
+			tint(_characterTilemap, _color);
+		}
+		addChild(_characterTilemap);
 		#end
 		
 		// render text
@@ -367,7 +393,7 @@ class Label extends Sprite
 						#if (flash || js)
 						_font.render(bitmapData, _preparedOutlineGlyphs, t, _outlineColor, _alpha, px + ox + _padding, py + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing);
 						#else
-						_font.render(_drawData, t, _outlineColor, _alpha, px + ox + _padding, py + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
+						_font.render(_outlineTilemap, t, _alpha, px + ox + _padding, py + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 						#end
 					}
 				}
@@ -379,20 +405,18 @@ class Label extends Sprite
 				#if (flash || js)
 				_font.render(bitmapData, _preparedShadowGlyphs, t, _shadowColor, _alpha, 1 + ox + _padding, 1 + oy + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing);
 				#else
-				_font.render(_drawData, t, _shadowColor, _alpha, 1 + ox + _padding, 1 + oy + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
+				_font.render(_shadowTilemap, t, _alpha, 1 + ox + _padding, 1 + oy + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 				#end
 			}
 			#if (flash || js)
 			_font.render(bitmapData, _preparedTextGlyphs, t, _color, _alpha, ox + _padding, oy + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing);
 			#else
-			_font.render(_drawData, t, _color, _alpha, ox + _padding, oy + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale, _useColor);
+			_font.render(_characterTilemap, t, _alpha, ox + _padding, oy + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 			#end
 			row++;
 		}
 		#if (flash || js)
 		bitmapData.unlock();
-		#else
-		_font.drawText(canvas, _drawData);
 		#end
 		
 		_pendingTextChange = false;
@@ -870,6 +894,13 @@ class Label extends Sprite
 			}
 			pGlyphs = null;
 		}
+	}
+	#else
+	private function tint(tilemap:Tilemap, color:Int):Void
+	{
+		var cm:ColorMatrix = new ColorMatrix();
+		cm.colorize(color, 1);
+		tilemap.filters = [cm.getFilter()];
 	}
 	#end
 

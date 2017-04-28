@@ -18,6 +18,12 @@ class GameModel
 {
 	public static var instance:GameModel;
 	
+	public static function resetStatics():Void
+	{
+		instance = null;
+		collisionMap = null;
+	}
+
 	public var name:String;
 
 	public var width:Int;
@@ -39,12 +45,12 @@ class GameModel
 	public var scenes:Map<Int,Scene>;
 	public var autotileFormats:Map<Int, AutotileFormat>;
 	
-	public static var INHERIT_ID:Int = -1000;
-	public static var REGION_ID:Int = -2;
-	public static var PLAYER_ID:Int = 0;
-	public static var TERRAIN_ID:Int = 1;
-	public static var DOODAD_ID:Int = 2;
-	public static var ACTOR_ID:Int = 3;
+	public static inline var INHERIT_ID:Int = -1000;
+	public static inline var REGION_ID:Int = -2;
+	public static inline var PLAYER_ID:Int = 0;
+	public static inline var TERRAIN_ID:Int = 1;
+	public static inline var DOODAD_ID:Int = 2;
+	public static inline var ACTOR_ID:Int = 3;
 	
 	public static function get():GameModel
 	{
@@ -175,7 +181,6 @@ class GameModel
 			map.set(Std.parseInt(e.att.id), new Scene(sceneID, e.att.name));
 		}
 		
-		Data.get().scenesXML = null;
 		Data.get().sceneListXML = null;
 		
 		return map;

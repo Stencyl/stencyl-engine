@@ -2,9 +2,7 @@ package com.stencyl.models.scene;
 
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-#if !js
-import openfl.display.Tilesheet;
-#end
+import openfl.display.Tileset as FLTileset;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
@@ -29,9 +27,7 @@ class Tile
 	public var currTime:Int;
 	public var updateSource:Bool;
 	
-	#if !js
-	public var data:Tilesheet;
-	#end
+	public var data:FLTileset;
 	
 	public function new
 	(
@@ -140,20 +136,14 @@ class Tile
 	public function unloadGraphics()
 	{
 		pixels = null;
-		
-		#if !js
 		data = null;
-		#end
 		
 		if(autotiles != null)
 		{
 			for(t in autotiles)
 			{
 				t.pixels = null;
-				
-				#if !js
 				t.data = null;
-				#end
 			}
 		}
 
@@ -170,12 +160,12 @@ class Tile
 			this.pixels = pixels;
 
 			#if (cpp || neko)
-			data = new Tilesheet(pixels);
+			data = new FLTileset(pixels);
 			
 			for(i in 0 ... durations.length)
 			{
 				currFrame = i;
-				data.addTileRect(getSource(parent.tileWidth, parent.tileHeight));
+				data.addRect(getSource(parent.tileWidth, parent.tileHeight));
 			}
 			#end
 		}
@@ -195,8 +185,8 @@ class Tile
 		var half_tw:Int = Std.int(tw / 2);
 		var half_th:Int = Std.int(th / 2);
 
-		rect.width = half_tw;
-		rect.height = half_th;
+		dummyRect.width = half_tw;
+		dummyRect.height = half_th;
 
 		for(corners in format.animCorners)
 		{
@@ -220,11 +210,11 @@ class Tile
 		return allAnimations;
 	}
 
-	private static var rect = new Rectangle();
+	private static var dummyRect = new Rectangle();
 	private inline function sourceRect(p:Point, srcFrameOffset:Int):Rectangle
 	{
-		rect.x = srcFrameOffset + p.x * rect.width;
-		rect.y = p.y * rect.height;
-		return rect;
+		dummyRect.x = srcFrameOffset + p.x * dummyRect.width;
+		dummyRect.y = p.y * dummyRect.height;
+		return dummyRect;
 	}
 }

@@ -11,6 +11,11 @@ class Font extends Resource
 {	
 	public static var defaultFont:BitmapFont = null;
 	
+	public static function resetStatics():Void
+	{
+		defaultFont = null;
+	}
+
 	public var font:BitmapFont;
 	public var fontScale:Float;
 	public var letterSpacing:Int;
@@ -52,7 +57,7 @@ class Font extends Resource
 		
 		else
 		{
-			var textBytes = Data.get().resourceAssets.get(ID + ".fnt");
+			var textBytes = Assets.getText('assets/graphics/${Engine.IMG_BASE}/font-$ID.fnt');
 			var xml = Xml.parse(textBytes);
 			var img = Data.get().getGraphicAsset
 			(

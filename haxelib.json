@@ -1,0 +1,12 @@
+{
+  "name": "stencyl",
+  "url": "http://www.stencyl.com",
+  "license": "MIT",
+  "tags": [ "stencyl", "flash", "cpp" ],
+  "description": "Stencyl.",
+  "version": "1.0.0",
+  "binaryversion": "1",
+  "releasenote": "First Release",
+  "contributors": [ "" ],
+  "dependencies": {}
+}

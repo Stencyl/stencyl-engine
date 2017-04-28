@@ -1,6 +1,7 @@
 package com.stencyl.graphics.shaders;
 
 import flash.geom.Rectangle;
+import com.stencyl.Config;
 import com.stencyl.Engine;
 import motion.Actuate;
 
@@ -60,14 +61,12 @@ class PostProcess extends OpenGLView
 	public function new(fragmentShader:String, literalText:Bool = false)
 	{
 		super();
-		#if !openfl_legacy
 		render = _render;
-		#end
 
 		uniforms = new Map<String, Uniform>();
 
 #if ios
-		defaultFramebuffer = new GLFramebuffer(GL.version, 1); // faked framebuffer
+		defaultFramebuffer = 1; // faked framebuffer
 #end
 
 		// create and bind the framebuffer
@@ -90,7 +89,8 @@ class PostProcess extends OpenGLView
 
 		buffer = GL.createBuffer();
 		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
-		GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(cast vertices), GL.STATIC_DRAW);
+		var data = new Float32Array(vertices);
+		GL.bufferData(GL.ARRAY_BUFFER, data.byteLength, data, GL.STATIC_DRAW);
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 
 		if(literalText)
@@ -217,23 +217,9 @@ class PostProcess extends OpenGLView
 		if (texture != null) GL.deleteTexture(texture);
 		if (renderbuffer != null) GL.deleteRenderbuffer(renderbuffer);
 
-		#if(desktop)
-		if(Engine.engine.isInFullScreen())
-		{
-			createTexture(Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
-			createRenderbuffer(Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
-		}
+		createTexture(Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
+		createRenderbuffer(Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
 		
-		else
-		{
-			createTexture(Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale), Std.int(scripts.MyAssets.stageHeight * scripts.MyAssets.gameScale));
-			createRenderbuffer(Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale), Std.int(scripts.MyAssets.stageHeight * scripts.MyAssets.gameScale));
-		}
-		#else
-		createTexture(Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
-		createRenderbuffer(Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
-		#end
-
 		GL.bindFramebuffer(GL.FRAMEBUFFER, null);
 	}
 
@@ -254,7 +240,7 @@ class PostProcess extends OpenGLView
 	{
 		texture = GL.createTexture();
 		GL.bindTexture(GL.TEXTURE_2D, texture);
-		GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB,  width, height,  0,  GL.RGB, GL.UNSIGNED_BYTE, null);
+		GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB,  width, height,  0,  GL.RGB, GL.UNSIGNED_BYTE, 0);
 
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
@@ -273,37 +259,19 @@ class PostProcess extends OpenGLView
 		GL.bindFramebuffer(GL.FRAMEBUFFER, framebuffer);
 		
 		//These seem to have no effect.
-		GL.viewport(0, 0, Std.int(openfl.Lib.current.stage.stageWidth), Std.int(openfl.Lib.current.stage.stageHeight));
+		GL.viewport(0, 0, Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
 		GL.clear(GL.DEPTH_BUFFER_BIT | GL.COLOR_BUFFER_BIT);
 	}
 
 	/**
 	 * Renders to a framebuffer or the screen every frame
 	 */
-	#if openfl_legacy
-	override public function render(rect:Rectangle)
-	#else
 	public function _render(rect:Rectangle)
-	#end
 	{
 		time += Engine.elapsedTime * timeScale;
 		GL.bindFramebuffer(GL.FRAMEBUFFER, renderTo);
-		
-		//Makes it work on full screen.
-		#if(desktop)
-		if(Engine.engine.isInFullScreen())
-		{
-			GL.viewport(0, 0, Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
-		}
-		
-		else
-		{
-			GL.viewport(0, 0, Std.int(scripts.MyAssets.stageWidth * scripts.MyAssets.gameScale), Std.int(scripts.MyAssets.stageHeight * scripts.MyAssets.gameScale));
-		}
-		#else
-		GL.viewport(0, 0, Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
-		#end
 
+		GL.viewport(0, 0, Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
 
 		GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 

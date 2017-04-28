@@ -8,13 +8,6 @@ import neko.vm.Gc;
 
 import de.polygonal.ds.IntHashTable;
 
-import com.stencyl.behavior.Attribute;
-import com.stencyl.behavior.Behavior;
-import com.stencyl.behavior.TimedTask;
-import com.stencyl.behavior.BehaviorManager;
-import com.stencyl.behavior.BehaviorInstance;
-import com.stencyl.behavior.Script;
-
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.display.DisplayObject;
@@ -35,48 +28,49 @@ import openfl.Assets;
 import openfl.Lib;
 import openfl.ui.Keyboard;
 
-import com.stencyl.graphics.transitions.Transition;
+import com.stencyl.behavior.Attribute;
+import com.stencyl.behavior.Behavior;
+import com.stencyl.behavior.BehaviorInstance;
+import com.stencyl.behavior.BehaviorManager;
+import com.stencyl.behavior.Script;
+import com.stencyl.behavior.TimedTask;
+import com.stencyl.event.EventMaster;
+import com.stencyl.event.NativeListener;
+import com.stencyl.graphics.G;
+import com.stencyl.graphics.BitmapFont;
+import com.stencyl.graphics.shaders.PostProcess;
+import com.stencyl.graphics.shaders.Shader;
+import com.stencyl.graphics.transitions.CircleTransition;
 import com.stencyl.graphics.transitions.FadeInTransition;
 import com.stencyl.graphics.transitions.FadeOutTransition;
-import com.stencyl.graphics.transitions.CircleTransition;
-import com.stencyl.graphics.BitmapFont;
-import com.stencyl.graphics.G;
-
-import com.stencyl.models.scene.layers.BackgroundLayer;
-import com.stencyl.models.scene.layers.RegularLayer;
+import com.stencyl.graphics.transitions.Transition;
+import com.stencyl.utils.Utils;
 
 import com.stencyl.models.Actor;
-import com.stencyl.models.scene.DeferredActor;
+import com.stencyl.models.Background;
+import com.stencyl.models.GameModel;
+import com.stencyl.models.Region;
+import com.stencyl.models.Scene;
+import com.stencyl.models.Sound;
+import com.stencyl.models.SoundChannel;
+import com.stencyl.models.Terrain;
 import com.stencyl.models.actor.Group;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.actor.Collision;
-import com.stencyl.models.scene.ActorInstance;
-import com.stencyl.models.GameModel;
-import com.stencyl.models.Scene;
-import com.stencyl.models.SoundChannel;
-import com.stencyl.models.Region;
-import com.stencyl.models.Terrain;
-import com.stencyl.models.Sound;
-
-import com.stencyl.models.scene.DeferredActor;
-import com.stencyl.models.scene.Tile;
-import com.stencyl.models.scene.Layer;
-import com.stencyl.models.scene.TileLayer;
-import com.stencyl.models.scene.ScrollingBitmap;
-
-import com.stencyl.models.Background;
 import com.stencyl.models.background.ImageBackground;
 import com.stencyl.models.background.ScrollingBackground;
+import com.stencyl.models.collision.Mask;
+import com.stencyl.models.scene.ActorInstance;
+import com.stencyl.models.scene.DeferredActor;
+import com.stencyl.models.scene.Layer;
+import com.stencyl.models.scene.Tile;
+import com.stencyl.models.scene.TileLayer;
+import com.stencyl.models.scene.ScrollingBitmap;
+import com.stencyl.models.scene.layers.BackgroundLayer;
+import com.stencyl.models.scene.layers.RegularLayer;
 
-import scripts.MyAssets;
 //Do not remove - forces your behaviors to be included
 import scripts.MyScripts;
-import com.stencyl.models.collision.Mask;
-
-import com.stencyl.utils.Utils;
-
-import com.stencyl.event.EventMaster;
-import com.stencyl.event.NativeListener;
 
 import motion.Actuate;
 import motion.easing.Elastic;
@@ -103,22 +97,24 @@ import box2D.dynamics.contacts.B2Contact;
 import box2D.dynamics.contacts.B2ContactEdge;
 
 import haxe.ds.ObjectMap;
-import com.stencyl.graphics.shaders.PostProcess;
-import com.stencyl.graphics.shaders.Shader;
 
 //import com.nmefermmmtools.debug.Console;
 
-class Engine 
+class Engine
 {
 	//*-----------------------------------------------
 	//* Constants
 	//*-----------------------------------------------
 		
-	public static var DOODAD:String = "";
+	public static inline var DOODAD:String = "";
 	
-	public static var INTERNAL_SHIFT:String = "iSHIFT";
-	public static var INTERNAL_CTRL:String = "iCTRL";
+	public static inline var INTERNAL_SHIFT:String = "iSHIFT";
+	public static inline var INTERNAL_CTRL:String = "iCTRL";
 	
+	//*-----------------------------------------------
+	//* Important Values
+	//*-----------------------------------------------
+
 	public static var NO_PHYSICS:Bool = false;
 	public static var DEBUG_DRAW:Bool = false; //!NO_PHYSICS && true;
 	
@@ -132,11 +128,6 @@ class Engine
 	public static var isIPhone6Plus:Bool = false;
 	public static var isTabletIOS:Bool = false;
 	
-	
-	//*-----------------------------------------------
-	//* Important Values
-	//*-----------------------------------------------
-	
 	public static var engine:Engine = null;
 	
 	public static var landscape:Bool = false; //Only applies to mobile
@@ -147,8 +138,8 @@ class Engine
 	public static var screenScaleX:Float;
 	public static var screenScaleY:Float;
 	
-	public static var originalScaleX:Float;
-	public static var originalScaleY:Float;
+	public static var unzoomedScaleX:Float;
+	public static var unzoomedScaleY:Float;
 	
 	public static var screenOffsetX:Int;
 	public static var screenOffsetY:Int;
@@ -227,6 +218,7 @@ class Engine
 	
 	public var scene:Scene;
 	public var camera:Actor;
+	private var sceneInitialized = false;
 	
 	public var channels:Array<SoundChannel>;
 	public var tasks:Array<TimedTask>;
@@ -350,7 +342,6 @@ class Engine
 	//*-----------------------------------------------
 	
 	public static var debug:Bool = false;
-	public static var debugDraw:Bool = false;
 	public static var debugDrawer:B2DebugDraw;
 	
 	
@@ -394,9 +385,101 @@ class Engine
 	public var whenFocusChangedListeners:Array<Dynamic>;
 	public var nativeListeners:Array<NativeListener>;
 	
+	//*-----------------------------------------------
+	//* Reloading
+	//*-----------------------------------------------
+	
+	public static function resetStatics():Void
+	{
+		//global effects
+		#if flash
+		engine.root.parent.removeChild(movieClip);
+		if(engine.isFullScreen)
+		{
+			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, engine.onKeyDown);
+		}
+		#end
+
+		stage.removeEventListener(Event.ENTER_FRAME, engine.onUpdate);
+		stage.removeEventListener(Event.DEACTIVATE, engine.onFocusLost);
+		stage.removeEventListener(Event.ACTIVATE, engine.onFocus);
+
+		if(engine.stats != null)
+		{
+			stage.removeChild(engine.stats);
+		}
+
+		//static cleanup
+
+		NO_PHYSICS = false;
+		DEBUG_DRAW = false;
+		
+		IMG_BASE = "";
+		SCALE = 1;
+		
+		checkedWideScreen = false;
+		isStandardIOS = false;
+		isExtendedIOS = false;
+		isIPhone6 = false;
+		isIPhone6Plus = false;
+		isTabletIOS = false;
+		
+		engine = null;
+		
+		landscape = false; //Only applies to mobile
+		
+		cameraX = 0;
+		cameraY = 0;
+		
+		screenScaleX = 0;
+		screenScaleY = 0;
+		
+		unzoomedScaleX = 0;
+		unzoomedScaleY = 0;
+		
+		screenOffsetX = 0;
+		screenOffsetY = 0;
+		
+		screenWidth = 0;
+		screenHeight = 0;
+		
+		sceneWidth = 0;
+		sceneHeight = 0;
+		
+		screenWidthHalf = 0;
+		screenHeightHalf = 0;
+		
+		paused = false;
+		started = false;
+		
+		events = new EventMaster();
+
+		ITERATIONS = 3;
+		physicsScale = 10.0;
+		
+		paddingLeft = 0;
+		paddingRight = 0;
+		paddingTop = 0;
+		paddingBottom = 0;
+		
+		ngID = "";
+		ngKey = "";
+
+		movieClip = null;
+		stage = null;
+
+		STEP_SIZE = 10;
+		MS_PER_SEC = 1000;
+		
+		elapsedTime = 0;
+		timeScale = 1;
+		
+		debug = false;
+		debugDrawer = null;
+	}
 	
 	//*-----------------------------------------------
-	//* Full Screen Shaders - EXPERIMENTAL - C++
+	//* Full Screen Shaders - C++
 	//*-----------------------------------------------
 	
 	#if(desktop || iphone || android)
@@ -413,7 +496,7 @@ class Engine
 	private var isFullScreen:Bool = false;
 	private var stats:com.nmefermmmtools.debug.Stats;
 	
-	#if(!js && !mobile)
+	#if(flash || cpp)
 	private function onKeyDown(e:KeyboardEvent = null)
 	{
 		if(e.keyCode == Key.ESCAPE)
@@ -429,71 +512,43 @@ class Engine
 	
 	public function toggleFullscreen(forceOff:Bool = false):Void
 	{
+		isFullScreen = !isFullScreen;
+		
 		if(forceOff)
 		{
-			isFullScreen = true;
+			isFullScreen = false;
 		}
-	
+
+		trace("toggleFullscreen");
+		
+		var oldImgBase = IMG_BASE;
+		cast(root, Universal).initScreen(isFullScreen);
+		
+		if(oldImgBase != IMG_BASE)
+		{
+			Data.get().reloadScaledResources();
+		}
+		g.scaleX = g.scaleY = SCALE;
+
+		unzoomedScaleX = screenScaleX = root.scaleX;
+		unzoomedScaleY = screenScaleY = root.scaleY;
+		screenOffsetX = Std.int(root.x);
+		screenOffsetY = Std.int(root.y);
+		
+		stats.x = stage.stageWidth - stats.width;
+		stats.y = 0;
+		
+		#if flash
 		if(isFullScreen)
 		{
-			isFullScreen = false;
-			Lib.current.stage.displayState = StageDisplayState.NORMAL;
-			
-			var screenWidth = Lib.current.stage.stageWidth;
-			var screenHeight = Lib.current.stage.stageHeight;
-			
-			root.scaleX = MyAssets.gameScale;
-			root.scaleY = MyAssets.gameScale;
-			root.x = 0.0;
-			root.y = 0.0;
-			
-			screenScaleX = root.scaleX;
-			originalScaleX = screenScaleX;
-			screenScaleY = root.scaleY;
-			originalScaleY = screenScaleY;
-			screenOffsetX = Std.int(root.x);
-			screenOffsetY = Std.int(root.y);
-					
-			if(stats != null)
-			{
-				stats.x = Std.int(MyAssets.stageWidth * MyAssets.gameScale) - stats.width;
-				stats.y = 0;
-			}
-			
-			#if !desktop
-			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			#end
-			resetShaders();
-		} 
-		
-		else 
-		{
-			isFullScreen = true;
-			Lib.current.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
-			
-			root.scaleX = 1;
-			root.scaleY = 1;
-			
-			cast(root, Universal).initScreen(true);
-			
-			screenScaleX = root.scaleX;
-			originalScaleX = screenScaleX;
-			screenScaleY = root.scaleY;
-			originalScaleY = screenScaleY;
-			screenOffsetX = Std.int(root.x);
-			screenOffsetY = Std.int(root.y);
-			
-			if(stats != null)
-			{
-				stats.x = Std.int(openfl.system.Capabilities.screenResolutionX) - stats.width;
-				stats.y = 0;
-			}
-			
-			#if !desktop
 			Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
-			#end
-			resetShaders();
 		}
+		else
+		{
+			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+		}
+		#end
+		resetShaders();
 	}
 	#end
 	
@@ -514,7 +569,7 @@ class Engine
 		root.mouseEnabled = false;
 		//root.stage.mouseChildren = false;
 
-		if(MyAssets.debugDraw)
+		if(Config.debugDraw)
 		{
 			DEBUG_DRAW = true;
 		}
@@ -523,25 +578,30 @@ class Engine
 		Script.engine = this;
 		this.root = root;
 		
-		isFullScreen = MyAssets.startInFullScreen;
-		screenScaleX = root.scaleX;
-		originalScaleX = screenScaleX;
-		screenScaleY = root.scaleY;
-		originalScaleY = screenScaleY;
+		isFullScreen = Config.startInFullScreen;
+		screenScaleX = unzoomedScaleX = root.scaleX;
+		screenScaleY = unzoomedScaleY = root.scaleY;
 		screenOffsetX = Std.int(root.x);
 		screenOffsetY = Std.int(root.y);
 		
-		NO_PHYSICS = MyAssets.physicsMode == 1;
+		NO_PHYSICS = Config.physicsMode == 1;
 		
 		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
 		stage.addEventListener(Event.DEACTIVATE, onFocusLost);
 		stage.addEventListener(Event.ACTIVATE, onFocus);
-		begin(MyAssets.initSceneID);
+		begin(Config.initSceneID);
 		
 		#if(desktop || iphone || android)
 		if(openfl.display.OpenGLView.isSupported)
 		{
 			root.addChild(shaderLayer);
+		}
+		#end
+
+		#if flash
+		if(isFullScreen)
+		{
+			Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
 		}
 		#end
 	}
@@ -635,19 +695,20 @@ class Engine
 		Input.define(INTERNAL_SHIFT, [Key.SHIFT]);
 		Input.define(INTERNAL_CTRL, [Key.CONTROL]);
 		
-		landscape = MyAssets.landscape;
-		var stageWidth = MyAssets.stageWidth;
-		var stageHeight = MyAssets.stageHeight;
-		
+		landscape = Config.landscape;
+		var stageWidth = Universal.logicalWidth;
+		var stageHeight = Universal.logicalHeight;
+
 		screenWidth = Std.int(stageWidth);
 		screenHeight = Std.int(stageHeight);
 		screenWidthHalf = Std.int(stageWidth/2);
 		screenHeightHalf = Std.int(stageHeight/2);
 		
 		#if (mobile && !air)
-		if(!MyAssets.autorotate)
+		if(!Config.autorotate)
 		{
-			if(landscape)
+			//These are no longer implemented in OpenFL.
+			/*if(landscape)
 			{
 				Stage.setFixedOrientation(Stage.OrientationLandscapeLeft);
 			}
@@ -655,7 +716,7 @@ class Engine
 			else
 			{
 				Stage.setFixedOrientation(Stage.OrientationPortrait);
-			}
+			}*/
 		}
 		#end
 
@@ -714,8 +775,8 @@ class Engine
 		lastTime = Lib.getTimer();
 
 		//Constants
-		sceneWidth = stageWidth; //Overriden once scene loads
-		sceneHeight = stageHeight; //Overriden once scene loads
+		sceneWidth = Std.int(stageWidth); //Overriden once scene loads
+		sceneHeight = Std.int(stageHeight); //Overriden once scene loads
 			
 		//Display List
 		colorLayer = new Shape();
@@ -746,26 +807,7 @@ class Engine
 		gameAttributes = new Map<String,Dynamic>();
 		
 		//Profiler
-		#if !js
-		//if(!MyAssets.releaseMode)
-		{
-			if(MyAssets.showConsole)
-			{
-				stats = new com.nmefermmmtools.debug.Stats();
-				stage.addChild(stats);
-			}
-		}
-		
-		/*if(MyAssets.showConsole)
-		{
-			pgr.gconsole.GameConsole.init();
-			pgr.GameConsole.setConsoleFont('./path/to/your/font.ttf');
-        	pgr.GameConsole.setPromptFont('./remember/to/make/it/relative.ttf');
-        	pgr.GameConsole.setMonitorFont('./or/you/will/be/confused.ttf');   
-		}*/
-		#end
-		
-		//Console.create();
+		setStatsVisible(Config.showConsole);
 		
 		#if (flash)
 		movieClip = new MovieClip();
@@ -789,13 +831,9 @@ class Engine
 		}
 		
 		//Purchases
-		#if (mobile && !android)
-		Purchases.initialize();
-		#end	
-		
-		#if (mobile && android)
-		Purchases.initialize(MyAssets.androidPublicKey);
-		#end	
+		#if (mobile)
+		Purchases.initialize(#if android APIKeys.androidPublicKey #end);
+		#end
 		
 		//Now, let's start
 		//enter = new FadeInTransition(0.5);
@@ -803,7 +841,29 @@ class Engine
 		sceneToEnter = initSceneID;
 		
 		loadScene(initSceneID);
+		sceneInitialized = true;
 	}	
+
+	public function setStatsVisible(value:Bool):Void
+	{
+		#if !js
+		if(value == (stats != null))
+			return;
+
+		if(value)
+		{
+			stats = new com.nmefermmmtools.debug.Stats();
+			stage.addChild(stats);
+			stats.x = stage.stageWidth - stats.width;
+			stats.y = 0;
+		}
+		else
+		{
+			stage.removeChild(stats);
+			stats = null;
+		}
+		#end
+	}
 	
 	public function loadScene(sceneID:Int)
 	{
@@ -1647,7 +1707,7 @@ class Engine
 		{
 			for(key in allActors.keys())
 			{
-				allActors.clr(key);
+				allActors.unset(key);
 			}
 		}
 		
@@ -1773,8 +1833,10 @@ class Engine
 		
 		//trace("Entering Scene " + sceneToEnter);
 		
+		sceneInitialized = false;
 		cleanup();
 		loadScene(sceneToEnter);
+		sceneInitialized = true;
 	}
 	
 	public function isTransitioning():Bool
@@ -1935,7 +1997,7 @@ class Engine
 	
 	public function removeActor(a:Actor)
 	{
-		allActors.clr(a.ID);
+		allActors.unset(a.ID);
 
 		//Remove from the layer group
 		removeActorFromLayer(a, a.layerID);
@@ -1945,7 +2007,7 @@ class Engine
 		
 		if(a.isHUD || a.alwaysSimulate)
 		{
-			hudActors.clr(a.ID);
+			hudActors.unset(a.ID);
 		}
 		
 		a.destroy();
@@ -2119,7 +2181,7 @@ class Engine
 			}
 		}
 		
-		allActors.clr(a.ID);
+		allActors.unset(a.ID);
 	}
 	
 	public function getRecycledActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
@@ -2444,7 +2506,7 @@ class Engine
 		{
 			for(pair in collisionPairs.keys())
 			{
-				collisionPairs.clr(pair);
+				collisionPairs.unset(pair);
 			}
 		}
 		
@@ -2592,7 +2654,7 @@ class Engine
 				enterScene();
 			}
 			
-			postUpdate(currTime);			
+			postUpdate(currTime);
 			
 			return;
 		}
@@ -2609,7 +2671,10 @@ class Engine
 			
 		//---
 		
-		postUpdate(currTime);
+		if(sceneInitialized)
+		{
+			postUpdate(currTime);
+		}
 	}
 	
 	private function postUpdate(currTime:Float)
@@ -2946,14 +3011,12 @@ class Engine
 		
 		zoomMultiplier = m;
 		
-		root.scaleX = m * originalScaleX;
-		root.scaleY = m * originalScaleY;
-		screenScaleX = m * originalScaleX;
-		screenScaleY = m * originalScaleY;
+		root.scaleX = screenScaleX = m * unzoomedScaleX;
+		root.scaleY = screenScaleY = m * unzoomedScaleY;
 		
-		screenWidth = Std.int(MyAssets.stageWidth * (1 / m));
+		screenWidth = Std.int(Universal.logicalWidth * (1 / m));
 		screenWidthHalf = Std.int(screenWidth / 2);
-		screenHeight = Std.int(MyAssets.stageHeight * (1 / m));
+		screenHeight = Std.int(Universal.logicalHeight * (1 / m));
 		screenHeightHalf = Std.int(screenHeight / 2);
 		setColorBackground(scene.colorBackground);
 		root.scrollRect = new Rectangle(0, 0, screenWidth, screenHeight);
@@ -3080,7 +3143,7 @@ class Engine
 			{
 				if(a.dead || a.recycled)
 				{
-					hudActors.clr(a.ID);
+					hudActors.unset(a.ID);
 				}
 			}
 		}
@@ -3242,7 +3305,7 @@ class Engine
 	
 	public function removeHUDActor(a:Actor)
 	{
-		hudActors.clr(a.ID);
+		hudActors.unset(a.ID);
 	}
 	
 	
@@ -3391,7 +3454,7 @@ class Engine
 			backgroundLayers.remove(cast(layer, BackgroundLayer));
 		else if(Std.is(layer, Layer))
 			interactiveLayers.remove(cast(layer, Layer));
-		layers.clr(layer.ID);
+		layers.unset(layer.ID);
 		layersByName.remove(layer.layerName);
 
 		refreshLayers();
@@ -3848,7 +3911,7 @@ class Engine
 	public function removeRegion(ID:Int)
 	{
 		var r = getRegion(ID);	
-		regions.clr(r.ID);
+		regions.unset(r.ID);
 		r.destroy();
 		
 		if(NO_PHYSICS)

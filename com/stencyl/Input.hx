@@ -1,15 +1,12 @@
 package com.stencyl;
 
+import com.stencyl.Config;
 import com.stencyl.utils.Utils;
 
 import openfl.events.Event;
 #if desktop
-#if openfl_legacy
-import openfl.events.JoystickEvent;
-#else
 import lime.ui.Joystick;
 import lime.ui.JoystickHatPosition;
-#end
 #end
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
@@ -22,7 +19,7 @@ import openfl.ui.Multitouch;
 //#end
 
 #if (cpp || neko)
-import openfl.ui.Accelerometer;
+import openfl.sensors.Accelerometer;
 #end
 
 import openfl.ui.Keyboard;
@@ -68,11 +65,93 @@ class Input
 	
 	public static var numTouches:Int;
 
+	private static var roxAgent:RoxGestureAgent;
 	private static var swipeDirection:Int;
 	public static var swipedUp:Bool;
 	public static var swipedDown:Bool;
 	public static var swipedLeft:Bool;
 	public static var swipedRight:Bool;
+
+	public static function resetStatics():Void
+	{
+		//global effects
+
+		Engine.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+		Engine.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+		Engine.stage.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+		Engine.stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+		Engine.stage.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+		#if js
+		Engine.stage.removeEventListener(TouchEvent.TOUCH_BEGIN, onMouseDown);
+		Engine.stage.removeEventListener(TouchEvent.TOUCH_END, onMouseUp);
+		#end
+		#if desktop
+		Engine.stage.removeEventListener(MouseEvent.RIGHT_MOUSE_DOWN, onRightMouseDown);
+		Engine.stage.removeEventListener(MouseEvent.RIGHT_MOUSE_UP, onRightMouseUp);
+		Engine.stage.removeEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, onMiddleMouseDown);
+		Engine.stage.removeEventListener(MouseEvent.MIDDLE_MOUSE_UP, onMiddleMouseUp);
+		#end
+
+		#if(mobile && android)
+		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, ignoreBackKey);
+		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_UP, ignoreBackKey);
+		#end
+		
+		#if !js
+		if(Multitouch.supportsTouchEvents)
+		{
+			Engine.stage.removeEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
+			Engine.stage.removeEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
+			Engine.stage.removeEventListener(TouchEvent.TOUCH_END, onTouchEnd);
+		}
+		#end
+
+		roxAgent.detach();
+		Engine.engine.root.removeEventListener(RoxGestureEvent.GESTURE_SWIPE, onSwipe);
+
+		//statics
+
+		keyString = "";
+		lastEvent = null;
+		lastKey = 0;
+		mouseX = 0; mouseY = 0;
+		mouseUp = mouseDown = mousePressed = mouseReleased = mouseWheel = false;
+		rightMouseUp = rightMouseDown = rightMousePressed = rightMouseReleased = false;
+		middleMouseUp = middleMouseDown = middleMousePressed = middleMouseReleased = false;
+		mouseWheelDelta = 0;
+		accelX = accelY = accelZ = 0;
+		joySensitivity = .12;
+		
+		#if !js
+		multiTouchEnabled = false;
+		multiTouchPoints = null;
+		#end
+
+		numTouches = 0;
+		swipeDirection = 0;
+		swipedUp = swipedDown = swipedRight = swipedLeft = false;
+		roxAgent = null;
+		
+		_joystickEnabled = false;
+		_enabled = false;
+		_key = new Array<Bool>();
+		_keyNum = 0;
+		_press = new Array<Int>();
+		_pressNum = 0;
+		_release = new Array<Int>();
+		_releaseNum = 0;
+		
+		_joyControllerReady = new Map<Int,Bool>();
+		_joyHatState = new Map<Int,Array<Int>>();
+		_joyAxisState = new Map<Int,Array<Int>>();
+		_joyAxisPressure = new Map<Int,Array<Float>>();
+		_joyButtonState = new Map<Int,Array<Bool>>();
+
+		_joyControlMap = new Map<String,String>();
+		_controlButtonMap = new Map<String,Array<JoystickButton>>();
+
+		_control = new Map<String,Array<Int>>();
+	}
 
 	/**
 	 * Returns the control->key map.
@@ -246,13 +325,6 @@ class Input
 		{
 			_joystickEnabled = true;
 			#if desktop
-			#if openfl_legacy
-			Engine.stage.addEventListener(JoystickEvent.AXIS_MOVE, onJoyAxisMove, false, 2);
-			Engine.stage.addEventListener(JoystickEvent.BALL_MOVE, onJoyBallMove, false, 2);
-			Engine.stage.addEventListener(JoystickEvent.HAT_MOVE, onJoyHatMove, false, 2);
-			Engine.stage.addEventListener(JoystickEvent.BUTTON_DOWN, onJoyButtonDown, false, 2);
-			Engine.stage.addEventListener(JoystickEvent.BUTTON_UP, onJoyButtonUp, false, 2);
-			#else
 			Joystick.onConnect.add (function (joystick) {
 				trace ("Connected Joystick: " + joystick.name);
 
@@ -287,9 +359,6 @@ class Input
 
 			});
 			#end
-			//for(i in 0...16)
-			//	_joyControllerReady[i] = false;
-			#end
 		}
 	}
 
@@ -315,29 +384,10 @@ class Input
 
 			//Disable default behavior for Android Back Button
 			#if(mobile && android)
-			if(scripts.MyAssets.disableBackButton)
+			if(Config.disableBackButton)
 			{
-				Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, function(event) 
-				{
-				   	lastEvent = event;
-				   
-				   	if(lastEvent.keyCode == 27) 
-				   	{
-					  	lastEvent.stopImmediatePropagation();
-					  	lastEvent.stopPropagation();
-				   	}
-				});
-				
-				Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, function(event) 
-				{
-					lastEvent = event;
-
-				   	if(lastEvent.keyCode == 27) 
-				   	{
-					  	lastEvent.stopImmediatePropagation();
-					  	lastEvent.stopPropagation();
-				   	}
-				});
+				Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, ignoreBackKey);
+				Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, ignoreBackKey);
 			}
 			#end
 			
@@ -354,7 +404,7 @@ class Input
 	        }
 	        #end
 	        
-			var roxAgent = new RoxGestureAgent(Engine.engine.root, RoxGestureAgent.GESTURE);
+			roxAgent = new RoxGestureAgent(Engine.engine.root, RoxGestureAgent.GESTURE);
 			Engine.engine.root.addEventListener(RoxGestureEvent.GESTURE_SWIPE, onSwipe);
 			
 			swipeDirection = -1;
@@ -370,6 +420,17 @@ class Input
 	        accelZ = 0;
 	        numTouches = 0;
 	        _enabled = true;
+		}
+	}
+
+	private static function ignoreBackKey(event:KeyboardEvent = null)
+	{
+		lastEvent = event;
+
+		if(lastEvent.keyCode == 27) 
+		{
+			lastEvent.stopImmediatePropagation();
+			lastEvent.stopPropagation();
 		}
 	}
 	
@@ -408,6 +469,7 @@ class Input
         }
 	}
 
+	@:access(openfl.sensors.Accelerometer)
 	public static function update()
 	{
 		swipedLeft = false;
@@ -437,14 +499,12 @@ class Input
 			swipeDirection = -1;
 		}
 		
-		#if (openfl_legacy && (cpp || neko))
-		if(openfl.sensors.Accelerometer.isSupported)
+		#if (cpp || neko)
+		if(Accelerometer.isSupported)
 		{
-			var data = Accelerometer.get();
-			
-			accelX = data.x;
-			accelY = data.y;
-			accelZ = data.z;
+			accelX = Accelerometer.currentX;
+			accelY = Accelerometer.currentY;
+			accelZ = Accelerometer.currentZ;
 		}
 		#end
 		
@@ -663,118 +723,6 @@ class Input
 
 	#if desktop
 	
-	#if openfl_legacy
-
-	private static function initJoyController(e:JoystickEvent)
-	{
-		_joyControllerReady[e.device] = true;
-
-		var a:Array<Int> = [];
-		for(f in e.axis)
-			a.push(0);
-		_joyAxisState.set(e.device, a);
-		_joyHatState.set(e.device, [0, 0]);
-		_joyButtonState.set(e.device, []);
-	}
-	
-	private static function onJoyAxisMove(e:JoystickEvent)
-	{
-		if(!_joyControllerReady[e.device])
-			initJoyController(e);
-
-		var oldState:Array<Int> = _joyAxisState.get(e.device);
-		
-		var cur:Int;
-		var old:Int;
-
-		for(i in 0...e.axis.length)
-		{
-			if(e.axis[i] < -joySensitivity)
-				cur = -1;
-			else if(e.axis[i] > joySensitivity)
-				cur = 1;
-			else
-				cur = 0;
-
-			old = oldState[i];
-
-			if(cur != old)
-			{
-				if(old == -1)
-					joyRelease(e.device + ", -axis " + i);
-				else if(old == 1)
-					joyRelease(e.device + ", +axis " + i);
-				if(cur == -1)
-					joyPress(e.device + ", -axis " + i);
-				else if(cur == 1)
-					joyPress(e.device + ", +axis " + i);
-			}
-
-			oldState[i] = cur;
-		}
-
-		_joyAxisPressure.set(e.device, e.axis);
-	}
-
-	private static function onJoyBallMove(e:JoystickEvent)
-	{
-		//not sure what to do with this
-	}
-
-	private static function onJoyHatMove(e:JoystickEvent)
-	{
-		if(!_joyControllerReady[e.device])
-			initJoyController(e);
-		
-		var oldX:Int = _joyHatState.get(e.device)[0];
-		var oldY:Int = _joyHatState.get(e.device)[1];
-
-		if(e.x != oldX)
-		{
-			if(oldX == -1)
-				joyRelease(e.device + ", left hat");
-			else if(oldX == 1)
-				joyRelease(e.device + ", right hat");
-			if(e.x == -1)
-				joyPress(e.device + ", left hat");
-			else if(e.x == 1)
-				joyPress(e.device + ", right hat");
-		}
-		if(e.y != oldY)
-		{
-			if(oldY == -1)
-				joyRelease(e.device + ", up hat");
-			else if(oldY == 1)
-				joyRelease(e.device + ", down hat");
-			if(e.y == -1)
-				joyPress(e.device + ", up hat");
-			else if(e.y == 1)
-				joyPress(e.device + ", down hat");
-		}
-
-		_joyHatState.set(e.device, [Std.int(e.x), Std.int(e.y)]);
-	}
-
-	private static function onJoyButtonDown(e:JoystickEvent)
-	{
-		if(!_joyControllerReady[e.device])
-			initJoyController(e);
-
-		_joyButtonState.get(e.device)[e.id] = true;
-		joyPress(e.device + ", " + e.id);
-	}
-
-	private static function onJoyButtonUp(e:JoystickEvent)
-	{
-		if(!_joyControllerReady[e.device])
-			initJoyController(e);
-
-		_joyButtonState.get(e.device)[e.id] = false;
-		joyRelease(e.device + ", " + e.id);
-	}
-
-	#else
-
 	private static function onJoyAxisMove(joystick:Joystick, axis:Int, value:Float)
 	{
 		var oldState:Array<Int> = _joyAxisState.get(joystick.id);
@@ -858,8 +806,6 @@ class Input
 		_joyButtonState.get(joystick.id)[button] = false;
 		joyRelease(joystick.id + ", " + button);
 	}
-
-	#end
 
 	private static function joyPress(id:String)
 	{
@@ -1010,6 +956,17 @@ class Input
 		joySensitivity = .12;
 	}
 
+	public static function loadInputConfig():Void
+	{
+		for(stencylControl in Config.keys.keys())
+		{
+			var value = Config.keys.get(stencylControl);
+			var keyboardConstList = [for (keyname in value) Key.keyFromName(keyname)];
+			
+			define(stencylControl, keyboardConstList);
+		}
+	}
+
 	#if !js
 	private static function onTouchBegin(e:TouchEvent)
 	{
@@ -1060,18 +1017,18 @@ class Input
 
 class JoystickButton
 {
-	public static var DEVICE:Int = 0;
-	public static var TYPE:Int = 1;
+	public static inline var DEVICE:Int = 0;
+	public static inline var TYPE:Int = 1;
 
-	public static var UP:Int = 0;
-	public static var DOWN:Int = 1;
-	public static var LEFT:Int = 2;
-	public static var RIGHT:Int = 3;
+	public static inline var UP:Int = 0;
+	public static inline var DOWN:Int = 1;
+	public static inline var LEFT:Int = 2;
+	public static inline var RIGHT:Int = 3;
 
-	public static var AXIS:Int = 0;
-	public static var HAT:Int = 1;
-	public static var BUTTON:Int = 2;
-	public static var BALL:Int = 3;
+	public static inline var AXIS:Int = 0;
+	public static inline var HAT:Int = 1;
+	public static inline var BUTTON:Int = 2;
+	public static inline var BALL:Int = 3;
 
 	public static function fromID(id:String):JoystickButton
 	{

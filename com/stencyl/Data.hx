@@ -9,18 +9,18 @@ import com.stencyl.io.SoundReader;
 import com.stencyl.io.SpriteReader;
 import com.stencyl.io.TilesetReader;
 
-import openfl.Assets;
-import openfl.Lib;
-import haxe.xml.Fast;
-
 import com.stencyl.behavior.Behavior;
 import com.stencyl.models.Scene;
 import com.stencyl.models.Resource;
-import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.Atlas;
 import com.stencyl.models.Sound;
-import openfl.display.Sprite;
+import com.stencyl.models.Font;
+import com.stencyl.models.actor.ActorType;
+import com.stencyl.models.actor.Sprite;
+
+import openfl.Assets;
+import haxe.xml.Fast;
 
 class Data
 {
@@ -29,35 +29,21 @@ class Data
 	//*-----------------------------------------------
 	
 	public static var instance:Data;
-	private var loader:AssetLoader;
-	public static var theLoader:AssetLoader;
-	private var preloader:Sprite;
 
 	public static function get():Data
 	{
 		if(instance == null)
 		{
-			#if scriptable
-
-			Type.createInstance(Type.resolveClass("scripts.CppiaAssets"), []);
-			
-			#else
-			
 			instance = new Data();
-			instance.loader = theLoader = Type.createInstance(Type.resolveClass("scripts.MyAssets"), []);
-			
-			#end
-
-			#if(mobile && !air)
-			
-			instance.preloader = Type.createInstance(Type.resolveClass("scripts.StencylPreloader"), []);
-			
-			#end
-			
 			instance.loadAll();
 		}
 		
 		return instance;
+	}
+
+	public static function resetStatics():Void
+	{
+		instance = null;
 	}
 	
 	
@@ -81,9 +67,6 @@ class Data
 	//*-----------------------------------------------
 	//* Data
 	//*-----------------------------------------------
-	
-	//Map of each [sceneID].xml by ID
-	public var scenesXML:Map<Int,String>;
 	
 	//Map of each [sceneID].scn by ID
 	//public var scenesTerrain:Map<Int,Dynamic>;
@@ -113,53 +96,17 @@ class Data
 		}
 	}
 	
-	public function updatePreloader(pct:Int)
-	{
-		//trace(pct);
-		
-		#if(mobile && !air)
-		if(preloader != null)
-		{
-			Reflect.callMethod(preloader, Reflect.field(preloader, "onUpdate"), [pct, 100]);
-		}
-		#end
-	}
-	
 	public function loadAll()
 	{
-		#if(mobile && !air)
-		if(preloader != null)
-		{
-			Lib.current.addChild(preloader);
-		}
-		updatePreloader(0);
-		#end
-		
 		gameXML = new Fast(Xml.parse(Assets.getText("assets/data/game.xml")).firstElement());
 		resourceListXML = new Fast(Xml.parse(Assets.getText("assets/data/resources.xml")).firstElement());
 		sceneListXML = new Fast(Xml.parse(Assets.getText("assets/data/scenes.xml")).firstElement());
 		behaviorListXML = new Fast(Xml.parse(Assets.getText("assets/data/behaviors.xml")).firstElement());
 
-		updatePreloader(5);
-
 		loadReaders();
 		loadBehaviors();
 		
-		updatePreloader(15);
-		
 		loadResources();
-		
-		updatePreloader(90);
-		
-		scenesXML = new Map<Int,String>();
-		
-		loader.loadScenes(scenesXML);
-		
-		updatePreloader(100);
-		
-		#if(mobile && !air)
-		Lib.current.removeChild(instance.preloader);
-		#end
 		
 		resourceListXML = null;
 		behaviorListXML = null;		
@@ -180,39 +127,18 @@ class Data
 	{
 		behaviors = new Map<Int,Behavior>();
 		
-		#if(mobile && !air)
-		var numParts = 0;
-		
-		for(e in behaviorListXML.elements)
-		{
-			numParts++;
-		}
-		
-		var i = 0;
-		var increment = 10.0 / numParts;
-		#end
-		
 		for(e in behaviorListXML.elements)
 		{
 			//trace("Reading Behavior: " + e.att.name);
 			
-			#if(mobile && !air)
-			updatePreloader(5 + Std.int(increment * i));
-			#end
-			
 			behaviors.set(Std.parseInt(e.att.id), BehaviorReader.readBehavior(e));
-			
-			#if(mobile && !air)
-			i++;
-			#end
 		}
 	}
 	
 	private function loadResources()
 	{
 		resourceAssets = new Map<String,Dynamic>();	
-		loader.loadResources(resourceAssets);
-		updatePreloader(65);	
+		
 		readResourceXML(resourceListXML);
 
 		resourceMap = new Map<String,Resource>();
@@ -220,7 +146,7 @@ class Data
 		{
 			if(r == null)
 				continue;
-			if(Std.is(r, com.stencyl.models.actor.Sprite))
+			if(Std.is(r, Sprite))
 				resourceMap.set("Sprite_" + r.name, r);
 			else
 				resourceMap.set(r.name, r);
@@ -231,25 +157,9 @@ class Data
 	{
 		resources = new Map<Int,Resource>();
 		
-		#if(mobile && !air)
-		var numParts = 0;
-		
-		for(e in list.elements)
-		{
-			numParts++;
-		}
-		
-		var i = 0;
-		var increment = 10.0 / numParts;
-		#end
-		
 		for(e in list.elements)
 		{
 			//trace("Reading: " + e.att.name);
-			
-			#if(mobile && !air)
-			updatePreloader(65 + Std.int(increment * i));
-			#end
 			
 			var atlasID = 0;
 			
@@ -259,10 +169,6 @@ class Data
 			}
 			
 			resources.set(Std.parseInt(e.att.id), readResource(Std.parseInt(e.att.id), atlasID, e.name, e.att.name, e));
-			
-			#if(mobile && !air)
-			i++;
-			#end
 		}
 	}
 	
@@ -361,6 +267,23 @@ class Data
 					resource.unloadGraphics();
 				}
 			}
+		}
+		#end
+	}
+
+	public function reloadScaledResources():Void
+	{
+		#if(cpp || neko)
+		for(r in resources)
+		{
+			if(r == null)
+				continue;
+			if(Std.is(r, Sound) || Std.is(r, ActorType))
+				continue;
+			if(!r.isAtlasActive())
+				continue;
+			r.unloadGraphics();
+			r.loadGraphics();
 		}
 		#end
 	}

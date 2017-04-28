@@ -7,10 +7,13 @@ import com.stencyl.behavior.TimedTask;
 import com.stencyl.models.collision.CollisionInfo;
 import com.stencyl.models.collision.Masklist;
 import flash.geom.Transform;
-import openfl.display.Sprite;
+import openfl.display.BlendMode;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-import openfl.display.Tilesheet;
+import openfl.display.Sprite;
+import openfl.display.Tile;
+import openfl.display.Tilemap;
+import openfl.display.Tileset;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.Assets;
@@ -24,6 +27,7 @@ import openfl.utils.ByteArray;
 import openfl.Memory;
 #end
 
+import com.stencyl.Config;
 import com.stencyl.Input;
 import com.stencyl.Engine;
 
@@ -44,6 +48,7 @@ import com.stencyl.models.actor.AngleHolder;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.actor.Animation;
+import com.stencyl.models.actor.Sprite as StencylSprite;
 import com.stencyl.models.GameModel;
 
 import com.stencyl.utils.Utils;
@@ -84,15 +89,6 @@ import openfl.filters.BitmapFilter;
 import openfl.filters.ColorMatrixFilter;
 import com.stencyl.utils.ColorMatrix;
 
-//#if flash
-//import flash.filters.ColorMatrixFilter;
-//import com.stencyl.utils.ColorMatrix;
-//#end
-
-#if js
-//import jeash.filters.ColorMatrixFilter;
-#end
-
 #if (cpp || neko)
 typedef ActorAnimation = SheetAnimation;
 #else
@@ -107,6 +103,11 @@ class Actor extends Sprite
 	
 	private var engine:Engine;
 	
+	public static function resetStatics():Void
+	{
+		lastCollided = null;
+		manifold = new B2WorldManifold();
+	}
 
 	//*-----------------------------------------------
 	//* Properties
@@ -123,7 +124,7 @@ class Actor extends Sprite
 	
 	private var groupsToCollideWith:Array<Int>; //cached value
 	
-	public static var GROUP_OFFSET:Int = 1000000; //for collision reporting
+	public static inline var GROUP_OFFSET:Int = 1000000; //for collision reporting
 	
 	
 	//*-----------------------------------------------
@@ -201,13 +202,7 @@ class Actor extends Sprite
 	public var currAnimationName:String;
 	public var animationMap:Map<String,ActorAnimation>;
 
-	#if (cpp || neko || js)
-	public var backupAnimationMap:Map<String,BitmapData>;
-	public var animsBackedUp:Bool = false;
-	public var tint:Bool = false;
-	#end
-
-	public var sprite:com.stencyl.models.actor.Sprite;
+	public var sprite:StencylSprite;
 	
 	public var shapeMap:Map<String,Dynamic>;
 	public var originMap:Map<String,B2Vec2>;
@@ -316,7 +311,7 @@ class Actor extends Sprite
 		layerID:Int=0,
 		width:Float=32, 
 		height:Float=32,
-		sprite:com.stencyl.models.actor.Sprite=null,
+		sprite:StencylSprite=null,
 		behaviorValues:Map<String,Dynamic>=null,
 		actorType:ActorType=null,
 		bodyDef:B2BodyDef=null,
@@ -500,7 +495,7 @@ class Actor extends Sprite
 		
 		if(sprite != null)
 		{
-			var s:com.stencyl.models.actor.Sprite = cast(Data.get().resources.get(actorType.spriteID), com.stencyl.models.actor.Sprite);
+			var s:StencylSprite = cast(Data.get().resources.get(actorType.spriteID), StencylSprite);
 			
 			if(s != null)
 			{
@@ -831,9 +826,9 @@ class Actor extends Sprite
 			//XXX: This ends up being the case for the recyclingDefault animation.
 			#if (cpp || neko)
 
-			var tilesheet = new Tilesheet(new BitmapData(16, 16));
-			tilesheet.addTileRect(new openfl.geom.Rectangle(0, 0, 16, 16));
-			var tempSprite = new SheetAnimation(tilesheet, [1000000], 16, 16, false, null);
+			var tileset = new Tileset(new BitmapData(16, 16));
+			tileset.addRect(new openfl.geom.Rectangle(0, 0, 16, 16));
+			var tempSprite = new SheetAnimation(tileset, [1000000], 16, 16, false, null);
 			tempSprite.framesAcross = 1;
 			animationMap.set(name, tempSprite);
 			
@@ -849,20 +844,20 @@ class Actor extends Sprite
 		}
 	
 		#if (cpp || neko)
-		var tilesheet = new Tilesheet(imgData);
-				
+		var tileset = new Tileset(imgData);
+		
 		frameWidth = Std.int(imgData.width/framesAcross);
 		frameHeight = Std.int(imgData.height/framesDown);
-				
+		
 		for(i in 0...frameCount)
 		{			
-			tilesheet.addTileRect(new openfl.geom.Rectangle(frameWidth * (i % framesAcross), Math.floor(i / framesAcross) * frameHeight, frameWidth, frameHeight));
+			tileset.addRect(new openfl.geom.Rectangle(frameWidth * (i % framesAcross), Math.floor(i / framesAcross) * frameHeight, frameWidth, frameHeight));
 			// trace("x: " + (frameWidth * (i % framesAcross)) + " y: " + (Math.floor(i / framesAcross) * frameHeight) + " w: " + (frameWidth) + " h: " + (frameHeight));
 		}
-		 	
+		
 		var sprite = new SheetAnimation
 		(
-			tilesheet, 
+			tileset, 
 			durations, 
 			frameWidth, 
 			frameHeight,
@@ -1054,49 +1049,22 @@ class Actor extends Sprite
 	
 	public function isAnimationPlaying():Bool
 	{
-		if(Std.is(currAnimation, AbstractAnimation))
-		{
-			return !cast(currAnimation, AbstractAnimation).isFinished();
-		}
-		
-		else
-		{
-			return true;
-		}
+		return !currAnimation.isFinished();
 	}
 	
 	public function getCurrentFrame():Int
 	{
-		if(Std.is(currAnimation, AbstractAnimation))
-		{
-			return cast(currAnimation, AbstractAnimation).getCurrentFrame();
-		}
-		
-		else
-		{
-			return 0;
-		}
+		return currAnimation.getCurrentFrame();
 	}
 	
 	public function setCurrentFrame(frame:Int)
 	{
-		if(Std.is(currAnimation, AbstractAnimation))
-		{
-			cast(currAnimation, AbstractAnimation).setFrame(frame);
-		}
+		currAnimation.setFrame(frame);
 	}
 	
 	public function getNumFrames():Int
 	{
-		if(Std.is(currAnimation, AbstractAnimation))
-		{
-			return cast(currAnimation, AbstractAnimation).getNumFrames();
-		}
-		
-		else
-		{
-			return 0;
-		}
+		return currAnimation.getNumFrames();
 	}
 	
 	public function switchAnimation(name:String)
@@ -1221,7 +1189,10 @@ class Actor extends Sprite
 			
 			currAnimationName = name;
 			currAnimation = newAnimation;
-							
+			#if desktop
+			currAnimation.filters = filters;
+			#end
+
 			addChild(newAnimation);			
 			
 			//----------------
@@ -1260,7 +1231,7 @@ class Actor extends Sprite
 				//SECRET/showthread.php?tid=9773&page=3
 				for(k in collisions.keys()) 
 				{
-					collisions.clr(k);
+					collisions.unset(k);
 				}
 				
 				collisions = new IntHashTable<Collision>(16);
@@ -1409,10 +1380,7 @@ class Actor extends Sprite
 			
 			//----------------
 			
-			if(Std.is(currAnimation, AbstractAnimation))
-			{
-				cast(currAnimation, AbstractAnimation).reset();
-			}				
+			currAnimation.reset();
 		}
 	}
 
@@ -1762,7 +1730,7 @@ class Actor extends Sprite
 			transformMatrix.rotate(realAngle * Utils.RAD);
 		}
 		
-		if (scripts.MyAssets.pixelsnap)
+		if (Config.pixelsnap)
 		{
 			transformMatrix.translate(Math.round(drawX) * Engine.SCALE, Math.round(drawY) * Engine.SCALE);
 		}
@@ -2156,7 +2124,7 @@ class Actor extends Sprite
 			contacts.set(point.key, point);
 			contactCount++;
 			
-			if(collisions.clr(point.key))
+			if(collisions.unset(point.key))
 			{
 				collisionsCount--;
 			}
@@ -2167,7 +2135,7 @@ class Actor extends Sprite
 	{
 		if(collisions != null)
 		{
-			if(collisions.clr(point.key))
+			if(collisions.unset(point.key))
 			{
 				collisionsCount--;
 			}
@@ -2175,7 +2143,7 @@ class Actor extends Sprite
 		
 		if(contacts != null)
 		{
-			if(contacts.clr(point.key))
+			if(contacts.unset(point.key))
 			{
 				contactCount--;
 			}
@@ -2194,7 +2162,7 @@ class Actor extends Sprite
 	{
 		if(regionContacts != null)
 		{
-			regionContacts.clr(point.key);
+			regionContacts.unset(point.key);
 		}
 	}
 	
@@ -3475,13 +3443,16 @@ class Actor extends Sprite
 				y += transformMatrix.ty - drawMatrix.ty;
 			}
 			
-			cast(currAnimation, AbstractAnimation).draw(g, x, y, realAngle * Utils.RAD, g.alpha);
+			var visibleCache = currAnimation.visible;
+			currAnimation.visible = true;
+			currAnimation.draw(g, x, y, realAngle * Utils.RAD, g.alpha);
+			currAnimation.visible = visibleCache;
 		}
 	}
 	
 	public function getCurrentImage()
 	{
-		return cast(currAnimation, AbstractAnimation).getCurrentImage();
+		return currAnimation.getCurrentImage();
 	}
 	
 	public function enableActorDrawing()
@@ -3529,397 +3500,30 @@ class Actor extends Sprite
 	//* Filters
 	//*-----------------------------------------------
 
-	#if (flash)
 	public function setFilter(filter:Array<BitmapFilter>)
-	{			
-		filters = filters.concat(filter);
-	}
-	#end
-	
-	#if js
-	public function setFilter(filter:Array<ColorMatrixFilter>)
 	{
-		var matrix:Array<Float> = cast(filter[0].matrix);
-		
-		if (!animsBackedUp)
-		{
-			backupAnimationMap = new Map<String,BitmapData>();
-		
-			for (key in animationMap.keys())
-			{
-				var anim = animationMap.get(key);
-				backupAnimationMap.set(key, anim.sheet.clone());
-			}
-			animsBackedUp = true;
-		}
-			
-		for (key in animationMap.keys())
-		{
-			var anim = animationMap.get(key);
-			var bd:BitmapData = anim.sheet.clone();
-			
-			bd.applyFilter(
-				bd,
-				bd.rect,
-				new Point(0, 0),
-				new ColorMatrixFilter(matrix)
-			);
-			anim.sheet = bd.clone();
-			anim.updateBitmap();
-		}
+		filters = filters.concat(filter);
+		#if desktop
+		currAnimation.filters = filters;
+		#end
 	}
-	#end
-	
-	
-	#if (cpp || neko)
-	public function setFilter(filter:Array<Array<Dynamic>>)
-	{	
-		var filterName:String;
-		var i:Int;
-		var srcA:Int;
-		var srcR:Int;
-		var srcG:Int;
-		var srcB:Int;
-		var redResult:Float;
-		var greenResult:Float;
-		var blueResult:Float;
-		
-		// Stencyl adds the result of the filter blocks into an array, so for cpp targets it must be taken out.
-		var defaultMatrix:Array<Dynamic> = filter[0];
-		
-		filterName = defaultMatrix[0];
-		
-		if (filterName != "TintFilter")
-		{
-			// Backup the default animations so the filters can be undone later.
-			if (!animsBackedUp)
-			{
-				backupAnimationMap = new Map<String,BitmapData>();
-			
-				for (key in animationMap.keys())
-				{
-					var anim = animationMap.get(key);
-					
-					if (Type.getClass(anim) == SheetAnimation)
-					{
-						backupAnimationMap.set(key, anim.getBitmap().clone());
-						
-						var frameWidth = anim.frameWidth;
-						var frameHeight = anim.frameHeight;
-						var tempData:BitmapData = anim.getBitmap().clone();
-						var tempTilesheet = new Tilesheet(tempData);
-						
-						var i = 0;
-						
-						while (i < anim.numFrames)
-						{
-							tempTilesheet.addTileRect(new openfl.geom.Rectangle(frameWidth * (i % anim.framesAcross), Math.floor(i / anim.framesAcross) * frameHeight, frameWidth, frameHeight));
-							i++;
-						}
-						
-						anim.tilesheet = tempTilesheet;
-						anim.updateBitmap();
-					}
-				}
-				animsBackedUp = true;
-			}
-		}
-		
-		if (filterName == "NegativeFilter")
-		{
-			for (anim in animationMap)
-			{
-				if (Type.getClass(anim) == SheetAnimation)
-				{
-					var imageData:BitmapData = anim.getBitmap();
-					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
-					var len:Int = byteArray.length;
-					// Using the Memory class with a ByteArray slightly increases performance.
-					Memory.select(byteArray);
-
-					i = 0;
-					while (i < len)
-					{
-						srcA = Memory.getByte(i);
-						if (srcA == 0)
-						{
-							// Ignore pixels with full transparency.
-							i = i + 4;
-							continue;
-						}
-
-						srcR = Memory.getByte(i + 1);
-						srcG = Memory.getByte(i + 2);
-						srcB = Memory.getByte(i + 3);
-					
-						Memory.setByte((i + 1), (255 - srcR));
-						Memory.setByte((i + 2), (255 - srcG));
-						Memory.setByte((i + 3), (255 - srcB));
-
-						i = i + 4;
-					}
-
-					// Not setting the ByteArray position back to 0 will result in an end-of-file error.
-					byteArray.position = 0;
-				
-					imageData.setPixels(imageData.rect, byteArray);
-				}
-
-			}
-		}
-		else if (filterName == "TintFilter")
-		{
-			tint = true;
-			
-			for (anim in animationMap)
-			{
-				if (Type.getClass(anim) == SheetAnimation)
-				{
-					// The tint filter uses drawTiles for much better performance.
-					anim.tint = true;
-					var tintAmount:Float = 1 - defaultMatrix[4];
-					anim.redValue   = Math.min((defaultMatrix[1] + tintAmount), 1);
-					anim.greenValue = Math.min((defaultMatrix[2] + tintAmount), 1);
-					anim.blueValue  = Math.min((defaultMatrix[3] + tintAmount), 1);
-					anim.updateBitmap();
-				}
-			}
-		}
-		else if (filterName == "GrayscaleFilter")
-		{
-			for (anim in animationMap)
-			{
-				if (Type.getClass(anim) == SheetAnimation)
-				{
-					var imageData:BitmapData = anim.getBitmap();
-					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
-					var len:Int = byteArray.length;
-					var greyResult:Int;
-					// Using the Memory class with a ByteArray slightly increases performance.
-					Memory.select(byteArray);
-
-					i = 0;
-					while (i < len)
-					{
-						srcA = Memory.getByte(i);
-						if (srcA == 0)
-						{
-							// Ignore pixels with full transparency.
-							i = i + 4;
-							continue;
-						}
-
-						srcR = Memory.getByte(i + 1);
-						srcG = Memory.getByte(i + 2);
-						srcB = Memory.getByte(i + 3);
-						
-						// All color values are the same in greyscale, so just calculate one.
-						greyResult = Std.int((srcR * 0.5) + (srcG * 0.5) + (srcB * 0.5));
-
-						if (greyResult > 254)
-						{
-							greyResult = 255;
-						}
-						else if (greyResult < 1)
-						{
-							greyResult = 0;
-						}
-
-						Memory.setByte((i + 1), greyResult);
-						Memory.setByte((i + 2), greyResult);
-						Memory.setByte((i + 3), greyResult);
-						
-						i = i + 4;
-					}
-
-					// Not setting the ByteArray position back to 0 will result in an end-of-file error.
-					byteArray.position = 0;
-				
-					imageData.setPixels(imageData.rect, byteArray);
-				}
-			}
-		}
-		else
-		{
-			// Take 12 values from the original array, ignoring alpha since no Stencyl filters change it.
-			var matrix = new Array<Float>();
-			matrix[0]  = defaultMatrix[1];
-			matrix[1]  = defaultMatrix[2];
-			matrix[2]  = defaultMatrix[3];
-			matrix[3]  = defaultMatrix[5];
-			matrix[4]  = defaultMatrix[6];
-			matrix[5]  = defaultMatrix[7];
-			matrix[6]  = defaultMatrix[8];
-			matrix[7]  = defaultMatrix[10];
-			matrix[8]  = defaultMatrix[11];
-			matrix[9]  = defaultMatrix[12];
-			matrix[10] = defaultMatrix[13];
-			matrix[11] = defaultMatrix[15];
-			
-			for (anim in animationMap)
-			{
-				if (Type.getClass(anim) == SheetAnimation)
-				{
-					var imageData:BitmapData = anim.getBitmap();
-					var byteArray:ByteArray = imageData.getPixels(imageData.rect);
-					var len:Int = byteArray.length;
-					
-					// Using the Memory class with a ByteArray slightly increases performance.
-					Memory.select(byteArray);
-
-					i = 0;
-					while (i < len)
-					{
-						srcA = Memory.getByte(i);
-						if (srcA == 0)
-						{
-							// Ignore pixels with full transparency.
-							i = i + 4;
-							continue;
-						}
-
-						srcR = Memory.getByte(i + 1);
-						srcG = Memory.getByte(i + 2);
-						srcB = Memory.getByte(i + 3);
-
-						redResult = ((matrix[0] * srcR) + (matrix[1] * srcG) + (matrix[2]  * srcB) + matrix[3]);
-						if (redResult > 254)
-						{
-							Memory.setByte((i + 1), 255);
-						}
-						else if (redResult < 1)
-						{
-							Memory.setByte((i + 1), 0);
-						}
-						else
-						{
-							Memory.setByte((i + 1), Std.int(redResult));
-						}
-					
-						greenResult = ((matrix[4] * srcR) + (matrix[5] * srcG) + (matrix[6]  * srcB) + matrix[7]);
-						if (greenResult > 254)
-						{
-							Memory.setByte((i + 2), 255);
-						}
-						else if (greenResult < 1)
-						{
-							Memory.setByte((i + 2), 0);
-						}
-						else
-						{
-							Memory.setByte((i + 2), Std.int(greenResult));
-						}
-					
-						blueResult = ((matrix[8] * srcR) + (matrix[9] * srcG) + (matrix[10] * srcB) + matrix[11]);
-						if (blueResult > 254)
-						{
-							Memory.setByte((i + 3), 255);
-						}
-						else if (blueResult < 1)
-						{
-							Memory.setByte((i + 3), 0);
-						}
-						else
-						{
-							Memory.setByte((i + 3), Std.int(blueResult));
-						}
-					
-						i = i + 4;
-					}
-
-					// Not setting the ByteArray position back to 0 will result in an end-of-file error.
-					byteArray.position = 0;
-				
-					imageData.setPixels(imageData.rect, byteArray);
-				}
-			}
-		}
-	}
-	#end
 	
 	public function clearFilters()
 	{
-		#if (flash)
 		filters = [];
-		#end
-		
-		#if js
-		if (animsBackedUp)
-		{
-			//var pt:Point = new Point(0,0);
-			
-			for (key in backupAnimationMap.keys())
-			{
-				var imageData = backupAnimationMap.get(key);
-				var sheetValue = animationMap.get(key);
-				sheetValue.sheet = imageData.clone();
-				//sheetValue.tint = false;
-				sheetValue.updateBitmap();
-			}	
-			animsBackedUp = false;
-		}
-		#end
-		
-		#if (cpp || neko)
-		if (animsBackedUp)
-		{
-			var pt:Point = new Point(0,0);
-			
-			for (key in backupAnimationMap.keys())
-			{
-				var imageData = backupAnimationMap.get(key);
-				var sheetValue = animationMap.get(key);
-				sheetValue.getBitmap().copyPixels(imageData, imageData.rect, pt);
-				sheetValue.tint = false;
-				sheetValue.updateBitmap();
-			}	
-		}
-		else if (tint)
-		{
-			for (anim in animationMap)
-			{
-				if (Type.getClass(anim) == SheetAnimation)
-				{
-					anim.tint = false;
-					anim.updateBitmap();
-				}
-			}
-		}
-		#end
-		
-		#if js
-			// clearFilters() is not implemented for HTML5.
+		#if desktop
+		currAnimation.filters = filters;
 		#end
 	}
 	
-	public function setBlendMode(blendName:Dynamic)
+	public function setBlendMode(blendMode:BlendMode)
 	{
-		#if (cpp || neko)
-		for (anim in animationMap)
-		{
-			if (Type.getClass(anim) == SheetAnimation)
-			{
-				anim.blendName = blendName;
-				anim.updateBitmap();
-			}
-		}
-		#else
-		blendMode = blendName;
-		#end
+		this.blendMode = blendMode;
 	}
 	
 	public function resetBlendMode()
 	{
-		#if (cpp || neko)
-		for (anim in animationMap)
-		{
-			if (Type.getClass(anim) == SheetAnimation)
-			{
-				anim.blendName = "NORMAL";
-				anim.updateBitmap();
-			}
-		}
-		#end
+		this.blendMode = BlendMode.NORMAL;
 	}
 	
 	//*-----------------------------------------------
@@ -4637,13 +4241,13 @@ class Actor extends Sprite
 			
 			Collision.recycle(oldInfo);
 			
-			simpleCollisions.clr(check);
+			simpleCollisions.unset(check);
 			simpleCollisions.set(check, info);
 			
 			return info;
 		}
 		
-		simpleCollisions.clr(collisionsCount);
+		simpleCollisions.unset(collisionsCount);
 		simpleCollisions.set(collisionsCount, info);
 		collisionsCount++;		
 		
