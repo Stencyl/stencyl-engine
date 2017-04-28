@@ -383,4 +383,10 @@ class Universal extends Sprite
 	{
 		Reflect.callMethod(am, Reflect.field(am, "reloadGame"), []);
 	}
+
+	public static function addReloadListener(reloadListener:Void->Void)
+	{
+		var reloadListeners:Array<Void->Void> = Reflect.getProperty(am, Reflect.field(am, "reloadListeners"));
+		reloadListeners.push(reloadListener);
+	}
 }

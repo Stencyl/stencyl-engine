@@ -155,8 +155,15 @@ using StringTools;
 		Engine.engine.g.scaleX = Engine.engine.g.scaleY = Engine.SCALE;
 	}
 
+	public static var reloadListeners = new Array<Void->Void>();
+
 	public static function reloadGame()
 	{
+		for(reloadListener in reloadListeners)
+		{
+			reloadListener();
+		}
+
 		com.stencyl.behavior.Script.resetStatics();
 		com.stencyl.graphics.G.resetStatics();
 		com.stencyl.models.Actor.resetStatics();
