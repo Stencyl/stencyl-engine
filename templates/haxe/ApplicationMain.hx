@@ -102,8 +102,10 @@ using StringTools;
 		Reflect.setField (config, "telemetry", telemetry);
 		#end
 
+		#if (stencyltools)
 		new com.stencyl.utils.ToolsetInterface();
-		
+		#end
+
 		#if (js && html5)
 		#if (munit || utest)
 		System.embed (projectName, null, ::WIN_WIDTH::, ::WIN_HEIGHT::, config);

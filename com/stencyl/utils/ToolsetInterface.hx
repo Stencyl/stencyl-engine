@@ -1,3 +1,4 @@
+#if (stencyltools)
 package com.stencyl.utils;
 
 import openfl.errors.*;
@@ -165,3 +166,4 @@ class ToolsetInterface
 		}
 	}
 }
+#end
