@@ -217,12 +217,8 @@ class PostProcess extends OpenGLView
 		if (texture != null) GL.deleteTexture(texture);
 		if (renderbuffer != null) GL.deleteRenderbuffer(renderbuffer);
 
-		var isFullScreen = Engine.engine.isInFullScreen();
-		var windowWidth = isFullScreen ? Engine.stage.fullScreenWidth : Config.stageWidth * Config.gameScale;
-		var windowHeight = isFullScreen ? Engine.stage.fullScreenHeight : Config.stageHeight * Config.gameScale;
-
-		createTexture(Std.int(windowWidth), Std.int(windowHeight));
-		createRenderbuffer(Std.int(windowWidth), Std.int(windowHeight));
+		createTexture(Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
+		createRenderbuffer(Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
 		
 		GL.bindFramebuffer(GL.FRAMEBUFFER, null);
 	}
@@ -263,7 +259,7 @@ class PostProcess extends OpenGLView
 		GL.bindFramebuffer(GL.FRAMEBUFFER, framebuffer);
 		
 		//These seem to have no effect.
-		GL.viewport(0, 0, Std.int(openfl.Lib.current.stage.stageWidth), Std.int(openfl.Lib.current.stage.stageHeight));
+		GL.viewport(0, 0, Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
 		GL.clear(GL.DEPTH_BUFFER_BIT | GL.COLOR_BUFFER_BIT);
 	}
 
@@ -274,22 +270,8 @@ class PostProcess extends OpenGLView
 	{
 		time += Engine.elapsedTime * timeScale;
 		GL.bindFramebuffer(GL.FRAMEBUFFER, renderTo);
-		
-		//Makes it work on full screen.
-		#if(desktop)
-		if(Engine.engine.isInFullScreen())
-		{
-			GL.viewport(0, 0, Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
-		}
-		
-		else
-		{
-			GL.viewport(0, 0, Std.int(Config.stageWidth * Config.gameScale), Std.int(Config.stageHeight * Config.gameScale));
-		}
-		#else
-		GL.viewport(0, 0, Std.int(openfl.system.Capabilities.screenResolutionX), Std.int(openfl.system.Capabilities.screenResolutionY));
-		#end
 
+		GL.viewport(0, 0, Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
 
 		GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 

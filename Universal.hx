@@ -27,6 +27,8 @@ class Universal extends Sprite
 	private static var window:Window;
 	public static var logicalWidth = 0.0;
 	public static var logicalHeight = 0.0;
+	public static var windowWidth = 0.0;
+	public static var windowHeight = 0.0;
 
 	public static function initWindow(window:Window):Void
 	{
@@ -117,8 +119,8 @@ class Universal extends Sprite
 			scales.set(scale, true);
 		}
 
-		var windowWidth = isFullScreen ? stage.fullScreenWidth : Config.stageWidth * Config.gameScale;
-		var windowHeight = isFullScreen ? stage.fullScreenHeight : Config.stageHeight * Config.gameScale;
+		windowWidth = isFullScreen ? stage.fullScreenWidth * window.scale : Config.stageWidth * Config.gameScale;
+		windowHeight = isFullScreen ? stage.fullScreenHeight * window.scale : Config.stageHeight * Config.gameScale;
 
 		trace("Game Width: " + Config.stageWidth);
 		trace("Game Height: " + Config.stageHeight);
