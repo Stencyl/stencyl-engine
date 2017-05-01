@@ -386,7 +386,7 @@ class Universal extends Sprite
 
 	public static function addReloadListener(reloadListener:Void->Void)
 	{
-		var reloadListeners:Array<Void->Void> = Reflect.getProperty(am, Reflect.field(am, "reloadListeners"));
+		var reloadListeners:Array<Void->Void> = Reflect.field(am, "reloadListeners");
 		reloadListeners.push(reloadListener);
 	}
 }
