@@ -413,8 +413,8 @@ class TileLayer extends Sprite
 		if(!tilemaps.exists(fltileset))
 		{
 			var tm = new Tilemap(
-				Std.int((Engine.screenWidth * Engine.SCALE) + (scene.tileWidth * Engine.SCALE)),
-				Std.int((Engine.screenHeight * Engine.SCALE) + (scene.tileHeight * Engine.SCALE)),
+				Std.int(Engine.sceneWidth * Engine.SCALE),
+				Std.int(Engine.sceneHeight * Engine.SCALE),
 				fltileset,
 				Config.antialias
 			);
