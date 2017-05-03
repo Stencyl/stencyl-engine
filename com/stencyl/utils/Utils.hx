@@ -975,7 +975,9 @@ class Utils
 
 		#if ios path = 'assets/$path'; #end
 
-		return Bytes.fromFile(path);
+		var bytes = Bytes.fromFile(path);
+		if(bytes == null) bytes = Bytes.alloc(0);
+		return bytes;
 
 		#end
 	}
