@@ -179,7 +179,7 @@ class Behavior
 						if(realValue != null)
 						{
 							list = cast(realValue, Array<Dynamic>);
-							list = list.copy();
+							list = [for (item in list) item];
 						}
 						
 						else
