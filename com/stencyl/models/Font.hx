@@ -67,7 +67,7 @@ class Font extends Resource
 			
 			font = new BitmapFont().loadAngelCode(img, xml);
 			fontScale = 1;
-			letterSpacing = 0;
+			letterSpacing = -2; // changed from 0 due to extra padding added in EditableFont.java
 		}
 	}
 	
