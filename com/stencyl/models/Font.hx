@@ -67,7 +67,15 @@ class Font extends Resource
 			
 			font = new BitmapFont().loadAngelCode(img, xml);
 			fontScale = 1;
-			letterSpacing = -2; // changed from 0 due to extra padding added in EditableFont.java
+			
+			if (isBitmapFont(xml))
+			{
+				letterSpacing = 0;
+			}
+			else
+			{
+				letterSpacing = -2; // changed from 0 due to extra padding added in EditableFont.java
+			}
 		}
 	}
 	
@@ -84,5 +92,30 @@ class Font extends Resource
 	public function setLetterSpacing(spacing:Float)
 	{
 		letterSpacing = Std.int(spacing);
+	}
+	
+	public function isBitmapFont(xml:Xml):Bool
+	{
+		for (node in xml.elements())
+		{
+			if (node.nodeName == "font")
+			{
+				for (nodeChild in node.elements())
+				{
+					if (nodeChild.nodeName == "info")
+					{
+						for (att in nodeChild.attributes())
+						{
+							if (att == "lspace")
+							{
+								// Only bitmap fonts have this attribute.
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 }
