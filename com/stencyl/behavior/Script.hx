@@ -181,7 +181,19 @@ class Script
 	
 	public static inline function asBoolean(o:Dynamic):Bool
 	{
-		return (o == true || o == "true");
+		if (o == true)
+		{
+			return true;
+		}
+		else if (o == "true")
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		//return (o == true || o == "true"); // This stopped working in 3.5: http://community.stencyl.com/index.php?issue=845.0
 	}
 	
 	public static inline function strCompare(one:String, two:String, whichWay:Int):Bool
