@@ -2631,9 +2631,9 @@ class Script
 				G.fontCache.set(font.ID, fontData);
 			}
 		
-			font.font.render(img, fontData, text, 0x000000, 1, x, y, 0, 0);
+			font.font.render(img, fontData, text, 0x000000, 1, x, y, font.letterSpacing, 0);
 			#else
-			font.font.renderToImg(img, text, 0x000000, 1, x, y, 0, font.fontScale, 0, false);
+			font.font.renderToImg(img, text, 0x000000, 1, x, y, font.letterSpacing, font.fontScale, 0, false);
 			#end
 		}
 	}
