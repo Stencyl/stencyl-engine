@@ -3225,8 +3225,10 @@ class Actor extends Sprite
 		//TODO: Mike - Make this work with arbitrary origin points
 		//The problem was that mouse detect was off for higher scales
 		//and would only work within the centered, original bounds.
-		var offsetX = (scaleX - 1) * Math.floor(cacheWidth/2);
-		var offsetY = (scaleY - 1) * Math.floor(cacheHeight/2);
+		var scaleXAbs = Math.abs(scaleX);
+		var scaleYAbs = Math.abs(scaleY);
+		var offsetX = (scaleXAbs - 1) * Math.floor(cacheWidth/2);
+		var offsetY = (scaleYAbs - 1) * Math.floor(cacheHeight/2);
 		
 		// Added to fix this issue -- http://community.stencyl.com/index.php?issue=488.0
 		if(physicsMode > 0)
@@ -3245,8 +3247,8 @@ class Actor extends Sprite
 		{
 			// Imagine a circle with the actor's origin point as the center and the mouse position somewhere on the circle.
 			// If the circle is rotated by the actor's direction, then the mouse's new position can be compared with the actor's original bounding box.
-			var actorOriginX:Float = xPos + currOrigin.x * scaleX;
-			var actorOriginY:Float = yPos + currOrigin.y * scaleY;
+			var actorOriginX:Float = xPos + currOrigin.x * scaleXAbs;
+			var actorOriginY:Float = yPos + currOrigin.y * scaleYAbs;
 			var xFromOrigin:Float = mx - actorOriginX;
 			var yFromOrigin:Float = my - actorOriginY;
 			var rotationRadians:Float = Utils.RAD * rotation;
