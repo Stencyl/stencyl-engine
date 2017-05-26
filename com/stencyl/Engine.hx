@@ -2275,6 +2275,8 @@ class Engine
 						actor.continuousCollision = actor.bodyDef.bullet;
 					}
 					
+					actor.updateTweenProperties();
+					
 					//actor.setFilter(null);					
 
 					//move to specified layer
