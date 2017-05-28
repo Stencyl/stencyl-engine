@@ -1754,7 +1754,7 @@ class Actor extends Sprite
 		//#end
 	}
 	
-	private function updateTweenProperties()
+	public function updateTweenProperties()
 	{		
 		//Since we can't tween directly on the Box2D values and can't make direct function calls,
 		//we have to reverse the normal flow of information from body -> NME to tween -> body
