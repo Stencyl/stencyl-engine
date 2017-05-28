@@ -1042,7 +1042,16 @@ class Actor extends Sprite
 			}
 			
 			defaultAnim = cast(anim, Animation).animName;
-			switchAnimation(defaultAnim);
+			
+			if (defaultShapeChanged())
+			{
+				switchAnimation(defaultAnim, true);
+			}
+			else
+			{
+				switchAnimation(defaultAnim);
+			}
+			
 			setCurrentFrame(0);
 		}
 	}
@@ -1067,9 +1076,106 @@ class Actor extends Sprite
 		return currAnimation.getNumFrames();
 	}
 	
-	public function switchAnimation(name:String)
+	public function defaultShapeChanged() // added to fix http://community.stencyl.com/index.php?issue=390.0
 	{
-		if(name != currAnimationName)
+		var arrDefault = shapeMap.get(defaultAnim);
+		
+		if (getBody() == null || getBody().getFixtureList() == null || getBody().getFixtureList().getShape() == null)
+		{
+			if (arrDefault != null && arrDefault.length > 0)
+			{
+				return true;
+			}
+		}
+		else
+		{
+			if (arrDefault == null || arrDefault.length == 0)
+			{
+				return true;
+			}
+			else
+			{
+				if (arrDefault.length > 1)
+				{
+					return true;
+				}
+				else
+				{
+					var defaultDef:B2FixtureDef = arrDefault[0];
+					
+					if (defaultDef == null)
+					{
+						return true;
+					}
+					else
+					{
+						var currShape:B2Shape = getBody().getFixtureList().getShape();
+						var defaultShape:B2Shape = defaultDef.shape;
+
+						if (getBody().getFixtureList().isSensor() != defaultDef.isSensor)
+						{
+							return true;
+						}
+						else if(Type.getClass(currShape) == Type.getClass(defaultShape))
+						{
+							if(Type.getClass(currShape) == B2PolygonShape)
+							{
+								var polyOld = cast(currShape, B2PolygonShape);
+								var polyNew = cast(defaultShape, B2PolygonShape);
+								
+								if(polyOld.m_vertexCount != polyNew.m_vertexCount)
+								{
+									return true;
+								}
+								
+								else
+								{
+									for(i in 0...polyOld.m_vertexCount)
+									{
+										if(polyOld.m_vertices[i].x != polyNew.m_vertices[i].x)
+										{
+											return true;
+											break;
+										}
+										
+										else if(polyOld.m_vertices[i].y != polyNew.m_vertices[i].y)
+										{
+											return true;
+											break;
+										}
+									}
+								}
+							}
+							
+							else if(Type.getClass(currShape) == B2CircleShape)
+							{
+								var circleOld = cast(currShape, B2CircleShape);
+								var circleNew = cast(defaultShape, B2CircleShape);
+								
+								if(circleOld.m_radius != circleNew.m_radius || 
+								   circleOld.m_p.x != circleNew.m_p.x || 
+								   circleOld.m_p.y != circleNew.m_p.y)
+								{
+									return true;
+								}
+							}
+						}
+						
+						else
+						{
+							return true;
+						}
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public function switchAnimation(name:String, defaultShapeChanged:Bool = false)
+	{
+		if(name != currAnimationName || defaultShapeChanged)
 		{
 			var newAnimation = animationMap.get(name);
 			
@@ -1085,11 +1191,11 @@ class Actor extends Sprite
 			
 			//---
 			
-			var isDifferentShape = false;
+			var isDifferentShape = defaultShapeChanged;
 			
 			//XXX: Only switch the animation shape if it's different from before.
 			//http://community.stencyl.com/index.php/topic,16464.0.html
-			if(body != null && physicsMode == 0)
+			if(body != null && physicsMode == 0 && !isDifferentShape)
 			{
 				var arrOld = shapeMap.get(currAnimationName);
 				var arrNew = shapeMap.get(name);
