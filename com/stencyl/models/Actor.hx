@@ -1078,6 +1078,11 @@ class Actor extends Sprite
 	
 	public function defaultShapeChanged() // added to fix http://community.stencyl.com/index.php?issue=390.0
 	{
+		if (physicsMode > 0)
+		{
+			return true;
+		}
+	
 		var arrDefault = shapeMap.get(defaultAnim);
 		
 		if (getBody() == null || getBody().getFixtureList() == null || getBody().getFixtureList().getShape() == null)
