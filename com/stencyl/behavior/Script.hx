@@ -1473,7 +1473,13 @@ class Script
 
     public static function setBlendModeForLayer(refType:Int, ref:String, mode:openfl.display.BlendMode)
     {
-    	getLayer(refType, ref).blendMode = mode;
+		var layer = getLayer(refType, ref);
+    	layer.blendMode = mode;
+		
+		if (Std.is(layer, Layer))
+		{
+			cast(layer, Layer).tiles.blendMode = mode;
+		}
     }
 	
 	/**
