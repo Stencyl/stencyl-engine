@@ -131,7 +131,7 @@ class SoundChannel
 			
 			else
 			{
-				if(currentSource != null)
+				if(currentSource != null && position > 0)
 				{
 					currentSound = currentClip.play(channelNum, position);
 					currentSound.soundTransform = transform;
