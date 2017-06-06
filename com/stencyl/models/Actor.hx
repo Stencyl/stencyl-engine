@@ -2195,6 +2195,22 @@ class Actor extends Sprite
 						d.thisCollidedWithSensor = d.thisCollidedWithSensor || otherShape.isSensor();
 						d.otherCollidedWithSensor = d.otherCollidedWithSensor || thisShape.isSensor();		
 					}
+					else if (thisShape.isSensor())
+					{
+						if(otherActor != null)
+						{
+							d.thisCollidedWithActor = d.thisCollidedWithActor || (otherActor.groupID != 1 && otherActor.groupID != -2 && !otherActor.isTerrainRegion);					
+							d.thisCollidedWithTerrain = d.thisCollidedWithTerrain || otherActor.isTerrainRegion;			
+							d.thisCollidedWithTile = d.thisCollidedWithTile || otherActor.groupID == 1;
+						}
+						
+						d.otherCollidedWithActor = d.otherCollidedWithActor || (this.groupID != 1 && this.groupID != -2 && !this.isTerrainRegion);					
+						d.otherCollidedWithTerrain = d.otherCollidedWithTerrain || this.isTerrainRegion;			
+						d.otherCollidedWithTile = d.otherCollidedWithTile || this.groupID == 1;
+						
+						d.thisCollidedWithSensor = d.thisCollidedWithSensor || otherShape.isSensor();
+						d.otherCollidedWithSensor = d.otherCollidedWithSensor || thisShape.isSensor();	
+					}
 				}
 			}
 		}
