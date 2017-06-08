@@ -24,6 +24,7 @@ class SoundChannel
 	public var volume:Float;
 	public var channelNum:Int;
 	public var looping:Bool;
+	public var paused:Bool = false;
 	
 	public var position:Float;
 	
@@ -50,6 +51,7 @@ class SoundChannel
 		if(currentSound != null)
 		{
 			currentSound.stop();
+			paused = false;
 		}
 		
 		if(clip != null)
@@ -126,12 +128,13 @@ class SoundChannel
 				currentSound.removeEventListener(Event.SOUND_COMPLETE, looped);
 			
 				position = currentSound.position;
-				currentSound.stop();	
+				currentSound.stop();
+				paused = true;
 			}
 			
 			else
 			{
-				if(currentSource != null && position > 0)
+				if(currentSource != null && paused)
 				{
 					currentSound = currentClip.play(channelNum, position);
 					currentSound.soundTransform = transform;
@@ -140,6 +143,8 @@ class SoundChannel
 					{
 						currentSound.addEventListener(Event.SOUND_COMPLETE, looped);
 					}
+					
+					paused = false;
 				}
 			}
 		}
@@ -180,6 +185,7 @@ class SoundChannel
 			position = 0;
 			currentSource = null;
 			currentSound = null;
+			paused = false;
 		}			
 	}	
 	
