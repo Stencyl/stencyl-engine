@@ -1645,7 +1645,7 @@ class Actor extends Sprite
 			{
 				resetReal(realX, realY);			
 				
-				moveActorBy(elapsedTime * xSpeed * 0.01, elapsedTime * ySpeed * 0.01, groupsToCollideWith);						
+				moveActorBy(elapsedTime * xSpeed * (10 / Engine.STEP_SIZE) * 0.01, elapsedTime * ySpeed * (10 / Engine.STEP_SIZE) * 0.01, groupsToCollideWith);
 			}			
 						
 			if(rSpeed != 0)
