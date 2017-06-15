@@ -1869,13 +1869,10 @@ class Script
 	
 	public static function setGravity(x:Float, y:Float)
 	{
-		if(engine.world == null)
-		{
-			engine.gravityX = x;
-			engine.gravityY = y;
-		}
-		
-		else
+		engine.gravityX = x;
+		engine.gravityY = y;
+
+		if(engine.world != null)
 		{
 			engine.world.setGravity(new B2Vec2(x, y));
 		}
