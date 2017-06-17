@@ -2913,8 +2913,7 @@ class Engine
 			var channelListeners = soundListeners.get(channelNum);
 			var clipListeners = soundListeners.get(sc.currentClip);
 			
-			//trace(soundListeners.keys);
-			//trace(channelListeners);
+			sc.currentSound = null;
 			
 			if(channelListeners != null)
 			{
@@ -2926,8 +2925,10 @@ class Engine
 				invokeListeners(clipListeners);
 			}
 		}
-		
-		sc.currentSound = null;
+		else
+		{
+			sc.currentSound = null;
+		}
 	}
 	
 	//*-----------------------------------------------
