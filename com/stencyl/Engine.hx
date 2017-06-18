@@ -2772,8 +2772,8 @@ class Engine
 		
 		if(NO_PHYSICS)
 		{
-			group1 = Actor.GROUP_OFFSET + event.groupA;
-			group2 = Actor.GROUP_OFFSET + event.groupB;
+			group1 = Actor.GROUP_OFFSET + event.thisActor.groupID;
+			group2 = Actor.GROUP_OFFSET + event.otherActor.groupID;
 		}
 		
 		else
