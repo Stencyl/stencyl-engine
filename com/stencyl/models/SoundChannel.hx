@@ -205,6 +205,14 @@ class SoundChannel
 		}
 	}
 	
+	public function fadeSound(time:Float, amount:Float)
+	{
+		if(currentSound != null)
+		{
+			Actuate.tween(transform, time, {volume:amount}).onUpdate(onUpdate);
+		}
+	}
+	
 	public function onUpdate()
 	{	
 		if(currentSound != null)

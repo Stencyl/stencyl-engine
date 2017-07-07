@@ -2154,6 +2154,12 @@ class Script
 		sc.fadeOutSound(time);			
 	}
 	
+	public static function fadeSoundOnChannel(channelNum:Int, time:Float, percent:Float)
+	{						
+		var sc:SoundChannel = engine.channels[channelNum];
+		sc.fadeSound(time, percent / 100);			
+	}
+	
 	/**
 	* Fade all audio in over time (milliseconds)
 	*/
@@ -2175,6 +2181,15 @@ class Script
 		{
 			var sc:SoundChannel = engine.channels[i];	
 			sc.fadeOutSound(time);
+		}
+	}
+	
+	public static function fadeForAllSounds(time:Float, percent:Float)
+	{
+		for(i in 0...CHANNELS)
+		{
+			var sc:SoundChannel = engine.channels[i];	
+			sc.fadeSound(time, percent / 100);
 		}
 	}
 	
