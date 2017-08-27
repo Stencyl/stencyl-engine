@@ -47,9 +47,9 @@ class Config
 		loadFromString(text);
 	}
 
-	public static function loadFromString(text:String):Void
+	public static function loadFromString(text:String, handleReload:Bool = true):Void
 	{
-		if(data == null)
+		if(data == null || !handleReload)
 		{
 			data = Json.parse(text);
 			setStaticFields();

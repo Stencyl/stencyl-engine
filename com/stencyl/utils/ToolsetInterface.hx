@@ -8,8 +8,13 @@ import openfl.utils.ByteArray;
 
 class ToolsetInterface
 {
+	static var instance:ToolsetInterface;
+
 	var socket:Socket;
 	var response:String = "";
+	var connected:Bool = false;
+
+	public static var ready(default, null):Bool = false;
 
 	public function new()
 	{
@@ -22,8 +27,19 @@ class ToolsetInterface
 		if(port == null)
 			port = 80;
 
+		haxe.Timer.delay(function() {
+			if(!connected)
+			{
+				trace("Couldn't establish gci connection.");
+				unconfigureListeners();
+				ToolsetInterface.ready = true;
+			}
+		}, 500);
+
 		configureListeners();
 		socket.connect(host, port);
+
+		instance = this;
 	}
 
 	private function configureListeners():Void
@@ -33,6 +49,23 @@ class ToolsetInterface
 		socket.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 		socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
 		socket.addEventListener(ProgressEvent.SOCKET_DATA, socketDataHandler);
+	}
+
+	private function unconfigureListeners():Void
+	{
+		socket.removeEventListener(Event.CLOSE, closeHandler);
+		socket.removeEventListener(Event.CONNECT, connectHandler);
+		socket.removeEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+		socket.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+		socket.removeEventListener(ProgressEvent.SOCKET_DATA, socketDataHandler);
+	}
+
+	@:access(openfl.net.Socket)
+	public static function preloadedUpdate()
+	{
+		#if(!flash)
+		instance.socket.this_onEnterFrame(new Event(Event.ENTER_FRAME));
+		#end
 	}
 
 	private function closeHandler(event:Event):Void
@@ -107,7 +140,10 @@ class ToolsetInterface
 			{
 				if(bytes.position + socket.bytesAvailable >= bytesExpected)
 				{
-					socket.readBytes(bytes, bytes.position, bytesExpected - bytes.position);
+					if(bytesExpected - bytes.position > 0)
+					{
+						socket.readBytes(bytes, bytes.position, bytesExpected - bytes.position);
+					}
 					
 					packetReady(currentHeader, bytes);
 					bytesExpected = 0;
@@ -145,6 +181,17 @@ class ToolsetInterface
 		var contentType = header.get("Content-Type");
 		switch(contentType)
 		{
+			case "Status":
+				if(header.get("Status") == "Connected")
+				{
+					connected = true;
+					trace("GCI connected. Waiting for updated assets.");
+				}
+				if(header.get("Status") == "Assets Ready")
+				{
+					ToolsetInterface.ready = true;
+				}
+
 			case "Command":
 				var action = header.get("Command-Action");
 
@@ -159,7 +206,7 @@ class ToolsetInterface
 				if(assetID == "config/game-config.json")
 				{
 					var receivedText = content.readUTFBytes(content.length);
-					Config.loadFromString(receivedText);
+					Config.loadFromString(receivedText, ToolsetInterface.ready);
 				}
 
 			default:

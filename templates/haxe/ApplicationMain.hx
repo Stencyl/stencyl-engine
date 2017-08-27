@@ -5,6 +5,9 @@ import com.stencyl.Data;
 import com.stencyl.Engine;
 import com.stencyl.Input;
 import com.stencyl.utils.Utils;
+#if stencyltools
+import com.stencyl.utils.ToolsetInterface;
+#end
 
 import haxe.Log in HaxeLog;
 
@@ -36,7 +39,7 @@ using StringTools;
 {
 	private static var app:Application;
 	private static var universal:Universal;
-
+	
 	public static function main ()
 	{
 		#if cppia
@@ -103,17 +106,15 @@ using StringTools;
 		#end
 
 		#if (stencyltools)
-		new com.stencyl.utils.ToolsetInterface();
+		new ToolsetInterface();
 		#end
 
 		#if (js && html5)
-		#if (munit || utest)
-		System.embed (projectName, null, ::WIN_WIDTH::, ::WIN_HEIGHT::, config);
-		#end
+		//application is started from html script with System.embed, which calls create(config)
 		#else
 		create (config);
 		#end
-		
+
 	}
 
 	private static var oldTrace;
@@ -187,9 +188,42 @@ using StringTools;
 		Lib.current.addChild(universal);
 		universal.preloaderComplete();
 	}
-	
+
 	public static function create (config:LimeConfig):Void
 	{
+		#if stencyltools
+
+		#if (flash || html5)
+
+		if(!ToolsetInterface.ready)
+		{
+			var timer = new haxe.Timer(10);
+			timer.run = function()
+			{
+				#if (!flash)
+				ToolsetInterface.preloadedUpdate();
+				#end
+				if(ToolsetInterface.ready)
+				{
+					timer.stop();
+					create (config);
+				}
+			}
+
+			return;
+		}
+
+		#else
+
+		while(!ToolsetInterface.ready)
+		{
+			ToolsetInterface.preloadedUpdate();
+		}
+
+		#end
+
+		#end
+
 		app = new Application ();
 		app.create (config);
 		
@@ -244,7 +278,7 @@ using StringTools;
 		preloader.load ();
 		
 		var result = app.exec ();
-		
+
 		#if (sys && !ios && !nodejs && !emscripten)
 		System.exit (result);
 		#end
