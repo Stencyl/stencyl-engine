@@ -73,6 +73,7 @@ class Universal extends Sprite
 	}
 
 	//isFullScreen is used on Web/Desktop for full screen mode
+	#if (!flash) @:access(openfl.display.Stage.__setLogicalSize) #end
 	public function initScreen(isFullScreen:Bool)
 	{
 		trace("initScreen");
@@ -80,6 +81,10 @@ class Universal extends Sprite
 		stage.displayState = isFullScreen ?
 			StageDisplayState.FULL_SCREEN_INTERACTIVE :
 			StageDisplayState.NORMAL;
+
+		#if (!flash)
+		stage.__setLogicalSize (0, 0);
+		#end
 
 		#if desktop
 		if(!isFullScreen)
