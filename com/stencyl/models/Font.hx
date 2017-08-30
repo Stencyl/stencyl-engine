@@ -1,11 +1,10 @@
 package com.stencyl.models;
 
-import openfl.Assets;
-import com.stencyl.graphics.fonts.BitmapFont;
-
+import com.stencyl.graphics.G;
 import com.stencyl.graphics.fonts.Label;
 import com.stencyl.graphics.fonts.BitmapFont;
 import com.stencyl.graphics.fonts.DefaultFontGenerator;
+import com.stencyl.utils.Assets;
 
 class Font extends Resource
 {	
@@ -88,6 +87,26 @@ class Font extends Resource
 		
 		Data.get().resourceAssets.remove(ID + ".png");
 	}
+
+	#if stencyltools
+	@:access(com.stencyl.graphics.G.fontData)
+	override public function reloadGraphics()
+	{
+		super.reloadGraphics();
+		
+		#if (flash || js)
+		var g:G = Engine.engine.g;
+		if(g.fontCache != null && g.fontCache.exists(ID))
+		{
+			g.fontCache.set(ID, font.getPreparedGlyphs(fontScale, 0x000000, isDefault));
+		}
+		if(g.font == this)
+		{
+			g.fontData = g.fontCache.get(ID);
+		}
+		#end
+	}
+	#end
 	
 	public function setLetterSpacing(spacing:Float)
 	{

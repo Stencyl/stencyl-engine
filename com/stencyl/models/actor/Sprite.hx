@@ -37,4 +37,22 @@ class Sprite extends Resource
 			a.unloadGraphics();
 		}
 	}
+
+	#if stencyltools
+	override public function reloadGraphics()
+	{
+		super.reloadGraphics();
+
+		for(actor in Engine.engine.allActors)
+		{
+			if(actor != null && !actor.dead && !actor.recycled)
+			{
+				if(actor.type.spriteID == ID)
+				{
+					actor.reloadAnimationGraphics();
+				}
+			}
+		}
+	}
+	#end
 }

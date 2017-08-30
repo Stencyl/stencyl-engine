@@ -1,8 +1,8 @@
 package com.stencyl.models;
 
 import openfl.media.SoundChannel;
-import openfl.Assets;
 import com.stencyl.behavior.Script;
+import com.stencyl.utils.Assets;
 
 //TODO: don't load a sound upfront - tie to atlas (remove loading from init)
 //Provide load/unload functions (need to hack into NME to unload a sound forcefully?)
@@ -69,7 +69,7 @@ class Sound extends Resource
 			src = null;
 		}
 	}
-	
+
 	public function play(channelNum:Int = 1, position:Float = 0):SoundChannel
 	{
 		if(streaming)

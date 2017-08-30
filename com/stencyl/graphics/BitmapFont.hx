@@ -1,6 +1,7 @@
 package com.stencyl.graphics;
 
-import openfl.Assets;
+import com.stencyl.utils.Assets;
+
 import openfl.display.Sprite;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;

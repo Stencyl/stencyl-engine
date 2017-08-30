@@ -44,4 +44,12 @@ class Resource
 	public function unloadGraphics()
 	{
 	}
+
+	#if stencyltools
+	public function reloadGraphics()
+	{
+		unloadGraphics();
+		loadGraphics();
+	}
+	#end
 }

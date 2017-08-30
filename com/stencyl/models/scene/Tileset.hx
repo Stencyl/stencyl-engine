@@ -161,6 +161,14 @@ class Tileset extends Resource
 		
 		Data.get().resourceAssets.remove(ID + ".png");
 	}
+
+	#if stencyltools
+	override public function reloadGraphics()
+	{
+		super.reloadGraphics();
+		Engine.engine.tileUpdated = true;
+	}
+	#end
 	
 	private function convertPixels(oldPixels:BitmapData):BitmapData
 	{

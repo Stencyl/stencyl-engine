@@ -3,6 +3,7 @@ package com.stencyl.graphics.shaders;
 import flash.geom.Rectangle;
 import com.stencyl.Config;
 import com.stencyl.Engine;
+import com.stencyl.utils.Assets;
 import motion.Actuate;
 
 import com.stencyl.graphics.shaders.Shader in FullScreenShader;
@@ -33,7 +34,6 @@ class PostProcess
 
 #else
 
-import openfl.Assets;
 import openfl.gl.*;
 import openfl.utils.Float32Array;
 import openfl.display.OpenGLView;

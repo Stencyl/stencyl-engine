@@ -188,4 +188,18 @@ class ImageBackground extends Resource implements Background
 			Data.get().resourceAssets.remove(ID + "-0.png");
 		}
 	}
+
+	#if stencyltools
+	override public function reloadGraphics()
+	{
+		super.reloadGraphics();
+		for(layer in Engine.engine.backgroundLayers)
+		{
+			if(layer.model == this)
+			{
+				layer.reload(layer.resourceID);
+			}
+		}
+	}
+	#end
 }

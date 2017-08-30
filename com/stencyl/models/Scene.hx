@@ -39,6 +39,7 @@ import box2D.common.math.B2Math;
 
 import haxe.xml.Fast;
 import com.stencyl.Engine;
+import com.stencyl.utils.Assets;
 import com.stencyl.utils.Utils;
 
 import openfl.geom.Rectangle;
@@ -86,7 +87,7 @@ class Scene
 	
 	public function load()
 	{
-		var xml:Fast = new Fast(Xml.parse(openfl.Assets.getText("assets/data/scene-" + ID + ".xml")).firstElement());
+		var xml:Fast = new Fast(Xml.parse(Assets.getText("assets/data/scene-" + ID + ".xml")).firstElement());
 		
 		var numTileLayers:Int = Std.parseInt(xml.att.depth);
 		
@@ -132,11 +133,11 @@ class Scene
 		wireframes = readWireframes(xml.node.terrain.elements);
 		
 		#if js
-		var rawLayers = readRawLayers(openfl.Assets.getText("assets/data/scene-" + ID + ".txt"), numTileLayers);
+		var rawLayers = readRawLayers(Assets.getText("assets/data/scene-" + ID + ".txt"), numTileLayers);
 		#end
 		
 		#if !js
-		var bytes = openfl.Assets.getBytes("assets/data/scene-" + ID + ".scn");
+		var bytes = Assets.getBytes("assets/data/scene-" + ID + ".scn");
 		bytes.endian = openfl.utils.Endian.BIG_ENDIAN;
 		var rawLayers = readRawLayers(bytes, numTileLayers);
 		#end

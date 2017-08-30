@@ -1,8 +1,8 @@
 package com.stencyl.models;
 
 import com.stencyl.Engine;
+import com.stencyl.utils.Assets;
 
-import openfl.Assets;
 import openfl.display.Sprite;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;

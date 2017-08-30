@@ -225,6 +225,11 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 		
 	}
 
+	public function setBitmap(imgData:BitmapData):Void
+	{
+		tileset.bitmapData = imgData;
+	}
+
 	#if !flash
 	public inline function getBitmap():BitmapData
 	{

@@ -6,6 +6,8 @@ import openfl.events.*;
 import openfl.net.Socket;
 import openfl.utils.ByteArray;
 
+using StringTools;
+
 class ToolsetInterface
 {
 	static var instance:ToolsetInterface;
@@ -207,6 +209,30 @@ class ToolsetInterface
 				{
 					var receivedText = content.readUTFBytes(content.length);
 					Config.loadFromString(receivedText, ToolsetInterface.ready);
+				}
+				else if(assetID.startsWith("assets/"))
+				{
+					Assets.updateAsset(assetID, header.get("Asset-Type"), content, function() {
+
+						if(assetID.startsWith('assets/graphics/${Engine.IMG_BASE}'))
+						{
+							assetID = assetID.split("/")[3].split(".")[0];
+							var parts = assetID.split("-");
+							var resourceType = parts[0];
+							var resourceID = Std.parseInt(parts[1]);
+							var subID = -1;
+							if(parts.length == 2)
+								subID = Std.parseInt(parts[2]);
+
+							var resource = Data.get().resources.get(resourceID);
+							if(resource != null && resource.isAtlasActive())
+							{
+								resource.reloadGraphics();
+							}
+						}
+
+					});
+					
 				}
 
 			default:

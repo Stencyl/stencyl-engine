@@ -24,7 +24,6 @@ import openfl.display.DisplayObjectContainer;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
-import openfl.Assets;
 import openfl.Lib;
 import openfl.ui.Keyboard;
 
@@ -37,7 +36,6 @@ import com.stencyl.behavior.TimedTask;
 import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
 import com.stencyl.graphics.G;
-import com.stencyl.graphics.BitmapFont;
 import com.stencyl.graphics.shaders.PostProcess;
 import com.stencyl.graphics.shaders.Shader;
 import com.stencyl.graphics.transitions.CircleTransition;

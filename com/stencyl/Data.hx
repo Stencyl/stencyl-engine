@@ -18,8 +18,8 @@ import com.stencyl.models.Sound;
 import com.stencyl.models.Font;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.actor.Sprite;
+import com.stencyl.utils.Assets;
 
-import openfl.Assets;
 import haxe.xml.Fast;
 
 class Data

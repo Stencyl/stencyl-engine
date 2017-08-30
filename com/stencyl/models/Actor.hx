@@ -16,7 +16,6 @@ import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
-import openfl.Assets;
 import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -885,6 +884,15 @@ class Actor extends Sprite
 		#end	
 				
 		originMap.set(name, new B2Vec2(originX, originY));
+	}
+
+	public function reloadAnimationGraphics()
+	{
+		for(a in sprite.animations)
+		{
+			var actorAnim = animationMap.get(a.animName);
+			actorAnim.setBitmap(a.imgData);
+		}
 	}
 	
 	public function initScripts()

@@ -222,6 +222,12 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 			durations[frame] = time;
 		}
 	}
+
+	public function setBitmap(imgData:BitmapData):Void
+	{
+		sheet = imgData;
+		updateBitmap();
+	}
 	
 	public function getCurrentImage():BitmapData
 	{
