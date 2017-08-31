@@ -163,9 +163,22 @@ class Tileset extends Resource
 	}
 
 	#if stencyltools
-	override public function reloadGraphics()
+	override public function reloadGraphics(subID:Int)
 	{
-		super.reloadGraphics();
+		if(subID == -1)
+		{
+			unloadGraphics();
+			loadGraphics();
+		}
+		else
+		{
+			var tile = tiles[subID];
+			if(tile != null)
+			{
+				tile.unloadGraphics();
+				tile.loadGraphics();
+			}
+		}
 		Engine.engine.tileUpdated = true;
 	}
 	#end

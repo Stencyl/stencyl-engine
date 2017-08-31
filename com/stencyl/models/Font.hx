@@ -90,9 +90,9 @@ class Font extends Resource
 
 	#if stencyltools
 	@:access(com.stencyl.graphics.G.fontData)
-	override public function reloadGraphics()
+	override public function reloadGraphics(subID:Int)
 	{
-		super.reloadGraphics();
+		super.reloadGraphics(subID);
 		
 		#if (flash || js)
 		var g:G = Engine.engine.g;

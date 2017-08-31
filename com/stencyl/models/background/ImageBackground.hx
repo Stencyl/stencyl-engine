@@ -190,9 +190,9 @@ class ImageBackground extends Resource implements Background
 	}
 
 	#if stencyltools
-	override public function reloadGraphics()
+	override public function reloadGraphics(subID:Int)
 	{
-		super.reloadGraphics();
+		super.reloadGraphics(subID);
 		for(layer in Engine.engine.backgroundLayers)
 		{
 			if(layer.model == this)

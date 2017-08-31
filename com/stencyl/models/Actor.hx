@@ -886,10 +886,19 @@ class Actor extends Sprite
 		originMap.set(name, new B2Vec2(originX, originY));
 	}
 
-	public function reloadAnimationGraphics()
+	public function reloadAnimationGraphics(animID:Int):Void
 	{
-		for(a in sprite.animations)
+		if(animID == -1)
 		{
+			for(a in sprite.animations)
+			{
+				var actorAnim = animationMap.get(a.animName);
+				actorAnim.setBitmap(a.imgData);
+			}
+		}
+		else
+		{
+			var a = sprite.animations.get(animID);
 			var actorAnim = animationMap.get(a.animName);
 			actorAnim.setBitmap(a.imgData);
 		}

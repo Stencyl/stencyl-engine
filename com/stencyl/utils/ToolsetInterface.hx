@@ -227,7 +227,7 @@ class ToolsetInterface
 							var resource = Data.get().resources.get(resourceID);
 							if(resource != null && resource.isAtlasActive())
 							{
-								resource.reloadGraphics();
+								resource.reloadGraphics(subID);
 							}
 						}
 

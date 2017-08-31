@@ -39,9 +39,18 @@ class Sprite extends Resource
 	}
 
 	#if stencyltools
-	override public function reloadGraphics()
+	override public function reloadGraphics(subID:Int)
 	{
-		super.reloadGraphics();
+		if(subID == -1)
+		{
+			unloadGraphics();
+			loadGraphics();
+		}
+		else
+		{
+			animations.get(subID).unloadGraphics();
+			animations.get(subID).loadGraphics();
+		}
 
 		for(actor in Engine.engine.allActors)
 		{
@@ -49,7 +58,7 @@ class Sprite extends Resource
 			{
 				if(actor.type.spriteID == ID)
 				{
-					actor.reloadAnimationGraphics();
+					actor.reloadAnimationGraphics(subID);
 				}
 			}
 		}

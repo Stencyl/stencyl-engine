@@ -46,7 +46,7 @@ class Resource
 	}
 
 	#if stencyltools
-	public function reloadGraphics()
+	public function reloadGraphics(subID:Int)
 	{
 		unloadGraphics();
 		loadGraphics();
