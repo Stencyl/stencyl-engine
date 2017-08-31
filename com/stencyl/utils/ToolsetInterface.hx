@@ -8,6 +8,8 @@ import openfl.utils.ByteArray;
 
 using StringTools;
 
+typedef Listener = String->Void;
+
 class ToolsetInterface
 {
 	static var instance:ToolsetInterface;
@@ -17,6 +19,13 @@ class ToolsetInterface
 	var connected:Bool = false;
 
 	public static var ready(default, null):Bool = false;
+
+	public static var assetUpdatedListeners = new Map<String, Array<Listener>>();
+
+	public static function resetStatics():Void
+	{
+		assetUpdatedListeners = new Map<String, Array<Listener>>();
+	}
 
 	public function new()
 	{
@@ -231,12 +240,39 @@ class ToolsetInterface
 							}
 						}
 
+						if(assetUpdatedListeners.exists(assetID))
+						{
+							for(listener in assetUpdatedListeners.get(assetID))
+							{
+								listener(assetID);
+							}
+						}
+
 					});
-					
 				}
 
 			default:
 		}
+	}
+
+	public static function addAssetUpdatedListener(assetID:String, listener:Listener):Void
+	{
+		if(!assetUpdatedListeners.exists(assetID))
+			assetUpdatedListeners.set(assetID, new Array<Listener>());
+		assetUpdatedListeners.get(assetID).push(listener);
+	}
+
+	public static function removeAssetUpdatedListener(assetID:String, listener:Listener):Void
+	{
+		if(!assetUpdatedListeners.exists(assetID))
+			return;
+		assetUpdatedListeners.get(assetID).remove(listener);
+	}
+
+	public static function clearAssetUpdatedListeners():Void
+	{
+		for(key in assetUpdatedListeners.keys())
+			assetUpdatedListeners.remove(key);
 	}
 }
 #end

@@ -178,6 +178,7 @@ using StringTools;
 		com.stencyl.models.scene.TileLayer.resetStatics();
 		#if flash com.stencyl.utils.Kongregate.resetStatics(); #end
 		com.stencyl.utils.Utils.resetStatics();
+		#if stencyltools com.stencyl.utils.ToolsetInterface.resetStatics(); #end
 		com.stencyl.Data.resetStatics();
 		com.stencyl.Input.resetStatics();
 		com.stencyl.Engine.resetStatics();

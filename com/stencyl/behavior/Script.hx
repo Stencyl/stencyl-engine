@@ -60,6 +60,7 @@ import com.stencyl.models.Font;
 import com.stencyl.models.Sound;
 import com.stencyl.models.SoundChannel;
 
+import com.stencyl.utils.Assets;
 import com.stencyl.utils.Utils;
 import com.stencyl.utils.ColorMatrix;
 import com.stencyl.event.EventMaster;
@@ -2400,11 +2401,19 @@ class Script
 		var original:BitmapData = a.getCurrentImage();
 		return original.clone();
 	}
-	
+
 	//Example path: "sample.png" - stick into the "extras" folder for your game - see: http://community.stencyl.com/index.php/topic,24729.0.html
 	public static function getExternalImage(path:String):BitmapData
 	{
-		return openfl.Assets.getBitmapData("assets/data/" + path, false);
+		var img = Assets.getBitmapData("assets/data/" + path, false);
+
+		/*#if stencyltools
+		com.stencyl.utils.ToolsetInterface.addAssetUpdatedListener("assets/data/" + path, function(assetID:String){
+			img.copyPixels(Assets.getBitmapData(assetID, false), img.rect, new Point(0, 0));
+		});
+		#end*/
+
+		return img;
 	}
 	
 	//TODO: See - http://www.onegiantmedia.com/as3--load-a-remote-image-from-any-url--domain-with-no-stupid-security-sandbox-errors
