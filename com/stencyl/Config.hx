@@ -76,7 +76,7 @@ class Config
 					{
 						case "scaleMode", "gameImageBase", "scales",
 							 "stageWidth", "stageHeight", "gameScale",
-							 "antialias":
+							 "antialias", "startInFullScreen":
 							needsScreenReload = true;
 
 						case "debugDraw":
