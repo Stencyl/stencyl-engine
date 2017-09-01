@@ -96,13 +96,13 @@ class Font extends Resource
 		
 		#if (flash || js)
 		var g:G = Engine.engine.g;
-		if(g.fontCache != null && g.fontCache.exists(ID))
+		if(G.fontCache != null && G.fontCache.exists(ID))
 		{
-			g.fontCache.set(ID, font.getPreparedGlyphs(fontScale, 0x000000, isDefault));
+			G.fontCache.set(ID, font.getPreparedGlyphs(fontScale, 0x000000, isDefault));
 		}
 		if(g.font == this)
 		{
-			g.fontData = g.fontCache.get(ID);
+			g.fontData = G.fontCache.get(ID);
 		}
 		#end
 	}
