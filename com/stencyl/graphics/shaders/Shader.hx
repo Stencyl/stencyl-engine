@@ -24,7 +24,7 @@ class Shader
 }
 
 #else
-import openfl.gl.*;
+import lime.graphics.opengl.*;
 
 typedef ShaderSource = {
 	var src:String;

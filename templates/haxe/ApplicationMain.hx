@@ -71,9 +71,11 @@ using StringTools;
 				::foreach windows::
 				{
 					allowHighDPI: ::allowHighDPI::,
+					alwaysOnTop: ::alwaysOnTop::,
 					antialiasing: ::antialiasing::,
 					background: ::background::,
 					borderless: ::borderless::,
+					colorDepth: ::colorDepth::,
 					depthBuffer: ::depthBuffer::,
 					display: ::display::,
 					fullscreen: ::fullscreen::,

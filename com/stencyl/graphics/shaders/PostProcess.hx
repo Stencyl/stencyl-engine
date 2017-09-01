@@ -34,8 +34,8 @@ class PostProcess
 
 #else
 
-import openfl.gl.*;
-import openfl.utils.Float32Array;
+import lime.graphics.opengl.*;
+import lime.utils.Float32Array;
 import openfl.display.OpenGLView;
 
 typedef Uniform = {

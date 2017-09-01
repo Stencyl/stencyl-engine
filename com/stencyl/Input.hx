@@ -349,8 +349,8 @@ class Input
 					onJoyHatMove(joystick, hat, position);
 				});
 
-				joystick.onTrackballMove.add (function (trackball:Int, value:Float) {
-					onJoyBallMove(joystick, trackball, value);
+				joystick.onTrackballMove.add (function (trackball:Int, x:Float, y:Float) {
+					onJoyBallMove(joystick, trackball, x, y);
 				});
 
 				joystick.onDisconnect.add (function () {
@@ -756,7 +756,7 @@ class Input
 		_joyAxisPressure.get(joystick.id)[axis] = value;
 	}
 
-	private static function onJoyBallMove(joystick:Joystick, trackball:Int, value:Float)
+	private static function onJoyBallMove(joystick:Joystick, trackball:Int, x:Float, y:Float)
 	{
 		//not sure what to do with this
 	}
