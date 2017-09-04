@@ -334,6 +334,8 @@ class Universal extends Sprite
 			logicalHeight += (windowHeight - scaledStageHeight * scaleY);
 		}
 
+		scrollRect = new Rectangle(0, 0, logicalWidth * Engine.SCALE, logicalHeight * Engine.SCALE);
+
 		trace("Logical Width: " + logicalWidth);
 		trace("Logical Height: " + logicalHeight);
 		trace("Scale X: " + scaleX);
