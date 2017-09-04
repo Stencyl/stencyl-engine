@@ -379,10 +379,6 @@ class Universal extends Sprite
 		Reflect.callMethod(am, Reflect.field(am, "setupTracing"), [enable]);
 	}
 	
-	public static function reloadScreen(oldConfig:Dynamic, newConfig:Dynamic)
-	{
-		Reflect.callMethod(am, Reflect.field(am, "reloadScreen"), [oldConfig, newConfig]);
-	}
 
 	public static function reloadGame()
 	{

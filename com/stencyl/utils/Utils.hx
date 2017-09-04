@@ -205,6 +205,19 @@ class Utils
 		
 		return newMap;
 	}
+
+	public static function applyToAllChildren(container:DisplayObjectContainer, fun:DisplayObject->Void):Void
+	{
+		for(i in 0...container.numChildren)
+		{
+			var obj = container.getChildAt(i);
+			if(Std.is(obj, DisplayObjectContainer))
+			{
+				applyToAllChildren(cast obj, fun);
+			}
+			fun(obj);
+		}
+	}
 	
 	public static function removeAllChildren(container:DisplayObjectContainer)
 	{

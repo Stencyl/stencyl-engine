@@ -189,7 +189,6 @@ class ImageBackground extends Resource implements Background
 		}
 	}
 
-	#if stencyltools
 	override public function reloadGraphics(subID:Int)
 	{
 		super.reloadGraphics(subID);
@@ -201,5 +200,4 @@ class ImageBackground extends Resource implements Background
 			}
 		}
 	}
-	#end
 }

@@ -22,6 +22,7 @@ import openfl.display.StageDisplayState;
 import openfl.text.TextField;
 import openfl.display.DisplayObjectContainer;
 import openfl.events.Event;
+import openfl.events.FullScreenEvent;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.Lib;
@@ -35,6 +36,8 @@ import com.stencyl.behavior.Script;
 import com.stencyl.behavior.TimedTask;
 import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
+import com.stencyl.graphics.BitmapWrapper;
+import com.stencyl.graphics.EngineScaleUpdateListener;
 import com.stencyl.graphics.G;
 import com.stencyl.graphics.shaders.PostProcess;
 import com.stencyl.graphics.shaders.Shader;
@@ -392,15 +395,16 @@ class Engine
 		//global effects
 		#if flash
 		engine.root.parent.removeChild(movieClip);
-		if(engine.isFullScreen)
-		{
-			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, engine.onKeyDown);
-		}
+		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, engine.onKeyDown);
 		#end
 
 		stage.removeEventListener(Event.ENTER_FRAME, engine.onUpdate);
 		stage.removeEventListener(Event.DEACTIVATE, engine.onFocusLost);
 		stage.removeEventListener(Event.ACTIVATE, engine.onFocus);
+		#if(!flash)
+		stage.removeEventListener(Event.RESIZE, engine.onWindowResize);
+		stage.window.onFullscreen.remove(engine.onWindowFullScreen);
+		#end
 
 		if(engine.stats != null)
 		{
@@ -494,61 +498,105 @@ class Engine
 	private var isFullScreen:Bool = false;
 	private var stats:com.nmefermmmtools.debug.Stats;
 	
-	#if(flash || cpp)
 	private function onKeyDown(e:KeyboardEvent = null)
 	{
-		if(e.keyCode == Key.ESCAPE)
+		if(isFullScreen && e.keyCode == Key.ESCAPE)
 		{
-			toggleFullscreen(true);
+			setFullScreen(false);
 		}
 	}
+
+	#if !flash
+	private function onWindowResize(event:Event):Void
+	{
+		if(isFullScreen && !stage.window.fullscreen)
+		{
+			setFullScreen(false);
+		}
+	}
+
+	private function onWindowFullScreen():Void
+	{
+		if(!isFullScreen)
+		{
+			setFullScreen(true);
+		}
+	}
+	#end
 	
 	public function isInFullScreen():Bool
 	{
 		return Lib.current.stage.displayState == StageDisplayState.FULL_SCREEN_INTERACTIVE;
 	}
-	
-	public function toggleFullscreen(forceOff:Bool = false):Void
-	{
-		isFullScreen = !isFullScreen;
-		
-		if(forceOff)
-		{
-			isFullScreen = false;
-		}
 
-		trace("toggleFullscreen");
-		
+	public function setFullScreen(value:Bool):Void
+	{
+		trace("Set fullScreen: " + value);
+		if(isFullScreen != value)
+		{
+			isFullScreen = value;
+			reloadScreen();
+		}
+	}
+	
+	public function toggleFullScreen():Void
+	{
+		setFullScreen(!isFullScreen);
+	}
+
+	public function reloadScreen():Void
+	{
 		var oldImgBase = IMG_BASE;
+		var oldScale = SCALE;
+
 		cast(root, Universal).initScreen(isFullScreen);
 		
 		if(oldImgBase != IMG_BASE)
 		{
 			Data.get().reloadScaledResources();
 		}
-		g.scaleX = g.scaleY = SCALE;
+		if(oldScale != SCALE)
+		{
+			if(debugDrawer != null)
+				debugDrawer.setDrawScale(10 * SCALE);
+
+			g.scaleX = g.scaleY = SCALE;
+
+			Utils.applyToAllChildren(root, function(obj) {
+
+				if(Std.is(obj, EngineScaleUpdateListener))
+				{
+					cast(obj, EngineScaleUpdateListener).updateScale();
+				}
+
+			});
+
+			for(a in allActors)
+			{
+				if(a != null && !a.dead && !a.recycled) 
+				{
+					a.updateMatrix = true;
+				}
+			}
+
+			setColorBackground(scene.colorBackground);
+		}
 
 		unzoomedScaleX = screenScaleX = root.scaleX;
 		unzoomedScaleY = screenScaleY = root.scaleY;
 		screenOffsetX = Std.int(root.x);
 		screenOffsetY = Std.int(root.y);
 		
-		stats.x = stage.stageWidth - stats.width;
-		stats.y = 0;
-		
-		#if flash
-		if(isFullScreen)
+		if(stats != null)
 		{
-			Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
+			stats.x = stage.stageWidth - stats.width;
+			stats.y = 0;
 		}
-		else
-		{
-			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-		}
-		#end
+
+		#if(desktop || iphone || android)
 		resetShaders();
+		#end
 	}
-	#end
 	
 	//*-----------------------------------------------
 	//* Init
@@ -587,6 +635,10 @@ class Engine
 		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
 		stage.addEventListener(Event.DEACTIVATE, onFocusLost);
 		stage.addEventListener(Event.ACTIVATE, onFocus);
+		#if(!flash)
+		stage.addEventListener(Event.RESIZE, onWindowResize);
+		stage.window.onFullscreen.add(onWindowFullScreen);
+		#end
 		begin(Config.initSceneID);
 		
 		#if(desktop || iphone || android)
@@ -597,10 +649,7 @@ class Engine
 		#end
 
 		#if flash
-		if(isFullScreen)
-		{
-			Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
-		}
+		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
 		#end
 	}
 	

@@ -145,19 +145,6 @@ using StringTools;
 		}
 	}
 
-	public static function reloadScreen(oldConfig:Dynamic, newConfig:Dynamic)
-	{
-		var oldImgBase = Engine.IMG_BASE;
-
-		universal.initScreen(Config.startInFullScreen);
-
-		if(oldImgBase != Engine.IMG_BASE)
-		{
-			Data.get().reloadScaledResources();
-		}
-		Engine.engine.g.scaleX = Engine.engine.g.scaleY = Engine.SCALE;
-	}
-
 	public static var reloadListeners = new Array<Void->Void>();
 
 	public static function reloadGame()

@@ -8,6 +8,7 @@ import openfl.display.Tilemap;
 import openfl.display.Tileset;
 
 import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 import com.stencyl.Config;
 import com.stencyl.Engine;
@@ -32,8 +33,7 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 	
 	private var model:Animation;
 	
-	public function new(tileset:Tileset, durations:Array<Int>, width:Int, height:Int, looping:Bool, model:Animation) 
-
+	public function new(tileset:Tileset, durations:Array<Int>, width:Int, height:Int, looping:Bool, model:Animation)
 	{
 		super(width, height, tileset, Config.antialias);
 		
@@ -60,7 +60,7 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 	public inline function update(elapsedTime:Float)
 	{
 		//Non-synced animations
-		if(model == null || !looping)
+		if(model == null || !model.sync || !looping)
 		{
 			timer += elapsedTime;
 		
@@ -133,7 +133,7 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 		finished = false;
 		
 		//Q: should we be altering the shared instance?
-		if(model != null)
+		if(model != null && model.sync)
 		{
 			model.sharedFrameIndex = frame;
 		}
@@ -227,7 +227,31 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 
 	public function setBitmap(imgData:BitmapData):Void
 	{
-		tileset.bitmapData = imgData;
+		var updateSize = (imgData.width != tileset.bitmapData.width) || (imgData.height != tileset.bitmapData.height);
+
+		if(updateSize)
+		{
+			var across = model.framesAcross;
+			var down = model.framesDown;
+
+			width = imgData.width / across;
+			height = imgData.height / down;
+			frameWidth = Std.int(width);
+			frameHeight = Std.int(height);
+			
+			x = -width/2 * Engine.SCALE;
+			y = -height/2 * Engine.SCALE;
+
+			var tiles = [for(i in 0...numFrames) new Rectangle(width * (i % across), Math.floor(i / across) * height, width, height)];
+			
+			tileset = new Tileset(imgData, tiles);
+		}
+		else
+		{
+			tileset.bitmapData = imgData;
+		}
+		
+		updateBitmap();
 	}
 
 	#if !flash

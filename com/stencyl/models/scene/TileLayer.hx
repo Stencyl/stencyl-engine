@@ -13,11 +13,12 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 import com.stencyl.Config;
+import com.stencyl.graphics.EngineScaleUpdateListener;
 import com.stencyl.models.Scene;
-import com.stencyl.utils.Utils;
 import com.stencyl.models.collision.Grid;
+import com.stencyl.utils.Utils;
 
-class TileLayer extends Sprite
+class TileLayer extends Sprite implements EngineScaleUpdateListener
 {
 	public var layerID:Int;
 	public var zOrder:Int;
@@ -405,6 +406,24 @@ class TileLayer extends Sprite
 			
 			y++;
 		}
+	}
+
+	public function updateScale():Void
+	{
+		#if (flash || js)
+		
+		clearBitmap();
+		reset();
+		
+		#else
+		
+		for(tilemap in tilemaps)
+		{
+			tilemap.width = Engine.sceneWidth * Engine.SCALE;
+			tilemap.height = Engine.sceneHeight * Engine.SCALE;
+		}
+		
+		#end
 	}
 
 	#if (cpp || neko)

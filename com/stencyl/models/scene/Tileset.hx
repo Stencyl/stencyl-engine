@@ -162,7 +162,6 @@ class Tileset extends Resource
 		Data.get().resourceAssets.remove(ID + ".png");
 	}
 
-	#if stencyltools
 	override public function reloadGraphics(subID:Int)
 	{
 		if(subID == -1)
@@ -179,9 +178,9 @@ class Tileset extends Resource
 				tile.loadGraphics();
 			}
 		}
+
 		Engine.engine.tileUpdated = true;
 	}
-	#end
 	
 	private function convertPixels(oldPixels:BitmapData):BitmapData
 	{

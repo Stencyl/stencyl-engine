@@ -94,7 +94,7 @@ typedef ActorAnimation = SheetAnimation;
 typedef ActorAnimation = BitmapAnimation;
 #end
 
-class Actor extends Sprite 
+class Actor extends Sprite
 {	
 	//*-----------------------------------------------
 	//* Globals
@@ -861,7 +861,7 @@ class Actor extends Sprite
 			frameWidth, 
 			frameHeight,
 			looping,
-			this.sprite.animations.get(animID).sync ? this.sprite.animations.get(animID) : null
+			this.sprite.animations.get(animID)
 		);
 		
 		sprite.framesAcross = framesAcross;
@@ -903,7 +903,7 @@ class Actor extends Sprite
 			actorAnim.setBitmap(a.imgData);
 		}
 	}
-	
+
 	public function initScripts()
 	{		
 		if(physicsMode == 2)
@@ -1842,9 +1842,6 @@ class Actor extends Sprite
 				drawY = p.y * Engine.physicsScale;
 			}
 		}
-		
-		var trueScaleX:Float = Engine.SCALE * realScaleX;
-		var trueScaleY:Float = Engine.SCALE * realScaleY;
 		
 		transformPoint.x = currOrigin.x - (cacheWidth*Engine.SCALE) / 2;
 		transformPoint.y = currOrigin.y - (cacheHeight*Engine.SCALE) / 2;

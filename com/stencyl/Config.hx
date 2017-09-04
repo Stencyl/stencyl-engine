@@ -5,6 +5,7 @@ import haxe.Json;
 import haxe.Resource;
 import com.stencyl.Engine;
 import com.stencyl.Input;
+import com.stencyl.graphics.BitmapWrapper;
 import com.stencyl.graphics.Scale;
 import com.stencyl.graphics.ScaleMode;
 import com.stencyl.utils.Utils;
@@ -22,6 +23,7 @@ class Config
 	public static var gameScale:Float;
 	public static var gameImageBase:String;
 	public static var antialias:Bool;
+	public static var autoscaleImages:Bool;
 	public static var pixelsnap:Bool;
 	public static var startInFullScreen:Bool;
 	public static var keys:Map<String,Array<String>>;
@@ -62,6 +64,8 @@ class Config
 
 			var needsScreenReload = false;
 			var needsGameReload = false;
+			var needsAutoscaleReload = false;
+			var fullScreenChanged = false;
 
 			for(key in Reflect.fields(oldData))
 			{
@@ -76,8 +80,11 @@ class Config
 					{
 						case "scaleMode", "gameImageBase", "scales",
 							 "stageWidth", "stageHeight", "gameScale",
-							 "antialias", "startInFullScreen":
+							 "antialias":
 							needsScreenReload = true;
+
+						case "autoscaleImages":
+							needsAutoscaleReload = true;
 
 						case "debugDraw":
 							Engine.DEBUG_DRAW = debugDraw;
@@ -103,9 +110,21 @@ class Config
 			{
 				Universal.reloadGame();
 			}
-			else if(needsScreenReload)
+			else
 			{
-				Universal.reloadScreen(oldData, data);
+				if(needsAutoscaleReload)
+				{
+					Utils.applyToAllChildren(Engine.engine.root, function(obj) {
+						if(Std.is(obj, BitmapWrapper))
+						{
+							cast(obj, BitmapWrapper).setAutoscale(Config.autoscaleImages);
+						}
+					});
+				}
+				if(needsScreenReload)
+				{
+					Engine.engine.reloadScreen();
+				}
 			}
 		}
 	}
@@ -123,6 +142,7 @@ class Config
 		gameImageBase = data.gameImageBase;
 		antialias = data.antialias;
 		pixelsnap = data.pixelsnap;
+		autoscaleImages = data.autoscaleImages;
 		startInFullScreen = data.startInFullScreen;
 		adPositionBottom = data.adPositionBottom;
 		testAds = data.testAds;

@@ -273,7 +273,6 @@ class Data
 
 	public function reloadScaledResources():Void
 	{
-		#if(cpp || neko)
 		for(r in resources)
 		{
 			if(r == null)
@@ -282,9 +281,7 @@ class Data
 				continue;
 			if(!r.isAtlasActive())
 				continue;
-			r.unloadGraphics();
-			r.loadGraphics();
+			r.reloadGraphics(-1);
 		}
-		#end
 	}
 }

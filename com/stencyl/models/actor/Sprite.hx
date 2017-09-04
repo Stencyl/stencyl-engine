@@ -38,7 +38,6 @@ class Sprite extends Resource
 		}
 	}
 
-	#if stencyltools
 	override public function reloadGraphics(subID:Int)
 	{
 		if(subID == -1)
@@ -63,5 +62,4 @@ class Sprite extends Resource
 			}
 		}
 	}
-	#end
 }

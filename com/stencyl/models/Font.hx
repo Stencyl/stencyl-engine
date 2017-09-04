@@ -88,7 +88,6 @@ class Font extends Resource
 		Data.get().resourceAssets.remove(ID + ".png");
 	}
 
-	#if stencyltools
 	@:access(com.stencyl.graphics.G.fontData)
 	override public function reloadGraphics(subID:Int)
 	{
@@ -106,7 +105,6 @@ class Font extends Resource
 		}
 		#end
 	}
-	#end
 	
 	public function setLetterSpacing(spacing:Float)
 	{

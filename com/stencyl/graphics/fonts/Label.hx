@@ -8,10 +8,15 @@ import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.display.Tile;
 
+import com.stencyl.Engine;
+import com.stencyl.models.Actor;
+import com.stencyl.models.Font;
+import com.stencyl.graphics.EngineScaleUpdateListener;
 import com.stencyl.utils.ColorMatrix;
 
-class Label extends Sprite
+class Label extends Sprite implements EngineScaleUpdateListener
 {
+	private var _stencylFont:Font;
 	private var _font:BitmapFont;
 	private var _text:String;
 	private var _color:Int;
@@ -37,6 +42,9 @@ class Label extends Sprite
 	private var _multiLine:Bool;
 	
 	private var _alpha:Float;
+
+	@:isVar public var labelX (get, set):Float;
+	@:isVar public var labelY (get, set):Float;
 	
 	#if (flash || js)
 	public var bitmapData:BitmapData;
@@ -114,6 +122,7 @@ class Label extends Sprite
 	 */
 	public function destroy():Void 
 	{
+		_stencylFont = null;
 		_font = null;
 		#if (flash || js)
 		removeChild(_bitmap);
@@ -718,6 +727,26 @@ class Label extends Sprite
 		}
 		return pFont;
 	}
+
+	/**
+	 * Sets which font to use for rendering.
+	 */
+	public var stencylFont(get_stencylFont, set_stencylFont):Font;
+	
+	public function get_stencylFont():Font
+	{
+		return _stencylFont;
+	}
+	
+	public function set_stencylFont(pFont:Font):Font 
+	{
+		if (_stencylFont != pFont)
+		{
+			_stencylFont = pFont;
+			set_font(pFont.font);
+		}
+		return pFont;
+	}
 	
 	/**
 	 * Sets the distance between lines
@@ -855,6 +884,45 @@ class Label extends Sprite
 			update();
 		}
 		return _fixedWidth;
+	}
+
+	public function set_labelX(x:Float):Float
+	{
+		this.x = x * Engine.SCALE;
+
+		return labelX = x;
+	}
+	
+	public function get_labelX():Float
+	{
+		return labelX;
+	}
+
+	public function set_labelY(y:Float):Float
+	{
+		this.y = y * Engine.SCALE;
+
+		return labelY = y;
+	}
+	
+	public function get_labelY():Float
+	{
+		return labelY;
+	}
+
+	public function updatePosition():Void
+	{
+		x = labelX * Engine.SCALE;
+		y = labelY * Engine.SCALE;
+	}
+
+	public function updateScale():Void
+	{
+		updatePosition();
+		if(_stencylFont != null)
+		{
+			set_font(_stencylFont.font);
+		}
 	}
 	
 	private function updateGlyphs(?textGlyphs:Bool = false, ?shadowGlyphs:Bool = false, ?outlineGlyphs:Bool = false):Void

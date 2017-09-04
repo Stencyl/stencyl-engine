@@ -45,11 +45,9 @@ class Resource
 	{
 	}
 
-	#if stencyltools
 	public function reloadGraphics(subID:Int)
 	{
 		unloadGraphics();
 		loadGraphics();
 	}
-	#end
 }

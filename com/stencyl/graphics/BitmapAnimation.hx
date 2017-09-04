@@ -225,7 +225,29 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 
 	public function setBitmap(imgData:BitmapData):Void
 	{
+		var updateSize = (imgData.width != sheet.width) || (imgData.height != sheet.height);
+
 		sheet = imgData;
+
+		if(updateSize)
+		{
+			bitmapData = new BitmapData(Std.int(sheet.width/across), Std.int(sheet.height/down));
+			frameWidth = Std.int(sheet.width / across);
+			frameHeight = Std.int(sheet.height / down);
+			
+			//html5 rounds strangely when pixel snapping
+			#if js
+			x = Math.round(-sheet.width/(2 * across) * Engine.SCALE);
+			y = Math.round(-sheet.height/(2 * down) * Engine.SCALE);			
+			#else
+			x = -sheet.width/(2 * across) * Engine.SCALE;
+			y = -sheet.height/(2 * down) * Engine.SCALE;
+			#end
+
+			region.width = frameWidth * Engine.SCALE;
+			region.height = frameHeight* Engine.SCALE;
+		}
+		
 		updateBitmap();
 	}
 	

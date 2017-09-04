@@ -2405,15 +2405,7 @@ class Script
 	//Example path: "sample.png" - stick into the "extras" folder for your game - see: http://community.stencyl.com/index.php/topic,24729.0.html
 	public static function getExternalImage(path:String):BitmapData
 	{
-		var img = Assets.getBitmapData("assets/data/" + path, false);
-
-		/*#if stencyltools
-		com.stencyl.utils.ToolsetInterface.addAssetUpdatedListener("assets/data/" + path, function(assetID:String){
-			img.copyPixels(Assets.getBitmapData(assetID, false), img.rect, new Point(0, 0));
-		});
-		#end*/
-
-		return img;
+		return Assets.getBitmapData("assets/data/" + path, false);
 	}
 	
 	//TODO: See - http://www.onegiantmedia.com/as3--load-a-remote-image-from-any-url--domain-with-no-stupid-security-sandbox-errors
@@ -2449,11 +2441,6 @@ class Script
 	
 	public static function getSubImage(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapData
 	{
-		x = Std.int(x * Engine.SCALE);
-		y = Std.int(y * Engine.SCALE);
-		width = Std.int(width * Engine.SCALE);
-		height = Std.int(height * Engine.SCALE);
-	
 		if(img != null && x >= 0 && y >= 0 && width > 0 && height > 0 && x < img.width && y < img.height)
 		{
 			var newImg:BitmapData = new BitmapData(width, height);
@@ -2529,9 +2516,6 @@ class Script
 	
 	public static function attachImageToActor(img:BitmapWrapper, a:Actor, x:Int, y:Int, pos:Int = 1)
 	{
-		x = Std.int(x * Engine.SCALE);
-		y = Std.int(y * Engine.SCALE);
-		
 		if(img != null)
 		{
 			//Behind the Actor - Send to the very back.
@@ -2546,10 +2530,12 @@ class Script
 				a.addChild(img);
 			}
 
-			img.imgX = x - (Engine.SCALE * a.getWidth() * (Engine.SCALE / 2));
-			img.imgY = y - (Engine.SCALE * a.getHeight() * (Engine.SCALE / 2));
-			
+			img.imgX = x;
+			img.imgY = y;
 			img.smoothing = Config.antialias;
+
+			img.imgX = x - (a.getWidth() / 2);
+			img.imgY = y - (a.getHeight() / 2);
 
 			a.attachedImages.push(img);
 		}
@@ -2558,9 +2544,6 @@ class Script
 	//Will be "fixed" like an HUD
 	public static function attachImageToHUD(img:BitmapWrapper, x:Int, y:Int)
 	{
-		x = Std.int(x * Engine.SCALE);
-		y = Std.int(y * Engine.SCALE);
-		
 		if(img != null)
 		{
 			engine.hudLayer.addChild(img);
@@ -2572,9 +2555,6 @@ class Script
 	
 	public static function attachImageToLayer(img:BitmapWrapper, layerRefType:Int, layerRef:String, x:Int, y:Int, pos:Int = 1)
 	{
-		x = Std.int(x * Engine.SCALE);
-		y = Std.int(y * Engine.SCALE);
-		
 		if(img != null)
 		{
 			var layer = engine.getLayer(layerRefType, layerRef);
@@ -2619,9 +2599,6 @@ class Script
 	
 	public static function drawImageOnImage(source:BitmapData, dest:BitmapData, x:Int, y:Int, blendMode:BlendMode)
 	{
-		x = Std.int(x * Engine.SCALE);
-		y = Std.int(y * Engine.SCALE);
-		
 		if(source != null && dest != null)
 		{
 			dummyPoint.x = x;
@@ -2636,7 +2613,7 @@ class Script
 			{
 				var drawMatrix = new Matrix();
 				drawMatrix.identity();
-				drawMatrix.translate(x * Engine.SCALE, y * Engine.SCALE);
+				drawMatrix.translate(x, y);
 				dest.draw(source, drawMatrix, null, blendMode);
 			}
 		}
@@ -2644,9 +2621,6 @@ class Script
 	
 	public static function drawTextOnImage(img:BitmapData, text:String, x:Int, y:Int, font:Font)
 	{
-		x = Std.int(x * Engine.SCALE);
-		y = Std.int(y * Engine.SCALE);
-		
 		if(img != null)
 		{
 			#if(flash || js)
@@ -2667,11 +2641,6 @@ class Script
 	
 	public static function clearImagePartially(img:BitmapData, x:Int, y:Int, width:Int, height:Int)
 	{
-		x = Std.int(x * Engine.SCALE);
-		y = Std.int(y * Engine.SCALE);
-		width = Std.int(width * Engine.SCALE);
-		height = Std.int(height * Engine.SCALE);
-		
 		if(img != null)
 		{
 			dummyRect.x = x;
@@ -2693,9 +2662,6 @@ class Script
 	
 	public static function clearImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
-		x = Std.int(x * Engine.SCALE);
-		y = Std.int(y * Engine.SCALE);
-		
 		//Inspired by http://franto.com/inverse-masking-disclosed/
 		var temp = new Sprite();
 		var bmpDest = new Bitmap(dest);
@@ -2718,10 +2684,7 @@ class Script
 	
 	public static function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
-		x = Std.int(x * Engine.SCALE);
-      	y = Std.int(y * Engine.SCALE);
-        
-      	dummyPoint.x = x;
+		dummyPoint.x = x;
       	dummyPoint.y = y;
       
       	dest.copyChannel(mask, mask.rect, dummyPoint, openfl.display.BitmapDataChannel.ALPHA, openfl.display.BitmapDataChannel.ALPHA);
@@ -2752,27 +2715,7 @@ class Script
 	{
 		if(img != null)
 		{
-			x = Std.int(x * Engine.SCALE);
-			y = Std.int(y * Engine.SCALE);
-		
 			img.setPixel(x, y, color);
-			
-			if(Engine.SCALE == 2)
-			{
-				img.setPixel(x + 1, y, color);
-				img.setPixel(x, y + 1, color);
-				img.setPixel(x + 1, y + 1, color);
-			}
-			
-			if(Engine.SCALE == 4)
-			{
-				img.setPixel(x + 2, y, color);
-				img.setPixel(x + 2, y + 1, color);
-				img.setPixel(x + 2, y + 2, color);
-				
-				img.setPixel(x, y + 2, color);
-				img.setPixel(x + 1, y + 2, color);
-			}
 		}
 	}
 	
@@ -2780,9 +2723,6 @@ class Script
 	{
 		if(img != null)
 		{
-			x = Std.int(x * Engine.SCALE);
-			y = Std.int(y * Engine.SCALE);
-		
 			return img.getPixel(x, y);
 		}
 		
@@ -2839,7 +2779,7 @@ class Script
 	{
 		if(img != null)
 		{
-			img.imgX = (Engine.SCALE * value);
+			img.imgX = value;
 		}
 	}
 	
@@ -2847,7 +2787,7 @@ class Script
 	{
 		if(img != null)
 		{
-			img.imgY = (Engine.SCALE * value);
+			img.imgY = value;
 		}
 	}
 	
@@ -2889,9 +2829,6 @@ class Script
 
 	public static function moveImageTo(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
 	{
-		x = (x * Engine.SCALE);
-		y = (y * Engine.SCALE);
-		
 		if(easing == null)
 		{
 			easing = Linear.easeNone;
@@ -2915,7 +2852,7 @@ class Script
 	
 	public static function moveImageBy(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
 	{
-		moveImageTo(img, (img.imgX / Engine.SCALE) + x, (img.imgY / Engine.SCALE) + y, duration, easing);
+		moveImageTo(img, img.imgX + x, img.imgY + y, duration, easing);
 	}
 	
 	public static function setFilterForImage(img:BitmapWrapper, filter:BitmapFilter)
@@ -3423,9 +3360,7 @@ class Script
 	
 	public static function toggleFullScreen()
 	{
-		#if((flash && !air) || (cpp && !mobile) || neko)
-		Engine.engine.toggleFullscreen();
-		#end
+		Engine.engine.toggleFullScreen();
 	}
 		
 	/**
