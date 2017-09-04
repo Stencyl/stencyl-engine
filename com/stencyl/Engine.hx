@@ -551,6 +551,12 @@ class Engine
 
 		cast(root, Universal).initScreen(isFullScreen);
 		
+		screenWidth = Std.int(Universal.logicalWidth);
+		screenWidthHalf = Std.int(screenWidth / 2);
+		screenHeight = Std.int(Universal.logicalHeight);
+		screenHeightHalf = Std.int(screenHeight / 2);
+		setColorBackground(scene.colorBackground);
+		
 		if(oldImgBase != IMG_BASE)
 		{
 			Data.get().reloadScaledResources();
@@ -578,8 +584,6 @@ class Engine
 					a.updateMatrix = true;
 				}
 			}
-
-			setColorBackground(scene.colorBackground);
 		}
 
 		unzoomedScaleX = screenScaleX = root.scaleX;
