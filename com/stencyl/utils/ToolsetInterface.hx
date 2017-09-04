@@ -210,6 +210,16 @@ class ToolsetInterface
 				{
 					Universal.reloadGame();
 				}
+				else if(action == "Load Scene")
+				{
+					var sceneID = Std.parseInt(header.get("Scene-ID"));
+
+					if(ToolsetInterface.ready)
+						Engine.engine.switchScene(sceneID);
+					else
+						Config.initSceneID = sceneID;
+					
+				}
 
 			case "Modified Asset":
 				var assetID = header.get("Asset-ID");
