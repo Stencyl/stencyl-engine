@@ -9,6 +9,7 @@ import openfl.display.StageDisplayState;
 import openfl.display.Shape;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
+import openfl.geom.Rectangle;
 import openfl.system.Capabilities;
 import openfl.ui.Keyboard;
 import lime.ui.Window;
@@ -286,6 +287,12 @@ class Universal extends Sprite
 			//expand the playable area rather than further scaling it
 			if(Config.scaleMode == ScaleMode.FULLSCREEN)
 			{
+				if(Engine.SCALE != theoreticalScale)
+				{
+					scaleX = theoreticalScale / Engine.SCALE;
+					scaleY = scaleX;
+				}
+
 				//don't do anything
 				//stage width/height are already the size of the screen
 			}
@@ -313,9 +320,13 @@ class Universal extends Sprite
 			}
 			
 			//no additional scaling
-			else //(Config.scaleMode == ScaleMode.NO_SCALING)
+			else if(Config.scaleMode == ScaleMode.NO_SCALING)
 			{
-				
+				if(Engine.SCALE != theoreticalScale)
+				{
+					scaleX = theoreticalScale / Engine.SCALE;
+					scaleY = scaleX;
+				}
 			}
 
 			if(Config.scaleMode != ScaleMode.SCALE_TO_FIT_FULLSCREEN && Config.scaleMode != ScaleMode.FULLSCREEN)
@@ -380,7 +391,6 @@ class Universal extends Sprite
 	{
 		Reflect.callMethod(am, Reflect.field(am, "setupTracing"), [enable]);
 	}
-	
 
 	public static function reloadGame()
 	{
