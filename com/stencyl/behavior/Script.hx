@@ -2529,15 +2529,11 @@ class Script
 			{
 				a.addChild(img);
 			}
-
+			
+			img.cacheParentAnchor = a.cacheAnchor;
 			img.imgX = x;
 			img.imgY = y;
 			img.smoothing = Config.antialias;
-
-			var p = Utils.getAnchorPoint(a);
-
-			img.imgX = x - p.x;
-			img.imgY = y - p.y;
 
 			a.attachedImages.push(img);
 		}

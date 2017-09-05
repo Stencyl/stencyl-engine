@@ -7,12 +7,14 @@ import openfl.display.Graphics;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.display.Tile;
+import openfl.geom.Point;
 
 import com.stencyl.Engine;
 import com.stencyl.models.Actor;
 import com.stencyl.models.Font;
 import com.stencyl.graphics.EngineScaleUpdateListener;
 import com.stencyl.utils.ColorMatrix;
+import com.stencyl.utils.Utils;
 
 class Label extends Sprite implements EngineScaleUpdateListener
 {
@@ -58,6 +60,8 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	public var _outlineTilemap:Tilemap;
 	public var _characterTilemap:Tilemap;
 	#end
+
+	public var cacheParentAnchor:Point = Utils.zero;
 	
 	/**
 	 * Constructs a new text field component.
@@ -912,8 +916,8 @@ class Label extends Sprite implements EngineScaleUpdateListener
 
 	public function updatePosition():Void
 	{
-		x = labelX * Engine.SCALE;
-		y = labelY * Engine.SCALE;
+		x = labelX * Engine.SCALE - cacheParentAnchor.x;
+		y = labelY * Engine.SCALE - cacheParentAnchor.y;
 	}
 
 	public function updateScale():Void

@@ -209,6 +209,7 @@ class Actor extends Sprite
 	
 	public var currOrigin:Point;
 	public var currOffset:Point;
+	public var cacheAnchor:Point;
 	
 	public var transformObj:Transform;
 	public var transformPoint:Point;
@@ -594,6 +595,8 @@ class Actor extends Sprite
 			}
 		}
 
+		cacheAnchor = new Point(0, 0);
+
 		switchToDefaultAnimation();
 		
 		//Use set location to align actors
@@ -895,12 +898,17 @@ class Actor extends Sprite
 				var actorAnim = animationMap.get(a.animName);
 				actorAnim.setBitmap(a.imgData);
 			}
+			updateChildrenPositions();
 		}
 		else
 		{
 			var a = sprite.animations.get(animID);
 			var actorAnim = animationMap.get(a.animName);
 			actorAnim.setBitmap(a.imgData);
+			if(actorAnim == currAnimation)
+			{
+				updateChildrenPositions();
+			}
 		}
 	}
 
@@ -1503,6 +1511,8 @@ class Actor extends Sprite
 			{					
 				setOriginPoint(Std.int(animOrigin.x), Std.int(animOrigin.y));				
 			}
+
+			updateChildrenPositions();
 			
 			updateMatrix = true;
 			
@@ -1512,10 +1522,30 @@ class Actor extends Sprite
 		}
 	}
 
+	public function updateChildrenPositions()
+	{
+		var newAnchor = new Point(-currAnimation.x, -currAnimation.y);
+		if(!newAnchor.equals(cacheAnchor))
+		{
+			cacheAnchor.copyFrom(newAnchor);
+			for(img in attachedImages)
+			{
+				img.updatePosition();
+			}
+			if(label != null)
+			{
+				label.updatePosition();
+			}
+		}
+	}
+
 	public function removeAttachedImages()
 	{
 		for(b in attachedImages)
+		{
+			b.cacheParentAnchor = Utils.zero;
 			removeChild(b);
+		}
 		attachedImages = new Array<BitmapWrapper>();
 	}
 	
@@ -1715,7 +1745,7 @@ class Actor extends Sprite
 		{
 			return;
 		}
-		
+
 		if(smoothMove)
 		{
 			if(!firstMove)
@@ -1871,7 +1901,7 @@ class Actor extends Sprite
 			transformObj = transform;
 		}
 		
-		transformObj.matrix = transformMatrix;		
+		transformObj.matrix = transformMatrix;
 		
 		//Temp until jeash handles on their end?
 		//#if js

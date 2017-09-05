@@ -2,8 +2,11 @@ package com.stencyl.graphics;
 
 import openfl.display.Bitmap;
 import openfl.display.Sprite;
+import openfl.geom.Point;
+import openfl.geom.Matrix;
 
 import com.stencyl.Engine;
+import com.stencyl.utils.Utils;
 
 class BitmapWrapper extends Sprite implements EngineScaleUpdateListener
 {
@@ -13,6 +16,7 @@ class BitmapWrapper extends Sprite implements EngineScaleUpdateListener
 	private var offsetY:Float;
 
 	private var autoscale:Bool = false;
+	public var cacheParentAnchor:Point = Utils.zero;
 
 	@:isVar public var smoothing (get, set):Bool;
 	@:isVar public var imgX (get, set):Float;
@@ -27,11 +31,18 @@ class BitmapWrapper extends Sprite implements EngineScaleUpdateListener
 		addChild(img);
 
 		autoscale = Config.autoscaleImages;
+
+		if(autoscale)
+		{
+			var mtx = new Matrix();
+			mtx.scale(Engine.SCALE, Engine.SCALE);
+			transform.matrix = mtx;
+		}
 	}
 
 	public function set_imgX(x:Float):Float
 	{
-		this.x = (x + offsetX) * Engine.SCALE;
+		this.x = (x + offsetX) * Engine.SCALE - cacheParentAnchor.x;
 
 		return imgX = x;
 	}
@@ -43,7 +54,7 @@ class BitmapWrapper extends Sprite implements EngineScaleUpdateListener
 
 	public function set_imgY(y:Float):Float
 	{
-		this.y = (y + offsetY) * Engine.SCALE;
+		this.y = (y + offsetY) * Engine.SCALE - cacheParentAnchor.y;
 
 		return imgY = y;
 	}
@@ -85,16 +96,15 @@ class BitmapWrapper extends Sprite implements EngineScaleUpdateListener
 
 	public function updatePosition():Void
 	{
-		x = (imgX + offsetX) * Engine.SCALE;
-		y = (imgY + offsetY) * Engine.SCALE;
+		x = (imgX + offsetX) * Engine.SCALE - cacheParentAnchor.x;
+		y = (imgY + offsetY) * Engine.SCALE - cacheParentAnchor.y;
 	}
 
 	public function updateScale():Void
 	{
 		if(autoscale)
 		{
-			var mtx = transform.matrix;
-			mtx.identity();
+			var mtx = new Matrix();
 			mtx.scale(Engine.SCALE, Engine.SCALE);
 			transform.matrix = mtx;
 		}
