@@ -542,42 +542,6 @@ class G
 			point.y = this.y + y;	
 		}
 		
-		#if (js)
-		if(alpha != 1)
-		{
-			//TODO: How to do you do this??? (Combine when we figure this out)
-			if (angle != 0)
-			{
-				mtx.identity();
-				mtx.rotate(-angle);
-				mtx.translate(point.x,point.y);
-				
-				canvas.draw(img, mtx);
-			}
-			else
-			{			
-				canvas.copyPixels(img, rect, point);
-			}			
-		}
-		
-		else
-		{
-			if (angle != 0)
-			{
-				mtx.identity();
-				mtx.rotate(-angle);
-				mtx.translate(point.x,point.y);
-				
-				canvas.draw(img, mtx);
-			}
-			else
-			{			
-				canvas.copyPixels(img, rect, point);
-			}
-		}
-
-		#else
-		
 		var newImg:BitmapData = null;
 		var imgSize = 0;
 		mtx.identity();
@@ -641,7 +605,6 @@ class G
 		}
 		
 		graphics.endFill();
-		#end
 	}
 	
 	private function toARGB(rgb:Int, newAlpha:Int):Int
