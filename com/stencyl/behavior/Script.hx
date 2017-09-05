@@ -2534,8 +2534,10 @@ class Script
 			img.imgY = y;
 			img.smoothing = Config.antialias;
 
-			img.imgX = x - (a.getWidth() / 2);
-			img.imgY = y - (a.getHeight() / 2);
+			var p = Utils.getAnchorPoint(a);
+
+			img.imgX = x - p.x;
+			img.imgY = y - p.y;
 
 			a.attachedImages.push(img);
 		}

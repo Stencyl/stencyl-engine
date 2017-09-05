@@ -251,6 +251,15 @@ class Utils
 	}
 
 	/**
+	 * The DisplayObject must be on the stage.
+	 */
+	public static function getAnchorPoint(obj:DisplayObject):Point
+	{
+		var rect = obj.getRect(obj);
+		return new Point(-1 * rect.x, -1 * rect.y);
+	};
+
+	/**
 	 * Sets the camera position.
 	 * @param	x	X position.
 	 * @param	y	Y position.
