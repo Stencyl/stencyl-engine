@@ -2398,8 +2398,13 @@ class Script
 	
 	public static function getImageForActor(a:Actor):BitmapData
 	{
-		var original:BitmapData = a.getCurrentImage();
-		return original.clone();
+		var original = a.getCurrentImage();
+		
+		var scaled = new BitmapData(Std.int(original.width / Engine.SCALE), Std.int(original.height / Engine.SCALE));
+		var mtx = new Matrix();
+		mtx.scale(1/Engine.SCALE, 1/Engine.SCALE);
+		scaled.draw(original, mtx);
+		return scaled;
 	}
 
 	//Example path: "sample.png" - stick into the "extras" folder for your game - see: http://community.stencyl.com/index.php/topic,24729.0.html
@@ -2630,9 +2635,9 @@ class Script
 				G.fontCache.set(font.ID, fontData);
 			}
 		
-			font.font.render(img, fontData, text, 0x000000, 1, x, y, font.letterSpacing, 0);
+			font.font.render(img, fontData, text, 0x000000, 1, x, y, font.letterSpacing, font.fontScale/Engine.SCALE, 0);
 			#else
-			font.font.renderToImg(img, text, 0x000000, 1, x, y, font.letterSpacing, font.fontScale, 0, false);
+			font.font.renderToImg(img, text, 0x000000, 1, x, y, font.letterSpacing, font.fontScale/Engine.SCALE, 0, false);
 			#end
 		}
 	}

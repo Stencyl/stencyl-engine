@@ -7,6 +7,7 @@ import openfl.display.Tile;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 
+import openfl.geom.Point;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
@@ -215,14 +216,9 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 	
 	public function getCurrentImage():BitmapData
 	{
-		#if flash
-		return null;
-		#else
 		var img = new BitmapData(Std.int(width) , Std.int(height), true, 0x00ffffff);
-		img.copyPixels(getBitmap(), new openfl.geom.Rectangle((frameIndex % framesAcross) * width, Math.floor(frameIndex / framesAcross) * height, Std.int(width), Std.int(height)), new openfl.geom.Point(0, 0), null, null, false);
+		img.copyPixels(getBitmap(), new Rectangle((frameIndex % framesAcross) * width, Math.floor(frameIndex / framesAcross) * height, Std.int(width), Std.int(height)), new Point(0, 0), null, null, false);
 		return img;
-		#end
-		
 	}
 
 	public function setBitmap(imgData:BitmapData):Void
@@ -254,10 +250,8 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 		updateBitmap();
 	}
 
-	#if !flash
 	public inline function getBitmap():BitmapData
 	{
 		return tileset.bitmapData;
 	}
-	#end
 }

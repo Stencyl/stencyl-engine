@@ -404,7 +404,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 					for (px in 0...(2 + 1)) 
 					{
 						#if (flash || js)
-						_font.render(bitmapData, _preparedOutlineGlyphs, t, _outlineColor, _alpha, px + ox + _padding, py + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing);
+						_font.render(bitmapData, _preparedOutlineGlyphs, t, _outlineColor, _alpha, px + ox + _padding, py + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 						#else
 						_font.render(_outlineTilemap, t, _alpha, px + ox + _padding, py + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 						#end
@@ -416,13 +416,13 @@ class Label extends Sprite implements EngineScaleUpdateListener
 			if (_shadow) 
 			{
 				#if (flash || js)
-				_font.render(bitmapData, _preparedShadowGlyphs, t, _shadowColor, _alpha, 1 + ox + _padding, 1 + oy + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing);
+				_font.render(bitmapData, _preparedShadowGlyphs, t, _shadowColor, _alpha, 1 + ox + _padding, 1 + oy + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 				#else
 				_font.render(_shadowTilemap, t, _alpha, 1 + ox + _padding, 1 + oy + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 				#end
 			}
 			#if (flash || js)
-			_font.render(bitmapData, _preparedTextGlyphs, t, _color, _alpha, ox + _padding, oy + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing);
+			_font.render(bitmapData, _preparedTextGlyphs, t, _color, _alpha, ox + _padding, oy + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 			#else
 			_font.render(_characterTilemap, t, _alpha, ox + _padding, oy + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 			#end

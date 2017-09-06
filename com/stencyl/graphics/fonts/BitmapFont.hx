@@ -425,15 +425,15 @@ class BitmapFont
 	/**
 	 * Renders a string of text onto bitmap data using the font.
 	 * @param	pBitmapData	Where to render the text.
-	 * @param	pText	Test to render.
+	 * @param	pText	Text to render.
 	 * @param	pColor	Color of text to render.
-	 * @param	pOffsetX	X position of thext output.
-	 * @param	pOffsetY	Y position of thext output.
+	 * @param	pOffsetX	X position of text output.
+	 * @param	pOffsetY	Y position of text output.
 	 */
 	#if flash 
-	public function render(pBitmapData:BitmapData, pFontData:Array<BitmapData>, pText:String, pColor:UInt, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, ?pAngle:Float = 0):Void 
+	public function render(pBitmapData:BitmapData, pFontData:Array<BitmapData>, pText:String, pColor:UInt, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0):Void 
 	#elseif js
-	public function render(pBitmapData:BitmapData, pFontData:Array<BitmapData>, pText:String, pColor:Int, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, ?pAngle:Float = 0):Void 
+	public function render(pBitmapData:BitmapData, pFontData:Array<BitmapData>, pText:String, pColor:Int, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0):Void 
 	#else
 	public function render(tilemap:Tilemap, pText:String, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0):Void 
 	#end
@@ -478,17 +478,27 @@ class BitmapFont
 			#end
 			{
 				#if (flash || js)
-				if(pAlpha == 1)
+
+				if(pAlpha == 1 && pScale == 1)
 				{
 					pBitmapData.copyPixels(glyph, glyph.rect, _point, null, null, true);
 				}
 				
-				else
+				else if(pScale == 1)
 				{
 					var colorTransformation = new ColorTransform(1,1,1,pAlpha,0,0,0,0);
 					var copy = glyph.clone();
 					copy.colorTransform(copy.rect, colorTransformation);
 					pBitmapData.copyPixels(copy, copy.rect, _point, null, null, true);
+				}
+
+				else
+				{
+					var mtx = new Matrix();
+					mtx.scale(pScale, pScale);
+					mtx.translate(_point.x, _point.y);
+					var colorTransformation = (pAlpha == 1 ? null : new ColorTransform(1,1,1,pAlpha,0,0,0,0));
+					pBitmapData.draw(glyph, mtx, colorTransformation, null, new Rectangle(_point.x, _point.y, glyph.width * pScale, glyph.height * pScale));
 				}
 				
 				_point.x += glyph.width + pLetterSpacing;
