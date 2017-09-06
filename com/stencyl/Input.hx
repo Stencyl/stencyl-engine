@@ -325,7 +325,9 @@ class Input
 		{
 			_joystickEnabled = true;
 			#if desktop
-			Joystick.onConnect.add (function (joystick) {
+
+			var addJoystick = function (joystick:Joystick) {
+
 				trace ("Connected Joystick: " + joystick.name);
 
 				_joyAxisState.set(joystick.id, [for(i in 0...joystick.numAxes) 0]);
@@ -357,7 +359,15 @@ class Input
 					trace ("Disconnected Joystick: " + joystick.name);
 				});
 
-			});
+			}
+
+			Joystick.onConnect.add (addJoystick);
+
+			for(joystick in Joystick.devices)
+			{
+				addJoystick(joystick);
+			}
+
 			#end
 		}
 	}
