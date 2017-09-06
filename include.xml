@@ -8,6 +8,7 @@
 	<haxelib name="console" />
 	<haxelib name="polygonal-ds" />
 	<haxelib name="box2d" />
+	<haxelib name="cloner" />
 
 	<template path="templates" />
 

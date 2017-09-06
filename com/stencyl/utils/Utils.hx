@@ -1,5 +1,6 @@
 package com.stencyl.utils;
 
+import cloner.Cloner;
 import lime.app.Future;
 import lime.app.Promise;
 import lime.graphics.Image;
@@ -192,6 +193,13 @@ class Utils
 		}
 		
 		return toReturn;
+	}
+
+	private static var cloner:Cloner = new Cloner();
+
+	public static function clone<T>(obj:T):T
+	{
+		return cloner.clone(obj);
 	}
 
 	public static function copyMap(map:Map<String, Dynamic>):Map<String, Dynamic>
@@ -816,7 +824,7 @@ class Utils
 	/** Saves a key/value pair in a SharedObject (does not flush the SharedObject) */
 	public static function saveToSharedObject(so:SharedObject, name:String, value:Dynamic):Void
 	{
-		Reflect.setField(so.data, name, value);
+		Reflect.setField(so.data, name, clone(value));
 
 		#if flash
 		if (Std.is(value, haxe.ds.StringMap))
@@ -837,10 +845,10 @@ class Utils
 		}
 		else
 		{
-			return Reflect.field(so.data, name);
+			return cloner.clone(Reflect.field(so.data, name));
 		}
 		#else
-		return Reflect.field(so.data, name);
+		return cloner.clone(Reflect.field(so.data, name));
 		#end
 	}
 	
