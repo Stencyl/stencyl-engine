@@ -1,14 +1,21 @@
 package com.stencyl.graphics;
 
-@:enum abstract Scale(Float)
+class Scale
 {
-	public var _1X = 1.0;
-	public var _1_5X = 1.5;
-	public var _2X = 2.0;
-	public var _3X = 3.0;
-	public var _4X = 4.0;
+	public static var _1X = new Scale(1.0);
+	public static var _1_5X = new Scale(1.5);
+	public static var _2X = new Scale(2.0);
+	public static var _3X = new Scale(3.0);
+	public static var _4X = new Scale(4.0);
 	
-	@:from private static function fromString (value:String):Scale
+	public var value(default, null):Float;
+
+	public function new(value:Float)
+	{
+		this.value = value;
+	}
+
+	public static function fromString (value:String):Scale
 	{
 		return switch (value)
 		{
@@ -21,16 +28,14 @@ package com.stencyl.graphics;
 		}
 	}
 	
-	@:to private static function toString (value:Float):String
+	public function toString():String
 	{
-		return switch (value)
-		{
-			case Scale._1X: "1x";
-			case Scale._1_5X: "1.5x";
-			case Scale._2X: "2x";
-			case Scale._3X: "3x";
-			case Scale._4X: "4x";
-			default: "1x";
-		}
+		return
+			value == 1.0 ? "1x" :
+			value == 1.5 ? "1.5x" :
+			value == 2.0 ? "2x" :
+			value == 3.0 ? "3x" :
+			value == 4.0 ? "4x" :
+			"";
 	}
 }

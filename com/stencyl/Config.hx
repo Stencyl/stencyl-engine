@@ -10,6 +10,8 @@ import com.stencyl.graphics.Scale;
 import com.stencyl.graphics.ScaleMode;
 import com.stencyl.utils.Utils;
 
+using Lambda;
+
 class Config
 {
 	//Game
@@ -151,7 +153,8 @@ class Config
 		debugDraw = data.debugDraw;
 		disableBackButton = data.disableBackButton;
 		keys = asMap(data.keys);
-		scales = asMap(data.scales);
+		var scaleMap:Map<String,Array<String>> = asMap(data.scales);
+		scales = [for(key in scaleMap.keys()) key => scaleMap.get(key).map(Scale.fromString).array()];
 		toolsetInterfaceHost = data.toolsetInterfaceHost;
 		toolsetInterfacePort = data.toolsetInterfacePort;
 		buildConfig = data.buildConfig;

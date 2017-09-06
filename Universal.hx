@@ -119,7 +119,7 @@ class Universal extends Sprite
 		enabledScales = Config.scales.get("android");
 		#end
 
-		var scales = new Map<String,Bool>();
+		var scales = new Map<Scale,Bool>();
 		for(scale in enabledScales)
 		{
 			scales.set(scale, true);
@@ -227,7 +227,7 @@ class Universal extends Sprite
 			{
 				theoreticalScale = 1;
 			}
-			
+
 			//4 scale scheme
 			if(theoreticalScale == 4 && scales.exists(Scale._4X))
 			{
