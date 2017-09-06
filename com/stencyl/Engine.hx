@@ -403,6 +403,7 @@ class Engine
 		stage.removeEventListener(Event.ACTIVATE, engine.onFocus);
 		#if(!flash)
 		stage.removeEventListener(Event.RESIZE, engine.onWindowResize);
+		stage.window.onRestore.remove(engine.onWindowRestore);
 		stage.window.onFullscreen.remove(engine.onWindowFullScreen);
 		#end
 
@@ -512,6 +513,16 @@ class Engine
 		if(isFullScreen && !stage.window.fullscreen)
 		{
 			setFullScreen(false);
+		}
+	}
+
+	//XXX: Seems a little odd. Cancels out window.__fullscreen = false in NativeApplication.hx
+	@:access(lime.ui.Window.__fullscreen)
+	private function onWindowRestore():Void
+	{
+		if(isFullScreen && !stage.window.fullscreen)
+		{
+			stage.window.__fullscreen = true;
 		}
 	}
 
@@ -641,6 +652,7 @@ class Engine
 		stage.addEventListener(Event.ACTIVATE, onFocus);
 		#if(!flash)
 		stage.addEventListener(Event.RESIZE, onWindowResize);
+		stage.window.onRestore.add(onWindowRestore);
 		stage.window.onFullscreen.add(onWindowFullScreen);
 		#end
 		begin(Config.initSceneID);
