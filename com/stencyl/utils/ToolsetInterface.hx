@@ -16,8 +16,8 @@ class ToolsetInterface
 
 	var socket:Socket;
 	var response:String = "";
-	var connected:Bool = false;
 
+	public static var connected(default, null):Bool = false;
 	public static var ready(default, null):Bool = false;
 
 	public static var assetUpdatedListeners = new Map<String, Array<Listener>>();
@@ -35,22 +35,25 @@ class ToolsetInterface
 
 		if(host == null)
 			host = "localhost";
-		if(port == null)
-			port = 80;
-
-		haxe.Timer.delay(function() {
-			if(!connected)
-			{
-				trace("Couldn't establish gci connection.");
-				unconfigureListeners();
-				ToolsetInterface.ready = true;
-			}
-		}, 500);
-
-		configureListeners();
-		socket.connect(host, port);
+		if(port != -1)
+		{
+			trace("GCI attempting to connect to toolset @" + host + ":" + port);
+			configureListeners();
+			socket.connect(host, port);
+		}
+		else
+		{
+			ToolsetInterface.ready = true;
+		}
 
 		instance = this;
+	}
+
+	public static function cancelConnection():Void
+	{
+		trace("Couldn't establish gci connection.");
+		instance.unconfigureListeners();
+		ToolsetInterface.ready = true;
 	}
 
 	private function configureListeners():Void
@@ -96,6 +99,8 @@ class ToolsetInterface
 	private function ioErrorHandler(event:IOErrorEvent):Void
 	{
 		trace("ioErrorHandler: " + event);
+		if(!ToolsetInterface.ready)
+			cancelConnection();
 	}
 
 	private function securityErrorHandler(event:SecurityErrorEvent):Void
@@ -195,7 +200,7 @@ class ToolsetInterface
 			case "Status":
 				if(header.get("Status") == "Connected")
 				{
-					connected = true;
+					ToolsetInterface.connected = true;
 					trace("GCI connected. Waiting for updated assets.");
 				}
 				if(header.get("Status") == "Assets Ready")

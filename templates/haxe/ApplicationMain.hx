@@ -10,6 +10,7 @@ import com.stencyl.utils.ToolsetInterface;
 #end
 
 import haxe.Log in HaxeLog;
+import haxe.Timer;
 
 import lime.app.Config in LimeConfig;
 import lime.system.System;
@@ -182,36 +183,47 @@ using StringTools;
 	public static function create (config:LimeConfig):Void
 	{
 		#if stencyltools
-
-		#if (flash || html5)
-
-		if(!ToolsetInterface.ready)
 		{
-			var timer = new haxe.Timer(10);
-			timer.run = function()
-			{
-				#if (!flash)
-				ToolsetInterface.preloadedUpdate();
-				#end
-				if(ToolsetInterface.ready)
+			var startTime = Timer.stamp();
+			var tryTimeout = function() {
+				if(!ToolsetInterface.connected && Timer.stamp() - startTime > 1)
 				{
-					timer.stop();
-					create (config);
+					ToolsetInterface.cancelConnection();
 				}
+			};
+
+			#if (flash || html5)
+
+			if(!ToolsetInterface.ready)
+			{
+				var timer = new Timer(10);
+				timer.run = function()
+				{
+					#if (!flash)
+					ToolsetInterface.preloadedUpdate();
+					#end
+
+					tryTimeout();
+					if(ToolsetInterface.ready)
+					{
+						timer.stop();
+						create (config);
+					}
+				}
+
+				return;
 			}
 
-			return;
+			#else
+
+			while(!ToolsetInterface.ready)
+			{
+				ToolsetInterface.preloadedUpdate();
+				tryTimeout();
+			}
+
+			#end
 		}
-
-		#else
-
-		while(!ToolsetInterface.ready)
-		{
-			ToolsetInterface.preloadedUpdate();
-		}
-
-		#end
-
 		#end
 
 		app = new Application ();
