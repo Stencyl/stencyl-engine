@@ -2816,7 +2816,7 @@ class Script
 			easing = Linear.easeNone;
 		}
 	
-		Actuate.tween(img, duration, {scaleX:scaleX, scaleY:scaleY}).ease(easing);
+		Actuate.tween(img, duration, {scaleX:scaleX*Engine.SCALE, scaleY:scaleY*Engine.SCALE}).ease(easing);
 	}
 	
 	//In degrees
