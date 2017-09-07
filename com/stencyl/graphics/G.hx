@@ -317,7 +317,7 @@ class G
 			var bitmapData = new BitmapData(w, h, true, 0);
 			
 			#if (flash || js)
-			font.font.render(bitmapData, fontData, s, 0x000000, alpha, 0, 0, font.letterSpacing, 0);
+			font.font.render(bitmapData, fontData, s, 0x000000, alpha, 0, 0, font.letterSpacing, font.fontScale, 0);
 			#else
 			font.font.renderToImg(bitmapData, s, 0x000000, alpha, 0, 0, font.letterSpacing, font.fontScale, 0, false); //0, false
 			#end

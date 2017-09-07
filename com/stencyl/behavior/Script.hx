@@ -2400,7 +2400,7 @@ class Script
 	{
 		var original = a.getCurrentImage();
 		
-		var scaled = new BitmapData(Std.int(original.width / Engine.SCALE), Std.int(original.height / Engine.SCALE));
+		var scaled = new BitmapData(Std.int(original.width / Engine.SCALE), Std.int(original.height / Engine.SCALE), true, 0);
 		var mtx = new Matrix();
 		mtx.scale(1/Engine.SCALE, 1/Engine.SCALE);
 		scaled.draw(original, mtx);
