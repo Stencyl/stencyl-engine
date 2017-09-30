@@ -3,25 +3,38 @@ package com.stencyl.models;
 import de.polygonal.ds.IntHashTable;
 import de.polygonal.ds.HashTable;
 
+import com.stencyl.behavior.BehaviorInstance;
+import com.stencyl.graphics.BlendModes;
+
+import com.stencyl.io.mbs.scene.layers.*;
+import com.stencyl.io.mbs.scene.physics.*;
+import com.stencyl.io.mbs.scene.*;
+import com.stencyl.io.mbs.scene.MbsScene.*;
+import com.stencyl.io.mbs.shape.*;
+import com.stencyl.io.mbs.Typedefs;
+import com.stencyl.io.AttributeValues;
 import com.stencyl.io.BackgroundReader;
 import com.stencyl.io.ActorTypeReader;
-import com.stencyl.io.SpriteReader;
+import com.stencyl.io.ShapeReader;
 
+import com.stencyl.models.background.ColorBackground;
+import com.stencyl.models.background.GradientBackground;
+import com.stencyl.models.collision.Mask;
+import com.stencyl.models.scene.layers.BackgroundLayer;
+import com.stencyl.models.scene.layers.RegularLayer;
 import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.Tileset;
 import com.stencyl.models.scene.TileLayer;
 import com.stencyl.models.scene.Layer;
-import com.stencyl.models.scene.layers.BackgroundLayer;
-import com.stencyl.models.scene.layers.RegularLayer;
-
-import com.stencyl.models.background.ColorBackground;
 import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.scene.RegionDef;
 import com.stencyl.models.scene.TerrainDef;
 import com.stencyl.models.scene.Wireframe;
-import com.stencyl.models.collision.Mask;
-import com.stencyl.behavior.BehaviorInstance;
-import com.stencyl.graphics.BlendModes;
+
+import com.stencyl.utils.Assets;
+import com.stencyl.utils.PolyDecompBayazit;
+import com.stencyl.utils.Utils;
+import com.stencyl.Engine;
 
 import openfl.display.BlendMode;
 import openfl.geom.Point;
@@ -37,14 +50,18 @@ import box2D.dynamics.joints.B2LineJointDef;
 import box2D.common.math.B2Vec2;
 import box2D.common.math.B2Math;
 
+import haxe.ds.Vector;
 import haxe.xml.Fast;
-import com.stencyl.Engine;
-import com.stencyl.utils.Assets;
-import com.stencyl.utils.Utils;
 
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
-import com.stencyl.utils.PolyDecompBayazit;
+
+import mbs.core.MbsObject;
+import mbs.core.MbsType;
+import mbs.core.MbsTypes.*;
+import mbs.io.*;
+import mbs.io.MbsListBase.MbsDynamicList;
+import mbs.io.MbsListBase.MbsIntList;
 
 class Scene
 {
@@ -87,50 +104,37 @@ class Scene
 	
 	public function load()
 	{
-		var xml:Fast = new Fast(Xml.parse(Assets.getText("assets/data/scene-" + ID + ".xml")).firstElement());
+		var r = new MbsReader(Assets.getBytes("assets/data/scene-" + ID + ".mbs"), Typedefs.instance, false);
+		var scene:MbsScene = cast r.getRoot();
+
+		var numTileLayers = scene.getDepth();
 		
-		var numTileLayers:Int = Std.parseInt(xml.att.depth);
+		sceneWidth = scene.getWidth();
+		sceneHeight = scene.getHeight();
 		
-		sceneWidth = Std.parseInt(xml.att.width);
-		sceneHeight = Std.parseInt(xml.att.height);
+		tileWidth = scene.getTileWidth();
+		tileHeight = scene.getTileHeight();
 		
-		tileWidth = Std.parseInt(xml.att.tilew);
-		tileHeight = Std.parseInt(xml.att.tileh);
+		gravityX = scene.getGravityX();
+		gravityY = scene.getGravityY();
 		
-		gravityX = Std.parseFloat(xml.att.gravx);
-		gravityY = Std.parseFloat(xml.att.gravy);
-								
 		animatedTiles = new Array<Tile>();
 		
-		actors = readActors(xml.node.actors.elements);
-		behaviorValues = ActorTypeReader.readBehaviors(xml.node.snippets);
+		actors = readActors(scene.getActorInstances());
+		behaviorValues = AttributeValues.readBehaviors(scene.getSnippets());
 		
-		var eventSnippetID = "";
+		var eventSnippetID = scene.getEventSnippetID();
 		
-		try
+		if(eventSnippetID > -1)
 		{
-			eventSnippetID = xml.att.eventsnippetid;
+			behaviorValues.set(""+eventSnippetID, new BehaviorInstance(eventSnippetID, new Map<String,Dynamic>()));
 		}
 		
-		catch(e:String)
-		{
-		}
-
-		if(eventSnippetID != "")
-		{
-			eventID = Std.parseInt(eventSnippetID);
-			
-			if(eventID > -1)
-			{
-				behaviorValues.set(eventSnippetID, new BehaviorInstance(eventID, new Map<String,Dynamic>()));
-			}
-		}
+		joints = readJoints(scene.getJoints());
+		regions = readRegions(scene.getRegions());
+		terrainRegions = readTerrainRegions(scene.getTerrainRegions());
 		
-		joints = readJoints(xml.node.joints.elements);
-		regions = readRegions(xml.node.regions.elements);
-		terrainRegions = readTerrainRegions(xml.node.terrainRegions.elements);
-		
-		wireframes = readWireframes(xml.node.terrain.elements);
+		wireframes = readWireframes(scene.getTerrain());
 		
 		#if js
 		var rawLayers = readRawLayers(Assets.getText("assets/data/scene-" + ID + ".txt"), numTileLayers);
@@ -142,14 +146,12 @@ class Scene
 		var rawLayers = readRawLayers(bytes, numTileLayers);
 		#end
 
-		layers = readAllLayers(xml.node.layers.elements, rawLayers);
+		layers = readAllLayers(scene.getLayers(), rawLayers);
 
-		retainsAtlases = xml.hasNode.atlases ?
-			xml.node.atlases.att.retainAtlases == "true" :
-			true;
+		retainsAtlases = scene.getRetainAtlases();
 		
 		if(!retainsAtlases)
-			atlases = readAtlases(xml.node.atlases);
+			atlases = readAtlases(scene.getAtlasMembers());
 		else
 			atlases = new Array<Int>();
 	}
@@ -171,78 +173,48 @@ class Scene
 		animatedTiles = null;
 	}
 	
-	public function readRegions(list:Iterator<Fast>):Map<Int,RegionDef>
+	public function readRegions(list:MbsList<MbsRegion>):Map<Int,RegionDef>
 	{
 		var map = new Map<Int,RegionDef>();
 		
-		for(e in list)
+		for(i in 0...list.length())
 		{
-			var r:RegionDef = readRegion(e);
+			var r:RegionDef = readRegion(list.getNextObject());
 			map.set(r.ID, r);
 		}
 		
 		return map;
 	}
 	
-	public function readRegion(e:Fast):RegionDef
+	public function readRegion(r:MbsRegion):RegionDef
 	{
-		var type = e.att.type;
-		var elementID = Std.parseInt(e.att.id);
-		var name = e.att.name;
+		var elementID = r.getId();
+		var name = r.getName();
 		var region:RegionDef;
 		
-		var x:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.x));
-		var y:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.y));
+		var x:Float = Engine.toPhysicalUnits(r.getX());
+		var y:Float = Engine.toPhysicalUnits(r.getY());
 		
 		var shape:B2Shape = null;
 		var ps = new Array<B2PolygonShape>();
 		shapeList = new Array<B2Shape>();
 		var decompParams:Array<String>;
+
+		var shapeData = r.getShape();
 		
-		if(type == "box")
+		if(Std.is(shapeData, MbsPolyRegion))
 		{
-			var w:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.w)); 
-			var h:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.h)); 
-			
-			if(Engine.NO_PHYSICS)
-			{
-				w = Std.parseFloat(e.att.w);
-				h = Std.parseFloat(e.att.h);
-			
-				region = new RegionDef(shapeList, elementID, name, x, y, 0, new Rectangle(0, 0, w, h));
-			}
-			
-			else
-			{
-				var box = new B2PolygonShape();
-				box.setAsBox(w/2, h/2);
-				shape = box;
-				shapeList[0] = shape;
-				region = new RegionDef(shapeList, elementID, name, x, y);
-			}
-		}
-		
-		else if(type == "poly")
-		{
-			var w = Std.parseFloat(e.att.w);
-			var h = Std.parseFloat(e.att.h);
-			var pts = null;
-			
-			if(e.has.pts)
-			{
-				pts = e.att.pts;
-			}
-			
-			var shapeType:String = "polyregion";
+			var polygon:MbsPolyRegion = cast shapeData;
+			var w = polygon.getWidth();
+			var h = polygon.getHeight();
+
+			var ptList = polygon.getPoints();
 			
 			//backwards compatibility for box regions
-			if(pts == null || Engine.NO_PHYSICS)
+			if(ptList.length() == 0 || Engine.NO_PHYSICS)
 			{
 				if(Engine.NO_PHYSICS)
 				{
-					w = Std.parseFloat(e.att.w);
-					h = Std.parseFloat(e.att.h);
-				
 					region = new RegionDef(shapeList, elementID, name, x, y, 0, new Rectangle(0, 0, w, h));
 				}
 				
@@ -264,20 +236,7 @@ class Scene
 			currW = w;
 			currH = h;
 			
-			var shapeParams = pts.split(",");
-			
-			var points = new Array<Point>();
-			var numVertices = Std.parseFloat(shapeParams[0]);
-			var vIndex:Int = 0;
-			var i:Int = 0;
-				
-			while(vIndex < numVertices)
-			{	
-				points.push(new Point(Std.parseFloat(shapeParams[i+1]), Std.parseFloat(shapeParams[i + 2])));
-				vIndex++;
-				i += 2;
-			}
-			
+			var points = ShapeReader.readPoints(ptList).toArray();
 			var decomp = new PolyDecompBayazit(points);
 			decomp.decompose(addPolygonRegion);
 			region = new RegionDef(shapeList, elementID, name, x, y);
@@ -285,11 +244,12 @@ class Scene
 			
 		else
 		{
-			var radius:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.rad));
+			var circle:MbsCircle = cast shapeData;
+			var radius = Engine.toPhysicalUnits(circle.getRadius());
 			
 			if(Engine.NO_PHYSICS)
 			{
-				radius = Std.parseFloat(e.att.rad);
+				radius = circle.getRadius();
 				
 				region = new RegionDef(shapeList, elementID, name, x, y, 0, new Rectangle(0, 0, radius*2, radius*2));
 			}
@@ -321,17 +281,15 @@ class Scene
 		var hiX:Float = 0;
 		var hiY:Float = 0;
 
-		var decompParams:Array<String> = new Array();
-		decompParams[0] = "" + p.points.length;
-
+		var decompParams:Vector<Point> = new Vector<Point>(p.points.length);
+		
 		for(j in 0...p.points.length)
 		{
 			loX = Math.min(loX, p.points[j].x);
 			loY = Math.min(loY, p.points[j].y);
 			hiX = Math.min(hiX, p.points[j].x);
 			hiY = Math.min(hiY, p.points[j].y);
-			decompParams.push("" + p.points[j].x);
-			decompParams.push("" + p.points[j].y);
+			decompParams[j] = p.points[j];
 		}
 		
 		var localWidth:Float;
@@ -342,7 +300,7 @@ class Scene
 		loX = Engine.toPhysicalUnits(loX);
 		loY = Engine.toPhysicalUnits(loY);
 		
-		var polyShape = cast(SpriteReader.createShape("polyregion", decompParams, currX, currY, currW, currH), B2PolygonShape);
+		var polyShape = cast(ShapeReader.createPolygon("PolyRegion", decompParams, currX, currY, currW, currH), B2PolygonShape);
 		shapeList.push(polyShape);
 	}
 	
@@ -355,8 +313,7 @@ class Scene
 		var hiX:Float = 0;
 		var hiY:Float = 0;
 
-		var decompParams:Array<String> = new Array();
-		decompParams[0] = "" + p.points.length;
+		var decompParams:Vector<Point> = new Vector<Point>(p.points.length);
 
 		for(j in 0...p.points.length)
 		{
@@ -364,8 +321,7 @@ class Scene
 			loY = Math.min(loY, p.points[j].y);
 			hiX = Math.min(hiX, p.points[j].x);
 			hiY = Math.min(hiY, p.points[j].y);
-			decompParams.push("" + p.points[j].x);
-			decompParams.push("" + p.points[j].y);
+			decompParams[j] = p.points[j];
 		}
 		
 		var localWidth:Float;
@@ -376,80 +332,54 @@ class Scene
 		loX = Engine.toPhysicalUnits(loX);
 		loY = Engine.toPhysicalUnits(loY);
 		
-		var polyShape = cast(SpriteReader.createShape("polyregion", decompParams, currX, currY, currW, currH), B2PolygonShape);
+		var polyShape = cast(ShapeReader.createPolygon("PolyRegion", decompParams, currX, currY, currW, currH), B2PolygonShape);
 		shapeList.push(polyShape);
 	}
 	
-	public function readTerrainRegions(list:Iterator<Fast>):Map<Int,TerrainDef>
+	public function readTerrainRegions(list:MbsList<MbsTerrainRegion>):Map<Int,TerrainDef>
 	{
 		var map = new Map<Int,TerrainDef>();
 		
-		for(e in list)
+		for(i in 0...list.length())
 		{
-			var r:TerrainDef = readTerrainRegion(e);
+			var r:TerrainDef = readTerrainRegion(list.getNextObject());
 			map.set(r.ID, r);
 		}
 		
 		return map;
 	}
 	
-	public function readTerrainRegion(e:Fast):TerrainDef
+	public function readTerrainRegion(r:MbsTerrainRegion):TerrainDef
 	{
-		var type = e.att.type;
-		var elementID = Std.parseInt(e.att.id);
-		var name = e.att.name;
-		var group = Std.parseInt(e.att.group);
+		var elementID = r.getId();
+		var name = r.getName();
+		var group = r.getGroupID();
 		var terrainRegion:TerrainDef;
 		
-		var x:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.x));
-		var y:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.y));
-		var r:Int = Std.parseInt(e.att.r);
-		var g:Int = Std.parseInt(e.att.g);
-		var b:Int = Std.parseInt(e.att.b);
-		var fillColor = Utils.getColorRGB(r, g, b);
+		var x:Float = Engine.toPhysicalUnits(r.getX());
+		var y:Float = Engine.toPhysicalUnits(r.getY());
+		var fillColor = r.getColor();
 		
 		var shape:B2Shape = null;
 		var ps = new Array<B2PolygonShape>();
 		shapeList = new Array<B2Shape>();
 		var decompParams:Array<String>;
-		
-		if(type == "box")
-		{
-			var w:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.w)); 
-			var h:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.h)); 
-			var box = new B2PolygonShape();
-			box.setAsBox(w/2, h/2);
-			shape = box;
-			shapeList[0] = shape;
-			terrainRegion= new TerrainDef(shapeList, elementID, name, x, y, group, fillColor);
-		}
-		
-		else if(type == "poly")
-		{
-			var w = Std.parseFloat(e.att.w);
-			var h = Std.parseFloat(e.att.h);
-			
-			var shapeType:String = "polyregion";
-			var shapeParams = e.att.pts.split(",");
 
+		var shapeData = r.getShape();
+		
+		if(Std.is(shapeData, MbsPolyRegion))
+		{
+			var polygon:MbsPolyRegion = cast shapeData;
+			var w = polygon.getWidth();
+			var h = polygon.getHeight();
+			
 			//Polygon Decomposition
 			currX = x;
 			currY = y;
 			currW = w;
 			currH = h;
 			
-			var points = new Array<Point>();
-			var numVertices = Std.parseFloat(shapeParams[0]);
-			var vIndex:Int = 0;
-			var i:Int = 0;
-				
-			while(vIndex < numVertices)
-			{	
-				points.push(new Point(Std.parseFloat(shapeParams[i+1]), Std.parseFloat(shapeParams[i + 2])));
-				vIndex++;
-				i += 2;
-			}
-			
+			var points = ShapeReader.readPoints(polygon.getPoints()).toArray();
 			var decomp = new PolyDecompBayazit(points);
 			decomp.decompose(addPolygonTerrain);
 			terrainRegion = new TerrainDef(shapeList, elementID, name, x, y, group, fillColor);
@@ -457,7 +387,8 @@ class Scene
 		
 		else
 		{
-			var radius:Float = Engine.toPhysicalUnits(Std.parseFloat(e.att.rad));
+			var circle:MbsCircle = cast shapeData;
+			var radius:Float = Engine.toPhysicalUnits(circle.getRadius());
 			shape = new B2CircleShape();
 			shape.m_radius = radius;
 			shapeList[0] = shape;
@@ -467,32 +398,32 @@ class Scene
 		return terrainRegion;
 	}
 	
-	public function readJoints(list:Iterator<Fast>):Map<Int,B2JointDef>
+	public function readJoints(list:MbsDynamicList):Map<Int,B2JointDef>
 	{
 		var map = new Map<Int,B2JointDef>();
 		
-		for(e in list)
+		for(i in 0...list.length())
 		{
-			var j = readJoint(e);
+			var j = readJoint(cast list.readObject());
 			map.set(j.ID, j);
 		}
 		
 		return map;
 	}
 	
-	public function readJoint(e:Fast):B2JointDef
+	public function readJoint(r:MbsJoint):B2JointDef
 	{
-		var type:String = e.name;
-		var elementID = Std.parseInt(e.att.id);
+		var elementID = r.getId();
 		
-		var a1 = Std.parseInt(e.att.a1);
-		var a2 = Std.parseInt(e.att.a2);
-		var collide = Utils.toBoolean(e.att.collide);
+		var a1 = r.getActor1();
+		var a2 = r.getActor2();
+		var collide = r.getCollide();
 		
-		if(type == "STICK_JOINT")
+		if(Std.is(r, MbsStickJoint))
 		{
 			var j = new B2DistanceJointDef();
-			
+			var r2:MbsStickJoint = cast r;
+
 			j.ID = elementID;
 			j.actor1 = a1;
 			j.actor2 = a2;
@@ -502,16 +433,17 @@ class Scene
 			
 			//---
 			
-			j.dampingRatio = Std.parseFloat(e.att.damping);
-			j.frequencyHz = Std.parseFloat(e.att.freq);
+			j.dampingRatio = r2.getDamping();
+			j.frequencyHz = r2.getFrequency();
 			
 			return j;
 		}
 		
-		else if(type == "HINGE_JOINT")
+		else if(Std.is(r, MbsHingeJoint))
 		{
 			var j2 = new B2RevoluteJointDef();
-			
+			var r2:MbsHingeJoint = cast r;
+
 			j2.ID = elementID;
 			j2.actor1 = a1;
 			j2.actor2 = a2;
@@ -521,19 +453,20 @@ class Scene
 			
 			//---
 			
-			j2.enableLimit = Utils.toBoolean(e.att.limit);
-			j2.enableMotor = Utils.toBoolean(e.att.motor);
-			j2.lowerAngle = Std.parseFloat(e.att.lower);
-			j2.upperAngle = Std.parseFloat(e.att.upper);
-			j2.maxMotorTorque = Std.parseFloat(e.att.torque);
-			j2.motorSpeed = Std.parseFloat(e.att.speed);
+			j2.enableLimit = r2.getLimit();
+			j2.enableMotor = r2.getMotor();
+			j2.lowerAngle = r2.getLower();
+			j2.upperAngle = r2.getUpper();
+			j2.maxMotorTorque = r2.getTorque();
+			j2.motorSpeed = r2.getSpeed();
 			
 			return j2;
 		}
 		
-		else if(type == "SLIDING_JOINT")
+		else if(Std.is(r, MbsSlidingJoint))
 		{
 			var j3 = new B2LineJointDef();
+			var r2:MbsSlidingJoint = cast r;
 			
 			j3.ID = elementID;
 			j3.actor1 = a1;
@@ -544,14 +477,14 @@ class Scene
 			
 			//---
 			
-			j3.enableLimit = Utils.toBoolean(e.att.limit);
-			j3.enableMotor = Utils.toBoolean(e.att.motor);
-			j3.lowerTranslation = Std.parseFloat(e.att.lower);
-			j3.upperTranslation = Std.parseFloat(e.att.upper);
-			j3.maxMotorForce = Std.parseFloat(e.att.force);
-			j3.motorSpeed = Std.parseFloat(e.att.speed);
-			j3.localAxisA.x = Std.parseFloat(e.att.x);
-			j3.localAxisA.y = Std.parseFloat(e.att.y);
+			j3.enableLimit = r2.getLimit();
+			j3.enableMotor = r2.getMotor();
+			j3.lowerTranslation = r2.getLower();
+			j3.upperTranslation = r2.getUpper();
+			j3.maxMotorForce = r2.getForce();
+			j3.motorSpeed = r2.getSpeed();
+			j3.localAxisA.x = r2.getX();
+			j3.localAxisA.y = r2.getY();
 			
 			return j3;
 		}
@@ -561,26 +494,30 @@ class Scene
 		return null;
 	}
 
-	public function readAllLayers(list:Iterator<Fast>, rawLayers:IntHashTable<TileLayer>):IntHashTable<RegularLayer>
+	public function readAllLayers(list:MbsDynamicList, rawLayers:IntHashTable<TileLayer>):IntHashTable<RegularLayer>
 	{
 		var map:IntHashTable<RegularLayer> = new IntHashTable<RegularLayer>(16);
 		map.reuseIterator = true;
 
-		for(e in list)
+		for(i in 0...list.length())
 		{
-			if(e.name == "color-bg" || e.name == "grad-bg")
-				colorBackground = cast(new BackgroundReader().read(0, 0, e.name, "", e), Background);
+			var dyn = list.readObject();
+			
+			if(Std.is(dyn, MbsColorBackground) || Std.is(dyn, MbsGradientBackground))
+				colorBackground = readColorBackground(dyn);
 			else
 			{
-				var ID:Int = Std.parseInt(e.att.id);
-				var name:String = e.att.name;
-				var order:Int = Std.parseInt(e.att.order);
-				var scrollFactorX:Float = Std.parseFloat(e.att.scrollFactorX);
-				var scrollFactorY:Float = Std.parseFloat(e.att.scrollFactorY);
-				var opacity:Float = Std.parseFloat(e.att.opacity) / 100;
-				var blendMode:BlendMode = BlendModes.get(e.att.blendMode);
+				var r:MbsLayer = cast dyn;
 
-				if(e.name == "layer")
+				var ID:Int = r.getId();
+				var name:String = r.getName();
+				var order:Int = r.getOrder();
+				var scrollFactorX:Float = r.getScrollFactorX();
+				var scrollFactorY:Float = r.getScrollFactorY();
+				var opacity:Float = r.getOpacity() / 100;
+				var blendMode:BlendMode = BlendModes.get(r.getBlendmode());
+
+				if(Std.is(dyn, MbsInteractiveLayer))
 				{
 					var tileLayer:TileLayer = rawLayers.get(ID);
 					if(tileLayer == null)
@@ -591,11 +528,12 @@ class Scene
 
 					map.set(layer.ID, layer);
 				}
-				else if(e.name == "background")
+				else if(Std.is(dyn, MbsImageBackground))
 				{
 					//Need to change order, atlases aren't loaded yet
-					var bgID = Std.parseInt(e.att.rid);
-					var customScroll = e.att.customScrollFactor == "true";
+					var bgR:MbsImageBackground = cast dyn;
+					var bgID = bgR.getResourceID();
+					var customScroll = bgR.getCustomScroll();
 
 					var layer:BackgroundLayer = new BackgroundLayer(ID, name, order, scrollFactorX, scrollFactorY, opacity, blendMode, bgID, customScroll);
 
@@ -605,6 +543,30 @@ class Scene
 		}
 		
 		return map;
+	}
+
+	public function readColorBackground(r:MbsObject):Background
+	{
+		if(Std.is(r, MbsColorBackground))
+		{
+			var r2:MbsColorBackground = cast r;
+			var color = r2.getColor();
+			return new ColorBackground(color);
+		}
+		
+		else if(Std.is(r, MbsGradientBackground))
+		{
+			var r2:MbsGradientBackground = cast r;
+			var color1 = r2.getColor1();
+			var color2 = r2.getColor2();
+			
+			return new GradientBackground(color1, color2);
+		}
+
+		else
+		{
+			return null;
+		}
 	}
 	
 	#if js
@@ -849,24 +811,18 @@ class Scene
 	}
 	#end
 
-	public function readAtlases(e:Fast):Array<Int>
+	public function readAtlases(r:MbsIntList):Array<Int>
 	{
 		var members = new Array<Int>();
-		var mems = e.att.members.split(",");
-
-		if(e.att.members != "")
+		
+		for(i in 0...r.length())
 		{
-			for(n in mems)
-			{
-				if(n == "")
-					continue;
+			var atlasID = r.readInt();
+			
+			if(GameModel.get().atlases.get(atlasID).allScenes)
+				continue;
 
-				var atlasID:Int = Std.parseInt(n);
-				if(GameModel.get().atlases.get(atlasID).allScenes)
-					continue;
-
-				members.push(Std.parseInt(n));
-			}
+			members.push(atlasID);
 		}
 
 		return members;
@@ -874,118 +830,73 @@ class Scene
 	
 	private static var MAX_VERTICES:Int = 200;
 	
-	public function readWireframes(list:Iterator<Fast>):Array<Wireframe>
+	public function readWireframes(list:MbsList<MbsWireframe>):Array<Wireframe>
 	{
 		var map = new Array<Wireframe>();
 		
-		for(e in list)
+		for(i in 0...list.length())
 		{
-			var x = Std.parseFloat(e.att.x);
-			var y = Std.parseFloat(e.att.y);
+			var poly = list.getNextObject();
+			var shapeType = "Wireframe";
+
+			var position = ShapeReader.readPoint(poly.getPosition());
+			var points = ShapeReader.readPoints(poly.getPoints());
+			var shapeData:Map<Int,Dynamic> = ShapeReader.createPolygon(shapeType, points, position.x, position.y);
 			
-			var shapeType:String = "wireframe";
-			var shapeParams:Array<String> = e.att.pts.split(",");
-						
-			//TODO: Does not work
-			if(Engine.NO_PHYSICS)
-			{
-				/*var points = new Array<Point>();
-				
-				var i = 1;
-				
-				while(i < shapeParams.length)
-				{
-					points.push(new Point(Std.parseFloat(shapeParams[i]), Std.parseFloat(shapeParams[i+1])));
-					i += 2;
-				}
-				
-				var shape2 = new Polygon(points);
-				
-				map.push
+			map.push
+			(
+				new Wireframe
 				(
-					new Wireframe
-					(
-						x,
-						y, 
-						shape2.width, 
-						shape2.height,
-						null,
-						shape2
-					)
-				);*/
-				
-				//Broken - Use the simple grid instead
-			}
-			
-			else
-			{
-				var shapeData:Map<Int,Dynamic> = SpriteReader.createShape(shapeType, shapeParams, x, y); 
-				
-				map.push
-				(
-					new Wireframe
-					(
-						Engine.toPhysicalUnits(x), 
-						Engine.toPhysicalUnits(y), 
-						shapeData.get(1), 
-						shapeData.get(2),
-						shapeData.get(0),
-						null
-					)
-				);		
-			}
+					Engine.toPhysicalUnits(position.x),
+					Engine.toPhysicalUnits(position.y),
+					shapeData.get(1),
+					shapeData.get(2),
+					shapeData.get(0),
+					null
+				)
+			);
 		}
 		
 		return map;
 	}
 	
-	public function readActors(list:Iterator<Fast>):Map<Int,ActorInstance>
+	public function readActors(list:MbsList<MbsActorInstance>):Map<Int,ActorInstance>
 	{
 		var map:Map<Int,ActorInstance> = new Map<Int,ActorInstance>();
 		
-		for(e in list)
+		for(i in 0...list.length())
 		{
-			var ai:ActorInstance = readActorInstance(e);
+			var ai:ActorInstance = readActorInstance(list.getNextObject());
 			
 			if(ai != null)
 			{
-				map.set(Std.parseInt(e.att.aid), ai);
+				map.set(ai.elementID, ai);
 			}
 		}
 		
 		return map;
 	}
 	
-	public function readActorInstance(xml:Fast):ActorInstance
+	public function readActorInstance(r:MbsActorInstance):ActorInstance
 	{
-		var elementID:Int = Std.parseInt(xml.att.aid);
-		var x:Int = Std.parseInt(xml.att.x);
-		var y:Int = Std.parseInt(xml.att.y);
+		var elementID = r.getAid();
+		var x = r.getX();
+		var y = r.getY();
 		
-		var scaleX:Float = 1;
-		var scaleY:Float = 1;
+		var scaleX = r.getScaleX();
+		var scaleY = r.getScaleY();
 		
-		try
-		{
-			scaleX = Std.parseFloat(xml.att.sx);
-			scaleY = Std.parseFloat(xml.att.sy);
-		}
-		
-		catch(e:String)
-		{
-		}
-		
-		var layerID:Int = Std.parseInt(xml.att.z);
-		var angle:Int = Std.parseInt(xml.att.a);
-		var groupID:Int =  Std.parseInt(xml.att.group);
-		var actorID:Int = Std.parseInt(xml.att.id);
-		var isCustomized:Bool = Utils.toBoolean(xml.att.c);
+		var layerID = r.getZ();
+		var angle = Std.int(r.getAngle());
+		var groupID = r.getGroupID();
+		var actorID = r.getId();
+		var isCustomized = r.getCustomized();
 		
 		var behaviors:Map<String,BehaviorInstance> = null;
 		
 		if(isCustomized)
 		{
-			behaviors = ActorTypeReader.readBehaviors(xml.node.snippets);
+			behaviors = AttributeValues.readBehaviors(r.getSnippets());
 		}
 		
 		if (scaleX == 0 || scaleY == 0)

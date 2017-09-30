@@ -1,5 +1,8 @@
 package com.stencyl;
 
+import com.stencyl.io.mbs.snippet.*;
+import com.stencyl.io.mbs.*;
+import com.stencyl.io.mbs.Typedefs;
 import com.stencyl.io.AbstractReader;
 import com.stencyl.io.ActorTypeReader;
 import com.stencyl.io.BackgroundReader;
@@ -21,6 +24,12 @@ import com.stencyl.models.actor.Sprite;
 import com.stencyl.utils.Assets;
 
 import haxe.xml.Fast;
+
+import mbs.core.MbsObject;
+import mbs.core.MbsTypes;
+import mbs.io.MbsReader;
+import mbs.io.MbsList;
+import mbs.io.MbsListBase.MbsDynamicList;
 
 class Data
 {
@@ -55,13 +64,13 @@ class Data
 	
 	
 	//*-----------------------------------------------
-	//* Master XML Files
+	//* Master XML/MBS Files
 	//*-----------------------------------------------
 	
 	public var gameXML:Fast;
-	public var resourceListXML:Fast;
+	public var resourceListMBS:MbsReader;
 	public var sceneListXML:Fast;
-	public var behaviorListXML:Fast;
+	public var behaviorListMBS:MbsReader;
 			
 	
 	//*-----------------------------------------------
@@ -99,17 +108,17 @@ class Data
 	public function loadAll()
 	{
 		gameXML = new Fast(Xml.parse(Assets.getText("assets/data/game.xml")).firstElement());
-		resourceListXML = new Fast(Xml.parse(Assets.getText("assets/data/resources.xml")).firstElement());
 		sceneListXML = new Fast(Xml.parse(Assets.getText("assets/data/scenes.xml")).firstElement());
-		behaviorListXML = new Fast(Xml.parse(Assets.getText("assets/data/behaviors.xml")).firstElement());
+		resourceListMBS = new MbsReader(Assets.getBytes("assets/data/resources.mbs"), Typedefs.instance, false);
+		behaviorListMBS = new MbsReader(Assets.getBytes("assets/data/behaviors.mbs"), Typedefs.instance, false);
 
 		loadReaders();
 		loadBehaviors();
 		
 		loadResources();
 		
-		resourceListXML = null;
-		behaviorListXML = null;		
+		resourceListMBS = null;
+		behaviorListMBS = null;
 	}
 	
 	private function loadReaders()
@@ -127,11 +136,15 @@ class Data
 	{
 		behaviors = new Map<Int,Behavior>();
 		
-		for(e in behaviorListXML.elements)
+		var reader = behaviorListMBS;
+		var listReader:MbsList<MbsSnippetDef> = cast reader.getRoot();
+		
+		for(i in 0...listReader.length())
 		{
 			//trace("Reading Behavior: " + e.att.name);
 			
-			behaviors.set(Std.parseInt(e.att.id), BehaviorReader.readBehavior(e));
+			var behavior = BehaviorReader.readBehavior(listReader.getNextObject());
+			behaviors.set(behavior.ID, behavior);
 		}
 	}
 	
@@ -139,7 +152,7 @@ class Data
 	{
 		resourceAssets = new Map<String,Dynamic>();	
 		
-		readResourceXML(resourceListXML);
+		readResourceXML(resourceListMBS);
 
 		resourceMap = new Map<String,Resource>();
 		for(r in resources)
@@ -153,32 +166,30 @@ class Data
 		}
 	}
 	
-	private function readResourceXML(list:Fast)
+	private function readResourceXML(reader:MbsReader)
 	{
 		resources = new Map<Int,Resource>();
+
+		var listReader:MbsDynamicList = cast reader.getRoot();
 		
-		for(e in list.elements)
+		for(i in 0...listReader.length())
 		{
 			//trace("Reading: " + e.att.name);
 			
-			var atlasID = 0;
-			
-			if(e.has.atlasID)
-			{
-				atlasID = Std.parseInt(e.att.atlasID);
-			}
-			
-			resources.set(Std.parseInt(e.att.id), readResource(Std.parseInt(e.att.id), atlasID, e.name, e.att.name, e));
+			var obj:MbsObject = cast listReader.readObject();
+			var newResource = readResource(obj.getMbsType().getName(), obj);
+
+			resources.set(newResource.ID, newResource);
 		}
 	}
 	
-	private function readResource(ID:Int, atlasID:Int, type:String, name:String, xml:Fast):Resource
+	private function readResource(type:String, object:Dynamic):Resource
 	{
 		for(reader in readers)
 		{
 			if(reader.accepts(type))
 			{
-				return reader.read(ID, atlasID, type, name, xml);
+				return reader.read(object);
 			}
 		}
 		

@@ -1,12 +1,15 @@
 package com.stencyl.utils;
 
 import cloner.Cloner;
+import haxe.ds.Vector;
+import haxe.Timer;
 import lime.app.Future;
 import lime.app.Promise;
 import lime.graphics.Image;
 import lime.utils.Bytes;
 import openfl.display.BitmapData;
 import openfl.display.Bitmap;
+import openfl.display.DisplayObjectContainer;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.Sprite;
@@ -14,6 +17,9 @@ import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.media.SoundTransform;
+import openfl.net.SharedObject;
+import openfl.system.System;
 import openfl.utils.ByteArray;
 #if flash
 import flash.display.Loader;
@@ -22,13 +28,8 @@ import flash.events.IOErrorEvent;
 import flash.events.ProgressEvent;
 import flash.media.SoundMixer;
 #end
-import openfl.media.SoundTransform;
-import openfl.net.SharedObject;
-import openfl.system.System;
-import haxe.Timer;
-import openfl.display.DisplayObjectContainer;
-import com.stencyl.models.Actor;
 import com.stencyl.models.actor.Collision;
+import com.stencyl.models.Actor;
 
 /**
  * Static catch-all class used to access global properties and functions.

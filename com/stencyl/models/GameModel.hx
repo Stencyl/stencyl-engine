@@ -2,7 +2,7 @@ package com.stencyl.models;
 
 import haxe.xml.Fast;
 
-import com.stencyl.io.SpriteReader;
+import com.stencyl.io.ShapeReader;
 import com.stencyl.utils.Utils;
 import com.stencyl.models.scene.Autotile;
 import com.stencyl.models.scene.AutotileFormat;
@@ -204,7 +204,7 @@ class GameModel
 				vertices.push(new B2Vec2(px * 3.1, py * 3.1));
 			}
 			
-			SpriteReader.EnsureCorrectVertexDirection(vertices);
+			ShapeReader.EnsureCorrectVertexDirection(vertices);
 			
 			var p = new B2PolygonShape();
 			p.setAsArray(vertices, vertices.length);
