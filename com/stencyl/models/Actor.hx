@@ -2766,6 +2766,51 @@ class Actor extends Sprite
 		
 		updateMatrix = true;
 	}
+	public function setXY(x:Float, y:Float, resetSpeed:Bool = false, noCollision:Bool = false)
+	{
+		if(physicsMode == 1)
+		{
+			moveActorTo(
+				x + Math.floor(cacheWidth/2) + currOffset.x,
+				y + Math.floor(cacheHeight/2) + currOffset.y,
+				!noCollision && continuousCollision ? groupsToCollideWith : null);
+		}
+		
+		else if(physicsMode == 2)
+		{
+			resetReal(x + Math.floor(cacheWidth/2) + currOffset.x, y + Math.floor(cacheHeight/2) + currOffset.y);
+		}
+		
+		else
+		{	
+			if(isRegion || isTerrainRegion)
+			{
+				dummy.x = Engine.toPhysicalUnits(x);
+				dummy.y = Engine.toPhysicalUnits(y);
+			}
+				
+			else
+			{
+				dummy.x = Engine.toPhysicalUnits(x + Math.floor(cacheWidth/2) + currOffset.x);
+				dummy.y = Engine.toPhysicalUnits(y + Math.floor(cacheHeight/2) + currOffset.y);
+			}
+			
+			body.setPosition(dummy);		
+			
+			if(resetSpeed)
+			{
+				body.setLinearVelocity(zero);
+			}
+		}
+		
+		if (snapOnSet)
+		{
+			drawX = realX;
+			drawY = realY;
+		}
+		
+		updateMatrix = true;
+	}
 	
 	public function setXCenter(x:Float)
 	{
@@ -4135,8 +4180,7 @@ class Actor extends Sprite
 		realX = x;
 		realY = y;
 		
-		setX(x, false, true);
-		setY(y, false, true);
+		setXY(x, y, false, true);
 	}
 	
 	//*-----------------------------------------------
