@@ -2862,7 +2862,10 @@ class Script
 	{
 		if(img != null)
 		{
+			//FILTERS DISABLED
+			#if flash
 			img.img.filters = img.filters.concat([filter]);
+			#end
 		}
 	}
 	
