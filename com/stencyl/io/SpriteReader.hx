@@ -37,12 +37,10 @@ class SpriteReader implements AbstractReader
 		//trace("Reading Sprite (" + ID + ") - " + name);
 		
 		var r:MbsSprite = cast obj;
-
-		var width = r.getWidth();
-		var height = r.getHeight();
+		
 		var defaultAnimation = r.getDefaultAnimation();
 		var animations = new Array<Animation>();
-		var sprite = new Sprite(r.getId(), r.getAtlasID(), r.getName(), width, height, defaultAnimation);
+		var sprite = new Sprite(r.getId(), r.getAtlasID(), r.getName(), defaultAnimation);
 		
 		var animList = r.getAnimations();
 		for(i in 0...animList.length())
