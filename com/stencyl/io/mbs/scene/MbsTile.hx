@@ -85,7 +85,7 @@ class MbsTile extends MbsObject
 	
 	public function getDurations():MbsIntList
 	{
-		_durations.setAddress(address + durations.address);
+		_durations.setAddress(data.readInt(address + durations.address));
 		return _durations;
 	}
 	
@@ -138,7 +138,7 @@ class MbsTile extends MbsObject
 	
 	public function getAutotileMerge():MbsIntList
 	{
-		_autotileMerge.setAddress(address + autotileMerge.address);
+		_autotileMerge.setAddress(data.readInt(address + autotileMerge.address));
 		return _autotileMerge;
 	}
 	

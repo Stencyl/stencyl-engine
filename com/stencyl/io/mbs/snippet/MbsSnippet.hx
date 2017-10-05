@@ -73,7 +73,7 @@ class MbsSnippet extends MbsObject
 	
 	public function getProperties():MbsList<MbsAttribute>
 	{
-		_properties.setAddress(address + properties.address);
+		_properties.setAddress(data.readInt(address + properties.address));
 		return _properties;
 	}
 	

@@ -335,7 +335,7 @@ class MbsScene extends MbsObject
 	
 	public function getActorInstances():MbsList<MbsActorInstance>
 	{
-		_actorInstances.setAddress(address + actorInstances.address);
+		_actorInstances.setAddress(data.readInt(address + actorInstances.address));
 		return _actorInstances;
 	}
 	
@@ -348,7 +348,7 @@ class MbsScene extends MbsObject
 	
 	public function getAtlasMembers():MbsIntList
 	{
-		_atlasMembers.setAddress(address + atlasMembers.address);
+		_atlasMembers.setAddress(data.readInt(address + atlasMembers.address));
 		return _atlasMembers;
 	}
 	
@@ -361,7 +361,7 @@ class MbsScene extends MbsObject
 	
 	public function getLayers():MbsDynamicList
 	{
-		_layers.setAddress(address + layers.address);
+		_layers.setAddress(data.readInt(address + layers.address));
 		return _layers;
 	}
 	
@@ -374,7 +374,7 @@ class MbsScene extends MbsObject
 	
 	public function getJoints():MbsDynamicList
 	{
-		_joints.setAddress(address + joints.address);
+		_joints.setAddress(data.readInt(address + joints.address));
 		return _joints;
 	}
 	
@@ -387,7 +387,7 @@ class MbsScene extends MbsObject
 	
 	public function getRegions():MbsList<MbsRegion>
 	{
-		_regions.setAddress(address + regions.address);
+		_regions.setAddress(data.readInt(address + regions.address));
 		return _regions;
 	}
 	
@@ -400,7 +400,7 @@ class MbsScene extends MbsObject
 	
 	public function getSnippets():MbsList<MbsSnippet>
 	{
-		_snippets.setAddress(address + snippets.address);
+		_snippets.setAddress(data.readInt(address + snippets.address));
 		return _snippets;
 	}
 	
@@ -413,7 +413,7 @@ class MbsScene extends MbsObject
 	
 	public function getTerrain():MbsList<MbsWireframe>
 	{
-		_terrain.setAddress(address + terrain.address);
+		_terrain.setAddress(data.readInt(address + terrain.address));
 		return _terrain;
 	}
 	
@@ -426,7 +426,7 @@ class MbsScene extends MbsObject
 	
 	public function getTerrainRegions():MbsList<MbsTerrainRegion>
 	{
-		_terrainRegions.setAddress(address + terrainRegions.address);
+		_terrainRegions.setAddress(data.readInt(address + terrainRegions.address));
 		return _terrainRegions;
 	}
 	

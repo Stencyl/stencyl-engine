@@ -71,6 +71,9 @@ class AttributeValues
 	
 	public static function readList(listReader:MbsDynamicList):Array<Dynamic>
 	{
+		if(listReader == null)
+			return null;
+
 		var map:Array<Dynamic> = new Array<Dynamic>();
 		
 		for(i in 0...listReader.length())
@@ -83,6 +86,9 @@ class AttributeValues
 	
 	public static function readMap(mapReader:MbsList<MbsMapElement>):Map<String,Dynamic>
 	{
+		if(mapReader == null)
+			return null;
+		
 		var map:Map<String,Dynamic> = new Map<String,Dynamic>();
 		
 		for(i in 0...mapReader.length())

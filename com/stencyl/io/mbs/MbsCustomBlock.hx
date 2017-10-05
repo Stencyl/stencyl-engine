@@ -148,7 +148,7 @@ class MbsCustomBlock extends MbsResource
 	
 	public function getBlanks():MbsList<MbsBlank>
 	{
-		_blanks.setAddress(address + blanks.address);
+		_blanks.setAddress(data.readInt(address + blanks.address));
 		return _blanks;
 	}
 	

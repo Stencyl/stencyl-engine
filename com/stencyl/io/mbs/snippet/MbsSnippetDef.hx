@@ -191,7 +191,7 @@ class MbsSnippetDef extends MbsObject
 	
 	public function getAttributes():MbsList<MbsAttributeDef>
 	{
-		_attributes.setAddress(address + attributes.address);
+		_attributes.setAddress(data.readInt(address + attributes.address));
 		return _attributes;
 	}
 	
@@ -204,7 +204,7 @@ class MbsSnippetDef extends MbsObject
 	
 	public function getBlocks():MbsList<MbsBlock>
 	{
-		_blocks.setAddress(address + blocks.address);
+		_blocks.setAddress(data.readInt(address + blocks.address));
 		return _blocks;
 	}
 	
@@ -217,7 +217,7 @@ class MbsSnippetDef extends MbsObject
 	
 	public function getEvents():MbsList<MbsEvent>
 	{
-		_events.setAddress(address + events.address);
+		_events.setAddress(data.readInt(address + events.address));
 		return _events;
 	}
 	

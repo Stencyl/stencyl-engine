@@ -256,7 +256,7 @@ class MbsActorType extends MbsResource
 	
 	public function getSnippets():MbsList<MbsSnippet>
 	{
-		_snippets.setAddress(address + snippets.address);
+		_snippets.setAddress(data.readInt(address + snippets.address));
 		return _snippets;
 	}
 	

@@ -300,7 +300,7 @@ class Scene
 		loX = Engine.toPhysicalUnits(loX);
 		loY = Engine.toPhysicalUnits(loY);
 		
-		var polyShape = cast(ShapeReader.createPolygon("PolyRegion", decompParams, currX, currY, currW, currH), B2PolygonShape);
+		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", decompParams, currX, currY, currW, currH), B2PolygonShape);
 		shapeList.push(polyShape);
 	}
 	
@@ -332,7 +332,7 @@ class Scene
 		loX = Engine.toPhysicalUnits(loX);
 		loY = Engine.toPhysicalUnits(loY);
 		
-		var polyShape = cast(ShapeReader.createPolygon("PolyRegion", decompParams, currX, currY, currW, currH), B2PolygonShape);
+		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", decompParams, currX, currY, currW, currH), B2PolygonShape);
 		shapeList.push(polyShape);
 	}
 	
@@ -837,7 +837,7 @@ class Scene
 		for(i in 0...list.length())
 		{
 			var poly = list.getNextObject();
-			var shapeType = "Wireframe";
+			var shapeType = "MbsWireframe";
 
 			var position = ShapeReader.readPoint(poly.getPosition());
 			var points = ShapeReader.readPoints(poly.getPoints());

@@ -52,7 +52,7 @@ class MbsPolygon extends MbsShape
 	
 	public function getPoints():MbsList<MbsPoint>
 	{
-		_points.setAddress(address + points.address);
+		_points.setAddress(data.readInt(address + points.address));
 		return _points;
 	}
 	

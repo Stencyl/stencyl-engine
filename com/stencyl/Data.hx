@@ -179,7 +179,10 @@ class Data
 			var obj:MbsObject = cast listReader.readObject();
 			var newResource = readResource(obj.getMbsType().getName(), obj);
 
-			resources.set(newResource.ID, newResource);
+			if(newResource != null)
+			{
+				resources.set(newResource.ID, newResource);
+			}
 		}
 	}
 	
@@ -192,6 +195,7 @@ class Data
 				return reader.read(object);
 			}
 		}
+
 		
 		return null;
 	}

@@ -40,7 +40,7 @@ class ShapeReader
 		return points;
 	}
 
-	public static function createCircle(radius:Float, x:Float, y:Float, imgWidth:Float=-1, imgHeight:Float=-1):Dynamic
+	public static function createCircle(radius:Float, x:Float, y:Float, imgWidth:Float=-1, imgHeight:Float=-1):B2CircleShape
 	{
 		var diameter = radius * 2;
 		
@@ -64,13 +64,13 @@ class ShapeReader
 		var numVertices = points.length;
 		var vIndex = 0;
 		var i = 1;
-		
-		if(type == "Polygon" || type == "PolyRegion")
+
+		if(type == "MbsPolygon" || type == "MbsPolyRegion")
 		{
 			var x0:Float = 0;
 			var y0:Float = 0;
 			
-			if(type == "PolyRegion")
+			if(type == "MbsPolyRegion")
 			{
 				x0 = 10000000;
 				y0 = 10000000;
@@ -116,13 +116,13 @@ class ShapeReader
 			//Account for origin and subtract by half the difference.
 			if(w < imgWidth)
 			{	
-				if(type ==  "PolyRegion") x0 += Math.abs(imgWidth - w) / 2;
+				if(type ==  "MbsPolyRegion") x0 += Math.abs(imgWidth - w) / 2;
 				else x0 += Engine.toPhysicalUnits(Math.abs(imgWidth - w) / 2);
 			}
 			
 			if(h < imgHeight)
 			{
-				if(type == "PolyRegion") y0 += Math.abs(imgHeight - h) / 2;
+				if(type == "MbsPolyRegion") y0 += Math.abs(imgHeight - h) / 2;
 				else y0 += Engine.toPhysicalUnits(Math.abs(imgHeight - h) / 2);
 			}
 			
@@ -133,7 +133,7 @@ class ShapeReader
 			{
 				var point = points[vIndex];
 
-				if (type == "PolyRegion")
+				if (type == "MbsPolyRegion")
 				{
 					var vX:Float = Engine.toPhysicalUnits(point.x - hw - x0 + xDiff);
 					var vY:Float = Engine.toPhysicalUnits(point.y - hh  - y0 + yDiff);
@@ -154,7 +154,7 @@ class ShapeReader
 			return B2PolygonShape.asArray(vertices, vertices.length);
 		}
 		
-		else if(type == "Wireframe")
+		else if(type == "MbsWireframe")
 		{
 			while(vIndex < numVertices)
 			{

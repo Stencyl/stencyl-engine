@@ -88,7 +88,7 @@ class MbsSprite extends MbsResource
 	
 	public function getAnimations():MbsList<MbsAnimation>
 	{
-		_animations.setAddress(address + animations.address);
+		_animations.setAddress(data.readInt(address + animations.address));
 		return _animations;
 	}
 	

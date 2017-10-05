@@ -100,7 +100,7 @@ class MbsTileset extends MbsResource
 	
 	public function getTiles():MbsList<MbsTile>
 	{
-		_tiles.setAddress(address + tiles.address);
+		_tiles.setAddress(data.readInt(address + tiles.address));
 		return _tiles;
 	}
 	

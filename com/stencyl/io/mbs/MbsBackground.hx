@@ -70,7 +70,7 @@ class MbsBackground extends MbsResource
 	
 	public function getDurations():MbsIntList
 	{
-		_durations.setAddress(address + durations.address);
+		_durations.setAddress(data.readInt(address + durations.address));
 		return _durations;
 	}
 	

@@ -98,7 +98,7 @@ class MbsAnimation extends MbsObject
 	
 	public function getDurations():MbsIntList
 	{
-		_durations.setAddress(address + durations.address);
+		_durations.setAddress(data.readInt(address + durations.address));
 		return _durations;
 	}
 	
@@ -211,7 +211,7 @@ class MbsAnimation extends MbsObject
 	
 	public function getShapes():MbsList<MbsAnimShape>
 	{
-		_shapes.setAddress(address + shapes.address);
+		_shapes.setAddress(data.readInt(address + shapes.address));
 		return _shapes;
 	}
 	
