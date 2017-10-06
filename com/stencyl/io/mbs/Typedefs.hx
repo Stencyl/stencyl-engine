@@ -28,6 +28,18 @@ class Typedefs extends MbsTypedefSet
 		types.push(com.stencyl.io.mbs.actortype.MbsAnimation.MBS_ANIMATION);
 		com.stencyl.io.mbs.actortype.MbsAnimShape.initializeType();
 		types.push(com.stencyl.io.mbs.actortype.MbsAnimShape.MBS_ANIM_SHAPE);
+		com.stencyl.io.mbs.game.MbsGame.initializeType();
+		types.push(com.stencyl.io.mbs.game.MbsGame.MBS_GAME);
+		com.stencyl.io.mbs.game.MbsAtlas.initializeType();
+		types.push(com.stencyl.io.mbs.game.MbsAtlas.MBS_ATLAS);
+		com.stencyl.io.mbs.game.MbsCollisionShape.initializeType();
+		types.push(com.stencyl.io.mbs.game.MbsCollisionShape.MBS_COLLISION_SHAPE);
+		com.stencyl.io.mbs.game.MbsCollisionGroup.initializeType();
+		types.push(com.stencyl.io.mbs.game.MbsCollisionGroup.MBS_COLLISION_GROUP);
+		com.stencyl.io.mbs.game.MbsCollisionPair.initializeType();
+		types.push(com.stencyl.io.mbs.game.MbsCollisionPair.MBS_COLLISION_PAIR);
+		com.stencyl.io.mbs.scene.MbsSceneHeader.initializeType();
+		types.push(com.stencyl.io.mbs.scene.MbsSceneHeader.MBS_SCENE_HEADER);
 		com.stencyl.io.mbs.scene.MbsTileset.initializeType();
 		types.push(com.stencyl.io.mbs.scene.MbsTileset.MBS_TILESET);
 		com.stencyl.io.mbs.scene.MbsTile.initializeType();
@@ -84,6 +96,10 @@ class Typedefs extends MbsTypedefSet
 		types.push(com.stencyl.io.mbs.snippet.MbsAttribute.MBS_ATTRIBUTE);
 		com.stencyl.io.mbs.snippet.MbsMapElement.initializeType();
 		types.push(com.stencyl.io.mbs.snippet.MbsMapElement.MBS_MAP_ELEMENT);
+		com.stencyl.io.mbs.game.autotile.MbsAutotileFormat.initializeType();
+		types.push(com.stencyl.io.mbs.game.autotile.MbsAutotileFormat.MBS_AUTOTILE_FORMAT);
+		com.stencyl.io.mbs.game.autotile.MbsCorners.initializeType();
+		types.push(com.stencyl.io.mbs.game.autotile.MbsCorners.MBS_CORNERS);
 		
 	}
 }

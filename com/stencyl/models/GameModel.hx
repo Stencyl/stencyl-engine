@@ -1,7 +1,9 @@
 package com.stencyl.models;
 
-import haxe.xml.Fast;
-
+import com.stencyl.io.mbs.game.autotile.*;
+import com.stencyl.io.mbs.game.*;
+import com.stencyl.io.mbs.scene.MbsSceneHeader;
+import com.stencyl.io.AttributeValues;
 import com.stencyl.io.ShapeReader;
 import com.stencyl.utils.Utils;
 import com.stencyl.models.scene.Autotile;
@@ -13,6 +15,9 @@ import box2D.collision.shapes.B2PolygonShape;
 import box2D.collision.shapes.B2CircleShape;
 
 import openfl.geom.Point;
+
+import mbs.io.*;
+import mbs.io.MbsListBase.*;
 
 class GameModel
 {
@@ -28,9 +33,6 @@ class GameModel
 
 	public var width:Int;
 	public var height:Int;
-	public var actualWidth:Int;
-	public var actualHeight:Int;
-	public var scale:Int;
 	
 	public var defaultSceneID:Int;
 	
@@ -56,39 +58,28 @@ class GameModel
 	{
 		if(instance == null)
 		{
-			instance = new GameModel(Data.get().gameXML);
+			instance = new GameModel();
 		}
 		
 		return instance;
 	}
 	
-	public function new(xml:Fast)
+	public function new()
 	{
-		name = xml.att.name;
-
-		width = Std.parseInt(xml.att.width);
-		height = Std.parseInt(xml.att.height);
-		actualWidth = Std.parseInt(xml.att.awidth);
-		actualHeight = Std.parseInt(xml.att.aheight);
-		scale = Std.parseInt(xml.att.scale);
-		defaultSceneID = 0;
+		var mg:MbsGame = cast Data.get().gameMbs.getRoot();
 		
-		try
-		{
-			defaultSceneID = Std.parseInt(xml.att.defaultSceneID);
-		}
-		
-		catch(e:String)
-		{
-		}
+		name = mg.getName();
+		width = mg.getWidth();
+		height = mg.getHeight();
+		defaultSceneID = mg.getDefaultSceneID();
 		
 		//---
 		
-		shapes = readShapes(xml.node.collisions.elements);
-		atlases = readAtlases(xml.node.atlases.elements);
-		autotileFormats = readAutotileFormats(xml.node.autotileFormats.elements);
+		shapes = readShapes(mg);
+		atlases = readAtlases(mg);
+		autotileFormats = readAutotileFormats(mg);
 
-		groups = readGroups(xml.node.groups.elements);
+		groups = readGroups(mg);
 		groups.push(new GroupDef(REGION_ID, "Regions"));
 		groups.push(new GroupDef(PLAYER_ID, "Players"));
 		groups.push(new GroupDef(TERRAIN_ID, "Terrain"));
@@ -99,7 +90,7 @@ class GameModel
 		
 		groupsCollidesWith = new Map<Int,Array<Int>>();
 		
-		collisionGroups = readCollisionGroups(xml.node.cgroups.elements);
+		collisionGroups = readCollisionGroups(mg);
 
 		collisionMap = new Array<Array<Bool>>();
 		
@@ -160,131 +151,114 @@ class GameModel
 		//Defined in MyScripts
 		//readInput(xml.node.input.elements);
 		
-		gameAttributes = readGameAttributes(xml.node.attributes.elements);
+		gameAttributes = readGameAttributes(mg);
 				
-		Data.get().gameXML = null;
+		Data.get().gameMbs = null;
 	}
 	
 	public function loadScenes()
 	{
-		scenes = readScenes(Data.get().sceneListXML);
-	}
-	
-	public function readScenes(list:Fast):Map<Int,Scene>
-	{
-		var map:Map<Int,Scene> = new Map<Int,Scene>();
+		scenes = new Map<Int,Scene>();
 		
-		for(e in list.elements)
+		var list:MbsList<MbsSceneHeader> = cast Data.get().sceneListMbs.getRoot();
+		for(i in 0...list.length())
 		{
-			var sceneID = Std.parseInt(e.att.id);
+			var header = list.getNextObject();
+			var sceneID = header.getId();
 			
-			map.set(Std.parseInt(e.att.id), new Scene(sceneID, e.att.name));
+			scenes.set(sceneID, new Scene(sceneID, header.getName()));
 		}
 		
-		Data.get().sceneListXML = null;
-		
-		return map;
+		Data.get().sceneListMbs = null;
 	}
 	
-	public function readShapes(list:Iterator<Fast>):Map<Int,B2PolygonShape>
+	public function readShapes(mg:MbsGame):Map<Int,B2PolygonShape>
 	{
 		var map:Map<Int,B2PolygonShape> = new Map<Int,B2PolygonShape>();
 		
-		for(e in list)
+		var list = mg.getShapes();
+
+		for(i in 0...list.length())
 		{
-			var s:String = e.att.pts;
-			var pts = s.split("#");
+			var colShape = list.getNextObject();
+			var ptList = colShape.getPoints();
+
 			var vertices = new Array<B2Vec2>();
 			
-			for(pt in pts)
+			for(pt in ShapeReader.readPoints(ptList))
 			{
-				var ptArray = pt.split(",");
-				var px = Std.parseFloat(ptArray[0]);
-				var py = Std.parseFloat(ptArray[1]);
-				vertices.push(new B2Vec2(px * 3.1, py * 3.1));
+				vertices.push(new B2Vec2(pt.x * 3.1, pt.y * 3.1));
 			}
 			
 			ShapeReader.EnsureCorrectVertexDirection(vertices);
 			
 			var p = new B2PolygonShape();
 			p.setAsArray(vertices, vertices.length);
-			map.set(Std.parseInt(e.att.id), p);
+			map.set(colShape.getId(), p);
 		}
 		
 		return map;
 	}
 	
-	public function readAtlases(list:Iterator<Fast>):Map<Int,Atlas>
+	public function readAtlases(mg:MbsGame):Map<Int,Atlas>
 	{
 		var map:Map<Int,Atlas> = new Map<Int,Atlas>();
 		
-		for(e in list)
+		var list = mg.getAtlases();
+
+		for(i in 0...list.length())
 		{
-			var ID = Std.parseInt(e.att.id);
-			var name = e.att.name;
-			var mems = e.att.members.split(",");
-			var allScenes = e.has.allScenes ?
-				e.att.allScenes == "true" :
-				e.att.start == "true";
-			var members = new Array<Int>();
+			var atlas = list.getNextObject();
+			var ID = atlas.getId();
+			var name = atlas.getName();
+			var allScenes = atlas.getAllScenes();
 			
-			if(e.att.members != "")
-			{
-				for(n in mems)
-				{
-					members.push(Std.parseInt(n));
-				}
-				
-				members.pop();
-			}
+			var memList = atlas.getMembers();
+			var members = [for(j in 0...memList.length()) memList.readInt()];
 			
-			map.set(ID, new Atlas(ID, name, allScenes, members)); 
+			map.set(ID, new Atlas(ID, name, allScenes, members));
 		}
 		
 		return map;
 	}
 
-	public function readAutotileFormats(list:Iterator<Fast>):Map<Int, AutotileFormat>
+	public function readAutotileFormats(mg:MbsGame):Map<Int, AutotileFormat>
 	{
 		var map = new Map<Int, AutotileFormat>();
 
-		for(e in list)
+		var list = mg.getAutotileFormats();
+
+		for(i in 0...list.length())
 		{
-			var name = e.att.name;
-			var id = Std.parseInt(e.att.id);
-			var across = Std.parseInt(e.att.across);
-			var down = Std.parseInt(e.att.down);
+			var atf = list.getNextObject();
+			var name = atf.getName();
+			var id = atf.getId();
+			var across = atf.getAcross();
+			var down = atf.getDown();
 
 			var allCorners = new Array<Corners>();
+			var cornersMap = new Array<Corners>();
 			
-			for(autotile in e.elements)
+			var cornersList = atf.getCorners();
+
+			for(cornersIndex in 0...cornersList.length())
 			{
-				var cornerStrings = autotile.att.corners.split(" ");
-				var corners = new Corners
+				var mbsCorners = cornersList.getNextObject();
+
+				cornersMap.push(new Corners
 				(
-					readPoint(cornerStrings[0]),
-					readPoint(cornerStrings[1]),
-					readPoint(cornerStrings[2]),
-					readPoint(cornerStrings[3])
-				);
-				
-				for(range in autotile.att.flag.split(","))
-				{
-					if(range.indexOf("-") != -1)
-					{
-						var low = Std.parseInt(range.split("-")[0]);
-						var high = Std.parseInt(range.split("-")[1]);
-						
-						for(k in low...high + 1)
-						{
-							allCorners[k] = corners;
-						}
-						
-						continue;
-					}
-					
-					allCorners[Std.parseInt(range)] = corners;
-				}
+					ShapeReader.readPoint(mbsCorners.getTopLeft()),
+					ShapeReader.readPoint(mbsCorners.getTopRight()),
+					ShapeReader.readPoint(mbsCorners.getBottomLeft()),
+					ShapeReader.readPoint(mbsCorners.getBottomRight())
+				));
+			}
+
+			var mbsFlags = atf.getFlags();
+
+			for(fi in 0...mbsFlags.length())
+			{
+				allCorners[fi] = cornersMap[mbsFlags.readInt()];
 			}
 			
 			map.set(id, new AutotileFormat(name, id, across, down, allCorners));
@@ -292,90 +266,39 @@ class GameModel
 
 		return map;
 	}
-
-	private function readPoint(s:String):Point
-	{
-		var coords = s.split(",");
-		return new Point(Std.parseInt(coords[0]), Std.parseInt(coords[1]));
-	}
 	
-	public function readGroups(list:Iterator<Fast>):Array<GroupDef>
+	public function readGroups(mg:MbsGame):Array<GroupDef>
 	{
 		var map:Array<GroupDef> = new Array<GroupDef>();
 		
-		for(e in list)
+		var list = mg.getGroups();
+		
+		for(i in 0...list.length())
 		{
-			map.push(new GroupDef(Std.parseInt(e.att.id), e.att.name));
+			var group = list.getNextObject();
+			map.push(new GroupDef(group.getId(), group.getName()));
 		}
 		
 		return map;
 	}
 	
-	public function readCollisionGroups(list:Iterator<Fast>):Array<CollisionGroupDef>
+	public function readCollisionGroups(mg:MbsGame):Array<CollisionGroupDef>
 	{
 		var map:Array<CollisionGroupDef> = new Array();
 		
-		for(e in list)
+		var list = mg.getCgroups();
+
+		for(i in 0...list.length())
 		{
-			map.push(new CollisionGroupDef(Std.parseInt(e.att.g1), Std.parseInt(e.att.g2)));
+			var cpair = list.getNextObject();
+			map.push(new CollisionGroupDef(cpair.getGroup1(), cpair.getGroup2()));
 		}
 		
 		return map;
 	}
 	
-	public static function readGameAttributes(list:Iterator<Fast>):Map<String,Dynamic>
+	public static function readGameAttributes(mg:MbsGame):Map<String,Dynamic>
 	{
-		var map:Map<String,Dynamic> = new Map<String,Dynamic>();
-		
-		for(e in list)
-		{
-			var type:String = e.name;
-			
-			if(type == "number")
-			{
-				var num:Float = Std.parseFloat(e.att.value);
-				map.set(e.att.name, num);
-			}
-			
-			else if(type == "text")
-			{
-				var str:String = e.att.value;
-				map.set(e.att.name, str);
-			}
-			
-			else if(type == "bool" || type == "boolean")
-			{
-				var bool:Bool = Utils.toBoolean(e.att.value);
-				map.set(e.att.name, bool);
-			}
-			
-			else if(type == "list")
-			{
-				var value:Array<Dynamic> = new Array<Dynamic>();
-				
-				for(item in e.elements)
-				{
-					var order:Int = Std.parseInt(item.att.order);
-					value[order] = item.att.value;
-				}
-				
-				map.set(e.att.name, value);
-			}
-			
-			else if(type == "map")
-			{
-				var value:Map<String,Dynamic> = new Map<String,Dynamic>();
-				
-				for(item in e.elements)
-				{
-					//TODO MIKE: Support references
-					value.set(item.att.key, item.att.value);
-				}
-				
-				map.set(e.att.name, value);
-			}
-		}
-		
-		return map;
+		return AttributeValues.readMap(mg.getGameAttributes());
 	}
 }

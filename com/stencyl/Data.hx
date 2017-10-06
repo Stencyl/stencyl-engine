@@ -25,8 +25,6 @@ import com.stencyl.models.actor.Sprite;
 import com.stencyl.utils.Assets;
 import com.stencyl.utils.LazyMap;
 
-import haxe.xml.Fast;
-
 import mbs.core.MbsObject;
 import mbs.core.MbsTypes;
 import mbs.io.MbsDynamicHelper;
@@ -68,12 +66,12 @@ class Data
 	
 	
 	//*-----------------------------------------------
-	//* Master XML/MBS Files
+	//* Master MBS Files
 	//*-----------------------------------------------
 	
-	public var gameXML:Fast;
+	public var gameMbs:MbsReader;
 	public var resourceListMbs:MbsReader;
-	public var sceneListXML:Fast;
+	public var sceneListMbs:MbsReader;
 	public var behaviorListMbs:MbsReader;
 			
 	
@@ -110,16 +108,16 @@ class Data
 	
 	public function new()
 	{
-		if(Assets.getText("assets/data/game.xml") == "")
+		if(Assets.getText("assets/data/game.mbs") == "")
 		{
-			throw "Data.hx - Could not load game. Check your logs for a possible cause (likely a bad MP3 file).";
+			throw "Data.hx - Could not load game. Check your logs for a possible cause.";
 		}
 	}
 	
 	public function loadAll()
 	{
-		gameXML = new Fast(Xml.parse(Assets.getText("assets/data/game.xml")).firstElement());
-		sceneListXML = new Fast(Xml.parse(Assets.getText("assets/data/scenes.xml")).firstElement());
+		gameMbs = new MbsReader(Assets.getBytes("assets/data/game.mbs"), Typedefs.instance, false);
+		sceneListMbs = new MbsReader(Assets.getBytes("assets/data/scenes.mbs"), Typedefs.instance, false);
 		resourceListMbs = new MbsReader(Assets.getBytes("assets/data/resources.mbs"), Typedefs.instance, false);
 		behaviorListMbs = new MbsReader(Assets.getBytes("assets/data/behaviors.mbs"), Typedefs.instance, false);
 
