@@ -1803,17 +1803,7 @@ class Script
 	 */
 	public static function getActorTypeByName(typeName:String):ActorType
 	{
-		var types = getAllActorTypes();
-		
-		for(type in types)
-		{
-			if(type.name == typeName)
-			{
-				return type;
-			}
-		}
-		
-		return null;
+		return cast Data.get().resourceMap.get(typeName);
 	}
 	
 	/**
@@ -1998,17 +1988,7 @@ class Script
 	*/
 	public static function getSoundByName(soundName:String):Sound
 	{
-		var sounds = Data.get().getResourcesOfType(Sound);
-		
-		for(sound in sounds)
-		{
-			if(sound.name == soundName)
-			{
-				return sound;
-			}
-		}
-		
-		return null;
+		return cast Data.get().resourceMap.get(soundName);
 	}
 	
 	/**
@@ -2318,17 +2298,7 @@ class Script
 	*/
 	public static function changeBackground(layerRefType:Int, layerRef:String, newBackName:String)
 	{
-		var types = Data.get().getResourcesOfType(ImageBackground);
-		
-		var bg:ImageBackground = null;
-
-		for(type in types)
-		{
-			if(type.name == newBackName)
-			{
-				bg = cast(type, ImageBackground);
-			}
-		}
+		var bg:ImageBackground = cast Data.get().resourceMap.get(newBackName);
 		
 		if(bg == null)
 			return;
