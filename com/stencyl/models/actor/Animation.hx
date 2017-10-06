@@ -15,7 +15,7 @@ class Animation
 	public var sync:Bool;
 	public var durations:Array<Int>;
 	
-	public var imgData:Dynamic;
+	public var imgData:BitmapData;
 	public var imgWidth:Int;
 	public var imgHeight:Int;
 	
@@ -30,6 +30,7 @@ class Animation
 	public var sharedFrameIndex:Int = 0;
 	
 	public static var allAnimations:Array<Animation> = new Array<Animation>();
+	private static var UNLOADED:BitmapData;
 	
 	public static function resetStatics():Void
 	{
@@ -66,6 +67,7 @@ class Animation
 		this.sync = sync;
 		this.durations = durations;
 
+		this.imgData = UNLOADED;
 		this.imgWidth = imgWidth;
 		this.imgHeight = imgHeight;
 		
@@ -99,11 +101,13 @@ class Animation
 			"assets/graphics/" + Engine.IMG_BASE + "/sprite-" + parentID + "-" + animID + ".png"
 		);
 	}
-	
+
 	public function unloadGraphics()
 	{
 		//Graceful fallback - just a blank image that is numFrames across in px
-		imgData = new BitmapData(framesAcross, framesDown);
+		if(UNLOADED == null)
+			UNLOADED = new BitmapData(1,1);
+		imgData = UNLOADED;
 		Data.get().resourceAssets.remove(parentID + "-" + animID + ".png");
 	}
 	
