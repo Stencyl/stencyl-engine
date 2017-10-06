@@ -30,6 +30,7 @@ import haxe.xml.Fast;
 import mbs.core.MbsObject;
 import mbs.core.MbsTypes;
 import mbs.io.MbsDynamicHelper;
+import mbs.io.MbsDynamicHelper.DynamicPool;
 import mbs.io.MbsReader;
 import mbs.io.MbsList;
 import mbs.io.MbsListBase.MbsDynamicList;
@@ -99,8 +100,9 @@ class Data
 	private var resourceLookup:Map<Int,Int> = null; //id -> address
 	private var resourceNameLookup:Map<String,Int> = null; //name -> id
 	private var behaviorLookup:Map<Int,Int> = null; //id -> address
+
 	private var behaviorReader:MbsSnippetDef = null;
-	private var resourceReader:MbsResource = null;
+	private var resourceReaderPool:DynamicPool = null;
 
 	//*-----------------------------------------------
 	//* Loading
@@ -160,20 +162,26 @@ class Data
 		}
 	}
 
-	@:access(mbs.io.MbsListBase.elementAddress)
+	@:access(mbs.io.MbsListBase)
 	private function scanResourceMbs()
 	{
 		resourceLookup = new Map<Int,Int>();
 		resourceNameLookup = new Map<String,Int>();
 
 		var listReader:MbsDynamicList = cast resourceListMbs.getRoot();
+		resourceReaderPool = MbsDynamicHelper.createObjectPool(resourceListMbs);
 		
+		var obj:MbsResource = new MbsResource(resourceListMbs);
+		var intSize = mbs.core.MbsTypes.INTEGER.getSize();
+
 		for(i in 0...listReader.length())
 		{
-			var address = listReader.elementAddress;
-			var obj:MbsResource = cast listReader.readObject();
+			var dynAddress = listReader.elementAddress;
+			var objAddress = resourceListMbs.readInt(dynAddress + intSize);
+			listReader.elementAddress += listReader.elementSize;
 
-			resourceLookup.set(obj.getId(), address);
+			obj.setAddress(objAddress);
+			resourceLookup.set(obj.getId(), dynAddress);
 			if(Std.is(obj, MbsSprite))
 				resourceNameLookup.set("Sprite_" + obj.getName(), obj.getId());
 			else
@@ -189,7 +197,7 @@ class Data
 	private function loadResourceFromMbs(id:Int):Resource
 	{
 		var address = resourceLookup.get(id);
-		var obj:MbsObject = cast MbsDynamicHelper.readDynamic(resourceListMbs, address);
+		var obj:MbsObject = cast MbsDynamicHelper.readDynamicUsingPool(resourceListMbs, address, resourceReaderPool);
 
 		var newResource = readResource(obj.getMbsType().getName(), obj);
 
