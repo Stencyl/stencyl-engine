@@ -187,7 +187,7 @@ class SpriteReader implements AbstractReader
 			if(Std.is(shapeData, MbsCircle))
 			{
 				var circle:MbsCircle = cast shapeData;
-				shape = ShapeReader.createCircle(circle.getRadius(), 0, 0, imgWidth, imgHeight);
+				shape = ShapeReader.createCircle(circle.getRadius(), circle.getPosition().getX(), circle.getPosition().getY(), imgWidth, imgHeight);
 			}
 			else
 			{
