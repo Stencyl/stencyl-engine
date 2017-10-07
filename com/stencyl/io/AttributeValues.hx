@@ -95,7 +95,15 @@ class AttributeValues
 		{
 			var mapElement = mapReader.getNextObject();
 			var key = mapElement.getKey();
-			map.set(key, mapElement.getValue());
+			var val:Dynamic = mapElement.getValue();
+
+			if(Std.is(val, MbsDynamicList))
+			{
+				var mdl:MbsDynamicList = cast val;
+				val = [for(i in 0...mdl.length()) mdl.readObject()];
+			}
+
+			map.set(key, val);
 		}
 
 		return map;	
