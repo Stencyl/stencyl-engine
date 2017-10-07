@@ -104,7 +104,9 @@ class Scene
 	
 	public function load()
 	{
-		var r = new MbsReader(Assets.getBytes("assets/data/scene-" + ID + ".mbs"), Typedefs.instance, false);
+		var r = new MbsReader(Typedefs.instance, false, true);
+		r.readData(Assets.getBytes("assets/data/scene-" + ID + ".mbs"));
+		
 		var scene:MbsScene = cast r.getRoot();
 
 		var numTileLayers = scene.getDepth();

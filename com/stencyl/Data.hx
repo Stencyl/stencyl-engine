@@ -116,10 +116,17 @@ class Data
 	
 	public function loadAll()
 	{
-		gameMbs = new MbsReader(Assets.getBytes("assets/data/game.mbs"), Typedefs.instance, false);
-		sceneListMbs = new MbsReader(Assets.getBytes("assets/data/scenes.mbs"), Typedefs.instance, false);
-		resourceListMbs = new MbsReader(Assets.getBytes("assets/data/resources.mbs"), Typedefs.instance, false);
-		behaviorListMbs = new MbsReader(Assets.getBytes("assets/data/behaviors.mbs"), Typedefs.instance, false);
+		gameMbs = new MbsReader(Typedefs.instance, false, true);
+		gameMbs.readData(Assets.getBytes("assets/data/game.mbs"));
+
+		sceneListMbs = new MbsReader(Typedefs.instance, false, true);
+		sceneListMbs.readData(Assets.getBytes("assets/data/scenes.mbs"));
+
+		resourceListMbs = new MbsReader(Typedefs.instance, false, false);
+		resourceListMbs.readData(Assets.getBytes("assets/data/resources.mbs"));
+
+		behaviorListMbs = new MbsReader(Typedefs.instance, false, false);
+		behaviorListMbs.readData(Assets.getBytes("assets/data/behaviors.mbs"));
 
 		resourceAssets = new Map<String,Dynamic>();
 		behaviors = LazyMap.fromFunction(loadBehaviorFromMbs);

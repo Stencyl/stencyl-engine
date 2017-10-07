@@ -102,4 +102,9 @@ class Typedefs extends MbsTypedefSet
 		types.push(com.stencyl.io.mbs.game.autotile.MbsCorners.MBS_CORNERS);
 		
 	}
+	
+	override public function getHash():Int
+	{
+		return 1341673740;
+	}
 }
