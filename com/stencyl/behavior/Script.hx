@@ -2421,17 +2421,8 @@ class Script
 		lc.checkPolicyFile = false;
 		lc.securityDomain = flash.system.SecurityDomain.currentDomain;
 		lc.applicationDomain = flash.system.ApplicationDomain.currentDomain; 
+    	#end
 		
-		var handler = function(event:Event):Void
-		{
-			var bitmapData = cast(event.currentTarget.content, Bitmap).bitmapData;
-    		onComplete(bitmapData);
-		}
-	
-		var loader:Loader = new Loader();
-    	loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handler);
-    	loader.load(new URLRequest(URL));
-		#else
 		var handler = function(event:Event):Void
 		{
 			var bitmapData = cast(cast(event.currentTarget, Loader).content, Bitmap).bitmapData;
@@ -2441,7 +2432,6 @@ class Script
 		var loader:Loader = new Loader();
     	loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handler);
     	loader.load(new URLRequest(URL));
-    	#end
 	}
 	
 	public static function getSubImage(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapData

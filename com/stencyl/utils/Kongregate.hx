@@ -41,7 +41,7 @@ class Kongregate
 	{
 		try 
 		{
-			Kongregate.kongregate = e.target.content;
+			Kongregate.kongregate = cast(e.target, flash.display.Loader).content;
 			Kongregate.kongregate.services.connect();
 		}
 		
