@@ -108,7 +108,7 @@ class Data
 	
 	public function new()
 	{
-		if(Assets.getText("assets/data/game.mbs") == "")
+		if(Assets.getBytes("assets/data/game.mbs") == null)
 		{
 			throw "Data.hx - Could not load game. Check your logs for a possible cause.";
 		}

@@ -138,16 +138,10 @@ class Scene
 		
 		wireframes = readWireframes(scene.getTerrain());
 		
-		#if js
-		var rawLayers = readRawLayers(Assets.getText("assets/data/scene-" + ID + ".txt"), numTileLayers);
-		#end
-		
-		#if !js
 		var bytes = Assets.getBytes("assets/data/scene-" + ID + ".scn");
 		bytes.endian = openfl.utils.Endian.BIG_ENDIAN;
 		var rawLayers = readRawLayers(bytes, numTileLayers);
-		#end
-
+		
 		layers = readAllLayers(scene.getLayers(), rawLayers);
 
 		retainsAtlases = scene.getRetainAtlases();
@@ -571,125 +565,6 @@ class Scene
 		}
 	}
 	
-	#if js
-	public function readRawLayers(data:String, numTileLayers:Int):IntHashTable<TileLayer>
-	{
-		var map = new IntHashTable<TileLayer>(16);
-		map.reuseIterator = true;
-
-		if(data != null)
-		{
-			var split = data.split("~");
-		
-			for(i in 0...numTileLayers)
-			{
-				var newLayer = readRawLayer(split[i]);
-				map.set(newLayer.layerID, newLayer);
-			}
-		}
-				
-		return map;
-	}
-	
-	public function readRawLayer(data:String):TileLayer
-	{
-		var split = data.split("#");
-		var width = Std.int(Math.floor(sceneWidth / tileWidth));
-		var height = Std.int(Math.floor(sceneHeight / tileHeight));
-		
-		var layerID = Std.parseInt(split[0]);
-		var zOrder = Std.parseInt(split[1]);
-
-		var layer = new TileLayer(layerID, zOrder, this, width, height);
-		
-		var row = 0;
-		var col = 0;
-		
-		//Grid for non-Box2D games
-		var grid = new com.stencyl.models.collision.Grid(sceneWidth, sceneHeight, tileWidth, tileHeight);
-		layer.grid = grid;
-
-		split = split[2].split("|");
-		
-		for(i in 0...split.length)
-		{
-			if(split[i] == "" || split[i] == "E" || split[i] == "EMPTY")
-			{
-				continue;
-			}
-			
-			var item = split[i].split(",");
-			
-			if (item.length > 3)
-			{
-				item.splice(0, 1);
-			}
-			
-			var tilesetID:Int = Std.parseInt(item[0]);
-			var tileID:Int = Std.parseInt(item[1]);
-			var runLength:Int = Std.parseInt(item[2]);
-			
-			var tset:Tileset = null;
-
-			if(tilesetID != -1)
-			{
-				tset = cast(Data.get().resources.get(tilesetID), Tileset);
-			}
-			
-			for(runIndex in 0...runLength)
-			{
-				if(tset == null || tileID < 0 || tset == null)
-				{
-					layer.setTileAt(row, col, null);
-				}
-				
-				else
-				{
-					layer.setTileAt(row, col, tset.tiles[tileID]);
-					
-					if(tset.tiles[tileID].collisionID >= 0)
-					{
-						grid.setTile(col, row, true);
-					}
-
-					var tile = tset.tiles[tileID];
-					
-					if(tile != null && tile.durations.length > 1)
-					{
-						var inList:Bool = false;
-						
-						for(checkTile in animatedTiles)
-						{
-							inList = (checkTile == tile);
-						
-							if(inList) 
-							{
-								break;
-							}
-						}
-						
-						if(!inList)
-						{
-							animatedTiles.push(tile);
-						}
-					}
-				}
-				
-				col++;
-				
-				if(col >= width)
-				{
-					col = 0;
-					row++;
-				}
-			}
-		}
-		
-		return layer;
-	}
-	#end
-	
-	#if !js
 	public function readRawLayers(bytes:ByteArray, numTileLayers:Int):IntHashTable<TileLayer>
 	{
 		var map = new IntHashTable<TileLayer>(16);
@@ -811,7 +686,6 @@ class Scene
 
 		return layer;
 	}
-	#end
 
 	public function readAtlases(r:MbsIntList):Array<Int>
 	{
