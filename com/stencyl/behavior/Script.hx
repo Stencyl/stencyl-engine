@@ -2646,13 +2646,13 @@ class Script
 		temp.addChild(bmpDest);
 		temp.addChild(bmpMask);
 		
-		var final = new BitmapData(dest.width, dest.height, true, 0);
-		final.draw(temp);
+		var result = new BitmapData(dest.width, dest.height, true, 0);
+		result.draw(temp);
 		
 		dummyPoint.x = 0;
 		dummyPoint.y = 0;
 		
-		dest.copyPixels(final, dest.rect, dummyPoint);
+		dest.copyPixels(result, dest.rect, dummyPoint);
 	}
 	
 	public static function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
@@ -2723,13 +2723,13 @@ class Script
 		matrix.scale(-1, 1);
 		matrix.translate(img.width, 0);
 		
-		var final = new BitmapData(img.width, img.height, true, 0);
-		final.draw(img, matrix);
+		var result = new BitmapData(img.width, img.height, true, 0);
+		result.draw(img, matrix);
 		
 		dummyPoint.x = 0;
 		dummyPoint.y = 0;
 		
-		img.copyPixels(final, final.rect, dummyPoint);
+		img.copyPixels(result, result.rect, dummyPoint);
 	}
 	
 	//TODO: Can we do this "in place" without the extra objects?
@@ -2739,13 +2739,13 @@ class Script
 		matrix.scale(1, -1);
 		matrix.translate(0, img.height);
 		
-		var final = new BitmapData(img.width, img.height, true, 0);
-		final.draw(img, matrix);
+		var result = new BitmapData(img.width, img.height, true, 0);
+		result.draw(img, matrix);
 		
 		dummyPoint.x = 0;
 		dummyPoint.y = 0;
 		
-		img.copyPixels(final, final.rect, dummyPoint);
+		img.copyPixels(result, result.rect, dummyPoint);
 	}
 	
 	public static function setXForImage(img:BitmapWrapper, value:Float)
