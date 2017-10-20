@@ -9,12 +9,10 @@ import com.stencyl.utils.Utils;
 import com.stencyl.utils.ToolsetInterface;
 #end
 
-import haxe.Log in HaxeLog;
 import haxe.Timer;
 
 import lime.app.Config in LimeConfig;
 import lime.system.System;
-import lime.utils.Log in LimeLog;
 
 import openfl.Lib;
 import openfl.display.Application;
@@ -48,13 +46,11 @@ using StringTools;
 			Sys.setCwd(StencylCppia.gamePath);
 		#end
 		Universal.am = ApplicationMain;
-
-		setupTracing(true);
+		Universal.setupTracing(true);
 
 		Config.load();
 		Input.loadInputConfig();
-		
-		setupTracing(!Config.releaseMode);
+		Universal.setupTracing();
 
 		var projectName = "::APP_FILE::";
 		
@@ -118,32 +114,6 @@ using StringTools;
 		create (config);
 		#end
 
-	}
-
-	private static var oldTrace;
-
-	public static function setupTracing(enable:Bool):Void
-	{
-		if(oldTrace == null)
-			oldTrace = HaxeLog.trace;
-
-		if(enable)
-		{
-			#if (flash9 || flash10)
-			HaxeLog.trace = function(v,?pos) { untyped __global__["trace"]("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"):",v); }
-			#elseif flash
-			HaxeLog.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
-			#else
-			HaxeLog.trace = oldTrace;
-			#end
-
-			LimeLog.level = VERBOSE;
-		}
-		else
-		{
-			HaxeLog.trace = function(v,?pos) { };
-			LimeLog.level = NONE;
-		}
 	}
 
 	public static var reloadListeners = new Array<Void->Void>();
