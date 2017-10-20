@@ -347,8 +347,8 @@ class Universal extends Sprite
 
 		if(isFullScreen && (Config.scaleMode == ScaleMode.SCALE_TO_FIT_FULLSCREEN || Config.scaleMode == ScaleMode.FULLSCREEN))
 		{
-			logicalWidth += (windowWidth - scaledStageWidth * scaleX);
-			logicalHeight += (windowHeight - scaledStageHeight * scaleY);
+			logicalWidth += (windowWidth / scaleX - scaledStageWidth);
+			logicalHeight += (windowHeight / scaleY - scaledStageHeight);
 		}
 
 		scrollRect = new Rectangle(0, 0, logicalWidth * Engine.SCALE, logicalHeight * Engine.SCALE);
