@@ -36,44 +36,29 @@ class Attribute
 		{
 			if(type == "int")
 			{
-				realValue = Std.parseInt(value);
+				realValue = value;
 			}
 			
 			else if(type == "float" || type == "number")
 			{
-				realValue = Std.parseFloat(value);
+				realValue = value;
 			}
 			
 			else if(type == "bool" || type == "boolean")
 			{
-				realValue = (value == "true") ? true : false;
+				realValue = value;
 			}
 			
 			else if(type == "color")
 			{
-				if(value == null || value == "")
-				{
-					realValue = 0xFF000000;
-				}
-				
-				else
-				{
-					var s:Array<String> = value.split(",");
-					
-					var r:Int = Std.parseInt(s[0]);
-					var g:Int = Std.parseInt(s[1]);
-					var b:Int = Std.parseInt(s[2]);
-					var a:Int = Std.parseInt(s[3]);
-					
-					realValue = (a << 24) | (r << 16) | (g << 8) | b;
-				}
+				realValue = value;
 			}
 			
 			else if(type == "sound" || type == "actortype" || type == "font")
 			{
 				if(value != null)
 				{
-					if(value == "null" || value == "")
+					if(value == -1)
 					{
 						realValue = null;
 					}
@@ -103,7 +88,7 @@ class Attribute
 			else if(type == "actorgroup")
 			{
 				//Script will pull the right group. Keep as int.
-				realValue = Std.parseInt(value);
+				realValue = value;
 			}
 			
 			else if(type == "control")
@@ -171,12 +156,12 @@ class Attribute
 			
 			else if(value != null && type == "joint")
 			{
-				realValue = Std.parseInt(value);
+				realValue = value;
 			}
 			
 			else if(value != null && type == "region")
 			{
-				realValue = Std.parseInt(value);
+				realValue = value;
 			}
 		}
 		
