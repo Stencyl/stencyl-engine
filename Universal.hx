@@ -20,8 +20,14 @@ import com.stencyl.Engine;
 import com.stencyl.Input;
 import com.stencyl.graphics.Scale;
 import com.stencyl.graphics.ScaleMode;
+#if stencyltools
+import com.stencyl.utils.ToolsetInterface;
+#end
 import com.stencyl.utils.Utils;
 import haxe.xml.Fast;
+
+import haxe.Log in HaxeLog;
+import lime.utils.Log in LimeLog;
 
 class Universal extends Sprite 
 {
@@ -341,8 +347,8 @@ class Universal extends Sprite
 
 		if(isFullScreen && (Config.scaleMode == ScaleMode.SCALE_TO_FIT_FULLSCREEN || Config.scaleMode == ScaleMode.FULLSCREEN))
 		{
-			logicalWidth += (windowWidth - scaledStageWidth * scaleX);
-			logicalHeight += (windowHeight - scaledStageHeight * scaleY);
+			logicalWidth += (windowWidth / scaleX - scaledStageWidth);
+			logicalHeight += (windowHeight / scaleY - scaledStageHeight);
 		}
 
 		scrollRect = new Rectangle(0, 0, logicalWidth * Engine.SCALE, logicalHeight * Engine.SCALE);
@@ -386,10 +392,37 @@ class Universal extends Sprite
 	//for Cppia, don't directly call ApplicationMain functions
 
 	private static var am:Class<Dynamic>;
-		
-	public static function setupTracing(enable:Bool):Void
+	private static var oldTrace:Dynamic;
+
+	public static function setupTracing(?forceEnable:Bool = false):Void
 	{
-		Reflect.callMethod(am, Reflect.field(am, "setupTracing"), [enable]);
+		if(oldTrace == null)
+			oldTrace = HaxeLog.trace;
+
+		var enable = forceEnable || !Config.releaseMode;
+		
+		if(enable)
+		{
+			#if (flash9 || flash10)
+			HaxeLog.trace = function(v,?pos) { untyped __global__["trace"]("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"):",v); }
+			#elseif flash
+			HaxeLog.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
+			#else
+			HaxeLog.trace = oldTrace;
+			#end
+
+			#if stencyltools
+			if(Config.useGciLogging)
+				HaxeLog.trace = ToolsetInterface.gciTrace;
+			#end
+
+			LimeLog.level = VERBOSE;
+		}
+		else
+		{
+			HaxeLog.trace = function(v,?pos) { };
+			LimeLog.level = NONE;
+		}
 	}
 
 	public static function reloadGame()

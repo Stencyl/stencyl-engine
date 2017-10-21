@@ -4,17 +4,13 @@ import com.stencyl.models.Resource;
 
 class Sprite extends Resource
 {
-	public var width:Int;
-	public var height:Int;
 	public var defaultAnimation:Int;
 	public var animations:Map<Int, Animation>;
 	
-	public function new(ID:Int, atlasID:Int, name:String, width:Int, height:Int, defaultAnimation:Int)
+	public function new(ID:Int, atlasID:Int, name:String, defaultAnimation:Int)
 	{
 		super(ID, name, atlasID);
 		
-		this.width = width;
-		this.height = height;
 		this.defaultAnimation = defaultAnimation;
 		
 		animations = new Map<Int, Animation>();

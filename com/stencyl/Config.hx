@@ -39,6 +39,7 @@ class Config
 	public static var adPositionBottom:Bool;
 	public static var testAds:Bool;
 	public static var releaseMode:Bool;
+	public static var useGciLogging:Bool;
 	public static var showConsole:Bool;
 	public static var debugDraw:Bool;
 	public static var disableBackButton:Bool;
@@ -100,11 +101,12 @@ class Config
 						case "physicsMode":
 							needsGameReload = true;
 
-						case "releaseMode":
+						case "releaseMode", "useGciLogging":
 							Universal.setupTracing(!releaseMode);
 
 						case "showConsole":
 							Engine.engine.setStatsVisible(showConsole);
+
 					}
 				}
 			}
@@ -152,6 +154,7 @@ class Config
 		showConsole = data.showConsole;
 		debugDraw = data.debugDraw;
 		disableBackButton = data.disableBackButton;
+		useGciLogging = data.useGciLogging;
 		keys = asMap(data.keys);
 		var scaleMap:Map<String,Array<String>> = asMap(data.scales);
 		scales = [for(key in scaleMap.keys()) key => scaleMap.get(key).map(Scale.fromString).array()];

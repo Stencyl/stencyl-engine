@@ -495,11 +495,11 @@ class Actor extends Sprite
 		
 		if(sprite != null)
 		{
-			var s:StencylSprite = cast(Data.get().resources.get(actorType.spriteID), StencylSprite);
+			var s:StencylSprite = cast Data.get().resources.get(actorType.spriteID);
 			
 			if(s != null)
 			{
-				this.type = cast(Data.get().resources.get(typeID), ActorType);
+				this.type = cast Data.get().resources.get(typeID);
 				
 				var defaultAnim:String = "";
 				
@@ -1150,8 +1150,8 @@ class Actor extends Sprite
 						{
 							if(Type.getClass(currShape) == B2PolygonShape)
 							{
-								var polyOld = cast(currShape, B2PolygonShape);
-								var polyNew = cast(defaultShape, B2PolygonShape);
+								var polyOld:B2PolygonShape = cast currShape;
+								var polyNew:B2PolygonShape = cast defaultShape;
 								
 								if(polyOld.m_vertexCount != polyNew.m_vertexCount)
 								{
@@ -1179,8 +1179,8 @@ class Actor extends Sprite
 							
 							else if(Type.getClass(currShape) == B2CircleShape)
 							{
-								var circleOld = cast(currShape, B2CircleShape);
-								var circleNew = cast(defaultShape, B2CircleShape);
+								var circleOld:B2CircleShape = cast currShape;
+								var circleNew:B2CircleShape = cast defaultShape;
 								
 								if(circleOld.m_radius != circleNew.m_radius || 
 								   circleOld.m_p.x != circleNew.m_p.x || 
@@ -1271,8 +1271,8 @@ class Actor extends Sprite
 							{
 								if(Type.getClass(oldShape) == B2PolygonShape)
 								{
-									var polyOld = cast(oldShape, B2PolygonShape);
-									var polyNew = cast(newShape, B2PolygonShape);
+									var polyOld:B2PolygonShape = cast oldShape;
+									var polyNew:B2PolygonShape = cast newShape;
 									
 									if(polyOld.m_vertexCount != polyNew.m_vertexCount)
 									{
@@ -1300,8 +1300,8 @@ class Actor extends Sprite
 								
 								else if(Type.getClass(oldShape) == B2CircleShape)
 								{
-									var circleOld = cast(oldShape, B2CircleShape);
-									var circleNew = cast(newShape, B2CircleShape);
+									var circleOld:B2CircleShape = cast oldShape;
+									var circleNew:B2CircleShape = cast newShape;
 									
 									if(circleOld.m_radius != circleNew.m_radius || 
 									   circleOld.m_p.x != circleNew.m_p.x || 
@@ -1419,7 +1419,7 @@ class Actor extends Sprite
 						if (Std.is(f.shape, B2PolygonShape))
 						{
 							var xf:B2Transform = new B2Transform();
-							var oldBox:B2PolygonShape = cast(f.shape, B2PolygonShape);
+							var oldBox:B2PolygonShape = cast f.shape;
 							var newBox:B2PolygonShape = new B2PolygonShape();
 								
 							newBox.setAsArray(oldBox.m_vertices, oldBox.m_vertices.length);
@@ -1444,7 +1444,7 @@ class Actor extends Sprite
 						
 						else if (Std.is(f.shape, B2CircleShape))
 						{
-							var oldCircle:B2CircleShape = cast(f.shape, B2CircleShape);
+							var oldCircle:B2CircleShape = cast f.shape;
 							var newCircle:B2CircleShape = new B2CircleShape();
 								
 							newCircle.setRadius(oldCircle.getRadius());
@@ -1997,22 +1997,24 @@ class Actor extends Sprite
 			var center:B2Vec2 = body.getLocalCenter();
 			if(Std.is(poly, B2CircleShape))
 			{
+				var circle:B2CircleShape = cast poly;
 				var factorX:Float = (1 / bodyScale.x) * width;					
 				var factorY:Float = (1 / bodyScale.y) * height;
 				
-				var p:B2Vec2 = cast(poly, B2CircleShape).m_p;
+				var p:B2Vec2 = circle.m_p;
 				p.subtract(center);
 				p.x = p.x * factorX;
 				p.y = p.y * factorY;	
 								
-				cast(poly, B2CircleShape).m_p = center.copy();
-				cast(poly, B2CircleShape).m_p.add(p);
+				circle.m_p = center.copy();
+				circle.m_p.add(p);
 				poly.m_radius = poly.m_radius * Math.abs(factorX);								
 			}
 
 			else if(Std.is(poly, B2PolygonShape))
 			{
-  				var verts:Array<B2Vec2> = cast(poly, B2PolygonShape).m_vertices;
+				var polygon:B2PolygonShape = cast poly;
+  				var verts:Array<B2Vec2> = polygon.m_vertices;
 				var newVerts:Array<B2Vec2> = new Array<B2Vec2>();
 
 				var horiChange:Bool = (bodyScale.x > 0 && width < 0) || (bodyScale.x < 0 && width > 0);
@@ -2045,7 +2047,7 @@ class Actor extends Sprite
 					newVerts.reverse();
 				}
 
-				cast(poly, B2PolygonShape).setAsArray(newVerts, newVerts.length);   				
+				polygon.setAsArray(newVerts, newVerts.length);   				
 			}
 		}	
 		
@@ -2129,8 +2131,8 @@ class Actor extends Sprite
 					continue;
 				}
 				
-				var a1 = cast(p.getFixtureA().getUserData(), Actor);
-				var a2 = cast(p.getFixtureB().getUserData(), Actor);
+				var a1:Actor = cast p.getFixtureA().getUserData();
+				var a2:Actor = cast p.getFixtureB().getUserData();
 				
 				if(a1 == this)
 				{
@@ -2391,7 +2393,7 @@ class Actor extends Sprite
 		
 		if(Std.is(result, ActorType))
 		{
-			return cast(result, ActorType);
+			return cast result;
 		}
 		
 		return null;
@@ -2749,6 +2751,51 @@ class Actor extends Sprite
 			}
 			
 			dummy.x = body.getPosition().x;
+			
+			body.setPosition(dummy);		
+			
+			if(resetSpeed)
+			{
+				body.setLinearVelocity(zero);
+			}
+		}
+		
+		if (snapOnSet)
+		{
+			drawX = realX;
+			drawY = realY;
+		}
+		
+		updateMatrix = true;
+	}
+	public function setXY(x:Float, y:Float, resetSpeed:Bool = false, noCollision:Bool = false)
+	{
+		if(physicsMode == 1)
+		{
+			moveActorTo(
+				x + Math.floor(cacheWidth/2) + currOffset.x,
+				y + Math.floor(cacheHeight/2) + currOffset.y,
+				!noCollision && continuousCollision ? groupsToCollideWith : null);
+		}
+		
+		else if(physicsMode == 2)
+		{
+			resetReal(x + Math.floor(cacheWidth/2) + currOffset.x, y + Math.floor(cacheHeight/2) + currOffset.y);
+		}
+		
+		else
+		{	
+			if(isRegion || isTerrainRegion)
+			{
+				dummy.x = Engine.toPhysicalUnits(x);
+				dummy.y = Engine.toPhysicalUnits(y);
+			}
+				
+			else
+			{
+				dummy.x = Engine.toPhysicalUnits(x + Math.floor(cacheWidth/2) + currOffset.x);
+				dummy.y = Engine.toPhysicalUnits(y + Math.floor(cacheHeight/2) + currOffset.y);
+			}
 			
 			body.setPosition(dummy);		
 			
@@ -4036,14 +4083,14 @@ class Actor extends Sprite
 	{
 		if(Std.is(shape, B2CircleShape))
 		{
-			var circle:B2CircleShape = cast(shape, B2CircleShape);
+			var circle:B2CircleShape = cast shape;
 			
 			circle.m_radius *= factor;
 		}
 		
 		else if(Std.is(shape, B2PolygonShape))
 		{
-			var polygon:B2PolygonShape = cast(shape, B2PolygonShape);
+			var polygon:B2PolygonShape = cast shape;
 			var vertices:Array<B2Vec2> = polygon.m_vertices;
 			var newVertices:Array<B2Vec2> = new Array<B2Vec2>();
 			
@@ -4135,8 +4182,7 @@ class Actor extends Sprite
 		realX = x;
 		realY = y;
 		
-		setX(x, false, true);
-		setY(y, false, true);
+		setXY(x, y, false, true);
 	}
 	
 	//*-----------------------------------------------
@@ -4465,7 +4511,7 @@ class Actor extends Sprite
 		{
 			if (Std.is(_mask.lastCheckedMask, Hitbox))
 			{
-				var box:Hitbox = cast(_mask.lastCheckedMask, Hitbox);
+				var box:Hitbox = cast _mask.lastCheckedMask;
 				
 				if (posDir)
 				{
@@ -4485,7 +4531,7 @@ class Actor extends Sprite
 		{
 			if (Std.is(_mask.lastCheckedMask, Hitbox))
 			{
-				var box:Hitbox = cast(_mask.lastCheckedMask, Hitbox);
+				var box:Hitbox = cast _mask.lastCheckedMask;
 				
 				if (posDir)
 				{
@@ -4708,7 +4754,7 @@ class Actor extends Sprite
 	{
 		if(Std.is(a, Region))
 		{
-			var region = cast(a, Region);
+			var region:Region = cast a;
 			region.addActor(this);
 			return;
 		}

@@ -1948,8 +1948,8 @@ class Engine
 			ai.x / physicsScale, 
 			ai.y / physicsScale, 
 			ai.layerID,
-			s.width, 
-			s.height, 
+			-1, 
+			-1, 
 			s,
 			ai.behaviorValues,
 			ai.actorType,
@@ -2158,8 +2158,7 @@ class Engine
 		}
 	
 		a.firstMove = false;
-		a.setX(1000000, false, true);
-		a.setY(1000000, false, true);
+		a.setXY(1000000, 1000000, false, true);
 		a.colX = 1000000;
 		a.colY = 1000000;
 		a.recycled = true;
@@ -2318,8 +2317,7 @@ class Engine
 					
 					actor.registry = new Map<String,Dynamic>();
 					actor.enableActorDrawing();					
-					actor.setX(x, false, true);
-					actor.setY(y, false, true);
+					actor.setXY(x, y, false, true);
 					
 					if(actor.physicsMode == 0)
 					{

@@ -172,111 +172,126 @@ class Input
 	}
 
 	/**
-	 * If the input or key is held down.
-	 * @param	input		An input name or key to check for.
+	 * If the input is held down.
+	 * @param	input		An input name to check for.
 	 * @return	True or false.
 	 */
-	public static function check(input:Dynamic):Bool
+	public static function check(input:String):Bool
 	{
-		if(Std.is(input, String))
+		var v:Array<Int> = _control.get(input);
+		
+		if(v == null)
 		{
-			var v:Array<Int> = _control.get(input);
-			
-			if(v == null)
-			{
-				//trace("No control selected for a control attribute");
-				return false;
-			}
-			
-			var i:Int = v.length;
-			
-			while(i-- > 0)
-			{
-				if(v[i] < 0)
-				{
-					if(_keyNum > 0) 
-					{
-						return true;
-					}
-					
-					continue;
-				}
-				
-				if(_key[v[i]]) 
-				{
-					return true;
-				}
-			}
-			
+			//trace("No control selected for a control attribute");
 			return false;
 		}
 		
+		var i:Int = v.length;
+		
+		while(i-- > 0)
+		{
+			if(v[i] < 0)
+			{
+				if(_keyNum > 0) 
+				{
+					return true;
+				}
+				
+				continue;
+			}
+			
+			if(_key[v[i]]) 
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	/**
+	 * If the key is held down.
+	 * @param	input		A key to check for.
+	 * @return	True or false.
+	 */
+	public static function checkKey(input:Int):Bool
+	{
 		return input < 0 ? _keyNum > 0 : _key[input];
 	}
 
 	/**
-	 * If the input or key was pressed this frame.
-	 * @param	input		An input name or key to check for.
+	 * If the input was pressed this frame.
+	 * @param	input		An input name to check for.
 	 * @return	True or false.
 	 */
-	public static function pressed(input:Dynamic):Bool
+	public static function pressed(input:String):Bool
 	{
-		if(Std.is(input, String))
+		var v:Array<Int> = _control.get(input);
+		
+		if(v == null)
 		{
-			var v:Array<Int> = _control.get(input);
-			
-			if(v == null)
-			{
-				//trace("No control selected for a control attribute");
-				return false;
-			}
-			
-			var i:Int = v.length;
-			
-			while(i-- > 0)
-			{
-				if((v[i] < 0) ? _pressNum != 0 : indexOf(_press, v[i]) >= 0) 
-				{
-					return true;
-				}
-			}
-			
+			//trace("No control selected for a control attribute");
 			return false;
 		}
 		
+		var i:Int = v.length;
+		
+		while(i-- > 0)
+		{
+			if((v[i] < 0) ? _pressNum != 0 : indexOf(_press, v[i]) >= 0) 
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	/**
+	 * If the key was pressed this frame.
+	 * @param	input		A key to check for.
+	 * @return	True or false.
+	 */
+	public static function pressedKey(input:Int):Bool
+	{
 		return (input < 0) ? _pressNum != 0 : indexOf(_press, input) >= 0;
 	}
 
 	/**
-	 * If the input or key was released this frame.
-	 * @param	input		An input name or key to check for.
+	 * If the input was released this frame.
+	 * @param	input		An input name to check for.
 	 * @return	True or false.
 	 */
-	public static function released(input:Dynamic):Bool
+	public static function released(input:String):Bool
 	{
-		if(Std.is(input, String))
+		var v:Array<Int> = _control.get(input);
+		
+		if(v == null)
 		{
-			var v:Array<Int> = _control.get(input);
-			
-			if(v == null)
-			{
-				//trace("No control selected for a control attribute");
-				return false;
-			}
-			
-			var i:Int = v.length;
-			
-			while(i-- > 0)
-			{
-				if((v[i] < 0) ? _releaseNum != 0 : indexOf(_release, v[i]) >= 0) 
-				{
-					return true;
-				}
-			}
-			
+			//trace("No control selected for a control attribute");
 			return false;
 		}
 		
+		var i:Int = v.length;
+		
+		while(i-- > 0)
+		{
+			if((v[i] < 0) ? _releaseNum != 0 : indexOf(_release, v[i]) >= 0) 
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	/**
+	 * If the key was released this frame.
+	 * @param	input		A key to check for.
+	 * @return	True or false.
+	 */
+	public static function releasedKey(input:Int):Bool
+	{
 		return (input < 0) ? _releaseNum != 0 : indexOf(_release, input) >= 0;
 	}
 

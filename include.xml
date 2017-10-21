@@ -9,6 +9,7 @@
 	<haxelib name="polygonal-ds" />
 	<haxelib name="box2d" />
 	<haxelib name="cloner" />
+	<haxelib name="mbs" />
 
 	<template path="templates" />
 

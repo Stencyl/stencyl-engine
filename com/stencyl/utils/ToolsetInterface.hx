@@ -113,6 +113,7 @@ class ToolsetInterface
 	private var currentHeader:Map<String,String>;
 	private var bytes:ByteArray;
 	private var bytesExpected:UInt = 0;
+	private static final INT_LENGTH = 4;
 
 	private function socketDataHandler(event:ProgressEvent):Void
 	{
@@ -201,6 +202,14 @@ class ToolsetInterface
 				if(header.get("Status") == "Connected")
 				{
 					ToolsetInterface.connected = true;
+					if(traceQueue != null)
+					{
+						for(msg in traceQueue)
+						{
+							gciTrace(msg.v, msg.pos);
+						}
+						traceQueue = null;
+					}
 					trace("GCI connected. Waiting for updated assets.");
 				}
 				if(header.get("Status") == "Assets Ready")
@@ -268,6 +277,69 @@ class ToolsetInterface
 
 			default:
 		}
+	}
+
+	private static var traceQueue:Array<{v:Dynamic, pos:haxe.PosInfos}> = null;
+
+	public static function gciTrace(v : Dynamic, ?pos : haxe.PosInfos)
+	{
+		if(ToolsetInterface.connected)
+		{
+			instance.sendData
+			(
+				["Content-Type" => "Log",
+				"Class" => pos.className,
+				"Method" => pos.methodName,
+				"Line" => ""+pos.lineNumber,
+				"Message" => v],
+				null
+			);
+		}
+		else
+		{
+			if(traceQueue == null)
+				traceQueue = [];
+			traceQueue.push({v: v, pos: pos});
+		}
+	}
+
+	public function sendData(header:Map<String,String>, data:String)
+	{
+		var dataBytes = haxe.io.Bytes.ofString(data == null ? "" : data);
+		var headerBytes = generateHTTPHeader(header, dataBytes);
+		var packet = createPacket(headerBytes, dataBytes);
+		socket.writeBytes(packet, 0, packet.length);
+		#if flash
+		socket.flush();
+		#end
+	}
+
+	private function createPacket(header:ByteArray, data:ByteArray):ByteArray
+	{
+		var message:ByteArray = new ByteArray(header.length + data.length);
+		message.endian = openfl.utils.Endian.BIG_ENDIAN;
+		message.writeBytes(header, 0, header.length);
+		message.writeBytes(data, 0, data.length);
+		return message;
+	}
+
+	private function generateHTTPHeader(keyValues:Map<String,String>, data:ByteArray):ByteArray
+	{
+		var sb = new StringBuf();
+		//not really http, but tells the toolset to process it as such
+		sb.add("GET/HTTP\r\n");
+
+		for(key in keyValues.keys())
+		{
+			sb.add(key);
+			sb.add(": ");
+			sb.add(keyValues.get(key));
+			sb.add("\r\n");
+		}
+		sb.add("Content-Length: "); sb.add("" + data.length); sb.add("\r\n");
+		sb.add("\r\n");
+		
+		return haxe.io.Bytes.ofString(sb.toString());
 	}
 
 	public static function addAssetUpdatedListener(assetID:String, listener:Listener):Void

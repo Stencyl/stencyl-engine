@@ -1,5 +1,9 @@
 package com.stencyl;
 
+import com.stencyl.io.mbs.actortype.*;
+import com.stencyl.io.mbs.snippet.*;
+import com.stencyl.io.mbs.*;
+import com.stencyl.io.mbs.Typedefs;
 import com.stencyl.io.AbstractReader;
 import com.stencyl.io.ActorTypeReader;
 import com.stencyl.io.BackgroundReader;
@@ -19,8 +23,15 @@ import com.stencyl.models.Font;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.actor.Sprite;
 import com.stencyl.utils.Assets;
+import com.stencyl.utils.LazyMap;
 
-import haxe.xml.Fast;
+import mbs.core.MbsObject;
+import mbs.core.MbsTypes;
+import mbs.io.MbsDynamicHelper;
+import mbs.io.MbsDynamicHelper.DynamicPool;
+import mbs.io.MbsReader;
+import mbs.io.MbsList;
+import mbs.io.MbsListBase.MbsDynamicList;
 
 class Data
 {
@@ -55,13 +66,13 @@ class Data
 	
 	
 	//*-----------------------------------------------
-	//* Master XML Files
+	//* Master MBS Files
 	//*-----------------------------------------------
 	
-	public var gameXML:Fast;
-	public var resourceListXML:Fast;
-	public var sceneListXML:Fast;
-	public var behaviorListXML:Fast;
+	public var gameMbs:MbsReader;
+	public var resourceListMbs:MbsReader;
+	public var sceneListMbs:MbsReader;
+	public var behaviorListMbs:MbsReader;
 			
 	
 	//*-----------------------------------------------
@@ -72,17 +83,24 @@ class Data
 	//public var scenesTerrain:Map<Int,Dynamic>;
 
 	//Map of each resource in memory by ID
-	public var resources:Map<Int,Resource>;
+	public var resources:LazyMap<Int,Resource>;
 
 	//Map of each resource in memory by name
-	public var resourceMap:Map<String,Resource>;
+	public var resourceMap:LazyMap<String,Resource>;
 
 	//Map of each static asset by filename
 	public var resourceAssets:Map<String,Dynamic>;
 	
 	//Map of each behavior by ID
-	public var behaviors:Map<Int,Behavior>;
+	public var behaviors:LazyMap<Int,Behavior>;
 	
+
+	private var resourceLookup:Map<Int,Int> = null; //id -> address
+	private var resourceNameLookup:Map<String,Int> = null; //name -> id
+	private var behaviorLookup:Map<Int,Int> = null; //id -> address
+
+	private var behaviorReader:MbsSnippetDef = null;
+	private var resourceReaderPool:DynamicPool = null;
 
 	//*-----------------------------------------------
 	//* Loading
@@ -90,26 +108,35 @@ class Data
 	
 	public function new()
 	{
-		if(Assets.getText("assets/data/game.xml") == "")
+		if(Assets.getBytes("assets/data/game.mbs") == null)
 		{
-			throw "Data.hx - Could not load game. Check your logs for a possible cause (likely a bad MP3 file).";
+			throw "Data.hx - Could not load game. Check your logs for a possible cause.";
 		}
 	}
 	
 	public function loadAll()
 	{
-		gameXML = new Fast(Xml.parse(Assets.getText("assets/data/game.xml")).firstElement());
-		resourceListXML = new Fast(Xml.parse(Assets.getText("assets/data/resources.xml")).firstElement());
-		sceneListXML = new Fast(Xml.parse(Assets.getText("assets/data/scenes.xml")).firstElement());
-		behaviorListXML = new Fast(Xml.parse(Assets.getText("assets/data/behaviors.xml")).firstElement());
+		gameMbs = new MbsReader(Typedefs.instance, false, true);
+		gameMbs.readData(Assets.getBytes("assets/data/game.mbs"));
+
+		sceneListMbs = new MbsReader(Typedefs.instance, false, true);
+		sceneListMbs.readData(Assets.getBytes("assets/data/scenes.mbs"));
+
+		resourceListMbs = new MbsReader(Typedefs.instance, false, false);
+		resourceListMbs.readData(Assets.getBytes("assets/data/resources.mbs"));
+
+		behaviorListMbs = new MbsReader(Typedefs.instance, false, false);
+		behaviorListMbs.readData(Assets.getBytes("assets/data/behaviors.mbs"));
+
+		resourceAssets = new Map<String,Dynamic>();
+		behaviors = LazyMap.fromFunction(loadBehaviorFromMbs);
+		resources = LazyMap.fromFunction(loadResourceFromMbs);
+		resourceMap = LazyMap.fromFunction(loadResourceFromMbsByName);
 
 		loadReaders();
-		loadBehaviors();
-		
-		loadResources();
-		
-		resourceListXML = null;
-		behaviorListXML = null;		
+
+		scanBehaviorMbs();
+		scanResourceMbs();
 	}
 	
 	private function loadReaders()
@@ -123,83 +150,95 @@ class Data
 		readers.push(new FontReader());
 	}
 	
-	private function loadBehaviors()
+	@:access(mbs.io.MbsListBase.elementAddress)
+	private function scanBehaviorMbs()
 	{
-		behaviors = new Map<Int,Behavior>();
+		behaviorLookup = new Map<Int,Int>();
 		
-		for(e in behaviorListXML.elements)
+		var reader = behaviorListMbs;
+		var listReader:MbsList<MbsSnippetDef> = cast reader.getRoot();
+		
+		for(i in 0...listReader.length())
 		{
-			//trace("Reading Behavior: " + e.att.name);
-			
-			behaviors.set(Std.parseInt(e.att.id), BehaviorReader.readBehavior(e));
-		}
-	}
-	
-	private function loadResources()
-	{
-		resourceAssets = new Map<String,Dynamic>();	
-		
-		readResourceXML(resourceListXML);
+			var address = listReader.elementAddress;
+			behaviorReader = listReader.getNextObject();
 
-		resourceMap = new Map<String,Resource>();
-		for(r in resources)
-		{
-			if(r == null)
-				continue;
-			if(Std.is(r, Sprite))
-				resourceMap.set("Sprite_" + r.name, r);
-			else
-				resourceMap.set(r.name, r);
+			behaviorLookup.set(behaviorReader.getId(), address);
 		}
 	}
-	
-	private function readResourceXML(list:Fast)
+
+	@:access(mbs.io.MbsListBase)
+	private function scanResourceMbs()
 	{
-		resources = new Map<Int,Resource>();
+		resourceLookup = new Map<Int,Int>();
+		resourceNameLookup = new Map<String,Int>();
+
+		var listReader:MbsDynamicList = cast resourceListMbs.getRoot();
+		resourceReaderPool = MbsDynamicHelper.createObjectPool(resourceListMbs);
 		
-		for(e in list.elements)
+		var obj:MbsResource = new MbsResource(resourceListMbs);
+		var intSize = mbs.core.MbsTypes.INTEGER.getSize();
+
+		for(i in 0...listReader.length())
 		{
-			//trace("Reading: " + e.att.name);
-			
-			var atlasID = 0;
-			
-			if(e.has.atlasID)
-			{
-				atlasID = Std.parseInt(e.att.atlasID);
-			}
-			
-			resources.set(Std.parseInt(e.att.id), readResource(Std.parseInt(e.att.id), atlasID, e.name, e.att.name, e));
+			var dynAddress = listReader.elementAddress;
+			var objAddress = resourceListMbs.readInt(dynAddress + intSize);
+			listReader.elementAddress += listReader.elementSize;
+
+			obj.setAddress(objAddress);
+			resourceLookup.set(obj.getId(), dynAddress);
+			if(Std.is(obj, MbsSprite))
+				resourceNameLookup.set("Sprite_" + obj.getName(), obj.getId());
+			else
+				resourceNameLookup.set(obj.getName(), obj.getId());
 		}
 	}
+
+	private function loadResourceFromMbsByName(name:String):Resource
+	{
+		return loadResourceFromMbs(resourceNameLookup.get(name));
+	}
+
+	private function loadResourceFromMbs(id:Int):Resource
+	{
+		var address = resourceLookup.get(id);
+		var obj:MbsObject = cast MbsDynamicHelper.readDynamicUsingPool(resourceListMbs, address, resourceReaderPool);
+
+		var newResource = readResource(obj.getMbsType().getName(), obj);
+
+		if(newResource != null)
+		{
+			resources.set(newResource.ID, newResource);
+
+			if(Std.is(newResource, Sprite))
+				resourceMap.set("Sprite_" + newResource.name, newResource);
+			else
+				resourceMap.set(newResource.name, newResource);
+		}
+
+		return newResource;
+	}
+
+	private function loadBehaviorFromMbs(id:Int):Behavior
+	{
+		behaviorReader.setAddress(behaviorLookup.get(id));
+		return BehaviorReader.readBehavior(behaviorReader);
+	}
 	
-	private function readResource(ID:Int, atlasID:Int, type:String, name:String, xml:Fast):Resource
+	private function readResource(type:String, object:Dynamic):Resource
 	{
 		for(reader in readers)
 		{
 			if(reader.accepts(type))
 			{
-				return reader.read(ID, atlasID, type, name, xml);
+				return reader.read(object);
 			}
 		}
 		
 		return null;
 	}
-	
-	public function getResourcesOfType(type:Dynamic):Array<Dynamic>
-	{
-		var a:Array<Dynamic> = new Array<Dynamic>();
-		
-		for(r in resources)
-		{
-			if(Std.is(r, type))
-			{
-				a.push(r);
-			}
-		}
-		
-		return a;
-	}
-	
+
+	//At the moment, this will be broken in most cases.
 	public function getAllActorTypes():Array<ActorType>
 	{
 		var a = new Array<ActorType>();

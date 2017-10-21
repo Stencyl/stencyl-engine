@@ -1,8 +1,9 @@
 package com.stencyl.io;
 
-import haxe.xml.Fast;
 import com.stencyl.utils.Utils;
 
+import com.stencyl.io.mbs.scene.*;
+import com.stencyl.io.mbs.scene.MbsTileset.*;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.Resource;
 import com.stencyl.models.scene.AutotileFormat;
@@ -17,24 +18,29 @@ class TilesetReader implements AbstractReader
 
 	public function accepts(type:String):Bool
 	{
-		return type == "tileset";
+		return type == MBS_TILESET.getName();
 	}
 	
-	public function read(ID:Int, atlasID:Int, type:String, name:String, xml:Fast):Resource
+	public function read(obj:Dynamic):Resource
 	{
 		//trace("Reading Tileset (" + ID + ") - " + name);
 
-		var framesAcross:Int = Std.parseInt(xml.att.across);
-		var framesDown:Int = Std.parseInt(xml.att.down);
-		var tileWidth:Int = Std.parseInt(xml.att.tw);
-		var tileHeight:Int = Std.parseInt(xml.att.th);
-		var tiles:Array<Tile> = new Array<Tile>();
+		var r:MbsTileset = cast obj;
 
-		var tset:Tileset = new Tileset(ID, atlasID, name, framesAcross, framesDown, tileWidth, tileHeight, tiles);
+		var framesAcross = r.getAcross();
+		var framesDown = r.getDown();
+		var tileWidth = r.getTileWidth();
+		var tileHeight = r.getTileHeight();
+		var tiles = new Array<Tile>();
+
+		var tset = new Tileset(r.getId(), r.getAtlasID(), r.getName(), framesAcross, framesDown, tileWidth, tileHeight, tiles);
 		
-		for(e in xml.elements)
+		var tileList = r.getTiles();
+
+		for(i in 0...tileList.length())
 		{
-			tiles[Std.parseInt(e.att.id)] = readTile(e, tset);
+			var tileReader = tileList.getNextObject();
+			tiles[tileReader.getId()] = readTile(tileReader, tset);
 		}
 		
 		tset.setupFLTileset();
@@ -42,23 +48,24 @@ class TilesetReader implements AbstractReader
 		return tset;
 	}
 	
-	public function readTile(xml:Fast, parent:Tileset):Tile
+	public function readTile(r:MbsTile, parent:Tileset):Tile
 	{
-		var tileID:Int = Std.parseInt(xml.att.id);
-		var collisionID:Int = Std.parseInt(xml.att.collision);
-		var metadata:String = xml.att.data;
+		var tileID = r.getId();
+		var collisionID = r.getCollision();
+		var metadata = r.getMetadata();
 		//Always single for now!
-		var frameID:Int = Std.parseInt(xml.att.frames);
+		var frameID = r.getFrames();
 		
 		//Animated Tiles
 		var imgData:Dynamic = null;
-		var durations:Array<Int> = new Array<Int>();
-		var counter:Int = 0;
+		var durations = new Array<Int>();
+		var counter = 0;
 		
-		for(frame in xml.att.durations.split(","))
+		var durList = r.getDurations();
+		for(i in 0...durList.length())
 		{
 			//Round to the nearest 10ms - there's no more granularity than this and makes it much easier for me.
-			durations[counter] = Std.parseInt(frame);
+			durations[counter] = durList.readInt();
 			
 			durations[counter] =  Math.floor(durations[counter] / 10);
 			durations[counter] *= 10;
@@ -67,16 +74,18 @@ class TilesetReader implements AbstractReader
 		}
 
 		var autotileFormat:AutotileFormat = null;
-		if(xml.has.autotile)
-			autotileFormat = GameModel.get().autotileFormats.get(Std.parseInt(xml.att.autotile));
+		if(r.getAutotile() != -1)
+			autotileFormat = GameModel.get().autotileFormats.get(r.getAutotile());
 
 		var autotileMergeSet:Map<Int, Int> = null;
-		if(xml.has.autotileMerge)
+		if(r.getAutotileMerge().length() != 0)
 		{
 			autotileMergeSet = new Map<Int, Int>();
-			for(mergeID in xml.att.autotileMerge.split(","))
+			var mergeList = r.getAutotileMerge();
+			for(i in 0...mergeList.length())
 			{
-				autotileMergeSet.set(Std.parseInt(mergeID), Std.parseInt(mergeID));
+				var mergeID = mergeList.readInt();
+				autotileMergeSet.set(mergeID, mergeID);
 			}
 		}
 

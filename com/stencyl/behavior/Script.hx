@@ -1803,17 +1803,7 @@ class Script
 	 */
 	public static function getActorTypeByName(typeName:String):ActorType
 	{
-		var types = getAllActorTypes();
-		
-		for(type in types)
-		{
-			if(type.name == typeName)
-			{
-				return type;
-			}
-		}
-		
-		return null;
+		return cast Data.get().resourceMap.get(typeName);
 	}
 	
 	/**
@@ -1998,17 +1988,7 @@ class Script
 	*/
 	public static function getSoundByName(soundName:String):Sound
 	{
-		var sounds = Data.get().getResourcesOfType(Sound);
-		
-		for(sound in sounds)
-		{
-			if(sound.name == soundName)
-			{
-				return sound;
-			}
-		}
-		
-		return null;
+		return cast Data.get().resourceMap.get(soundName);
 	}
 	
 	/**
@@ -2318,17 +2298,7 @@ class Script
 	*/
 	public static function changeBackground(layerRefType:Int, layerRef:String, newBackName:String)
 	{
-		var types = Data.get().getResourcesOfType(ImageBackground);
-		
-		var bg:ImageBackground = null;
-
-		for(type in types)
-		{
-			if(type.name == newBackName)
-			{
-				bg = cast(type, ImageBackground);
-			}
-		}
+		var bg:ImageBackground = cast Data.get().resourceMap.get(newBackName);
 		
 		if(bg == null)
 			return;
@@ -2666,13 +2636,13 @@ class Script
 		temp.addChild(bmpDest);
 		temp.addChild(bmpMask);
 		
-		var final = new BitmapData(dest.width, dest.height, true, 0);
-		final.draw(temp);
+		var result = new BitmapData(dest.width, dest.height, true, 0);
+		result.draw(temp);
 		
 		dummyPoint.x = 0;
 		dummyPoint.y = 0;
 		
-		dest.copyPixels(final, dest.rect, dummyPoint);
+		dest.copyPixels(result, dest.rect, dummyPoint);
 	}
 	
 	public static function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
@@ -2743,13 +2713,13 @@ class Script
 		matrix.scale(-1, 1);
 		matrix.translate(img.width, 0);
 		
-		var final = new BitmapData(img.width, img.height, true, 0);
-		final.draw(img, matrix);
+		var result = new BitmapData(img.width, img.height, true, 0);
+		result.draw(img, matrix);
 		
 		dummyPoint.x = 0;
 		dummyPoint.y = 0;
 		
-		img.copyPixels(final, final.rect, dummyPoint);
+		img.copyPixels(result, result.rect, dummyPoint);
 	}
 	
 	//TODO: Can we do this "in place" without the extra objects?
@@ -2759,13 +2729,13 @@ class Script
 		matrix.scale(1, -1);
 		matrix.translate(0, img.height);
 		
-		var final = new BitmapData(img.width, img.height, true, 0);
-		final.draw(img, matrix);
+		var result = new BitmapData(img.width, img.height, true, 0);
+		result.draw(img, matrix);
 		
 		dummyPoint.x = 0;
 		dummyPoint.y = 0;
 		
-		img.copyPixels(final, final.rect, dummyPoint);
+		img.copyPixels(result, result.rect, dummyPoint);
 	}
 	
 	public static function setXForImage(img:BitmapWrapper, value:Float)
@@ -2852,7 +2822,10 @@ class Script
 	{
 		if(img != null)
 		{
+			//FILTERS DISABLED
+			#if flash
 			img.img.filters = img.filters.concat([filter]);
+			#end
 		}
 	}
 	

@@ -2,6 +2,7 @@ package com.stencyl.behavior;
 
 import openfl.display.Graphics;
 import haxe.ds.StringMap;
+import haxe.CallStack;
 
 class Behavior 
 {	
@@ -110,6 +111,7 @@ class Behavior
 			{
 				trace("Error in when created for behavior: " + name);
 				trace(e);
+				trace(CallStack.toString(CallStack.exceptionStack()));
 			}
 		}
 	}
