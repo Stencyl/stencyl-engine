@@ -16,10 +16,6 @@ import mbs.io.MbsList;
 
 class MbsGame extends MbsObject
 {
-	public static var name:MbsField;
-	public static var width:MbsField;
-	public static var height:MbsField;
-	public static var defaultSceneID:MbsField;
 	public static var shapes:MbsField;
 	public static var atlases:MbsField;
 	public static var autotileFormats:MbsField;
@@ -34,10 +30,6 @@ class MbsGame extends MbsObject
 		MBS_GAME = new ComposedType("MbsGame");
 		MBS_GAME.setInstantiator(function(data) return new MbsGame(data));
 		
-		name = MBS_GAME.createField("name", STRING);
-		width = MBS_GAME.createField("width", INTEGER);
-		height = MBS_GAME.createField("height", INTEGER);
-		defaultSceneID = MBS_GAME.createField("defaultSceneID", INTEGER);
 		shapes = MBS_GAME.createField("shapes", LIST);
 		atlases = MBS_GAME.createField("atlases", LIST);
 		autotileFormats = MBS_GAME.createField("autotileFormats", LIST);
@@ -78,46 +70,6 @@ class MbsGame extends MbsObject
 	public function allocateNew():Void
 	{
 		setAddress(data.allocate(MBS_GAME.getSize()));
-	}
-	
-	public function getName():String
-	{
-		return data.readString(address + name.address);
-	}
-	
-	public function setName(_val:String):Void
-	{
-		data.writeString(address + name.address, _val);
-	}
-	
-	public function getWidth():Int
-	{
-		return data.readInt(address + width.address);
-	}
-	
-	public function setWidth(_val:Int):Void
-	{
-		data.writeInt(address + width.address, _val);
-	}
-	
-	public function getHeight():Int
-	{
-		return data.readInt(address + height.address);
-	}
-	
-	public function setHeight(_val:Int):Void
-	{
-		data.writeInt(address + height.address, _val);
-	}
-	
-	public function getDefaultSceneID():Int
-	{
-		return data.readInt(address + defaultSceneID.address);
-	}
-	
-	public function setDefaultSceneID(_val:Int):Void
-	{
-		data.writeInt(address + defaultSceneID.address, _val);
 	}
 	
 	public function getShapes():MbsList<MbsCollisionShape>

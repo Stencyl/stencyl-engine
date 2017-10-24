@@ -29,13 +29,6 @@ class GameModel
 		collisionMap = null;
 	}
 
-	public var name:String;
-
-	public var width:Int;
-	public var height:Int;
-	
-	public var defaultSceneID:Int;
-	
 	public var groups:Array<GroupDef>;
 	public var groupsCollidesWith:Map<Int,Array<Int>>;
 	public static var collisionMap:Array<Array<Bool>>;
@@ -67,13 +60,6 @@ class GameModel
 	public function new()
 	{
 		var mg:MbsGame = cast Data.get().gameMbs.getRoot();
-		
-		name = mg.getName();
-		width = mg.getWidth();
-		height = mg.getHeight();
-		defaultSceneID = mg.getDefaultSceneID();
-		
-		//---
 		
 		shapes = readShapes(mg);
 		atlases = readAtlases(mg);

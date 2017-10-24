@@ -942,7 +942,7 @@ class Engine
 		
 		if(sceneID == -1 || scene == null)
 		{
-			scene = GameModel.get().scenes.get(GameModel.get().defaultSceneID);
+			scene = GameModel.get().scenes.get(Config.initSceneID);
 			
 			//Something really went wrong!
 			if(scene == null)
