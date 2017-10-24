@@ -113,7 +113,7 @@ class ToolsetInterface
 	private var currentHeader:Map<String,String>;
 	private var bytes:ByteArray;
 	private var bytesExpected:UInt = 0;
-	private static final INT_LENGTH = 4;
+	private static inline var INT_LENGTH = 4;
 
 	private function socketDataHandler(event:ProgressEvent):Void
 	{
