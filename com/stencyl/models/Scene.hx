@@ -104,7 +104,7 @@ class Scene
 	
 	public function load()
 	{
-		var r = new MbsReader(Typedefs.instance, false, true);
+		var r = new MbsReader(Typedefs.get(), false, true);
 		r.readData(Assets.getBytes("assets/data/scene-" + ID + ".mbs"));
 		
 		var scene:MbsScene = cast r.getRoot();

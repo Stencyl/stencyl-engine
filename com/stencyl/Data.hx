@@ -116,16 +116,16 @@ class Data
 	
 	public function loadAll()
 	{
-		gameMbs = new MbsReader(Typedefs.instance, false, true);
+		gameMbs = new MbsReader(Typedefs.get(), false, true);
 		gameMbs.readData(Assets.getBytes("assets/data/game.mbs"));
 
-		sceneListMbs = new MbsReader(Typedefs.instance, false, true);
+		sceneListMbs = new MbsReader(Typedefs.get(), false, true);
 		sceneListMbs.readData(Assets.getBytes("assets/data/scenes.mbs"));
 
-		resourceListMbs = new MbsReader(Typedefs.instance, false, false);
+		resourceListMbs = new MbsReader(Typedefs.get(), false, false);
 		resourceListMbs.readData(Assets.getBytes("assets/data/resources.mbs"));
 
-		behaviorListMbs = new MbsReader(Typedefs.instance, false, false);
+		behaviorListMbs = new MbsReader(Typedefs.get(), false, false);
 		behaviorListMbs.readData(Assets.getBytes("assets/data/behaviors.mbs"));
 
 		resourceAssets = new Map<String,Dynamic>();

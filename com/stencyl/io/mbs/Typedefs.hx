@@ -4,7 +4,14 @@ import mbs.core.MbsTypedefSet;
 
 class Typedefs extends MbsTypedefSet
 {
-	public static var instance = new Typedefs();
+	private static var instance:Typedefs = null;
+
+	public static function get():Typedefs
+	{
+		if(instance == null)
+			instance = new Typedefs();
+		return instance;
+	}
 	
 	override public function addTypes():Void
 	{
