@@ -11,6 +11,7 @@ import com.stencyl.graphics.ScaleMode;
 import com.stencyl.utils.Utils;
 
 using Lambda;
+using StringTools;
 
 class Config
 {
@@ -28,7 +29,7 @@ class Config
 	public static var pixelsnap:Bool;
 	public static var startInFullScreen:Bool;
 	public static var keys:Map<String,Array<String>>;
-	public static var scales:Map<String,Array<Scale>>;
+	public static var scales:Array<Scale>;
 
 	public static var toolsetInterfaceHost:String;
 	public static var toolsetInterfacePort:Null<Int>;
@@ -44,6 +45,7 @@ class Config
 	public static var disableBackButton:Bool;
 	
 	private static var data:Dynamic;
+	private static var defines = com.stencyl.utils.HaxeDefines.getDefines();
 	
 	public static function load():Void
 	{
@@ -51,17 +53,37 @@ class Config
 		loadFromString(text);
 	}
 
+	private static function loadMap(jsonData:Dynamic, mapData:Dynamic):Dynamic
+	{
+		for(field in Reflect.fields(jsonData))
+		{
+			if(field.startsWith("config-"))
+			{
+				if(defines.exists(field.substr("config-".length)))
+				{
+					loadMap(Reflect.field(jsonData, field), mapData);
+				}
+			}
+			else
+			{
+				Reflect.setField(mapData, field, Reflect.field(jsonData, field));
+			}
+		}
+
+		return mapData;
+	}
+
 	public static function loadFromString(text:String, handleReload:Bool = true):Void
 	{
 		if(data == null || !handleReload)
 		{
-			data = Json.parse(text);
+			data = loadMap(Json.parse(text), {});
 			setStaticFields();
 		}
 		else
 		{
 			var oldData = data;
-			data = Json.parse(text);
+			data = loadMap(Json.parse(text), {});
 			setStaticFields();
 
 			var needsScreenReload = false;
@@ -153,8 +175,7 @@ class Config
 		disableBackButton = data.disableBackButton;
 		useGciLogging = data.useGciLogging;
 		keys = asMap(data.keys);
-		var scaleMap:Map<String,Array<String>> = asMap(data.scales);
-		scales = [for(key in scaleMap.keys()) key => scaleMap.get(key).map(Scale.fromString).array()];
+		scales = (data.scales : Array<String>).map(Scale.fromString).array();
 		toolsetInterfaceHost = data.toolsetInterfaceHost;
 		toolsetInterfacePort = data.toolsetInterfacePort;
 		buildConfig = data.buildConfig;

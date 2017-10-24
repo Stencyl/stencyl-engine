@@ -113,20 +113,8 @@ class Universal extends Sprite
 		Engine.stage = stage;
 
 		//enabled scales
-
-		var enabledScales:Array<Scale> =
-			#if web
-			Config.scales.get("web");
-			#elseif desktop
-			Config.scales.get("desktop");
-			#elseif ios
-			Config.scales.get("ios");
-			#elseif android
-			Config.scales.get("android");
-			#end
-
 		var scales = new Map<Scale,Bool>();
-		for(scale in enabledScales)
+		for(scale in Config.scales)
 		{
 			scales.set(scale, true);
 		}
@@ -139,7 +127,7 @@ class Universal extends Sprite
 		trace("Game Scale: " + Config.gameScale);
 		trace("Window Width: " + windowWidth);
 		trace("Window Height: " + windowHeight);
-		trace("Enabled Scales: " + enabledScales);
+		trace("Enabled Scales: " + Config.scales);
 		trace("Scale Mode: " + Config.scaleMode);
 		
 		var theoreticalScale:Float = 1;
