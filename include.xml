@@ -21,8 +21,8 @@
 		<haxeflag name="-D network-sandbox" />
 		<haxeflag name="-D as3_native" />
 		<haxeflag name="-D swf-directblit" />
-		<haxeflag name="-swf-lib" value="flashlib/newgrounds.swf" />
-		<haxeflag name="-swf-lib" value="flashlib/cpmstar.swf" />
+		<haxeflag name="-swf-lib" value="${haxelib:stencyl}/flashlib/newgrounds.swf" />
+		<haxeflag name="-swf-lib" value="${haxelib:stencyl}/flashlib/cpmstar.swf" />
 		
 	</section>
 
