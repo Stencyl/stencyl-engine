@@ -264,6 +264,16 @@ class ToolsetInterface
 							}
 						}
 
+						if(assetID.startsWith('assets/data/scene-') && assetID.endsWith(".mbs"))
+						{
+							var sceneID = Std.parseInt(assetID.substring('assets/data/scene-'.length, assetID.length - ".mbs".length));
+
+							if(Engine.engine.scene.ID == sceneID)
+							{
+								Engine.engine.switchScene(sceneID, null, null);
+							}
+						}
+
 						if(assetUpdatedListeners.exists(assetID))
 						{
 							for(listener in assetUpdatedListeners.get(assetID))
