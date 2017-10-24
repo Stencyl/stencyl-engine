@@ -114,16 +114,16 @@ class Universal extends Sprite
 
 		//enabled scales
 
-		var enabledScales:Array<Scale> = Config.scales.get("project");
-		#if web
-		enabledScales = Config.scales.get("web");
-		#elseif desktop
-		enabledScales = Config.scales.get("desktop");
-		#elseif (mobile && !android)
-		enabledScales = Config.scales.get("ios");
-		#elseif android
-		enabledScales = Config.scales.get("android");
-		#end
+		var enabledScales:Array<Scale> =
+			#if web
+			Config.scales.get("web");
+			#elseif desktop
+			Config.scales.get("desktop");
+			#elseif ios
+			Config.scales.get("ios");
+			#elseif android
+			Config.scales.get("android");
+			#end
 
 		var scales = new Map<Scale,Bool>();
 		for(scale in enabledScales)

@@ -23,7 +23,6 @@ class Config
 	public static var initSceneID:Int;
 	public static var physicsMode:Int;
 	public static var gameScale:Float;
-	public static var gameImageBase:String;
 	public static var antialias:Bool;
 	public static var autoscaleImages:Bool;
 	public static var pixelsnap:Bool;
@@ -81,9 +80,8 @@ class Config
 
 					switch(key)
 					{
-						case "scaleMode", "gameImageBase", "scales",
-							 "stageWidth", "stageHeight", "gameScale",
-							 "antialias":
+						case "scaleMode", "scales", "gameScale",
+							 "stageWidth", "stageHeight", "antialias":
 							needsScreenReload = true;
 
 						case "autoscaleImages":
@@ -143,7 +141,6 @@ class Config
 		initSceneID = data.initSceneID;
 		physicsMode = data.physicsMode;
 		gameScale = data.gameScale;
-		gameImageBase = data.gameImageBase;
 		antialias = data.antialias;
 		pixelsnap = data.pixelsnap;
 		autoscaleImages = data.autoscaleImages;
