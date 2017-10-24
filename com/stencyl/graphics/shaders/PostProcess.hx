@@ -39,11 +39,7 @@ import lime.utils.Float32Array;
 import openfl.display.OpenGLView;
 
 typedef Uniform = {
-	#if js
-	var id:lime.graphics.opengl.GLUniformLocation;
-	#else
-	var id:Int;
-	#end
+	var id:GLUniformLocation;
 	var value:Float;
 };
 
@@ -53,6 +49,7 @@ typedef Uniform = {
  */
 class PostProcess extends OpenGLView
 {
+	static var UNIFORM_NOT_FOUND(default, never) = #if js null #else -1 #end;
 
 	/**
 	 * Create a new PostProcess object
@@ -147,13 +144,11 @@ class PostProcess extends OpenGLView
 		}
 		else
 		{
-			#if js
-			var id:lime.graphics.opengl.GLUniformLocation = fullScreenShader.uniform(uniform);
-			uniforms.set(uniform, {id: id, value: value});
-			#else
-			var id:Int = fullScreenShader.uniform(uniform);
-			if (id != -1) uniforms.set(uniform, {id: id, value: value});
-			#end
+			var id:GLUniformLocation = fullScreenShader.uniform(uniform);
+			if(id != UNIFORM_NOT_FOUND)
+			{
+				uniforms.set(uniform, {id: id, value: value});
+			}
 		}
 	}
 	
@@ -335,17 +330,10 @@ class PostProcess extends OpenGLView
 
 	private var vertexSlot:Int;
 	private var texCoordSlot:Int;
-	#if js
-	private var imageUniform:lime.graphics.opengl.GLUniformLocation;
-	private var resolutionUniform:lime.graphics.opengl.GLUniformLocation;
-	private var resolutionUsUniform:lime.graphics.opengl.GLUniformLocation;
-	private var timeUniform:lime.graphics.opengl.GLUniformLocation;
-	#else
-	private var imageUniform:Int;
-	private var resolutionUniform:Int;
-	private var resolutionUsUniform:Int;
-	private var timeUniform:Int;
-	#end
+	private var imageUniform:GLUniformLocation;
+	private var resolutionUniform:GLUniformLocation;
+	private var resolutionUsUniform:GLUniformLocation;
+	private var timeUniform:GLUniformLocation;
 	private var uniforms:Map<String, Uniform>;
 
 	/* @private Simple full screen vertex fullScreenShader */

@@ -237,13 +237,6 @@ class Engine
 	public var master:Sprite; // the root of the main node
 	public var hudLayer:Sprite; //Shows above everything else
 
-	//Shows above everything else
-	#if (js)
-	public var transitionBitmapLayer:Bitmap;
-	#else
-	public var transitionBitmapLayer:Sprite;
-	#end
-
 	public var transitionLayer:Sprite; //Shows above everything else
 	public var debugLayer:Sprite;
 	
@@ -485,7 +478,7 @@ class Engine
 	//* Full Screen Shaders - C++
 	//*-----------------------------------------------
 	
-	#if(desktop || iphone || android)
+	#if(!flash)
 	private var shader:PostProcess;
 	public var shaderLayer:Sprite;
 	public var shaders:Array<PostProcess>;
@@ -608,7 +601,7 @@ class Engine
 			stats.y = 0;
 		}
 
-		#if(desktop || iphone || android)
+		#if(!flash)
 		resetShaders();
 		#end
 	}
@@ -619,7 +612,7 @@ class Engine
 
 	public function new(root:Sprite) 
 	{		
-		#if(desktop || iphone || android)
+		#if(!flash)
 		if(openfl.display.OpenGLView.isSupported)
 		{
 			shaderLayer = new Sprite();
@@ -657,7 +650,7 @@ class Engine
 		#end
 		begin(Config.initSceneID);
 		
-		#if(desktop || iphone || android)
+		#if(!flash)
 		if(openfl.display.OpenGLView.isSupported)
 		{
 			root.addChild(shaderLayer);
@@ -669,7 +662,7 @@ class Engine
 		#end
 	}
 	
-	#if(flash || js)
+	#if(flash)
 	public function addShader(s:PostProcess, addToDisplayTree:Bool = true) {}
 	public function clearShaders() {}
 	public function toggleShadersForHUD() {} 
@@ -854,14 +847,6 @@ class Engine
 		transitionLayer = new Sprite();
 		root.addChild(transitionLayer);
 		
-		#if (js)
-		transitionBitmapLayer = new Bitmap(new BitmapData(1, 1, true, 0));
-		#else
-		transitionBitmapLayer = new Sprite();
-		#end
-		
-		//root.addChild(transitionBitmapLayer);
-		
 		debugLayer = new Sprite();
 		root.addChild(debugLayer);
 				
@@ -909,7 +894,6 @@ class Engine
 
 	public function setStatsVisible(value:Bool):Void
 	{
-		#if !js
 		if(value == (stats != null))
 			return;
 
@@ -925,7 +909,6 @@ class Engine
 			stage.removeChild(stats);
 			stats = null;
 		}
-		#end
 	}
 	
 	public function loadScene(sceneID:Int)
@@ -3183,21 +3166,6 @@ class Engine
      	for(l in interactiveLayers)
 		{
 			l.overlay.graphics.clear();
-			
-			#if (js)
-
-			if (l.drawnOn)
-			{
-				//l.overlay.graphics.__invalidate(); Seems to be obselete - unsure what replaced it
-				l.bitmapOverlay.bitmapData.fillRect(l.bitmapOverlay.bitmapData.rect, 0);
-				l.drawnOn = false;
-			}
-			
-			#else
-			
-			l.bitmapOverlay.graphics.clear();
-			
-			#end
 		}
 		
 		//Clean up HUD actors
@@ -3224,20 +3192,10 @@ class Engine
 					
 					if(layer != null)
 					{
-						layer.drawnOn = true;
-						
 						g.graphics = layer.overlay.graphics;
-
-						#if (js)
-						g.canvas = layer.bitmapOverlay.bitmapData;
-						#end
-						
-						#if (cpp || flash || neko)
-						g.canvas = layer.bitmapOverlay;
-						#end		
-						
 						g.translateToActor(a);
 						g.resetGraphicsSettings();
+
 						invokeListeners4(a.whenDrawingListeners, g, 0, 0);
 					}
 				}
@@ -3261,24 +3219,8 @@ class Engine
      	
      	//Scene Behavior/Event Drawing
      	g.graphics = transitionLayer.graphics;
-     	
-     	#if (js)
-     	g.canvas = transitionBitmapLayer.bitmapData;
-     	#else
-     	g.canvas = transitionBitmapLayer;
-     	#end
-     	
      	g.translateToScreen();
      	g.graphics.clear();
-     	
-     	#if (js)
-     	g.canvas.fillRect(g.canvas.rect, 0);
-     	#end
-     	
-     	#if (cpp || flash || neko)
-     	g.canvas.graphics.clear();
-     	#end
-     	
      	g.resetGraphicsSettings();
      	invokeListeners4(whenDrawingListeners, g, 0, 0);
 		
@@ -3294,7 +3236,7 @@ class Engine
 			enter.draw(null);
 		}
 		
-		#if(desktop || iphone || android)
+		#if(!flash)
 		if(shaders != null && shaders.length > 0)
 		{
 			//Only need to capture the first shader in the chain

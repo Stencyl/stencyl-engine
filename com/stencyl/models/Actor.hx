@@ -640,10 +640,6 @@ class Actor extends Sprite
 			return;
 		}
 		
-		#if js
-		clearFilters();
-		#end
-		
 		destroyed = true;
 		
 		for(anim in animationMap)
@@ -1902,11 +1898,6 @@ class Actor extends Sprite
 		}
 		
 		transformObj.matrix = transformMatrix;
-		
-		//Temp until jeash handles on their end?
-		//#if js
-		//currAnimation.__invalidateMatrix();
-		//#end
 	}
 	
 	public function updateTweenProperties()

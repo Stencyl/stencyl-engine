@@ -38,7 +38,7 @@ class Tile
 		durations:Array<Int>,
 		autotileFormat:AutotileFormat,
 		autotileMergeSet:Map<Int, Int>,
-		parent: #if js Dynamic #else Tileset #end
+		parent:Tileset
 	)
 	{
 		this.tileID = tileID;

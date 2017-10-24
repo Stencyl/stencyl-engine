@@ -1544,14 +1544,6 @@ class Script
 		if(layer != null)
 		{
 			Engine.engine.g.graphics = layer.overlay.graphics;
-
-			#if (js)
-			Engine.engine.g.canvas = layer.bitmapOverlay.bitmapData;
-			#end
-									
-			#if (cpp || flash || neko)
-			Engine.engine.g.canvas = layer.bitmapOverlay;
-			#end
 		}
 	}
 	
@@ -1573,12 +1565,6 @@ class Script
 	public static function setDrawingLayerToSceneLayer()
 	{
 		Engine.engine.g.graphics = Engine.engine.transitionLayer.graphics;
- 	
-		#if (js)
-		Engine.engine.g.canvas = Engine.engine.transitionBitmapLayer.bitmapData;
-		#else
-		Engine.engine.g.canvas = Engine.engine.transitionBitmapLayer;
-		#end
 	}
 	
 	//*-----------------------------------------------
@@ -2842,28 +2828,7 @@ class Script
 	{
 		var bytes = img.getPixels(img.rect);
 		
-		#if js
-		var byteArray = bytes;
-		byteArray.position = 0;
-		var bytes:Bytes = Bytes.alloc(byteArray.length);
-		while (byteArray.bytesAvailable > 0) 
-		{
-		var position = byteArray.position;
-		bytes.set(position, byteArray.readByte()); 
-		}
-		return img.width + ";" + img.height + ";" + toBase64(bytes);
-		#elseif(cpp || neko)
-		var b = Bytes.alloc(bytes.length);
-		
-		for(i in 0...bytes.length)
-		{
-			b.set(i, bytes[i]);
-		}
-		
-		return img.width + ";" + img.height + ";" + toBase64(b);
-		#else
 		return img.width + ";" + img.height + ";" + toBase64(Bytes.ofData(bytes));
-		#end
 	}
 	
 	//This is extremely slow. Tried this (https://github.com/underscorediscovery/gameapi-haxe/blob/master/playtomic/Encode.hx) 

@@ -27,12 +27,7 @@ class G
 	private var defaultFont:Font;
 
 	public var graphics:Graphics;
-	#if (js)
-	public var canvas:BitmapData;
-	#else
-	public var canvas:Sprite;
-	#end
-
+	
 	public var x:Float;
 	public var y:Float;
 	public var scaleX:Float; //[1]
