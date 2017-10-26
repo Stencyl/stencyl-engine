@@ -10,6 +10,7 @@ import flash.geom.Transform;
 import openfl.display.BlendMode;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
+import openfl.display.Shader;
 import openfl.display.Sprite;
 import openfl.display.Tile;
 import openfl.display.Tilemap;
@@ -232,6 +233,10 @@ class Actor extends Sprite
 	public var moveYDistance:Float = 0;
 	public var minMove:Float = 3;
 	public var maxMove:Float = 99999;
+
+	#if(!flash)
+	private var shader:Shader = null;
+	#end
 	
 	//*-----------------------------------------------
 	//* Behaviors
@@ -1321,8 +1326,8 @@ class Actor extends Sprite
 			
 			currAnimationName = name;
 			currAnimation = newAnimation;
-			#if desktop
-			currAnimation.filters = filters;
+			#if(!flash)
+			currAnimation.shader = shader;
 			#end
 
 			addChild(newAnimation);			
@@ -3723,17 +3728,28 @@ class Actor extends Sprite
 
 	public function setFilter(filter:Array<BitmapFilter>)
 	{
+		#if(!flash)
+		if(filter.length >= 1)
+		{
+			shader = filter[0].getShader();
+		}
+		else
+		{
+			shader = null;
+		}
+		currAnimation.shader = shader;
+		#else
 		filters = filters.concat(filter);
-		#if desktop
-		currAnimation.filters = filters;
 		#end
 	}
 	
 	public function clearFilters()
 	{
+		#if(!flash)
+		shader = null;
+		currAnimation.shader = shader;
+		#else
 		filters = [];
-		#if desktop
-		currAnimation.filters = filters;
 		#end
 	}
 	
