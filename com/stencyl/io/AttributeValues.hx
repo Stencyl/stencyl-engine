@@ -102,6 +102,10 @@ class AttributeValues
 				var mdl:MbsDynamicList = cast val;
 				val = [for(i in 0...mdl.length()) mdl.readObject()];
 			}
+			else if(Std.is(val, MbsList))
+			{
+				val = readMap(cast val);
+			}
 
 			map.set(key, val);
 		}
