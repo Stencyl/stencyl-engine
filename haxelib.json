@@ -4,9 +4,9 @@
   "license": "MIT",
   "tags": [ "stencyl", "flash", "cpp" ],
   "description": "Stencyl.",
-  "version": "1.0.0",
+  "version": "3.5.0",
   "binaryversion": "1",
-  "releasenote": "First Release",
+  "releasenote": "",
   "contributors": [ "" ],
   "dependencies": {}
 }
