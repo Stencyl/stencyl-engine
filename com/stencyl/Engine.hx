@@ -98,6 +98,7 @@ import box2D.dynamics.contacts.B2Contact;
 import box2D.dynamics.contacts.B2ContactEdge;
 
 import haxe.ds.ObjectMap;
+import haxe.CallStack;
 
 //import com.nmefermmmtools.debug.Console;
 
@@ -4108,6 +4109,9 @@ class Engine
 			catch(e:String)
 			{
 				trace(e);
+				#if debug
+				trace(CallStack.toString(CallStack.exceptionStack()));
+				#end
 			}	
 			
 			r++;			
@@ -4135,6 +4139,9 @@ class Engine
 			catch(e:String)
 			{
 				trace(e);
+				#if debug
+				trace(CallStack.toString(CallStack.exceptionStack()));
+				#end
 			}
 			
 			r++;
@@ -4162,6 +4169,9 @@ class Engine
 			catch(e:String)
 			{
 				trace(e);
+				#if debug
+				trace(CallStack.toString(CallStack.exceptionStack()));
+				#end
 			}
 			
 			r++;
@@ -4189,6 +4199,9 @@ class Engine
 			catch(e:String)
 			{
 				trace(e);
+				#if debug
+				trace(CallStack.toString(CallStack.exceptionStack()));
+				#end
 			}
 			
 			r++;
@@ -4216,6 +4229,9 @@ class Engine
 			catch(e:String)
 			{
 				trace(e);
+				#if debug
+				trace(CallStack.toString(CallStack.exceptionStack()));
+				#end
 			}
 			
 			r++;
@@ -4243,6 +4259,9 @@ class Engine
 			catch(e:String)
 			{
 				trace(e);
+				#if debug
+				trace(CallStack.toString(CallStack.exceptionStack()));
+				#end
 			}
 			
 			r++;

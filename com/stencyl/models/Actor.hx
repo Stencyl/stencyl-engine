@@ -89,6 +89,8 @@ import openfl.filters.BitmapFilter;
 import openfl.filters.ColorMatrixFilter;
 import com.stencyl.utils.ColorMatrix;
 
+import haxe.CallStack;
+
 #if (cpp || neko)
 typedef ActorAnimation = SheetAnimation;
 #else
@@ -942,6 +944,9 @@ class Actor extends Sprite
 			catch(e:String)
 			{
 				trace(e);
+				#if debug
+				trace(CallStack.toString(CallStack.exceptionStack()));
+				#end
 			}
 			
 			r++;

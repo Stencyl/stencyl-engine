@@ -111,7 +111,9 @@ class Behavior
 			{
 				trace("Error in when created for behavior: " + name);
 				trace(e);
+				#if debug
 				trace(CallStack.toString(CallStack.exceptionStack()));
+				#end
 			}
 		}
 	}

@@ -25,6 +25,7 @@ import com.stencyl.utils.ToolsetInterface;
 #end
 import com.stencyl.utils.Utils;
 import haxe.xml.Fast;
+import haxe.CallStack;
 
 import haxe.Log in HaxeLog;
 import lime.utils.Log in LimeLog;
@@ -362,6 +363,17 @@ class Universal extends Sprite
 			
 		} catch (e:Dynamic) {
 			
+			#if stencyltools
+			if(Config.useGciLogging)
+			{
+				trace(e);
+				#if debug
+				trace(CallStack.toString(CallStack.exceptionStack()));
+				#end
+				ToolsetInterface.preloadedUpdate();
+			}
+			#end
+
 			stage.__handleError (e);
 			
 		}
