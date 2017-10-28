@@ -708,8 +708,13 @@ class Scene
 	
 	public function readWireframes(list:MbsList<MbsWireframe>):Array<Wireframe>
 	{
+		if(Engine.NO_PHYSICS)
+		{
+			return new Array<Wireframe>();
+		}
+
 		var map = new Array<Wireframe>();
-		
+
 		for(i in 0...list.length())
 		{
 			var poly = list.getNextObject();
