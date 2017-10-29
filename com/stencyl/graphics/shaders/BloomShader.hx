@@ -20,6 +20,10 @@ class BloomShader extends BasicShader
 		
 		#if desktop
 		var script = "
+			#ifdef GL_ES
+				precision mediump float;
+			#endif
+
 			varying vec2 vTexCoord;
 			uniform vec2 uResolution;
 			uniform sampler2D uImage0;
@@ -70,6 +74,10 @@ class BloomShader extends BasicShader
 		";
 		#else
 		var script = "
+			#ifdef GL_ES
+				precision mediump float;
+			#endif
+			
 			varying vec2 vTexCoord;
 			uniform vec2 uResolution;
 			uniform sampler2D uImage0;

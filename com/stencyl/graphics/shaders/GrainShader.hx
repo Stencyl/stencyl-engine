@@ -11,6 +11,10 @@ class GrainShader extends BasicShader
 				Film Grain post-process shader v1.1
 				Martins Upitis (martinsh) devlog-martinsh.blogspot.com
 			*/
+
+			#ifdef GL_ES
+				precision mediump float;
+			#endif
 			
 			uniform sampler2D uImage0; //rendered scene sampler
 			uniform vec2 uResolution; //scene sampler resolution

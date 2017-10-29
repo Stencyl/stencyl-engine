@@ -7,6 +7,10 @@ class SharpenShader extends BasicShader
 		super();
 		
 		var script = "
+			#ifdef GL_ES
+				precision mediump float;
+			#endif
+			
 			varying vec2 vTexCoord;
 			uniform sampler2D uImage0;
 			uniform vec2 uResolution;

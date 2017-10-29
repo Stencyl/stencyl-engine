@@ -7,6 +7,10 @@ class BlurShader extends BasicShader
 		super();
 		
 		var script = "
+			#ifdef GL_ES
+				precision mediump float;
+			#endif
+			
 			//in attributes from our vertex shader
 			varying vec2 vTexCoord;
 			

@@ -23,11 +23,20 @@ class CSBShader extends BasicShader
 		super();
 		
 		var script = "
+			#ifdef GL_ES
+				precision mediump float;
+			#endif
+
 			varying vec2 vTexCoord;
 			uniform sampler2D uImage0;
 			uniform float contrast;
 			uniform float brightness;
 			uniform float saturation;
+
+			vec3 _mix(vec3 a, vec3 b, float amount) 
+			{ 
+				return vec3(a.x * (1.0 - amount) + b.x * amount, a.y * (1.0 - amount) + b.y * amount, a.z * (1.0 - amount) + b.z * amount); 
+			}
 
 			void main() 
 			{
@@ -37,15 +46,10 @@ class CSBShader extends BasicShader
 		
 				vec3 brtColor = vec3(color.x * brightness, color.y * brightness, color.z * brightness);
 				vec3 intensity = vec3(dot(brtColor, luminanceCoefficient));
-				vec3 satColor = mix(intensity, brtColor, saturation);
-				vec3 conColor = mix(avgLuminance, satColor, contrast);
+				vec3 satColor = _mix(intensity, brtColor, saturation);
+				vec3 conColor = _mix(avgLuminance, satColor, contrast);
 		
 				gl_FragColor = vec4(conColor, 1);
-			}
-			
-			vec3 mix(vec3 a, vec3 b, float amount) 
-			{ 
-				return vec3(a.x * (1.0 - amount) + b.x * amount, a.y * (1.0 - amount) + b.y * amount, a.z * (1.0 - amount) + b.z * amount); 
 			}
 		";
 	

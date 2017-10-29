@@ -9,6 +9,10 @@ class TintShader extends BasicShader
 		super();
 		
 		var script = "
+			#ifdef GL_ES
+				precision mediump float;
+			#endif
+
 			varying vec2 vTexCoord;
 			uniform sampler2D uImage0;
 			uniform float amount;
@@ -16,16 +20,16 @@ class TintShader extends BasicShader
 			uniform float green;
 			uniform float blue;
 
+			vec3 _mix(vec3 a, vec3 b, float amount) 
+			{ 
+				return vec3(a.x * (1.0 - amount) + b.x * amount, a.y * (1.0 - amount) + b.y * amount, a.z * (1.0 - amount) + b.z * amount); 
+			}
+
 			void main() 
 			{
 				vec3 color = texture2D(uImage0, vTexCoord).rgb;
-				vec3 endColor = mix(color, vec3(red, green, blue), amount);
+				vec3 endColor = _mix(color, vec3(red, green, blue), amount);
 				gl_FragColor = vec4(endColor.x, endColor.y, endColor.z, 1);
-			}
-			
-			vec3 mix(vec3 a, vec3 b, float amount) 
-			{ 
-				return vec3(a.x * (1.0 - amount) + b.x * amount, a.y * (1.0 - amount) + b.y * amount, a.z * (1.0 - amount) + b.z * amount); 
 			}
 		";
 	

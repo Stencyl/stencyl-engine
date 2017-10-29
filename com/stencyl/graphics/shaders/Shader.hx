@@ -78,6 +78,7 @@ class Shader
 		if (GL.getShaderParameter(shader, GL.COMPILE_STATUS) == 0)
 		{
 			trace(GL.getShaderInfoLog(shader));
+			trace("From source:\n" + source);
 			return null;
 		}
 
