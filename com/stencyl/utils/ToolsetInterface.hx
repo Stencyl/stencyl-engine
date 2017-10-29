@@ -300,9 +300,8 @@ class ToolsetInterface
 				["Content-Type" => "Log",
 				"Class" => pos.className,
 				"Method" => pos.methodName,
-				"Line" => ""+pos.lineNumber,
-				"Message" => v],
-				null
+				"Line" => ""+pos.lineNumber],
+				v
 			);
 		}
 		else
