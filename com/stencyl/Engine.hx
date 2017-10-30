@@ -4108,11 +4108,8 @@ class Engine
 			
 			catch(e:String)
 			{
-				trace(e);
-				#if debug
-				trace(CallStack.toString(CallStack.exceptionStack()));
-				#end
-			}	
+				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
+			}
 			
 			r++;			
 		}
@@ -4138,10 +4135,7 @@ class Engine
 			
 			catch(e:String)
 			{
-				trace(e);
-				#if debug
-				trace(CallStack.toString(CallStack.exceptionStack()));
-				#end
+				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
 			}
 			
 			r++;
@@ -4168,10 +4162,7 @@ class Engine
 			
 			catch(e:String)
 			{
-				trace(e);
-				#if debug
-				trace(CallStack.toString(CallStack.exceptionStack()));
-				#end
+				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
 			}
 			
 			r++;
@@ -4198,10 +4189,7 @@ class Engine
 			
 			catch(e:String)
 			{
-				trace(e);
-				#if debug
-				trace(CallStack.toString(CallStack.exceptionStack()));
-				#end
+				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
 			}
 			
 			r++;
@@ -4228,10 +4216,7 @@ class Engine
 			
 			catch(e:String)
 			{
-				trace(e);
-				#if debug
-				trace(CallStack.toString(CallStack.exceptionStack()));
-				#end
+				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
 			}
 			
 			r++;
@@ -4258,10 +4243,7 @@ class Engine
 			
 			catch(e:String)
 			{
-				trace(e);
-				#if debug
-				trace(CallStack.toString(CallStack.exceptionStack()));
-				#end
+				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
 			}
 			
 			r++;

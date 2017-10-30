@@ -366,10 +366,7 @@ class Universal extends Sprite
 			#if stencyltools
 			if(Config.useGciLogging)
 			{
-				trace(e);
-				#if debug
-				trace(CallStack.toString(CallStack.exceptionStack()));
-				#end
+				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
 				ToolsetInterface.preloadedUpdate();
 			}
 			#end

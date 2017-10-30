@@ -261,7 +261,6 @@ using StringTools;
 	{
 		if (Std.is(event.error, Error))
 		{
-			trace(cast(event.error, Error).message);
 			trace(cast(event.error, Error).getStackTrace());
 		}
 		else if (Std.is(event.error,ErrorEvent))

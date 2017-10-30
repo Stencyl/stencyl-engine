@@ -109,11 +109,11 @@ class Behavior
 			
 			catch(e:String)
 			{
-				trace("Error in when created for behavior: " + name);
-				trace(e);
-				#if debug
-				trace(CallStack.toString(CallStack.exceptionStack()));
-				#end
+				trace
+				(
+					"Error in when created for behavior: " + name + "\n" + e
+					#if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end
+				);
 			}
 		}
 	}
