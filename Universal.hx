@@ -86,6 +86,10 @@ class Universal extends Sprite
 	{
 		trace("initScreen");
 
+		#if mobile
+		isFullScreen = true;
+		#end
+
 		stage.displayState = isFullScreen ?
 			StageDisplayState.FULL_SCREEN_INTERACTIVE :
 			StageDisplayState.NORMAL;
