@@ -26,6 +26,7 @@ import com.stencyl.utils.Assets;
 import com.stencyl.utils.LazyMap;
 
 import mbs.core.MbsObject;
+import mbs.core.MbsType;
 import mbs.core.MbsTypes;
 import mbs.io.MbsDynamicHelper;
 import mbs.io.MbsDynamicHelper.DynamicPool;
@@ -187,7 +188,9 @@ class Data
 
 			obj.setAddress(objAddress);
 			resourceLookup.set(obj.getId(), dynAddress);
-			if(Std.is(obj, MbsSprite))
+
+			var type = resourceListMbs.readTypecode(dynAddress);
+			if(type == MbsSprite.MBS_SPRITE)
 				resourceNameLookup.set("Sprite_" + obj.getName(), obj.getId());
 			else
 				resourceNameLookup.set(obj.getName(), obj.getId());
@@ -219,6 +222,31 @@ class Data
 		return newResource;
 	}
 
+	@:access(mbs.io.MbsListBase)
+	private function loadAllResourcesOfType(type:MbsType):Void
+	{
+		var listReader:MbsDynamicList = cast resourceListMbs.getRoot();
+		
+		var obj:MbsResource = new MbsResource(resourceListMbs);
+		var intSize = mbs.core.MbsTypes.INTEGER.getSize();
+
+		listReader.elementAddress = listReader.getAddress() + intSize * 2;
+		for(i in 0...listReader.length())
+		{
+			var dynAddress = listReader.elementAddress;
+			var objType = resourceListMbs.readTypecode(dynAddress);
+
+			if(objType == type)
+			{
+				var objAddress = resourceListMbs.readInt(dynAddress + intSize);
+				obj.setAddress(objAddress);
+				loadResourceFromMbs(obj.getId());
+			}
+			
+			listReader.elementAddress += listReader.elementSize;
+		}
+	}
+
 	private function loadBehaviorFromMbs(id:Int):Behavior
 	{
 		behaviorReader.setAddress(behaviorLookup.get(id));
@@ -238,9 +266,16 @@ class Data
 		return null;
 	}
 
-	//At the moment, this will be broken in most cases.
+	private var actorTypesLoaded = false;
+	
 	public function getAllActorTypes():Array<ActorType>
 	{
+		if(!actorTypesLoaded)
+		{
+			loadAllResourcesOfType(MbsActorType.MBS_ACTOR_TYPE);
+			actorTypesLoaded = true;
+		}
+
 		var a = new Array<ActorType>();
 		
 		for(r in resources)
