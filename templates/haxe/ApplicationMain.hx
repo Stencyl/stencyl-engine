@@ -156,7 +156,7 @@ using StringTools;
 		{
 			var startTime = Timer.stamp();
 			var tryTimeout = function() {
-				if(!ToolsetInterface.connected && Timer.stamp() - startTime > 1)
+				if(!ToolsetInterface.connected && Timer.stamp() - startTime > 2)
 				{
 					ToolsetInterface.cancelConnection();
 				}
