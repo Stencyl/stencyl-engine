@@ -140,7 +140,7 @@ class ToolsetInterface
 				if(bytes.position + socket.bytesAvailable >= bytesExpected)
 				{
 					socket.readBytes(bytes, bytes.position, bytesExpected - bytes.position);
-
+					
 					readingHeader = false;
 					currentHeader = parseHeader(bytes);
 					bytesExpected = Std.parseInt(currentHeader.get("Content-Length"));
@@ -150,7 +150,9 @@ class ToolsetInterface
 				}
 				else
 				{
-					socket.readBytes(bytes, bytes.position, socket.bytesAvailable);
+					var newBytes = socket.bytesAvailable;
+					socket.readBytes(bytes, bytes.position, newBytes);
+					bytes.position += newBytes;
 				}
 			}
 			if(!readingHeader)
@@ -170,7 +172,9 @@ class ToolsetInterface
 				}
 				else
 				{
-					socket.readBytes(bytes, bytes.position, socket.bytesAvailable);
+					var newBytes = socket.bytesAvailable;
+					socket.readBytes(bytes, bytes.position, newBytes);
+					bytes.position += newBytes;
 				}
 			}
 		}
