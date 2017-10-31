@@ -269,7 +269,14 @@ class G
 			}
 		}
 	}
-		
+
+	private static var drawnStringCache = new Map<String, TemporaryImage>();
+
+	private inline function getCacheKey(string:String, font:Font, alpha:Float):String
+	{
+		return string + ":" + font.ID + ":" + alpha;
+	}
+	
 	public inline function drawString(s:String, x:Float, y:Float)
 	{
 		if(font == null)
@@ -303,24 +310,60 @@ class G
 		
 		mtx.identity();
 		mtx.translate(drawX, drawY);
+
+		var toDraw:BitmapData = null;
 		
-		var w = font.font.getTextWidth(s, font.letterSpacing, font.fontScale);
-		var h = Std.int(font.font.getFontHeight() * font.fontScale);
-		
-		if(w > 0 && h > 0)
+		var cacheKey = getCacheKey(s, font, alpha);
+		if(drawnStringCache.exists(cacheKey))
 		{
-			var bitmapData = new BitmapData(w, h, true, 0);
+			var temp = drawnStringCache.get(cacheKey);
+			temp.lifetime = 5;
+			toDraw = temp.img;
+		}
+		else
+		{
+			var w = font.font.getTextWidth(s, font.letterSpacing, font.fontScale);
+			var h = Std.int(font.font.getFontHeight() * font.fontScale);
 			
-			#if (flash || js)
-			font.font.render(bitmapData, fontData, s, 0x000000, alpha, 0, 0, font.letterSpacing, font.fontScale, 0);
-			#else
-			font.font.renderToImg(bitmapData, s, 0x000000, alpha, 0, 0, font.letterSpacing, font.fontScale, 0, false); //0, false
-			#end
-			
-			//TODO: This approach is really, really slow!
-			graphics.beginBitmapFill(bitmapData, mtx);
-			graphics.drawRect(drawX, drawY, w, h);
+			if(w > 0 && h > 0)
+			{
+				toDraw = new BitmapData(w, h, true, 0);
+				
+				#if (flash || js)
+				font.font.render(toDraw, fontData, s, 0x000000, alpha, 0, 0, font.letterSpacing, font.fontScale, 0);
+				#else
+				font.font.renderToImg(toDraw, s, 0x000000, alpha, 0, 0, font.letterSpacing, font.fontScale, 0, false); //0, false
+				#end
+				
+				var temp = new TemporaryImage();
+				temp.img = toDraw;
+				temp.lifetime = 5;
+
+				drawnStringCache.set(cacheKey, temp);
+				trace("Added drawString image to cache: " + cacheKey);
+			}
+		}
+
+		if(toDraw != null)
+		{
+			graphics.beginBitmapFill(toDraw, mtx);
+			graphics.drawRect(drawX, drawY, toDraw.width, toDraw.height);
 			graphics.endFill();
+		}
+	}
+
+	public static function visitStringCache():Void
+	{
+		for(key in drawnStringCache.keys())
+		{
+			var temp = drawnStringCache.get(key);
+			--temp.lifetime;
+			if(temp.lifetime == 0)
+			{
+				temp.img.dispose();
+				drawnStringCache.remove(key);
+				trace("Removed drawString image from cache: " + key);
+			}
 		}
 	}
 	
@@ -615,4 +658,12 @@ class G
 	{
 		font = defaultFont;
 	}
+}
+
+private class TemporaryImage
+{
+	public var lifetime:Int;
+	public var img:BitmapData;
+
+	public function new() {}
 }

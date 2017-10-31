@@ -3224,6 +3224,8 @@ class Engine
      	g.graphics.clear();
      	g.resetGraphicsSettings();
      	invokeListeners4(whenDrawingListeners, g, 0, 0);
+
+     	G.visitStringCache();
 		
 		//Draw Transitions
 		if(leave != null && leave.isActive())
