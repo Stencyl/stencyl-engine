@@ -6,6 +6,9 @@ class Sprite extends Resource
 {
 	public var defaultAnimation:Int;
 	public var animations:Map<Int, Animation>;
+
+	@:deprecated("Get width from individual animations") public var width(get, never):Int;
+	@:deprecated("Get height from individual animations") public var height(get, never):Int;
 	
 	public function new(ID:Int, atlasID:Int, name:String, defaultAnimation:Int)
 	{
@@ -57,5 +60,17 @@ class Sprite extends Resource
 				}
 			}
 		}
+	}
+
+	private function get_width():Int
+	{
+		var defaultAnim = animations.get(defaultAnimation);
+		return Std.int(defaultAnim.imgWidth / defaultAnim.framesAcross);
+	}
+
+	private function get_height():Int
+	{
+		var defaultAnim = animations.get(defaultAnimation);
+		return Std.int(defaultAnim.imgHeight / defaultAnim.framesDown);
 	}
 }
