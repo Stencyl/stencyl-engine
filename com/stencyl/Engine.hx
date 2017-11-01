@@ -2023,7 +2023,7 @@ class Engine
 		//---
 			
 		//Add to type cache
-		if(ai.actorType != null)
+		if(ai.actorType != null && ai.actorType.ID != -1)
 		{
 			var cache = actorsOfType.get(ai.actorType.ID);
 			
@@ -2061,10 +2061,9 @@ class Engine
 		
 		//---
 		
-		if (Data.get().resources.get(a.typeID) != null)
+		if (a.type != null && a.typeID != -1)
 		{
-			var typeID:ActorType = cast(Data.get().resources.get(a.typeID), ActorType);
-			var cache = actorsOfType.get(typeID.ID);
+			var cache = actorsOfType.get(a.typeID);
 			
 			if(cache != null)
 			{
