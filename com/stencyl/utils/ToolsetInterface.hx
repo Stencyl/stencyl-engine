@@ -92,7 +92,7 @@ class ToolsetInterface
 		trace("connectHandler: " + event);
 		if(Config.buildConfig != null)
 		{
-			socket.writeUTFBytes("Client-Registration: \r\n\r\n" + haxe.Json.stringify(Config.buildConfig));
+			sendData(["Content-Type" => "Client-Registration"], haxe.Json.stringify(Config.buildConfig));
 		}
 	}
 
@@ -329,8 +329,9 @@ class ToolsetInterface
 
 	private function createPacket(header:ByteArray, data:ByteArray):ByteArray
 	{
-		var message:ByteArray = new ByteArray(header.length + data.length);
+		var message:ByteArray = new ByteArray(INT_LENGTH + header.length + data.length);
 		message.endian = openfl.utils.Endian.BIG_ENDIAN;
+		message.writeInt(header.length);
 		message.writeBytes(header, 0, header.length);
 		message.writeBytes(data, 0, data.length);
 		return message;
@@ -339,9 +340,7 @@ class ToolsetInterface
 	private function generateHTTPHeader(keyValues:Map<String,String>, data:ByteArray):ByteArray
 	{
 		var sb = new StringBuf();
-		//not really http, but tells the toolset to process it as such
-		sb.add("GET/HTTP\r\n");
-
+		
 		for(key in keyValues.keys())
 		{
 			sb.add(key);
