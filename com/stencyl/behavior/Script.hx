@@ -2971,13 +2971,8 @@ class Script
 		return -1;
 	}
 
-	public static function setTileAt(row:Dynamic, col:Dynamic, refType:Int, ref:String, tilesetID:Dynamic, tileID:Dynamic)
+	public static function setTileAt(row:Int, col:Int, refType:Int, ref:String, tilesetID:Int, tileID:Int)
 	{
-		row = Std.int(row);
-		col = Std.int(col);
-		tilesetID = Std.int(tilesetID);
-		tileID = Std.int(tileID);
-	
 		var layer = engine.getLayer(refType, ref);
 		if(layer == null || !Std.is(layer, Layer))
 		{
@@ -3032,20 +3027,20 @@ class Script
 		engine.tileUpdated = true;
 	}
 	
-	public static function tileExistsAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Bool
+	public static function tileExistsAt(row:Int, col:Int, refType:Int, ref:String):Bool
 	{
-		return getTileAt(Std.int(row), Std.int(col), refType, ref) != null;
+		return getTileAt(row, col, refType, ref) != null;
 	}
 	
 	//tileCollisionAt function added to return True if ANY collision shape exists, or False for no tile or collision shape
 	//if the user gives it a negative value for the layer, it will loop through all layers instead of a specific one
-	public static function tileCollisionAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Bool
+	public static function tileCollisionAt(row:Int, col:Int, refType:Int, ref:String):Bool
 	{
 		if(refType == 0 && Std.parseInt(ref) < 0)
 		{
 			for (layer in engine.interactiveLayers)
 			{
-				var tile = layer.tiles.getTileAt(Std.int(row), Std.int(col));
+				var tile = layer.tiles.getTileAt(row, col);
 				if((tile == null) || (tile.collisionID == -1))
 				{
 					continue;
@@ -3059,7 +3054,7 @@ class Script
 		}
 		else
 		{
-			var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
+			var tile = getTileAt(row, col, refType, ref);
 			if((tile == null) || (tile.collisionID == -1))
 			{
 				return false;
@@ -3078,17 +3073,17 @@ class Script
 		var tileW = engine.scene.tileWidth;
 		if(axis == 0)
 		{
-			return Std.int(Math.floor(val / tileW));
+			return Math.floor(val / tileW);
 		}
 		else
 		{
-			return Std.int(Math.floor(val / tileH));
+			return Math.floor(val / tileH);
 		}
 	}
 
-	public static function getTileIDAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Int
+	public static function getTileIDAt(row:Int, col:Int, refType:Int, ref:String):Int
 	{
-		var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
+		var tile = getTileAt(row, col, refType, ref);
 		
 		if(tile == null)
 		{
@@ -3098,9 +3093,9 @@ class Script
 		return tile.tileID;
 	}
 	
-	public static function getTileColIDAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Int
+	public static function getTileColIDAt(row:Int, col:Int, refType:Int, ref:String):Int
     {
-    	var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
+    	var tile = getTileAt(row, col, refType, ref);
                        
         if(tile == null)
         {
@@ -3110,9 +3105,9 @@ class Script
         return tile.collisionID;
     }
 
-	public static function getTileDataAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):String
+	public static function getTileDataAt(row:Int, col:Int, refType:Int, ref:String):String
     {
-    	var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
+    	var tile = getTileAt(row, col, refType, ref);
         
         if(tile == null)
         {
@@ -3122,9 +3117,9 @@ class Script
         return tile.metadata;
     }
 	
-	public static function getTilesetIDAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Int
+	public static function getTilesetIDAt(row:Int, col:Int, refType:Int, ref:String):Int
 	{
-		var tile = getTileAt(Std.int(row), Std.int(col), refType, ref);
+		var tile = getTileAt(row, col, refType, ref);
 		
 		if(tile == null)
 		{
@@ -3134,7 +3129,7 @@ class Script
 		return tile.parent.ID;
 	}
 	
-	public static function getTileAt(row:Dynamic, col:Dynamic, refType:Int, ref:String):Tile
+	public static function getTileAt(row:Int, col:Int, refType:Int, ref:String):Tile
 	{
 		var tlayer = getTileLayerAt(refType, ref);
 		
@@ -3143,14 +3138,11 @@ class Script
 			return null;
 		}
 		
-		return tlayer.getTileAt(Std.int(row), Std.int(col));
+		return tlayer.getTileAt(row, col);
 	}
 	
-	public static function removeTileAt(row:Dynamic, col:Dynamic, refType:Int, ref:String)
+	public static function removeTileAt(row:Int, col:Int, refType:Int, ref:String)
 	{
-		row = Std.int(row);
-		col = Std.int(col);
-		
 		var layer = engine.getLayer(refType, ref);
 		if(layer == null || !Std.is(layer, Layer))
 		{
@@ -3318,7 +3310,7 @@ class Script
 	/**
 	* Get the screen width in pixels
 	*/
-	public static function getScreenWidth()
+	public static function getScreenWidth():Int
 	{
 		return Engine.screenWidth;
 	}
@@ -3326,7 +3318,7 @@ class Script
 	/**
 	* Get the screen height in pixels
 	*/
-	public static function getScreenHeight()
+	public static function getScreenHeight():Int
 	{
 		return Engine.screenHeight;
 	}
@@ -3402,15 +3394,15 @@ class Script
 	/**
 	 * Generates a random integer between the low and high values.
 	 */
-	public static function randomInt(low:Float, high:Float):Int
+	public static function randomInt(low:Int, high:Int):Int
 	{
 		if (low <= high)
 		{
-			return Std.int(low) + Math.floor(Math.random() * (Std.int(high) - Std.int(low) + 1));
+			return low + Math.floor(Math.random() * (high - low + 1));
 		}
 		else
 		{
-			return Std.int(high) + Math.floor(Math.random() * (Std.int(low) - Std.int(high) + 1));
+			return high + Math.floor(Math.random() * (low - high + 1));
 		}
 	}
 	
