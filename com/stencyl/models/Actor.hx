@@ -39,6 +39,7 @@ import com.stencyl.graphics.SheetAnimation;
 import com.stencyl.graphics.fonts.Label;
 
 import com.stencyl.behavior.Behavior;
+import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.behavior.BehaviorManager;
 
 import com.stencyl.models.actor.Group;
@@ -319,7 +320,7 @@ class Actor extends Sprite
 		width:Float=32, 
 		height:Float=32,
 		sprite:StencylSprite=null,
-		behaviorValues:Map<String,Dynamic>=null,
+		behaviorValues:Map<String,BehaviorInstance>=null,
 		actorType:ActorType=null,
 		bodyDef:B2BodyDef=null,
 		isSensor:Bool=false,

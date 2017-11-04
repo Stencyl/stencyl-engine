@@ -13,6 +13,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 import com.stencyl.Config;
+import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.graphics.EngineScaleUpdateListener;
 import com.stencyl.models.Scene;
 import com.stencyl.models.collision.Grid;
@@ -155,7 +156,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 			grid.width, 
 			grid.height, 
 			null, 
-			new Map<String,Dynamic>(),
+			new Map<String,BehaviorInstance>(),
 			null,
 			null, 
 			false, 

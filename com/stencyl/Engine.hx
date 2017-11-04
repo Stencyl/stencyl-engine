@@ -1099,7 +1099,7 @@ class Engine
 	public static function initBehaviors
 	(
 		manager:BehaviorManager, 
-		behaviorValues:Map<String,Dynamic>, 
+		behaviorValues:Map<String,BehaviorInstance>, 
 		parent:Dynamic, 
 		game:Engine,
 		initialize:Bool
@@ -1110,10 +1110,8 @@ class Engine
 			return;
 		}
 		
-		for(behaviorInstance in behaviorValues)
+		for(bi in behaviorValues)
 		{
-			var bi:BehaviorInstance = behaviorInstance;
-		
 			if(bi == null || !bi.enabled)
 			{
 				continue;
@@ -1133,14 +1131,7 @@ class Engine
 			{
 				for(key in template.attributes.keys())
 				{
-					var att = template.attributes.get(key);
-					
-					if(att == null)
-					{
-						continue;
-					}
-					
-					var attribute:Attribute = cast(att, Attribute);
+					var attribute = template.attributes.get(key);
 	
 					if(attribute == null)
 					{
@@ -1166,20 +1157,7 @@ class Engine
 			{
 				var value:Dynamic = bi.values.get(key);
 				
-				if(template == null)
-				{
-					trace("Non-Existent Behavior ID (Init): " + bi.behaviorID);
-					continue;
-				}
-				
-				var att = template.attributes.get(key);
-
-				if(att == null)
-				{
-					continue;
-				}
-				
-				var attribute:Attribute = cast(att, Attribute);
+				var attribute = template.attributes.get(key);
 
 				if(attribute == null)
 				{
@@ -1190,12 +1168,6 @@ class Engine
 				var ID:Int = attribute.ID;
 				
 				attributes.set(key, new Attribute(ID, attribute.fieldName, attribute.fullName, value, type, null, attribute.hidden));
-			}
-			
-			if(template == null)
-			{
-				trace("Non-Existent Behavior ID (Init): " + bi.behaviorID);
-				continue;
 			}
 			
 			var b:Behavior = new Behavior
@@ -1520,7 +1492,7 @@ class Engine
 					Std.int(wireframe.width), 
 					Std.int(wireframe.height), 
 					null, 
-					new Map<String,Dynamic>(),
+					new Map<String,BehaviorInstance>(),
 					null,
 					null, 
 					false, 
