@@ -340,7 +340,7 @@ class G
 				temp.lifetime = 5;
 
 				drawnStringCache.set(cacheKey, temp);
-				trace("Added drawString image to cache: " + cacheKey);
+				//trace("Added drawString image to cache: " + cacheKey);
 			}
 		}
 
@@ -362,7 +362,7 @@ class G
 			{
 				temp.img.dispose();
 				drawnStringCache.remove(key);
-				trace("Removed drawString image from cache: " + key);
+				//trace("Removed drawString image from cache: " + key);
 			}
 		}
 	}

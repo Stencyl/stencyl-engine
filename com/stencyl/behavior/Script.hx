@@ -3067,7 +3067,7 @@ class Script
 	}
 
 	//to easily get a column or row coordinate at a given X or Y coordinate
-	public static function getTilePosition(axis:Dynamic, val:Dynamic):Int
+	public static function getTilePosition(axis:Dynamic, val:Float):Int
 	{
 		var tileH = engine.scene.tileHeight;
 		var tileW = engine.scene.tileWidth;
