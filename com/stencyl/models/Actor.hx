@@ -55,6 +55,7 @@ import com.stencyl.models.GameModel;
 import com.stencyl.utils.Utils;
 
 import motion.Actuate;
+import motion.MotionPath;
 import motion.easing.Back;
 import motion.easing.Cubic;
 import motion.easing.Elastic;
@@ -3601,6 +3602,20 @@ class Actor extends Sprite
 		Actuate.tween(tweenLoc, duration, {x:x, y:y}).ease(easing).onComplete(onTweenPositionComplete);		
 	}
 	
+	public function bezierPathMoveTo(destX:Float, destY:Float, controlX:Float, controlY:Float, duration:Float = 1, easing:Dynamic = null )
+	{
+		var path = new MotionPath().bezier (destX, destY, controlX, controlY);
+		tweenLoc.x = getX(false);
+		tweenLoc.y = getY(false);
+		if(easing == null)
+		{
+			easing = Linear.easeNone;
+		}
+		activePositionTweens++;
+		
+		Actuate.motionPath(tweenLoc,duration,{x:path.x,y:path.y}).ease(easing).onComplete(onTweenPositionComplete);
+	}
+				
 	//In degrees
 	public function spinBy(angle:Float, duration:Float = 1, easing:Dynamic = null)
 	{
