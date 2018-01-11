@@ -24,7 +24,7 @@ class Sound extends Resource
 	
 	public var src:openfl.media.Sound;
 
-	public function new(ID:Int, name:String, streaming:Bool, looping:Bool, panning:Float, volume:Float, ext:String) 
+	public function new(ID:Int, name:String, streaming:Bool, looping:Bool, panning:Float, volume:Float, ext:String, atlasID:Int)
 	{
 		super(ID, name, -1);
 		
@@ -33,19 +33,21 @@ class Sound extends Resource
 		this.panning = panning;
 		this.volume = volume;
 		this.ext = ext;
-		
+		this.atlasID = atlasID;
+
 		#if(mobile || desktop || js)
 		this.ext = "ogg";
 		#else
 		this.ext = "mp3";
 		#end
 		
-		#if mobile
-		//don't auto-load sounds - atlasize them
-		#else
-		loadGraphics();
-		#end
-	}	
+		var atlas = GameModel.get().atlases.get(atlasID);
+
+		if(atlas != null && atlas.active)
+		{
+			loadGraphics();
+		}
+	}
 	
 	override public function loadGraphics()
 	{

@@ -790,23 +790,6 @@ class Engine
 		}
 		#end
 		
-		#if mobile
-		//Preload sounds here.
-		for(r in Data.get().resources)
-		{
-			if(Std.is(r, Sound))
-			{
-				var sound = cast(r, Sound);		
-				var atlas = GameModel.get().atlases.get(sound.atlasID);
-	
-				if(atlas != null && atlas.active)
-				{
-					sound.loadGraphics();
-				}
-			}
-		}
-		#end
-		
 		g = new G();
 		
 		//---

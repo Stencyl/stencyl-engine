@@ -29,8 +29,7 @@ class SoundReader implements AbstractReader
 		var panning:Float = r.getPan();
 		var volume:Float = r.getVolume();
 		var ext = r.getType();
-		var s = new Sound(r.getId(), r.getName(), streaming, looping, panning, volume, ext);
-		s.atlasID = r.getAtlasID();
+		var s = new Sound(r.getId(), r.getName(), streaming, looping, panning, volume, ext, r.getAtlasID());
 		
 		return s;
 	}
