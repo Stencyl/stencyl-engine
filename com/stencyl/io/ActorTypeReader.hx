@@ -2,6 +2,7 @@ package com.stencyl.io;
 
 import com.stencyl.utils.Utils;
 
+import com.stencyl.models.PhysicsMode;
 import com.stencyl.models.Resource;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.io.mbs.actortype.MbsActorType;
@@ -60,7 +61,7 @@ class ActorTypeReader implements AbstractReader
 
 		var spriteID:Int = r.getSprite();
 		var groupID:Int = r.getGroupID();
-		var physicsMode:Int = r.getPhysicsMode();
+		var physicsMode:PhysicsMode = r.getPhysicsMode();
 		var autoScale:Bool = r.getAutoScale();
 		var pausable:Bool = r.getPausable();
 		var ignoreGravity:Bool = bodyDef.ignoreGravity || bodyDef.type == B2Body.b2_staticBody || bodyDef.type == B2Body.b2_kinematicBody;

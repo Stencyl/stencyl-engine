@@ -148,7 +148,7 @@ class Actor extends Sprite
 	
 	public var isCamera:Bool;
 	public var killLeaveScreen:Bool;	
-	public var physicsMode:Int;
+	public var physicsMode:PhysicsMode;
 	public var autoScale:Bool;
 	
 	public var dead:Bool; //gone from the game - don't touch
@@ -331,15 +331,15 @@ class Actor extends Sprite
 		typeID:Int = 0,
 		autoScale:Bool = true,
 		ignoreGravity:Bool = false,
-		physicsMode:Int = 0
+		physicsMode:PhysicsMode = NORMAL_PHYSICS
 	)
 	{
 		super();
 		
-		if(Engine.NO_PHYSICS && physicsMode == 0)
+		if(Engine.NO_PHYSICS && physicsMode == NORMAL_PHYSICS)
 		{
-			physicsMode = 1;
-			this.physicsMode = 1;
+			physicsMode = SIMPLE_PHYSICS;
+			this.physicsMode = SIMPLE_PHYSICS;
 		}
 		
 		//---
@@ -376,7 +376,7 @@ class Actor extends Sprite
 		solid = !isSensor;
 		updateMatrix = true;
 		
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			this.x = x * Engine.physicsScale;
 			this.y = y * Engine.physicsScale;
@@ -527,7 +527,7 @@ class Actor extends Sprite
 						a.originY,
 						a.durations, 
 						a.looping,
-						physicsMode > 0 ? a.simpleShapes : a.physicsShapes
+						physicsMode == NORMAL_PHYSICS ? a.physicsShapes : a.simpleShapes
 					);
 					
 					if(a.animID == s.defaultAnimation)
@@ -542,7 +542,7 @@ class Actor extends Sprite
 		
 		addAnim(-1, "recyclingDefault", null, 1, 1, 1, 1, 1, 1, 1, [1000], false, null);
 
-		if(bodyDef != null && physicsMode == 0)
+		if(bodyDef != null && physicsMode == NORMAL_PHYSICS)
 		{
 			if(bodyDef.bullet)
 			{
@@ -597,7 +597,7 @@ class Actor extends Sprite
 				isTerrain = true;
 			}
 			
-			else if(physicsMode == 0)
+			else if(physicsMode == NORMAL_PHYSICS)
 			{
 				initBody(groupID, isSensor, isStationary, isKinematic, canRotate, shape);
 			}
@@ -626,7 +626,7 @@ class Actor extends Sprite
 				cacheHeight = this.height = height;
 			}
 			
-			else if(physicsMode == 0)
+			else if(physicsMode == NORMAL_PHYSICS)
 			{
 				body.setPosition(new B2Vec2(x, y));
 			}
@@ -657,7 +657,7 @@ class Actor extends Sprite
 		
 		Utils.removeAllChildren(this);
 
-		if(body != null && physicsMode == 0)
+		if(body != null && physicsMode == NORMAL_PHYSICS)
 		{
 			var contact:B2ContactEdge = body.getContactList();
 			
@@ -785,11 +785,11 @@ class Actor extends Sprite
 		{
 			var arr = new Array<Dynamic>();
 			
-			if(physicsMode == 1)
+			if(physicsMode == SIMPLE_PHYSICS)
 			{
 				for(s in shapes)
 				{				
-					if(Std.is(s, Hitbox) && physicsMode > 0)
+					if(Std.is(s, Hitbox) && physicsMode != NORMAL_PHYSICS)
 					{		
 						s = cast(s, Hitbox).clone();
 						s.assignTo(this);
@@ -799,7 +799,7 @@ class Actor extends Sprite
 				}
 			}
 			
-			else if(physicsMode == 2)
+			else if(physicsMode == MINIMAL_PHYSICS)
 			{
 				//no shapes at all
 			}
@@ -812,7 +812,7 @@ class Actor extends Sprite
 				}
 			}
 			
-			if(physicsMode > 0)
+			if(physicsMode != NORMAL_PHYSICS)
 			{
 				shapeMap.set(name, new Masklist(arr, this));
 				
@@ -918,7 +918,7 @@ class Actor extends Sprite
 
 	public function initScripts()
 	{		
-		if(physicsMode == 2)
+		if(physicsMode == MINIMAL_PHYSICS)
 		{
 			handlesCollisions = false;
 			return;
@@ -1107,7 +1107,7 @@ class Actor extends Sprite
 	
 	public function defaultShapeChanged() // added to fix http://community.stencyl.com/index.php?issue=390.0
 	{
-		if (physicsMode > 0)
+		if (physicsMode != NORMAL_PHYSICS)
 		{
 			return true;
 		}
@@ -1229,7 +1229,7 @@ class Actor extends Sprite
 			
 			//XXX: Only switch the animation shape if it's different from before.
 			//http://community.stencyl.com/index.php/topic,16464.0.html
-			if(body != null && physicsMode == 0 && !isDifferentShape)
+			if(body != null && physicsMode == NORMAL_PHYSICS && !isDifferentShape)
 			{
 				var arrOld = shapeMap.get(currAnimationName);
 				var arrNew = shapeMap.get(name);
@@ -1339,7 +1339,7 @@ class Actor extends Sprite
 			
 			var animOrigin:B2Vec2 = originMap.get(name);		
 			
-			if(physicsMode == 0)
+			if(physicsMode == NORMAL_PHYSICS)
 			{
 				updateTweenProperties();
 			}
@@ -1347,7 +1347,7 @@ class Actor extends Sprite
 			var centerx = (currAnimation.width / Engine.SCALE / 2) - animOrigin.x;
 			var centery = (currAnimation.height / Engine.SCALE / 2) - animOrigin.y;
 			
-			if(body != null && isDifferentShape && physicsMode == 0)
+			if(body != null && isDifferentShape && physicsMode == NORMAL_PHYSICS)
 			{
 				//Remember regions
 				var regions = new Array<Region>();
@@ -1486,7 +1486,7 @@ class Actor extends Sprite
 				}
 			}	
 						
-			else if(shapeMap.get(name) != null && physicsMode == 1)
+			else if(shapeMap.get(name) != null && physicsMode == SIMPLE_PHYSICS)
 			{				
 				//Get hitbox list for Simple Physics
 				set_shape(shapeMap.get(name));
@@ -1505,7 +1505,7 @@ class Actor extends Sprite
 				body.size.y = Engine.toPhysicalUnits(cacheHeight);
 			}
 			
-			if(physicsMode == 0)
+			if(physicsMode == NORMAL_PHYSICS)
 			{
 				realX = getX(false);
 				realY = getY(false);
@@ -1632,7 +1632,7 @@ class Actor extends Sprite
 		var ec = engine.collisionListeners;
 		var ep = engine.typeGroupPositionListeners;
 				
-		if(physicsMode == 0)
+		if(physicsMode == NORMAL_PHYSICS)
 		{
 			if(collisionListenerCount > 0 || 
 			   ec.get(checkType) != null || 
@@ -1645,7 +1645,7 @@ class Actor extends Sprite
 		
 		internalUpdate(elapsedTime, true);		
 		
-		if (physicsMode == 1)
+		if (physicsMode == SIMPLE_PHYSICS)
 		{
 			if(collisionListenerCount > 0 || 
 			   ec.get(checkType) != null || 
@@ -1655,7 +1655,7 @@ class Actor extends Sprite
 			}
 		}
 		
-		if(physicsMode < 2)
+		if(physicsMode != MINIMAL_PHYSICS)
 		{
 			Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
 		}
@@ -1683,9 +1683,9 @@ class Actor extends Sprite
 			return;
 		}
 					
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{		
-			if(physicsMode == 1 && !ignoreGravity && !isHUD)
+			if(physicsMode == SIMPLE_PHYSICS && !ignoreGravity && !isHUD)
 			{
 				//TODO: Adjust?
 				xSpeed += elapsedTime * engine.gravityX * 0.001;
@@ -1862,7 +1862,7 @@ class Actor extends Sprite
 		//Normal Movement
 		else
 		{
-			if(physicsMode > 0)
+			if(physicsMode != NORMAL_PHYSICS)
 			{
 				drawX = realX;
 				drawY = realY;
@@ -1915,7 +1915,7 @@ class Actor extends Sprite
 		var a:Bool = activePositionTweens > 0;
 		var b:Bool = activeAngleTweens > 0;
 				
-		if(autoScale && physicsMode == 0 && body != null && bodyDef.type != B2Body.b2_staticBody && (bodyScale.x != realScaleX || bodyScale.y != realScaleY))
+		if(autoScale && physicsMode == NORMAL_PHYSICS && body != null && bodyDef.type != B2Body.b2_staticBody && (bodyScale.x != realScaleX || bodyScale.y != realScaleY))
 		{			
 			if(realScaleX != 0 && realScaleY != 0)
 			{
@@ -1925,7 +1925,7 @@ class Actor extends Sprite
 		
 		if(a && b)
 		{					
-			if(physicsMode == 0)
+			if(physicsMode == NORMAL_PHYSICS)
 			{
 				realX = tweenLoc.x;
 				realY = tweenLoc.y;
@@ -1954,7 +1954,7 @@ class Actor extends Sprite
 		{
 			if(a)
 			{
-				if(physicsMode == 0)
+				if(physicsMode == NORMAL_PHYSICS)
 				{
 					setX(tweenLoc.x);
 					setY(tweenLoc.y);
@@ -2354,7 +2354,7 @@ class Actor extends Sprite
 	
 	public function getGroupID():Int
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			return groupID;
 		}
@@ -2428,7 +2428,7 @@ class Actor extends Sprite
 			
 			this.paused = true;
 			
-			if(physicsMode == 0)
+			if(physicsMode == NORMAL_PHYSICS)
 			{
 				this.body.setPaused(true);
 			}
@@ -2451,7 +2451,7 @@ class Actor extends Sprite
 			
 			this.paused = false;
 			
-			if(physicsMode == 0)
+			if(physicsMode == NORMAL_PHYSICS)
 			{
 				this.body.setPaused(false);
 			}
@@ -2591,13 +2591,13 @@ class Actor extends Sprite
 				toReturn = Engine.toPixelUnits(body.getPosition().x) - cacheWidth/2;
 			}
 			
-			else if(physicsMode == 0)
+			else if(physicsMode == NORMAL_PHYSICS)
 			{
 				toReturn = body.getPosition().x * Engine.physicsScale - Math.floor(cacheWidth / 2) - currOffset.x;
 			}
 		}
 		
-		if (Engine.NO_PHYSICS || physicsMode > 0)
+		if (Engine.NO_PHYSICS || physicsMode != NORMAL_PHYSICS)
 		{
 			toReturn = realX - Math.floor(cacheWidth/2) - currOffset.x;
 		}
@@ -2616,13 +2616,13 @@ class Actor extends Sprite
 				toReturn = Engine.toPixelUnits(body.getPosition().y) - cacheHeight/2;
 			}
 			
-			else if(physicsMode == 0)
+			else if(physicsMode == NORMAL_PHYSICS)
 			{
 				toReturn = body.getPosition().y * Engine.physicsScale - Math.floor(cacheHeight / 2) - currOffset.y;
 			}
 		}
 		
-		if (Engine.NO_PHYSICS || physicsMode > 0)
+		if (Engine.NO_PHYSICS || physicsMode != NORMAL_PHYSICS)
 		{
 			toReturn = realY - Math.floor(cacheHeight / 2) - currOffset.y;
 		}
@@ -2632,7 +2632,7 @@ class Actor extends Sprite
 	
 	public function getXCenter():Float
 	{
-		if(physicsMode == 0)
+		if(physicsMode == NORMAL_PHYSICS)
 		{
 			return Math.round(Engine.toPixelUnits(body.getWorldCenter().x) - currOffset.x);
 		}
@@ -2645,7 +2645,7 @@ class Actor extends Sprite
 	
 	public function getYCenter():Float
 	{
-		if(physicsMode == 0)
+		if(physicsMode == NORMAL_PHYSICS)
 		{
 			return Math.round(Engine.toPixelUnits(body.getWorldCenter().y) - currOffset.y);
 		}
@@ -2684,12 +2684,12 @@ class Actor extends Sprite
 	
 	public function setX(x:Float, resetSpeed:Bool = false, noCollision:Bool = false)
 	{	
-		if(physicsMode == 1)
+		if(physicsMode == SIMPLE_PHYSICS)
 		{
 			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY, !noCollision && continuousCollision ? groupsToCollideWith: null);
 		}
 		
-		else if(physicsMode == 2)
+		else if(physicsMode == MINIMAL_PHYSICS)
 		{
 			resetReal(x + Math.floor(cacheWidth/2) + currOffset.x, realY);
 		}
@@ -2727,12 +2727,12 @@ class Actor extends Sprite
 	
 	public function setY(y:Float, resetSpeed:Bool = false, noCollision:Bool = false)
 	{		
-		if(physicsMode == 1)
+		if(physicsMode == SIMPLE_PHYSICS)
 		{
 			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y, !noCollision && continuousCollision ? groupsToCollideWith : null);
 		}
 		
-		else if(physicsMode == 2)
+		else if(physicsMode == MINIMAL_PHYSICS)
 		{
 			resetReal(realX, y + Math.floor(cacheHeight/2) + currOffset.y);
 		}
@@ -2769,7 +2769,7 @@ class Actor extends Sprite
 	}
 	public function setXY(x:Float, y:Float, resetSpeed:Bool = false, noCollision:Bool = false)
 	{
-		if(physicsMode == 1)
+		if(physicsMode == SIMPLE_PHYSICS)
 		{
 			moveActorTo(
 				x + Math.floor(cacheWidth/2) + currOffset.x,
@@ -2777,7 +2777,7 @@ class Actor extends Sprite
 				!noCollision && continuousCollision ? groupsToCollideWith : null);
 		}
 		
-		else if(physicsMode == 2)
+		else if(physicsMode == MINIMAL_PHYSICS)
 		{
 			resetReal(x + Math.floor(cacheWidth/2) + currOffset.x, y + Math.floor(cacheHeight/2) + currOffset.y);
 		}
@@ -2854,7 +2854,7 @@ class Actor extends Sprite
 			return;
 		}
 	
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			moveActorTo(a.getXCenter(), a.getYCenter());	
 			return;
@@ -2865,7 +2865,7 @@ class Actor extends Sprite
 	
 	public function followWithOffset(a:Actor, ox:Int, oy:Int)
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			moveActorTo(a.getXCenter() + ox, a.getYCenter() + oy);
 			return;
@@ -2883,7 +2883,7 @@ class Actor extends Sprite
 	{
 		var resetPosition:B2Vec2 = null;
 		
-		if (physicsMode == 0)
+		if (physicsMode == NORMAL_PHYSICS)
 		{
 			resetPosition = body.getPosition();
 		}
@@ -2931,7 +2931,7 @@ class Actor extends Sprite
 		resetPosition.x += Engine.toPhysicalUnits(offsetDiff.x);
 		resetPosition.y += Engine.toPhysicalUnits(offsetDiff.y);
 		
-		if(physicsMode == 0)
+		if(physicsMode == NORMAL_PHYSICS)
 		{
 			body.setPosition(resetPosition);
 		}
@@ -2951,7 +2951,7 @@ class Actor extends Sprite
 	
 	public function getXVelocity():Float
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			return xSpeed;
 		}
@@ -2961,7 +2961,7 @@ class Actor extends Sprite
 	
 	public function getYVelocity():Float
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			return ySpeed;
 		}
@@ -2971,7 +2971,7 @@ class Actor extends Sprite
 	
 	public function setXVelocity(dx:Float)
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			xSpeed = dx;
 			return;
@@ -2985,7 +2985,7 @@ class Actor extends Sprite
 	
 	public function setYVelocity(dy:Float)
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			ySpeed = dy;
 			return;
@@ -3025,7 +3025,7 @@ class Actor extends Sprite
 	
 	public function getAngle():Float
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			return Utils.RAD * realAngle;
 		}
@@ -3035,7 +3035,7 @@ class Actor extends Sprite
 	
 	public function getAngleInDegrees():Float
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			return realAngle;
 		}
@@ -3047,7 +3047,7 @@ class Actor extends Sprite
 	{
 		if(inRadians)
 		{
-			if(physicsMode > 0)
+			if(physicsMode != NORMAL_PHYSICS)
 			{
 				realAngle = Utils.DEG * angle;
 			}
@@ -3060,7 +3060,7 @@ class Actor extends Sprite
 		
 		else
 		{
-			if(physicsMode > 0)
+			if(physicsMode != NORMAL_PHYSICS)
 			{
 				realAngle = angle;
 			}
@@ -3078,7 +3078,7 @@ class Actor extends Sprite
 	{
 		if(inRadians)
 		{
-			if(physicsMode > 0)
+			if(physicsMode != NORMAL_PHYSICS)
 			{
 				realAngle += Utils.DEG * angle;
 			}
@@ -3091,7 +3091,7 @@ class Actor extends Sprite
 			
 		else
 		{
-			if(physicsMode > 0)
+			if(physicsMode != NORMAL_PHYSICS)
 			{
 				realAngle += angle;
 			}
@@ -3105,7 +3105,7 @@ class Actor extends Sprite
 	
 	public function getAngularVelocity():Float
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			return Utils.RAD * rSpeed;
 		}
@@ -3115,7 +3115,7 @@ class Actor extends Sprite
 	
 	public function setAngularVelocity(omega:Float)
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			rSpeed = Utils.DEG * omega;
 		}
@@ -3129,7 +3129,7 @@ class Actor extends Sprite
 	
 	public function changeAngularVelocity(omega:Float)
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			rSpeed += Utils.DEG * omega;
 		}
@@ -3147,7 +3147,7 @@ class Actor extends Sprite
 	
 	public function push(dirX:Float, dirY:Float, magnitude:Float)
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			dummy.x = dirX;
 			dummy.y = dirY;
@@ -3184,7 +3184,7 @@ class Actor extends Sprite
 	
 	public function applyImpulse(dirX:Float, dirY:Float, magnitude:Float)
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			dummy.x = dirX;
 			dummy.y = dirY;
@@ -3224,7 +3224,7 @@ class Actor extends Sprite
 	
 	public function applyTorque(torque:Float)
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			if(!fixedRotation)
 			{
@@ -3274,7 +3274,7 @@ class Actor extends Sprite
 	
 	public function enableRotation()
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			fixedRotation = false;
 		}
@@ -3287,7 +3287,7 @@ class Actor extends Sprite
 	
 	public function disableRotation()
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			fixedRotation = true;
 		}
@@ -3302,7 +3302,7 @@ class Actor extends Sprite
 	{
 		ignoreGravity = state;
 	
-		if(physicsMode == 0)
+		if(physicsMode == NORMAL_PHYSICS)
 		{
 			body.setIgnoreGravity(state);
 		}
@@ -3310,7 +3310,7 @@ class Actor extends Sprite
 	
 	public function ignoresGravity():Bool
 	{
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			return ignoreGravity;
 		}
@@ -3320,7 +3320,7 @@ class Actor extends Sprite
 	
 	public function getFriction():Float
 	{
-		if (physicsMode == 0 && body.m_fixtureList != null)
+		if (physicsMode == NORMAL_PHYSICS && body.m_fixtureList != null)
 		{
 			return body.m_fixtureList.m_friction;
 		}
@@ -3330,7 +3330,7 @@ class Actor extends Sprite
 	
 	public function getBounciness():Float
 	{
-		if (physicsMode == 0 && body.m_fixtureList != null)
+		if (physicsMode == NORMAL_PHYSICS && body.m_fixtureList != null)
 		{
 			return body.m_fixtureList.m_restitution;
 		}
@@ -3340,7 +3340,7 @@ class Actor extends Sprite
 	
 	public function getMass():Float
 	{
-		if (physicsMode == 0)
+		if (physicsMode == NORMAL_PHYSICS)
 		{
 			return md.mass;
 		}
@@ -3350,7 +3350,7 @@ class Actor extends Sprite
 	
 	public function getAngularMass():Float
 	{
-		if (physicsMode == 0)
+		if (physicsMode == NORMAL_PHYSICS)
 		{
 			return md.I;
 		}
@@ -3360,7 +3360,7 @@ class Actor extends Sprite
 	
 	public function getLinearDamping():Float
 	{
-		if (physicsMode == 0)
+		if (physicsMode == NORMAL_PHYSICS)
 		{
 			return body.getLinearDamping();
 		}
@@ -3370,7 +3370,7 @@ class Actor extends Sprite
 	
 	public function getAngularDamping():Float
 	{
-		if (physicsMode == 0)
+		if (physicsMode == NORMAL_PHYSICS)
 		{
 			return body.getAngularDamping();
 		}
@@ -3380,7 +3380,7 @@ class Actor extends Sprite
 	
 	public function setFriction(value:Float)
 	{
-		if(physicsMode == 0)
+		if(physicsMode == NORMAL_PHYSICS)
 		{
 			body.setFriction(value);
 		}
@@ -3388,7 +3388,7 @@ class Actor extends Sprite
 	
 	public function setBounciness(value:Float)
 	{
-		if(physicsMode == 0)
+		if(physicsMode == NORMAL_PHYSICS)
 		{
 			body.setBounciness(value);
 		}
@@ -3396,7 +3396,7 @@ class Actor extends Sprite
 	
 	public function setMass(newMass:Float)
 	{
-		if (physicsMode == 0)
+		if (physicsMode == NORMAL_PHYSICS)
 		{
 			md.mass = newMass;
 			body.setMassData(this.md);
@@ -3405,7 +3405,7 @@ class Actor extends Sprite
 	
 	public function setAngularMass(newAMass:Float)
 	{
-		if (physicsMode == 0)
+		if (physicsMode == NORMAL_PHYSICS)
 		{
 			md.I = newAMass;
 			body.setMassData(this.md);
@@ -3414,7 +3414,7 @@ class Actor extends Sprite
 	
 	public function setLinearDamping(newDamping:Float)
 	{
-		if (physicsMode == 0)
+		if (physicsMode == NORMAL_PHYSICS)
 		{
 			body.setLinearDamping(newDamping);
 		}
@@ -3422,7 +3422,7 @@ class Actor extends Sprite
 	
 	public function setAngularDamping(newDamping:Float)
 	{
-		if (physicsMode == 0)
+		if (physicsMode == NORMAL_PHYSICS)
 		{
 			body.setAngularDamping(newDamping);
 		}
@@ -3458,7 +3458,7 @@ class Actor extends Sprite
 		var offsetY = (scaleYAbs - 1) * Math.floor(cacheHeight/2);
 		
 		// Added to fix this issue -- http://community.stencyl.com/index.php?issue=488.0
-		if(physicsMode > 0)
+		if(physicsMode != NORMAL_PHYSICS)
 		{
 			// Check if the origin point is something other than center.
 			if((currOrigin.x != cacheWidth / 2) || (currOrigin.y != cacheHeight / 2))
@@ -3940,7 +3940,7 @@ class Actor extends Sprite
 	
 	public function anchorToScreen()
 	{
-		if(physicsMode == 0)
+		if(physicsMode == NORMAL_PHYSICS)
 		{
 			body.setAlwaysActive(true);
 		}
@@ -3955,7 +3955,7 @@ class Actor extends Sprite
 	
 	public function unanchorFromScreen()
 	{
-		if(physicsMode == 0)
+		if(physicsMode == NORMAL_PHYSICS)
 		{
 			body.setAlwaysActive(alwaysSimulate);
 		}
@@ -3977,7 +3977,7 @@ class Actor extends Sprite
 	{
 		if (!alwaysSimulate)
 		{
-			if(physicsMode == 0 && alterBody)
+			if(physicsMode == NORMAL_PHYSICS && alterBody)
 			{
 				body.setAlwaysActive(true);
 				body.setActive(true);
@@ -3992,7 +3992,7 @@ class Actor extends Sprite
 	{
 		if (alwaysSimulate)
 		{
-			if(physicsMode == 0 && alterBody)
+			if(physicsMode == NORMAL_PHYSICS && alterBody)
 			{
 				body.setAlwaysActive(false);
 				body.setActive(false);
@@ -4051,7 +4051,7 @@ class Actor extends Sprite
 		var right = Engine.paddingRight;
 		var bottom = Engine.paddingBottom;
 	
-		return (physicsMode > 0 || body.isActive()) && 
+		return (physicsMode != NORMAL_PHYSICS || body.isActive()) && 
 			   getX(true) >= -cameraX - left && 
 			   getY(true) >= -cameraY - top &&
 			   getX(true) < -cameraX + Engine.screenWidth + right &&
@@ -4060,7 +4060,7 @@ class Actor extends Sprite
 	
 	public function isInScene():Bool
 	{
-		return (physicsMode > 0 || body.isActive()) && 
+		return (physicsMode != NORMAL_PHYSICS || body.isActive()) && 
 			   getX(true) >= 0 && 
 			   getY(true) >= 0 &&
 			   getX(true) < Engine.sceneWidth &&
@@ -4118,7 +4118,7 @@ class Actor extends Sprite
 	
 	public function addRectangularShape(x:Float, y:Float, w:Float, h:Float)
 	{
-		if (physicsMode == 0)
+		if (physicsMode == NORMAL_PHYSICS)
 		{
 			var polygon:B2PolygonShape = new B2PolygonShape();
 			var vertices:Array<B2Vec2> = new Array<B2Vec2>();
@@ -4138,7 +4138,7 @@ class Actor extends Sprite
 	
 	public function addCircularShape(x:Float, y:Float, r:Float)
 	{
-		if (physicsMode == 0)
+		if (physicsMode == NORMAL_PHYSICS)
 		{
 			var circle:B2CircleShape = new B2CircleShape();
 			circle.m_radius = Engine.toPhysicalUnits(r);
@@ -4158,7 +4158,7 @@ class Actor extends Sprite
 	
 	public function addPolygonalShape(vertices:Array<B2Vec2>)
 	{
-		if (physicsMode == 0)
+		if (physicsMode == NORMAL_PHYSICS)
 		{
 			var polygon:B2PolygonShape = new B2PolygonShape();
 			/*var newVertices:Array<B2Vec2> = new Array<B2Vec2>();
@@ -4176,7 +4176,7 @@ class Actor extends Sprite
 
 	public function getLastCreatedFixture():B2Fixture
 	{
-		if(physicsMode == 0)
+		if(physicsMode == NORMAL_PHYSICS)
 		{
 			return body.getFixtureList();
 		}

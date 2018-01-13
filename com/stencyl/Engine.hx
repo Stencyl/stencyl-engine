@@ -639,7 +639,7 @@ class Engine
 		screenOffsetX = Std.int(root.x);
 		screenOffsetY = Std.int(root.y);
 		
-		NO_PHYSICS = Config.physicsMode == 1;
+		NO_PHYSICS = Config.physicsMode == SIMPLE_PHYSICS;
 		
 		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
 		stage.addEventListener(Event.DEACTIVATE, onFocusLost);
@@ -1946,7 +1946,7 @@ class Engine
 		
 		//----
 		
-		if(ai.actorType.physicsMode < 2)
+		if(ai.actorType.physicsMode != MINIMAL_PHYSICS)
 		{
 			var group = groups.get(ai.groupID);
 			
@@ -2123,7 +2123,7 @@ class Engine
 		a.removeAttachedImages();
 		
 		//Kill previous contacts
-		if(a.physicsMode == 0 && a.body != null)
+		if(a.physicsMode == NORMAL_PHYSICS && a.body != null)
 		{
 			var contact:B2ContactEdge = a.body.getContactList();
 			
@@ -2139,7 +2139,7 @@ class Engine
 		
 		removeActorFromLayer(a, a.layerID);
 		
-		if(a.physicsMode == 0)
+		if(a.physicsMode == NORMAL_PHYSICS)
 		{
 			a.body.setActive(false);
 			a.body.setAwake(false);
@@ -2236,7 +2236,7 @@ class Engine
 					actor.switchToDefaultAnimation();						
 					actor.enableAllBehaviors();
 					
-					if(actor.physicsMode == 0)
+					if(actor.physicsMode == NORMAL_PHYSICS)
 					{
 						actor.body.setActive(true);
 						actor.body.setAwake(true);
@@ -2257,7 +2257,7 @@ class Engine
 					actor.enableActorDrawing();					
 					actor.setXY(x, y, false, true);
 					
-					if(actor.physicsMode == 0)
+					if(actor.physicsMode == NORMAL_PHYSICS)
 					{
 						actor.colX = x;
 						actor.colY = y;
@@ -2521,7 +2521,7 @@ class Engine
 				{
 					//--- HAND INLINED THIS SINCE ITS CALLED SO MUCH
 					var isOnScreen =
-						(a.physicsMode > 0 || a.body.isActive()) && 
+						(a.physicsMode != NORMAL_PHYSICS || a.body.isActive()) && 
 						a.colX + a.cacheWidth >= -cameraX / SCALE - paddingLeft && 
 						a.colY + a.cacheHeight >= -cameraY / SCALE - paddingTop &&
 						a.colX < -cameraX / SCALE + screenWidth + paddingRight &&
@@ -2531,7 +2531,7 @@ class Engine
 					
 					//---
 				
-					if(a.physicsMode == 0 && a.body != null)
+					if(a.physicsMode == NORMAL_PHYSICS && a.body != null)
 					{
 						if(a.killLeaveScreen && !isOnScreen)
 						{		
@@ -2544,7 +2544,7 @@ class Engine
 						}
 					}
 					
-					else if(a.physicsMode > 0)
+					else if(a.physicsMode != NORMAL_PHYSICS)
 					{
 						if(a.killLeaveScreen && !isOnScreen)
 						{
@@ -2694,7 +2694,7 @@ class Engine
 		{
 			for(a in allActors)
 			{
-				if(a == null || (a.physicsMode == 0 && a.body == null))
+				if(a == null || (a.physicsMode == NORMAL_PHYSICS && a.body == null))
 				{
 					continue;
 				}

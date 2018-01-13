@@ -8,6 +8,7 @@ import com.stencyl.Input;
 import com.stencyl.graphics.BitmapWrapper;
 import com.stencyl.graphics.Scale;
 import com.stencyl.graphics.ScaleMode;
+import com.stencyl.models.PhysicsMode;
 import com.stencyl.utils.Utils;
 
 using Lambda;
@@ -22,7 +23,7 @@ class Config
 	public static var stageWidth:Int;
 	public static var stageHeight:Int;
 	public static var initSceneID:Int;
-	public static var physicsMode:Int;
+	public static var physicsMode:PhysicsMode;
 	public static var gameScale:Float;
 	public static var antialias:Bool;
 	public static var autoscaleImages:Bool;
@@ -161,7 +162,7 @@ class Config
 		stageWidth = data.stageWidth;
 		stageHeight = data.stageHeight;
 		initSceneID = data.initSceneID;
-		physicsMode = data.physicsMode;
+		physicsMode = (data.physicsMode : String);
 		gameScale = data.gameScale;
 		antialias = data.antialias;
 		pixelsnap = data.pixelsnap;

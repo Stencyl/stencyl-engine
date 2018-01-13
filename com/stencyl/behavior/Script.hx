@@ -1891,7 +1891,7 @@ class Script
 	{
 		if (Engine.NO_PHYSICS)
 		{
-			if (actor != null && actor.physicsMode == 1)
+			if (actor != null && actor.physicsMode == SIMPLE_PHYSICS)
 			{
 				actor.continuousCollision = true;
 			}
@@ -1900,7 +1900,7 @@ class Script
 		
 		B2World.m_continuousPhysics = true;
 		
-		if(actor != null && actor.physicsMode == 0)
+		if(actor != null && actor.physicsMode == NORMAL_PHYSICS)
 		{
 			actor.body.setBullet(true);
 		}
@@ -1911,14 +1911,14 @@ class Script
 	{
 		if (Engine.NO_PHYSICS)
 		{
-			if (actor != null && actor.physicsMode == 1)
+			if (actor != null && actor.physicsMode == SIMPLE_PHYSICS)
 			{
 				actor.continuousCollision = false;
 			}
 			return;
 		}
 		
-		if(actor != null && actor.physicsMode == 0)
+		if(actor != null && actor.physicsMode == NORMAL_PHYSICS)
 		{
 			actor.body.setBullet(false);
 			

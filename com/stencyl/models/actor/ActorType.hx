@@ -1,6 +1,7 @@
 package com.stencyl.models.actor;
 
 import com.stencyl.behavior.BehaviorInstance;
+import com.stencyl.models.PhysicsMode;
 import com.stencyl.models.Resource;
 
 import box2D.dynamics.B2BodyDef;
@@ -11,7 +12,7 @@ class ActorType extends Resource
 	public var spriteID:Int;
 	public var behaviorValues:Map<String,BehaviorInstance>;
 	public var bodyDef:B2BodyDef;
-	public var physicsMode:Int;
+	public var physicsMode:PhysicsMode;
 	public var autoScale:Bool;
 	public var pausable:Bool;
 	public var ignoreGravity:Bool;
@@ -25,7 +26,7 @@ class ActorType extends Resource
 		spriteID:Int, 
 		behaviorValues:Map<String,BehaviorInstance>, 
 		bodyDef:B2BodyDef, 
-		physicsMode:Int, 
+		physicsMode:PhysicsMode, 
 		autoScale:Bool,
 		pausable:Bool,
 		ignoreGravity:Bool
