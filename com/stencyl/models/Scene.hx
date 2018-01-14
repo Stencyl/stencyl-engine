@@ -188,8 +188,8 @@ class Scene
 		var name = r.getName();
 		var region:RegionDef;
 		
-		var x:Float = Engine.toPhysicalUnits(r.getX());
-		var y:Float = Engine.toPhysicalUnits(r.getY());
+		var x:Float = r.getX();
+		var y:Float = r.getY();
 		
 		var shape:B2Shape = null;
 		var ps = new Array<B2PolygonShape>();
@@ -217,7 +217,7 @@ class Scene
 				else
 				{
 					var box = new B2PolygonShape();
-					box.setAsBox(w/2, h/2);
+					box.setAsBox(Engine.toPhysicalUnits(w)/2, Engine.toPhysicalUnits(h)/2);
 					shape = box;
 					shapeList[0] = shape;
 					region = new RegionDef(shapeList, elementID, name, x, y);
@@ -227,8 +227,6 @@ class Scene
 			}
 
 			//Polygon Decomposition
-			currX = x;
-			currY = y;
 			currW = w;
 			currH = h;
 			
@@ -241,7 +239,7 @@ class Scene
 		else
 		{
 			var circle:MbsCircle = cast shapeData;
-			var radius = Engine.toPhysicalUnits(circle.getRadius());
+			var radius = circle.getRadius();
 			
 			if(Engine.NO_PHYSICS)
 			{
@@ -253,18 +251,16 @@ class Scene
 			else
 			{
 				shape = new B2CircleShape();
-				shape.m_radius = radius;
+				shape.m_radius = Engine.toPhysicalUnits(radius);
 				shapeList[0] = shape;
 				region = new RegionDef(shapeList, elementID, name, x, y);
-			}		
+			}
 		}
 		
 		return region;
 	}
 	
 	var shapeList:Array<B2Shape>;
-	var currX:Float;
-	var currY:Float;
 	var currW:Float;
 	var currH:Float;
 	
@@ -272,31 +268,14 @@ class Scene
 	{
    		//trace("THE POLY: " + p.points);
    		
-   		var loX:Float = B2Math.MAX_VALUE;
-		var loY:Float = B2Math.MAX_VALUE;
-		var hiX:Float = 0;
-		var hiY:Float = 0;
-
-		var decompParams:Vector<Point> = new Vector<Point>(p.points.length);
+   		var decompParams:Vector<Point> = new Vector<Point>(p.points.length);
 		
 		for(j in 0...p.points.length)
 		{
-			loX = Math.min(loX, p.points[j].x);
-			loY = Math.min(loY, p.points[j].y);
-			hiX = Math.min(hiX, p.points[j].x);
-			hiY = Math.min(hiY, p.points[j].y);
 			decompParams[j] = p.points[j];
 		}
 		
-		var localWidth:Float;
-		var localHeight:Float;
-		
-		localWidth = hiX - loX;
-		localHeight = hiY - loY;
-		loX = Engine.toPhysicalUnits(loX);
-		loY = Engine.toPhysicalUnits(loY);
-		
-		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", decompParams, currX, currY, currW, currH), B2PolygonShape);
+		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", decompParams, currW, currH), B2PolygonShape);
 		shapeList.push(polyShape);
 	}
 	
@@ -304,31 +283,14 @@ class Scene
 	{
 		//trace("THE POLY: " + p.points);
 		
-		var loX:Float = B2Math.MAX_VALUE;
-		var loY:Float = B2Math.MAX_VALUE;
-		var hiX:Float = 0;
-		var hiY:Float = 0;
-
 		var decompParams:Vector<Point> = new Vector<Point>(p.points.length);
 
 		for(j in 0...p.points.length)
 		{
-			loX = Math.min(loX, p.points[j].x);
-			loY = Math.min(loY, p.points[j].y);
-			hiX = Math.min(hiX, p.points[j].x);
-			hiY = Math.min(hiY, p.points[j].y);
 			decompParams[j] = p.points[j];
 		}
 		
-		var localWidth:Float;
-		var localHeight:Float;
-		
-		localWidth = hiX - loX;
-		localHeight = hiY - loY;
-		loX = Engine.toPhysicalUnits(loX);
-		loY = Engine.toPhysicalUnits(loY);
-		
-		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", decompParams, currX, currY, currW, currH), B2PolygonShape);
+		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", decompParams, currW, currH), B2PolygonShape);
 		shapeList.push(polyShape);
 	}
 	
@@ -370,8 +332,6 @@ class Scene
 			var h = polygon.getHeight();
 			
 			//Polygon Decomposition
-			currX = x;
-			currY = y;
 			currW = w;
 			currH = h;
 			
@@ -384,9 +344,9 @@ class Scene
 		else
 		{
 			var circle:MbsCircle = cast shapeData;
-			var radius:Float = Engine.toPhysicalUnits(circle.getRadius());
+			var radius:Float = circle.getRadius();
 			shape = new B2CircleShape();
-			shape.m_radius = radius;
+			shape.m_radius = Engine.toPhysicalUnits(radius);
 			shapeList[0] = shape;
 			terrainRegion = new TerrainDef(shapeList, elementID, name, x, y, group, fillColor);
 		}
@@ -718,11 +678,10 @@ class Scene
 		for(i in 0...list.length())
 		{
 			var poly = list.getNextObject();
-			var shapeType = "MbsWireframe";
-
+			
 			var position = ShapeReader.readPoint(poly.getPosition());
 			var points = ShapeReader.readPoints(poly.getPoints());
-			var shapeData:Map<Int,Dynamic> = ShapeReader.createPolygon(shapeType, points, position.x, position.y);
+			var shapeData:Map<Int,Dynamic> = ShapeReader.createPolygon("MbsWireframe", points);
 			
 			map.push
 			(

@@ -192,7 +192,7 @@ class SpriteReader implements AbstractReader
 			else
 			{
 				var polygon:MbsPolygon = cast shapeData;
-				shape = ShapeReader.createPolygon(shapeData.getMbsType().getName(), ShapeReader.readPoints(polygon.getPoints()), 0, 0, imgWidth, imgHeight);
+				shape = ShapeReader.createPolygon(shapeData.getMbsType().getName(), ShapeReader.readPoints(polygon.getPoints()), imgWidth, imgHeight);
 			}
 			
 			var fixtureDef = new B2FixtureDef();

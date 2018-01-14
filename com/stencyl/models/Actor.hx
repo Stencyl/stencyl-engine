@@ -376,20 +376,8 @@ class Actor extends Sprite
 		solid = !isSensor;
 		updateMatrix = true;
 		
-		if(physicsMode != NORMAL_PHYSICS)
-		{
-			this.x = x * Engine.physicsScale;
-			this.y = y * Engine.physicsScale;
-		}
-		
-		else
-		{
-			this.x = x;
-			this.y = y;
-		}
-
-		realX = colX = x;
-		realY = colY = y;
+		colX = 0;
+		colY = 0;
 
 		activeAngleTweens = 0;
 		activePositionTweens = 0;
@@ -610,7 +598,7 @@ class Actor extends Sprite
 		//Use set location to align actors
 		if(sprite != null)
 		{ 
-			setLocation(Engine.toPixelUnits(x), Engine.toPixelUnits(y));
+			setLocation(x, y);
 		}
 		
 		else
@@ -628,7 +616,7 @@ class Actor extends Sprite
 			
 			else if(physicsMode == NORMAL_PHYSICS)
 			{
-				body.setPosition(new B2Vec2(x, y));
+				body.setPosition(new B2Vec2(Engine.toPhysicalUnits(x), Engine.toPhysicalUnits(y)));
 			}
 		}
 		

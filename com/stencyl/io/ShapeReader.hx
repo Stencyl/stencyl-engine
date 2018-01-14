@@ -52,7 +52,7 @@ class ShapeReader
 		return c;
 	}
 
-	public static function createPolygon(type:String, points:Vector<Point>, xOffset:Float=0, yOffset:Float=0, imgWidth:Float=-1, imgHeight:Float=-1):Dynamic
+	public static function createPolygon(type:String, points:Vector<Point>, imgWidth:Float=-1, imgHeight:Float=-1):Dynamic
 	{
 		var x:Float = 0;
 		var y:Float = 0;
@@ -67,15 +67,8 @@ class ShapeReader
 
 		if(type == "MbsPolygon" || type == "MbsPolyRegion")
 		{
-			var x0:Float = 0;
-			var y0:Float = 0;
-			
-			if(type == "MbsPolyRegion")
-			{
-				x0 = 10000000;
-				y0 = 10000000;
-			}
-			
+			var x0:Float = 10000000;
+			var y0:Float = 10000000;
 			var x1:Float = 0;
 			var y1:Float = 0;
 			
@@ -83,69 +76,42 @@ class ShapeReader
 			{
 				var point = points[vIndex];
 
-				x = Engine.toPhysicalUnits(point.x);
-				y = Engine.toPhysicalUnits(point.y);
-				
 				x0 = Math.min(x0, point.x);
 				y0 = Math.min(y0, point.y);
 				x1 = Math.max(x1, point.x);
 				y1 = Math.max(y1, point.y);
-				
-				vertices[vIndex] = new B2Vec2(x, y);
+
 				vIndex++;
 			}
-											
-			EnsureCorrectVertexDirection(vertices);
-							
+			
 			w = x1 - x0;
 			h = y1 - y0;
-			
-			var xDiff:Float = x0 - Engine.toPixelUnits(xOffset);
-			var yDiff:Float = y0 - Engine.toPixelUnits(yOffset);
 
 			var hw:Float = w/2;
 			var hh:Float = h/2;
 
-			//Axis-orient the polygon otherwise it rotates around the wrong point.
-			var s = B2PolygonShape.asArray(vertices, vertices.length);
-			var aabb = new B2AABB();
-			var t = new B2Transform();
-			t.setIdentity();
-			s.computeAABB(aabb, t); 
-						
 			//Account for origin and subtract by half the difference.
 			if(w < imgWidth)
 			{	
-				if(type ==  "MbsPolyRegion") x0 += Math.abs(imgWidth - w) / 2;
-				else x0 += Engine.toPhysicalUnits(Math.abs(imgWidth - w) / 2);
+				x0 += Math.abs(imgWidth - w) / 2;
 			}
 			
 			if(h < imgHeight)
 			{
-				if(type == "MbsPolyRegion") y0 += Math.abs(imgHeight - h) / 2;
-				else y0 += Engine.toPhysicalUnits(Math.abs(imgHeight - h) / 2);
+				y0 += Math.abs(imgHeight - h) / 2;
 			}
 			
-			//Reconstruct a new polygon that's axis-oriented.
+			//Construct a polygon that's axis-oriented.
 			vIndex = 0;
 			
 			while(vIndex < numVertices)
 			{
 				var point = points[vIndex];
 
-				if (type == "MbsPolyRegion")
-				{
-					var vX:Float = Engine.toPhysicalUnits(point.x - hw - x0 + xDiff);
-					var vY:Float = Engine.toPhysicalUnits(point.y - hh  - y0 + yDiff);
-					vertices[vIndex] = new B2Vec2(vX, vY);
-				}
+				var vX:Float = Engine.toPhysicalUnits(point.x - hw - x0);
+				var vY:Float = Engine.toPhysicalUnits(point.y - hh - y0);
+				vertices[vIndex] = new B2Vec2(vX, vY);
 				
-				else
-				{
-					vertices[vIndex] = new B2Vec2(Engine.toPhysicalUnits(point.x - hw) - x0, 
-					                              Engine.toPhysicalUnits(point.y - hh) - y0);
-				}
-
 				vIndex++;
 			}
 

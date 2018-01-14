@@ -89,7 +89,7 @@ class Region extends Actor
 			
 			currOffset.x = -(cacheWidth / 2);
 			currOffset.y = -(cacheHeight / 2);
-			resetReal(x * Engine.physicsScale, y * Engine.physicsScale);
+			resetReal(x, y);
 		}
 		
 		else

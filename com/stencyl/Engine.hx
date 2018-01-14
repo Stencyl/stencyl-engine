@@ -1288,8 +1288,7 @@ class Engine
 			
 			if(!NO_PHYSICS)
 			{
-				region.setX(toPixelUnits(r.x) + (region.regionWidth / 2));
-				region.setY(toPixelUnits(r.y) + (region.regionHeight / 2));
+				region.setXY(r.x + region.regionWidth / 2, r.y + region.regionHeight / 2);
 			}
 			
 			region.ID = r.ID;
@@ -1884,8 +1883,8 @@ class Engine
 			this, 
 			ai.elementID,
 			ai.groupID,
-			ai.x / physicsScale, 
-			ai.y / physicsScale, 
+			ai.x, 
+			ai.y, 
 			ai.layerID,
 			-1, 
 			-1, 
@@ -3816,8 +3815,7 @@ class Engine
 		
 		if(offset)
 		{
-			region.setX(toPixelUnits(x) + region.regionWidth / 2);
-			region.setY(toPixelUnits(y) + region.regionHeight / 2);
+			region.setXY(x + region.regionWidth / 2, y + region.regionHeight / 2);
 		}
 		
 		addRegion(region);
@@ -3826,11 +3824,6 @@ class Engine
 	
 	public function createBoxRegion(x:Float, y:Float, w:Float, h:Float):Region
 	{
-		x = toPhysicalUnits(x);
-		y = toPhysicalUnits(y);
-		w = toPhysicalUnits(w);
-		h = toPhysicalUnits(h);
-	
 		if(NO_PHYSICS)
 		{
 			var region = new Region(this, x, y, [], new Rectangle(0, 0, w, h));
@@ -3840,6 +3833,9 @@ class Engine
 		
 		else
 		{
+			w = toPhysicalUnits(w);
+			h = toPhysicalUnits(h);
+			
 			var p = new B2PolygonShape();
 			p.setAsBox(w/2, h/2);
 			return createRegion(x, y, p, true);
@@ -3848,10 +3844,6 @@ class Engine
 	
 	public function createCircularRegion(x:Float, y:Float, r:Float):Region
 	{
-		x = toPhysicalUnits(x);
-		y = toPhysicalUnits(y);
-		r = toPhysicalUnits(r);
-		
 		if(NO_PHYSICS)
 		{
 			var region = new Region(this, x, y, [], new Rectangle(0, 0, r*2, r*2));
@@ -3861,6 +3853,8 @@ class Engine
 		
 		else
 		{
+			r = toPhysicalUnits(r);
+			
 			var cShape = new B2CircleShape();
 			cShape.m_radius = r;
 			return createRegion(x, y, cShape, true);
@@ -3944,8 +3938,7 @@ class Engine
 		
 		if(offset)
 		{
-			region.setX(toPixelUnits(x) + region.regionWidth / 2);
-			region.setY(toPixelUnits(y) + region.regionHeight / 2);
+			region.setXY(x + region.regionWidth / 2, y + region.regionHeight / 2);
 		}
 		
 		addTerrainRegion(region);
@@ -3954,8 +3947,6 @@ class Engine
 	
 	public function createBoxTerrainRegion(x:Float, y:Float, w:Float, h:Float, groupID:Int=1):Terrain
 	{
-		x = toPhysicalUnits(x);
-		y = toPhysicalUnits(y);
 		w = toPhysicalUnits(w);
 		h = toPhysicalUnits(h);
 	
@@ -3967,8 +3958,6 @@ class Engine
 	
 	public function createCircularTerrainRegion(x:Float, y:Float, r:Float, groupID:Int = 1):Terrain
 	{
-		x = toPhysicalUnits(x);
-		y = toPhysicalUnits(y);
 		r = toPhysicalUnits(r);
 		
 		var cShape = new B2CircleShape();
