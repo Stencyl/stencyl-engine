@@ -687,8 +687,8 @@ class Scene
 			(
 				new Wireframe
 				(
-					Engine.toPhysicalUnits(position.x),
-					Engine.toPhysicalUnits(position.y),
+					position.x,
+					position.y,
 					shapeData.get(1),
 					shapeData.get(2),
 					shapeData.get(0),

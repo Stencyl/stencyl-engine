@@ -3016,7 +3016,7 @@ class Script
 			
 			if(!Engine.NO_PHYSICS && tileShape != null)
 			{
-				createDynamicTile(tileShape, Engine.toPhysicalUnits(x), Engine.toPhysicalUnits(y), layer.ID, engine.scene.tileWidth, engine.scene.tileHeight);
+				createDynamicTile(tileShape, x, y, layer.ID, engine.scene.tileWidth, engine.scene.tileHeight);
 			}
 			else if (tileShape != null)
 			{
@@ -3258,7 +3258,7 @@ class Script
 		
 		engine.moveActorToLayer(a, layerID);
 
-		var key = "ID" + "-" + Engine.toPixelUnits(x) + "-" + Engine.toPixelUnits(y) + "-" + layerID;
+		var key = "ID" + "-" + x + "-" + y + "-" + layerID;
 
 		engine.dynamicTiles.set(key, a);
 	}
