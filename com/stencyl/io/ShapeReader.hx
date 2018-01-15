@@ -52,7 +52,7 @@ class ShapeReader
 		return c;
 	}
 
-	public static function createPolygon(type:String, points:Vector<Point>, imgWidth:Float=-1, imgHeight:Float=-1):Dynamic
+	public static function createPolygon(type:String, points:Vector<Point>, imgWidth:Int=0, imgHeight:Int=0):Dynamic
 	{
 		var x:Float = 0;
 		var y:Float = 0;
@@ -65,42 +65,11 @@ class ShapeReader
 		var vIndex = 0;
 		var i = 1;
 
+		var offsetX = Std.int(-imgWidth / 2);
+		var offsetY = Std.int(-imgHeight / 2);
+		
 		if(type == "MbsPolygon" || type == "MbsPolyRegion")
 		{
-			var x0:Float = 10000000;
-			var y0:Float = 10000000;
-			var x1:Float = 0;
-			var y1:Float = 0;
-			
-			while(vIndex < numVertices)
-			{
-				var point = points[vIndex];
-
-				x0 = Math.min(x0, point.x);
-				y0 = Math.min(y0, point.y);
-				x1 = Math.max(x1, point.x);
-				y1 = Math.max(y1, point.y);
-
-				vIndex++;
-			}
-			
-			w = x1 - x0;
-			h = y1 - y0;
-
-			var hw:Float = w/2;
-			var hh:Float = h/2;
-
-			//Account for origin and subtract by half the difference.
-			if(w < imgWidth)
-			{	
-				x0 += Math.abs(imgWidth - w) / 2;
-			}
-			
-			if(h < imgHeight)
-			{
-				y0 += Math.abs(imgHeight - h) / 2;
-			}
-			
 			//Construct a polygon that's axis-oriented.
 			vIndex = 0;
 			
@@ -108,8 +77,8 @@ class ShapeReader
 			{
 				var point = points[vIndex];
 
-				var vX:Float = Engine.toPhysicalUnits(point.x - hw - x0);
-				var vY:Float = Engine.toPhysicalUnits(point.y - hh - y0);
+				var vX:Float = Engine.toPhysicalUnits(point.x + offsetX);
+				var vY:Float = Engine.toPhysicalUnits(point.y + offsetY);
 				vertices[vIndex] = new B2Vec2(vX, vY);
 				
 				vIndex++;

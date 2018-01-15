@@ -69,8 +69,8 @@ class SpriteReader implements AbstractReader
 		var framesDown = r.getDown();
 		
 		var parentID:Int = parent.ID;
-		var simpleShapes = readSimpleShapes(r, imgWidth/framesAcross, imgHeight/framesDown);
-		var physicsShapes = readShapes(r, imgWidth/framesAcross, imgHeight/framesDown);
+		var simpleShapes = readSimpleShapes(r, Std.int(imgWidth/framesAcross), Std.int(imgHeight/framesDown));
+		var physicsShapes = readShapes(r, Std.int(imgWidth/framesAcross), Std.int(imgHeight/framesDown));
 		var looping = r.getLoop();
 		var sync = r.getSync();
 		var durations = new Array<Int>();
@@ -163,7 +163,7 @@ class SpriteReader implements AbstractReader
 		return shapes;
 	}
 	
-	public function readShapes(r:MbsAnimation, imgWidth:Float, imgHeight:Float):Map<Int,Dynamic>
+	public function readShapes(r:MbsAnimation, imgWidth:Int, imgHeight:Int):Map<Int,Dynamic>
 	{
 		var shapes = new Map<Int,Dynamic>();
 		

@@ -226,10 +226,6 @@ class Scene
 				return region;
 			}
 
-			//Polygon Decomposition
-			currW = w;
-			currH = h;
-			
 			var points = ShapeReader.readPoints(ptList).toArray();
 			var decomp = new PolyDecompBayazit(points);
 			decomp.decompose(addPolygonRegion);
@@ -261,8 +257,6 @@ class Scene
 	}
 	
 	var shapeList:Array<B2Shape>;
-	var currW:Float;
-	var currH:Float;
 	
 	function addPolygonRegion(p:PolyDecompBayazit)
 	{
@@ -275,7 +269,7 @@ class Scene
 			decompParams[j] = p.points[j];
 		}
 		
-		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", decompParams, currW, currH), B2PolygonShape);
+		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", decompParams), B2PolygonShape);
 		shapeList.push(polyShape);
 	}
 	
@@ -290,7 +284,7 @@ class Scene
 			decompParams[j] = p.points[j];
 		}
 		
-		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", decompParams, currW, currH), B2PolygonShape);
+		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", decompParams), B2PolygonShape);
 		shapeList.push(polyShape);
 	}
 	
@@ -328,12 +322,6 @@ class Scene
 		if(Std.is(shapeData, MbsPolyRegion))
 		{
 			var polygon:MbsPolyRegion = cast shapeData;
-			var w = polygon.getWidth();
-			var h = polygon.getHeight();
-			
-			//Polygon Decomposition
-			currW = w;
-			currH = h;
 			
 			var points = ShapeReader.readPoints(polygon.getPoints()).toArray();
 			var decomp = new PolyDecompBayazit(points);
