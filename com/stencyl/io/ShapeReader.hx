@@ -52,7 +52,7 @@ class ShapeReader
 		return c;
 	}
 
-	public static function createPolygon(type:String, points:Vector<Point>, imgWidth:Int=0, imgHeight:Int=0):Dynamic
+	public static function createPolygon(type:String, points:Array<Point>, imgWidth:Int=0, imgHeight:Int=0):Dynamic
 	{
 		var x:Float = 0;
 		var y:Float = 0;

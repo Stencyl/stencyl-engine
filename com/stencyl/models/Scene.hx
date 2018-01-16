@@ -201,35 +201,23 @@ class Scene
 		if(Std.is(shapeData, MbsPolyRegion))
 		{
 			var polygon:MbsPolyRegion = cast shapeData;
-			var w = polygon.getWidth();
-			var h = polygon.getHeight();
+			var w = currW = polygon.getWidth();
+			var h = currH = polygon.getHeight();
 
 			var ptList = polygon.getPoints();
 			
-			//backwards compatibility for box regions
-			if(ptList.length() == 0 || Engine.NO_PHYSICS)
+			if(Engine.NO_PHYSICS)
 			{
-				if(Engine.NO_PHYSICS)
-				{
-					region = new RegionDef(shapeList, elementID, name, x, y, 0, new Rectangle(0, 0, w, h));
-				}
-				
-				else
-				{
-					var box = new B2PolygonShape();
-					box.setAsBox(Engine.toPhysicalUnits(w)/2, Engine.toPhysicalUnits(h)/2);
-					shape = box;
-					shapeList[0] = shape;
-					region = new RegionDef(shapeList, elementID, name, x, y);
-				}
-				
-				return region;
+				region = new RegionDef(shapeList, elementID, name, x, y, 0, new Rectangle(0, 0, w, h));
 			}
-
-			var points = ShapeReader.readPoints(ptList).toArray();
-			var decomp = new PolyDecompBayazit(points);
-			decomp.decompose(addPolygonRegion);
-			region = new RegionDef(shapeList, elementID, name, x, y);
+			
+			else
+			{
+				var points = ShapeReader.readPoints(ptList).toArray();
+				var decomp = new PolyDecompBayazit(points);
+				decomp.decompose(addPolygonRegion);
+				region = new RegionDef(shapeList, elementID, name, x, y);
+			}
 		}
 			
 		else
@@ -239,8 +227,6 @@ class Scene
 			
 			if(Engine.NO_PHYSICS)
 			{
-				radius = circle.getRadius();
-				
 				region = new RegionDef(shapeList, elementID, name, x, y, 0, new Rectangle(0, 0, radius*2, radius*2));
 			}
 			
@@ -257,34 +243,24 @@ class Scene
 	}
 	
 	var shapeList:Array<B2Shape>;
+	var currW:Int = 0;
+	var currH:Int = 0;
 	
 	function addPolygonRegion(p:PolyDecompBayazit)
 	{
-   		//trace("THE POLY: " + p.points);
-   		
-   		var decompParams:Vector<Point> = new Vector<Point>(p.points.length);
-		
-		for(j in 0...p.points.length)
-		{
-			decompParams[j] = p.points[j];
-		}
-		
-		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", decompParams), B2PolygonShape);
+   		trace("THE POLY: " + p.points);
+   		trace(currW + ", " + currH);
+
+   		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", p.points, currW, currH), B2PolygonShape);
 		shapeList.push(polyShape);
 	}
 	
 	function addPolygonTerrain(p:PolyDecompBayazit)
 	{
-		//trace("THE POLY: " + p.points);
+		trace("THE POLY: " + p.points);
+		trace(currW + ", " + currH);
 		
-		var decompParams:Vector<Point> = new Vector<Point>(p.points.length);
-
-		for(j in 0...p.points.length)
-		{
-			decompParams[j] = p.points[j];
-		}
-		
-		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", decompParams), B2PolygonShape);
+		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", p.points, currW, currH), B2PolygonShape);
 		shapeList.push(polyShape);
 	}
 	
@@ -322,7 +298,9 @@ class Scene
 		if(Std.is(shapeData, MbsPolyRegion))
 		{
 			var polygon:MbsPolyRegion = cast shapeData;
-			
+			currW = polygon.getWidth();
+			currH = polygon.getHeight();
+
 			var points = ShapeReader.readPoints(polygon.getPoints()).toArray();
 			var decomp = new PolyDecompBayazit(points);
 			decomp.decompose(addPolygonTerrain);
@@ -668,7 +646,7 @@ class Scene
 			var poly = list.getNextObject();
 			
 			var position = ShapeReader.readPoint(poly.getPosition());
-			var points = ShapeReader.readPoints(poly.getPoints());
+			var points = ShapeReader.readPoints(poly.getPoints()).toArray();
 			var shapeData:Map<Int,Dynamic> = ShapeReader.createPolygon("MbsWireframe", points);
 			
 			map.push
