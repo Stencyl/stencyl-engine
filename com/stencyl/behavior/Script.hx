@@ -1974,7 +1974,15 @@ class Script
 	*/
 	public static function getSoundByName(soundName:String):Sound
 	{
-		return cast Data.get().resourceMap.get(soundName);
+		if (Data.get().resourceMap.exists(soundName))
+		{
+			return cast Data.get().resourceMap.get(soundName);
+		}
+		else
+		{
+			trace("Could not find a sound named " + soundName + ".");
+			return null;
+		}
 	}
 	
 	/**
