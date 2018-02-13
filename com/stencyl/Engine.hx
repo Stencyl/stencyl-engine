@@ -362,7 +362,8 @@ class Engine
 	public var whenTypeGroupDiesListeners:ObjectMap<Dynamic, Dynamic>;
 	public var typeGroupPositionListeners:Map<Int,Dynamic>;
 	public var collisionListeners:Map<Int,Dynamic>;
-	public var soundListeners:ObjectMap<Dynamic, Dynamic>;		
+	public var soundListeners:Map<Sound, Dynamic>;
+	public var channelListeners:Map<Int, Dynamic>;
 			
 	public var whenUpdatedListeners:Array<Dynamic>;
 	public var whenDrawingListeners:Array<Dynamic>;
@@ -1033,7 +1034,8 @@ class Engine
 		whenTypeGroupDiesListeners = new ObjectMap<Dynamic, Dynamic>();
 		typeGroupPositionListeners = new Map<Int,Dynamic>();
 		collisionListeners = new Map<Int,Dynamic>();
-		soundListeners = new ObjectMap<Dynamic, Dynamic>();
+		soundListeners = new Map<Sound, Dynamic>();
+		channelListeners = new Map<Int, Dynamic>();
 		nativeListeners = new Array<NativeListener>();
 		
 		whenUpdatedListeners = new Array<Dynamic>();
@@ -1751,6 +1753,7 @@ class Engine
 		typeGroupPositionListeners = null;
 		collisionListeners = null;
 		soundListeners = null;
+		channelListeners = null;
 					
 		whenUpdatedListeners = null;
 		whenDrawingListeners = null;
@@ -2908,15 +2911,9 @@ class Engine
 		
 		if(soundListeners != null)
 		{
-			var channelListeners = soundListeners.get(channelNum);
 			var clipListeners = soundListeners.get(sc.currentClip);
 			
 			sc.currentSound = null;
-			
-			if(channelListeners != null)
-			{
-				invokeListeners(channelListeners);
-			}
 			
 			if(clipListeners != null)
 			{
@@ -2926,6 +2923,16 @@ class Engine
 		else
 		{
 			sc.currentSound = null;
+		}
+		
+		if(channelListeners != null)
+		{
+			var chanListeners = channelListeners.get(channelNum);
+			
+			if(chanListeners != null)
+			{
+				invokeListeners(chanListeners);
+			}
 		}
 	}
 	

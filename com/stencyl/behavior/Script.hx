@@ -929,17 +929,35 @@ class Script
 	
 	public function addSoundListener(obj:Dynamic, func:Array<Dynamic>->Void)
 	{
-		if(!engine.soundListeners.exists(obj))
+		if (Std.is(obj, Sound))
 		{
-			engine.soundListeners.set(obj, new Array<Dynamic>());
+			if(!engine.soundListeners.exists(obj))
+			{
+				engine.soundListeners.set(obj, new Array<Dynamic>());
+			}
+			
+			var listeners:Array<Dynamic> = engine.soundListeners.get(obj);
+			listeners.push(func);
+			
+			if(Std.is(this, ActorScript))
+			{
+				cast(this, ActorScript).actor.registerListener(listeners, func);
+			}
 		}
-		
-		var listeners:Array<Dynamic> = engine.soundListeners.get(obj);
-		listeners.push(func);
-		
-		if(Std.is(this, ActorScript))
+		else
 		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
+			if(!engine.channelListeners.exists(obj))
+			{
+				engine.channelListeners.set(obj, new Array<Dynamic>());
+			}
+			
+			var listeners:Array<Dynamic> = engine.channelListeners.get(obj);
+			listeners.push(func);
+			
+			if(Std.is(this, ActorScript))
+			{
+				cast(this, ActorScript).actor.registerListener(listeners, func);
+			}
 		}
 	}
 	
