@@ -112,7 +112,7 @@ class BehaviorManager
 			
 			var field = Reflect.field(b.script, attributeName);
 
-			#if !cpp
+			#if flash
 			if(field == null && !Reflect.hasField(b.script, attributeName))
 			{
 				trace("Get Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
@@ -148,7 +148,7 @@ class BehaviorManager
 			else
 			{
 				//Just insist on doing it
-				#if cpp
+				#if !flash
 				Reflect.setField(b.script, attributeName, value);
 				b.script.propertyChanged(attributeName, value);
 				#else
