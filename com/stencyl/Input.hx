@@ -452,10 +452,9 @@ class Input
 	{
 		lastEvent = event;
 
-		if(lastEvent.keyCode == 27) 
+		if(lastEvent.keyCode == lime.ui.KeyCode.APP_CONTROL_BACK)
 		{
-			lastEvent.stopImmediatePropagation();
-			lastEvent.stopPropagation();
+			lastEvent.preventDefault();
 		}
 	}
 	
