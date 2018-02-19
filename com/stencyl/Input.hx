@@ -141,7 +141,6 @@ class Input
 		_release = new Array<Int>();
 		_releaseNum = 0;
 		
-		_joyControllerReady = new Map<Int,Bool>();
 		_joyHatState = new Map<Int,Array<Int>>();
 		_joyAxisState = new Map<Int,Array<Int>>();
 		_joyAxisPressure = new Map<Int,Array<Float>>();
@@ -902,9 +901,6 @@ class Input
 			
 			for(b in buttons)
 			{
-				if(!_joyControllerReady[b.a[0]])
-					continue;
-
 				switch(b.a[JoystickButton.TYPE])
 				{
 					case JoystickButton.AXIS:
@@ -1027,7 +1023,6 @@ class Input
 	private static var _release:Array<Int> = new Array<Int>();
 	private static var _releaseNum:Int = 0;
 	
-	private static var _joyControllerReady:Map<Int, Bool> = new Map<Int,Bool>();
 	private static var _joyHatState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
 	private static var _joyAxisState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
 	private static var _joyAxisPressure:Map<Int,Array<Float>> = new Map<Int,Array<Float>>();
