@@ -328,7 +328,7 @@ class Actor extends Sprite
 		isKinematic:Bool=false,
 		canRotate:Bool=false,
 		shape:Dynamic=null, //B2Shape or Mask - Used only for terrain.
-		typeID:Int = 0,
+		typeID:Int = -1,
 		autoScale:Bool = true,
 		ignoreGravity:Bool = false,
 		physicsMode:PhysicsMode = NORMAL_PHYSICS
