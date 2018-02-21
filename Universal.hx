@@ -173,7 +173,12 @@ class Universal extends Sprite
 			else if(smaller == 1125 && larger == 2001)
 			{
 				Engine.isIPhone6Plus = true;
-			}	
+			}
+
+			else if(smaller == 1125 && larger == 2436)
+			{
+				Engine.isIPhoneX = true;
+			}
 			
 			else if(smaller == 768 && larger == 1024)
 			{
