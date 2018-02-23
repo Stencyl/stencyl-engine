@@ -346,7 +346,7 @@ class G
 
 		if(toDraw != null)
 		{
-			graphics.beginBitmapFill(toDraw, mtx, true, Config.antialias);
+			graphics.beginBitmapFill(toDraw, mtx, false, Config.antialias);
 			graphics.drawRect(drawX, drawY, toDraw.width, toDraw.height);
 			graphics.endFill();
 		}
