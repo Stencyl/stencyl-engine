@@ -3142,6 +3142,10 @@ class Engine
 			}
 		}
 		
+     	g.graphics = transitionLayer.graphics;
+     	g.graphics.clear();
+     	g.resetGraphicsSettings();
+		
 		//Walk through all actors
 		//TODO: cache the actors that need to be drawn instead upon creation
 		if(!allActors.isEmpty())
@@ -3182,8 +3186,6 @@ class Engine
      	//Scene Behavior/Event Drawing
      	g.graphics = transitionLayer.graphics;
      	g.translateToScreen();
-     	g.graphics.clear();
-     	g.resetGraphicsSettings();
      	invokeListeners4(whenDrawingListeners, g, 0, 0);
 
      	G.visitStringCache();
