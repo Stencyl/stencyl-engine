@@ -2834,11 +2834,7 @@ class Script
 	{
 		if(img != null)
 		{
-			#if flash
 			img.img.filters = img.filters.concat([filter]);
-			#else
-			img.img.shader = filter.getShader();
-			#end
 		}
 	}
 	
@@ -2846,11 +2842,7 @@ class Script
 	{
 		if(img != null)
 		{
-			#if flash
 			img.img.filters = [];
-			#else
-			img.img.shader = null;
-			#end
 		}
 	}
 	

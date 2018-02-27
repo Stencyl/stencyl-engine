@@ -104,6 +104,8 @@ using StringTools;
 		Reflect.setField (config, "telemetry", telemetry);
 		#end
 
+		Lib.current;
+
 		#if (stencyltools)
 		new ToolsetInterface();
 		#end

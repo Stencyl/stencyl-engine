@@ -3208,14 +3208,6 @@ class Engine
 			//Only need to capture the first shader in the chain
 			shaders[0].capture();
 		}
-
-		//A stencyl-specific customization of the Graphics class that
-		//allows the generated surface to be no larger than the screen.
-		for(l in interactiveLayers)
-		{
-			l.overlay.graphics.clip(0, 0, screenWidth * SCALE, screenHeight * SCALE);
-		}
-		transitionLayer.graphics.clip(0, 0, screenWidth * SCALE, screenHeight * SCALE);
 		#end
      }
 	

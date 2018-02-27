@@ -10,7 +10,7 @@ import flash.geom.Transform;
 import openfl.display.BlendMode;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-import openfl.display.Shader;
+import openfl.display.DisplayObjectShader;
 import openfl.display.Sprite;
 import openfl.display.Tile;
 import openfl.display.Tilemap;
@@ -238,7 +238,7 @@ class Actor extends Sprite
 	public var maxMove:Float = 99999;
 
 	#if(!flash)
-	private var shader:Shader = null;
+	private var shader:DisplayObjectShader = null;
 	#end
 	
 	//*-----------------------------------------------
@@ -3719,29 +3719,12 @@ class Actor extends Sprite
 
 	public function setFilter(filter:Array<BitmapFilter>)
 	{
-		#if(!flash)
-		if(filter.length >= 1)
-		{
-			shader = filter[0].getShader();
-		}
-		else
-		{
-			shader = null;
-		}
-		currAnimation.shader = shader;
-		#else
 		filters = filters.concat(filter);
-		#end
 	}
 	
 	public function clearFilters()
 	{
-		#if(!flash)
-		shader = null;
-		currAnimation.shader = shader;
-		#else
 		filters = [];
-		#end
 	}
 	
 	public function setBlendMode(blendMode:BlendMode)
