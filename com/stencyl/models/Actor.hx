@@ -92,7 +92,7 @@ import com.stencyl.utils.ColorMatrix;
 
 import haxe.CallStack;
 
-#if (use_tilemap)
+#if (use_actor_tilemap)
 typedef ActorAnimation = SheetAnimation;
 #else
 typedef ActorAnimation = BitmapAnimation;
@@ -818,7 +818,7 @@ class Actor extends Sprite
 			
 			//XXX: Did some work on cases where image data is missing. It's still an error but won't crash anymore.
 			//XXX: This ends up being the case for the recyclingDefault animation.
-			#if (use_tilemap)
+			#if (use_actor_tilemap)
 
 			var tileset = new Tileset(new BitmapData(16, 16));
 			tileset.addRect(new openfl.geom.Rectangle(0, 0, 16, 16));
@@ -837,7 +837,7 @@ class Actor extends Sprite
 			return;
 		}
 	
-		#if (use_tilemap)
+		#if (use_actor_tilemap)
 		var tileset = new Tileset(imgData);
 		
 		frameWidth = Std.int(imgData.width/framesAcross);
@@ -3627,7 +3627,7 @@ class Actor extends Sprite
 			var x:Float = 0;
 			var y:Float = 0;
 			
-			#if (use_tilemap)
+			#if (use_actor_tilemap)
 			if(g.drawActor)
 			{
 				x = g.x + Engine.cameraX;
