@@ -124,8 +124,8 @@ class Universal extends Sprite
 			scales.set(scale, true);
 		}
 
-		windowWidth = isFullScreen ? stage.fullScreenWidth * window.scale : Config.stageWidth * Config.gameScale;
-		windowHeight = isFullScreen ? stage.fullScreenHeight * window.scale : Config.stageHeight * Config.gameScale;
+		windowWidth = isFullScreen ? stage.fullScreenWidth : Config.stageWidth * Config.gameScale;
+		windowHeight = isFullScreen ? stage.fullScreenHeight : Config.stageHeight * Config.gameScale;
 
 		trace("Game Width: " + Config.stageWidth);
 		trace("Game Height: " + Config.stageHeight);
