@@ -34,7 +34,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 	public var numCols:Int;
 
 	//Internal/Temporary stuff
-	#if(flash || js)
+	#if(!use_tilemap)
 	public var bitmapData:BitmapData;
 	private var flashPoint:Point;
 	#else
@@ -77,7 +77,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 			}
 		}
 		
-		#if(flash || js)
+		#if(!use_tilemap)
 		flashPoint = new Point();
 		#else
 		tilemaps = new Map<FLTileset, Tilemap>();
@@ -86,7 +86,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 	
 	public function reset()
 	{
-		#if (flash || js)
+		#if (!use_tilemap)
 		if(!noTiles)
 		{
 			bitmapData = new BitmapData
@@ -108,7 +108,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 	
 	public function clearBitmap()
 	{
-		#if (flash || js)
+		#if (!use_tilemap)
 		while(numChildren > 0)
 		{
 			removeChildAt(0);
@@ -126,12 +126,10 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 	
 	public function setPosition(x:Int, y:Int)
 	{
-		#if (flash || js)
+		#if (!use_tilemap)
 		this.x = x - x % (scene.tileWidth * Engine.SCALE);
 		this.y = y - y % (scene.tileHeight * Engine.SCALE);
-		#end
-		
-		#if (cpp || neko)
+		#else
 		//this.x = x;
 		//this.y = y;
 		#end
@@ -187,7 +185,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 		{
 			noTiles = false;
 
-			#if (flash || js)
+			#if (!use_tilemap)
 			if(bitmapData == null)
 				reset();
 			#end
@@ -291,7 +289,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 			return;
 		}
 		
-		#if (cpp || neko)
+		#if (use_tilemap)
 		
 		for(tm in tilemaps)
 			tm.removeTiles();
@@ -372,7 +370,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 					t = t.autotiles[autotileData[y][x]];
 				}
 				
-				#if (flash || js)
+				#if (!use_tilemap)
 				//If animated or an autotile, used animated tile pixels
 				var pixels = (t.pixels == null) ? t.parent.pixels : t.pixels;
 				
@@ -411,7 +409,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 
 	public function updateScale():Void
 	{
-		#if (flash || js)
+		#if (!use_tilemap)
 		
 		clearBitmap();
 		reset();
@@ -427,7 +425,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 		#end
 	}
 
-	#if (cpp || neko)
+	#if (use_tilemap)
 	private function getTilemap(fltileset:FLTileset):Tilemap
 	{
 		if(!tilemaps.exists(fltileset))

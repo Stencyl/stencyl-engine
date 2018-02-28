@@ -10,6 +10,12 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
+#if (flash)
+typedef PixelColor = UInt;
+#else
+typedef PixelColor = Int;
+#end
+
 /**
  * Holds information and bitmap glpyhs for a bitmap font.
  * @author Johan Peitz
@@ -20,7 +26,7 @@ class BitmapFont
 	
 	private static var ZERO_POINT:Point = new Point();
 	
-	#if (flash || js)
+	#if (!use_tilemap)
 	private var _glyphs:Array<BitmapData>;
 	#else
 	private var _glyphs:Map<Int,FontSymbol>;
@@ -30,7 +36,7 @@ class BitmapFont
 	private var _glyphString:String;
 	private var _maxHeight:Int;
 	
-	#if (flash || js)
+	#if (!use_tilemap)
 	private var _matrix:Matrix;
 	private var _colorTransform:ColorTransform;
 	#end
@@ -46,7 +52,7 @@ class BitmapFont
 	{
 		_maxHeight = 0;
 		_point = new Point();
-		#if (flash || js)
+		#if (!use_tilemap)
 		_matrix = new Matrix();
 		_colorTransform = new ColorTransform();
 		_glyphs = [];
@@ -73,7 +79,7 @@ class BitmapFont
 			var result:BitmapData = prepareBitmapData(pBitmapData, tileRects);
 			var currRect:Rectangle;
 			
-			#if (cpp || neko)
+			#if (use_tilemap)
 			_tileset = new Tileset(result);
 			#end
 			
@@ -82,7 +88,7 @@ class BitmapFont
 				currRect = tileRects[letterID];
 				
 				// create glyph
-				#if (flash || js)
+				#if (!use_tilemap)
 				var bd:BitmapData = new BitmapData(Math.floor(currRect.width), Math.floor(currRect.height), true, 0x0);
 				bd.copyPixels(pBitmapData, currRect, ZERO_POINT, null, null, true);
 				
@@ -117,7 +123,7 @@ class BitmapFont
 			var charCode:Int;
 			var charString:String;
 			
-			#if (cpp || neko)
+			#if (use_tilemap)
 			_tileset = new Tileset(pBitmapData);
 			#end
 			
@@ -167,7 +173,7 @@ class BitmapFont
 						}
 						
 						// create glyph
-						#if (flash || js)
+						#if (!use_tilemap)
 						bd = null;
 						if (charString != " " && charString != "")
 						{
@@ -208,7 +214,7 @@ class BitmapFont
 	{
 		dispose();
 		_maxHeight = 0;
-		#if (flash || js)
+		#if (!use_tilemap)
 		_glyphs = [];
 		#else
 		_glyphs = new Map<Int,FontSymbol>();
@@ -270,13 +276,8 @@ class BitmapFont
 		
 		var resultBitmapData:BitmapData = pBitmapData.clone();
 		
-		#if flash
-		var pixelColor:UInt;
-		var bgColor32:UInt = pBitmapData.getPixel32(0, 0);
-		#else
-		var pixelColor:Int;
-		var bgColor32:Int = pBitmapData.getPixel32(0, 0);
-		#end
+		var pixelColor:PixelColor;
+		var bgColor32:PixelColor = pBitmapData.getPixel32(0, 0);
 		
 		cy = 0;
 		while (cy < pBitmapData.height)
@@ -297,7 +298,7 @@ class BitmapFont
 		return resultBitmapData;
 	}
 	
-	#if (flash || js)
+	#if (!use_tilemap)
 	public function getPreparedGlyphs(pScale:Float, pColor:Int, ?pUseColorTransform:Bool = true):Array<BitmapData>
 	{
 		var result:Array<BitmapData> = [];
@@ -342,7 +343,7 @@ class BitmapFont
 	 */
 	public function dispose():Void 
 	{
-		#if (flash || js)
+		#if (!use_tilemap)
 		var bd:BitmapData;
 		for (i in 0...(_glyphs.length)) 
 		{
@@ -359,7 +360,7 @@ class BitmapFont
 		_glyphs = null;
 	}
 	
-	#if (flash || js)
+	#if (!use_tilemap)
 	/**
 	 * Serializes font data to cryptic bit string.
 	 * @return	Cryptic string with font as bits.
@@ -386,7 +387,7 @@ class BitmapFont
 	}
 	#end
 	
-	#if (flash || js)
+	#if (!use_tilemap)
 	private function setGlyph(pCharID:Int, pBitmapData:BitmapData):Void 
 	{
 		if (_glyphs[pCharID] != null) 
@@ -404,6 +405,10 @@ class BitmapFont
 	#else
 	private function setGlyph(pCharID:Int, pRect:Rectangle, pGlyphID:Int, ?pOffsetX:Int = 0, ?pOffsetY:Int = 0, ?pAdvanceX:Int = 0):Void 
 	{
+		if(pRect.width == 0)
+			pRect.width = 1;
+		if(pRect.height == 0)
+			pRect.height = 1;
 		_tileset.addRect(pRect);
 		
 		var symbol:FontSymbol = new FontSymbol();
@@ -430,17 +435,15 @@ class BitmapFont
 	 * @param	pOffsetX	X position of text output.
 	 * @param	pOffsetY	Y position of text output.
 	 */
-	#if flash 
-	public function render(pBitmapData:BitmapData, pFontData:Array<BitmapData>, pText:String, pColor:UInt, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0):Void 
-	#elseif js
-	public function render(pBitmapData:BitmapData, pFontData:Array<BitmapData>, pText:String, pColor:Int, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0):Void 
+	#if (!use_tilemap) 
+	public function render(pBitmapData:BitmapData, pFontData:Array<BitmapData>, pText:String, pColor:PixelColor, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0):Void 
 	#else
 	public function render(tilemap:Tilemap, pText:String, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0):Void 
 	#end
 	{
 		_point.x = pOffsetX;
 		_point.y = pOffsetY;
-		#if (flash || js)
+		#if (!use_tilemap)
 		var glyph:BitmapData;
 		#else
 		var glyph:FontSymbol;
@@ -469,7 +472,7 @@ class BitmapFont
 				}
 			}
 			
-			#if (flash || js)
+			#if (!use_tilemap)
 			glyph = pFontData[charCode];
 			if (glyph != null) 
 			#else
@@ -477,7 +480,7 @@ class BitmapFont
 			if (_glyphs.exists(charCode))
 			#end
 			{
-				#if (flash || js)
+				#if (!use_tilemap)
 
 				if(pAlpha == 1 && pScale == 1)
 				{
@@ -520,8 +523,8 @@ class BitmapFont
 		}
 	}
 
-	#if (!flash && !js)
-	public function renderToImg(pBitmapData:BitmapData, pText:String, pColor:Int, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0, ?pUseColorTransform:Bool = true):Void 
+	#if (use_tilemap)
+	public function renderToImg(pBitmapData:BitmapData, pText:String, pColor:PixelColor, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0, ?pUseColorTransform:Bool = true):Void 
 	{
 		var tilemap = new Tilemap(pBitmapData.width, pBitmapData.height, _tileset);
 
@@ -585,7 +588,7 @@ class BitmapFont
 				}
 			}
 			
-			#if (flash || js)
+			#if (!use_tilemap)
 			var glyph:BitmapData = _glyphs[charCode];
 			if (glyph != null) 
 			{
@@ -629,7 +632,7 @@ class BitmapFont
 	
 	public function get_numLetters():Int 
 	{
-		#if (flash || js)
+		#if (!use_tilemap)
 		return _glyphs.length;
 		#else
 		return _num_letters;
@@ -662,7 +665,7 @@ class BitmapFont
 		return _glyphString.indexOf(char) >= 0;
 	}
 
-	#if (cpp || neko)
+	#if (use_tilemap)
 	public function getTileset():Tileset
 	{
 		return _tileset;

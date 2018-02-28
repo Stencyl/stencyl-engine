@@ -92,7 +92,7 @@ import com.stencyl.utils.ColorMatrix;
 
 import haxe.CallStack;
 
-#if (cpp || neko)
+#if (use_tilemap)
 typedef ActorAnimation = SheetAnimation;
 #else
 typedef ActorAnimation = BitmapAnimation;
@@ -818,7 +818,7 @@ class Actor extends Sprite
 			
 			//XXX: Did some work on cases where image data is missing. It's still an error but won't crash anymore.
 			//XXX: This ends up being the case for the recyclingDefault animation.
-			#if (cpp || neko)
+			#if (use_tilemap)
 
 			var tileset = new Tileset(new BitmapData(16, 16));
 			tileset.addRect(new openfl.geom.Rectangle(0, 0, 16, 16));
@@ -826,7 +826,7 @@ class Actor extends Sprite
 			tempSprite.framesAcross = 1;
 			animationMap.set(name, tempSprite);
 			
-			#elseif flash
+			#else
 			
 			animationMap.set(name, new BitmapAnimation(new BitmapData(16, 16), 1, 1, 1, [1000000], false, null));
 			
@@ -837,7 +837,7 @@ class Actor extends Sprite
 			return;
 		}
 	
-		#if (cpp || neko)
+		#if (use_tilemap)
 		var tileset = new Tileset(imgData);
 		
 		frameWidth = Std.int(imgData.width/framesAcross);
@@ -862,9 +862,7 @@ class Actor extends Sprite
 		sprite.framesAcross = framesAcross;
 		
 		animationMap.set(name, sprite);
-		#end
-		
-		#if (flash || js)
+		#else
 		var sprite = new BitmapAnimation
 		(
 			imgData, 
@@ -3629,7 +3627,7 @@ class Actor extends Sprite
 			var x:Float = 0;
 			var y:Float = 0;
 			
-			#if (cpp || neko)
+			#if (use_tilemap)
 			if(g.drawActor)
 			{
 				x = g.x + Engine.cameraX;

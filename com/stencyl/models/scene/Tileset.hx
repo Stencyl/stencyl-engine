@@ -17,7 +17,7 @@ class Tileset extends Resource
 	public var pixels:BitmapData;
 	public static var temp:Rectangle = new Rectangle();
 	
-	#if (cpp || neko)
+	#if (use_tilemap)
 	public var flTileset:FLTileset;
 	public var data:Array<Float>;
 	
@@ -43,7 +43,7 @@ class Tileset extends Resource
 	
 	public function setupFLTileset()
 	{
-		#if (cpp || neko)
+		#if (use_tilemap)
 		sheetMap = new Map<Int,Int>();
 		data = [0.0,0.0,0];
 		
@@ -94,7 +94,7 @@ class Tileset extends Resource
 			var row:Int = Math.floor(tile.frameIndex / framesAcross);
 			var col:Int = Math.floor(tile.frameIndex % framesAcross);
 			
-			#if (cpp || neko)
+			#if (use_tilemap)
 			// The tile line fix now affects all scale modes.  Set to false if this causes any problems.
 			if(true)
 			{
@@ -147,7 +147,7 @@ class Tileset extends Resource
 	{
 		pixels = null;
 	
-		#if (cpp || neko)
+		#if (use_tilemap)
 		flTileset = null;
 		#end
 		

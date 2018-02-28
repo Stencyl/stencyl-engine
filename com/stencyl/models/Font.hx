@@ -85,7 +85,7 @@ class Font extends Resource
 	{
 		super.reloadGraphics(subID);
 		
-		#if (flash || js)
+		#if (!use_tilemap)
 		var g:G = Engine.engine.g;
 		if(G.fontCache != null && G.fontCache.exists(ID))
 		{
