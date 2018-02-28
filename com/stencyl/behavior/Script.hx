@@ -2598,7 +2598,7 @@ class Script
 	{
 		if(img != null)
 		{
-			#if(flash || js)
+			#if(!use_tilemap)
 			var fontData = G.fontCache.get(font.ID);
 				
 			if(fontData == null)
@@ -2675,7 +2675,6 @@ class Script
 	
 	public static function filterImage(img:BitmapData, filter:BitmapFilter)
 	{
-		#if flash
 		if(img != null)
 		{
 			dummyPoint.x = 0;
@@ -2683,7 +2682,6 @@ class Script
 		
 			img.applyFilter(img, img.rect, dummyPoint, filter);
 		}
-		#end
 	}
 	
 	public static function imageSetPixel(img:BitmapData, x:Int, y:Int, color:Int)
