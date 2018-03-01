@@ -1815,7 +1815,7 @@ class Script
 	*/
 	public static function getActorType(actorTypeID:Int):ActorType
 	{
-		return cast(Data.get().resources.get(actorTypeID), ActorType);
+		return cast Data.get().resources.get(actorTypeID);
 	}
 	
 	/**
@@ -1977,14 +1977,7 @@ class Script
 	*/
 	public static function getSound(soundID:Int):Sound
 	{
-		var temp = Data.get().resources.get(soundID);
-		
-		if(temp == null)
-		{
-			return null;
-		}
-	
-		return cast(temp, Sound);
+		return cast Data.get().resources.get(soundID);
 	}
 	
 	/**
@@ -1992,15 +1985,7 @@ class Script
 	*/
 	public static function getSoundByName(soundName:String):Sound
 	{
-		if (Data.get().resourceMap.exists(soundName))
-		{
-			return cast Data.get().resourceMap.get(soundName);
-		}
-		else
-		{
-			trace("Could not find a sound named " + soundName + ".");
-			return null;
-		}
+		return cast Data.get().resourceMap.get(soundName);
 	}
 	
 	/**
@@ -2996,7 +2981,7 @@ class Script
 		}
 		var tlayer = cast(layer, Layer).tiles;
 
-		var tset = cast(Data.get().resources.get(tilesetID), Tileset);
+		var tset = cast Data.get().resources.get(tilesetID);
 		var tile:Tile = tset.tiles[tileID];
 		
 		//add the Tile to the TileLayer
@@ -3285,7 +3270,7 @@ class Script
 	
 	public static function getFont(fontID:Int):Font
 	{
-		return cast(Data.get().resources.get(fontID), Font);
+		return cast Data.get().resources.get(fontID);
 	}
 	
 	//*-----------------------------------------------

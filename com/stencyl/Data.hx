@@ -188,7 +188,7 @@ class Data
 
 			obj.setAddress(objAddress);
 			resourceLookup.set(obj.getId(), dynAddress);
-
+			
 			var type = resourceListMbs.readTypecode(dynAddress);
 			if(type == MbsSprite.MBS_SPRITE)
 				resourceNameLookup.set("Sprite_" + obj.getName(), obj.getId());
@@ -199,12 +199,24 @@ class Data
 
 	private function loadResourceFromMbsByName(name:String):Resource
 	{
-		return loadResourceFromMbs(resourceNameLookup.get(name));
+		var id:Null<Int> = resourceNameLookup.get(name);
+		if(id == null)
+		{
+			trace("Resource with name " + name + " doesn't exist.");
+			return null;
+		}
+		
+		return loadResourceFromMbs(id);
 	}
 
 	private function loadResourceFromMbs(id:Int):Resource
 	{
-		var address = resourceLookup.get(id);
+		var address:Null<Int> = resourceLookup.get(id);
+		if(address == null)
+		{
+			trace("Error: resource with id " + id + " doesn't exist.");
+			return null;
+		}
 		var obj:MbsObject = cast MbsDynamicHelper.readDynamicUsingPool(resourceListMbs, address, resourceReaderPool);
 
 		var newResource = readResource(obj.getMbsType().getName(), obj);
