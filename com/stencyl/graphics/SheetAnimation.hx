@@ -166,10 +166,17 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 
 	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
-		//TODO: Are angle and alpha reflected here?
-		//should they be?
 		var bitmapData = new BitmapData(frameWidth, frameHeight, true, 0);
-		bitmapData.draw(this);
+		
+		if (g.alpha == 1)
+		{
+			bitmapData.draw(this);
+		}
+		else
+		{
+			var colorTransformation = new openfl.geom.ColorTransform(1,1,1,g.alpha,0,0,0,0);
+			bitmapData.draw(this, null, colorTransformation);
+		}
 
 		g.graphics.beginBitmapFill(bitmapData, new Matrix(1, 0, 0, 1, x, y));
 		g.graphics.drawRect(x, y, frameWidth, frameHeight);
