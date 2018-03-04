@@ -274,7 +274,7 @@ class G
 
 	private inline function getCacheKey(string:String, font:Font, alpha:Float):String
 	{
-		return string + ":" + font.ID + ":" + alpha;
+		return string + ":" + font.ID + ":" + alpha + ":" + font.letterSpacing;
 	}
 	
 	public inline function drawString(s:String, x:Float, y:Float)
