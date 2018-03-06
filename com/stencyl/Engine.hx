@@ -58,6 +58,7 @@ import com.stencyl.models.Terrain;
 import com.stencyl.models.actor.Group;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.actor.Collision;
+import com.stencyl.models.background.ColorBackground;
 import com.stencyl.models.background.ImageBackground;
 import com.stencyl.models.background.ScrollingBackground;
 import com.stencyl.models.collision.Mask;
@@ -1598,7 +1599,16 @@ class Engine
 
 	public function setColorBackground(bg:Background)
 	{
-		bg.draw(colorLayer.graphics, 0, 0, Std.int(screenWidth * SCALE), Std.int(screenHeight * SCALE));
+		if(Std.is(bg, ColorBackground))
+		{
+			colorLayer.graphics.clear();
+			var cbg:ColorBackground = cast bg;
+			stage.color = (cbg.bgColor == ColorBackground.TRANSPARENT) ? null : cbg.bgColor;
+		}
+		else
+		{
+			bg.draw(colorLayer.graphics, 0, 0, Std.int(screenWidth * SCALE), Std.int(screenHeight * SCALE));
+		}
 	}
 
 	//*-----------------------------------------------
