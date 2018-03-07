@@ -756,6 +756,18 @@ class Utils
 	{
 		return color & 0xFF;
 	}
+	
+	public static inline function convertColor(color:Int):Int
+	{
+		if (color < 0)
+		{
+			return color + 16777216;
+		}
+		else
+		{
+			return color;
+		}
+	}
 
 	/**
 	 * Sets a time flag.
