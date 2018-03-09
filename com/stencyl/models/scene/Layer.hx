@@ -16,7 +16,7 @@ class Layer extends RegularLayer
 	//Tiles
 	public var tiles:TileLayer;
 	//Actors
-	public var actorContainer:Sprite;
+	public var actorContainer:ActorLayer;
 	//Custom Drawing
 	public var overlay:Sprite;
 	
@@ -32,7 +32,7 @@ class Layer extends RegularLayer
 		tiles.reset();
 		tiles.blendMode = blendMode;
 
-		actorContainer = new Sprite();
+		actorContainer = new ActorLayer(#if (use_actor_tilemap) 0, 0, null, Config.antialias #end);
 		overlay = new Sprite();
 
 		addChild(tiles);

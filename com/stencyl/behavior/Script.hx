@@ -2425,6 +2425,7 @@ class Script
 	
 	public static function setOrderForImage(img:BitmapWrapper, order:Int)
 	{
+		#if (!use_actor_tilemap)
 		if(img != null && img.parent != null)
 		{
 			if(order >= 0 && order < img.parent.numChildren)
@@ -2432,52 +2433,64 @@ class Script
 				img.parent.setChildIndex(img, order);
 			}
 		}
+		#end
 	}
 
 	public static function getOrderForImage(img:BitmapWrapper)
 	{
+		#if (!use_actor_tilemap)
 		if(img != null && img.parent != null)
 		{
 			return img.parent.getChildIndex(img);
 		}
+		#end
 		
 		return -1;
 	}
 	
 	public static function bringImageBack(img:BitmapWrapper)
 	{
+		#if (!use_actor_tilemap)
 		if(img != null && img.parent != null)
 		{
 			setOrderForImage(img, img.parent.getChildIndex(img) - 1);
 		}
+		#end
 	}
 	
 	public static function bringImageForward(img:BitmapWrapper)
 	{
+		#if (!use_actor_tilemap)
 		if(img != null && img.parent != null)
 		{
 			setOrderForImage(img, img.parent.getChildIndex(img) + 1);
 		}
+		#end
 	}
 	
 	public static function bringImageToBack(img:BitmapWrapper)
 	{
+		#if (!use_actor_tilemap)
 		if(img != null && img.parent != null)
 		{
 			setOrderForImage(img, 0);
 		}
+		#end
 	}
 	
 	public static function bringImagetoFront(img:BitmapWrapper)
 	{
+		#if (!use_actor_tilemap)
 		if(img != null && img.parent != null)
 		{
 			setOrderForImage(img, img.parent.numChildren - 1);
 		}
+		#end
 	}
 	
 	public static function attachImageToActor(img:BitmapWrapper, a:Actor, x:Int, y:Int, pos:Int = 1)
 	{
+		#if (!use_actor_tilemap)
 		if(img != null)
 		{
 			//Behind the Actor - Send to the very back.
@@ -2499,6 +2512,7 @@ class Script
 
 			a.attachedImages.push(img);
 		}
+		#end
 	}
 	
 	//Will be "fixed" like an HUD
@@ -2537,7 +2551,7 @@ class Script
 	
 	public static function removeImage(img:BitmapWrapper)
 	{
-		if(img != null)
+		if(img != null #if (use_actor_tilemap) && img.parent != null #end)
 		{
 			if(Std.is(img.parent, Actor))
 				cast(img.parent, Actor).attachedImages.remove(img);

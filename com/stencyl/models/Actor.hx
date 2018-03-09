@@ -98,7 +98,7 @@ typedef ActorAnimation = SheetAnimation;
 typedef ActorAnimation = BitmapAnimation;
 #end
 
-class Actor extends Sprite
+class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 {	
 	//*-----------------------------------------------
 	//* Globals
@@ -118,6 +118,10 @@ class Actor extends Sprite
 	
 	//Used for recycled actors to tell them apart
 	public var createTime:Float;
+	
+	#if(use_actor_tilemap)
+	public var name:String;
+	#end
 	
 	public var ID:Int;
 	public var groupID:Int;
@@ -164,9 +168,6 @@ class Actor extends Sprite
 	//*-----------------------------------------------
 	//* Position / Motion
 	//*-----------------------------------------------
-	
-	public var originX:Float;
-	public var originY:Float;
 	
 	public var realX:Float;
 	public var realY:Float;
@@ -237,10 +238,6 @@ class Actor extends Sprite
 	public var minMove:Float = 3;
 	public var maxMove:Float = 99999;
 
-	#if(!flash)
-	private var shader:DisplayObjectShader = null;
-	#end
-	
 	//*-----------------------------------------------
 	//* Behaviors
 	//*-----------------------------------------------
@@ -370,8 +367,6 @@ class Actor extends Sprite
 		realScaleX = 1;
 		realScaleY = 1;
 		
-		originX = 0;
-		originY = 0;
 		collidable = true;
 		solid = !isSensor;
 		updateMatrix = true;
@@ -605,6 +600,7 @@ class Actor extends Sprite
 		{
 			if(shape != null && Std.is(shape, com.stencyl.models.collision.Mask))
 			{
+				#if(!use_actor_tilemap)
 				//TODO: Very inefficient for CPP/mobile - can we force width/height a different way?
 				var dummy = new Bitmap(new BitmapData(1, 1, true, 0));
 				dummy.x = width;
@@ -612,6 +608,7 @@ class Actor extends Sprite
 				addChild(dummy);
 				cacheWidth = this.width = width;
 				cacheHeight = this.height = height;
+				#end
 			}
 			
 			else if(physicsMode == NORMAL_PHYSICS)
@@ -638,12 +635,14 @@ class Actor extends Sprite
 		
 		destroyed = true;
 		
+		#if(!use_actor_tilemap)
 		for(anim in animationMap)
 		{
 			anim.visible = false;
 		}
 		
 		Utils.removeAllChildren(this);
+		#end
 
 		if(body != null && physicsMode == NORMAL_PHYSICS)
 		{
@@ -820,10 +819,8 @@ class Actor extends Sprite
 			//XXX: This ends up being the case for the recyclingDefault animation.
 			#if (use_actor_tilemap)
 
-			var tileset = new Tileset(new BitmapData(16, 16));
-			tileset.addRect(new openfl.geom.Rectangle(0, 0, 16, 16));
-			var tempSprite = new SheetAnimation(tileset, [1000000], 16, 16, false, null);
-			tempSprite.framesAcross = 1;
+			var img = new BitmapData(16, 16);
+			var tempSprite = new SheetAnimation(img, [1000000], 16, 16, false, null, this);
 			animationMap.set(name, tempSprite);
 			
 			#else
@@ -838,28 +835,19 @@ class Actor extends Sprite
 		}
 	
 		#if (use_actor_tilemap)
-		var tileset = new Tileset(imgData);
-		
 		frameWidth = Std.int(imgData.width/framesAcross);
 		frameHeight = Std.int(imgData.height/framesDown);
 		
-		for(i in 0...frameCount)
-		{			
-			tileset.addRect(new openfl.geom.Rectangle(frameWidth * (i % framesAcross), Math.floor(i / framesAcross) * frameHeight, frameWidth, frameHeight));
-			// trace("x: " + (frameWidth * (i % framesAcross)) + " y: " + (Math.floor(i / framesAcross) * frameHeight) + " w: " + (frameWidth) + " h: " + (frameHeight));
-		}
-		
 		var sprite = new SheetAnimation
 		(
-			tileset, 
+			imgData, 
 			durations, 
 			frameWidth, 
 			frameHeight,
 			looping,
-			this.sprite.animations.get(animID)
+			this.sprite.animations.get(animID),
+			this
 		);
-		
-		sprite.framesAcross = framesAcross;
 		
 		animationMap.set(name, sprite);
 		#else
@@ -1204,10 +1192,12 @@ class Actor extends Sprite
 				return;
 			}
 			
+			#if (!use_actor_tilemap)
 			if(currAnimation != null)
 			{
 				removeChild(currAnimation);
 			}
+			#end
 			
 			//---
 			
@@ -1315,11 +1305,10 @@ class Actor extends Sprite
 			
 			currAnimationName = name;
 			currAnimation = newAnimation;
-			#if(!flash)
-			currAnimation.shader = shader;
-			#end
 
+			#if (!use_actor_tilemap)
 			addChild(newAnimation);			
+			#end
 			
 			//----------------
 			
@@ -1501,7 +1490,7 @@ class Actor extends Sprite
 			{					
 				setOriginPoint(Std.int(animOrigin.x), Std.int(animOrigin.y));				
 			}
-
+			
 			updateChildrenPositions();
 			
 			updateMatrix = true;
@@ -1509,9 +1498,11 @@ class Actor extends Sprite
 			//----------------
 			
 			currAnimation.reset();
+			currAnimation.activate();
+			
 		}
 	}
-
+	
 	public function updateChildrenPositions()
 	{
 		var newAnchor = new Point(-currAnimation.x, -currAnimation.y);
@@ -1531,12 +1522,14 @@ class Actor extends Sprite
 
 	public function removeAttachedImages()
 	{
+		#if (!use_actor_tilemap)
 		for(b in attachedImages)
 		{
 			b.cacheParentAnchor = Utils.zero;
 			removeChild(b);
 		}
 		attachedImages = new Array<BitmapWrapper>();
+		#end
 	}
 	
 	//*-----------------------------------------------
@@ -1722,7 +1715,6 @@ class Actor extends Sprite
 		
 		if(doAll && currAnimation != null)
 		{
-   			//This may be a slowdown on iOS by 3-5 FPS due to clear and redraw?
    			currAnimation.update(elapsedTime);
 		}
 			
@@ -1885,13 +1877,16 @@ class Actor extends Sprite
 			transformMatrix.translate(drawX * Engine.SCALE, drawY * Engine.SCALE);
 		}
 		
-						
+		#if(!use_actor_tilemap)
 		if(transformObj == null)
 		{
 			transformObj = transform;
 		}
 		
 		transformObj.matrix = transformMatrix;
+		#else
+		matrix = transformMatrix;
+		#end
 	}
 	
 	public function updateTweenProperties()
@@ -2509,41 +2504,74 @@ class Actor extends Sprite
 	
 	public function moveToBottom()
 	{
+		#if(use_actor_tilemap)
+		this.parent.setTileIndex(this, 0);
+		#else
 		this.parent.setChildIndex(this, 0);
+		#end
 	}
 	
 	public function moveToTop()
 	{
+		#if(use_actor_tilemap)
+		this.parent.setTileIndex(this, this.parent.numTiles-1);
+		#else
 		this.parent.setChildIndex(this, this.parent.numChildren-1);
+		#end
 	}
 	
 	public function moveDown()
 	{
+		#if(!use_actor_tilemap)
 		var index:Int = this.parent.getChildIndex(this);
 		if (index > 0)
 		{
 			this.parent.setChildIndex(this, index-1);
 		}
+		#else
+		var index:Int = this.parent.getTileIndex(this);
+		if(index > 0)
+		{
+			this.parent.setTileIndex(this, index-1);
+		}
+		#end
 	}
 	
 	public function moveUp()
 	{
+		#if(!use_actor_tilemap)
 		var index:Int = this.parent.getChildIndex(this);
 		var max:Int = this.parent.numChildren-1;
 		if (index < max)
 		{
 			this.parent.setChildIndex(this, index+1);
 		}
+		#else
+		var index:Int = this.parent.getTileIndex(this);
+		var max:Int = this.parent.numTiles-1;
+		if(index < max)
+		{
+			this.parent.setTileIndex(this, index-1);
+		}
+		#end
 	}
 	
 	public function getZIndex():Int
 	{
+		#if(!use_actor_tilemap)
 		return this.parent.getChildIndex(this);
+		#else
+		return this.parent.getTileIndex(this);
+		#end
 	}
 	
 	public function setZIndex(zindex:Int)
 	{
+		#if(!use_actor_tilemap)
 		var max:Int = this.parent.numChildren-1;
+		#else
+		var max:Int = this.parent.numTiles-1;
+		#end
 		if (zindex > max)
 		{
 			zindex = max;
@@ -2552,7 +2580,11 @@ class Actor extends Sprite
 		{
 			zindex = 0;
 		}
+		#if(!use_actor_tilemap)
 		this.parent.setChildIndex(this, zindex);
+		#else
+		this.parent.setTileIndex(this, zindex);
+		#end
 	}
 	
 	//*-----------------------------------------------
@@ -2908,8 +2940,8 @@ class Actor extends Sprite
 		
 		currOrigin.x = x;
 		currOrigin.y = y;
-		originX = currOffset.x = newOffX;
-		originY = currOffset.y = newOffY;
+		currOffset.x = newOffX;
+		currOffset.y = newOffY;
 							
 		offsetDiff.x = currOffset.x - offsetDiff.x;
 		offsetDiff.y = currOffset.y - offsetDiff.y;		
@@ -3658,10 +3690,19 @@ class Actor extends Sprite
 				y += transformMatrix.ty - drawMatrix.ty;
 			}
 			
+			#if (!use_actor_tilemap)
 			var visibleCache = currAnimation.visible;
 			currAnimation.visible = true;
+			#else
+			var visibleCache = visible;
+			visible = true;
+			#end
 			currAnimation.draw(g, x, y, realAngle * Utils.RAD, g.alpha);
+			#if (!use_actor_tilemap)
 			currAnimation.visible = visibleCache;
+			#else
+			visible = visibleCache;
+			#end
 		}
 	}
 	
@@ -3674,6 +3715,7 @@ class Actor extends Sprite
 	{
 		drawActor = true;
 		
+		#if(!use_actor_tilemap)
 		if(currAnimation != null)
 		{
 			currAnimation.visible = true;
@@ -3686,12 +3728,16 @@ class Actor extends Sprite
 				anim.visible = true;
 			}
 		}
+		#else
+		visible = true;
+		#end
 	}
 	
 	public function disableActorDrawing()
 	{
 		drawActor = false;
 		
+		#if(!use_actor_tilemap)
 		if(currAnimation != null)
 		{
 			currAnimation.visible = false;
@@ -3704,6 +3750,9 @@ class Actor extends Sprite
 				anim.visible = false;
 			}
 		}
+		#else
+		visible = false;
+		#end
 	}
 	
 	public function drawsImage():Bool
@@ -3717,22 +3766,30 @@ class Actor extends Sprite
 
 	public function setFilter(filter:Array<BitmapFilter>)
 	{
+		#if (!use_actor_tilemap)
 		filters = filters.concat(filter);
+		#end
 	}
 	
 	public function clearFilters()
 	{
+		#if (!use_actor_tilemap)
 		filters = [];
+		#end
 	}
 	
 	public function setBlendMode(blendMode:BlendMode)
 	{
+		#if (!use_actor_tilemap)
 		this.blendMode = blendMode;
+		#end
 	}
 	
 	public function resetBlendMode()
 	{
+		#if (!use_actor_tilemap)
 		this.blendMode = BlendMode.NORMAL;
+		#end
 	}
 	
 	//*-----------------------------------------------
@@ -3909,6 +3966,7 @@ class Actor extends Sprite
 	
 	public function anchorToScreen()
 	{
+		#if (!use_actor_tilemap)
 		if(physicsMode == NORMAL_PHYSICS)
 		{
 			body.setAlwaysActive(true);
@@ -3920,10 +3978,12 @@ class Actor extends Sprite
 		engine.hudLayer.addChild(this);
 		
 		updateMatrix = true;
+		#end
 	}
 	
 	public function unanchorFromScreen()
 	{
+		#if (!use_actor_tilemap)
 		if(physicsMode == NORMAL_PHYSICS)
 		{
 			body.setAlwaysActive(alwaysSimulate);
@@ -3935,6 +3995,7 @@ class Actor extends Sprite
 		engine.moveActorToLayer(this, layerID);		
 		
 		updateMatrix = true;
+		#end
 	}
 	
 	public function isAnchoredToScreen():Bool
@@ -4048,7 +4109,7 @@ class Actor extends Sprite
 		killLeaveScreen = true;
 	}
 	
-	override public function toString():String
+	#if(!use_actor_tilemap) override #end public function toString():String
 	{
 		if(name == null)
 		{

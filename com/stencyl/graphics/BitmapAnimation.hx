@@ -24,8 +24,8 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	private var across:Int;
 	private var down:Int;
 	
-	private var frameWidth:Int;
-	private var frameHeight:Int;
+	public var frameWidth:Int;
+	public var frameHeight:Int;
 	private var region:Rectangle;
 	private var pt:Point;
 	
@@ -255,4 +255,6 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	{
 		return bitmapData;
 	}
+	
+	public inline function activate() {}
 }

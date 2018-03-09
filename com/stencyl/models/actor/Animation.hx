@@ -1,6 +1,7 @@
 package com.stencyl.models.actor;
 
 import openfl.display.BitmapData;
+import com.stencyl.graphics.DynamicTileset;
 import box2D.dynamics.B2FixtureDef;
 
 class Animation
@@ -110,6 +111,27 @@ class Animation
 		imgData = UNLOADED;
 		Data.get().resourceAssets.remove(parentID + "-" + animID + ".png");
 	}
+	
+	#if (use_actor_tilemap)
+	public var tilesetInitialized = false;
+	public var tileset:DynamicTileset = null;
+	public var frameIndexOffset:Int;
+	
+	public function initializeInTileset(tileset:DynamicTileset):Bool
+	{
+		var frameWidth = Std.int(imgWidth / framesAcross);
+		var frameHeight = Std.int(imgHeight / framesDown);
+		if(!tileset.checkForSpace(frameWidth, frameHeight, frameCount))
+		{
+			return false;
+		}
+		
+		frameIndexOffset = tileset.addFrames(imgData, frameWidth, frameHeight, framesAcross, frameCount);
+		this.tileset = tileset;
+		tilesetInitialized = true;
+		return true;
+	}
+	#end
 	
 	public static function updateAll(elapsedTime:Float)
 	{

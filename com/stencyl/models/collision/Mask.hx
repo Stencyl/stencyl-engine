@@ -119,25 +119,25 @@ class Mask
 			max:Float = -9999999999.,
 			min:Float = 9999999999.;
 
-		cur = -parent.originX * axis.x - parent.originY * axis.y;
+		cur = -parent.currOffset.x * axis.x - parent.currOffset.y * axis.y;
 		if (cur < min)
 			min = cur;
 		if (cur > max)
 			max = cur;
 
-		cur = (-parent.originX + parent.cacheWidth) * axis.x - parent.originY * axis.y;
+		cur = (-parent.currOffset.x + parent.cacheWidth) * axis.x - parent.currOffset.y * axis.y;
 		if (cur < min)
 			min = cur;
 		if (cur > max)
 			max = cur;
 
-		cur = -parent.originX * axis.x + (-parent.originY + parent.cacheHeight) * axis.y;
+		cur = -parent.currOffset.x * axis.x + (-parent.currOffset.y + parent.cacheHeight) * axis.y;
 		if (cur < min)
 			min = cur;
 		if (cur > max)
 			max = cur;
 
-		cur = (-parent.originX + parent.cacheWidth) * axis.x + (-parent.originY + parent.cacheHeight)* axis.y;
+		cur = (-parent.currOffset.x + parent.cacheWidth) * axis.x + (-parent.currOffset.y + parent.cacheHeight)* axis.y;
 		if (cur < min)
 			min = cur;
 		if (cur > max)

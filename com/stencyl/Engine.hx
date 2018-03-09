@@ -37,6 +37,7 @@ import com.stencyl.behavior.TimedTask;
 import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
 import com.stencyl.graphics.BitmapWrapper;
+import com.stencyl.graphics.DynamicTileset;
 import com.stencyl.graphics.EngineScaleUpdateListener;
 import com.stencyl.graphics.G;
 import com.stencyl.graphics.shaders.PostProcess;
@@ -63,6 +64,7 @@ import com.stencyl.models.background.ImageBackground;
 import com.stencyl.models.background.ScrollingBackground;
 import com.stencyl.models.collision.Mask;
 import com.stencyl.models.scene.ActorInstance;
+import com.stencyl.models.scene.ActorLayer;
 import com.stencyl.models.scene.DeferredActor;
 import com.stencyl.models.scene.Layer;
 import com.stencyl.models.scene.Tile;
@@ -234,7 +236,7 @@ class Engine
 	
 	public static var movieClip:MovieClip;
 	public static var stage:Stage;
-	public var defaultGroup:Sprite; //The default layer (bottom-most)
+	public var defaultGroup:ActorLayer; //The default layer (bottom-most)
 	public var root:Sprite; //The absolute root
 	public var colorLayer:Shape;
 	public var master:Sprite; // the root of the main node
@@ -257,7 +259,7 @@ class Engine
 	public var nextID:Int;
 	
 	//Used to be called actorsToRender
-	public var actorsPerLayer:Map<Int,DisplayObjectContainer>;
+	public var actorsPerLayer:Map<Int,ActorLayer>;
 	
 	public var hudActors:IntHashTable<Actor>;
 	
@@ -303,6 +305,10 @@ class Engine
 	public var loadedAtlases:Map<Int,Int>;
 	public var atlasesToLoad:Map<Int,Int>;
 	public var atlasesToUnload:Map<Int,Int>;
+	
+	#if (use_actor_tilemap)
+	public var actorTilesets:Array<DynamicTileset>;
+	#end
 	
 	
 	//*-----------------------------------------------
@@ -652,6 +658,11 @@ class Engine
 		stage.window.onRestore.add(onWindowRestore);
 		stage.window.onFullscreen.add(onWindowFullScreen);
 		#end
+		
+		#if (use_actor_tilemap)
+		actorTilesets = new Array<DynamicTileset>();
+		#end
+		
 		begin(Config.initSceneID);
 		
 		#if(!flash)
@@ -1021,7 +1032,7 @@ class Engine
 		hudActors.reuseIterator = true;
 		allActors = new IntHashTable<Actor>(256); 
 		allActors.reuseIterator = true;
-		actorsPerLayer = new Map<Int,DisplayObjectContainer>();
+		actorsPerLayer = new Map<Int,ActorLayer>();
 		nextID = 0;
 		
 		//Events
@@ -1592,7 +1603,7 @@ class Engine
 		//For scenes with no scene data
 		if(defaultGroup == null)
 		{
-			defaultGroup = new RegularLayer(0, "", 0, 1, 1, 1, openfl.display.BlendMode.NORMAL);
+			defaultGroup = new ActorLayer(#if (use_actor_tilemap) 0, 0, null, Config.antialias #end);
 			master.addChild(defaultGroup);
 		}
 	}
@@ -1603,7 +1614,7 @@ class Engine
 		{
 			colorLayer.graphics.clear();
 			var cbg:ColorBackground = cast bg;
-			stage.color = (cbg.bgColor == ColorBackground.TRANSPARENT) ? null : cbg.bgColor;
+			stage.color = (cbg.bgColor == ColorBackground.TRANSPARENT) ? 0 : cbg.bgColor;
 		}
 		else
 		{
@@ -1655,7 +1666,11 @@ class Engine
 	
 		for(group in actorsPerLayer)
 		{
+			#if (use_actor_tilemap)
+			group.removeTiles();
+			#else
 			Utils.removeAllChildren(group);
+			#end
 		}
 		
 		//--
@@ -1918,7 +1933,7 @@ class Engine
 		);
 
 		if(ai.angle != 0)
-		{								
+		{
 			if (a.currOffset.x != 0 || a.currOffset.y != 0)
 			{
 				var resetOrigX:Int = Std.int(a.currOrigin.x);
@@ -1931,8 +1946,8 @@ class Engine
 			
 			else
 			{
-				a.setAngle(ai.angle, false);
-			}
+			a.setAngle(ai.angle, false);
+		}
 		}	
 		
 		if(ai.scaleX != 1 || ai.scaleY != 1)
@@ -2054,7 +2069,11 @@ class Engine
 		//Be gentle and don't error out if it's not in here (in case of a double-remove)
 		if(layer.contains(a))
 		{
+			#if (use_actor_tilemap)
+			layer.removeTile(a);
+			#else
 			layer.removeChild(a);
+			#end
 		}
 	}
 	
@@ -2070,7 +2089,11 @@ class Engine
 		}
 		
 		//To ensure that it draws after
+		#if (use_actor_tilemap)
+		layer.addTile(a);
+		#else
 		layer.addChild(a);
+		#end
 		a.layerID = layerID;
 	}
 	
@@ -3372,7 +3395,11 @@ class Engine
 		var layer = getLayer(refType, ref);
 		
 		if(Std.is(layer, Layer))
+			#if (use_actor_tilemap)
+			return cast(layer, Layer).actorContainer.numTiles;
+			#else
 			return cast(layer, Layer).actorContainer.numChildren;
+			#end
 		else
 			return 0;
 	}

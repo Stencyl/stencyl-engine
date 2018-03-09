@@ -1,6 +1,9 @@
 package com.stencyl.graphics;
 
+#if(use_actor_tilemap)
+
 import com.stencyl.models.actor.Animation;
+import com.stencyl.models.Actor;
 import openfl.display.BitmapData;
 
 import openfl.display.Tile;
@@ -14,7 +17,7 @@ import openfl.geom.Rectangle;
 import com.stencyl.Config;
 import com.stencyl.Engine;
 
-class SheetAnimation extends Tilemap implements AbstractAnimation
+class SheetAnimation implements AbstractAnimation
 {
 	private var frameIndex:Int;
 	private var looping:Bool;
@@ -22,27 +25,27 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 	private var finished:Bool;
 	private var needsUpdate:Bool;
 	
-	public var framesAcross:Int;
-	public var frameWidth:Int;
-	public var frameHeight:Int;
+	private var framesAcross:Int;
+	private var frameWidth:Int;
+	private var frameHeight:Int;
 	
 	private var durations:Array<Int>;
 	private var individualDurations:Bool;
-	public var numFrames:Int;
+	private var numFrames:Int;
 	
-	private var data:Array<Float>;
-	
+	private var imgData:BitmapData;
 	private var model:Animation;
+	private var parent:Actor;
 	
-	public function new(tileset:Tileset, durations:Array<Int>, width:Int, height:Int, looping:Bool, model:Animation)
+	public var x(get, never):Float;
+	public var y(get, never):Float;
+	public var width(get, never):Int;
+	public var height(get, never):Int;
+	
+	public function new(imgData:BitmapData, durations:Array<Int>, width:Int, height:Int, looping:Bool, model:Animation, parent:Actor)
 	{
-		super(width, height, tileset, Config.antialias);
-		
 		this.model = model;
-		
-		this.x = -width/2 * Engine.SCALE;
-		this.y = -height/2 * Engine.SCALE;
-		
+		this.parent = parent;
 		this.timer = 0;
 		this.frameIndex = 0;
 		this.frameWidth = width;
@@ -51,13 +54,10 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 		this.durations = durations;
 		
 		numFrames = durations.length;
-
-		data = [0.0, 0.0, 0];
-
-		addTile(new Tile());
-		updateBitmap();
+		
+		framesAcross = model != null ? model.framesAcross : numFrames;
 	}
-
+	
 	public inline function update(elapsedTime:Float)
 	{
 		//Non-synced animations
@@ -86,7 +86,7 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 						frameIndex--;
 					}
 				}
-				
+
 				if(old != frameIndex)
 				{
 					needsUpdate = true;
@@ -129,7 +129,7 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 			frameIndex = frame;
 			needsUpdate = true;
 		}
-
+		
 		timer = 0;
 		finished = false;
 		
@@ -145,9 +145,27 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 		return finished;
 	}
 	
-	public function needsBitmapUpdate():Bool
+	public function needsBitmapUpdate():Bool 
 	{
 		return needsUpdate;
+	}
+	
+	public inline function activate()
+	{
+		if(!model.tilesetInitialized)
+		{
+			var arr = Engine.engine.actorTilesets;
+			if(arr.length == 0 || !model.initializeInTileset(arr[arr.length-1]))
+			{
+				arr.push(new DynamicTileset());
+				model.initializeInTileset(arr[arr.length-1]);
+			}
+		}
+		
+		parent.originX = frameWidth/2 * Engine.SCALE;
+		parent.originY = frameHeight/2 * Engine.SCALE;
+		parent.tileset = model.tileset.tileset;
+		updateBitmap();
 	}
 	
 	public inline function reset()
@@ -160,7 +178,7 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 	
 	public inline function updateBitmap()
 	{
-		getTileAt(0).id = frameIndex;
+		parent.id = frameIndex + model.frameIndexOffset;
 		needsUpdate = false;
 	}
 
@@ -170,12 +188,12 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 		
 		if (g.alpha == 1)
 		{
-			bitmapData.draw(this);
+			bitmapData.draw(getCurrentImage());
 		}
 		else
 		{
 			var colorTransformation = new openfl.geom.ColorTransform(1,1,1,g.alpha,0,0,0,0);
-			bitmapData.draw(this, null, colorTransformation);
+			bitmapData.draw(getCurrentImage(), null, colorTransformation);
 		}
 
 		g.graphics.beginBitmapFill(bitmapData, new Matrix(1, 0, 0, 1, x, y));
@@ -189,7 +207,7 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 	}
 	
 	public function setFrameDurations(time:Int)
-	{	
+	{
 		if(durations != null)
 		{
 			var newDurations:Array<Int> = new Array<Int>();
@@ -223,13 +241,14 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 	
 	public function getCurrentImage():BitmapData
 	{
-		var img = new BitmapData(Std.int(width) , Std.int(height), true, 0x00ffffff);
-		img.copyPixels(getBitmap(), new Rectangle((frameIndex % framesAcross) * width, Math.floor(frameIndex / framesAcross) * height, Std.int(width), Std.int(height)), new Point(0, 0), null, null, false);
+		var img = new BitmapData(frameWidth, frameHeight, true, 0x00ffffff);
+		img.copyPixels(getBitmap(), new Rectangle((frameIndex % framesAcross) * frameWidth, Math.floor(frameIndex / framesAcross) * frameHeight, frameWidth, frameHeight), new Point(0, 0), null, null, false);
 		return img;
 	}
 
 	public function setBitmap(imgData:BitmapData):Void
 	{
+		/*
 		var updateSize = (imgData.width != tileset.bitmapData.width) || (imgData.height != tileset.bitmapData.height);
 
 		if(updateSize)
@@ -242,8 +261,8 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 			frameWidth = Std.int(width);
 			frameHeight = Std.int(height);
 			
-			x = -width/2 * Engine.SCALE;
-			y = -height/2 * Engine.SCALE;
+			parent.originX = -width/2 * Engine.SCALE;
+			parent.originY = -height/2 * Engine.SCALE;
 
 			var tiles = [for(i in 0...numFrames) new Rectangle(width * (i % across), Math.floor(i / across) * height, width, height)];
 			
@@ -253,12 +272,33 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 		{
 			tileset.bitmapData = imgData;
 		}
-		
-		updateBitmap();
+		*/
 	}
 
 	public inline function getBitmap():BitmapData
 	{
-		return tileset.bitmapData;
+		return imgData;
+	}
+	
+	private function get_x():Float
+	{
+		return parent.originX;
+	}
+	
+	private function get_y():Float
+	{
+		return parent.originY;
+	}
+	
+	private function get_width():Int
+	{
+		return frameWidth;
+	}
+	
+	private function get_height():Int
+	{
+		return frameHeight;
 	}
 }
+
+#end
