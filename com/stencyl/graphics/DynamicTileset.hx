@@ -20,6 +20,7 @@ class DynamicTileset
 	
 	private static var textureMaxSize:Null<Int> = null;
 	private static var MAX_TEXTURE_CAP = 4096;
+	private static var FRAME_PADDING = 1;
 	
 	public function new()
 	{
@@ -38,7 +39,7 @@ class DynamicTileset
 		
 		trace("Creating new dynamic tileset (size: " + textureMaxSize + ")");
 		
-		tileset = new Tileset(new BitmapData(textureMaxSize, textureMaxSize));
+		tileset = new Tileset(new BitmapData(textureMaxSize, textureMaxSize, true, 0));
 		point = new Point(0, 0);
 		nextLine = 0;
 	}
@@ -54,7 +55,7 @@ class DynamicTileset
 		{
 			while(x + frameWidth < textureMaxSize)
 			{
-				x += frameWidth;
+				x += frameWidth + FRAME_PADDING;
 				++i;
 				if(i >= frameCount)
 				{
@@ -63,7 +64,7 @@ class DynamicTileset
 			}
 			y = _nextLine;
 			x = 0;
-			_nextLine += frameHeight;
+			_nextLine += frameHeight + FRAME_PADDING;
 		}
 		
 		return false;
@@ -88,9 +89,9 @@ class DynamicTileset
 			sourceRect.setTo(point.x, point.y, sourceRect.width, sourceRect.height);
 			tileset.addRect(sourceRect);
 			
-			point.x += frameWidth;
+			point.x += frameWidth + FRAME_PADDING;
 			if(nextLine < point.y + frameHeight)
-				nextLine = Std.int(point.y + frameHeight);
+				nextLine = Std.int(point.y + frameHeight + FRAME_PADDING);
 		}
 		
 		//saveImage(tileset.bitmapData, "out-" + offset + ".png");
