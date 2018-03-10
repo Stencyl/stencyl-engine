@@ -1526,20 +1526,19 @@ class Script
 	/**
 	 * Force the given layer to fade to the given opacity over time, applying the easing function.
 	 *
-	 * @param	layerRefType	0 to get layer by ID, 1 for name
-	 * @param	layerRef		The ID or name of the layer as a String
+	 * @param	layer			The layer to tween
 	 * @param	alphaPct		the opacity (0-1) to fade to
 	 * @param	duration		the duration of the fading (in milliseconds)
 	 * @param	easing			easing function to apply. Linear (no smoothing) is the default.
 	 */
-	public static function fadeTileLayerTo(layerRefType:Int, layerRef:String, alphaPct:Float, duration:Float, easing:Dynamic = null)
+	public static function fadeTileLayerTo(layer:RegularLayer, alphaPct:Float, duration:Float, easing:Dynamic = null)
 	{
 		if(easing == null)
 		{
 			easing = Linear.easeNone;
 		}
 		
-		Actuate.tween(getLayer(layerRefType, layerRef), duration, {alpha:alphaPct}).ease(easing);
+		Actuate.tween(layer, duration, {alpha:alphaPct}).ease(easing);
 	}
 
 	/**
@@ -1548,35 +1547,29 @@ class Script
 	 * @param	refType		0 to get layer by ID, 1 for name
 	 * @param	ref			The ID or name of the layer as a String
 	 */
-	public static function getTileLayerOpacity(refType:Int, ref:String):Float
+	public static function getTileLayerOpacity(layer:RegularLayer):Float
 	{
-		return engine.getLayer(refType, ref).alpha * 100;
+		return layer.alpha * 100;
 	}
 	
 	//*-----------------------------------------------
 	//* Drawing Layer
 	//*-----------------------------------------------
 	
-	private static function transitionToLayer(layer:Layer)
+	public static function setDrawingLayer(layer:RegularLayer)
 	{
-		if(layer != null)
+		if(Std.is(layer, Layer))
 		{
-			Engine.engine.g.graphics = layer.overlay.graphics;
+			var l:Layer = cast layer;
+			Engine.engine.g.graphics = l.overlay.graphics;
 		}
 	}
-	
-	public static function setDrawingLayer(refType:Int, ref:String)
-	{
-		var layer = cast(Engine.engine.getLayer(refType, ref), Layer);
-		transitionToLayer(layer);
-	} 
 	
 	public static function setDrawingLayerToActorLayer(a:Actor)
 	{
 		if(a != null)
 		{
-			var layer:Layer = cast(Engine.engine.layers.get(a.layerID), Layer);
-			transitionToLayer(layer);
+			Engine.engine.g.graphics = a.layer.overlay.graphics;
 		}
 	}
 	
@@ -1781,9 +1774,9 @@ class Script
 		return a;
 	}
 
-	public static function createRecycledActorOnLayer(type:ActorType, x:Float, y:Float, layerRefType:Int, layerRef:String):Actor
+	public static function createRecycledActorOnLayer(type:ActorType, x:Float, y:Float, layer:RegularLayer):Actor
 	{
-		var a:Actor = engine.getRecycledActorOfTypeOnLayer(type, x, y, engine.getLayer(layerRefType, layerRef).ID);
+		var a:Actor = engine.getRecycledActorOfTypeOnLayer(type, x, y, layer.ID);
 		lastCreatedActor = a;
 		return a;
 	}
@@ -2252,11 +2245,9 @@ class Script
 	/**
 	* Set the speed of all scrolling backgrounds (Backgrounds must already be set to scrolling)
 	*/
-	public static function setScrollSpeedForBackground(refType:Int, ref:String, xSpeed:Float, ySpeed:Float)
+	public static function setScrollSpeedForBackground(layer:RegularLayer, xSpeed:Float, ySpeed:Float)
 	{
-		var allBackgrounds:Bool = (refType == 0 && ref == "-1");
-
-		if(allBackgrounds)
+		if(layer == null)
 		{
 			for(layer in Engine.engine.backgroundLayers)
 			{
@@ -2265,7 +2256,6 @@ class Script
 		}
 		else
 		{
-			var layer = Engine.engine.getLayer(refType, ref);
 			if(Std.is(layer, BackgroundLayer))
 			{
 				cast(layer, BackgroundLayer).setScrollSpeed(xSpeed, ySpeed);
@@ -2276,9 +2266,8 @@ class Script
 	/**
 	* Set the parallax factor of a background or tilelayer
 	*/
-	public static function setScrollFactorForLayer(refType:Int, ref:String, scrollFactorX:Float, scrollFactorY:Float)
+	public static function setScrollFactorForLayer(layer:RegularLayer, scrollFactorX:Float, scrollFactorY:Float)
 	{
-		var layer = Engine.engine.getLayer(refType, ref);
 		if(Std.is(layer, BackgroundLayer))
 		{
 			cast(layer, BackgroundLayer).setScrollFactor(scrollFactorX, scrollFactorY);
@@ -2293,14 +2282,13 @@ class Script
 	/**
 	* Switches one background for another
 	*/
-	public static function changeBackground(layerRefType:Int, layerRef:String, newBackName:String)
+	public static function changeBackground(layer:RegularLayer, newBackName:String)
 	{
 		var bg:ImageBackground = cast Data.get().resourceMap.get(newBackName);
 		
 		if(bg == null)
 			return;
 
-		var layer = Engine.engine.getLayer(layerRefType, layerRef);
 		if(Std.is(layer, BackgroundLayer))
 		{
 			cast(layer, BackgroundLayer).reload(bg.ID);
@@ -2310,12 +2298,11 @@ class Script
 	/**
 	* Change a background's image
 	*/
-	public static function changeBackgroundImage(layerRefType:Int, layerRef:String, newImg:BitmapData)
+	public static function changeBackgroundImage(layer:RegularLayer, newImg:BitmapData)
 	{
 		if(newImg == null)
 			return;
 
-		var layer = engine.getLayer(layerRefType, layerRef);
 		if(Std.is(layer, BackgroundLayer))
 		{
 			cast(layer, BackgroundLayer).setImage(newImg);
@@ -2337,9 +2324,8 @@ class Script
 		engine.insertLayer(layer, order);
 	}
 	
-	public static function removeBackground(layerRefType:Int, layerRef:String)
+	public static function removeBackground(layer:RegularLayer)
 	{
-		var layer = engine.getLayer(layerRefType, layerRef);
 		if(Std.is(layer, BackgroundLayer))
 			engine.removeLayer(layer);
 	}
@@ -2527,12 +2513,10 @@ class Script
 		}
 	}
 	
-	public static function attachImageToLayer(img:BitmapWrapper, layerRefType:Int, layerRef:String, x:Int, y:Int, pos:Int = 1)
+	public static function attachImageToLayer(img:BitmapWrapper, layer:RegularLayer, x:Int, y:Int, pos:Int = 1)
 	{
 		if(img != null)
 		{
-			var layer = engine.getLayer(layerRefType, layerRef);
-
 			//Behind all Actors & Tiles in this layer.
 			if(pos == 2)
 			{
@@ -2968,9 +2952,8 @@ class Script
 		return engine.getMiddleLayer();
 	}
 
-	public static function getTileLayerAt(refType:Int, ref:String):TileLayer
+	public static function getTileLayerAt(layer:RegularLayer):TileLayer
 	{
-		var layer = engine.getLayer(refType, ref);
 		if(layer == null || !Std.is(layer, Layer))
 			return null;
 		return cast(layer, Layer).tiles;
@@ -2986,9 +2969,8 @@ class Script
 		return -1;
 	}
 
-	public static function setTileAt(row:Int, col:Int, refType:Int, ref:String, tilesetID:Int, tileID:Int)
+	public static function setTileAt(row:Int, col:Int, layer:RegularLayer, tilesetID:Int, tileID:Int)
 	{
-		var layer = engine.getLayer(refType, ref);
 		if(layer == null || !Std.is(layer, Layer))
 		{
 			return;
@@ -3035,23 +3017,23 @@ class Script
 			}
 			else if (tileShape != null)
 			{
-				getTileLayerAt(refType, ref).grid.setTile(col, row);
+				getTileLayerAt(layer).grid.setTile(col, row);
 			}
 		}
 		
 		engine.tileUpdated = true;
 	}
 	
-	public static function tileExistsAt(row:Int, col:Int, refType:Int, ref:String):Bool
+	public static function tileExistsAt(row:Int, col:Int, layer:RegularLayer):Bool
 	{
-		return getTileAt(row, col, refType, ref) != null;
+		return getTileAt(row, col, layer) != null;
 	}
 	
 	//tileCollisionAt function added to return True if ANY collision shape exists, or False for no tile or collision shape
-	//if the user gives it a negative value for the layer, it will loop through all layers instead of a specific one
-	public static function tileCollisionAt(row:Int, col:Int, refType:Int, ref:String):Bool
+	//if the user gives it a null value for the layer, it will loop through all layers instead of a specific one
+	public static function tileCollisionAt(row:Int, col:Int, layer:RegularLayer):Bool
 	{
-		if(refType == 0 && Std.parseInt(ref) < 0)
+		if(layer == null)
 		{
 			for (layer in engine.interactiveLayers)
 			{
@@ -3069,7 +3051,7 @@ class Script
 		}
 		else
 		{
-			var tile = getTileAt(row, col, refType, ref);
+			var tile = getTileAt(row, col, layer);
 			if((tile == null) || (tile.collisionID == -1))
 			{
 				return false;
@@ -3096,9 +3078,9 @@ class Script
 		}
 	}
 
-	public static function getTileIDAt(row:Int, col:Int, refType:Int, ref:String):Int
+	public static function getTileIDAt(row:Int, col:Int, layer:RegularLayer):Int
 	{
-		var tile = getTileAt(row, col, refType, ref);
+		var tile = getTileAt(row, col, layer);
 		
 		if(tile == null)
 		{
@@ -3108,9 +3090,9 @@ class Script
 		return tile.tileID;
 	}
 	
-	public static function getTileColIDAt(row:Int, col:Int, refType:Int, ref:String):Int
+	public static function getTileColIDAt(row:Int, col:Int, layer:RegularLayer):Int
     {
-    	var tile = getTileAt(row, col, refType, ref);
+    	var tile = getTileAt(row, col, layer);
                        
         if(tile == null)
         {
@@ -3120,9 +3102,9 @@ class Script
         return tile.collisionID;
     }
 
-	public static function getTileDataAt(row:Int, col:Int, refType:Int, ref:String):String
+	public static function getTileDataAt(row:Int, col:Int, layer:RegularLayer):String
     {
-    	var tile = getTileAt(row, col, refType, ref);
+    	var tile = getTileAt(row, col, layer);
         
         if(tile == null)
         {
@@ -3132,9 +3114,9 @@ class Script
         return tile.metadata;
     }
 	
-	public static function getTilesetIDAt(row:Int, col:Int, refType:Int, ref:String):Int
+	public static function getTilesetIDAt(row:Int, col:Int, layer:RegularLayer):Int
 	{
-		var tile = getTileAt(row, col, refType, ref);
+		var tile = getTileAt(row, col, layer);
 		
 		if(tile == null)
 		{
@@ -3144,9 +3126,9 @@ class Script
 		return tile.parent.ID;
 	}
 	
-	public static function getTileAt(row:Int, col:Int, refType:Int, ref:String):Tile
+	public static function getTileAt(row:Int, col:Int, layer:RegularLayer):Tile
 	{
-		var tlayer = getTileLayerAt(refType, ref);
+		var tlayer = getTileLayerAt(layer);
 		
 		if(tlayer == null)
 		{
@@ -3156,9 +3138,8 @@ class Script
 		return tlayer.getTileAt(row, col);
 	}
 	
-	public static function removeTileAt(row:Int, col:Int, refType:Int, ref:String)
+	public static function removeTileAt(row:Int, col:Int, layer:RegularLayer)
 	{
-		var layer = engine.getLayer(refType, ref);
 		if(layer == null || !Std.is(layer, Layer))
 		{
 			return;
@@ -3166,7 +3147,7 @@ class Script
 		var tlayer = cast(layer, Layer).tiles;
 		
 		//grab the tile to get the shape
-		var tile:Tile = getTileAt(row, col, refType, ref);
+		var tile:Tile = getTileAt(row, col, layer);
 		
 		//If we find a tile in this location
 		if(tile != null)
@@ -3271,8 +3252,6 @@ class Script
 		a.name = "Terrain";
 		a.visible = false;
 		
-		engine.moveActorToLayer(a, layerID);
-
 		var key = "ID" + "-" + x + "-" + y + "-" + layerID;
 
 		engine.dynamicTiles.set(key, a);

@@ -29,7 +29,7 @@ class Terrain extends Actor
 	
 	public function new(game:Engine, x:Float, y:Float, shapes:Array<B2Shape>, groupID:Int, fillColor:Int = 0)
 	{
-		super(game, UNSET_ID, groupID, x, y, game.getTopLayer(), 1, 1, 
+		super(game, UNSET_ID, groupID, x, y, -1, 1, 1, 
 		      null, null, null, null, 
 		      false, true, false, false, 
 		      shapes[0]);

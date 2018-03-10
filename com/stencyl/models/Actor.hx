@@ -47,9 +47,11 @@ import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.CollisionPoint;
 import com.stencyl.models.actor.AngleHolder;
 import com.stencyl.models.actor.ActorType;
-import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.actor.Animation;
 import com.stencyl.models.actor.Sprite as StencylSprite;
+import com.stencyl.models.scene.layers.RegularLayer;
+import com.stencyl.models.scene.ActorInstance;
+import com.stencyl.models.scene.Layer;
 import com.stencyl.models.GameModel;
 
 import com.stencyl.utils.Utils;
@@ -125,7 +127,8 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 	
 	public var ID:Int;
 	public var groupID:Int;
-	public var layerID:Int;
+	public var cachedLayer:Layer;
+	public var layer:Layer;
 	public var typeID:Int;
 	public var type:ActorType;
 	
@@ -313,7 +316,7 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 		groupID:Int,
 		x:Float=0, 
 		y:Float=0, 
-		layerID:Int=0,
+		layerID:Int=-1, 
 		width:Float=32, 
 		height:Float=32,
 		sprite:StencylSprite=null,
@@ -446,7 +449,6 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 		this.name = "Unknown";
 		this.ID = ID;
 		this.groupID = groupID;
-		this.layerID = layerID;
 		this.typeID = typeID;
 		this.engine = engine;
 		
@@ -622,7 +624,12 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 		{
 			behaviorValues = actorType.behaviorValues;
 		}
-
+		
+		if(layerID != -1)
+		{
+			engine.moveActorToLayer(this, cast engine.getLayerById(layerID));
+		}
+		
 		Engine.initBehaviors(behaviors, behaviorValues, this, engine, false);
 	}	
 	
@@ -1499,7 +1506,6 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 			
 			currAnimation.reset();
 			currAnimation.activate();
-			
 		}
 	}
 	
@@ -2348,18 +2354,22 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 	
 	public function getLayerID():Int
 	{
-		return layerID;
+		return layer.ID;
+	}
+	
+	public function getLayer():Layer
+	{
+		return layer;
 	}
 	
 	public function getLayerName():String
 	{
-		return engine.layers.get(layerID).layerName;
+		return layer.layerName;
 	}
 	
 	public function getLayerOrder():Int
 	{
-		return engine.layers.get(layerID).order;
-		//getOrderForLayerID(layerID) + 1; WHY plus one??
+		return layer.order;
 	}
 	
 	public function getType():ActorType
@@ -2462,11 +2472,11 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 	//* Layering
 	//*-----------------------------------------------
 	
-	public function moveToLayer(layerRefType:Int, layerRef:String)
+	public function moveToLayer(layer:RegularLayer)
 	{
-		if(!isHUD)
+		if(!isHUD && Std.is(layer, Layer))
 		{
-			engine.moveToLayer(this, layerRefType, layerRef);
+			engine.moveActorToLayer(this, cast layer);
 		}
 	}
 	
@@ -3463,8 +3473,8 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 		
 		else
 		{
-			mx = (Input.mouseX - Engine.cameraX * engine.layers.get(layerID).scrollFactorX) / Engine.SCALE;
-		 	my = (Input.mouseY - Engine.cameraY * engine.layers.get(layerID).scrollFactorY) / Engine.SCALE;
+			mx = (Input.mouseX - Engine.cameraX * layer.scrollFactorX) / Engine.SCALE;
+		 	my = (Input.mouseY - Engine.cameraY * layer.scrollFactorY) / Engine.SCALE;
 		}
 		
 		//TODO: Mike - Make this work with arbitrary origin points
@@ -3966,36 +3976,18 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 	
 	public function anchorToScreen()
 	{
-		#if (!use_actor_tilemap)
-		if(physicsMode == NORMAL_PHYSICS)
-		{
-			body.setAlwaysActive(true);
-		}
+		if(isHUD)
+			return;
 		
-		isHUD = true;	
-		engine.removeActorFromLayer(this, layerID);
-		engine.addHUDActor(this);		
-		engine.hudLayer.addChild(this);
-		
-		updateMatrix = true;
-		#end
+		engine.moveActorToLayer(this, engine.hudLayer);
 	}
 	
 	public function unanchorFromScreen()
 	{
-		#if (!use_actor_tilemap)
-		if(physicsMode == NORMAL_PHYSICS)
-		{
-			body.setAlwaysActive(alwaysSimulate);
-		}
+		if(!isHUD)
+			return;
 		
-		isHUD = false;			
-		engine.removeHUDActor(this);
-		engine.hudLayer.removeChild(this);
-		engine.moveActorToLayer(this, layerID);		
-		
-		updateMatrix = true;
-		#end
+		engine.moveActorToLayer(this, cachedLayer);
 	}
 	
 	public function isAnchoredToScreen():Bool
@@ -4013,8 +4005,7 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 				body.setActive(true);
 			}
 			
-			alwaysSimulate = true;			
-			engine.addHUDActor(this);
+			alwaysSimulate = true;
 		}
 	}
 	
@@ -4028,8 +4019,7 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 				body.setActive(false);
 			}
 			
-			alwaysSimulate = false;			
-			engine.removeHUDActor(this);
+			alwaysSimulate = false;
 		}
 	}
 	

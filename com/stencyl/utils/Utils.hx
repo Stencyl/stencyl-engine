@@ -14,6 +14,7 @@ import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.Sprite;
 import openfl.display.Stage;
+import openfl.display.Tilemap;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -237,6 +238,10 @@ class Utils
 			if(Std.is(c, DisplayObjectContainer))
 			{
 				Utils.removeAllChildren(cast(c, DisplayObjectContainer));
+			}
+			if(Std.is(c, Tilemap))
+			{
+				cast(c, Tilemap).removeTiles();
 			}
 			
 			container.removeChild(c);

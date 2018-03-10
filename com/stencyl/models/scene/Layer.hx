@@ -29,13 +29,16 @@ class Layer extends RegularLayer
 		super(ID, name, order, scrollFactorX, scrollFactorY, opacity, blendMode);
 		
 		tiles = tileLayer;
-		tiles.reset();
-		tiles.blendMode = blendMode;
+		if(tiles != null) //null only for HUD layer
+		{
+			tiles.reset();
+			tiles.blendMode = blendMode;
+		}
 
 		actorContainer = new ActorLayer(#if (use_actor_tilemap) 0, 0, null, Config.antialias #end);
 		overlay = new Sprite();
 
-		addChild(tiles);
+		if(tiles != null) addChild(tiles);
 		addChild(actorContainer);
 		addChild(overlay);
 	}
