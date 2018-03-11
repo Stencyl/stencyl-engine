@@ -4059,7 +4059,13 @@ class Engine
 	//* Utils
 	//*-----------------------------------------------
 	
-	public function setScrollFactor(layer:Layer, amountX:Float, ?amountY:Float)
+	@:deprecated("use setLayerScrollFactor")
+	public function setScrollFactor(id:Int, amountX:Float, ?amountY:Float)
+	{
+		setLayerScrollFactor(getLayerById(id), amountX, amountY);
+	}
+	
+	public function setLayerScrollFactor(layer:RegularLayer, amountX:Float, ?amountY:Float)
 	{
 		if(amountY == null)
 			amountY = amountX;
