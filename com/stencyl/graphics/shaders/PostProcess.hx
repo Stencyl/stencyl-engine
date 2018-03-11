@@ -307,12 +307,6 @@ class PostProcess extends OpenGLView
 		GL.disableVertexAttribArray(texCoordSlot);
 
 		GL.useProgram(null);
-
-		// check gl error
-		if (GL.getError() == GL.INVALID_FRAMEBUFFER_OPERATION)
-		{
-			trace("INVALID_FRAMEBUFFER_OPERATION!!");
-		}
 	}
 
 	private var framebuffer:GLFramebuffer;
