@@ -205,6 +205,8 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 	//* Sprite-Based Animation
 	//*-----------------------------------------------
 	
+	private static var recycledAnimation:Animation;
+	
 	public var currAnimation:ActorAnimation;
 	public var currAnimationName:String;
 	public var animationMap:Map<String,ActorAnimation>;
@@ -483,49 +485,28 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 		originMap = new Map<String,B2Vec2>();
 		
 		this.sprite = sprite;
+		this.type = cast Data.get().resources.get(typeID);
 		
 		//---
 		
 		if(sprite != null)
 		{
-			var s:StencylSprite = cast Data.get().resources.get(actorType.spriteID);
-			
-			if(s != null)
+			for(a in sprite.animations)
 			{
-				this.type = cast Data.get().resources.get(typeID);
+				addAnim(a);
 				
-				var defaultAnim:String = "";
-				
-				for(a in s.animations)
+				if(a.animID == sprite.defaultAnimation)
 				{
-					addAnim
-					(
-						a.animID,
-						a.animName, 
-						a.imgData, 
-						a.frameCount, 
-						Math.floor(a.imgWidth / a.framesAcross), 
-						Math.floor(a.imgHeight / a.framesDown), 
-						a.framesAcross,
-						a.framesDown,
-						a.originX,
-						a.originY,
-						a.durations, 
-						a.looping,
-						physicsMode == NORMAL_PHYSICS ? a.physicsShapes : a.simpleShapes
-					);
-					
-					if(a.animID == s.defaultAnimation)
-					{
-						defaultAnim = a.animName;
-					}
+					defaultAnim = a.animName;
 				}
 			}
 		}
 		
 		//--
 		
-		addAnim(-1, "recyclingDefault", null, 1, 1, 1, 1, 1, 1, 1, [1000], false, null);
+		if(recycledAnimation == null)
+			recycledAnimation = new Animation(-1, "recyclingDefault", -1, null, null, false, false, 1, 1, 0, 0, [10], 1, 1, 1, -1);
+		addAnim(recycledAnimation);
 
 		if(bodyDef != null && physicsMode == NORMAL_PHYSICS)
 		{
@@ -713,7 +694,7 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 	}
 	
 	public function resetListeners()
-	{		
+	{
 		for (key in allListeners)
 		{
 			allListeners.remove(key);
@@ -758,23 +739,10 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 		collisionListenerCount = 0;
 	}
 	
-	public function addAnim
-	(
-		animID:Int,
-		name:String, 
-		imgData:BitmapData, 
-		frameCount:Int=1, 
-		frameWidth:Int=0, 
-		frameHeight:Int = 0, 
-		framesAcross:Int = 1,
-		framesDown:Int = 1,
-		originX:Float = 0,
-		originY:Float = 0,
-		durations:Array<Int>=null, 
-		looping:Bool=true, 
-		shapes:Map<Int,Dynamic>=null
-	)
+	public function addAnim(anim:Animation)
 	{
+		var shapes = (physicsMode == NORMAL_PHYSICS) ? anim.physicsShapes : anim.simpleShapes;
+		
 		if(shapes != null)
 		{
 			var arr = new Array<Dynamic>();
@@ -808,70 +776,26 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 			
 			if(physicsMode != NORMAL_PHYSICS)
 			{
-				shapeMap.set(name, new Masklist(arr, this));
-				
+				shapeMap.set(anim.animName, new Masklist(arr, this));
 			}
 			
 			else
 			{
-				shapeMap.set(name, arr);
+				shapeMap.set(anim.animName, arr);
 			}
 		}
-	
-		if(imgData == null || imgData.width <= 0 || imgData.height <= 0)
-		{
-			//animationMap.set(name, new Sprite());
-			
-			//XXX: Did some work on cases where image data is missing. It's still an error but won't crash anymore.
-			//XXX: This ends up being the case for the recyclingDefault animation.
-			#if (use_actor_tilemap)
-
-			var img = new BitmapData(16, 16);
-			var tempSprite = new SheetAnimation(img, [1000000], 16, 16, false, null, this);
-			animationMap.set(name, tempSprite);
-			
-			#else
-			
-			animationMap.set(name, new BitmapAnimation(new BitmapData(16, 16), 1, 1, 1, [1000000], false, null));
-			
-			#end
-			
-			originMap.set(name, new B2Vec2(originX, originY));
-			
-			return;
-		}
-	
+		
 		#if (use_actor_tilemap)
-		frameWidth = Std.int(imgData.width/framesAcross);
-		frameHeight = Std.int(imgData.height/framesDown);
 		
-		var sprite = new SheetAnimation
-		(
-			imgData, 
-			durations, 
-			frameWidth, 
-			frameHeight,
-			looping,
-			this.sprite.animations.get(animID),
-			this
-		);
+		animationMap.set(anim.animName, new SheetAnimation(anim, this));
 		
-		animationMap.set(name, sprite);
 		#else
-		var sprite = new BitmapAnimation
-		(
-			imgData, 
-			frameCount, 
-			framesAcross,
-			framesDown,
-			durations, 
-			looping, 
-			this.sprite.animations.get(animID).sync ? this.sprite.animations.get(animID) : null
-		);
-		animationMap.set(name, sprite);
-		#end	
-				
-		originMap.set(name, new B2Vec2(originX, originY));
+		
+		animationMap.set(anim.animName, new BitmapAnimation(anim));
+		
+		#end
+		
+		originMap.set(anim.animName, new B2Vec2(anim.originX, anim.originY));
 	}
 
 	public function reloadAnimationGraphics(animID:Int):Void
@@ -881,7 +805,7 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 			for(a in sprite.animations)
 			{
 				var actorAnim = animationMap.get(a.animName);
-				actorAnim.setBitmap(a.imgData);
+				actorAnim.framesUpdated();
 			}
 			updateChildrenPositions();
 		}
@@ -889,7 +813,7 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 		{
 			var a = sprite.animations.get(animID);
 			var actorAnim = animationMap.get(a.animName);
-			actorAnim.setBitmap(a.imgData);
+			actorAnim.framesUpdated();
 			if(actorAnim == currAnimation)
 			{
 				updateChildrenPositions();
@@ -1036,32 +960,9 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 	
 	public function switchToDefaultAnimation()
 	{
-		//TODO: PERF - We lost SizedMap - this operation is O(n)
-		if(sprite != null && Lambda.count(sprite.animations) > 0)
+		if(defaultAnim != null)
 		{
-			var anim = sprite.animations.get(sprite.defaultAnimation);
-		
-			//In case the animation ID is bogus...
-			if(anim == null)
-			{
-				for(a in sprite.animations)
-				{
-					anim = a;
-					break;
-				}
-			}
-			
-			defaultAnim = cast(anim, Animation).animName;
-			
-			if (defaultShapeChanged())
-			{
-				switchAnimation(defaultAnim, true);
-			}
-			else
-			{
-				switchAnimation(defaultAnim);
-			}
-			
+			switchAnimation(defaultAnim, defaultShapeChanged());
 			setCurrentFrame(0);
 		}
 	}
@@ -1212,6 +1113,7 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 			
 			//XXX: Only switch the animation shape if it's different from before.
 			//http://community.stencyl.com/index.php/topic,16464.0.html
+			//TODO: This is similar to defaultShapeChanged(). See if they can be combined.
 			if(body != null && physicsMode == NORMAL_PHYSICS && !isDifferentShape)
 			{
 				var arrOld = shapeMap.get(currAnimationName);

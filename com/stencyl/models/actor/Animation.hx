@@ -1,6 +1,8 @@
 package com.stencyl.models.actor;
 
 import openfl.display.BitmapData;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 import com.stencyl.graphics.DynamicTileset;
 import box2D.dynamics.B2FixtureDef;
 
@@ -15,20 +17,24 @@ class Animation
 	public var looping:Bool;
 	public var sync:Bool;
 	public var durations:Array<Int>;
-	
-	public var imgData:BitmapData;
-	public var imgWidth:Int;
-	public var imgHeight:Int;
-	
-	public var frameCount:Int;
-	public var framesAcross:Int;
-	public var framesDown:Int;
+	public var frames:Array<BitmapData>;
+	public var frameWidth:Int;
+	public var frameHeight:Int;
 	
 	public var originX:Float;
 	public var originY:Float;
 	
 	public var sharedTimer:Float = 0;
 	public var sharedFrameIndex:Int = 0;
+	
+	//used for reading in animation strips from filesystem
+	public var imgWidth:Int;
+	public var imgHeight:Int;
+	public var frameCount:Int;
+	public var framesAcross:Int;
+	public var framesDown:Int;
+	
+	public var graphicsLoaded:Bool;
 	
 	public static var allAnimations:Array<Animation> = new Array<Animation>();
 	private static var UNLOADED:BitmapData;
@@ -67,11 +73,16 @@ class Animation
 		this.looping = looping;
 		this.sync = sync;
 		this.durations = durations;
-
-		this.imgData = UNLOADED;
+		
+		//Graceful fallback - just a blank image that is numFrames across in px
+		if(UNLOADED == null)
+			UNLOADED = new BitmapData(1,1);
+		this.frames = [for(i in 0...frameCount) UNLOADED];
+		frameWidth = Std.int(imgWidth/framesAcross);
+		frameHeight = Std.int(imgHeight/framesDown);
+		
 		this.imgWidth = imgWidth;
 		this.imgHeight = imgHeight;
-		
 		this.frameCount = frameCount;
 		this.framesAcross = framesAcross;
 		this.framesDown = framesDown;
@@ -96,20 +107,50 @@ class Animation
 	
 	public function loadGraphics()
 	{
-		imgData = Data.get().getGraphicAsset
+		if(graphicsLoaded)
+			return;
+		
+		var imgData = Data.get().getGraphicAsset
 		(
 			parentID + "-" + animID + ".png",
-			"assets/graphics/" + Engine.IMG_BASE + "/sprite-" + parentID + "-" + animID + ".png"
+			"assets/graphics/" + Engine.IMG_BASE + "/sprite-" + parentID + "-" + animID + ".png",
+			false
 		);
+		
+		if(imgData == null)
+		{
+			frames = [for(i in 0...frameCount) UNLOADED];
+			return;
+		}
+		
+		var point = new Point(0, 0);
+		for(i in 0...frameCount)
+		{
+			var sourceRect = new Rectangle(frameWidth * (i % framesAcross), Math.floor(i / framesAcross) * frameHeight, frameWidth, frameHeight);
+			var frameImg = new BitmapData(frameWidth, frameHeight, true, 0);
+			frameImg.copyPixels(imgData, sourceRect, point);
+			frames[i] = frameImg;
+		}
+		
+		imgData.dispose();
+		
+		graphicsLoaded = true;
 	}
 
 	public function unloadGraphics()
 	{
-		//Graceful fallback - just a blank image that is numFrames across in px
-		if(UNLOADED == null)
-			UNLOADED = new BitmapData(1,1);
-		imgData = UNLOADED;
-		Data.get().resourceAssets.remove(parentID + "-" + animID + ".png");
+		if(!graphicsLoaded)
+			return;
+		
+		for(i in 0...frameCount)
+		{
+			#if (!dispose_images)
+			frames[i].dispose();
+			#end
+			frames[i] = UNLOADED;
+		}
+		
+		graphicsLoaded = false;
 	}
 	
 	#if (use_actor_tilemap)
@@ -126,7 +167,7 @@ class Animation
 			return false;
 		}
 		
-		frameIndexOffset = tileset.addFrames(imgData, frameWidth, frameHeight, framesAcross, frameCount);
+		frameIndexOffset = tileset.addFrames(frames);
 		this.tileset = tileset;
 		tilesetInitialized = true;
 		return true;

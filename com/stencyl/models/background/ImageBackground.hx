@@ -118,7 +118,8 @@ class ImageBackground extends Resource implements Background
 					Data.get().getGraphicAsset
 					(
 						ID + "-" + i + ".png",
-						"assets/graphics/" + Engine.IMG_BASE + "/background-" + ID + "-" + i + ".png"
+						"assets/graphics/" + Engine.IMG_BASE + "/background-" + ID + "-" + i + ".png",
+						#if dispose_images false #else true #end
 					)
 				);
 			}
@@ -131,7 +132,8 @@ class ImageBackground extends Resource implements Background
 				Data.get().getGraphicAsset
 				(
 					ID + "-0.png",
-					"assets/graphics/" + Engine.IMG_BASE + "/background-" + ID + "-0.png"
+					"assets/graphics/" + Engine.IMG_BASE + "/background-" + ID + "-0.png",
+					#if dispose_images false #else true #end
 				)
 			);
 		}

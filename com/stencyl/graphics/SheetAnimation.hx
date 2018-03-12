@@ -20,21 +20,15 @@ import com.stencyl.Engine;
 class SheetAnimation implements AbstractAnimation
 {
 	private var frameIndex:Int;
-	private var looping:Bool;
 	private var timer:Float;
 	private var finished:Bool;
 	private var needsUpdate:Bool;
 	
-	private var framesAcross:Int;
-	private var frameWidth:Int;
-	private var frameHeight:Int;
-	
 	private var durations:Array<Int>;
-	private var individualDurations:Bool;
 	private var numFrames:Int;
+	private var individualDurations:Bool;
 	
-	private var imgData:BitmapData;
-	private var model:Animation;
+	public var model(default, null):Animation;
 	private var parent:Actor;
 	
 	public var x(get, never):Float;
@@ -42,26 +36,20 @@ class SheetAnimation implements AbstractAnimation
 	public var width(get, never):Int;
 	public var height(get, never):Int;
 	
-	public function new(imgData:BitmapData, durations:Array<Int>, width:Int, height:Int, looping:Bool, model:Animation, parent:Actor)
+	public function new(model:Animation, parent:Actor)
 	{
 		this.model = model;
 		this.parent = parent;
 		this.timer = 0;
 		this.frameIndex = 0;
-		this.frameWidth = width;
-		this.frameHeight = height;
-		this.looping = looping;
-		this.durations = durations;
-		
+		this.durations = model == null ? [10] : model.durations;
 		numFrames = durations.length;
-		
-		framesAcross = model != null ? model.framesAcross : numFrames;
 	}
 	
 	public inline function update(elapsedTime:Float)
 	{
 		//Non-synced animations
-		if(model == null || !model.sync || !looping)
+		if(!model.sync || !model.looping)
 		{
 			timer += elapsedTime;
 		
@@ -75,7 +63,7 @@ class SheetAnimation implements AbstractAnimation
 				
 				if(frameIndex >= numFrames)
 				{
-					if(looping)
+					if(model.looping)
 					{
 						frameIndex = 0;
 					}
@@ -162,8 +150,8 @@ class SheetAnimation implements AbstractAnimation
 			}
 		}
 		
-		parent.originX = frameWidth/2 * Engine.SCALE;
-		parent.originY = frameHeight/2 * Engine.SCALE;
+		parent.originX = model.frameWidth/2 * Engine.SCALE;
+		parent.originY = model.frameHeight/2 * Engine.SCALE;
 		parent.tileset = model.tileset.tileset;
 		updateBitmap();
 	}
@@ -184,20 +172,21 @@ class SheetAnimation implements AbstractAnimation
 
 	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
-		var bitmapData = new BitmapData(frameWidth, frameHeight, true, 0);
+		var bitmapData;
 		
 		if (g.alpha == 1)
 		{
-			bitmapData.draw(getCurrentImage());
+			bitmapData = model.frames[frameIndex];
 		}
 		else
 		{
+			bitmapData = new BitmapData(model.frameWidth, model.frameHeight, true, 0);
 			var colorTransformation = new openfl.geom.ColorTransform(1,1,1,g.alpha,0,0,0,0);
-			bitmapData.draw(getCurrentImage(), null, colorTransformation);
+			bitmapData.draw(model.frames[frameIndex], null, colorTransformation);
 		}
 
 		g.graphics.beginBitmapFill(bitmapData, new Matrix(1, 0, 0, 1, x, y));
-		g.graphics.drawRect(x, y, frameWidth, frameHeight);
+		g.graphics.drawRect(x, y, model.frameWidth, model.frameHeight);
  	 	g.graphics.endFill();
   	}
 	
@@ -241,12 +230,10 @@ class SheetAnimation implements AbstractAnimation
 	
 	public function getCurrentImage():BitmapData
 	{
-		var img = new BitmapData(frameWidth, frameHeight, true, 0x00ffffff);
-		img.copyPixels(getBitmap(), new Rectangle((frameIndex % framesAcross) * frameWidth, Math.floor(frameIndex / framesAcross) * frameHeight, frameWidth, frameHeight), new Point(0, 0), null, null, false);
-		return img;
+		return model.frames[frameIndex];
 	}
 
-	public function setBitmap(imgData:BitmapData):Void
+	public function framesUpdated():Void
 	{
 		/*
 		var updateSize = (imgData.width != tileset.bitmapData.width) || (imgData.height != tileset.bitmapData.height);
@@ -274,11 +261,6 @@ class SheetAnimation implements AbstractAnimation
 		}
 		*/
 	}
-
-	public inline function getBitmap():BitmapData
-	{
-		return imgData;
-	}
 	
 	private function get_x():Float
 	{
@@ -292,12 +274,12 @@ class SheetAnimation implements AbstractAnimation
 	
 	private function get_width():Int
 	{
-		return frameWidth;
+		return model.frameWidth;
 	}
 	
 	private function get_height():Int
 	{
-		return frameHeight;
+		return model.frameHeight;
 	}
 }
 

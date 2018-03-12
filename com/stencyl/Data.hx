@@ -25,6 +25,8 @@ import com.stencyl.models.actor.Sprite;
 import com.stencyl.utils.Assets;
 import com.stencyl.utils.LazyMap;
 
+import openfl.display.BitmapData;
+
 import mbs.core.MbsObject;
 import mbs.core.MbsType;
 import mbs.core.MbsTypes;
@@ -80,9 +82,6 @@ class Data
 	//* Data
 	//*-----------------------------------------------
 	
-	//Map of each [sceneID].scn by ID
-	//public var scenesTerrain:Map<Int,Dynamic>;
-
 	//Map of each resource in memory by ID
 	public var resources:LazyMap<Int,Resource>;
 
@@ -90,7 +89,7 @@ class Data
 	public var resourceMap:LazyMap<String,Resource>;
 
 	//Map of each static asset by filename
-	public var resourceAssets:Map<String,Dynamic>;
+	public var resourceAssets:Map<String,BitmapData>;
 	
 	//Map of each behavior by ID
 	public var behaviors:LazyMap<Int,Behavior>;
@@ -129,7 +128,7 @@ class Data
 		behaviorListMbs = new MbsReader(Typedefs.get(), false, false);
 		behaviorListMbs.readData(Assets.getBytes("assets/data/behaviors.mbs"));
 
-		resourceAssets = new Map<String,Dynamic>();
+		resourceAssets = new Map<String,BitmapData>();
 		behaviors = LazyMap.fromFunction(loadBehaviorFromMbs);
 		resources = LazyMap.fromFunction(loadResourceFromMbs);
 		resourceMap = LazyMap.fromFunction(loadResourceFromMbsByName);
@@ -301,14 +300,26 @@ class Data
 		return a;
 	}
 	
-	public function getGraphicAsset(url:String, diskURL:String):Dynamic
+	public function getGraphicAsset(url:String, diskURL:String, useCache:Bool=true):BitmapData
 	{
-		if(resourceAssets.get(url) == null)
+		if(useCache)
 		{
-			resourceAssets.set(url, Assets.getBitmapData(diskURL, false));
+			if(resourceAssets.get(url) == null)
+			{
+				resourceAssets.set(url, Assets.getBitmapData(diskURL, false));
+			}
+			
+			return resourceAssets.get(url);
 		}
-		
-		return resourceAssets.get(url);
+		else
+		{
+			return Assets.getBitmapData(diskURL, false);
+		}
+	}
+	
+	public function clearGraphicAsset(url:String)
+	{
+		resourceAssets.remove(url);
 	}
 	
 	public function loadAtlas(atlasID:Int)

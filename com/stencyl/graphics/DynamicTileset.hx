@@ -2,6 +2,9 @@ package com.stencyl.graphics;
 
 #if (use_actor_tilemap)
 
+import lime.graphics.opengl.GLTexture;
+import lime.graphics.GLRenderContext;
+
 import openfl.display.BitmapData;
 import openfl.display.Tileset;
 import openfl.geom.Point;
@@ -17,6 +20,7 @@ import flash.utils.ByteArray;
 class DynamicTileset
 {
 	public var tileset:Tileset;
+	private var texture:GLTexture;
 	private var point:Point;
 	private var nextLine:Int;
 	
@@ -28,20 +32,55 @@ class DynamicTileset
 	{
 		if(textureMaxSize == null)
 		{
-			var gl = getGL();
-			textureMaxSize = cast gl.getParameter(gl.MAX_TEXTURE_SIZE);
-			trace("GL value of MAX_TEXTURE_SIZE: " + textureMaxSize);
-			
-			textureMaxSize = Std.int(textureMaxSize / 2);
-			if(textureMaxSize > MAX_TEXTURE_CAP)
-				textureMaxSize = MAX_TEXTURE_CAP;
+			initialize();
 		}
 		
 		trace("Creating new dynamic tileset (size: " + textureMaxSize + ")");
 		
-		tileset = new Tileset(new BitmapData(textureMaxSize, textureMaxSize, true, 0));
+		tileset = new Tileset(createNewTexture(getGL(), textureMaxSize));
 		point = new Point(0, 0);
 		nextLine = 0;
+	}
+	
+	private function initialize()
+	{
+		var gl = getGL();
+		textureMaxSize = cast gl.getParameter(gl.MAX_TEXTURE_SIZE);
+		trace("GL value of MAX_TEXTURE_SIZE: " + textureMaxSize);
+		
+		textureMaxSize = Std.int(textureMaxSize / 2);
+		if(textureMaxSize > MAX_TEXTURE_CAP)
+			textureMaxSize = MAX_TEXTURE_CAP;
+		
+		if(BitmapData.__supportsBGRA == null)
+		{
+			new BitmapData(1, 1, true, 0).getTexture(gl);
+		}
+	}
+	
+	private function createNewTexture(gl:GLRenderContext, size:Int):BitmapData
+	{
+		texture = gl.createTexture();
+		
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+		
+		var internalFormat = BitmapData.__textureInternalFormat;
+		var format = BitmapData.__textureFormat;
+		gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, size, size, 0, format, gl.UNSIGNED_BYTE, 0);
+		
+		var bitmapData = new BitmapData(0, 0, true, 0);
+		bitmapData.__resize(size, size);
+		bitmapData.readable = false;
+		bitmapData.__texture = texture;
+		bitmapData.__textureContext = gl;
+		bitmapData.__isValid = true;
+		bitmapData.image = null;
+		
+		return bitmapData;
 	}
 	
 	public function checkForSpace(frameWidth:Int, frameHeight:Int, frameCount:Int):Bool
@@ -72,7 +111,54 @@ class DynamicTileset
 	
 	private var zero:Point = new Point(0, 0);
 	
-	public function addFrames(imgData:BitmapData, frameWidth:Int, frameHeight:Int, framesAcross:Int, frameCount:Int):Int
+	public function addFrames(frames:Array<BitmapData>):Int
+	{
+		//trace("Adding " + frames.length + " frames to dynamicTileset.");
+		
+		@:privateAccess var offset = tileset.__data.length;
+		
+		var newRects = [];
+		
+		for(frame in frames)
+		{
+			if(point.x + frame.width > textureMaxSize)
+			{
+				point.x = 0;
+				point.y = nextLine;
+			}
+			
+			var rect = new Rectangle(point.x, point.y, frame.width, frame.height);
+			tileset.addRect(rect);
+			newRects.push(rect);
+			
+			point.x += frame.width + FRAME_PADDING;
+			if(nextLine < point.y + frame.height)
+				nextLine = Std.int(point.y + frame.height + FRAME_PADDING);
+		}
+		
+		//trace(newRects);
+		
+		var gl = getGL();
+		var internalFormat = BitmapData.__textureInternalFormat;
+		var format = BitmapData.__textureFormat;
+		
+		gl.bindTexture (gl.TEXTURE_2D, texture);
+		
+		for(i in 0...newRects.length)
+		{
+			var r = newRects[i];
+			var newFrame = frames[i];
+			
+			gl.texSubImage2D(gl.TEXTURE_2D, 0, Std.int(r.x), Std.int(r.y), Std.int(r.width), Std.int(r.height), format, gl.UNSIGNED_BYTE, newFrame.image.data);
+			#if (dispose_images)
+			newFrame.dispose();
+			#end
+		}
+		
+		return offset;
+	}
+	
+	/*public function addFramesFromStrip(imgData:BitmapData, frameWidth:Int, frameHeight:Int, framesAcross:Int, frameCount:Int):Int
 	{
 		//trace("Adding " + frameCount + " frames to dynamicTileset.");
 		
@@ -149,7 +235,7 @@ class DynamicTileset
 		//saveImage(tileset.bitmapData, "out-" + offset + ".png");
 		
 		return offset;
-	}
+	}*/
 	
 	private function getGL()
 	{

@@ -125,7 +125,8 @@ class Tileset extends Resource
 		pixels = Data.get().getGraphicAsset
 		(
 			ID + ".png",
-			"assets/graphics/" + Engine.IMG_BASE + "/tileset-" + ID + ".png"
+			"assets/graphics/" + Engine.IMG_BASE + "/tileset-" + ID + ".png",
+			#if dispose_images false #else true #end
 		);
 		
 		for (tile in tiles)
