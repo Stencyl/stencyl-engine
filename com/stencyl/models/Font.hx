@@ -62,7 +62,7 @@ class Font extends Resource
 			(
 				ID + ".png",
 				"assets/graphics/" + Engine.IMG_BASE + "/font-" + ID + ".png",
-				#if dispose_images false #else true #end
+				!Config.disposeImages
 			);
 			
 			font = new BitmapFont().loadAngelCode(img, xml);

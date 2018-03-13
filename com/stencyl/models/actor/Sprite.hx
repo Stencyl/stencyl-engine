@@ -6,15 +6,17 @@ class Sprite extends Resource
 {
 	public var defaultAnimation:Int;
 	public var animations:Map<Int, Animation>;
+	public var readableImages:Bool;
 
 	@:deprecated("Get width from individual animations") public var width(get, never):Int;
 	@:deprecated("Get height from individual animations") public var height(get, never):Int;
 	
-	public function new(ID:Int, atlasID:Int, name:String, defaultAnimation:Int)
+	public function new(ID:Int, atlasID:Int, name:String, defaultAnimation:Int, readableImages:Bool)
 	{
 		super(ID, name, atlasID);
 		
 		this.defaultAnimation = defaultAnimation;
+		this.readableImages = readableImages;
 		
 		animations = new Map<Int, Animation>();
 	}

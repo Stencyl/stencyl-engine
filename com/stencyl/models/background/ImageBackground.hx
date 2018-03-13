@@ -119,7 +119,7 @@ class ImageBackground extends Resource implements Background
 					(
 						ID + "-" + i + ".png",
 						"assets/graphics/" + Engine.IMG_BASE + "/background-" + ID + "-" + i + ".png",
-						#if dispose_images false #else true #end
+						!Config.disposeImages
 					)
 				);
 			}
@@ -133,7 +133,7 @@ class ImageBackground extends Resource implements Background
 				(
 					ID + "-0.png",
 					"assets/graphics/" + Engine.IMG_BASE + "/background-" + ID + "-0.png",
-					#if dispose_images false #else true #end
+					!Config.disposeImages
 				)
 			);
 		}

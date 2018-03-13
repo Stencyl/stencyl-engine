@@ -3,6 +3,8 @@ package com.stencyl.models.actor;
 import openfl.display.BitmapData;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import com.stencyl.models.actor.ActorType;
+import com.stencyl.models.actor.Sprite;
 import com.stencyl.graphics.DynamicTileset;
 import box2D.dynamics.B2FixtureDef;
 
@@ -37,7 +39,7 @@ class Animation
 	public var graphicsLoaded:Bool;
 	
 	public static var allAnimations:Array<Animation> = new Array<Animation>();
-	private static var UNLOADED:BitmapData;
+	public static var UNLOADED(default, null):BitmapData;
 	
 	public static function resetStatics():Void
 	{
@@ -144,13 +146,34 @@ class Animation
 		
 		for(i in 0...frameCount)
 		{
-			#if (!dispose_images)
-			frames[i].dispose();
-			#end
+			if(frames[i].readable)
+				frames[i].dispose();
+			
 			frames[i] = UNLOADED;
 		}
 		
 		graphicsLoaded = false;
+	}
+	
+	public function checkImageReadable():Bool
+	{
+		if(frames[0].readable)
+			return true;
+		
+		#if (stencyltools)
+		/*com.stencyl.utils.ToolsetInterface.instance.sendData
+		(
+			["Content-Type" => "Issue",
+			"Issue" => "Disposed-Image-Access",
+			"ID" => ""+parentID],
+			null
+		);*/
+		trace("Can't get actor image with disposeImages enabled: " + Data.get().resources.get(parentID).name);
+		#else
+		trace("Can't get actor image with disposeImages enabled: " + Data.get().resources.get(parentID).name);
+		#end
+		
+		return false;
 	}
 	
 	#if (use_actor_tilemap)
@@ -170,6 +193,22 @@ class Animation
 		frameIndexOffset = tileset.addFrames(frames);
 		this.tileset = tileset;
 		tilesetInitialized = true;
+		
+		//trace(Config.disposeImages);
+		
+		if(Config.disposeImages && parentID != -1)
+		{
+			var sprite:Sprite = cast Data.get().resources.get(parentID);
+			
+			if(!sprite.readableImages)
+			{
+				for(frame in frames)
+				{
+					frame.dispose();
+				}
+			}
+		}
+		
 		return true;
 	}
 	#end

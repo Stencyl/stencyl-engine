@@ -11,6 +11,7 @@ import mbs.io.MbsList;
 class MbsFont extends MbsResource
 {
 	public static var alphabet:MbsField;
+	public static var readableImages:MbsField;
 	public static var height:MbsField;
 	public static var offsets:MbsField;
 	public static var prerendered:MbsField;
@@ -27,6 +28,7 @@ class MbsFont extends MbsResource
 		MBS_FONT.inherit(MbsResource.MBS_RESOURCE);
 		
 		alphabet = MBS_FONT.createField("alphabet", STRING);
+		readableImages = MBS_FONT.createField("readableImages", BOOLEAN);
 		height = MBS_FONT.createField("height", INTEGER);
 		offsets = MBS_FONT.createField("offsets", STRING);
 		prerendered = MBS_FONT.createField("prerendered", BOOLEAN);
@@ -62,6 +64,16 @@ class MbsFont extends MbsResource
 	public function setAlphabet(_val:String):Void
 	{
 		data.writeString(address + alphabet.address, _val);
+	}
+	
+	public function getReadableImages():Bool
+	{
+		return data.readBool(address + readableImages.address);
+	}
+	
+	public function setReadableImages(_val:Bool):Void
+	{
+		data.writeBool(address + readableImages.address, _val);
 	}
 	
 	public function getHeight():Int

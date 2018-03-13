@@ -11,6 +11,7 @@ import mbs.io.MbsListBase.MbsIntList;
 
 class MbsBackground extends MbsResource
 {
+	public static var readableImages:MbsField;
 	public static var durations:MbsField;
 	public static var height:MbsField;
 	public static var numFrames:MbsField;
@@ -32,6 +33,7 @@ class MbsBackground extends MbsResource
 		MBS_BACKGROUND.setInstantiator(function(data) return new MbsBackground(data));
 		MBS_BACKGROUND.inherit(MbsResource.MBS_RESOURCE);
 		
+		readableImages = MBS_BACKGROUND.createField("readableImages", BOOLEAN);
 		durations = MBS_BACKGROUND.createField("durations", LIST);
 		height = MBS_BACKGROUND.createField("height", INTEGER);
 		numFrames = MBS_BACKGROUND.createField("numFrames", INTEGER);
@@ -66,6 +68,16 @@ class MbsBackground extends MbsResource
 	override public function allocateNew():Void
 	{
 		setAddress(data.allocate(MBS_BACKGROUND.getSize()));
+	}
+	
+	public function getReadableImages():Bool
+	{
+		return data.readBool(address + readableImages.address);
+	}
+	
+	public function setReadableImages(_val:Bool):Void
+	{
+		data.writeBool(address + readableImages.address, _val);
 	}
 	
 	public function getDurations():MbsIntList

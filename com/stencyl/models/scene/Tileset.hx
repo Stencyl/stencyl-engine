@@ -126,7 +126,7 @@ class Tileset extends Resource
 		(
 			ID + ".png",
 			"assets/graphics/" + Engine.IMG_BASE + "/tileset-" + ID + ".png",
-			#if dispose_images false #else true #end
+			!Config.disposeImages
 		);
 		
 		for (tile in tiles)

@@ -12,6 +12,7 @@ import mbs.io.MbsList;
 class MbsSprite extends MbsResource
 {
 	public static var defaultAnimation:MbsField;
+	public static var readableImages:MbsField;
 	public static var height:MbsField;
 	public static var width:MbsField;
 	public static var animations:MbsField;
@@ -27,6 +28,7 @@ class MbsSprite extends MbsResource
 		MBS_SPRITE.inherit(MbsResource.MBS_RESOURCE);
 		
 		defaultAnimation = MBS_SPRITE.createField("defaultAnimation", INTEGER);
+		readableImages = MBS_SPRITE.createField("readableImages", BOOLEAN);
 		height = MBS_SPRITE.createField("height", INTEGER);
 		width = MBS_SPRITE.createField("width", INTEGER);
 		animations = MBS_SPRITE.createField("animations", LIST);
@@ -64,6 +66,16 @@ class MbsSprite extends MbsResource
 	public function setDefaultAnimation(_val:Int):Void
 	{
 		data.writeInt(address + defaultAnimation.address, _val);
+	}
+	
+	public function getReadableImages():Bool
+	{
+		return data.readBool(address + readableImages.address);
+	}
+	
+	public function setReadableImages(_val:Bool):Void
+	{
+		data.writeBool(address + readableImages.address, _val);
 	}
 	
 	public function getHeight():Int

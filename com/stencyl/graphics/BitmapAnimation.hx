@@ -155,6 +155,9 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	
 	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
+		if(Config.disposeImages && !model.checkImageReadable())
+			return;
+		
 		g.drawImage(bitmapData, x, y, angle);
 	}
 	
@@ -212,6 +215,9 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	
 	public function getCurrentImage():BitmapData
 	{
+		if(Config.disposeImages && !model.checkImageReadable())
+			return Animation.UNLOADED;
+		
 		return bitmapData;
 	}
 	

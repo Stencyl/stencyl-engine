@@ -116,7 +116,7 @@ class Tile
 			(
 				parent.ID + "-" + tileID + ".png",
 				"assets/graphics/" + Engine.IMG_BASE + "/tileset-" + parent.ID + "-" + tileID + ".png",
-				#if dispose_images false #else true #end
+				!Config.disposeImages
 			);
 		}
 		

@@ -172,6 +172,9 @@ class SheetAnimation implements AbstractAnimation
 
 	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
+		if(Config.disposeImages && !model.checkImageReadable())
+			return;
+		
 		var bitmapData;
 		
 		if (g.alpha == 1)
@@ -230,9 +233,12 @@ class SheetAnimation implements AbstractAnimation
 	
 	public function getCurrentImage():BitmapData
 	{
+		if(Config.disposeImages && !model.checkImageReadable())
+			return Animation.UNLOADED;
+		
 		return model.frames[frameIndex];
 	}
-
+	
 	public function framesUpdated():Void
 	{
 		/*

@@ -150,9 +150,6 @@ class DynamicTileset
 			var newFrame = frames[i];
 			
 			gl.texSubImage2D(gl.TEXTURE_2D, 0, Std.int(r.x), Std.int(r.y), Std.int(r.width), Std.int(r.height), format, gl.UNSIGNED_BYTE, newFrame.image.data);
-			#if (dispose_images)
-			newFrame.dispose();
-			#end
 		}
 		
 		return offset;

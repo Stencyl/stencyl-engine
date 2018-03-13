@@ -12,7 +12,7 @@ typedef Listener = String->Void;
 
 class ToolsetInterface
 {
-	static var instance:ToolsetInterface;
+	public static var instance:ToolsetInterface;
 
 	var socket:Socket;
 	var response:String = "";
