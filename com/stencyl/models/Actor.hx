@@ -4021,8 +4021,8 @@ class Actor extends Sprite
 		var bottom = Engine.paddingBottom;
 	
 		return (physicsMode != NORMAL_PHYSICS || body.isActive()) && 
-			   getX(true) >= -cameraX - left && 
-			   getY(true) >= -cameraY - top &&
+			   getX(true) + cacheWidth >= -cameraX - left && 
+			   getY(true) + cacheHeight >= -cameraY - top &&
 			   getX(true) < -cameraX + Engine.screenWidth + right &&
 			   getY(true) < -cameraY + Engine.screenHeight + bottom;
 	}
@@ -4030,8 +4030,8 @@ class Actor extends Sprite
 	public function isInScene():Bool
 	{
 		return (physicsMode != NORMAL_PHYSICS || body.isActive()) && 
-			   getX(true) >= 0 && 
-			   getY(true) >= 0 &&
+			   getX(true) + cacheWidth >= 0 && 
+			   getY(true) + cacheHeight >= 0 &&
 			   getX(true) < Engine.sceneWidth &&
 			   getY(true) < Engine.sceneHeight;
 	}
