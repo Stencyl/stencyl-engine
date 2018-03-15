@@ -1,6 +1,6 @@
 package com.stencyl.graphics;
 
-#if (use_actor_tilemap)
+#if (lime_opengl && use_actor_tilemap)
 
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
@@ -9,11 +9,6 @@ import openfl.display.BitmapData;
 import openfl.display.Tileset;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-
-import haxe.io.Output;
-import sys.FileSystem;
-import sys.io.File;
-import flash.utils.ByteArray;
 
 @:access(openfl.display.BitmapData)
 
@@ -24,63 +19,16 @@ class DynamicTileset
 	private var point:Point;
 	private var nextLine:Int;
 	
-	private static var textureMaxSize:Null<Int> = null;
-	private static var MAX_TEXTURE_CAP = 4096;
 	private static var FRAME_PADDING = 1;
 	
 	public function new()
 	{
-		if(textureMaxSize == null)
-		{
-			initialize();
-		}
+		trace("Creating new dynamic tileset (size: " + GLUtil.textureMaxSize + ")");
 		
-		trace("Creating new dynamic tileset (size: " + textureMaxSize + ")");
-		
-		tileset = new Tileset(createNewTexture(getGL(), textureMaxSize));
+		tileset = new Tileset(GLUtil.createNewTexture(GLUtil.textureMaxSize));
+		texture = tileset.bitmapData.__texture;
 		point = new Point(0, 0);
 		nextLine = 0;
-	}
-	
-	private function initialize()
-	{
-		var gl = getGL();
-		textureMaxSize = cast gl.getParameter(gl.MAX_TEXTURE_SIZE);
-		trace("GL value of MAX_TEXTURE_SIZE: " + textureMaxSize);
-		
-		textureMaxSize = Std.int(textureMaxSize / 2);
-		if(textureMaxSize > MAX_TEXTURE_CAP)
-			textureMaxSize = MAX_TEXTURE_CAP;
-		
-		if(BitmapData.__supportsBGRA == null)
-		{
-			new BitmapData(1, 1, true, 0).getTexture(gl);
-		}
-	}
-	
-	private function createNewTexture(gl:GLRenderContext, size:Int):BitmapData
-	{
-		texture = gl.createTexture();
-		
-		gl.bindTexture(gl.TEXTURE_2D, texture);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-		
-		var internalFormat = BitmapData.__textureInternalFormat;
-		var format = BitmapData.__textureFormat;
-		gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, size, size, 0, format, gl.UNSIGNED_BYTE, 0);
-		
-		var bitmapData = new BitmapData(0, 0, true, 0);
-		bitmapData.__resize(size, size);
-		bitmapData.readable = false;
-		bitmapData.__texture = texture;
-		bitmapData.__textureContext = gl;
-		bitmapData.__isValid = true;
-		bitmapData.image = null;
-		
-		return bitmapData;
 	}
 	
 	public function checkForSpace(frameWidth:Int, frameHeight:Int, frameCount:Int):Bool
@@ -90,9 +38,9 @@ class DynamicTileset
 		var i = 0;
 		var _nextLine = nextLine;
 		
-		while(y + frameHeight < textureMaxSize)
+		while(y + frameHeight < GLUtil.textureMaxSize)
 		{
-			while(x + frameWidth < textureMaxSize)
+			while(x + frameWidth < GLUtil.textureMaxSize)
 			{
 				x += frameWidth + FRAME_PADDING;
 				++i;
@@ -121,7 +69,7 @@ class DynamicTileset
 		
 		for(frame in frames)
 		{
-			if(point.x + frame.width > textureMaxSize)
+			if(point.x + frame.width > GLUtil.textureMaxSize)
 			{
 				point.x = 0;
 				point.y = nextLine;
@@ -138,7 +86,7 @@ class DynamicTileset
 		
 		//trace(newRects);
 		
-		var gl = getGL();
+		var gl = GLUtil.gl;
 		var internalFormat = BitmapData.__textureInternalFormat;
 		var format = BitmapData.__textureFormat;
 		
@@ -233,22 +181,5 @@ class DynamicTileset
 		
 		return offset;
 	}*/
-	
-	private function getGL()
-	{
-		switch(Engine.stage.window.renderer.context)
-		{
-			case OPENGL(gl): return gl;
-			default: throw "Can't get gl context.";
-		}
-	}
-	
-	public function saveImage(image:BitmapData, outputFile:String):Void
-	{
-		var imageData:ByteArray = image.encode(image.rect, new flash.display.PNGEncoderOptions());
-		var fo:Output = sys.io.File.write(outputFile, true);
-		fo.writeBytes(imageData, 0, imageData.length);
-		fo.close();
-	}
 }
 #end

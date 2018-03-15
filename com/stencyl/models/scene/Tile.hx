@@ -1,5 +1,7 @@
 package com.stencyl.models.scene;
 
+import com.stencyl.utils.Assets;
+
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.Tileset as FLTileset;
@@ -112,11 +114,10 @@ class Tile
 		
 		if(durations.length > 1 || autotileFormat != null)
 		{
-			imgData = Data.get().getGraphicAsset
+			imgData = Assets.getBitmapData
 			(
-				parent.ID + "-" + tileID + ".png",
 				"assets/graphics/" + Engine.IMG_BASE + "/tileset-" + parent.ID + "-" + tileID + ".png",
-				!Config.disposeImages
+				false
 			);
 		}
 		
@@ -146,11 +147,6 @@ class Tile
 				t.pixels = null;
 				t.data = null;
 			}
-		}
-
-		if(durations.length > 1 || autotiles != null)
-		{
-			Data.get().resourceAssets.remove(parent.ID + "-" + tileID + ".png");				
 		}
 	}
 

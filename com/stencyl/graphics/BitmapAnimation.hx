@@ -39,6 +39,8 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		this.frameIndex = 0;
 		
 		this.individualDurations = false;
+		this.durations = model.durations;
+		
 		this.numFrames = durations.length;
 		this.smoothing = Config.antialias;
 		
@@ -50,7 +52,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	public inline function update(elapsedTime:Float)
 	{
 		//Non-synced animations
-		if(!model.looping)
+		if(!(model.sync && model.looping))
 		{
 			timer += elapsedTime;
 		

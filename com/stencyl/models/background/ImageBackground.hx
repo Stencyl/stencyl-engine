@@ -9,6 +9,7 @@ import openfl.geom.Point;
 
 import com.stencyl.Engine;
 import com.stencyl.models.scene.layers.BackgroundLayer;
+import com.stencyl.utils.Assets;
 
 class ImageBackground extends Resource implements Background 
 {
@@ -24,7 +25,9 @@ class ImageBackground extends Resource implements Background
 	
 	public var repeats:Bool;
 	public var repeated:Bool;
-		
+	
+	public var graphicsLoaded:Bool;
+	
 	public function new
 	(
 		ID:Int,
@@ -106,6 +109,9 @@ class ImageBackground extends Resource implements Background
 	
 	override public function loadGraphics()
 	{
+		if(graphicsLoaded)
+			return;
+		
 		var frameData = new Array<Dynamic>();
 		var numFrames = durations.length;
 		
@@ -115,11 +121,10 @@ class ImageBackground extends Resource implements Background
 			{
 				frameData.push
 				(
-					Data.get().getGraphicAsset
+					Assets.getBitmapData
 					(
-						ID + "-" + i + ".png",
 						"assets/graphics/" + Engine.IMG_BASE + "/background-" + ID + "-" + i + ".png",
-						!Config.disposeImages
+						false
 					)
 				);
 			}
@@ -129,11 +134,10 @@ class ImageBackground extends Resource implements Background
 		{
 			frameData.push
 			(
-				Data.get().getGraphicAsset
+				Assets.getBitmapData
 				(
-					ID + "-0.png",
 					"assets/graphics/" + Engine.IMG_BASE + "/background-" + ID + "-0.png",
-					!Config.disposeImages
+					false
 				)
 			);
 		}
@@ -158,10 +162,15 @@ class ImageBackground extends Resource implements Background
 		}
 		
 		this.img = frames[0];
+		
+		graphicsLoaded = true;
 	}
 	
 	override public function unloadGraphics()
 	{
+		if(!graphicsLoaded)
+			return;
+		
 		//Replace with a 1x1 px blank - graceful fallback
 		img = new BitmapData(1, 1);
 		currFrame = 0;
@@ -177,18 +186,7 @@ class ImageBackground extends Resource implements Background
 		
 		var numFrames = durations.length;
 		
-		if(numFrames > 0)
-		{
-			for(i in 0...numFrames)
-			{
-				Data.get().resourceAssets.remove(ID + "-" + i + ".png");
-			}
-		}
-		
-		else
-		{
-			Data.get().resourceAssets.remove(ID + "-0.png");
-		}
+		graphicsLoaded = false;
 	}
 
 	override public function reloadGraphics(subID:Int)

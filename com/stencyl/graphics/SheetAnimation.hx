@@ -42,7 +42,9 @@ class SheetAnimation implements AbstractAnimation
 		this.parent = parent;
 		this.timer = 0;
 		this.frameIndex = 0;
-		this.durations = model == null ? [10] : model.durations;
+		
+		this.individualDurations = false;
+		this.durations = model.durations;
 		numFrames = durations.length;
 	}
 	

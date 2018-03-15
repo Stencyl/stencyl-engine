@@ -69,7 +69,6 @@ class SpriteReader implements AbstractReader
 		var framesAcross = r.getAcross();
 		var framesDown = r.getDown();
 		
-		var parentID:Int = parent.ID;
 		var simpleShapes = readSimpleShapes(r, Std.int(imgWidth/framesAcross), Std.int(imgHeight/framesDown));
 		var physicsShapes = readShapes(r, Std.int(imgWidth/framesAcross), Std.int(imgHeight/framesDown));
 		var looping = r.getLoop();
@@ -92,7 +91,7 @@ class SpriteReader implements AbstractReader
 		(
 			animID,
 			animName,
-			parentID, 
+			parent, 
 			simpleShapes,
 			physicsShapes,
 			looping, 
@@ -104,8 +103,7 @@ class SpriteReader implements AbstractReader
 			durations, 
 			frameCount,
 			framesAcross, 
-			framesDown,
-			parent.atlasID
+			framesDown
 		);
 	}
 	

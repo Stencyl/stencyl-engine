@@ -621,6 +621,8 @@ class Engine
 	public function new(root:Sprite) 
 	{		
 		#if(!flash)
+		com.stencyl.graphics.GLUtil.initialize();
+		
 		if(openfl.display.OpenGLView.isSupported)
 		{
 			shaderLayer = new Sprite();
@@ -798,8 +800,8 @@ class Engine
 			{
 				if(atlas.active)
 					atlasesToLoad.set(atlas.ID, atlas.ID);
+				}
 			}
-		}
 		#end
 		
 		g = new G();

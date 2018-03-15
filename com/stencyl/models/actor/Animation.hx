@@ -6,6 +6,7 @@ import openfl.geom.Rectangle;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.actor.Sprite;
 import com.stencyl.graphics.DynamicTileset;
+import com.stencyl.utils.Assets;
 import box2D.dynamics.B2FixtureDef;
 
 class Animation
@@ -13,7 +14,7 @@ class Animation
 	public var animID:Int;
 	public var animName:String;
 	
-	public var parentID:Int;
+	public var parent:Sprite;
 	public var simpleShapes:Map<Int,Dynamic>;
 	public var physicsShapes:Map<Int,Dynamic>;
 	public var looping:Bool;
@@ -50,7 +51,7 @@ class Animation
 	(
 		animID:Int,
 		animName:String,
-		parentID:Int, 
+		parent:Sprite, 
 		simpleShapes:Map<Int,Dynamic>, 
 		physicsShapes:Map<Int,Dynamic>, 
 		looping:Bool, 
@@ -62,14 +63,13 @@ class Animation
 		durations:Array<Int>, 
 		frameCount:Int,
 		framesAcross:Int, 
-		framesDown:Int,
-		atlasID:Int
+		framesDown:Int
 	)
 	{
 		this.animID = animID;
 		this.animName = animName;
 		
-		this.parentID = parentID;
+		this.parent = parent;
 		this.simpleShapes = simpleShapes;
 		this.physicsShapes = physicsShapes;
 		this.looping = looping;
@@ -92,30 +92,35 @@ class Animation
 		this.originX = originX;
 		this.originY = originY;
 		
-		var atlas = GameModel.get().atlases.get(atlasID);
-			
-		if(atlas != null && atlas.active)
+		if(parent == null)
 		{
-			loadGraphics();
+			frames = [UNLOADED];
 		}
-		
-		if(frameCount > 1 && looping)
+		else
 		{
-			allAnimations.push(this);
+			var atlas = GameModel.get().atlases.get(parent.atlasID);
+			
+			if(atlas != null && atlas.active)
+			{
+				loadGraphics();
+			}
+			
+			if(frameCount > 1 && looping)
+			{
+				allAnimations.push(this);
+			}
 		}
 	}
 	
 	//For Atlases
-	
 	public function loadGraphics()
 	{
 		if(graphicsLoaded)
 			return;
 		
-		var imgData = Data.get().getGraphicAsset
+		var imgData = Assets.getBitmapData
 		(
-			parentID + "-" + animID + ".png",
-			"assets/graphics/" + Engine.IMG_BASE + "/sprite-" + parentID + "-" + animID + ".png",
+			"assets/graphics/" + Engine.IMG_BASE + "/sprite-" + parent.ID + "-" + animID + ".png",
 			false
 		);
 		
@@ -135,6 +140,18 @@ class Animation
 		}
 		
 		imgData.dispose();
+		
+		#if (lime_opengl && !use_actor_tilemap)
+		if(Config.disposeImages && parent != null && !parent.readableImages)
+		{
+			var i = 0;
+			for(frame in frames)
+			{
+				com.stencyl.graphics.GLUtil.uploadTexture(frame, true);
+				//@:privateAccess trace("Uploaded texture for " + parent.name + " frame " + (i++) + " to gpu texture " + frame.__texture.id);
+			}
+		}
+		#end
 		
 		graphicsLoaded = true;
 	}
@@ -168,9 +185,10 @@ class Animation
 			"ID" => ""+parentID],
 			null
 		);*/
-		trace("Can't get actor image with disposeImages enabled: " + Data.get().resources.get(parentID).name);
+		//XXX: This is based on the assumption that the associated actorType is the previous resource ID
+		trace("Can't get actor image with disposeImages enabled: " + Data.get().resources.get(parent.ID - 1).name);
 		#else
-		trace("Can't get actor image with disposeImages enabled: " + Data.get().resources.get(parentID).name);
+		trace("Can't get actor image with disposeImages enabled: " + Data.get().resources.get(parent.ID - 1).name);
 		#end
 		
 		return false;
@@ -196,16 +214,11 @@ class Animation
 		
 		//trace(Config.disposeImages);
 		
-		if(Config.disposeImages && parentID != -1)
+		if(Config.disposeImages && parent != null && !parent.readableImages)
 		{
-			var sprite:Sprite = cast Data.get().resources.get(parentID);
-			
-			if(!sprite.readableImages)
+			for(frame in frames)
 			{
-				for(frame in frames)
-				{
-					frame.dispose();
-				}
+				frame.dispose();
 			}
 		}
 		

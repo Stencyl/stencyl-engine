@@ -485,7 +485,7 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 		originMap = new Map<String,B2Vec2>();
 		
 		this.sprite = sprite;
-		this.type = cast Data.get().resources.get(typeID);
+		this.type = typeID == -1 ? null : cast Data.get().resources.get(typeID);
 		
 		//---
 		
@@ -505,7 +505,7 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 		//--
 		
 		if(recycledAnimation == null)
-			recycledAnimation = new Animation(-1, "recyclingDefault", -1, null, null, false, false, 1, 1, 0, 0, [10], 1, 1, 1, -1);
+			recycledAnimation = new Animation(-1, "recyclingDefault", null, null, null, false, false, 1, 1, 0, 0, [10], 1, 1, 1);
 		addAnim(recycledAnimation);
 
 		if(bodyDef != null && physicsMode == NORMAL_PHYSICS)
@@ -3679,7 +3679,10 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 	public function setFilter(filter:Array<BitmapFilter>)
 	{
 		#if (!use_actor_tilemap)
-		filters = filters.concat(filter);
+		if(!Config.disposeImages || currAnimation.model.checkImageReadable())
+		{
+			filters = filters.concat(filter);
+		}
 		#end
 	}
 	
@@ -3693,7 +3696,7 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 	public function setBlendMode(blendMode:BlendMode)
 	{
 		#if (!use_actor_tilemap)
-		this.blendMode = blendMode;
+			this.blendMode = blendMode;
 		#end
 	}
 	
