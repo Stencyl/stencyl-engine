@@ -277,7 +277,8 @@ class PostProcess extends OpenGLView
 
 		GL.activeTexture(GL.TEXTURE0);
 		GL.bindTexture(GL.TEXTURE_2D, texture);
-		GL.enable(GL.TEXTURE_2D);
+		if (GL.type == OPENGL)
+			GL.enable(GL.TEXTURE_2D);
 
 		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
 		GL.vertexAttribPointer(vertexSlot, 2, GL.FLOAT, false, 16, 0);
@@ -300,7 +301,8 @@ class PostProcess extends OpenGLView
 		GL.drawArrays(GL.TRIANGLES, 0, 6);
 
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
-		GL.disable(GL.TEXTURE_2D);
+		if (GL.type == OPENGL)
+			GL.disable(GL.TEXTURE_2D);
 		GL.bindTexture(GL.TEXTURE_2D, null);
 
 		GL.disableVertexAttribArray(vertexSlot);
