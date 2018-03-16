@@ -13,6 +13,7 @@ import openfl.display.BitmapData;
 import openfl.display.DisplayObjectShader;
 import openfl.display.Sprite;
 import openfl.display.Tile;
+import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.display.DisplayObject;
@@ -100,7 +101,7 @@ typedef ActorAnimation = SheetAnimation;
 typedef ActorAnimation = BitmapAnimation;
 #end
 
-class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
+class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 {	
 	//*-----------------------------------------------
 	//* Globals
@@ -623,13 +624,15 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 		
 		destroyed = true;
 		
-		#if(!use_actor_tilemap)
 		for(anim in animationMap)
 		{
 			anim.visible = false;
 		}
 		
+		#if(!use_actor_tilemap)
 		Utils.removeAllChildren(this);
+		#else
+		Utils.removeAllTiles(this);
 		#end
 
 		if(body != null && physicsMode == NORMAL_PHYSICS)
@@ -785,16 +788,7 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 			}
 		}
 		
-		#if (use_actor_tilemap)
-		
-		animationMap.set(anim.animName, new SheetAnimation(anim, this));
-		
-		#else
-		
-		animationMap.set(anim.animName, new BitmapAnimation(anim));
-		
-		#end
-		
+		animationMap.set(anim.animName, new ActorAnimation(anim));
 		originMap.set(anim.animName, new B2Vec2(anim.originX, anim.originY));
 	}
 
@@ -1100,12 +1094,14 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 				return;
 			}
 			
-			#if (!use_actor_tilemap)
 			if(currAnimation != null)
 			{
+				#if (!use_actor_tilemap)
 				removeChild(currAnimation);
+				#else
+				removeTile(currAnimation);
+				#end
 			}
-			#end
 			
 			//---
 			
@@ -1216,7 +1212,9 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 			currAnimation = newAnimation;
 
 			#if (!use_actor_tilemap)
-			addChild(newAnimation);			
+			addChild(newAnimation);
+			#else
+			addTile(newAnimation);
 			#end
 			
 			//----------------
@@ -3602,19 +3600,10 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 				y += transformMatrix.ty - drawMatrix.ty;
 			}
 			
-			#if (!use_actor_tilemap)
 			var visibleCache = currAnimation.visible;
 			currAnimation.visible = true;
-			#else
-			var visibleCache = visible;
-			visible = true;
-			#end
 			currAnimation.draw(g, x, y, realAngle * Utils.RAD, g.alpha);
-			#if (!use_actor_tilemap)
 			currAnimation.visible = visibleCache;
-			#else
-			visible = visibleCache;
-			#end
 		}
 	}
 	
@@ -3627,7 +3616,6 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 	{
 		drawActor = true;
 		
-		#if(!use_actor_tilemap)
 		if(currAnimation != null)
 		{
 			currAnimation.visible = true;
@@ -3640,16 +3628,12 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 				anim.visible = true;
 			}
 		}
-		#else
-		visible = true;
-		#end
 	}
 	
 	public function disableActorDrawing()
 	{
 		drawActor = false;
 		
-		#if(!use_actor_tilemap)
 		if(currAnimation != null)
 		{
 			currAnimation.visible = false;
@@ -3662,9 +3646,6 @@ class Actor extends #if (use_actor_tilemap) Tile #else Sprite #end
 				anim.visible = false;
 			}
 		}
-		#else
-		visible = false;
-		#end
 	}
 	
 	public function drawsImage():Bool

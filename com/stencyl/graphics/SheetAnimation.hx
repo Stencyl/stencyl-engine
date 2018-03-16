@@ -17,7 +17,7 @@ import openfl.geom.Rectangle;
 import com.stencyl.Config;
 import com.stencyl.Engine;
 
-class SheetAnimation implements AbstractAnimation
+class SheetAnimation extends Tile implements AbstractAnimation
 {
 	private var frameIndex:Int;
 	private var timer:Float;
@@ -29,23 +29,24 @@ class SheetAnimation implements AbstractAnimation
 	private var individualDurations:Bool;
 	
 	public var model(default, null):Animation;
-	private var parent:Actor;
 	
-	public var x(get, never):Float;
-	public var y(get, never):Float;
 	public var width(get, never):Int;
 	public var height(get, never):Int;
 	
-	public function new(model:Animation, parent:Actor)
+	public function new(model:Animation)
 	{
+		super();
+		
 		this.model = model;
-		this.parent = parent;
 		this.timer = 0;
 		this.frameIndex = 0;
 		
 		this.individualDurations = false;
 		this.durations = model.durations;
 		numFrames = durations.length;
+		
+		x = -width/2 * Engine.SCALE;
+		y = -height/2 * Engine.SCALE;
 	}
 	
 	public inline function update(elapsedTime:Float)
@@ -150,11 +151,9 @@ class SheetAnimation implements AbstractAnimation
 				arr.push(new DynamicTileset());
 				model.initializeInTileset(arr[arr.length-1]);
 			}
+			tileset = model.tileset.tileset;
 		}
 		
-		parent.originX = model.frameWidth/2 * Engine.SCALE;
-		parent.originY = model.frameHeight/2 * Engine.SCALE;
-		parent.tileset = model.tileset.tileset;
 		updateBitmap();
 	}
 	
@@ -168,7 +167,7 @@ class SheetAnimation implements AbstractAnimation
 	
 	public inline function updateBitmap()
 	{
-		parent.id = frameIndex + model.frameIndexOffset;
+		id = frameIndex + model.frameIndexOffset;
 		needsUpdate = false;
 	}
 
@@ -256,8 +255,8 @@ class SheetAnimation implements AbstractAnimation
 			frameWidth = Std.int(width);
 			frameHeight = Std.int(height);
 			
-			parent.originX = -width/2 * Engine.SCALE;
-			parent.originY = -height/2 * Engine.SCALE;
+			x = -width/2 * Engine.SCALE;
+			y = -height/2 * Engine.SCALE;
 
 			var tiles = [for(i in 0...numFrames) new Rectangle(width * (i % across), Math.floor(i / across) * height, width, height)];
 			
@@ -268,16 +267,6 @@ class SheetAnimation implements AbstractAnimation
 			tileset.bitmapData = imgData;
 		}
 		*/
-	}
-	
-	private function get_x():Float
-	{
-		return parent.originX;
-	}
-	
-	private function get_y():Float
-	{
-		return parent.originY;
 	}
 	
 	private function get_width():Int

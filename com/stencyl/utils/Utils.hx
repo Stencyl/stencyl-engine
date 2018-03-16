@@ -12,6 +12,7 @@ import openfl.display.Bitmap;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
+import openfl.display.ITileContainer;
 import openfl.display.Sprite;
 import openfl.display.Stage;
 import openfl.display.Tilemap;
@@ -241,10 +242,25 @@ class Utils
 			}
 			if(Std.is(c, Tilemap))
 			{
-				cast(c, Tilemap).removeTiles();
+				Utils.removeAllTiles(cast c);
 			}
 			
 			container.removeChild(c);
+		}
+	}
+	
+	public static function removeAllTiles(container:ITileContainer)
+	{
+		while(container.numTiles > 0)
+		{
+			var c = container.getTileAt(0);
+			
+			if(Std.is(c, ITileContainer))
+			{
+				Utils.removeAllTiles(cast c);
+			}
+			
+			container.removeTile(c);
 		}
 	}
 	

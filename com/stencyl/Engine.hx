@@ -1660,7 +1660,7 @@ class Engine
 		Utils.removeAllChildren(master);
 		
 		#if(use_actor_tilemap)
-		hudLayer.actorContainer.removeTiles();
+		Utils.removeAllTiles(hudLayer.actorContainer);
 		#else
 		Utils.removeAllChildren(hudLayer.actorContainer);
 		#end
