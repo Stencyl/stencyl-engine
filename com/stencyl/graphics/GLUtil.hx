@@ -46,13 +46,18 @@ class GLUtil
 		
 		if(dispose)
 		{
-			img.image = null;
-			img.readable = false;
-			img.__surface = null;
-			img.__buffer = null;
-			img.__framebuffer = null;
-			img.__framebufferContext = null;
+			disposeSoftwareBuffer(img);
 		}
+	}
+	
+	public static function disposeSoftwareBuffer(img:BitmapData):Void
+	{
+		img.image = null;
+		img.readable = false;
+		img.__surface = null;
+		img.__buffer = null;
+		img.__framebuffer = null;
+		img.__framebufferContext = null;
 	}
 	
 	public static function createNewTexture(size:Int):BitmapData

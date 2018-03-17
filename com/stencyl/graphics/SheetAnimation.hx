@@ -153,6 +153,10 @@ class SheetAnimation extends Tile implements AbstractAnimation
 			}
 			tileset = model.tileset.tileset;
 		}
+		else if(tileset == null)
+		{
+			tileset = model.tileset.tileset;
+		}
 		
 		updateBitmap();
 	}

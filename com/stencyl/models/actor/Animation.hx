@@ -212,13 +212,15 @@ class Animation
 		this.tileset = tileset;
 		tilesetInitialized = true;
 		
+		//@:privateAccess trace("Uploaded textures for " + parent.name + " (" + frames.length + " frames) to gpu texture " + tileset.tileset.bitmapData.__texture.id);
+		
 		//trace(Config.disposeImages);
 		
 		if(Config.disposeImages && parent != null && !parent.readableImages)
 		{
 			for(frame in frames)
 			{
-				frame.dispose();
+				com.stencyl.graphics.GLUtil.disposeSoftwareBuffer(frame);
 			}
 		}
 		

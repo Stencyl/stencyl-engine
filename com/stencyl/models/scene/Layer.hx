@@ -36,6 +36,7 @@ class Layer extends RegularLayer
 		}
 
 		actorContainer = new ActorLayer(#if (use_actor_tilemap) 0, 0, null, Config.antialias #end);
+		#if (use_actor_tilemap) actorContainer.tileColorTransformEnabled = false; #end
 		overlay = new Sprite();
 
 		if(tiles != null) addChild(tiles);
