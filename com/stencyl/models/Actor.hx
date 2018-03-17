@@ -2,11 +2,6 @@ package com.stencyl.models;
 
 import de.polygonal.ds.IntHashTable;
 
-import com.stencyl.behavior.TimedTask;
-
-import com.stencyl.models.collision.CollisionInfo;
-import com.stencyl.models.collision.Masklist;
-import flash.geom.Transform;
 import openfl.display.BlendMode;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -19,9 +14,13 @@ import openfl.display.Tileset;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Graphics;
+import openfl.filters.BitmapFilter;
+import openfl.filters.ColorMatrixFilter;
+import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.geom.Transform;
 import openfl.utils.ByteArray;
 
 #if (flash || cpp || neko)
@@ -32,16 +31,18 @@ import com.stencyl.Config;
 import com.stencyl.Input;
 import com.stencyl.Engine;
 
-import com.stencyl.graphics.G;
 import com.stencyl.graphics.AbstractAnimation;
 import com.stencyl.graphics.BitmapAnimation;
 import com.stencyl.graphics.BitmapWrapper;
+import com.stencyl.graphics.G;
 import com.stencyl.graphics.SheetAnimation;
+import com.stencyl.graphics.StencylColorMatrixShader;
 import com.stencyl.graphics.fonts.Label;
 
 import com.stencyl.behavior.Behavior;
 import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.behavior.BehaviorManager;
+import com.stencyl.behavior.TimedTask;
 
 import com.stencyl.models.actor.Group;
 import com.stencyl.models.actor.Collision;
@@ -55,6 +56,7 @@ import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.scene.Layer;
 import com.stencyl.models.GameModel;
 
+import com.stencyl.utils.ColorMatrix;
 import com.stencyl.utils.Utils;
 
 import motion.Actuate;
@@ -85,13 +87,11 @@ import box2D.common.math.B2Vec2;
 import box2D.common.math.B2Transform;
 import box2D.collision.B2WorldManifold;
 
-import com.stencyl.models.collision.Mask;
-import com.stencyl.models.collision.Hitbox;
+import com.stencyl.models.collision.CollisionInfo;
 import com.stencyl.models.collision.Grid;
-
-import openfl.filters.BitmapFilter;
-import openfl.filters.ColorMatrixFilter;
-import com.stencyl.utils.ColorMatrix;
+import com.stencyl.models.collision.Hitbox;
+import com.stencyl.models.collision.Masklist;
+import com.stencyl.models.collision.Mask;
 
 import haxe.CallStack;
 
@@ -3657,27 +3657,68 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	//* Filters
 	//*-----------------------------------------------
 
+	private var cm:ColorMatrix;
+
 	public function setFilter(filter:Array<BitmapFilter>)
 	{
-		#if (!use_actor_tilemap)
-		if(!Config.disposeImages || currAnimation.model.checkImageReadable())
+		#if !flash
+		for(f in filter)
 		{
-			filters = filters.concat(filter);
+			if(Std.is(f, ColorMatrixFilter))
+			{
+				if(cm == null)
+				{
+					cm = new ColorMatrix();
+					cm.matrix = cast(f, ColorMatrixFilter).matrix;
+				}
+				else
+				{
+					var cm2 = new ColorMatrix();
+					cm2.matrix = cast(f, ColorMatrixFilter).matrix;
+					var cm3 = new ColorMatrix();
+					
+					ColorMatrix.mulMatrixMatrix(cm, cm2, cm3);
+					cm = cm3;
+				}
+				
+				var scms = new StencylColorMatrixShader();
+				scms.init(cm.matrix);
+				
+				#if (use_actor_tilemap)
+				shader = scms;
+				#else
+				renderShader = scms;
+				#end
+			}
 		}
+		#else
+		filters = filters.concat(filter);
 		#end
 	}
 	
 	public function clearFilters()
 	{
-		#if (!use_actor_tilemap)
-		filters = [];
+		#if !flash
+		
+		cm = null;
+		
+		#if (use_actor_tilemap)
+		shader = null;
+		#else
+		renderShader = null;
+		#end
+		
+		#else
+		
+		filters = null;
+		
 		#end
 	}
 	
 	public function setBlendMode(blendMode:BlendMode)
 	{
 		#if (!use_actor_tilemap)
-			this.blendMode = blendMode;
+		this.blendMode = blendMode;
 		#end
 	}
 	
