@@ -80,18 +80,12 @@ class Data
 	//* Data
 	//*-----------------------------------------------
 	
-	//Map of each [sceneID].scn by ID
-	//public var scenesTerrain:Map<Int,Dynamic>;
-
 	//Map of each resource in memory by ID
 	public var resources:LazyMap<Int,Resource>;
 
 	//Map of each resource in memory by name
 	public var resourceMap:LazyMap<String,Resource>;
 
-	//Map of each static asset by filename
-	public var resourceAssets:Map<String,Dynamic>;
-	
 	//Map of each behavior by ID
 	public var behaviors:LazyMap<Int,Behavior>;
 	
@@ -129,7 +123,6 @@ class Data
 		behaviorListMbs = new MbsReader(Typedefs.get(), false, false);
 		behaviorListMbs.readData(Assets.getBytes("assets/data/behaviors.mbs"));
 
-		resourceAssets = new Map<String,Dynamic>();
 		behaviors = LazyMap.fromFunction(loadBehaviorFromMbs);
 		resources = LazyMap.fromFunction(loadResourceFromMbs);
 		resourceMap = LazyMap.fromFunction(loadResourceFromMbsByName);
@@ -301,16 +294,6 @@ class Data
 		return a;
 	}
 	
-	public function getGraphicAsset(url:String, diskURL:String):Dynamic
-	{
-		if(resourceAssets.get(url) == null)
-		{
-			resourceAssets.set(url, Assets.getBitmapData(diskURL, false));
-		}
-		
-		return resourceAssets.get(url);
-	}
-	
 	public function loadAtlas(atlasID:Int)
 	{
 		trace("Load Atlas: " + atlasID);
@@ -356,7 +339,7 @@ class Data
 		}
 		#end
 	}
-
+	
 	public function reloadScaledResources():Void
 	{
 		for(r in resources)

@@ -13,6 +13,7 @@ class MbsTileset extends MbsResource
 {
 	public static var across:MbsField;
 	public static var down:MbsField;
+	public static var readableImages:MbsField;
 	public static var tileWidth:MbsField;
 	public static var tileHeight:MbsField;
 	public static var tiles:MbsField;
@@ -29,6 +30,7 @@ class MbsTileset extends MbsResource
 		
 		across = MBS_TILESET.createField("across", INTEGER);
 		down = MBS_TILESET.createField("down", INTEGER);
+		readableImages = MBS_TILESET.createField("readableImages", BOOLEAN);
 		tileWidth = MBS_TILESET.createField("tileWidth", INTEGER);
 		tileHeight = MBS_TILESET.createField("tileHeight", INTEGER);
 		tiles = MBS_TILESET.createField("tiles", LIST);
@@ -76,6 +78,16 @@ class MbsTileset extends MbsResource
 	public function setDown(_val:Int):Void
 	{
 		data.writeInt(address + down.address, _val);
+	}
+	
+	public function getReadableImages():Bool
+	{
+		return data.readBool(address + readableImages.address);
+	}
+	
+	public function setReadableImages(_val:Bool):Void
+	{
+		data.writeBool(address + readableImages.address, _val);
 	}
 	
 	public function getTileWidth():Int

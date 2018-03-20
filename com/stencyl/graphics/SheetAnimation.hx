@@ -1,6 +1,9 @@
 package com.stencyl.graphics;
 
+#if(use_actor_tilemap)
+
 import com.stencyl.models.actor.Animation;
+import com.stencyl.models.Actor;
 import openfl.display.BitmapData;
 
 import openfl.display.Tile;
@@ -14,54 +17,42 @@ import openfl.geom.Rectangle;
 import com.stencyl.Config;
 import com.stencyl.Engine;
 
-class SheetAnimation extends Tilemap implements AbstractAnimation
+class SheetAnimation extends Tile implements AbstractAnimation
 {
 	private var frameIndex:Int;
-	private var looping:Bool;
 	private var timer:Float;
 	private var finished:Bool;
 	private var needsUpdate:Bool;
 	
-	public var framesAcross:Int;
-	public var frameWidth:Int;
-	public var frameHeight:Int;
-	
 	private var durations:Array<Int>;
+	private var numFrames:Int;
 	private var individualDurations:Bool;
-	public var numFrames:Int;
 	
-	private var data:Array<Float>;
+	public var model(default, null):Animation;
 	
-	private var model:Animation;
+	public var width(get, never):Int;
+	public var height(get, never):Int;
 	
-	public function new(tileset:Tileset, durations:Array<Int>, width:Int, height:Int, looping:Bool, model:Animation)
+	public function new(model:Animation)
 	{
-		super(width, height, tileset, Config.antialias);
+		super();
 		
 		this.model = model;
-		
-		this.x = -width/2 * Engine.SCALE;
-		this.y = -height/2 * Engine.SCALE;
-		
 		this.timer = 0;
 		this.frameIndex = 0;
-		this.frameWidth = width;
-		this.frameHeight = height;
-		this.looping = looping;
-		this.durations = durations;
 		
+		this.individualDurations = false;
+		this.durations = model.durations;
 		numFrames = durations.length;
-
-		data = [0.0, 0.0, 0];
-
-		addTile(new Tile());
-		updateBitmap();
+		
+		x = -width/2 * Engine.SCALE;
+		y = -height/2 * Engine.SCALE;
 	}
-
+	
 	public inline function update(elapsedTime:Float)
 	{
 		//Non-synced animations
-		if(model == null || !model.sync || !looping)
+		if(!model.sync || !model.looping)
 		{
 			timer += elapsedTime;
 		
@@ -75,7 +66,7 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 				
 				if(frameIndex >= numFrames)
 				{
-					if(looping)
+					if(model.looping)
 					{
 						frameIndex = 0;
 					}
@@ -86,7 +77,7 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 						frameIndex--;
 					}
 				}
-				
+
 				if(old != frameIndex)
 				{
 					needsUpdate = true;
@@ -129,7 +120,7 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 			frameIndex = frame;
 			needsUpdate = true;
 		}
-
+		
 		timer = 0;
 		finished = false;
 		
@@ -145,9 +136,33 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 		return finished;
 	}
 	
-	public function needsBitmapUpdate():Bool
+	public function needsBitmapUpdate():Bool 
 	{
 		return needsUpdate;
+	}
+	
+	public inline function activate()
+	{
+		if(!model.tilesetInitialized)
+		{
+			var e = Engine.engine;
+			while(e.nextTileset >= e.actorTilesets.length)
+			{
+				e.actorTilesets.push(new DynamicTileset());
+			}
+			if(!model.initializeInTileset(e.actorTilesets[e.nextTileset]))
+			{
+				e.actorTilesets.push(new DynamicTileset());
+				model.initializeInTileset(e.actorTilesets[++e.nextTileset]);
+			}
+			tileset = model.tileset.tileset;
+		}
+		else if(tileset == null)
+		{
+			tileset = model.tileset.tileset;
+		}
+		
+		updateBitmap();
 	}
 	
 	public inline function reset()
@@ -160,26 +175,30 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 	
 	public inline function updateBitmap()
 	{
-		getTileAt(0).id = frameIndex;
+		id = frameIndex + model.frameIndexOffset;
 		needsUpdate = false;
 	}
 
 	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
-		var bitmapData = new BitmapData(frameWidth, frameHeight, true, 0);
+		if(Config.disposeImages && !model.checkImageReadable())
+			return;
+		
+		var bitmapData;
 		
 		if (g.alpha == 1)
 		{
-			bitmapData.draw(this);
+			bitmapData = model.frames[frameIndex];
 		}
 		else
 		{
+			bitmapData = new BitmapData(model.frameWidth, model.frameHeight, true, 0);
 			var colorTransformation = new openfl.geom.ColorTransform(1,1,1,g.alpha,0,0,0,0);
-			bitmapData.draw(this, null, colorTransformation);
+			bitmapData.draw(model.frames[frameIndex], null, colorTransformation);
 		}
 
 		g.graphics.beginBitmapFill(bitmapData, new Matrix(1, 0, 0, 1, x, y));
-		g.graphics.drawRect(x, y, frameWidth, frameHeight);
+		g.graphics.drawRect(x, y, model.frameWidth, model.frameHeight);
  	 	g.graphics.endFill();
   	}
 	
@@ -189,7 +208,7 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 	}
 	
 	public function setFrameDurations(time:Int)
-	{	
+	{
 		if(durations != null)
 		{
 			var newDurations:Array<Int> = new Array<Int>();
@@ -223,13 +242,15 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 	
 	public function getCurrentImage():BitmapData
 	{
-		var img = new BitmapData(Std.int(width) , Std.int(height), true, 0x00ffffff);
-		img.copyPixels(getBitmap(), new Rectangle((frameIndex % framesAcross) * width, Math.floor(frameIndex / framesAcross) * height, Std.int(width), Std.int(height)), new Point(0, 0), null, null, false);
-		return img;
+		if(Config.disposeImages && !model.checkImageReadable())
+			return Animation.UNLOADED;
+		
+		return model.frames[frameIndex];
 	}
-
-	public function setBitmap(imgData:BitmapData):Void
+	
+	public function framesUpdated():Void
 	{
+		/*
 		var updateSize = (imgData.width != tileset.bitmapData.width) || (imgData.height != tileset.bitmapData.height);
 
 		if(updateSize)
@@ -253,12 +274,18 @@ class SheetAnimation extends Tilemap implements AbstractAnimation
 		{
 			tileset.bitmapData = imgData;
 		}
-		
-		updateBitmap();
+		*/
 	}
-
-	public inline function getBitmap():BitmapData
+	
+	private function get_width():Int
 	{
-		return tileset.bitmapData;
+		return model.frameWidth;
+	}
+	
+	private function get_height():Int
+	{
+		return model.frameHeight;
 	}
 }
+
+#end

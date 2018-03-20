@@ -19,14 +19,20 @@ class Font extends Resource
 	public var fontScale:Float;
 	public var letterSpacing:Int;
 	public var isDefault:Bool;
+	
+	public var graphicsLoaded:Bool;
 
 	public function new(ID:Int, atlasID:Int, name:String, isDefault:Bool)
 	{	
 		super(ID, name, atlasID);
 		
 		this.isDefault = isDefault;
-		loadGraphics();
-	}		
+		
+		if(isAtlasActive())
+		{
+			loadGraphics();
+		}
+	}
 	
 	public function getHeight():Int
 	{
@@ -45,6 +51,9 @@ class Font extends Resource
 	
 	override public function loadGraphics()
 	{
+		if(graphicsLoaded)
+			return;
+		
 		if(isDefault)
 		{
 			var textBytes = Assets.getText("assets/graphics/default-font.fnt");
@@ -58,26 +67,31 @@ class Font extends Resource
 		{
 			var textBytes = Assets.getText('assets/graphics/${Engine.IMG_BASE}/font-$ID.fnt');
 			var xml = Xml.parse(textBytes);
-			var img = Data.get().getGraphicAsset
+			var img = Assets.getBitmapData
 			(
-				ID + ".png",
-				"assets/graphics/" + Engine.IMG_BASE + "/font-" + ID + ".png"
+				"assets/graphics/" + Engine.IMG_BASE + "/font-" + ID + ".png",
+				false
 			);
 			
 			font = new BitmapFont().loadAngelCode(img, xml);
 			fontScale = 1;
 			letterSpacing = 0;
 		}
+		
+		graphicsLoaded = true;
 	}
 	
 	override public function unloadGraphics()
 	{
+		if(!graphicsLoaded)
+			return;
+			
 		//Use the default font - no extra memory, graceful fallback.
 		font = defaultFont;
 		fontScale = 1;
 		letterSpacing = 0;
 		
-		Data.get().resourceAssets.remove(ID + ".png");
+		graphicsLoaded = false;
 	}
 
 	@:access(com.stencyl.graphics.G.fontData)

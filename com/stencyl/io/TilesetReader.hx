@@ -31,9 +31,10 @@ class TilesetReader implements AbstractReader
 		var framesDown = r.getDown();
 		var tileWidth = r.getTileWidth();
 		var tileHeight = r.getTileHeight();
+		var readable = r.getReadableImages();
 		var tiles = new Array<Tile>();
 
-		var tset = new Tileset(r.getId(), r.getAtlasID(), r.getName(), framesAcross, framesDown, tileWidth, tileHeight, tiles);
+		var tset = new Tileset(r.getId(), r.getAtlasID(), r.getName(), framesAcross, framesDown, tileWidth, tileHeight, readable, tiles);
 		
 		var tileList = r.getTiles();
 
@@ -43,7 +44,10 @@ class TilesetReader implements AbstractReader
 			tiles[tileReader.getId()] = readTile(tileReader, tset);
 		}
 		
-		tset.setupFLTileset();
+		if(tset.isAtlasActive())
+		{
+			tset.loadGraphics();
+		}
 
 		return tset;
 	}

@@ -112,6 +112,6 @@ class Typedefs extends MbsTypedefSet
 	
 	override public function getHash():Int
 	{
-		return -1134453392;
+		return 1466594936;
 	}
 }

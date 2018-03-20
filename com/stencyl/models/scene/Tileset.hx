@@ -1,5 +1,8 @@
 package com.stencyl.models.scene;
 
+import com.stencyl.utils.Assets;
+import com.stencyl.Engine;
+
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.Tileset as FLTileset;
@@ -13,19 +16,21 @@ class Tileset extends Resource
 	public var tileWidth:Int;
 	public var tileHeight:Int;
 	public var tiles:Array<Tile>;
+	public var readableImages:Bool;
 	
 	public var pixels:BitmapData;
 	public static var temp:Rectangle = new Rectangle();
 	
+	public var graphicsLoaded:Bool;
+	
 	#if (use_tilemap)
 	public var flTileset:FLTileset;
-	public var data:Array<Float>;
 	
 	//tileID -> sheetID
 	public var sheetMap:Map<Int,Int>;
 	#end
 	
-	public function new(ID:Int, atlasID:Int, name:String, framesAcross:Int, framesDown:Int, tileWidth:Int, tileHeight:Int, tiles:Array<Tile>)
+	public function new(ID:Int, atlasID:Int, name:String, framesAcross:Int, framesDown:Int, tileWidth:Int, tileHeight:Int, readable:Bool, tiles:Array<Tile>)
 	{
 		super(ID, name, atlasID);
 		
@@ -33,24 +38,21 @@ class Tileset extends Resource
 		this.framesDown = framesDown;
 		this.tileWidth = tileWidth;
 		this.tileHeight = tileHeight;
+		this.readableImages = readable;
 		this.tiles = tiles;
-
-		if(isAtlasActive())
-		{
-			loadGraphics();
-		}
 	}
 	
+	#if (use_tilemap)
 	public function setupFLTileset()
 	{
-		#if (use_tilemap)
 		sheetMap = new Map<Int,Int>();
-		data = [0.0,0.0,0];
 		
 		if(pixels != null)
 		{
 			// The tile line fix now affects all scale modes.  Set to false if this causes any problems.
-			if(true)
+			var tileLineFix = true;
+			
+			if(tileLineFix)
 			{
 				// The tileset needs to be modified to avoid pixel bleeding when stretching.
 				flTileset = new FLTileset(convertPixels(pixels));
@@ -71,9 +73,14 @@ class Tileset extends Resource
 				
 				sheetMap.set(tile.tileID, flTileset.addRect(r));
 			}
+			
+			#if lime_opengl
+			var shouldDispose = flTileset.bitmapData != pixels;
+			com.stencyl.graphics.GLUtil.uploadTexture(flTileset.bitmapData, shouldDispose);
+			#end
 		}
-		#end
 	}
+	#end
 	
 	public function getImageSourceForTile(tileID:Int, tileWidth:Int, tileHeight:Int):Rectangle
 	{
@@ -122,10 +129,13 @@ class Tileset extends Resource
 	
 	override public function loadGraphics()
 	{
-		pixels = Data.get().getGraphicAsset
+		if(graphicsLoaded)
+			return;
+		
+		pixels = Assets.getBitmapData
 		(
-			ID + ".png",
-			"assets/graphics/" + Engine.IMG_BASE + "/tileset-" + ID + ".png"
+			"assets/graphics/" + Engine.IMG_BASE + "/tileset-" + ID + ".png",
+			false
 		);
 		
 		for (tile in tiles)
@@ -136,15 +146,25 @@ class Tileset extends Resource
 			}
 		}
 		
-		//On a first read, this won't be ready to do, and we'll load when we're OK
-		if(tiles.length > 0)
+		#if (use_tilemap)
+		setupFLTileset();
+		
+		if(Config.disposeImages && !readableImages)
 		{
-			setupFLTileset();
+			pixels.dispose();
 		}
+		#end
+		
+		graphicsLoaded = true;
 	}
 	
 	override public function unloadGraphics()
 	{
+		if(!graphicsLoaded)
+			return;
+		
+		if(pixels.readable)
+			pixels.dispose();
 		pixels = null;
 	
 		#if (use_tilemap)
@@ -159,7 +179,7 @@ class Tileset extends Resource
 			}
 		}
 		
-		Data.get().resourceAssets.remove(ID + ".png");
+		graphicsLoaded = false;
 	}
 
 	override public function reloadGraphics(subID:Int)

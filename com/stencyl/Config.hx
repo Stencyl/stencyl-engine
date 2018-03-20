@@ -29,6 +29,7 @@ class Config
 	public static var autoscaleImages:Bool;
 	public static var pixelsnap:Bool;
 	public static var startInFullScreen:Bool;
+	public static var disposeImages:Bool;
 	public static var keys:Map<String,Array<String>>;
 	public static var scales:Array<Scale>;
 
@@ -119,7 +120,7 @@ class Config
 						case "keys":
 							Input.loadInputConfig();
 
-						case "physicsMode":
+						case "disposeImages", "physicsMode":
 							needsGameReload = true;
 
 						case "releaseMode", "useGciLogging":
@@ -168,6 +169,7 @@ class Config
 		pixelsnap = data.pixelsnap;
 		autoscaleImages = data.autoscaleImages;
 		startInFullScreen = data.startInFullScreen;
+		disposeImages = data.disposeImages;
 		adPositionBottom = data.adPositionBottom;
 		testAds = data.testAds;
 		releaseMode = data.releaseMode;

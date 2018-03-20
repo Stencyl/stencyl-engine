@@ -39,8 +39,9 @@ class SpriteReader implements AbstractReader
 		var r:MbsSprite = cast obj;
 		
 		var defaultAnimation = r.getDefaultAnimation();
+		var readableImages = r.getReadableImages();
 		var animations = new Array<Animation>();
-		var sprite = new Sprite(r.getId(), r.getAtlasID(), r.getName(), defaultAnimation);
+		var sprite = new Sprite(r.getId(), r.getAtlasID(), r.getName(), defaultAnimation, readableImages);
 		
 		var animList = r.getAnimations();
 		for(i in 0...animList.length())
@@ -68,7 +69,6 @@ class SpriteReader implements AbstractReader
 		var framesAcross = r.getAcross();
 		var framesDown = r.getDown();
 		
-		var parentID:Int = parent.ID;
 		var simpleShapes = readSimpleShapes(r, Std.int(imgWidth/framesAcross), Std.int(imgHeight/framesDown));
 		var physicsShapes = readShapes(r, Std.int(imgWidth/framesAcross), Std.int(imgHeight/framesDown));
 		var looping = r.getLoop();
@@ -91,7 +91,7 @@ class SpriteReader implements AbstractReader
 		(
 			animID,
 			animName,
-			parentID, 
+			parent, 
 			simpleShapes,
 			physicsShapes,
 			looping, 
@@ -103,8 +103,7 @@ class SpriteReader implements AbstractReader
 			durations, 
 			frameCount,
 			framesAcross, 
-			framesDown,
-			parent.atlasID
+			framesDown
 		);
 	}
 	

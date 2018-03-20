@@ -150,7 +150,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 			GameModel.TERRAIN_ID,
 			0, 
 			0, 
-			Engine.engine.getTopLayer(),
+			-1,
 			grid.width, 
 			grid.height, 
 			null, 

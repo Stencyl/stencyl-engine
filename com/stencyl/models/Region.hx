@@ -43,7 +43,7 @@ class Region extends Actor
 
 	public function new(game:Engine, x:Float, y:Float, shapes:Array<B2Shape>, simpleBounds:Rectangle = null)
 	{
-		super(game, UNSET_ID, -2, x, y, game.getTopLayer(), Engine.NO_PHYSICS ? simpleBounds.width : 1, Engine.NO_PHYSICS ? simpleBounds.height : 1, 
+		super(game, UNSET_ID, -2, x, y, -1, Engine.NO_PHYSICS ? simpleBounds.width : 1, Engine.NO_PHYSICS ? simpleBounds.height : 1, 
 		      null, null, null, null, 
 		      false, false, false, false, 
 		      Engine.NO_PHYSICS ? null : shapes[0],

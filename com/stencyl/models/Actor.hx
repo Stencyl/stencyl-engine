@@ -2,25 +2,25 @@ package com.stencyl.models;
 
 import de.polygonal.ds.IntHashTable;
 
-import com.stencyl.behavior.TimedTask;
-
-import com.stencyl.models.collision.CollisionInfo;
-import com.stencyl.models.collision.Masklist;
-import flash.geom.Transform;
 import openfl.display.BlendMode;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectShader;
 import openfl.display.Sprite;
 import openfl.display.Tile;
+import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Graphics;
+import openfl.filters.BitmapFilter;
+import openfl.filters.ColorMatrixFilter;
+import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.geom.Transform;
 import openfl.utils.ByteArray;
 
 #if (flash || cpp || neko)
@@ -31,27 +31,32 @@ import com.stencyl.Config;
 import com.stencyl.Input;
 import com.stencyl.Engine;
 
-import com.stencyl.graphics.G;
 import com.stencyl.graphics.AbstractAnimation;
 import com.stencyl.graphics.BitmapAnimation;
 import com.stencyl.graphics.BitmapWrapper;
+import com.stencyl.graphics.ColorMatrixShader;
+import com.stencyl.graphics.G;
 import com.stencyl.graphics.SheetAnimation;
 import com.stencyl.graphics.fonts.Label;
 
 import com.stencyl.behavior.Behavior;
 import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.behavior.BehaviorManager;
+import com.stencyl.behavior.TimedTask;
 
 import com.stencyl.models.actor.Group;
 import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.CollisionPoint;
 import com.stencyl.models.actor.AngleHolder;
 import com.stencyl.models.actor.ActorType;
-import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.actor.Animation;
 import com.stencyl.models.actor.Sprite as StencylSprite;
+import com.stencyl.models.scene.layers.RegularLayer;
+import com.stencyl.models.scene.ActorInstance;
+import com.stencyl.models.scene.Layer;
 import com.stencyl.models.GameModel;
 
+import com.stencyl.utils.ColorMatrix;
 import com.stencyl.utils.Utils;
 
 import motion.Actuate;
@@ -82,13 +87,11 @@ import box2D.common.math.B2Vec2;
 import box2D.common.math.B2Transform;
 import box2D.collision.B2WorldManifold;
 
-import com.stencyl.models.collision.Mask;
-import com.stencyl.models.collision.Hitbox;
+import com.stencyl.models.collision.CollisionInfo;
 import com.stencyl.models.collision.Grid;
-
-import openfl.filters.BitmapFilter;
-import openfl.filters.ColorMatrixFilter;
-import com.stencyl.utils.ColorMatrix;
+import com.stencyl.models.collision.Hitbox;
+import com.stencyl.models.collision.Masklist;
+import com.stencyl.models.collision.Mask;
 
 import haxe.CallStack;
 
@@ -98,7 +101,7 @@ typedef ActorAnimation = SheetAnimation;
 typedef ActorAnimation = BitmapAnimation;
 #end
 
-class Actor extends Sprite
+class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 {	
 	//*-----------------------------------------------
 	//* Globals
@@ -119,9 +122,14 @@ class Actor extends Sprite
 	//Used for recycled actors to tell them apart
 	public var createTime:Float;
 	
+	#if(use_actor_tilemap)
+	public var name:String;
+	#end
+	
 	public var ID:Int;
 	public var groupID:Int;
-	public var layerID:Int;
+	public var cachedLayer:Layer;
+	public var layer:Layer;
 	public var typeID:Int;
 	public var type:ActorType;
 	
@@ -165,9 +173,6 @@ class Actor extends Sprite
 	//* Position / Motion
 	//*-----------------------------------------------
 	
-	public var originX:Float;
-	public var originY:Float;
-	
 	public var realX:Float;
 	public var realY:Float;
 	public var realAngle:Float;
@@ -200,6 +205,8 @@ class Actor extends Sprite
 	//*-----------------------------------------------
 	//* Sprite-Based Animation
 	//*-----------------------------------------------
+	
+	private static var recycledAnimation:Animation;
 	
 	public var currAnimation:ActorAnimation;
 	public var currAnimationName:String;
@@ -237,10 +244,6 @@ class Actor extends Sprite
 	public var minMove:Float = 3;
 	public var maxMove:Float = 99999;
 
-	#if(!flash)
-	private var shader:DisplayObjectShader = null;
-	#end
-	
 	//*-----------------------------------------------
 	//* Behaviors
 	//*-----------------------------------------------
@@ -316,7 +319,7 @@ class Actor extends Sprite
 		groupID:Int,
 		x:Float=0, 
 		y:Float=0, 
-		layerID:Int=0,
+		layerID:Int=-1, 
 		width:Float=32, 
 		height:Float=32,
 		sprite:StencylSprite=null,
@@ -370,8 +373,6 @@ class Actor extends Sprite
 		realScaleX = 1;
 		realScaleY = 1;
 		
-		originX = 0;
-		originY = 0;
 		collidable = true;
 		solid = !isSensor;
 		updateMatrix = true;
@@ -451,7 +452,6 @@ class Actor extends Sprite
 		this.name = "Unknown";
 		this.ID = ID;
 		this.groupID = groupID;
-		this.layerID = layerID;
 		this.typeID = typeID;
 		this.engine = engine;
 		
@@ -486,49 +486,28 @@ class Actor extends Sprite
 		originMap = new Map<String,B2Vec2>();
 		
 		this.sprite = sprite;
+		this.type = typeID == -1 ? null : cast Data.get().resources.get(typeID);
 		
 		//---
 		
 		if(sprite != null)
 		{
-			var s:StencylSprite = cast Data.get().resources.get(actorType.spriteID);
-			
-			if(s != null)
+			for(a in sprite.animations)
 			{
-				this.type = cast Data.get().resources.get(typeID);
+				addAnim(a);
 				
-				var defaultAnim:String = "";
-				
-				for(a in s.animations)
+				if(a.animID == sprite.defaultAnimation)
 				{
-					addAnim
-					(
-						a.animID,
-						a.animName, 
-						a.imgData, 
-						a.frameCount, 
-						Math.floor(a.imgWidth / a.framesAcross), 
-						Math.floor(a.imgHeight / a.framesDown), 
-						a.framesAcross,
-						a.framesDown,
-						a.originX,
-						a.originY,
-						a.durations, 
-						a.looping,
-						physicsMode == NORMAL_PHYSICS ? a.physicsShapes : a.simpleShapes
-					);
-					
-					if(a.animID == s.defaultAnimation)
-					{
-						defaultAnim = a.animName;
-					}
+					defaultAnim = a.animName;
 				}
 			}
 		}
 		
 		//--
 		
-		addAnim(-1, "recyclingDefault", null, 1, 1, 1, 1, 1, 1, 1, [1000], false, null);
+		if(recycledAnimation == null)
+			recycledAnimation = new Animation(-1, "recyclingDefault", null, null, null, false, false, 1, 1, 0, 0, [10], 1, 1, 1);
+		addAnim(recycledAnimation);
 
 		if(bodyDef != null && physicsMode == NORMAL_PHYSICS)
 		{
@@ -605,6 +584,7 @@ class Actor extends Sprite
 		{
 			if(shape != null && Std.is(shape, com.stencyl.models.collision.Mask))
 			{
+				#if(!use_actor_tilemap)
 				//TODO: Very inefficient for CPP/mobile - can we force width/height a different way?
 				var dummy = new Bitmap(new BitmapData(1, 1, true, 0));
 				dummy.x = width;
@@ -612,6 +592,7 @@ class Actor extends Sprite
 				addChild(dummy);
 				cacheWidth = this.width = width;
 				cacheHeight = this.height = height;
+				#end
 			}
 			
 			else if(physicsMode == NORMAL_PHYSICS)
@@ -625,7 +606,12 @@ class Actor extends Sprite
 		{
 			behaviorValues = actorType.behaviorValues;
 		}
-
+		
+		if(layerID != -1)
+		{
+			engine.moveActorToLayer(this, cast engine.getLayerById(layerID));
+		}
+		
 		Engine.initBehaviors(behaviors, behaviorValues, this, engine, false);
 	}	
 	
@@ -643,7 +629,11 @@ class Actor extends Sprite
 			anim.visible = false;
 		}
 		
+		#if(!use_actor_tilemap)
 		Utils.removeAllChildren(this);
+		#else
+		Utils.removeAllTiles(this);
+		#end
 
 		if(body != null && physicsMode == NORMAL_PHYSICS)
 		{
@@ -707,7 +697,7 @@ class Actor extends Sprite
 	}
 	
 	public function resetListeners()
-	{		
+	{
 		for (key in allListeners)
 		{
 			allListeners.remove(key);
@@ -752,23 +742,10 @@ class Actor extends Sprite
 		collisionListenerCount = 0;
 	}
 	
-	public function addAnim
-	(
-		animID:Int,
-		name:String, 
-		imgData:BitmapData, 
-		frameCount:Int=1, 
-		frameWidth:Int=0, 
-		frameHeight:Int = 0, 
-		framesAcross:Int = 1,
-		framesDown:Int = 1,
-		originX:Float = 0,
-		originY:Float = 0,
-		durations:Array<Int>=null, 
-		looping:Bool=true, 
-		shapes:Map<Int,Dynamic>=null
-	)
+	public function addAnim(anim:Animation)
 	{
+		var shapes = (physicsMode == NORMAL_PHYSICS) ? anim.physicsShapes : anim.simpleShapes;
+		
 		if(shapes != null)
 		{
 			var arr = new Array<Dynamic>();
@@ -802,81 +779,17 @@ class Actor extends Sprite
 			
 			if(physicsMode != NORMAL_PHYSICS)
 			{
-				shapeMap.set(name, new Masklist(arr, this));
-				
+				shapeMap.set(anim.animName, new Masklist(arr, this));
 			}
 			
 			else
 			{
-				shapeMap.set(name, arr);
+				shapeMap.set(anim.animName, arr);
 			}
 		}
-	
-		if(imgData == null || imgData.width <= 0 || imgData.height <= 0)
-		{
-			//animationMap.set(name, new Sprite());
-			
-			//XXX: Did some work on cases where image data is missing. It's still an error but won't crash anymore.
-			//XXX: This ends up being the case for the recyclingDefault animation.
-			#if (use_actor_tilemap)
-
-			var tileset = new Tileset(new BitmapData(16, 16));
-			tileset.addRect(new openfl.geom.Rectangle(0, 0, 16, 16));
-			var tempSprite = new SheetAnimation(tileset, [1000000], 16, 16, false, null);
-			tempSprite.framesAcross = 1;
-			animationMap.set(name, tempSprite);
-			
-			#else
-			
-			animationMap.set(name, new BitmapAnimation(new BitmapData(16, 16), 1, 1, 1, [1000000], false, null));
-			
-			#end
-			
-			originMap.set(name, new B2Vec2(originX, originY));
-			
-			return;
-		}
-	
-		#if (use_actor_tilemap)
-		var tileset = new Tileset(imgData);
 		
-		frameWidth = Std.int(imgData.width/framesAcross);
-		frameHeight = Std.int(imgData.height/framesDown);
-		
-		for(i in 0...frameCount)
-		{			
-			tileset.addRect(new openfl.geom.Rectangle(frameWidth * (i % framesAcross), Math.floor(i / framesAcross) * frameHeight, frameWidth, frameHeight));
-			// trace("x: " + (frameWidth * (i % framesAcross)) + " y: " + (Math.floor(i / framesAcross) * frameHeight) + " w: " + (frameWidth) + " h: " + (frameHeight));
-		}
-		
-		var sprite = new SheetAnimation
-		(
-			tileset, 
-			durations, 
-			frameWidth, 
-			frameHeight,
-			looping,
-			this.sprite.animations.get(animID)
-		);
-		
-		sprite.framesAcross = framesAcross;
-		
-		animationMap.set(name, sprite);
-		#else
-		var sprite = new BitmapAnimation
-		(
-			imgData, 
-			frameCount, 
-			framesAcross,
-			framesDown,
-			durations, 
-			looping, 
-			this.sprite.animations.get(animID).sync ? this.sprite.animations.get(animID) : null
-		);
-		animationMap.set(name, sprite);
-		#end	
-				
-		originMap.set(name, new B2Vec2(originX, originY));
+		animationMap.set(anim.animName, new ActorAnimation(anim));
+		originMap.set(anim.animName, new B2Vec2(anim.originX, anim.originY));
 	}
 
 	public function reloadAnimationGraphics(animID:Int):Void
@@ -886,7 +799,7 @@ class Actor extends Sprite
 			for(a in sprite.animations)
 			{
 				var actorAnim = animationMap.get(a.animName);
-				actorAnim.setBitmap(a.imgData);
+				actorAnim.framesUpdated();
 			}
 			updateChildrenPositions();
 		}
@@ -894,7 +807,7 @@ class Actor extends Sprite
 		{
 			var a = sprite.animations.get(animID);
 			var actorAnim = animationMap.get(a.animName);
-			actorAnim.setBitmap(a.imgData);
+			actorAnim.framesUpdated();
 			if(actorAnim == currAnimation)
 			{
 				updateChildrenPositions();
@@ -1041,32 +954,9 @@ class Actor extends Sprite
 	
 	public function switchToDefaultAnimation()
 	{
-		//TODO: PERF - We lost SizedMap - this operation is O(n)
-		if(sprite != null && Lambda.count(sprite.animations) > 0)
+		if(defaultAnim != null)
 		{
-			var anim = sprite.animations.get(sprite.defaultAnimation);
-		
-			//In case the animation ID is bogus...
-			if(anim == null)
-			{
-				for(a in sprite.animations)
-				{
-					anim = a;
-					break;
-				}
-			}
-			
-			defaultAnim = cast(anim, Animation).animName;
-			
-			if (defaultShapeChanged())
-			{
-				switchAnimation(defaultAnim, true);
-			}
-			else
-			{
-				switchAnimation(defaultAnim);
-			}
-			
+			switchAnimation(defaultAnim, defaultShapeChanged());
 			setCurrentFrame(0);
 		}
 	}
@@ -1206,7 +1096,11 @@ class Actor extends Sprite
 			
 			if(currAnimation != null)
 			{
+				#if (!use_actor_tilemap)
 				removeChild(currAnimation);
+				#else
+				removeTile(currAnimation);
+				#end
 			}
 			
 			//---
@@ -1215,6 +1109,7 @@ class Actor extends Sprite
 			
 			//XXX: Only switch the animation shape if it's different from before.
 			//http://community.stencyl.com/index.php/topic,16464.0.html
+			//TODO: This is similar to defaultShapeChanged(). See if they can be combined.
 			if(body != null && physicsMode == NORMAL_PHYSICS && !isDifferentShape)
 			{
 				var arrOld = shapeMap.get(currAnimationName);
@@ -1315,11 +1210,12 @@ class Actor extends Sprite
 			
 			currAnimationName = name;
 			currAnimation = newAnimation;
-			#if(!flash)
-			currAnimation.shader = shader;
-			#end
 
-			addChild(newAnimation);			
+			#if (!use_actor_tilemap)
+			addChild(newAnimation);
+			#else
+			addTile(newAnimation);
+			#end
 			
 			//----------------
 			
@@ -1501,7 +1397,7 @@ class Actor extends Sprite
 			{					
 				setOriginPoint(Std.int(animOrigin.x), Std.int(animOrigin.y));				
 			}
-
+			
 			updateChildrenPositions();
 			
 			updateMatrix = true;
@@ -1509,9 +1405,10 @@ class Actor extends Sprite
 			//----------------
 			
 			currAnimation.reset();
+			currAnimation.activate();
 		}
 	}
-
+	
 	public function updateChildrenPositions()
 	{
 		var newAnchor = new Point(-currAnimation.x, -currAnimation.y);
@@ -1531,12 +1428,14 @@ class Actor extends Sprite
 
 	public function removeAttachedImages()
 	{
+		#if (!use_actor_tilemap)
 		for(b in attachedImages)
 		{
 			b.cacheParentAnchor = Utils.zero;
 			removeChild(b);
 		}
 		attachedImages = new Array<BitmapWrapper>();
+		#end
 	}
 	
 	//*-----------------------------------------------
@@ -1722,7 +1621,6 @@ class Actor extends Sprite
 		
 		if(doAll && currAnimation != null)
 		{
-   			//This may be a slowdown on iOS by 3-5 FPS due to clear and redraw?
    			currAnimation.update(elapsedTime);
 		}
 			
@@ -1885,13 +1783,16 @@ class Actor extends Sprite
 			transformMatrix.translate(drawX * Engine.SCALE, drawY * Engine.SCALE);
 		}
 		
-						
+		#if(!use_actor_tilemap)
 		if(transformObj == null)
 		{
 			transformObj = transform;
 		}
 		
 		transformObj.matrix = transformMatrix;
+		#else
+		matrix = transformMatrix;
+		#end
 	}
 	
 	public function updateTweenProperties()
@@ -2353,18 +2254,22 @@ class Actor extends Sprite
 	
 	public function getLayerID():Int
 	{
-		return layerID;
+		return layer.ID;
+	}
+	
+	public function getLayer():Layer
+	{
+		return layer;
 	}
 	
 	public function getLayerName():String
 	{
-		return engine.layers.get(layerID).layerName;
+		return layer.layerName;
 	}
 	
 	public function getLayerOrder():Int
 	{
-		return engine.layers.get(layerID).order;
-		//getOrderForLayerID(layerID) + 1; WHY plus one??
+		return layer.order;
 	}
 	
 	public function getType():ActorType
@@ -2467,11 +2372,11 @@ class Actor extends Sprite
 	//* Layering
 	//*-----------------------------------------------
 	
-	public function moveToLayer(layerRefType:Int, layerRef:String)
+	public function moveToLayer(layer:RegularLayer)
 	{
-		if(!isHUD)
+		if(!isHUD && Std.is(layer, Layer))
 		{
-			engine.moveToLayer(this, layerRefType, layerRef);
+			engine.moveActorToLayer(this, cast layer);
 		}
 	}
 	
@@ -2509,41 +2414,74 @@ class Actor extends Sprite
 	
 	public function moveToBottom()
 	{
+		#if(use_actor_tilemap)
+		this.parent.setTileIndex(this, 0);
+		#else
 		this.parent.setChildIndex(this, 0);
+		#end
 	}
 	
 	public function moveToTop()
 	{
+		#if(use_actor_tilemap)
+		this.parent.setTileIndex(this, this.parent.numTiles-1);
+		#else
 		this.parent.setChildIndex(this, this.parent.numChildren-1);
+		#end
 	}
 	
 	public function moveDown()
 	{
+		#if(!use_actor_tilemap)
 		var index:Int = this.parent.getChildIndex(this);
 		if (index > 0)
 		{
 			this.parent.setChildIndex(this, index-1);
 		}
+		#else
+		var index:Int = this.parent.getTileIndex(this);
+		if(index > 0)
+		{
+			this.parent.setTileIndex(this, index-1);
+		}
+		#end
 	}
 	
 	public function moveUp()
 	{
+		#if(!use_actor_tilemap)
 		var index:Int = this.parent.getChildIndex(this);
 		var max:Int = this.parent.numChildren-1;
 		if (index < max)
 		{
 			this.parent.setChildIndex(this, index+1);
 		}
+		#else
+		var index:Int = this.parent.getTileIndex(this);
+		var max:Int = this.parent.numTiles-1;
+		if(index < max)
+		{
+			this.parent.setTileIndex(this, index-1);
+		}
+		#end
 	}
 	
 	public function getZIndex():Int
 	{
+		#if(!use_actor_tilemap)
 		return this.parent.getChildIndex(this);
+		#else
+		return this.parent.getTileIndex(this);
+		#end
 	}
 	
 	public function setZIndex(zindex:Int)
 	{
+		#if(!use_actor_tilemap)
 		var max:Int = this.parent.numChildren-1;
+		#else
+		var max:Int = this.parent.numTiles-1;
+		#end
 		if (zindex > max)
 		{
 			zindex = max;
@@ -2552,7 +2490,11 @@ class Actor extends Sprite
 		{
 			zindex = 0;
 		}
+		#if(!use_actor_tilemap)
 		this.parent.setChildIndex(this, zindex);
+		#else
+		this.parent.setTileIndex(this, zindex);
+		#end
 	}
 	
 	//*-----------------------------------------------
@@ -2908,8 +2850,8 @@ class Actor extends Sprite
 		
 		currOrigin.x = x;
 		currOrigin.y = y;
-		originX = currOffset.x = newOffX;
-		originY = currOffset.y = newOffY;
+		currOffset.x = newOffX;
+		currOffset.y = newOffY;
 							
 		offsetDiff.x = currOffset.x - offsetDiff.x;
 		offsetDiff.y = currOffset.y - offsetDiff.y;		
@@ -3431,8 +3373,8 @@ class Actor extends Sprite
 		
 		else
 		{
-			mx = (Input.mouseX - Engine.cameraX * engine.layers.get(layerID).scrollFactorX) / Engine.SCALE;
-		 	my = (Input.mouseY - Engine.cameraY * engine.layers.get(layerID).scrollFactorY) / Engine.SCALE;
+			mx = (Input.mouseX - Engine.cameraX * layer.scrollFactorX) / Engine.SCALE;
+		 	my = (Input.mouseY - Engine.cameraY * layer.scrollFactorY) / Engine.SCALE;
 		}
 		
 		//TODO: Mike - Make this work with arbitrary origin points
@@ -3715,24 +3657,76 @@ class Actor extends Sprite
 	//* Filters
 	//*-----------------------------------------------
 
+	private var cm:ColorMatrix;
+
 	public function setFilter(filter:Array<BitmapFilter>)
 	{
+		#if !flash
+		for(f in filter)
+		{
+			if(Std.is(f, ColorMatrixFilter))
+			{
+				if(cm == null)
+				{
+					cm = new ColorMatrix();
+					cm.matrix = cast(f, ColorMatrixFilter).matrix;
+				}
+				else
+				{
+					var cm2 = new ColorMatrix();
+					cm2.matrix = cast(f, ColorMatrixFilter).matrix;
+					var cm3 = new ColorMatrix();
+					
+					ColorMatrix.mulMatrixMatrix(cm, cm2, cm3);
+					cm = cm3;
+				}
+				
+				var cms = new ColorMatrixShader();
+				cms.init(cm.matrix);
+				
+				#if (use_actor_tilemap)
+				shader = cms;
+				#else
+				renderShader = cms;
+				#end
+			}
+		}
+		#else
 		filters = filters.concat(filter);
+		#end
 	}
 	
 	public function clearFilters()
 	{
-		filters = [];
+		#if !flash
+		
+		cm = null;
+		
+		#if (use_actor_tilemap)
+		shader = null;
+		#else
+		renderShader = null;
+		#end
+		
+		#else
+		
+		filters = null;
+		
+		#end
 	}
 	
 	public function setBlendMode(blendMode:BlendMode)
 	{
+		#if (!use_actor_tilemap)
 		this.blendMode = blendMode;
+		#end
 	}
 	
 	public function resetBlendMode()
 	{
+		#if (!use_actor_tilemap)
 		this.blendMode = BlendMode.NORMAL;
+		#end
 	}
 	
 	//*-----------------------------------------------
@@ -3909,32 +3903,18 @@ class Actor extends Sprite
 	
 	public function anchorToScreen()
 	{
-		if(physicsMode == NORMAL_PHYSICS)
-		{
-			body.setAlwaysActive(true);
-		}
+		if(isHUD)
+			return;
 		
-		isHUD = true;	
-		engine.removeActorFromLayer(this, layerID);
-		engine.addHUDActor(this);		
-		engine.hudLayer.addChild(this);
-		
-		updateMatrix = true;
+		engine.moveActorToLayer(this, engine.hudLayer);
 	}
 	
 	public function unanchorFromScreen()
 	{
-		if(physicsMode == NORMAL_PHYSICS)
-		{
-			body.setAlwaysActive(alwaysSimulate);
-		}
+		if(!isHUD)
+			return;
 		
-		isHUD = false;			
-		engine.removeHUDActor(this);
-		engine.hudLayer.removeChild(this);
-		engine.moveActorToLayer(this, layerID);		
-		
-		updateMatrix = true;
+		engine.moveActorToLayer(this, cachedLayer);
 	}
 	
 	public function isAnchoredToScreen():Bool
@@ -3952,8 +3932,7 @@ class Actor extends Sprite
 				body.setActive(true);
 			}
 			
-			alwaysSimulate = true;			
-			engine.addHUDActor(this);
+			alwaysSimulate = true;
 		}
 	}
 	
@@ -3967,8 +3946,7 @@ class Actor extends Sprite
 				body.setActive(false);
 			}
 			
-			alwaysSimulate = false;			
-			engine.removeHUDActor(this);
+			alwaysSimulate = false;
 		}
 	}
 	
@@ -4048,7 +4026,7 @@ class Actor extends Sprite
 		killLeaveScreen = true;
 	}
 	
-	override public function toString():String
+	#if(!use_actor_tilemap) override #end public function toString():String
 	{
 		if(name == null)
 		{

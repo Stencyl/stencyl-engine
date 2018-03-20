@@ -8,61 +8,41 @@ import openfl.geom.Point;
 import com.stencyl.Config;
 import com.stencyl.Engine;
 
-//TODO: It would be better to pass in the frames, broken up and swap between the frames.
 class BitmapAnimation extends Bitmap implements AbstractAnimation
 {
-	private var model:Animation;
+	public var model(default, null):Animation;
 
 	private var frameIndex:Int;
-	private var looping:Bool;
 	private var timer:Float;
-	//Made public for html5 filters.
-	public var sheet:BitmapData;
-	private var durations:Array<Int>;
-	private var individualDurations:Bool;
-	private var numFrames:Int;
-	private var across:Int;
-	private var down:Int;
-	
-	private var frameWidth:Int;
-	private var frameHeight:Int;
-	private var region:Rectangle;
-	private var pt:Point;
-	
 	private var finished:Bool;
 	private var needsUpdate:Bool;
 	
-	public function new(sheet:BitmapData, numFrames:Int, across:Int, down:Int, durations:Array<Int>, looping:Bool, model:Animation) 
+	private var durations:Array<Int>;
+	private var individualDurations:Bool;
+	private var numFrames:Int;
+	
+	public function new(model:Animation) 
 	{
-		super(new BitmapData(Std.int(sheet.width/across), Std.int(sheet.height/down)));
+		super(model.frames[0]);
 		
 		this.model = model;
 		
-		this.across = across;
-		this.down = down;
-		this.frameWidth = Std.int(sheet.width / across);
-		this.frameHeight = Std.int(sheet.height / down);
-		
-		//html5 rounds strangely when pixel snapping
 		#if js
-		this.x = Math.round(-sheet.width/(2 * across) * Engine.SCALE);
-		this.y = Math.round(-sheet.height/(2 * down) * Engine.SCALE);			
+		x = Math.round(-model.frameWidth / 2 * Engine.SCALE);
+		y = Math.round(-model.frameHeight / 2 * Engine.SCALE);
 		#else
-		this.x = -sheet.width/(2 * across) * Engine.SCALE;
-		this.y = -sheet.height/(2 * down) * Engine.SCALE;
+		x = -model.frameWidth / 2 * Engine.SCALE;
+		y = -model.frameHeight / 2 * Engine.SCALE;
 		#end
 		
 		this.timer = 0;
 		this.frameIndex = 0;
-		this.looping = looping;
-		this.sheet = sheet;
-		this.durations = durations;
-		this.individualDurations = false;
-		this.numFrames = numFrames;
-		this.smoothing = Config.antialias;
 		
-		region = new Rectangle(0, 0, frameWidth* Engine.SCALE, frameHeight* Engine.SCALE);
-		pt = new Point(0, 0);
+		this.individualDurations = false;
+		this.durations = model.durations;
+		
+		this.numFrames = durations.length;
+		this.smoothing = Config.antialias;
 		
 		finished = (numFrames <= 1);
 		
@@ -72,7 +52,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	public inline function update(elapsedTime:Float)
 	{
 		//Non-synced animations
-		if(model == null || !looping)
+		if(!(model.sync && model.looping))
 		{
 			timer += elapsedTime;
 		
@@ -86,13 +66,13 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 				
 				if(frameIndex >= numFrames)
 				{
-					if(looping)
+					if(model.looping)
 					{
 						frameIndex = 0;
 					}
 					
 					else
-					{	
+					{
 						finished = true;
 						frameIndex--;
 					}
@@ -171,17 +151,15 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	
 	public inline function updateBitmap()
 	{
-		region.x = frameWidth * (frameIndex % across);
-		region.y = frameHeight * Math.floor(frameIndex/ across);
-		
-		bitmapData.fillRect(this.bitmapData.rect, 0x00000000);
-		bitmapData.copyPixels(sheet, region, pt);
-		
+		bitmapData = model.frames[frameIndex];
 		needsUpdate = false;
 	}
 	
 	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
+		if(Config.disposeImages && !model.checkImageReadable())
+			return;
+		
 		g.drawImage(bitmapData, x, y, angle);
 	}
 	
@@ -223,36 +201,27 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		}
 	}
 
-	public function setBitmap(imgData:BitmapData):Void
+	public function framesUpdated():Void
 	{
-		var updateSize = (imgData.width != sheet.width) || (imgData.height != sheet.height);
-
-		sheet = imgData;
-
-		if(updateSize)
-		{
-			bitmapData = new BitmapData(Std.int(sheet.width/across), Std.int(sheet.height/down));
-			frameWidth = Std.int(sheet.width / across);
-			frameHeight = Std.int(sheet.height / down);
-			
-			//html5 rounds strangely when pixel snapping
-			#if js
-			x = Math.round(-sheet.width/(2 * across) * Engine.SCALE);
-			y = Math.round(-sheet.height/(2 * down) * Engine.SCALE);			
-			#else
-			x = -sheet.width/(2 * across) * Engine.SCALE;
-			y = -sheet.height/(2 * down) * Engine.SCALE;
-			#end
-
-			region.width = frameWidth * Engine.SCALE;
-			region.height = frameHeight* Engine.SCALE;
-		}
+		//html5 rounds strangely when pixel snapping
+		#if js
+		x = Math.round(-model.frameWidth / 2 * Engine.SCALE);
+		y = Math.round(-model.frameHeight / 2 * Engine.SCALE);
+		#else
+		x = -model.frameWidth / 2 * Engine.SCALE;
+		y = -model.frameHeight / 2 * Engine.SCALE;
+		#end
 		
 		updateBitmap();
 	}
 	
 	public function getCurrentImage():BitmapData
 	{
+		if(Config.disposeImages && !model.checkImageReadable())
+			return Animation.UNLOADED;
+		
 		return bitmapData;
 	}
+	
+	public inline function activate() {}
 }
