@@ -2,6 +2,8 @@ package com.stencyl.graphics;
 
 import openfl.display.DisplayObjectShader;
 
+#if !flash
+
 class ColorMatrixShader extends DisplayObjectShader
 {
 	@:glFragmentSource(
@@ -100,3 +102,4 @@ class ColorMatrixShader extends DisplayObjectShader
 		offsets[3] = matrix[19] / 255.0;
 	}
 }
+#end
