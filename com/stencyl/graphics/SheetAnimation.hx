@@ -145,11 +145,15 @@ class SheetAnimation extends Tile implements AbstractAnimation
 	{
 		if(!model.tilesetInitialized)
 		{
-			var arr = Engine.engine.actorTilesets;
-			if(arr.length == 0 || !model.initializeInTileset(arr[arr.length-1]))
+			var e = Engine.engine;
+			while(e.nextTileset >= e.actorTilesets.length)
 			{
-				arr.push(new DynamicTileset());
-				model.initializeInTileset(arr[arr.length-1]);
+				e.actorTilesets.push(new DynamicTileset());
+			}
+			if(!model.initializeInTileset(e.actorTilesets[e.nextTileset]))
+			{
+				e.actorTilesets.push(new DynamicTileset());
+				model.initializeInTileset(e.actorTilesets[++e.nextTileset]);
 			}
 			tileset = model.tileset.tileset;
 		}

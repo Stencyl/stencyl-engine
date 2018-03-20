@@ -57,9 +57,10 @@ import com.stencyl.models.Scene;
 import com.stencyl.models.Sound;
 import com.stencyl.models.SoundChannel;
 import com.stencyl.models.Terrain;
-import com.stencyl.models.actor.Group;
 import com.stencyl.models.actor.ActorType;
+import com.stencyl.models.actor.Animation;
 import com.stencyl.models.actor.Collision;
+import com.stencyl.models.actor.Group;
 import com.stencyl.models.background.ColorBackground;
 import com.stencyl.models.background.ImageBackground;
 import com.stencyl.models.background.ScrollingBackground;
@@ -306,6 +307,8 @@ class Engine
 	
 	#if (use_actor_tilemap)
 	public var actorTilesets:Array<DynamicTileset>;
+	public var loadedAnimations:Array<Animation>;
+	public var nextTileset = 0;
 	#end
 	
 	
@@ -480,6 +483,10 @@ class Engine
 		
 		debug = false;
 		debugDrawer = null;
+		
+		#if (use_actor_tilemap)
+		resetActorTilesets();
+		#end
 	}
 	
 	//*-----------------------------------------------
@@ -614,6 +621,23 @@ class Engine
 		#end
 	}
 	
+	#if (use_actor_tilemap)
+	public static function resetActorTilesets()
+	{
+		for(ts in engine.actorTilesets)
+		{
+			ts.clearSheet();
+		}
+		for(anim in engine.loadedAnimations)
+		{
+			anim.tilesetInitialized = false;
+			anim.tileset = null;
+			anim.frameIndexOffset = 0;
+		}
+		engine.nextTileset = 0;
+	}
+	#end
+	
 	//*-----------------------------------------------
 	//* Init
 	//*-----------------------------------------------
@@ -661,6 +685,7 @@ class Engine
 		
 		#if (use_actor_tilemap)
 		actorTilesets = new Array<DynamicTileset>();
+		loadedAnimations = new Array<Animation>();
 		#end
 		
 		begin(Config.initSceneID);
@@ -933,6 +958,10 @@ class Engine
 				return;
 			}
 		}
+		
+		#if (use_actor_tilemap)
+		resetActorTilesets();
+		#end
 		
 		scene.load();
 

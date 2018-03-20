@@ -7,6 +7,7 @@ import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.actor.Sprite;
 import com.stencyl.graphics.DynamicTileset;
 import com.stencyl.utils.Assets;
+import com.stencyl.Engine;
 import box2D.dynamics.B2FixtureDef;
 
 class Animation
@@ -211,6 +212,8 @@ class Animation
 		frameIndexOffset = tileset.addFrames(frames);
 		this.tileset = tileset;
 		tilesetInitialized = true;
+		
+		Engine.engine.loadedAnimations.push(this);
 		
 		//@:privateAccess trace("Uploaded textures for " + parent.name + " (" + frames.length + " frames) to gpu texture " + tileset.tileset.bitmapData.__texture.id);
 		

@@ -9,8 +9,10 @@ import openfl.display.BitmapData;
 import openfl.display.Tileset;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.Vector;
 
 @:access(openfl.display.BitmapData)
+@:access(openfl.display.Tileset)
 
 class DynamicTileset
 {
@@ -101,6 +103,16 @@ class DynamicTileset
 		}
 		
 		return offset;
+	}
+	
+	public function clearSheet():Void
+	{
+		GLUtil.clearTexture(tileset.bitmapData);
+		point = new Point(0, 0);
+		nextLine = 0;
+		
+		tileset.rectData = new Vector<Float>();
+		tileset.__data = new Array();
 	}
 	
 	/*public function addFramesFromStrip(imgData:BitmapData, frameWidth:Int, frameHeight:Int, framesAcross:Int, frameCount:Int):Int

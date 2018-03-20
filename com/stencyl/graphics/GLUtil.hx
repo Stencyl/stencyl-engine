@@ -84,6 +84,18 @@ class GLUtil
 		
 		return bitmapData;
 	}
+	
+	public static function clearTexture(img:BitmapData):Void
+	{
+		var internalFormat = BitmapData.__textureInternalFormat;
+		var format = BitmapData.__textureFormat;
+		
+		gl.bindTexture(gl.TEXTURE_2D, img.__texture);
+		gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, img.width, img.height, 0, format, gl.UNSIGNED_BYTE, 0);
+		
+		/*gl.bindTexture(gl.TEXTURE_2D, img.__texture);
+		gl.clearTexImage(gl.TEXTURE_2D, 0, BitmapData.__textureFormat, gl.UNSIGNED_BYTE, 0);*/
+	}
 }
 
 #end
