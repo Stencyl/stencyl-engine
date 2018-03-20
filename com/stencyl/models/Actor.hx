@@ -34,9 +34,9 @@ import com.stencyl.Engine;
 import com.stencyl.graphics.AbstractAnimation;
 import com.stencyl.graphics.BitmapAnimation;
 import com.stencyl.graphics.BitmapWrapper;
+import com.stencyl.graphics.ColorMatrixShader;
 import com.stencyl.graphics.G;
 import com.stencyl.graphics.SheetAnimation;
-import com.stencyl.graphics.StencylColorMatrixShader;
 import com.stencyl.graphics.fonts.Label;
 
 import com.stencyl.behavior.Behavior;
@@ -3681,13 +3681,13 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 					cm = cm3;
 				}
 				
-				var scms = new StencylColorMatrixShader();
-				scms.init(cm.matrix);
+				var cms = new ColorMatrixShader();
+				cms.init(cm.matrix);
 				
 				#if (use_actor_tilemap)
-				shader = scms;
+				shader = cms;
 				#else
-				renderShader = scms;
+				renderShader = cms;
 				#end
 			}
 		}

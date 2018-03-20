@@ -2,7 +2,7 @@ package com.stencyl.graphics;
 
 import openfl.display.DisplayObjectShader;
 
-class StencylColorMatrixShader extends DisplayObjectShader
+class ColorMatrixShader extends DisplayObjectShader
 {
 	@:glFragmentSource(
 	
@@ -63,12 +63,10 @@ class StencylColorMatrixShader extends DisplayObjectShader
 	
 	public function init(matrix:Array<Float> = null):Void
 	{
-		var cmData = data_StencylColorMatrixShader;
-		
-		if(matrix == null || cmData.uMultipliers.value == null)
+		if(matrix == null || uMultipliers.value == null)
 		{
-			cmData.uMultipliers.value = [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ];
-			cmData.uOffsets.value = [ 0, 0, 0, 0 ];
+			uMultipliers.value = [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ];
+			uOffsets.value = [ 0, 0, 0, 0 ];
 		}
 		
 		if(matrix == null)
@@ -76,8 +74,8 @@ class StencylColorMatrixShader extends DisplayObjectShader
 			return;
 		}
 		
-		var multipliers = cmData.uMultipliers.value;
-		var offsets = cmData.uOffsets.value;
+		var multipliers = uMultipliers.value;
+		var offsets = uOffsets.value;
 		
 		multipliers[0] = matrix[0];
 		multipliers[1] = matrix[1];
