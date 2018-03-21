@@ -1979,7 +1979,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	private var collisionsCount:Int;
 	
 	inline private function handleCollisions()
-	{		
+	{
 		var otherActor:Actor;
 		var otherShape:B2Fixture;
 		var thisShape:B2Fixture;
@@ -1991,7 +1991,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			{
 				var key = p.key;
 				
-				if(collisions.get(key) != null)
+				if(collisions.hasKey(key))
 				{
 					//need to update points for pre-existing contacts.
 
@@ -2169,11 +2169,6 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 				engine.handleCollision(this, collision);	
 			}
 		}
-		
-		//TODO: Can we avoid remaking this? Yes, just don't clear out and let system naturally
-		//remove contacts and ignore ones we've already processed.
-		//10 FPS drop
-		//contacts = new IntHash<B2Contact>();
 	}
 	
 	public inline function addContact(point:B2Contact)
@@ -2182,11 +2177,6 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		{
 			contacts.set(point.key, point);
 			contactCount++;
-			
-			if(collisions.unset(point.key))
-			{
-				collisionsCount--;
-			}
 		}
 	}
 	
