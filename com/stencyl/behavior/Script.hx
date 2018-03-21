@@ -1481,19 +1481,9 @@ class Script
 	//* Tile Layers
 	//*-----------------------------------------------
 	
-	/**
-     * @param	refType		0 to get layer by ID, 1 for name
-     * @param	ref			The ID or name of the layer as a String
-     */
-    public static function getLayer(refType:Int, ref:String):RegularLayer
+	public static function setBlendModeForLayer(layer:RegularLayer, mode:openfl.display.BlendMode)
     {
-    	return engine.getLayer(refType, ref);
-    }
-
-    public static function setBlendModeForLayer(refType:Int, ref:String, mode:openfl.display.BlendMode)
-    {
-		var layer = getLayer(refType, ref);
-    	layer.blendMode = mode;
+		layer.blendMode = mode;
 		
 		if (Std.is(layer, Layer))
 		{
@@ -1507,9 +1497,9 @@ class Script
 	 * @param	refType		0 to get layer by ID, 1 for name
 	 * @param	ref			The ID or name of the layer as a String
 	 */
-	public static function showTileLayer(refType:Int, ref:String)
+	public static function showTileLayer(layer:RegularLayer)
 	{
-		engine.getLayer(refType, ref).alpha = 1;
+		layer.alpha = 1;
 	}
 	
 	/**
@@ -1518,9 +1508,9 @@ class Script
 	 * @param	refType		0 to get layer by ID, 1 for name
 	 * @param	ref			The ID or name of the layer as a String
 	 */
-	public static function hideTileLayer(refType:Int, ref:String)
+	public static function hideTileLayer(layer:RegularLayer)
 	{
-		engine.getLayer(refType, ref).alpha = 0;
+		layer.alpha = 0;
 	}
 	
 	/**
