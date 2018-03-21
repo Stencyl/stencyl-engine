@@ -2264,19 +2264,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	
 	public function getType():ActorType
 	{
-		if(typeID == -1)
-		{
-			return null;
-		}
-		
-		var result = Data.get().resources.get(typeID);
-		
-		if(Std.is(result, ActorType))
-		{
-			return cast result;
-		}
-		
-		return null;
+		return type;
 	}
 		
 	//*-----------------------------------------------
