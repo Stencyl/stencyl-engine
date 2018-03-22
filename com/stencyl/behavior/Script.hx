@@ -3234,7 +3234,6 @@ class Script
 			false, //kinematic?
 			false, //rotates?
 			shape, //terrain shape
-			-1, //typeID?
 			false, //is lightweight?
 			false //autoscale?
 		);

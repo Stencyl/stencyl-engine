@@ -47,7 +47,7 @@ class Region extends Actor
 		      null, null, null, null, 
 		      false, false, false, false, 
 		      Engine.NO_PHYSICS ? null : shapes[0],
-		      0, Engine.NO_PHYSICS
+		      Engine.NO_PHYSICS
 		      );
 	
 		alwaysSimulate = true;

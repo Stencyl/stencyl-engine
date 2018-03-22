@@ -1311,7 +1311,7 @@ class Engine
 	
 	private function loadCamera()
 	{
-		camera = new Actor(this, -1, GameModel.DOODAD_ID, 0, 0, topLayer.ID, 2, 2, null, null, null, null, true, false, true, false, null, 0, true, false);
+		camera = new Actor(this, -1, GameModel.DOODAD_ID, 0, 0, topLayer.ID, 2, 2, null, null, null, null, true, false, true, false, null, true, false);
 		camera.name = "Camera";
 		camera.isCamera = true;
 		cameraX = 0;
@@ -1948,7 +1948,6 @@ class Engine
 			false,
 			false,
 			null,
-			ai.actorType.ID,
 			ai.actorType.autoScale,
 			ai.actorType.ignoreGravity,
 			ai.actorType.physicsMode

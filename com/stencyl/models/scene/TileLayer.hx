@@ -162,7 +162,6 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 			false,
 			false, 
 			grid,
-			-1,
 			Engine.NO_PHYSICS
 		);
 		

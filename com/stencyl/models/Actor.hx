@@ -331,7 +331,6 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		isKinematic:Bool=false,
 		canRotate:Bool=false,
 		shape:Dynamic=null, //B2Shape or Mask - Used only for terrain.
-		typeID:Int = -1,
 		autoScale:Bool = true,
 		ignoreGravity:Bool = false,
 		physicsMode:PhysicsMode = NORMAL_PHYSICS
@@ -452,7 +451,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		this.name = "Unknown";
 		this.ID = ID;
 		this.groupID = groupID;
-		this.typeID = typeID;
+		this.typeID = actorType != null ? actorType.ID : -1;
 		this.engine = engine;
 		
 		groupsToCollideWith = GameModel.get().groupsCollidesWith.get(groupID);
@@ -486,11 +485,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		originMap = new Map<String,B2Vec2>();
 		
 		this.sprite = sprite;
-		
-		if (actorType != null)
-		{
-			this.type = typeID == -1 ? null : cast Data.get().resources.get(typeID);
-		}
+		this.type = actorType;
 		
 		//---
 		
