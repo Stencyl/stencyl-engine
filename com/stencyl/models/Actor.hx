@@ -486,7 +486,11 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		originMap = new Map<String,B2Vec2>();
 		
 		this.sprite = sprite;
-		this.type = typeID == -1 ? null : cast Data.get().resources.get(typeID);
+		
+		if (actorType != null)
+		{
+			this.type = typeID == -1 ? null : cast Data.get().resources.get(typeID);
+		}
 		
 		//---
 		
