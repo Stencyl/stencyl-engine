@@ -205,7 +205,7 @@ class Animation
 	
 	public function initializeInTileset(tileset:DynamicTileset):Bool
 	{
-		if(!tileset.checkForSpace(frameWidth * Engine.SCALE, frameHeight * Engine.SCALE, frameCount))
+		if(!tileset.checkForSpace(Std.int(frameWidth * Engine.SCALE), Std.int(frameHeight * Engine.SCALE), frameCount))
 		{
 			return false;
 		}

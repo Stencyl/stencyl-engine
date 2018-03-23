@@ -280,12 +280,12 @@ class SheetAnimation extends Tile implements AbstractAnimation
 	
 	private function get_width():Int
 	{
-		return model.frameWidth * Engine.SCALE;
+		return Std.int(model.frameWidth * Engine.SCALE);
 	}
 	
 	private function get_height():Int
 	{
-		return model.frameHeight * Engine.SCALE;
+		return Std.int(model.frameHeight * Engine.SCALE);
 	}
 }
 
