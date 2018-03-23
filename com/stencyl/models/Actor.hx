@@ -2291,7 +2291,8 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			
 			for (b in behaviors.behaviors)
 			{
-				Actuate.pause(b.script);
+				if(b.script != null)
+					Actuate.pause(b.script);
 			}
 			
 			this.paused = true;
@@ -2314,7 +2315,8 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			
 			for (b in behaviors.behaviors)
 			{
-				Actuate.resume(b.script);
+				if(b.script != null)
+					Actuate.resume(b.script);
 			}
 			
 			this.paused = false;
