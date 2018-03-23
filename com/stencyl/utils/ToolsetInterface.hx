@@ -22,6 +22,8 @@ class ToolsetInterface
 
 	public static var assetUpdatedListeners = new Map<String, Array<Listener>>();
 
+	var hscript:HscriptRunner;
+
 	public static function resetStatics():Void
 	{
 		assetUpdatedListeners = new Map<String, Array<Listener>>();
@@ -237,6 +239,42 @@ class ToolsetInterface
 					else
 						Config.initSceneID = sceneID;
 					
+				}
+				
+			case "Hscript":
+				if(hscript == null) hscript = new HscriptRunner();
+				
+				var hsType = header.get("Hscript-Type");
+				
+				switch(hsType)
+				{
+					case "Resolve Types":
+						var typesToRegister = content.readUTFBytes(content.length).split("\n");
+						for(type in typesToRegister)
+						{
+							type = StringTools.trim(type);
+							if(type == "") continue;
+							
+							var resolvedType = Type.resolveClass(type);
+							if(resolvedType != null)
+							{
+								hscript.registerVar(type.split(".").pop(), resolvedType);
+							}
+							else
+							{
+								trace("Couldn't resolve class: " + type);
+							}
+						}
+						
+					case "Run Script":
+						try
+						{
+							hscript.execute(content.readUTFBytes(content.length));
+						}
+						catch(ex:Dynamic)
+						{
+							trace(ex);
+						}
 				}
 
 			case "Modified Asset":
