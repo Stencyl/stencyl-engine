@@ -29,9 +29,13 @@ class FadeOutTransition extends Transition
 		rect = new Shape();
 		rect.alpha = 0;
 		var g = rect.graphics;
+		
 		g.beginFill(color);
 		g.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 		g.endFill();
+		
+		g.drawCircle(1, 1, 1); //HACK: Force a software draw for this shape.
+		
 		Engine.engine.transitionLayer.addChild(rect);
 		
 		Actuate.tween(rect, duration, {alpha:1}).ease(Linear.easeNone).onComplete(stop);

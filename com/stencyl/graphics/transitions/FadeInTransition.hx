@@ -28,9 +28,13 @@ class FadeInTransition extends Transition
 	
 		rect = new Shape();
 		var g = rect.graphics;
+		
 		g.beginFill(color);
 		g.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 		g.endFill();
+		
+		g.drawCircle(1, 1, 1); //HACK: Force a software draw for this shape.
+		
 		Engine.engine.transitionLayer.addChild(rect);
 		
 		Actuate.tween(rect, duration, {alpha:0}).ease(Linear.easeNone).onComplete(stop);
