@@ -131,8 +131,8 @@ class Animation
 			return;
 		}
 		
-		var fw = frameWidth * Engine.SCALE;
-		var fh = frameHeight * Engine.SCALE;
+		var fw = Std.int(frameWidth * Engine.SCALE);
+		var fh = Std.int(frameHeight * Engine.SCALE);
 		
 		var point = new Point(0, 0);
 		for(i in 0...frameCount)
