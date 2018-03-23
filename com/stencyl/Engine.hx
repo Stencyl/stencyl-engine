@@ -603,6 +603,8 @@ class Engine
 					a.updateMatrix = true;
 				}
 			}
+			
+			moveCamera(camera.realX, camera.realY);
 		}
 
 		unzoomedScaleX = screenScaleX = root.scaleX;
