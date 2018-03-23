@@ -192,13 +192,14 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		}
 		else
 		{
-			bitmapData = new BitmapData(model.frameWidth, model.frameHeight, true, 0);
+			var orig = model.frames[frameIndex];
+			bitmapData = new BitmapData(orig.width, orig.height, true, 0);
 			var colorTransformation = new openfl.geom.ColorTransform(1,1,1,g.alpha,0,0,0,0);
-			bitmapData.draw(model.frames[frameIndex], null, colorTransformation);
+			bitmapData.draw(orig, null, colorTransformation);
 		}
 
 		g.graphics.beginBitmapFill(bitmapData, new Matrix(1, 0, 0, 1, x, y));
-		g.graphics.drawRect(x, y, model.frameWidth, model.frameHeight);
+		g.graphics.drawRect(x, y, bitmapData.width, bitmapData.height);
  	 	g.graphics.endFill();
   	}
 	
@@ -279,12 +280,12 @@ class SheetAnimation extends Tile implements AbstractAnimation
 	
 	private function get_width():Int
 	{
-		return model.frameWidth;
+		return model.frameWidth * Engine.SCALE;
 	}
 	
 	private function get_height():Int
 	{
-		return model.frameHeight;
+		return model.frameHeight * Engine.SCALE;
 	}
 }
 

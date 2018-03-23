@@ -218,13 +218,13 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	public var originMap:Map<String,B2Vec2>;
 	public var defaultAnim:String;
 	
-	public var currOrigin:Point;
-	public var currOffset:Point;
-	public var cacheAnchor:Point;
+	public var currOrigin:Point; //logical coords
+	public var currOffset:Point; //logical coords
+	public var cacheAnchor:Point; //scaled coords
 	
 	public var transformObj:Transform;
-	public var transformPoint:Point;
-	public var transformMatrix:Matrix;
+	public var transformPoint:Point; //scaled coords
+	public var transformMatrix:Matrix; //scaled coords
 	public var updateMatrix:Bool;
 	public var drawMatrix:Matrix; //For use when drawing actor image
 	
@@ -1760,11 +1760,11 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			}
 		}
 		
-		transformPoint.x = currOrigin.x - (cacheWidth*Engine.SCALE) / 2;
-		transformPoint.y = currOrigin.y - (cacheHeight*Engine.SCALE) / 2;
+		transformPoint.x = (currOrigin.x - cacheWidth / 2) * Engine.SCALE;
+		transformPoint.y = (currOrigin.y - cacheHeight / 2) * Engine.SCALE;
 
 		transformMatrix.identity();
-		transformMatrix.translate( -transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
+		transformMatrix.translate( -transformPoint.x, -transformPoint.y);
 		transformMatrix.scale(realScaleX, realScaleY);
 		
 		if(realAngle != 0)
@@ -2784,9 +2784,9 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		body.setPosition(pt);
 	}
 	
-	public function setOriginPoint(x:Int, y:Int)
+	public function setOriginPoint(x:Int, y:Int) //logical coords
 	{
-		var resetPosition:B2Vec2 = null;
+		var resetPosition:B2Vec2 = null; //physical coords
 		
 		if (physicsMode == NORMAL_PHYSICS)
 		{
@@ -2798,7 +2798,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			resetPosition = new B2Vec2(Engine.toPhysicalUnits(realX), Engine.toPhysicalUnits(realY));
 		}
 		
-		var offsetDiff:B2Vec2 = new B2Vec2(currOffset.x, currOffset.y);
+		var offsetDiff:B2Vec2 = new B2Vec2(currOffset.x, currOffset.y); //logical coords
 		var radians:Float = getAngle();
 			
 		var rotated:Bool = Std.int(radians * Utils.DEG) != 0;	
@@ -3564,10 +3564,10 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			if (realAngle > 0)
 			{
 				drawMatrix.identity();
-				transformPoint.x = 0 - (cacheWidth*Engine.SCALE) / 2;
-				transformPoint.y = 0 - (cacheHeight*Engine.SCALE) / 2;
+				transformPoint.x = (0 - cacheWidth / 2) * Engine.SCALE;
+				transformPoint.y = (0 - cacheHeight / 2) * Engine.SCALE;
 
-				drawMatrix.translate( -transformPoint.x * Engine.SCALE, -transformPoint.y * Engine.SCALE);
+				drawMatrix.translate( -transformPoint.x, -transformPoint.y);
 				drawMatrix.scale(realScaleX, realScaleY);		
 				drawMatrix.rotate(realAngle * Utils.RAD);		
 		

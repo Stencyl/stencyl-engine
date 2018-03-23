@@ -22,8 +22,8 @@ class Animation
 	public var sync:Bool;
 	public var durations:Array<Int>;
 	public var frames:Array<BitmapData>;
-	public var frameWidth:Int;
-	public var frameHeight:Int;
+	public var frameWidth:Int; //logical size
+	public var frameHeight:Int; //logical size
 	
 	public var originX:Float;
 	public var originY:Float;
@@ -131,11 +131,14 @@ class Animation
 			return;
 		}
 		
+		var fw = frameWidth * Engine.SCALE;
+		var fh = frameHeight * Engine.SCALE;
+		
 		var point = new Point(0, 0);
 		for(i in 0...frameCount)
 		{
-			var sourceRect = new Rectangle(frameWidth * (i % framesAcross), Math.floor(i / framesAcross) * frameHeight, frameWidth, frameHeight);
-			var frameImg = new BitmapData(frameWidth, frameHeight, true, 0);
+			var sourceRect = new Rectangle(fw * (i % framesAcross), Math.floor(i / framesAcross) * fh, fw, fh);
+			var frameImg = new BitmapData(fw, fh, true, 0);
 			frameImg.copyPixels(imgData, sourceRect, point);
 			frames[i] = frameImg;
 		}
@@ -202,9 +205,7 @@ class Animation
 	
 	public function initializeInTileset(tileset:DynamicTileset):Bool
 	{
-		var frameWidth = Std.int(imgWidth / framesAcross);
-		var frameHeight = Std.int(imgHeight / framesDown);
-		if(!tileset.checkForSpace(frameWidth, frameHeight, frameCount))
+		if(!tileset.checkForSpace(frameWidth * Engine.SCALE, frameHeight * Engine.SCALE, frameCount))
 		{
 			return false;
 		}
