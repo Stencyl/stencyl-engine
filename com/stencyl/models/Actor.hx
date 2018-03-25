@@ -2062,7 +2062,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 				for (point in manifold.m_points)
 				{
 					//ignore the point if it is (0,0)
-					if (point.x != 0 && point.y != 0)
+					if ((point.x != 0 && point.y != 0) && !(thisShape.isSensor()))
 					{
 						pt = point;
 
