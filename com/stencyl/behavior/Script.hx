@@ -1927,7 +1927,7 @@ class Script
 			var actorCCD = false;
 			for (a in engine.allActors)
 			{
-				if (a.body.isBullet())
+				if (a.body != null && a.body.isBullet())
 				{
 					actorCCD = true;
 					break;
