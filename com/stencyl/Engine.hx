@@ -336,6 +336,7 @@ class Engine
 	
 	public static var elapsedTime:Float = 0;
 	public static var timeScale:Float = 1;
+	public static var totalElapsedTime:Int = 0;
 	
 	private var lastTime:Float;
 	private var acc:Float;
@@ -480,6 +481,7 @@ class Engine
 		
 		elapsedTime = 0;
 		timeScale = 1;
+		totalElapsedTime = 0;
 		
 		debug = false;
 		debugDrawer = null;
@@ -702,6 +704,10 @@ class Engine
 		#if flash
 		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
 		#end
+		
+		motion.actuators.SimpleActuator.getTime = function():Float {
+			return Engine.totalElapsedTime / 1000;
+		}
 	}
 	
 	#if(flash)
@@ -2423,7 +2429,6 @@ class Engine
 	//* Update Loop
 	//*-----------------------------------------------
 	
-	@:access(motion.actuators.SimpleActuator.stage_onEnterFrame)
 	public function update(elapsedTime:Float)
 	{
 		if(scene == null)
@@ -2676,7 +2681,6 @@ class Engine
 	}
 	
 	//Game Loop
-	@:access(motion.actuators.SimpleActuator.stage_onEnterFrame)
 	private function onUpdate(event:Event):Void 
 	{
 		var currTime:Float = Lib.getTimer();
@@ -2704,6 +2708,7 @@ class Engine
 		acc += elapsedTime;
 		
 		Engine.elapsedTime = elapsedTime;
+		Engine.totalElapsedTime += Std.int(elapsedTime);
 
 		if(leave != null)
 		{
