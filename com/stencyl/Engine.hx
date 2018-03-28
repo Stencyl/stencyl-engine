@@ -2683,6 +2683,10 @@ class Engine
 		var elapsedTime:Float = (currTime - lastTime);
 		
 		#if stencyltools
+		@:privateAccess if(com.stencyl.utils.ToolsetInterface.paused)
+		{
+			com.stencyl.utils.ToolsetInterface.pause();
+		}
 		if(elapsedTime > 10 && com.stencyl.utils.ToolsetInterface.wasPaused)
 		{
 			elapsedTime = 10;
