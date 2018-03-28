@@ -1639,17 +1639,8 @@ class Engine
 
 	public function setColorBackground(bg:Background)
 	{
-		if(Std.is(bg, ColorBackground))
-		{
-			colorLayer.graphics.clear();
-			var cbg:ColorBackground = cast bg;
-			stage.color = (cbg.bgColor == ColorBackground.TRANSPARENT) ? 0 : cbg.bgColor;
-		}
-		else
-		{
 			bg.draw(colorLayer.graphics, 0, 0, Std.int(screenWidth * SCALE), Std.int(screenHeight * SCALE));
 		}
-	}
 
 	//*-----------------------------------------------
 	//* Scene Switching
