@@ -1,6 +1,8 @@
 #if (stencyltools)
 package com.stencyl.utils;
 
+import haxe.io.Bytes;
+import openfl.display.*;
 import openfl.errors.*;
 import openfl.events.*;
 import openfl.net.Socket;
@@ -353,10 +355,35 @@ class ToolsetInterface
 			traceQueue.push({v: v, pos: pos});
 		}
 	}
+	
+	public static function imageTrace(img : BitmapData, ?pos : haxe.PosInfos)
+	{
+		if(ToolsetInterface.connected)
+		{
+			instance.sendBinaryData
+			(
+				["Content-Type" => "ImageLog",
+				"Class" => pos.className,
+				"Method" => pos.methodName,
+				"Line" => ""+pos.lineNumber],
+				img.encode(img.rect, new PNGEncoderOptions())
+			);
+		}
+	}
 
 	public function sendData(header:Map<String,String>, data:String)
 	{
 		var dataBytes = haxe.io.Bytes.ofString(data == null ? "" : data);
+		var headerBytes = generateHTTPHeader(header, dataBytes);
+		var packet = createPacket(headerBytes, dataBytes);
+		socket.writeBytes(packet, 0, packet.length);
+		#if flash
+		socket.flush();
+		#end
+	}
+	
+	public function sendBinaryData(header:Map<String,String>, dataBytes:Bytes)
+	{
 		var headerBytes = generateHTTPHeader(header, dataBytes);
 		var packet = createPacket(headerBytes, dataBytes);
 		socket.writeBytes(packet, 0, packet.length);
