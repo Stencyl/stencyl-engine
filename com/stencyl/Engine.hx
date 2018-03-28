@@ -1639,8 +1639,8 @@ class Engine
 
 	public function setColorBackground(bg:Background)
 	{
-			bg.draw(colorLayer.graphics, 0, 0, Std.int(screenWidth * SCALE), Std.int(screenHeight * SCALE));
-		}
+		bg.draw(colorLayer.graphics, 0, 0, Std.int(screenWidth * SCALE), Std.int(screenHeight * SCALE));
+	}
 
 	//*-----------------------------------------------
 	//* Scene Switching
@@ -2681,6 +2681,14 @@ class Engine
 	{
 		var currTime:Float = Lib.getTimer();
 		var elapsedTime:Float = (currTime - lastTime);
+		
+		#if stencyltools
+		if(elapsedTime > 10 && com.stencyl.utils.ToolsetInterface.wasPaused)
+		{
+			elapsedTime = 10;
+			com.stencyl.utils.ToolsetInterface.wasPaused = false;
+		}
+		#end
 		
 		//Max Frame Duration = 5 FPS
 		//Prevents spikes and prevents mobile backgrounding from going haywire.

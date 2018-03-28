@@ -411,5 +411,18 @@ class ToolsetInterface
 		for(key in assetUpdatedListeners.keys())
 			assetUpdatedListeners.remove(key);
 	}
+	
+	private static var paused:Bool = false;
+	public static var wasPaused = false;
+	
+	public static function pause():Void
+	{
+		paused = true;
+		wasPaused = true;
+		while(paused)
+		{
+			preloadedUpdate();
+		}
+	}
 }
 #end
