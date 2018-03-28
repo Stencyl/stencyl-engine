@@ -75,8 +75,8 @@ class Tileset extends Resource
 			}
 			
 			#if lime_opengl
-			var shouldDispose = flTileset.bitmapData != pixels;
-			com.stencyl.graphics.GLUtil.uploadTexture(flTileset.bitmapData, shouldDispose);
+			//var shouldDispose = flTileset.bitmapData != pixels;
+			//com.stencyl.graphics.GLUtil.uploadTexture(flTileset.bitmapData, shouldDispose);
 			#end
 		}
 	}
