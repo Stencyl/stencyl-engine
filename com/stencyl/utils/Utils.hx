@@ -2,6 +2,7 @@ package com.stencyl.utils;
 
 import cloner.Cloner;
 import haxe.ds.Vector;
+import haxe.io.Output;
 import haxe.Timer;
 import lime.app.Future;
 import lime.app.Promise;
@@ -32,6 +33,12 @@ import flash.media.SoundMixer;
 #end
 import com.stencyl.models.actor.Collision;
 import com.stencyl.models.Actor;
+
+#if sys
+import sys.FileSystem;
+import sys.io.File;
+#end
+
 
 /**
  * Static catch-all class used to access global properties and functions.
@@ -1067,6 +1074,16 @@ class Utils
 
 		#end
 	}
+	
+	#if sys
+	public static function saveImage(image:BitmapData, outputFile:String):Void
+	{
+		var imageData:ByteArray = image.encode(image.rect, new openfl.display.PNGEncoderOptions());
+		var fo:Output = File.write(outputFile, true);
+		fo.writeBytes(imageData, 0, imageData.length);
+		fo.close();
+	}
+	#end
 
 	// Time information.
 	private static var _time:Float;
