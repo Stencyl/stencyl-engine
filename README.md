@@ -1,22 +1,22 @@
-#Stencyl
+# Stencyl
 http://www.stencyl.com
 
 Create Flash, HTML5, iOS, Android, Mac, Windows and Linux games with no code with Stencyl. This is the source to Stencyl's Haxe-based game engine.
 
-#Requirements
+## Requirements
 - [Haxe 3.2.0](http://www.haxe.org/)
 - [Stencyl 3.0](http://www.stencyl.com/)
 Stencyl's engine is written in Haxe, a language similar to ActionScript 3. You can edit Haxe directly from any text editor, or you can use something more complete such as FlashDevelop, Sublime Text, MonoDevelop or Eclipse.
 
-#Reporting Issues
+## Reporting Issues
 Report all bugs and enhancement requests on our [Issue Tracker](http://community.stencyl.com/index.php?project=1).
 
-#Developing alongside Stencyl
+## Developing alongside Stencyl
 To make changes to the Stencyl engine, simply edit the files in your Stencyl installation directory under `plaf/haxe/lib/stencyl/1,00`. You don't have to restart Stencyl for the changes to take effect.
 
 If you have the engine files elsewhere (a fork of this repository, for example), you can direct haxelib to use that alternate copy (including when compiling from within Stencyl). Use the command `haxelib dev stencyl [alternate stencyl-engine path]` to set this, and later `haxelib dev stencyl` to revert to the Stencyl-installed engine. This could be useful to permit use of an engine version that's under active development without altering the original, installed copy.
 
-#Developing Standalone
+## Developing Standalone
 For those who desire a more traditional workflow, the engine can be run standalone, outside of Stencyl.
 
 To do this, run any of the following commands from within the checked out directory to run the engine by itself using a minimal test project. You do not need to run the build-stencyl script unless you wish to run a game within Stencyl.
@@ -32,10 +32,10 @@ haxelib run nme test TestProject.nmml mac
 
 To edit the data for the standalone test game, peek inside of Assets (contains the resource definitions, graphics, sounds) inside of Scripts.
 
-#Extensions
+## Extensions
 Extensions expose native mobile functionality to the Stencyl engine. [Read this page for details](https://github.com/Stencyl/stencyl-engine/wiki/Extensions).
 
-#Debugging
+## Debugging
 If you're running the engine standalone, viewing the engine's logs involves external apps.
 
 - For Flash, use [Vizzy](https://code.google.com/p/flash-tracer)
@@ -44,17 +44,17 @@ If you're running the engine standalone, viewing the engine's logs involves exte
 - For iOS, use OS X's Console app. Also peek at the contents of ios-log.text.
 - For Android, use DDMS (Android Device Monitor).
 
-#Code Structure
+## Code Structure
 [Read this Wiki page](https://github.com/Stencyl/stencyl-engine/wiki/Code-Structure)
 
-#Contributing
+## Contributing
 - [Making Contributions](https://github.com/Stencyl/stencyl-engine/wiki/Making-Contributions)
 - [What areas need the most help?](https://github.com/Stencyl/stencyl-engine/wiki/Areas-that-need-help)
 
-#Credits
+## Credits
 Stencyl's game engine is proudly built on top of [OpenFL](http://www.openfl.org/) and [Haxe](http://www.haxe.org/). We're a proud sponsor of the [Haxe Foundation](http://www.haxe-foundation.org/).
 
-#Contributors
+## Contributors
 - Rob Alvarez
 - Mike Marve
 - Dario Seidl
@@ -68,7 +68,7 @@ Stencyl's game engine is proudly built on top of [OpenFL](http://www.openfl.org/
 - Robin Schaafsma
 - Chris Finn
 
-#MIT License
+## MIT License
 
 ```
 Copyright (c) 2013 Stencyl, LLC
