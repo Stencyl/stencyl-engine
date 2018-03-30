@@ -647,7 +647,7 @@ class Engine
 	//*-----------------------------------------------
 
 	public function new(root:Sprite) 
-	{		
+	{
 		#if(!flash)
 		com.stencyl.graphics.GLUtil.initialize();
 		
@@ -692,6 +692,10 @@ class Engine
 		loadedAnimations = new Array<Animation>();
 		#end
 		
+		motion.actuators.SimpleActuator.getTime = function():Float {
+			return Engine.totalElapsedTime / 1000;
+		}
+		
 		begin(Config.initSceneID);
 		
 		#if(!flash)
@@ -704,10 +708,6 @@ class Engine
 		#if flash
 		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
 		#end
-		
-		motion.actuators.SimpleActuator.getTime = function():Float {
-			return Engine.totalElapsedTime / 1000;
-		}
 	}
 	
 	#if(flash)
