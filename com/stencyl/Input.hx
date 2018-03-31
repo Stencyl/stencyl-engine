@@ -454,6 +454,22 @@ class Input
 		if(lastEvent.keyCode == lime.ui.KeyCode.APP_CONTROL_BACK)
 		{
 			lastEvent.preventDefault();
+
+			for (key in _control.keys())
+			{
+				if (_control.get(key)[0] == lime.ui.KeyCode.ESCAPE)
+				{
+					if (lastEvent.type == KeyboardEvent.KEY_DOWN)
+					{
+						simulateKeyPress(key);
+					}
+					else
+					{
+						simulateKeyRelease(key);
+					}
+					
+				}
+			}
 		}
 	}
 	
