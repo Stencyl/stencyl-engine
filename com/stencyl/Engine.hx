@@ -2040,6 +2040,8 @@ class Engine
 			}
 		}
 		
+		Script.lastCreatedActor = a;
+		
 		return a;
 	}
 	
