@@ -10,12 +10,12 @@ class BasicShader
 	{
 	}
 	
-	public function setProperty(name:String, value:Float)
+	public function setProperty(name:String, value:Dynamic)
 	{
 		model.setUniform(name, value);
 	}
 	
-	public function getProperty(name:String):Float
+	public function getProperty(name:String):Dynamic
 	{
 		return model.getUniform(name);
 	}

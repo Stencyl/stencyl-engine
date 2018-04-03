@@ -40,7 +40,7 @@ import openfl.display.OpenGLView;
 
 typedef Uniform = {
 	var id:GLUniformLocation;
-	var value:Float;
+	var value:Dynamic;
 };
 
 /**
@@ -135,7 +135,7 @@ class PostProcess extends OpenGLView
 	 * @param uniform  The uniform name within the fullScreenShader source
 	 * @param value    Value to set the uniform to
 	 */
-	public function setUniform(uniform:String, value:Float):Void
+	public function setUniform(uniform:String, value:Dynamic):Void
 	{
 		if (uniforms.exists(uniform))
 		{
@@ -294,7 +294,14 @@ class PostProcess extends OpenGLView
 		var u = it.next();
 		while (u != null)
 		{
-			GL.uniform1f(u.id, u.value);
+			if (Std.is(u.value, Array))
+			{
+				GL.uniform1fv(u.id, u.value.length, new Float32Array(null, null, u.value));
+			}
+			else
+			{
+				GL.uniform1f(u.id, u.value);
+			}
 			u = it.next();
 		}
 
