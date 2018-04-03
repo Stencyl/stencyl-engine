@@ -296,7 +296,11 @@ class PostProcess extends OpenGLView
 		{
 			if (Std.is(u.value, Array))
 			{
+				#if (js && html5)
+				GL.uniform1fvWEBGL(u.id, new Float32Array(null, u.value));
+				#else
 				GL.uniform1fv(u.id, u.value.length, new Float32Array(null, null, u.value));
+				#end
 			}
 			else
 			{
