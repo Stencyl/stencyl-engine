@@ -2341,13 +2341,20 @@ class Script
 	
 	public static function getImageForActor(a:Actor):BitmapData
 	{
-		var original = a.getCurrentImage();
-		
-		var scaled = new BitmapData(Std.int(original.width / Engine.SCALE), Std.int(original.height / Engine.SCALE), true, 0);
-		var mtx = new Matrix();
-		mtx.scale(1/Engine.SCALE, 1/Engine.SCALE);
-		scaled.draw(original, mtx);
-		return scaled;
+		if (Config.autoscaleImages)
+		{
+			var original = a.getCurrentImage();
+			
+			var scaled = new BitmapData(Std.int(original.width / Engine.SCALE), Std.int(original.height / Engine.SCALE), true, 0);
+			var mtx = new Matrix();
+			mtx.scale(1/Engine.SCALE, 1/Engine.SCALE);
+			scaled.draw(original, mtx);
+			return scaled;
+		}
+		else
+		{
+			return a.getCurrentImage();
+		}
 	}
 
 	//Example path: "sample.png" - stick into the "extras" folder for your game - see: http://community.stencyl.com/index.php/topic,24729.0.html
