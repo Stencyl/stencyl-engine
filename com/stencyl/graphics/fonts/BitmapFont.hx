@@ -506,7 +506,8 @@ class BitmapFont
 					pBitmapData.draw(glyph, mtx, colorTransformation, null, new Rectangle(_point.x, _point.y, glyph.width * pScale, glyph.height * pScale));
 				}
 				
-				_point.x += glyph.width + pLetterSpacing;
+				var scaledWidth = glyph.width * Math.min(pScale, 1);
+				_point.x += scaledWidth + pLetterSpacing;
 				#else
 				glyphWidth = glyph.xadvance;
 				var tile = new Tile(glyph.tileID, _point.x + glyph.xoffset * pScale, _point.y + glyph.yoffset * pScale);

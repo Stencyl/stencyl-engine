@@ -2578,6 +2578,12 @@ class Script
 	{
 		if(img != null)
 		{
+			var fontScale = font.fontScale;
+			if (Config.autoscaleImages)
+			{
+				fontScale = font.fontScale / Engine.SCALE;
+			}
+		
 			#if(!use_tilemap)
 			var fontData = G.fontCache.get(font.ID);
 				
@@ -2586,10 +2592,10 @@ class Script
 				fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, false);
 				G.fontCache.set(font.ID, fontData);
 			}
-		
-			font.font.render(img, fontData, text, 0x000000, 1, x, y, font.letterSpacing, font.fontScale/Engine.SCALE, 0);
+
+			font.font.render(img, fontData, text, 0x000000, 1, x, y, font.letterSpacing, fontScale, 0);
 			#else
-			font.font.renderToImg(img, text, 0x000000, 1, x, y, font.letterSpacing, font.fontScale/Engine.SCALE, 0, false);
+			font.font.renderToImg(img, text, 0x000000, 1, x, y, font.letterSpacing, fontScale, 0, false);
 			#end
 		}
 	}
