@@ -61,6 +61,7 @@ class Font extends Resource
 			defaultFont = font = new BitmapFont().loadAngelCode(Assets.getBitmapData("assets/graphics/default-font.png"), xml);
 			fontScale = 1 * Engine.SCALE;
 			letterSpacing = 0;
+			defaultFont.isDefault = true;
 		}
 		
 		else
