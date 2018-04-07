@@ -152,6 +152,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	public inline function updateBitmap()
 	{
 		bitmapData = model.frames[frameIndex];
+		smoothing = Config.antialias;
 		needsUpdate = false;
 	}
 	
