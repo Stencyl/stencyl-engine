@@ -2445,8 +2445,8 @@ class Engine
 		if(!NO_PHYSICS)
 		{
 			var aabb = world.getScreenBounds();
-			aabb.lowerBound.x = (Math.abs(cameraX / SCALE) - paddingLeft) / physicsScale;
-			aabb.lowerBound.y = (Math.abs(cameraY / SCALE) - paddingTop) / physicsScale;
+			aabb.lowerBound.x = (cameraX / SCALE - paddingLeft) / physicsScale;
+			aabb.lowerBound.y = (cameraY / SCALE - paddingTop) / physicsScale;
 			aabb.upperBound.x = aabb.lowerBound.x + ((screenWidth + paddingRight + paddingLeft) / physicsScale);
 			aabb.upperBound.y = aabb.lowerBound.y + ((screenHeight + paddingBottom + paddingTop) / physicsScale);
 		}
@@ -2578,10 +2578,10 @@ class Engine
 					//--- HAND INLINED THIS SINCE ITS CALLED SO MUCH
 					var isOnScreen =
 						(a.physicsMode != NORMAL_PHYSICS || a.body.isActive()) && 
-						a.colX + a.cacheWidth >= -cameraX / SCALE - paddingLeft && 
-						a.colY + a.cacheHeight >= -cameraY / SCALE - paddingTop &&
-						a.colX < -cameraX / SCALE + screenWidth + paddingRight &&
-						a.colY < -cameraY / SCALE + screenHeight + paddingBottom;
+						a.colX + a.cacheWidth >= cameraX / SCALE - paddingLeft && 
+						a.colY + a.cacheHeight >= cameraY / SCALE - paddingTop &&
+						a.colX < cameraX / SCALE + screenWidth + paddingRight &&
+						a.colY < cameraY / SCALE + screenHeight + paddingBottom;
 					
 					a.isOnScreenCache = (isOnScreen || a.isHUD);
 					
@@ -2659,8 +2659,8 @@ class Engine
 		
 		if(!NO_PHYSICS && DEBUG_DRAW)
 		{
-			debugLayer.x = cameraX;
-			debugLayer.y = cameraY;
+			debugLayer.x = -cameraX;
+			debugLayer.y = -cameraY;
 		}
 		
 		//Shaking
@@ -3053,19 +3053,15 @@ class Engine
 	{
 		camera.setLocation(x, y);
 
-		cameraX = -Math.abs(camera.realX) + screenWidthHalf;
-		cameraY = -Math.abs(camera.realY) + screenHeightHalf;
+		cameraX = camera.realX - screenWidthHalf;
+		cameraY = camera.realY - screenHeightHalf;
 
-		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
-		cameraX = Math.max(cameraX, -sceneWidth + screenWidth);
-		cameraY = Math.max(cameraY, -sceneHeight + screenHeight);
-
+		//Position Limiter: Never go past 0 or sceneDimension-screenDimension
+		cameraX = Math.max(0, Math.min(sceneWidth - screenWidth, cameraX));
+		cameraY = Math.max(0, Math.min(sceneHeight - screenHeight, cameraY));
+		
 		cameraX *= SCALE;
 		cameraY *= SCALE;
-		
-		//Position Limiter - Never go past 0 (which would be fully to the right/bottom)
-		cameraX = Math.min(0, cameraX);
-		cameraY = Math.min(0, cameraY);
 		
 		// Moving the HUD Layer when zoom is activated
 		if ((zoomMultiplier != 1.0 ) && isHUDZoomable)

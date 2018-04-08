@@ -303,8 +303,8 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 
 		#end
 		
-		viewX = Math.floor(Math.abs(viewX));
-		viewY = Math.floor(Math.abs(viewY));
+		viewX = Math.floor(viewX);
+		viewY = Math.floor(viewY);
 		
 		var width:Int = numCols;
 		var height:Int = numRows;
