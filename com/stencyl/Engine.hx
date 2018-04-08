@@ -140,6 +140,7 @@ class Engine
 	
 	public static var landscape:Bool = false; //Only applies to mobile
 	
+	public static var limitCameraToScene:Bool = true;
 	public static var cameraX:Float;
 	public static var cameraY:Float;
 	
@@ -3057,8 +3058,11 @@ class Engine
 		cameraY = camera.realY - screenHeightHalf;
 
 		//Position Limiter: Never go past 0 or sceneDimension-screenDimension
-		cameraX = Math.max(0, Math.min(sceneWidth - screenWidth, cameraX));
-		cameraY = Math.max(0, Math.min(sceneHeight - screenHeight, cameraY));
+		if(limitCameraToScene)
+		{
+			cameraX = Math.max(0, Math.min(sceneWidth - screenWidth, cameraX));
+			cameraY = Math.max(0, Math.min(sceneHeight - screenHeight, cameraY));
+		}
 		
 		cameraX *= SCALE;
 		cameraY *= SCALE;
