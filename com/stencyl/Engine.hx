@@ -1693,7 +1693,8 @@ class Engine
 		#else
 		Utils.removeAllChildren(hudLayer.actorContainer);
 		#end
-			
+		Utils.removeAllChildren(hudLayer);
+		
 		behaviors.destroy();
 		
 		//--
