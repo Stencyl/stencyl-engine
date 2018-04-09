@@ -220,12 +220,12 @@ class Universal extends Sprite
 				theoreticalScale = 2;
 			}
 			
-			#if(android || flash || desktop)
+			//#if(android || flash || desktop)
 			else if(windowWidth >= x15 && windowHeight >= y15)
 			{
 				theoreticalScale = 1.5;
 			}
-			#end
+			//#end
 			
 			else
 			{
@@ -251,13 +251,13 @@ class Universal extends Sprite
 				Engine.IMG_BASE = "2x";
 			}
 			
-			#if(android || flash || desktop)
+			//#if(android || flash || desktop)
 			else if(theoreticalScale >= 1.5 && scales.exists(Scale._1_5X))
 			{
 				Engine.SCALE = 1.5;
 				Engine.IMG_BASE = "1.5x";
 			}
-			#end
+			//#end
 			
 			else
 			{
