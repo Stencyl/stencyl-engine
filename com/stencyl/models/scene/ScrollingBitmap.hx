@@ -120,8 +120,8 @@ class ScrollingBitmap extends Sprite
 		
 		if(parallax)
 		{
-			xPos = Std.int(x * parallaxX);
-			yPos = Std.int(y * parallaxY);
+			xPos = -Std.int(x * parallaxX);
+			yPos = -Std.int(y * parallaxY);
 
 			needsReset = true;
 		}

@@ -254,8 +254,8 @@ class BackgroundLayer extends RegularLayer
 		
 		else
 		{
-			this.x = Std.int(x * scrollFactorX);
-			this.y = Std.int(y * scrollFactorY);
+			this.x = -Std.int(x * scrollFactorX);
+			this.y = -Std.int(y * scrollFactorY);
 		}
 		
 		if(isAnimated)
