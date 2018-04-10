@@ -1686,14 +1686,13 @@ class Engine
 			debugDrawer.m_sprite.graphics.clear();
 		}
 
-		Utils.removeAllChildren(master);
+		for(layer in interactiveLayers)
+		{
+			layer.clear();
+		}
+		hudLayer.clear();
 		
-		#if(use_actor_tilemap)
-		Utils.removeAllTiles(hudLayer.actorContainer);
-		#else
-		Utils.removeAllChildren(hudLayer.actorContainer);
-		#end
-		Utils.removeAllChildren(hudLayer);
+		Utils.removeAllChildren(master);
 		
 		behaviors.destroy();
 		
@@ -1742,12 +1741,6 @@ class Engine
 		for(set in recycledActorsOfType)
 		{
 			Utils.clear(set);
-		}
-		
-		//Clear old TileLayer data
-		for(layer in interactiveLayers)
-		{
-			layer.tiles.clearBitmap();
 		}
 		
 		for(a in allActors)

@@ -1,5 +1,7 @@
 package com.stencyl.models.scene;
 
+import com.stencyl.graphics.BitmapWrapper;
+import com.stencyl.utils.Utils;
 import com.stencyl.Config;
 
 import openfl.display.Sprite;
@@ -19,6 +21,8 @@ class Layer extends RegularLayer
 	public var actorContainer:ActorLayer;
 	//Custom Drawing
 	public var overlay:Sprite;
+	//Images
+	public var attachedImages:Array<BitmapWrapper>;
 	
 	public var cameraMoved:Bool = true;
 	public var cameraOldX:Int = -1;
@@ -31,7 +35,6 @@ class Layer extends RegularLayer
 		tiles = tileLayer;
 		if(tiles != null) //null only for HUD layer
 		{
-			tiles.reset();
 			tiles.blendMode = blendMode;
 		}
 
@@ -42,6 +45,8 @@ class Layer extends RegularLayer
 		if(tiles != null) addChild(tiles);
 		addChild(actorContainer);
 		addChild(overlay);
+		
+		attachedImages = new Array<BitmapWrapper>();
 	}
 
 	override public function updatePosition(x:Float, y:Float, elapsedTime:Float)
@@ -66,5 +71,27 @@ class Layer extends RegularLayer
 		
 		cameraOldX = tempX;
 		cameraOldY = tempY;
+	}
+	
+	public function clear()
+	{
+		for(b in attachedImages)
+		{
+			removeChild(b);
+		}
+		attachedImages = new Array<BitmapWrapper>();
+		
+		#if(use_actor_tilemap)
+		Utils.removeAllTiles(actorContainer);
+		#else
+		Utils.removeAllChildren(actorContainer);
+		#end
+		
+		overlay.graphics.clear();
+		
+		if(tiles != null)
+		{
+			tiles.clear();
+		}
 	}
 }

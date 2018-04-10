@@ -60,6 +60,65 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 		this.scene = scene;
 		this.numRows = numRows;
 		this.numCols = numCols;
+		clear();
+		
+		#if(!use_tilemap)
+		flashPoint = new Point();
+		#else
+		tilemaps = new Map<FLTileset, Tilemap>();
+		#end
+	}
+	
+	#if (!use_tilemap)
+	public function initBitmap()
+	{
+		if(!noTiles)
+		{
+			bitmapData = new BitmapData
+			(
+				Std.int((Engine.screenWidth * Engine.SCALE) + (scene.tileWidth * Engine.SCALE)), 
+				Std.int((Engine.screenHeight * Engine.SCALE) + (scene.tileHeight * Engine.SCALE)), 
+				true, 
+				0
+			);
+			
+			var bmp = new Bitmap(bitmapData);
+			bmp.smoothing = Config.antialias;
+			addChild(bmp);
+		}
+	}
+	
+	public function clearBitmap()
+	{
+		while(numChildren > 0)
+		{
+			removeChildAt(0);
+		}
+		
+		if(bitmapData != null)
+		{
+			bitmapData.dispose();
+		}
+		
+		bitmapData = null;
+	}
+	#end
+	
+	public function clear()
+	{
+		#if (!use_tilemap)
+		
+		if(bitmapData != null)
+			clearBitmap();
+		
+		#else
+		
+		if(tilemaps != null)
+			for(tm in tilemaps)
+				tm.removeTiles();
+		
+		#end
+		
 		this.noTiles = true;
 
 		rows = [];
@@ -76,52 +135,6 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 				autotileData[row][col] = 0;
 			}
 		}
-		
-		#if(!use_tilemap)
-		flashPoint = new Point();
-		#else
-		tilemaps = new Map<FLTileset, Tilemap>();
-		#end
-	}
-	
-	public function reset()
-	{
-		#if (!use_tilemap)
-		if(!noTiles)
-		{
-			bitmapData = new BitmapData
-			(
-				Std.int((Engine.screenWidth * Engine.SCALE) + (scene.tileWidth * Engine.SCALE)), 
-				Std.int((Engine.screenHeight * Engine.SCALE) + (scene.tileHeight * Engine.SCALE)), 
-				true, 
-				0
-			);
-			
-			var bmp = new Bitmap(bitmapData);
-			bmp.smoothing = Config.antialias;
-			addChild(bmp);
-		}
-		#end
-		
-		alpha = 1;
-	}
-	
-	public function clearBitmap()
-	{
-		#if (!use_tilemap)
-		while(numChildren > 0)
-		{
-			removeChildAt(0);
-		}
-		
-		if(bitmapData != null)
-		{
-			bitmapData.dispose();
-		}
-		
-		bitmapData = null;
-		
-		#end
 	}
 	
 	public function setPosition(x:Int, y:Int)
@@ -186,7 +199,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 
 			#if (!use_tilemap)
 			if(bitmapData == null)
-				reset();
+				initBitmap();
 			#end
 		}
 
@@ -411,7 +424,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 		#if (!use_tilemap)
 		
 		clearBitmap();
-		reset();
+		initBitmap();
 		
 		#else
 		

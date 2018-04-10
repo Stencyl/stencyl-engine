@@ -2504,13 +2504,14 @@ class Script
 		if(img != null)
 		{
 			engine.hudLayer.addChild(img);
+			engine.hudLayer.attachedImages.push(img);
 			img.imgX = x;
 			img.imgY = y;
 			img.smoothing = Config.antialias;
 		}
 	}
 	
-	public static function attachImageToLayer(img:BitmapWrapper, layer:RegularLayer, x:Int, y:Int, pos:Int = 1)
+	public static function attachImageToLayer(img:BitmapWrapper, layer:Layer, x:Int, y:Int, pos:Int = 1)
 	{
 		if(img != null)
 		{
@@ -2523,6 +2524,7 @@ class Script
 			{
 				layer.addChild(img);
 			}
+			layer.attachedImages.push(img);
 			
 			img.imgX = x;
 			img.imgY = y;
@@ -2536,6 +2538,8 @@ class Script
 		{
 			if(Std.is(img.parent, Actor))
 				cast(img.parent, Actor).attachedImages.remove(img);
+			else if(Std.is(img.parent, Layer))
+				cast(img.parent, Layer).attachedImages.remove(img);
 			img.parent.removeChild(img);
 		}
 	}
