@@ -1579,7 +1579,7 @@ class Script
 	 */
 	public static function getScreenX():Float
 	{
-		return Math.abs(Engine.cameraX / Engine.SCALE);
+		return Engine.cameraX / Engine.SCALE;
 	}
 	
 	/**
@@ -1589,7 +1589,7 @@ class Script
 	 */
 	public static function getScreenY():Float
 	{
-		return Math.abs(Engine.cameraY / Engine.SCALE);
+		return Engine.cameraY / Engine.SCALE;
 	}
 	
 	/**
@@ -1599,7 +1599,7 @@ class Script
 	 */
 	public static function getScreenXCenter():Float
 	{
-		return Math.abs(Engine.cameraX / Engine.SCALE) + Engine.screenWidth / 2;
+		return Engine.cameraX / Engine.SCALE + Engine.screenWidth / 2;
 	}
 	
 	/**
@@ -1609,7 +1609,7 @@ class Script
 	 */
 	public static function getScreenYCenter():Float
 	{
-		return Math.abs(Engine.cameraY / Engine.SCALE) + Engine.screenHeight / 2;
+		return Engine.cameraY / Engine.SCALE + Engine.screenHeight / 2;
 	}
 	
 	/**

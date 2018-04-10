@@ -2572,7 +2572,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		
 		else
 		{
-			return getX(true) + Engine.cameraX / Engine.SCALE;
+			return getX(true) - Engine.cameraX / Engine.SCALE;
 		}
 	}
 	
@@ -2585,7 +2585,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			
 		else
 		{
-			return getY(true) + Engine.cameraY / Engine.SCALE;
+			return getY(true) - Engine.cameraY / Engine.SCALE;
 		}
 	}
 	
@@ -2738,7 +2738,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		}
 		else
 		{
-			setX(x - (Engine.cameraX / Engine.SCALE));
+			setX(x + (Engine.cameraX / Engine.SCALE));
 		}
 	}
 	
@@ -2750,7 +2750,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		}
 		else
 		{
-			setY(y - (Engine.cameraY / Engine.SCALE));
+			setY(y + (Engine.cameraY / Engine.SCALE));
 		}
 	}
 	
@@ -3352,8 +3352,8 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		
 		else
 		{
-			mx = (Input.mouseX - Engine.cameraX * layer.scrollFactorX) / Engine.SCALE;
-		 	my = (Input.mouseY - Engine.cameraY * layer.scrollFactorY) / Engine.SCALE;
+			mx = (Input.mouseX + Engine.cameraX * layer.scrollFactorX) / Engine.SCALE;
+		 	my = (Input.mouseY + Engine.cameraY * layer.scrollFactorY) / Engine.SCALE;
 		}
 		
 		//TODO: Mike - Make this work with arbitrary origin points
@@ -3551,8 +3551,8 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			#if (use_actor_tilemap)
 			if(g.drawActor)
 			{
-				x = g.x + Engine.cameraX;
-				y = g.y + Engine.cameraY;
+				x = g.x - Engine.cameraX;
+				y = g.y - Engine.cameraY;
 			}
 			
 			else
@@ -3978,10 +3978,10 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		var bottom = Engine.paddingBottom;
 	
 		return (physicsMode != NORMAL_PHYSICS || body.isActive()) && 
-			   getX(true) + cacheWidth >= -cameraX - left && 
-			   getY(true) + cacheHeight >= -cameraY - top &&
-			   getX(true) < -cameraX + Engine.screenWidth + right &&
-			   getY(true) < -cameraY + Engine.screenHeight + bottom;
+			   getX(true) + cacheWidth >= cameraX - left && 
+			   getY(true) + cacheHeight >= cameraY - top &&
+			   getX(true) < cameraX + Engine.screenWidth + right &&
+			   getY(true) < cameraY + Engine.screenHeight + bottom;
 	}
 	
 	public function isInScene():Bool

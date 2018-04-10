@@ -170,8 +170,8 @@ class G
 			
 			else
 			{
-				x += Engine.cameraX;
-				y += Engine.cameraY;
+				x -= Engine.cameraX;
+				y -= Engine.cameraY;
 			}
 		}
 	
@@ -190,8 +190,8 @@ class G
 	{
 		if(drawActor && !actor.isHUD)
 		{
-			x -= Engine.cameraX;
-			y -= Engine.cameraY;
+			x += Engine.cameraX;
+			y += Engine.cameraY;
 		}
 		
 		graphics.lineStyle();
@@ -297,8 +297,8 @@ class G
 			
 			else
 			{
-				drawX = this.x + x * scaleX + Engine.cameraX;
-				drawY = this.y + y * scaleY + Engine.cameraY;
+				drawX = this.x + x * scaleX - Engine.cameraX;
+				drawY = this.y + y * scaleY - Engine.cameraY;
 			}
 		}
 		
@@ -569,8 +569,8 @@ class G
 			
 			else
 			{
-				point.x = this.x + x + Engine.cameraX;
-				point.y = this.y + y + Engine.cameraY;	
+				point.x = this.x + x - Engine.cameraX;
+				point.y = this.y + y - Engine.cameraY;	
 			}
 		}
 		

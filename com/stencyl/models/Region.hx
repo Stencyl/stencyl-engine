@@ -294,8 +294,8 @@ class Region extends Actor
 	
 	override public function isMouseOver():Bool
 	{
-		var mx = (Input.mouseX - Engine.cameraX) / Engine.SCALE;
-		var my = (Input.mouseY - Engine.cameraY) / Engine.SCALE;
+		var mx = (Input.mouseX + Engine.cameraX) / Engine.SCALE;
+		var my = (Input.mouseY + Engine.cameraY) / Engine.SCALE;
 		
 		var xPos:Float = getX();
 		var yPos:Float = getY();
