@@ -340,6 +340,9 @@ class Universal extends Sprite
 			}
 		}
 
+		Engine.screenScaleX = scaleX;
+		Engine.screenScaleY = scaleY;
+		
 		logicalWidth = Config.stageWidth;
 		logicalHeight = Config.stageHeight;
 
