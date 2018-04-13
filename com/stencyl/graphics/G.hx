@@ -590,9 +590,7 @@ class G
 		{
 			if (alpha == 1)
 			{
-				//TODO: This is pretty wasteful but some weird caching bug if we don't do it.
-				//http://community.stencyl.com/index.php/topic,13870.new.html#new
-				graphics.beginBitmapFill(img.clone(), mtx);
+				graphics.beginBitmapFill(img, mtx);
 			}
 			else // actor is transparent
 			{
