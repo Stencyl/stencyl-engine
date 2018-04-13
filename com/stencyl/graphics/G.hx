@@ -657,6 +657,16 @@ class G
 	public inline function resetFont()
 	{
 		font = defaultFont;
+		
+		if (font.fontScale != Engine.SCALE)
+		{
+			font.fontScale = Engine.SCALE;
+			#if (!use_tilemap)
+			font = null;
+			fontCache.set(-1, null);
+			setFont(defaultFont);
+			#end
+		}
 	}
 }
 

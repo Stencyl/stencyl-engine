@@ -607,6 +607,8 @@ class Engine
 				}
 			}
 			
+			g.resetFont();
+			
 			moveCamera(camera.realX, camera.realY);
 		}
 
