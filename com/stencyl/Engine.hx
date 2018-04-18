@@ -3334,6 +3334,11 @@ class Engine
 	
 	public function getLayerById(id:Int):RegularLayer
 	{
+		if (id == -1)
+		{
+			return null;
+		}
+		
 		var layer = engine.layers.get(id);
 		
 		if(layer == null)
