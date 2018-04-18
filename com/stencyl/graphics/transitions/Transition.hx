@@ -23,6 +23,7 @@ class Transition
 		if(duration == 0)
 		{
 			complete = true;
+			active = true;
 		}
 	}
 	
