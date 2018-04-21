@@ -3234,6 +3234,7 @@ class Engine
      	//Scene Behavior/Event Drawing
      	g.graphics = transitionLayer.graphics;
      	g.translateToScreen();
+		g.resetGraphicsSettings();
      	invokeListeners4(whenDrawingListeners, g, 0, 0);
 
      	G.visitStringCache();
