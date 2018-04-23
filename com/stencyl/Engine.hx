@@ -607,6 +607,15 @@ class Engine
 				}
 			}
 			
+			for (actors in recycledActorsOfType)
+			{
+				for (a in actors)
+				{
+					a.currAnimation.framesUpdated();
+					a.updateMatrix = true;
+				}
+			}
+			
 			g.resetFont();
 			
 			moveCamera(camera.realX, camera.realY);
