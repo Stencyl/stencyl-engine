@@ -888,7 +888,34 @@ class Input
 			}
 		}
 		
-		// Added to avoid duplicate control mapping
+		if(!_controlButtonMap.exists(control))
+			_controlButtonMap.set(control, new Array<JoystickButton>());
+		_controlButtonMap.get(control).push(button);
+
+		_joyControlMap.set(id, control);
+		#end
+	}
+	
+	public static function unMapJoystickButton(id:String)
+	{
+		#if desktop
+		var button:JoystickButton = JoystickButton.fromID(id);
+		var control:String = _joyControlMap.get(id);
+		
+		if(_controlButtonMap.exists(control))
+		{
+			_controlButtonMap.get(control).remove(button);
+		}
+
+		_joyControlMap.remove(id);
+		#end
+	}
+	
+	public static function unMapControl(control:String)
+	{
+		#if desktop
+		_controlButtonMap.remove(control);
+
 		for(k in _joyControlMap.keys())
 		{
 			if (_joyControlMap.get(k) == control)
@@ -896,12 +923,6 @@ class Input
 				_joyControlMap.remove(k);
 			}
 		}
-		
-		// if(!_controlButtonMap.exists(control)) // Commented out to avoid duplicate control mapping
-			_controlButtonMap.set(control, new Array<JoystickButton>());
-		_controlButtonMap.get(control).push(button);
-
-		_joyControlMap.set(id, control);
 		#end
 	}
 
