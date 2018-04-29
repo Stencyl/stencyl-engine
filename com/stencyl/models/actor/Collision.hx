@@ -4,7 +4,9 @@ import com.stencyl.models.Actor;
 import com.stencyl.models.collision.Mask;
 
 import box2D.common.math.B2Vec2;
+import box2D.collision.B2Manifold;
 import box2D.dynamics.B2Fixture;
+import box2D.dynamics.contacts.B2Contact;
 
 import openfl.geom.Rectangle;
 
@@ -65,21 +67,57 @@ class Collision
 	public var solidCollision:Bool;
 	public var linkedCollision:Collision;
 	
-	
-	public static function addResponse(firstActor:ActorType, secondActor:ActorType, response:String)
+	public static function addResponse(firstObject:Dynamic, secondObject:Dynamic, response:String)
 	{
-		if (collisionResponses.get(firstActor.groupID) == null)
+		var groupID1:Int = -1;
+		var groupID2:Int = -1;
+	
+		if (Std.is(firstObject, ActorType))
 		{
-			collisionResponses.set(firstActor.groupID, new Map<Int,String>());
+			groupID1 = firstObject.groupID;
+		}
+		else if (Std.is(firstObject, Group))
+		{
+			groupID1 = firstObject.ID;
 		}
 		
-		if (collisionResponses.get(secondActor.groupID) == null)
+		if (Std.is(secondObject, ActorType))
 		{
-			collisionResponses.set(secondActor.groupID, new Map<Int,String>());
+			groupID2 = secondObject.groupID;
+		}
+		else if (Std.is(secondObject, Group))
+		{
+			groupID2 = secondObject.ID;
+		}
+	
+		if (collisionResponses.get(groupID1) == null)
+		{
+			collisionResponses.set(groupID1, new Map<Int,String>());
 		}
 		
-		collisionResponses.get(firstActor.groupID).set(secondActor.groupID, response);
-		collisionResponses.get(secondActor.groupID).set(firstActor.groupID, response);
+		if (collisionResponses.get(groupID2) == null)
+		{
+			collisionResponses.set(groupID2, new Map<Int,String>());
+		}
+		
+		collisionResponses.get(groupID1).set(groupID2, response);
+		collisionResponses.get(groupID2).set(groupID1, response);
+	}
+	
+	public static function preSolve(contact:B2Contact, oldManifold:B2Manifold):Void
+	{
+		var groupID1:Int = contact.getFixtureA().getBody().groupID;
+		var groupID2:Int = contact.getFixtureB().getBody().groupID;
+		
+		if (collisionResponses.get(groupID1) != null)
+		{
+			var response:String = collisionResponses.get(groupID1).get(groupID2);
+			
+			if (response == "sensor")
+			{
+				contact.setEnabled(false);
+			}
+		}
 	}
 	
 	public function new()
