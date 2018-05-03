@@ -2375,7 +2375,7 @@ class Script
 		
 		var handler = function(event:Event):Void
 		{
-			var bitmapData = cast(cast(event.currentTarget, Loader).content, Bitmap).bitmapData;
+			var bitmapData = cast(cast(event.currentTarget, LoaderInfo).content, Bitmap).bitmapData;
     		onComplete(bitmapData);
 		}
 	
