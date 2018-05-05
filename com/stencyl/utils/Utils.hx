@@ -3,6 +3,7 @@ package com.stencyl.utils;
 import cloner.Cloner;
 import haxe.ds.Vector;
 import haxe.io.Output;
+import haxe.io.Path;
 import haxe.Timer;
 import lime.app.Future;
 import lime.app.Promise;
@@ -955,6 +956,47 @@ class Utils
 		
 		if (onComplete != null)
 			onComplete(true);
+	}
+	
+	@:access(openfl.net.SharedObject)
+	public static function convertLegacySharedObject(name:String, overwrite:Bool = false):Void
+	{
+		#if mobile
+		var path = SharedObject.__getPath("", name);
+		trace(path + " exists? " + FileSystem.exists(path));
+		
+		if(overwrite || !FileSystem.exists(path))
+		{
+			var data = Native.getUserPreference(name);
+			
+			if(data != null && data != "")
+			{
+				trace("Converting old data");
+				try
+				{
+					var directory = Path.directory(path);
+					
+					if(!FileSystem.exists(directory))
+					{
+						SharedObject.__mkdir(directory);
+					}
+					
+					var output = File.write(path, false);
+					output.writeString(data);
+					output.close();
+					
+					if(FileSystem.exists(path))
+					{
+						trace("Legacy data converted successfully");
+					}
+				}
+				catch(e:Dynamic)
+				{
+					trace(e);
+				}
+			}
+		}
+		#end
 	}
 
 	#if (flash || js)
