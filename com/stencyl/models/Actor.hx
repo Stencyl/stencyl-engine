@@ -34,7 +34,6 @@ import com.stencyl.Engine;
 import com.stencyl.graphics.AbstractAnimation;
 import com.stencyl.graphics.BitmapAnimation;
 import com.stencyl.graphics.BitmapWrapper;
-import com.stencyl.graphics.ColorMatrixShader;
 import com.stencyl.graphics.G;
 import com.stencyl.graphics.SheetAnimation;
 import com.stencyl.graphics.fonts.Label;
@@ -3636,62 +3635,14 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	//* Filters
 	//*-----------------------------------------------
 
-	private var cm:ColorMatrix;
-
 	public function setFilter(filter:Array<BitmapFilter>)
 	{
-		#if !flash
-		for(f in filter)
-		{
-			if(Std.is(f, ColorMatrixFilter))
-			{
-				if(cm == null)
-				{
-					cm = new ColorMatrix();
-					cm.matrix = cast(f, ColorMatrixFilter).matrix;
-				}
-				else
-				{
-					var cm2 = new ColorMatrix();
-					cm2.matrix = cast(f, ColorMatrixFilter).matrix;
-					var cm3 = new ColorMatrix();
-					
-					ColorMatrix.mulMatrixMatrix(cm, cm2, cm3);
-					cm = cm3;
-				}
-				
-				var cms = new ColorMatrixShader();
-				cms.init(cm.matrix);
-				
-				#if (use_actor_tilemap)
-				shader = cms;
-				#else
-				renderShader = cms;
-				#end
-			}
-		}
-		#else
 		filters = filters.concat(filter);
-		#end
 	}
 	
 	public function clearFilters()
 	{
-		#if !flash
-		
-		cm = null;
-		
-		#if (use_actor_tilemap)
-		shader = null;
-		#else
-		renderShader = null;
-		#end
-		
-		#else
-		
 		filters = null;
-		
-		#end
 	}
 	
 	public function setBlendMode(blendMode:BlendMode)
