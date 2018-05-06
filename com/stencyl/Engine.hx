@@ -164,6 +164,7 @@ class Engine
 	
 	public static var paused:Bool = false;
 	public static var started:Bool = false;
+	public static var inFocus:Bool = true;
 	
 	public static var events:EventMaster = new EventMaster();
 	
@@ -2816,12 +2817,20 @@ class Engine
 	
 	public function onFocus(event:Event)
 	{
-		focusChanged(false);
+		if (!inFocus)
+		{
+			inFocus = true;
+			focusChanged(false);
+		}
 	}
 	
 	public function onFocusLost(event:Event)
 	{
-		focusChanged(true);
+		if (inFocus)
+		{
+			inFocus = false;
+			focusChanged(true);
+		}
 	}
 	
 	public function focusChanged(lost:Bool)
