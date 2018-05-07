@@ -3107,7 +3107,7 @@ class Engine
 		screenHeight = Std.int(Universal.logicalHeight * (1 / m));
 		screenHeightHalf = Std.int(screenHeight / 2);
 		setColorBackground(scene.colorBackground);
-		root.scrollRect = new Rectangle(0, 0, screenWidth, screenHeight);
+		root.scrollRect = new Rectangle(0, 0, screenWidth * SCALE, screenHeight * SCALE);
 		moveCamera(camera.realX, camera.realY);
 
 		if (!isHUDZoomable)
