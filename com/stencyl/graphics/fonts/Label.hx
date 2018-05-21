@@ -824,7 +824,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	
 	public function set_letterSpacing(pSpacing:Int):Int
 	{
-		var tmp:Int = Math.floor(Math.abs(pSpacing));
+		var tmp:Int = Math.floor(pSpacing);
 		if (tmp != _letterSpacing)
 		{
 			_letterSpacing = tmp;
