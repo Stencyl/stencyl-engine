@@ -3360,8 +3360,10 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		//and would only work within the centered, original bounds.
 		var scaleXAbs = Math.abs(scaleX);
 		var scaleYAbs = Math.abs(scaleY);
-		var offsetX = (scaleXAbs - 1) * Math.floor(cacheWidth/2);
-		var offsetY = (scaleYAbs - 1) * Math.floor(cacheHeight/2);
+		var offsetLeft = currOrigin.x * (scaleXAbs - 1);
+		var offsetRight = (cacheWidth - currOrigin.x) * (scaleXAbs - 1);
+		var offsetUp = currOrigin.y * (scaleYAbs - 1);
+		var offsetDown = (cacheHeight - currOrigin.y) * (scaleYAbs - 1);
 		
 		// Added to fix this issue -- http://community.stencyl.com/index.php?issue=488.0
 		if(physicsMode != NORMAL_PHYSICS)
@@ -3373,8 +3375,8 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			}
 		}
 		
-		var xPos = colX - offsetX;
-		var yPos = colY - offsetY;
+		var xPos = colX - offsetLeft;
+		var yPos = colY - offsetUp;
 
 		if(rotation != 0)
 		{
@@ -3395,15 +3397,15 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		{
 			return (mx >= xPos/Engine.engine.zoomMultiplier && 
 		   		my >= yPos/Engine.engine.zoomMultiplier && 
-		   		mx < (xPos + cacheWidth + offsetX * 2)/Engine.engine.zoomMultiplier && 
-		   		my < (yPos + cacheHeight + offsetY * 2)/Engine.engine.zoomMultiplier);	
+		   		mx < (xPos + cacheWidth + offsetLeft + offsetRight)/Engine.engine.zoomMultiplier && 
+		   		my < (yPos + cacheHeight + offsetUp + offsetDown)/Engine.engine.zoomMultiplier);	
 		}
 		else
 		{
 			return (mx >= xPos && 
 			   		my >= yPos && 
-			   		mx < xPos + cacheWidth + offsetX * 2 && 
-			   		my < yPos + cacheHeight + offsetY * 2);
+			   		mx < xPos + cacheWidth + offsetLeft + offsetRight && 
+			   		my < yPos + cacheHeight + offsetUp + offsetDown);
 		}
 	}
 	
