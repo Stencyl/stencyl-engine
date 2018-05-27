@@ -44,6 +44,7 @@ class BitmapFont
 	private var _point:Point;
 	
 	public var isDefault = false;
+	public var lineSpacing = 0;
 	
 	/**
 	 * Creates a new bitmap font using specified bitmap data and letter input.
@@ -136,10 +137,13 @@ class BitmapFont
 				{
 					for (nodeChild in node.elements())
 					{
-						if (nodeChild.nodeName == "chars")
+						if (nodeChild.nodeName == "common")
+						{
+							lineSpacing = Std.parseInt(nodeChild.get("lineHeight"));
+						}
+						else if (nodeChild.nodeName == "chars")
 						{
 							chars = nodeChild;
-							break;
 						}
 					}
 				}
