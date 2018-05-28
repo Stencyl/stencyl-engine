@@ -2524,7 +2524,11 @@ class Script
 			{
 				layer.addChild(img);
 			}
-			layer.attachedImages.push(img);
+			
+			if (layer.attachedImages.indexOf(img) == -1)
+			{
+				layer.attachedImages.push(img);
+			}
 			
 			img.imgX = x;
 			img.imgY = y;
