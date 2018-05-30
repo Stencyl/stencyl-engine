@@ -705,10 +705,6 @@ class Engine
 		loadedAnimations = new Array<Animation>();
 		#end
 		
-		motion.actuators.SimpleActuator.getTime = function():Float {
-			return Engine.totalElapsedTime / 1000;
-		}
-		
 		begin(Config.initSceneID);
 		
 		#if(!flash)

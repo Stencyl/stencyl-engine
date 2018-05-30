@@ -234,6 +234,10 @@ using StringTools;
 			}
 		}
 		#end
+		
+		motion.actuators.SimpleActuator.getTime = function():Float {
+			return Engine.totalElapsedTime / 1000;
+		}
 
 		var preloader = new Preloader (new StencylPreloader ());
 		app.setPreloader (preloader);
