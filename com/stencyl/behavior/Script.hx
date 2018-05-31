@@ -566,7 +566,7 @@ class Script
 		}
 	}
 	
-	public function addWhenDrawingListener(a:Actor, func:Callable<G->Int->Int->Void>)
+	public function addWhenDrawingListener(a:Actor, func:Callable<G->Float->Float->Void>)
 	{
 		var isActorScript = Std.is(this, ActorScript);
 	
