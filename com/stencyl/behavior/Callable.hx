@@ -17,14 +17,12 @@ class Callable<T>
 	public var id:Int;
 	public var parent:Script;
 	public var f:T;
-	public var argNames:Array<String>;
 	public var finished:Bool;
 	
-	public function new(id:Int, parent:Script, f:T, argNames:Array<String>)
+	public function new(id:Int, parent:Script, f:T)
 	{
 		this.id = id;
 		this.parent = parent;
-		this.argNames = argNames;
 		
 		#if stencyltools
 		
@@ -40,11 +38,7 @@ class Callable<T>
 		if(callTemplates.exists(id))
 		{
 			var expr = callTemplates.get(id);
-			
-			this.f = Reflect.makeVarArgs(function(argList:Array<Dynamic>) {
-				var argMap = [for(i in 0...argNames.length) argNames[i] => argList[i]];
-				parent.interp.executeWithArgs(expr, argMap);
-			});
+			this.f = parent.interp.expr(expr);
 		}
 		else
 		{
@@ -67,6 +61,7 @@ class Callable<T>
 			var c = callTable.get(id)[0];
 			
 			var parser = new hscript.Parser();
+			parser.allowTypes = true;
 			for(name in c.parent.nameMap)
 			{
 				parser.classFields.set(name, name);
@@ -88,10 +83,7 @@ class Callable<T>
 			if(c.parent.interp == null)
 				c.parent.initHscript();
 			
-			c.f = Reflect.makeVarArgs(function(argList:Array<Dynamic>) {
-				var argMap = [for(i in 0...c.argNames.length) c.argNames[i] => argList[i]];
-				c.parent.interp.executeWithArgs(expr, argMap);
-			});
+			c.f = c.parent.interp.expr(expr);
 		}
 	}
 	

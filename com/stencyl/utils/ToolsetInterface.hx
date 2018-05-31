@@ -338,7 +338,7 @@ class ToolsetInterface
 					});
 				}
 				
-			case "Modified Event":
+			case "Modified Callable":
 			
 				var callableID = header.get("Callable-ID");
 				var receivedText = content.readUTFBytes(content.length);
