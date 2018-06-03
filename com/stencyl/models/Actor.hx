@@ -4010,7 +4010,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			vertices.push(new B2Vec2(x + w, y + h));
 			vertices.push(new B2Vec2(x, y + h));
 			polygon.setAsVector(vertices);
-			var fixture:B2Fixture = this.getBody().createFixture2(polygon, 1);
+			var fixture:B2Fixture = createFixture(polygon);
 			fixture.SetUserData(this);
 		}
 	}
@@ -4023,7 +4023,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			circle.m_radius = Engine.toPhysicalUnits(r);
 			circle.m_p.x = Engine.toPhysicalUnits(x);
 			circle.m_p.y = Engine.toPhysicalUnits(y);
-			var fixture:B2Fixture = this.getBody().createFixture2(circle, 1);
+			var fixture:B2Fixture = createFixture(circle);
 			fixture.SetUserData(this);
 		}
 	}
@@ -4048,11 +4048,21 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			}
 			polygon.setAsArray(newVertices);*/
 			polygon.setAsArray(vertices);
-			var fixture:B2Fixture = this.getBody().createFixture2(polygon, 1);
+			var fixture:B2Fixture = createFixture(polygon);
 			fixture.SetUserData(this);
 		}
 	}
 
+	public function createFixture(newShape:B2Shape):B2Fixture
+	{
+		var def:B2FixtureDef = new B2FixtureDef();
+		def.shape = newShape;
+		def.density = 0.1;
+		def.friction = bodyDef.friction;
+		def.restitution = bodyDef.bounciness;
+		return this.getBody().createFixture(def);
+	}
+	
 	public function getLastCreatedFixture():B2Fixture
 	{
 		if(physicsMode == NORMAL_PHYSICS)
