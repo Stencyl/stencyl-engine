@@ -4060,7 +4060,9 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		def.density = 0.1;
 		def.friction = bodyDef.friction;
 		def.restitution = bodyDef.bounciness;
-		return this.getBody().createFixture(def);
+		var fix:B2Fixture = body.createFixture(def);
+		body.setMassData(md);
+		return fix;
 	}
 	
 	public function getLastCreatedFixture():B2Fixture
