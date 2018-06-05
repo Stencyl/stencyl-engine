@@ -2863,6 +2863,7 @@ class Script
 		}
 		
 		data.position = 0;
+		data.endian = BIG_ENDIAN;
 		
 		var img = new BitmapData(width, height, true, 0);
 		img.setPixels(img.rect, data);
