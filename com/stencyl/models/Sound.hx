@@ -1,6 +1,9 @@
 package com.stencyl.models;
 
+import lime.media.AudioBuffer;
+import lime.media.codecs.vorbis.VorbisFile;
 import openfl.media.SoundChannel;
+import openfl.media.Sound in OpenFLSound;
 import com.stencyl.behavior.Script;
 import com.stencyl.utils.Assets;
 
@@ -76,7 +79,17 @@ class Sound extends Resource
 	{
 		if(streaming)
 		{
+			#if(mobile || desktop || js)
+			
+			var vorbisFile = VorbisFile.fromFile(Assets.getPath("assets/music/sound-" + ID + "." + ext));
+			var audioBuffer = AudioBuffer.fromVorbisFile(vorbisFile);
+			src = OpenFLSound.fromAudioBuffer(audioBuffer);
+			
+			#else
+			
 			src = Assets.getSound("assets/music/sound-" + ID + "." + ext, false);
+			
+			#end
 		}
 		
 		if(src == null)
@@ -92,7 +105,17 @@ class Sound extends Resource
 	{
 		if(streaming)
 		{
+			#if(mobile || desktop || js)
+			
+			var vorbisFile = VorbisFile.fromFile(Assets.getPath("assets/music/sound-" + ID + "." + ext));
+			var audioBuffer = AudioBuffer.fromVorbisFile(vorbisFile);
+			src = OpenFLSound.fromAudioBuffer(audioBuffer);
+			
+			#else
+			
 			src = Assets.getSound("assets/music/sound-" + ID + "." + ext, false);
+			
+			#end
 		}
 		
 		if(src == null)

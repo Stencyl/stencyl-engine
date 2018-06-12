@@ -36,6 +36,11 @@ class Assets
 		}
 		return OpenFLAssets.getBytes(id);
 	}
+	
+	public static function getPath(id:String):String
+	{
+		return OpenFLAssets.getPath(id);
+	}
 
 	public static function getSound(id:String, useCache:Bool = true):Sound
 	{
