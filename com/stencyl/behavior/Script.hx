@@ -2030,7 +2030,7 @@ class Script
 	* Play a specific SoundClip resource looped on a specific channel (use playSoundOnChannel() to play once)
 	*/
 	public static function loopSoundOnChannel(clip:Sound, channelNum:Int)
-	{		
+	{
 		var sc:SoundChannel = engine.channels[channelNum];	
 		sc.loopSound(clip);			
 	}
@@ -2039,7 +2039,7 @@ class Script
 	* Stop all sound on a specific channel (use pauseSoundOnChannel() to just pause)
 	*/
 	public static function stopSoundOnChannel(channelNum:Int)
-	{					
+	{
 		var sc:SoundChannel = engine.channels[channelNum];
 		sc.stopSound();
 	}
@@ -2048,7 +2048,7 @@ class Script
 	* Pause all sound on a specific channel (use stopSoundOnChannel() to stop it)
 	*/
 	public static function pauseSoundOnChannel(channelNum:Int)
-	{					
+	{
 		var sc:SoundChannel = engine.channels[channelNum];	
 		sc.setPause(true);			
 	}
@@ -2057,7 +2057,7 @@ class Script
 	* Resume all sound on a specific channel (must have been paused with pauseSoundOnChannel())
 	*/
 	public static function resumeSoundOnChannel(channelNum:Int)
-	{					
+	{
 		var sc:SoundChannel = engine.channels[channelNum];		
 		sc.setPause(false);			
 	}
@@ -2066,7 +2066,7 @@ class Script
 	* Set the volume of all sound on a specific channel (use decimal volume such as .5)
 	*/
 	public static function setVolumeForChannel(volume:Float, channelNum:Int)
-	{			
+	{
 		var sc:SoundChannel = engine.channels[channelNum];		
 		sc.setVolume(volume);
 	}
@@ -2075,7 +2075,7 @@ class Script
 	* Stop all the sounds currently playing (use mute() to mute the game).
 	*/
 	public static function stopAllSounds()
-	{			
+	{
 		for(i in 0...CHANNELS)
 		{
 			var sc:SoundChannel = engine.channels[i];		
@@ -2101,7 +2101,7 @@ class Script
 	* Fade a specific channel's audio in over time (milliseconds)
 	*/
 	public static function fadeInSoundOnChannel(channelNum:Int, time:Float)
-	{						
+	{
 		var sc:SoundChannel = engine.channels[channelNum];
 		sc.fadeInSound(time);			
 	}
@@ -2110,13 +2110,13 @@ class Script
 	* Fade a specific channel's audio out over time (milliseconds)
 	*/
 	public static function fadeOutSoundOnChannel(channelNum:Int, time:Float)
-	{						
+	{
 		var sc:SoundChannel = engine.channels[channelNum];
 		sc.fadeOutSound(time);			
 	}
 	
 	public static function fadeSoundOnChannel(channelNum:Int, time:Float, percent:Float)
-	{						
+	{
 		var sc:SoundChannel = engine.channels[channelNum];
 		sc.fadeSound(time, percent / 100);			
 	}
@@ -2159,7 +2159,7 @@ class Script
 	* If not playing, will return the last point it was played at.
 	*/
 	public static function getPositionForChannel(channelNum:Int)
-	{			
+	{
 		var sc:SoundChannel = engine.channels[channelNum];	
 		
 		if(sc != null && sc.currentSound != null)
@@ -2174,10 +2174,23 @@ class Script
 	}
 	
 	/**
+	* Sets the current position for the given channel in milliseconds.
+	*/
+	public static function setPositionForChannel(channelNum:Int, position:Int)
+	{
+		var sc:SoundChannel = engine.channels[channelNum];	
+		
+		if(sc != null && sc.currentSound != null)
+		{
+			sc.currentSound.position = position;
+		}
+	}
+	
+	/**
 	* Gets the length for the given channel in milliseconds.
 	*/
 	public static function getSoundLengthForChannel(channelNum:Int)
-	{			
+	{
 		var sc:SoundChannel = engine.channels[channelNum];		
 		
 		if(sc != null && sc.currentSource != null)
@@ -2195,7 +2208,7 @@ class Script
 	* Gets the length of the given sound in milliseconds.
 	*/
 	public static function getSoundLength(clip:Sound)
-	{			
+	{
 		if(clip != null && clip.src != null)
 		{
 			return clip.src.length;
