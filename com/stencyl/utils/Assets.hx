@@ -32,7 +32,9 @@ class Assets
 	{
 		if(modifiedAssetCache.exists(id))
 		{
-			return cast modifiedAssetCache.get(id);
+			var ba:ByteArray = cast modifiedAssetCache.get(id);
+			ba.position = 0;
+			return ba;
 		}
 		return OpenFLAssets.getBytes(id);
 	}
