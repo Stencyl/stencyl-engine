@@ -119,6 +119,8 @@ class Script
 	
 	public static var dummyVec:B2Vec2 = new B2Vec2();
 	
+	public static var IMAGE_API_PIXEL_OPS = false;
+	
 	public static function resetStatics():Void
 	{
 		engine = null;
@@ -127,6 +129,7 @@ class Script
 		lastCreatedRegion = null;
 		lastCreatedTerrainRegion = null;
 		mpx = 0; mpy = 0; mrx = 0; mry = 0;
+		IMAGE_API_PIXEL_OPS = false;
 		
 		#if flash
 		medalPopup = null;
@@ -2388,6 +2391,14 @@ class Script
 	
 	public static function getSubImage(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapData
 	{
+		if(!IMAGE_API_PIXEL_OPS)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+			width = Std.int(width * Engine.SCALE);
+			height = Std.int(height * Engine.SCALE);
+		}
+		
 		if(img != null && x >= 0 && y >= 0 && width > 0 && height > 0 && x < img.width && y < img.height)
 		{
 			var newImg:BitmapData = new BitmapData(width, height);
@@ -2564,6 +2575,12 @@ class Script
 	
 	public static function drawImageOnImage(source:BitmapData, dest:BitmapData, x:Int, y:Int, blendMode:BlendMode)
 	{
+		if(!IMAGE_API_PIXEL_OPS)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+		}
+		
 		if(source != null && dest != null)
 		{
 			dummyPoint.x = x;
@@ -2586,6 +2603,12 @@ class Script
 	
 	public static function drawTextOnImage(img:BitmapData, text:String, x:Int, y:Int, font:Font)
 	{
+		if(!IMAGE_API_PIXEL_OPS)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+		}
+		
 		if(img != null)
 		{
 			var fontScale = font.fontScale;
@@ -2608,6 +2631,14 @@ class Script
 	
 	public static function clearImagePartially(img:BitmapData, x:Int, y:Int, width:Int, height:Int)
 	{
+		if(!IMAGE_API_PIXEL_OPS)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+			width = Std.int(width * Engine.SCALE);
+			height = Std.int(height * Engine.SCALE);
+		}
+		
 		if(img != null)
 		{
 			dummyRect.x = x;
@@ -2629,6 +2660,12 @@ class Script
 	
 	public static function clearImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
+		if(!IMAGE_API_PIXEL_OPS)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+		}
+		
 		//Inspired by http://franto.com/inverse-masking-disclosed/
 		var temp = new Sprite();
 		var bmpDest = new Bitmap(dest);
@@ -2651,10 +2688,16 @@ class Script
 	
 	public static function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
+		if(!IMAGE_API_PIXEL_OPS)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+		}
+		
 		dummyPoint.x = x;
-      	dummyPoint.y = y;
-      
-      	dest.copyChannel(mask, mask.rect, dummyPoint, openfl.display.BitmapDataChannel.ALPHA, openfl.display.BitmapDataChannel.ALPHA);
+		dummyPoint.y = y;
+
+		dest.copyChannel(mask, mask.rect, dummyPoint, openfl.display.BitmapDataChannel.ALPHA, openfl.display.BitmapDataChannel.ALPHA);
 	}
 	
 	public static function fillImage(img:BitmapData, color:Int)
@@ -2680,6 +2723,22 @@ class Script
 	{
 		if(img != null)
 		{
+			if(!IMAGE_API_PIXEL_OPS && Engine.SCALE != 1)
+			{
+				x = Std.int(x * Engine.SCALE);
+				y = Std.int(y * Engine.SCALE);
+				var x2 = Std.int((x+1) * Engine.SCALE);
+				var y2 = Std.int((y+1) * Engine.SCALE);
+				
+				for(j in x...x2)
+				{
+					for(k in y...y2)
+					{
+						img.setPixel(j, k, color);
+					}
+				}
+			}
+			
 			img.setPixel(x, y, color);
 		}
 	}
@@ -2688,6 +2747,12 @@ class Script
 	{
 		if(img != null)
 		{
+			if(!IMAGE_API_PIXEL_OPS)
+			{
+				x = Std.int(x * Engine.SCALE);
+				y = Std.int(y * Engine.SCALE);
+			}
+			
 			return img.getPixel(x, y);
 		}
 		

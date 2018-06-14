@@ -75,6 +75,11 @@ class BitmapWrapper extends Sprite implements EngineScaleUpdateListener
 		img.y = -y;
 	}
 
+	public function updateScale():Void
+	{
+		updatePosition();
+	}
+
 	public function updatePosition():Void
 	{
 		x = (imgX + offsetX) * Engine.SCALE - cacheParentAnchor.x;
