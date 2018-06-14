@@ -2178,12 +2178,14 @@ class Script
 	*/
 	public static function setPositionForChannel(channelNum:Int, position:Int)
 	{
+		#if !flash
 		var sc:SoundChannel = engine.channels[channelNum];	
 		
 		if(sc != null && sc.currentSound != null)
 		{
 			sc.currentSound.position = position;
 		}
+		#end
 	}
 	
 	/**
