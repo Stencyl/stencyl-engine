@@ -136,7 +136,7 @@ class Universal extends Sprite
 		trace("Scale Mode: " + Config.scaleMode);
 		
 		var theoreticalScale:Float = 1;
-		var needsScaling = windowWidth != Config.stageWidth || windowHeight != Config.stageHeight;
+		var needsScaling = Config.forceHiResAssets || windowWidth != Config.stageWidth || windowHeight != Config.stageHeight;
 		
 		if(needsScaling)
 		{
@@ -231,28 +231,30 @@ class Universal extends Sprite
 			{
 				theoreticalScale = 1;
 			}
+			
+			var useHighest = Config.forceHiResAssets;
 
 			//4 scale scheme
-			if(theoreticalScale == 4 && scales.exists(Scale._4X))
+			if((useHighest || theoreticalScale == 4) && scales.exists(Scale._4X))
 			{
 				Engine.SCALE = 4;
 				Engine.IMG_BASE = "4x";
 			}
 			
-			else if(theoreticalScale >= 3 && scales.exists(Scale._3X))
+			else if((useHighest || theoreticalScale >= 3) && scales.exists(Scale._3X))
 			{
 				Engine.SCALE = 3;
 				Engine.IMG_BASE = "3x";
 			}
 			
-			else if(theoreticalScale >= 2 && scales.exists(Scale._2X))
+			else if((useHighest || theoreticalScale >= 2) && scales.exists(Scale._2X))
 			{
 				Engine.SCALE = 2;
 				Engine.IMG_BASE = "2x";
 			}
 			
 			//#if(android || flash || desktop)
-			else if(theoreticalScale >= 1.5 && scales.exists(Scale._1_5X))
+			else if((useHighest || theoreticalScale >= 1.5) && scales.exists(Scale._1_5X))
 			{
 				Engine.SCALE = 1.5;
 				Engine.IMG_BASE = "1.5x";

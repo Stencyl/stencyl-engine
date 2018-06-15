@@ -25,6 +25,7 @@ class Config
 	public static var initSceneID:Int;
 	public static var physicsMode:PhysicsMode;
 	public static var gameScale:Float;
+	public static var forceHiResAssets:Bool;
 	public static var antialias:Bool;
 	public static var pixelsnap:Bool;
 	public static var startInFullScreen:Bool;
@@ -103,7 +104,8 @@ class Config
 					switch(key)
 					{
 						case "scaleMode", "scales", "gameScale",
-							 "stageWidth", "stageHeight", "antialias":
+							 "stageWidth", "stageHeight", "antialias",
+							 "forceHiResAssets":
 							needsScreenReload = true;
 
 						case "debugDraw":
@@ -148,6 +150,7 @@ class Config
 		initSceneID = data.initSceneID;
 		physicsMode = (data.physicsMode : String);
 		gameScale = data.gameScale;
+		forceHiResAssets = data.forceHiResAssets;
 		antialias = data.antialias;
 		pixelsnap = data.pixelsnap;
 		startInFullScreen = data.startInFullScreen;
