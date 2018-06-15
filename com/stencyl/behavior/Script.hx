@@ -2345,6 +2345,14 @@ class Script
 	public static var dummyRect = new flash.geom.Rectangle(0, 0, 1, 1);
 	public static var dummyPoint = new flash.geom.Point(0, 0);
 	
+	public static function newImage(width:Int, height:Int):BitmapData
+	{
+		if(IMAGE_API_PIXEL_OPS)
+			return new BitmapData(width, height, true, 0);
+		else
+			return new BitmapData(Std.int(width * Engine.SCALE), Std.int(height * Engine.SCALE), true, 0);
+	}
+	
 	public static function captureScreenshot():BitmapData
 	{
 		//var img:BitmapData = new BitmapData(Std.int(getScreenWidth() * Engine.SCALE) , Std.int(getScreenHeight() * Engine.SCALE));
@@ -2843,7 +2851,7 @@ class Script
 			easing = Linear.easeNone;
 		}
 	
-		Actuate.tween(img, duration, {scaleX:scaleX*Engine.SCALE, scaleY:scaleY*Engine.SCALE}).ease(easing);
+		Actuate.tween(img, duration, {scaleX:scaleX, scaleY:scaleY}).ease(easing);
 	}
 	
 	//In degrees
