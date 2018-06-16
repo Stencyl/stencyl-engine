@@ -126,12 +126,14 @@ class Universal extends Sprite
 
 		windowWidth = isFullScreen ? stage.fullScreenWidth : Config.stageWidth * Config.gameScale;
 		windowHeight = isFullScreen ? stage.fullScreenHeight : Config.stageHeight * Config.gameScale;
-
+		
 		trace("Game Width: " + Config.stageWidth);
 		trace("Game Height: " + Config.stageHeight);
 		trace("Game Scale: " + Config.gameScale);
 		trace("Window Width: " + windowWidth);
 		trace("Window Height: " + windowHeight);
+		trace("FullScreen Width: " + stage.fullScreenWidth);
+		trace("FullScreen Height: " + stage.fullScreenHeight);
 		trace("Enabled Scales: " + Config.scales);
 		trace("Scale Mode: " + Config.scaleMode);
 		
@@ -205,23 +207,27 @@ class Universal extends Sprite
 			var x15 = x3 / 2;
 			var y15 = y3 / 2;
 			
-			if(windowWidth >= x4 && windowHeight >= y4)
+			//Enabling forceHiResAssets is a way of ensuring that jumping between fullscreen and windowed doesn't change the asset scale.
+			var checkWidth = Config.forceHiResAssets ? stage.fullScreenWidth : windowWidth;
+			var checkHeight = Config.forceHiResAssets ? stage.fullScreenHeight : windowHeight;
+			
+			if(checkWidth >= x4 && checkHeight >= y4)
 			{
 				theoreticalScale = 4;
 			}
 			
-			else if(windowWidth >= x3 && windowHeight >= y3)
+			else if(checkWidth >= x3 && checkHeight >= y3)
 			{
 				theoreticalScale = 3;
 			}
 			
-			else if(windowWidth >= x2 && windowHeight >= y2)
+			else if(checkWidth >= x2 && checkHeight >= y2)
 			{
 				theoreticalScale = 2;
 			}
 			
 			//#if(android || flash || desktop)
-			else if(windowWidth >= x15 && windowHeight >= y15)
+			else if(checkWidth >= x15 && checkHeight >= y15)
 			{
 				theoreticalScale = 1.5;
 			}
@@ -232,29 +238,27 @@ class Universal extends Sprite
 				theoreticalScale = 1;
 			}
 			
-			var useHighest = Config.forceHiResAssets;
-
 			//4 scale scheme
-			if((useHighest || theoreticalScale == 4) && scales.exists(Scale._4X))
+			if(theoreticalScale == 4 && scales.exists(Scale._4X))
 			{
 				Engine.SCALE = 4;
 				Engine.IMG_BASE = "4x";
 			}
 			
-			else if((useHighest || theoreticalScale >= 3) && scales.exists(Scale._3X))
+			else if(theoreticalScale >= 3 && scales.exists(Scale._3X))
 			{
 				Engine.SCALE = 3;
 				Engine.IMG_BASE = "3x";
 			}
 			
-			else if((useHighest || theoreticalScale >= 2) && scales.exists(Scale._2X))
+			else if(theoreticalScale >= 2 && scales.exists(Scale._2X))
 			{
 				Engine.SCALE = 2;
 				Engine.IMG_BASE = "2x";
 			}
 			
 			//#if(android || flash || desktop)
-			else if((useHighest || theoreticalScale >= 1.5) && scales.exists(Scale._1_5X))
+			else if(theoreticalScale >= 1.5 && scales.exists(Scale._1_5X))
 			{
 				Engine.SCALE = 1.5;
 				Engine.IMG_BASE = "1.5x";
