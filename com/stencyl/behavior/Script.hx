@@ -119,7 +119,7 @@ class Script
 	
 	public static var dummyVec:B2Vec2 = new B2Vec2();
 	
-	public static var IMAGE_API_PIXEL_OPS = false;
+	public static var imageApiAutoscale = true;
 	
 	public static function resetStatics():Void
 	{
@@ -129,7 +129,7 @@ class Script
 		lastCreatedRegion = null;
 		lastCreatedTerrainRegion = null;
 		mpx = 0; mpy = 0; mrx = 0; mry = 0;
-		IMAGE_API_PIXEL_OPS = false;
+		imageApiAutoscale = true;
 		
 		#if flash
 		medalPopup = null;
@@ -2377,7 +2377,7 @@ class Script
 	
 	public static function newImage(width:Int, height:Int):BitmapData
 	{
-		if(IMAGE_API_PIXEL_OPS)
+		if(!imageApiAutoscale)
 			return new BitmapData(width, height, true, 0);
 		else
 			return new BitmapData(Std.int(width * Engine.SCALE), Std.int(height * Engine.SCALE), true, 0);
@@ -2429,7 +2429,7 @@ class Script
 	
 	public static function getSubImage(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapData
 	{
-		if(!IMAGE_API_PIXEL_OPS)
+		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
 			y = Std.int(y * Engine.SCALE);
@@ -2613,7 +2613,7 @@ class Script
 	
 	public static function drawImageOnImage(source:BitmapData, dest:BitmapData, x:Int, y:Int, blendMode:BlendMode)
 	{
-		if(!IMAGE_API_PIXEL_OPS)
+		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
 			y = Std.int(y * Engine.SCALE);
@@ -2641,7 +2641,7 @@ class Script
 	
 	public static function drawTextOnImage(img:BitmapData, text:String, x:Int, y:Int, font:Font)
 	{
-		if(!IMAGE_API_PIXEL_OPS)
+		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
 			y = Std.int(y * Engine.SCALE);
@@ -2669,7 +2669,7 @@ class Script
 	
 	public static function clearImagePartially(img:BitmapData, x:Int, y:Int, width:Int, height:Int)
 	{
-		if(!IMAGE_API_PIXEL_OPS)
+		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
 			y = Std.int(y * Engine.SCALE);
@@ -2698,7 +2698,7 @@ class Script
 	
 	public static function clearImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
-		if(!IMAGE_API_PIXEL_OPS)
+		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
 			y = Std.int(y * Engine.SCALE);
@@ -2726,7 +2726,7 @@ class Script
 	
 	public static function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
-		if(!IMAGE_API_PIXEL_OPS)
+		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
 			y = Std.int(y * Engine.SCALE);
@@ -2761,12 +2761,12 @@ class Script
 	{
 		if(img != null)
 		{
-			if(!IMAGE_API_PIXEL_OPS && Engine.SCALE != 1)
+			if(imageApiAutoscale && Engine.SCALE != 1)
 			{
-				x = Std.int(x * Engine.SCALE);
-				y = Std.int(y * Engine.SCALE);
 				var x2 = Std.int((x+1) * Engine.SCALE);
 				var y2 = Std.int((y+1) * Engine.SCALE);
+				x = Std.int(x * Engine.SCALE);
+				y = Std.int(y * Engine.SCALE);
 				
 				for(j in x...x2)
 				{
@@ -2776,8 +2776,10 @@ class Script
 					}
 				}
 			}
-			
-			img.setPixel(x, y, color);
+			else
+			{
+				img.setPixel(x, y, color);
+			}
 		}
 	}
 	
@@ -2785,7 +2787,7 @@ class Script
 	{
 		if(img != null)
 		{
-			if(!IMAGE_API_PIXEL_OPS)
+			if(imageApiAutoscale)
 			{
 				x = Std.int(x * Engine.SCALE);
 				y = Std.int(y * Engine.SCALE);
