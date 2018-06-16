@@ -119,6 +119,8 @@ class Script
 	
 	public static var dummyVec:B2Vec2 = new B2Vec2();
 	
+	public static var imageApiAutoscale = true;
+	
 	public static function resetStatics():Void
 	{
 		engine = null;
@@ -127,6 +129,7 @@ class Script
 		lastCreatedRegion = null;
 		lastCreatedTerrainRegion = null;
 		mpx = 0; mpy = 0; mrx = 0; mry = 0;
+		imageApiAutoscale = true;
 		
 		#if flash
 		medalPopup = null;
@@ -978,6 +981,36 @@ class Script
 		if(Std.is(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenPausedListeners, func);
+		}
+	}
+	
+	public function addFullscreenListener(func:Array<Dynamic>->Void)
+	{
+		engine.fullscreenListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.fullscreenListeners, func);
+		}
+	}
+	
+	public function addGameScaleListener(func:Array<Dynamic>->Void)
+	{
+		engine.gameScaleListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.gameScaleListeners, func);
+		}
+	}
+	
+	public function addScreenSizeListener(func:Array<Dynamic>->Void)
+	{
+		engine.screenSizeListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.screenSizeListeners, func);
 		}
 	}
 	
@@ -2342,6 +2375,14 @@ class Script
 	public static var dummyRect = new flash.geom.Rectangle(0, 0, 1, 1);
 	public static var dummyPoint = new flash.geom.Point(0, 0);
 	
+	public static function newImage(width:Int, height:Int):BitmapData
+	{
+		if(!imageApiAutoscale)
+			return new BitmapData(width, height, true, 0);
+		else
+			return new BitmapData(Std.int(width * Engine.SCALE), Std.int(height * Engine.SCALE), true, 0);
+	}
+	
 	public static function captureScreenshot():BitmapData
 	{
 		//var img:BitmapData = new BitmapData(Std.int(getScreenWidth() * Engine.SCALE) , Std.int(getScreenHeight() * Engine.SCALE));
@@ -2356,20 +2397,7 @@ class Script
 	
 	public static function getImageForActor(a:Actor):BitmapData
 	{
-		if (Config.autoscaleImages)
-		{
-			var original = a.getCurrentImage();
-			
-			var scaled = new BitmapData(Std.int(original.width / Engine.SCALE), Std.int(original.height / Engine.SCALE), true, 0);
-			var mtx = new Matrix();
-			mtx.scale(1/Engine.SCALE, 1/Engine.SCALE);
-			scaled.draw(original, mtx);
-			return scaled;
-		}
-		else
-		{
-			return a.getCurrentImage();
-		}
+		return a.getCurrentImage();
 	}
 
 	//Example path: "sample.png" - stick into the "extras" folder for your game - see: http://community.stencyl.com/index.php/topic,24729.0.html
@@ -2401,6 +2429,14 @@ class Script
 	
 	public static function getSubImage(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapData
 	{
+		if(imageApiAutoscale)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+			width = Std.int(width * Engine.SCALE);
+			height = Std.int(height * Engine.SCALE);
+		}
+		
 		if(img != null && x >= 0 && y >= 0 && width > 0 && height > 0 && x < img.width && y < img.height)
 		{
 			var newImg:BitmapData = new BitmapData(width, height);
@@ -2577,6 +2613,12 @@ class Script
 	
 	public static function drawImageOnImage(source:BitmapData, dest:BitmapData, x:Int, y:Int, blendMode:BlendMode)
 	{
+		if(imageApiAutoscale)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+		}
+		
 		if(source != null && dest != null)
 		{
 			dummyPoint.x = x;
@@ -2599,14 +2641,16 @@ class Script
 	
 	public static function drawTextOnImage(img:BitmapData, text:String, x:Int, y:Int, font:Font)
 	{
+		if(imageApiAutoscale)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+		}
+		
 		if(img != null)
 		{
 			var fontScale = font.fontScale;
-			if (Config.autoscaleImages)
-			{
-				fontScale = font.fontScale / Engine.SCALE;
-			}
-		
+			
 			#if(!use_tilemap)
 			var fontData = G.fontCache.get(font.ID);
 				
@@ -2625,6 +2669,14 @@ class Script
 	
 	public static function clearImagePartially(img:BitmapData, x:Int, y:Int, width:Int, height:Int)
 	{
+		if(imageApiAutoscale)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+			width = Std.int(width * Engine.SCALE);
+			height = Std.int(height * Engine.SCALE);
+		}
+		
 		if(img != null)
 		{
 			dummyRect.x = x;
@@ -2646,6 +2698,12 @@ class Script
 	
 	public static function clearImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
+		if(imageApiAutoscale)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+		}
+		
 		//Inspired by http://franto.com/inverse-masking-disclosed/
 		var temp = new Sprite();
 		var bmpDest = new Bitmap(dest);
@@ -2668,10 +2726,16 @@ class Script
 	
 	public static function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
+		if(imageApiAutoscale)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+		}
+		
 		dummyPoint.x = x;
-      	dummyPoint.y = y;
-      
-      	dest.copyChannel(mask, mask.rect, dummyPoint, openfl.display.BitmapDataChannel.ALPHA, openfl.display.BitmapDataChannel.ALPHA);
+		dummyPoint.y = y;
+
+		dest.copyChannel(mask, mask.rect, dummyPoint, openfl.display.BitmapDataChannel.ALPHA, openfl.display.BitmapDataChannel.ALPHA);
 	}
 	
 	public static function fillImage(img:BitmapData, color:Int)
@@ -2697,7 +2761,25 @@ class Script
 	{
 		if(img != null)
 		{
-			img.setPixel(x, y, color);
+			if(imageApiAutoscale && Engine.SCALE != 1)
+			{
+				var x2 = Std.int((x+1) * Engine.SCALE);
+				var y2 = Std.int((y+1) * Engine.SCALE);
+				x = Std.int(x * Engine.SCALE);
+				y = Std.int(y * Engine.SCALE);
+				
+				for(j in x...x2)
+				{
+					for(k in y...y2)
+					{
+						img.setPixel(j, k, color);
+					}
+				}
+			}
+			else
+			{
+				img.setPixel(x, y, color);
+			}
 		}
 	}
 	
@@ -2705,6 +2787,12 @@ class Script
 	{
 		if(img != null)
 		{
+			if(imageApiAutoscale)
+			{
+				x = Std.int(x * Engine.SCALE);
+				y = Std.int(y * Engine.SCALE);
+			}
+			
 			return img.getPixel(x, y);
 		}
 		
@@ -2795,7 +2883,7 @@ class Script
 			easing = Linear.easeNone;
 		}
 	
-		Actuate.tween(img, duration, {scaleX:scaleX*Engine.SCALE, scaleY:scaleY*Engine.SCALE}).ease(easing);
+		Actuate.tween(img, duration, {scaleX:scaleX, scaleY:scaleY}).ease(easing);
 	}
 	
 	//In degrees

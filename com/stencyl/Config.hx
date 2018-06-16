@@ -25,8 +25,8 @@ class Config
 	public static var initSceneID:Int;
 	public static var physicsMode:PhysicsMode;
 	public static var gameScale:Float;
+	public static var forceHiResAssets:Bool;
 	public static var antialias:Bool;
-	public static var autoscaleImages:Bool;
 	public static var pixelsnap:Bool;
 	public static var startInFullScreen:Bool;
 	public static var disposeImages:Bool;
@@ -90,7 +90,6 @@ class Config
 
 			var needsScreenReload = false;
 			var needsGameReload = false;
-			var needsAutoscaleReload = false;
 			var fullScreenChanged = false;
 
 			for(key in Reflect.fields(oldData))
@@ -105,11 +104,9 @@ class Config
 					switch(key)
 					{
 						case "scaleMode", "scales", "gameScale",
-							 "stageWidth", "stageHeight", "antialias":
+							 "stageWidth", "stageHeight", "antialias",
+							 "forceHiResAssets":
 							needsScreenReload = true;
-
-						case "autoscaleImages":
-							needsAutoscaleReload = true;
 
 						case "debugDraw":
 							Engine.DEBUG_DRAW = debugDraw;
@@ -136,21 +133,9 @@ class Config
 			{
 				Universal.reloadGame();
 			}
-			else
+			else if(needsScreenReload)
 			{
-				if(needsAutoscaleReload)
-				{
-					Utils.applyToAllChildren(Engine.engine.root, function(obj) {
-						if(Std.is(obj, BitmapWrapper))
-						{
-							cast(obj, BitmapWrapper).setAutoscale(Config.autoscaleImages);
-						}
-					});
-				}
-				if(needsScreenReload)
-				{
-					Engine.engine.reloadScreen();
-				}
+				Engine.engine.reloadScreen();
 			}
 		}
 	}
@@ -165,9 +150,9 @@ class Config
 		initSceneID = data.initSceneID;
 		physicsMode = (data.physicsMode : String);
 		gameScale = data.gameScale;
+		forceHiResAssets = data.forceHiResAssets;
 		antialias = data.antialias;
 		pixelsnap = data.pixelsnap;
-		autoscaleImages = data.autoscaleImages;
 		startInFullScreen = data.startInFullScreen;
 		disposeImages = data.disposeImages;
 		adPositionBottom = data.adPositionBottom;

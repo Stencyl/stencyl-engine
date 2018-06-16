@@ -385,6 +385,10 @@ class Engine
 	public var whenMouseDraggedListeners:Array<Dynamic>;	
 	public var whenPausedListeners:Array<Dynamic>;
 	
+	public var fullscreenListeners:Array<Dynamic>;
+	public var screenSizeListeners:Array<Dynamic>;
+	public var gameScaleListeners:Array<Dynamic>;
+	
 	public var whenSwipedListeners:Array<Dynamic>;
 	public var whenMTStartListeners:Array<Dynamic>;
 	public var whenMTDragListeners:Array<Dynamic>;
@@ -559,6 +563,7 @@ class Engine
 		{
 			isFullScreen = value;
 			reloadScreen();
+			invokeListeners(fullscreenListeners);
 		}
 	}
 	
@@ -571,6 +576,8 @@ class Engine
 	{
 		var oldImgBase = IMG_BASE;
 		var oldScale = SCALE;
+		var oldScreenWidth = screenWidth;
+		var oldScreenHeight = screenHeight;
 
 		cast(root, Universal).initScreen(isFullScreen);
 		
@@ -579,6 +586,9 @@ class Engine
 		screenHeight = Std.int(Universal.logicalHeight);
 		screenHeightHalf = Std.int(screenHeight / 2);
 		setColorBackground(scene.colorBackground);
+		
+		var screensizeUpdated = screenWidth != oldScreenWidth || screenHeight != oldScreenHeight;
+		var gameScaleUpdated = oldScale != SCALE;
 		
 		if(oldImgBase != IMG_BASE)
 		{
@@ -636,6 +646,11 @@ class Engine
 		#if(!flash)
 		resetShaders();
 		#end
+		
+		if(gameScaleUpdated)
+			invokeListeners(gameScaleListeners);
+		if(screensizeUpdated)
+			invokeListeners(screenSizeListeners);
 	}
 	
 	#if (use_actor_tilemap)
@@ -1107,6 +1122,11 @@ class Engine
 		whenMTDragListeners = new Array<Dynamic>();
 		whenMTEndListeners = new Array<Dynamic>();
 		whenFocusChangedListeners = new Array();
+		
+		fullscreenListeners = new Array<Dynamic>();
+		screenSizeListeners = new Array<Dynamic>();
+		gameScaleListeners = new Array<Dynamic>();
+		
 		
 		if(!NO_PHYSICS)
 		{									
@@ -1812,6 +1832,10 @@ class Engine
 		whenMouseMovedListeners = null;
 		whenMouseDraggedListeners = null;		
 		whenPausedListeners = null;
+		
+		fullscreenListeners = null;
+		screenSizeListeners = null;
+		gameScaleListeners = null;
 		
 		whenSwipedListeners = null;
 		whenMTStartListeners = null;
