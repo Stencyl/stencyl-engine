@@ -984,6 +984,36 @@ class Script
 		}
 	}
 	
+	public function addFullscreenListener(func:Array<Dynamic>->Void)
+	{
+		engine.fullscreenListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.fullscreenListeners, func);
+		}
+	}
+	
+	public function addGameScaleListener(func:Array<Dynamic>->Void)
+	{
+		engine.gameScaleListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.gameScaleListeners, func);
+		}
+	}
+	
+	public function addScreenSizeListener(func:Array<Dynamic>->Void)
+	{
+		engine.screenSizeListeners.push(func);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.screenSizeListeners, func);
+		}
+	}
+	
 	//*-----------------------------------------------
 	//* Regions
 	//*-----------------------------------------------
