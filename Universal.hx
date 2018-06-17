@@ -137,140 +137,90 @@ class Universal extends Sprite
 		trace("Enabled Scales: " + Config.scales);
 		trace("Scale Mode: " + Config.scaleMode);
 		
-		var theoreticalScale:Float = 1;
-		var needsScaling = Config.forceHiResAssets || windowWidth != Config.stageWidth || windowHeight != Config.stageHeight;
+		#if ios
 		
-		if(needsScaling)
+		var larger = Math.max(windowWidth, windowHeight);
+		var smaller = Math.min(windowWidth, windowHeight);
+		
+		if(smaller == 320 && larger == 480)
 		{
-			var larger = Math.max(windowWidth, windowHeight);
-			var smaller = Math.min(windowWidth, windowHeight);
-			
-			if(smaller == 320 && larger == 480)
-			{
-				Engine.isStandardIOS = true;
-			}
-			
-			else if(smaller == 640 && larger == 960)
-			{
-				Engine.isStandardIOS = true;
-			}
-			
-			//iPhone 5, 5s, or iPhone 6 with Display Zoom
-			else if(smaller == 640 && larger == 1136)
-			{
-				Engine.isExtendedIOS = true;
-			}	
-			
-			else if(smaller == 750 && larger == 1334)
-			{
-				Engine.isIPhone6 = true;
-			}	
-			
-			else if(smaller == 1242 && larger == 2208)
-			{
-				Engine.isIPhone6Plus = true;
-			}
-			
-			//iPhone 6+ with Display Zoom
-			else if(smaller == 1125 && larger == 2001)
-			{
-				Engine.isIPhone6Plus = true;
-			}
-
-			else if(smaller == 1125 && larger == 2436)
-			{
-				Engine.isIPhoneX = true;
-			}
-			
-			else if(smaller == 768 && larger == 1024)
-			{
-				Engine.isTabletIOS = true;
-			}	
-			
-			else if(smaller == 1536 && larger == 2048)
-			{
-				Engine.isTabletIOS = true;
-			}		
-			
-			var x1 = Config.stageWidth;
-			var y1 = Config.stageHeight;
-			
-			var x2 = x1 * 2;
-			var y2 = y1 * 2;
-			
-			var x3 = x1 * 3;
-			var y3 = y1 * 3;
-			
-			var x4 = x2 * 2;
-			var y4 = y2 * 2;
-			
-			var x15 = x3 / 2;
-			var y15 = y3 / 2;
-			
-			//Enabling forceHiResAssets is a way of ensuring that jumping between fullscreen and windowed doesn't change the asset scale.
-			var checkWidth = Config.forceHiResAssets ? stage.fullScreenWidth : windowWidth;
-			var checkHeight = Config.forceHiResAssets ? stage.fullScreenHeight : windowHeight;
-			
-			if(checkWidth >= x4 && checkHeight >= y4)
-			{
-				theoreticalScale = 4;
-			}
-			
-			else if(checkWidth >= x3 && checkHeight >= y3)
-			{
-				theoreticalScale = 3;
-			}
-			
-			else if(checkWidth >= x2 && checkHeight >= y2)
-			{
-				theoreticalScale = 2;
-			}
-			
-			//#if(android || flash || desktop)
-			else if(checkWidth >= x15 && checkHeight >= y15)
-			{
-				theoreticalScale = 1.5;
-			}
-			//#end
-			
-			else
-			{
-				theoreticalScale = 1;
-			}
-			
-			//4 scale scheme
-			if(theoreticalScale == 4 && scales.exists(Scale._4X))
-			{
-				Engine.SCALE = 4;
-				Engine.IMG_BASE = "4x";
-			}
-			
-			else if(theoreticalScale >= 3 && scales.exists(Scale._3X))
-			{
-				Engine.SCALE = 3;
-				Engine.IMG_BASE = "3x";
-			}
-			
-			else if(theoreticalScale >= 2 && scales.exists(Scale._2X))
-			{
-				Engine.SCALE = 2;
-				Engine.IMG_BASE = "2x";
-			}
-			
-			//#if(android || flash || desktop)
-			else if(theoreticalScale >= 1.5 && scales.exists(Scale._1_5X))
-			{
-				Engine.SCALE = 1.5;
-				Engine.IMG_BASE = "1.5x";
-			}
-			//#end
-			
-			else
-			{
-				Engine.SCALE = 1;
-				Engine.IMG_BASE = "1x";
-			}
+			Engine.isStandardIOS = true;
 		}
+		
+		else if(smaller == 640 && larger == 960)
+		{
+			Engine.isStandardIOS = true;
+		}
+		
+		//iPhone 5, 5s, or iPhone 6 with Display Zoom
+		else if(smaller == 640 && larger == 1136)
+		{
+			Engine.isExtendedIOS = true;
+		}	
+		
+		else if(smaller == 750 && larger == 1334)
+		{
+			Engine.isIPhone6 = true;
+		}	
+		
+		else if(smaller == 1242 && larger == 2208)
+		{
+			Engine.isIPhone6Plus = true;
+		}
+		
+		//iPhone 6+ with Display Zoom
+		else if(smaller == 1125 && larger == 2001)
+		{
+			Engine.isIPhone6Plus = true;
+		}
+
+		else if(smaller == 1125 && larger == 2436)
+		{
+			Engine.isIPhoneX = true;
+		}
+		
+		else if(smaller == 768 && larger == 1024)
+		{
+			Engine.isTabletIOS = true;
+		}	
+		
+		else if(smaller == 1536 && larger == 2048)
+		{
+			Engine.isTabletIOS = true;
+		}		
+		
+		#end
+		
+		var theoreticalWindowedScale = getDesiredScale(windowWidth, windowHeight, Config.stageWidth, Config.stageHeight);
+		var theoreticalFullscreenScale = getDesiredScale(stage.fullScreenWidth, stage.fullScreenHeight, Config.stageWidth, Config.stageHeight);
+		
+		var theoreticalScale = Config.forceHiResAssets ? theoreticalFullscreenScale : theoreticalWindowedScale;
+		
+		//4 scale scheme
+		if(theoreticalScale == 4 && scales.exists(Scale._4X))
+		{
+			Engine.SCALE = 4;
+			Engine.IMG_BASE = "4x";
+		}
+		
+		else if(theoreticalScale >= 3 && scales.exists(Scale._3X))
+		{
+			Engine.SCALE = 3;
+			Engine.IMG_BASE = "3x";
+		}
+		
+		else if(theoreticalScale >= 2 && scales.exists(Scale._2X))
+		{
+			Engine.SCALE = 2;
+			Engine.IMG_BASE = "2x";
+		}
+		
+		else if(theoreticalScale >= 1.5 && scales.exists(Scale._1_5X))
+		{
+			Engine.SCALE = 1.5;
+			Engine.IMG_BASE = "1.5x";
+		}
+		
 		else
 		{
 			Engine.SCALE = 1;
@@ -290,16 +240,16 @@ class Universal extends Sprite
 		var fitWidthScale = windowWidth / scaledStageWidth;
 		var fitHeightScale = windowHeight / scaledStageHeight;
 
-		if(needsScaling)
+		if(Config.forceHiResAssets || windowWidth != Config.stageWidth || windowHeight != Config.stageHeight)
 		{
 			//after the basic assets scale, how do we fill out the rest of the screen?
 
 			//expand the playable area rather than further scaling it
 			if(Config.scaleMode == ScaleMode.FULLSCREEN)
 			{
-				if(Engine.SCALE != theoreticalScale)
+				if(Engine.SCALE != theoreticalWindowedScale)
 				{
-					scaleX = theoreticalScale / Engine.SCALE;
+					scaleX = theoreticalWindowedScale / Engine.SCALE;
 					scaleY = scaleX;
 				}
 
@@ -332,9 +282,9 @@ class Universal extends Sprite
 			//no additional scaling
 			else if(Config.scaleMode == ScaleMode.NO_SCALING)
 			{
-				if(Engine.SCALE != theoreticalScale)
+				if(Engine.SCALE != theoreticalWindowedScale)
 				{
-					scaleX = theoreticalScale / Engine.SCALE;
+					scaleX = theoreticalWindowedScale / Engine.SCALE;
 					scaleY = scaleX;
 				}
 			}
@@ -364,6 +314,52 @@ class Universal extends Sprite
 		trace("Logical Height: " + logicalHeight);
 		trace("Scale X: " + scaleX);
 		trace("Scale Y: " + scaleY);
+	}
+	
+	private function getDesiredScale(checkWidth:Float, checkHeight:Float, baseWidth:Int, baseHeight:Int):Float
+	{
+		var x1 = baseWidth;
+		var y1 = baseHeight;
+		
+		var x2 = x1 * 2;
+		var y2 = y1 * 2;
+		
+		var x3 = x1 * 3;
+		var y3 = y1 * 3;
+		
+		var x4 = x2 * 2;
+		var y4 = y2 * 2;
+		
+		var x15 = x3 / 2;
+		var y15 = y3 / 2;
+		
+		
+		if(checkWidth >= x4 && checkHeight >= y4)
+		{
+			return 4;
+		}
+		
+		else if(checkWidth >= x3 && checkHeight >= y3)
+		{
+			return 3;
+		}
+		
+		else if(checkWidth >= x2 && checkHeight >= y2)
+		{
+			return 2;
+		}
+		
+		//#if(android || flash || desktop)
+		else if(checkWidth >= x15 && checkHeight >= y15)
+		{
+			return 1.5;
+		}
+		//#end
+		
+		else
+		{
+			return 1;
+		}
 	}
 
 	@:access(openfl.display.Stage)
