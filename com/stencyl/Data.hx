@@ -254,7 +254,11 @@ class Data
 
 	private function loadBehaviorFromMbs(id:Int):Behavior
 	{
-		behaviorReader.setAddress(behaviorLookup.get(id));
+		var address = behaviorLookup.get(id);
+		if(address == null)
+			return null;
+		
+		behaviorReader.setAddress(address);
 		return BehaviorReader.readBehavior(behaviorReader);
 	}
 	
