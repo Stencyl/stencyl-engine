@@ -1999,6 +1999,18 @@ class Engine
 		
 		if(ai.scaleX != 1 || ai.scaleY != 1)
 		{
+			var centerOriginX = Std.int(a.cacheWidth / 2);
+			var centerOriginY = Std.int(a.cacheHeight / 2);
+			if (a.currOrigin.x != centerOriginX || a.currOrigin.y != centerOriginY)
+			{
+				var sin = Math.sin(Utils.RAD * ai.angle);
+				var cos = Math.cos(Utils.RAD * ai.angle);
+				var xDiff = ((a.currOrigin.x - centerOriginX) * ai.scaleX) - a.currOffset.x;
+				var yDiff = ((a.currOrigin.y - centerOriginY) * ai.scaleY) - a.currOffset.y;
+				a.setX(a.getX(false) + xDiff * cos - yDiff * sin);
+				a.setY(a.getY(false) + xDiff * sin + yDiff * cos);
+			}
+			
 			a.growTo(ai.scaleX, ai.scaleY, 0);
 		}
 		
