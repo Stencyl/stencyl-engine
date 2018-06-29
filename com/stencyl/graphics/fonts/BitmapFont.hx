@@ -514,13 +514,17 @@ class BitmapFont
 				_point.x += scaledWidth + pLetterSpacing;
 				#else
 				glyphWidth = glyph.xadvance;
-				var tile = new Tile(glyph.tileID, _point.x + glyph.xoffset * pScale, _point.y + glyph.yoffset * pScale);
 				
-				tile.scaleX = pScale;
-				tile.scaleY = pScale;
-				tile.alpha = pAlpha;
+				if(charCode != 32)
+				{
+					var tile = new Tile(glyph.tileID, _point.x + glyph.xoffset * pScale, _point.y + glyph.yoffset * pScale);
+					
+					tile.scaleX = pScale;
+					tile.scaleY = pScale;
+					tile.alpha = pAlpha;
 
-				tilemap.addTile(tile);
+					tilemap.addTile(tile);
+				}
 				
 				_point.x += glyphWidth * pScale + pLetterSpacing;
 				#end
