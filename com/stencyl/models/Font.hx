@@ -118,8 +118,14 @@ class Font extends Resource
 		letterSpacing = Std.int(spacing);
 	}
 	
-	public function isBitmapFont(xml:Xml):Bool
+	public function isBitmapFont(xml:Xml = null):Bool
 	{
+		if (xml == null)
+		{
+			var textBytes = Assets.getText('assets/graphics/${Engine.IMG_BASE}/font-$ID.fnt');
+			xml = Xml.parse(textBytes);
+		}
+	
 		for (node in xml.elements())
 		{
 			if (node.nodeName == "font")
