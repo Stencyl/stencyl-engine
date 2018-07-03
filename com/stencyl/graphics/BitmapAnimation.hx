@@ -123,12 +123,6 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 
 		timer = 0;
 		finished = false;
-		
-		//Q: should we be altering the shared instance?
-		if(model != null)
-		{
-			model.sharedFrameIndex = frame;
-		}
 	}
 	
 	public function isFinished():Bool
