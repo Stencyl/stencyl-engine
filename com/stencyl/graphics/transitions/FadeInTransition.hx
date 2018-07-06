@@ -30,7 +30,7 @@ class FadeInTransition extends Transition
 		var g = rect.graphics;
 		
 		g.beginFill(color);
-		g.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
+		g.drawRect(0, 0, Engine.screenWidth * Engine.SCALE + 4, Engine.screenHeight * Engine.SCALE + 4);
 		g.endFill();
 		
 		g.drawCircle(1, 1, 1); //HACK: Force a software draw for this shape.
