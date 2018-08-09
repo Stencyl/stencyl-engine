@@ -3383,7 +3383,7 @@ class Engine
 			return getLayerByName(ref);
 	}
 	
-	public function getLayerById(id:Int):RegularLayer
+	public function getLayerById(id:Int, withFallback:Bool = true):RegularLayer
 	{
 		if (id == -1)
 		{
@@ -3392,7 +3392,7 @@ class Engine
 		
 		var layer = engine.layers.get(id);
 		
-		if(layer == null)
+		if(layer == null && withFallback)
 		{
 			trace("Layer ID \"" + id + "\" does not exist");
 			trace("Assuming top layer");
@@ -3402,11 +3402,11 @@ class Engine
 		return layer;
 	}
 	
-	public function getLayerByName(name:String):RegularLayer
+	public function getLayerByName(name:String, withFallback:Bool = true):RegularLayer
 	{
 		var layer = engine.layersByName.get(name);
 		
-		if(layer == null)
+		if(layer == null && withFallback)
 		{
 			trace("Layer name \"" + name + "\" does not exist");
 			trace("Assuming top layer");
