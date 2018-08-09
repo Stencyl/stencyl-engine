@@ -22,7 +22,6 @@ import com.stencyl.utils.Utils;
 class TileLayer extends Sprite implements EngineScaleUpdateListener
 {
 	public var layerID:Int;
-	public var zOrder:Int;
 		
 	//Data
 	public var rows:Array<Array<Tile>>;
@@ -50,12 +49,11 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 		cacheSource = new Map<Int,Rectangle>();
 	}
 
-	public function new(layerID:Int, zOrder:Int, scene:Scene, numCols:Int, numRows:Int)
+	public function new(layerID:Int, scene:Scene, numCols:Int, numRows:Int)
 	{
 		super();
 		
 		this.layerID = layerID;
-		this.zOrder = zOrder;
 		
 		this.scene = scene;
 		this.numRows = numRows;

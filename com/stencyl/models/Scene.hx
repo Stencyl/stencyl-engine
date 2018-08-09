@@ -443,7 +443,7 @@ class Scene
 				{
 					var tileLayer:TileLayer = rawLayers.get(ID);
 					if(tileLayer == null)
-						tileLayer = new TileLayer(ID, order, this, Std.int(Math.floor(sceneWidth / tileWidth)), Std.int(Math.floor(sceneHeight / tileHeight)));
+						tileLayer = new TileLayer(ID, this, Std.int(Math.floor(sceneWidth / tileWidth)), Std.int(Math.floor(sceneHeight / tileHeight)));
 					tileLayer.name = name;
 
 					var layer:Layer = new Layer(ID, name, order, scrollFactorX, scrollFactorY, opacity, blendMode, tileLayer);
@@ -526,7 +526,7 @@ class Scene
 		var zOrder = bytes.readInt();
 		length -= 4;
 		
-		var layer = new TileLayer(layerID, zOrder, this, width, height);
+		var layer = new TileLayer(layerID, this, width, height);
 		
 		var noTiles = true;
 		var row = 0;

@@ -1605,7 +1605,7 @@ class Engine
 		if(layers.isEmpty())
 		{
 			//For scenes with no scene data
-			var tileLayer = new TileLayer(0, 0, scene, Std.int(scene.sceneWidth / scene.tileWidth), Std.int(scene.sceneHeight / scene.tileHeight));
+			var tileLayer = new TileLayer(0, scene, Std.int(scene.sceneWidth / scene.tileWidth), Std.int(scene.sceneHeight / scene.tileHeight));
 			var layer = new Layer(0, "default", 0, 1.0, 1.0, 1.0, BlendMode.NORMAL, tileLayer);
 			layers.set(layer.ID, layer);
 		}
@@ -3560,6 +3560,7 @@ class Engine
 		{
 			var l:RegularLayer = cast(master.getChildAt(i), RegularLayer);
 			layersToDraw.set(i, l);
+			l.order = i;
 			
 			if(Std.is(l, Layer))
 			{

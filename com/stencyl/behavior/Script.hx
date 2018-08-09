@@ -2362,10 +2362,18 @@ class Script
 		engine.insertLayer(layer, order);
 	}
 	
-	public static function removeBackground(layer:RegularLayer)
+	public static function addTileLayer(layerName:String, order:Int)
 	{
-		if(Std.is(layer, BackgroundLayer))
-			engine.removeLayer(layer);
+		var cols = Std.int(engine.scene.sceneWidth / engine.scene.tileWidth);
+		var rows = Std.int(engine.scene.sceneHeight / engine.scene.tileHeight);
+		var ID = engine.getNextLayerID();
+		
+		var tileLayer = new TileLayer(ID, engine.scene, cols, rows);
+		tileLayer.name = layerName;
+		
+		var layer:Layer = new Layer(ID, layerName, order, 1.0, 1.0, 1.0, BlendMode.NORMAL, tileLayer);
+		
+		engine.insertLayer(layer, order);
 	}
 
 	//*-----------------------------------------------
