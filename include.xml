@@ -10,7 +10,7 @@
 	<haxelib name="box2d" />
 	<haxelib name="cloner" />
 	<haxelib name="mbs" />
-	<haxelib name="hscript" />
+	<haxelib name="hscript" unless="cppia" />
 
 	<template path="templates" />
 	

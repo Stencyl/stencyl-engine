@@ -24,8 +24,10 @@ class ToolsetInterface
 
 	public static var assetUpdatedListeners = new Map<String, Array<Listener>>();
 
+	#if !(scriptable || cppia)
 	var hscript:HscriptRunner;
-
+	#end
+	
 	public static function resetStatics():Void
 	{
 		assetUpdatedListeners = new Map<String, Array<Listener>>();
@@ -243,6 +245,7 @@ class ToolsetInterface
 					
 				}
 				
+			#if !(scriptable || cppia)
 			case "Hscript":
 				if(hscript == null) hscript = new HscriptRunner();
 				
@@ -278,6 +281,7 @@ class ToolsetInterface
 							trace(ex);
 						}
 				}
+			#end
 
 			case "Modified Asset":
 				var assetID = header.get("Asset-ID");

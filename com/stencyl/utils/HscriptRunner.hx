@@ -1,6 +1,6 @@
 package com.stencyl.utils;
 
-#if stencyltools
+#if (stencyltools && !(scriptable || cppia))
 
 import hscript.*;
 
