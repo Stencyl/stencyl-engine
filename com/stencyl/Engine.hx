@@ -2299,7 +2299,15 @@ class Engine
 	
 	public function getRecycledActorOfType(type:ActorType, x:Float, y:Float, layerConst:Int):Actor
 	{
-		return getRecycledActorOfTypeOnLayer(type, x, y, getLayerByOrder(layerConst).ID);
+		var a:Actor = getRecycledActorOfTypeOnLayer(type, x, y, getLayerByOrder(layerConst).ID);
+		
+		if (Engine.paused)
+		{
+			a.updateDrawingMatrix();
+			a.pause();
+		}
+		
+		return a;
 	}
 
 	public function getRecycledActorOfTypeOnLayer(type:ActorType, x:Float, y:Float, layerID:Int):Actor
