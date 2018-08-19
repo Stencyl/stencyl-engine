@@ -3098,6 +3098,9 @@ class Script
 		{
 			return;
 		}
+		
+		removeTileAt(row, col, layer);
+		
 		var tlayer = cast(layer, Layer).tiles;
 
 		var tset = cast Data.get().resources.get(tilesetID);
