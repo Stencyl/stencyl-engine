@@ -1,5 +1,10 @@
 package com.stencyl.graphics.shaders;
 
+#if (js && html5)
+import js.html.CanvasElement;
+import js.Browser;
+#end
+
 import flash.geom.Rectangle;
 import com.stencyl.Config;
 import com.stencyl.Engine;
@@ -19,6 +24,7 @@ class PostProcess
 	public var timeScale:Float = 1;
 	public var parent:Dynamic;
 	public var to:Dynamic;
+	public static var isSupported (get, never):Bool;
 
 	public function new(fullScreenShader:String, literalText:Bool = false)
 	{
@@ -30,27 +36,44 @@ class PostProcess
 	public function setUniform(variable:String, value:Float) { }
 	public function getUniform(variable:String):Float { return -1; }
 	public function tweenUniform(name:String, targetValue:Float, duration:Float = 1, easing:Dynamic = null) { }
+	
+	@:noCompletion private static function get_isSupported ():Bool
+	{
+		return false;
+	}
 }
 
 #else
 
 import lime.graphics.opengl.*;
 import lime.utils.Float32Array;
-import openfl.display.OpenGLView;
+import openfl._internal.Lib;
+import openfl.display.DisplayObject;
+import openfl.display.OpenGLRenderer;
+import openfl.geom.Rectangle;
 
 typedef Uniform = {
 	var id:GLUniformLocation;
 	var value:Dynamic;
 };
 
+@:access(lime.graphics.opengl.GL)
+
 /**
  * Fullscreen post processing class
  * Uses glsl fullScreenShaders to produce post processing effects
  */
-class PostProcess extends OpenGLView
+class PostProcess extends DisplayObject
 {
 	static var UNIFORM_NOT_FOUND(default, never) = #if js null #else -1 #end;
-
+	public static inline var CONTEXT_LOST = "glcontextlost";
+	public static inline var CONTEXT_RESTORED = "glcontextrestored";
+	
+	public static var isSupported (get, never):Bool;
+	
+	@:noCompletion private var __added:Bool;
+	@:noCompletion private var __initialized:Bool;
+	
 	/**
 	 * Create a new PostProcess object
 	 * @param fragmentShader  A glsl file in your assets path
@@ -58,8 +81,7 @@ class PostProcess extends OpenGLView
 	public function new(fragmentShader:String, literalText:Bool = false)
 	{
 		super();
-		render = _render;
-
+		
 		uniforms = new Map<String, Uniform>();
 
 #if ios
@@ -87,7 +109,11 @@ class PostProcess extends OpenGLView
 		buffer = GL.createBuffer();
 		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
 		var data = new Float32Array(vertices);
+		#if (lime_opengl || lime_opengles)
 		GL.bufferData(GL.ARRAY_BUFFER, data.byteLength, data, GL.STATIC_DRAW);
+		#elseif lime_webgl
+		GL.bufferDataWEBGL(GL.ARRAY_BUFFER, data, GL.STATIC_DRAW, 0, data.byteLength);
+		#end
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 
 		if(literalText)
@@ -128,6 +154,135 @@ class PostProcess extends OpenGLView
 
 		vertexSlot = fullScreenShader.attribute("aVertex");
 		texCoordSlot = fullScreenShader.attribute("aTexCoord");
+	}
+	
+	@:noCompletion private static function get_isSupported ():Bool
+	{
+		#if (js && html5)
+		
+		#if (canvas && !dom)
+		return false;
+		#else
+		
+		if (untyped (!window.WebGLRenderingContext)) {
+			
+			return false;
+			
+		}
+		
+		if (GL.context != null) {
+			
+			return true;
+			
+		} else {
+			
+			var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
+			var context = cast canvas.getContext ("webgl");
+			
+			if (context == null) {
+				
+				context = cast canvas.getContext ("experimental-webgl");
+				
+			}
+			
+			return (context != null);
+			
+		}
+		#end
+		
+		#else
+		
+		return true;
+		
+		#end
+		
+	}
+	
+	@:noCompletion private override function __enterFrame (deltaTime:Int):Void
+	{
+		__setRenderDirty ();
+	}
+	
+	@:noCompletion private override function __renderGL (renderer:OpenGLRenderer):Void
+	{
+		if (stage != null && __renderable)
+		{
+			var rect = null;
+			
+			if (__scrollRect == null)
+			{
+				rect = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
+			}
+			else
+			{
+				rect = new Rectangle (x + __scrollRect.x, y + __scrollRect.y, __scrollRect.width, __scrollRect.height);
+			}
+			
+			renderer.setShader (null);
+			renderer.__setBlendMode (null);
+			
+			time += Engine.elapsedTime * timeScale;
+			GL.bindFramebuffer(GL.FRAMEBUFFER, renderTo);
+
+			GL.viewport(0, 0, Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
+
+			GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
+
+			fullScreenShader.bind();
+
+			GL.enableVertexAttribArray(vertexSlot);
+			GL.enableVertexAttribArray(texCoordSlot);
+
+			GL.activeTexture(GL.TEXTURE0);
+			GL.bindTexture(GL.TEXTURE_2D, texture);
+			if (GL.type == OPENGL)
+				GL.enable(GL.TEXTURE_2D);
+
+			GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
+			GL.vertexAttribPointer(vertexSlot, 2, GL.FLOAT, false, 16, 0);
+			GL.vertexAttribPointer(texCoordSlot, 2, GL.FLOAT, false, 16, 8);
+
+			GL.uniform1i(imageUniform, 0);
+			GL.uniform1f(timeUniform, time);
+			GL.uniform2f(resolutionUniform, Std.int(openfl.Lib.current.stage.stageWidth), Std.int(openfl.Lib.current.stage.stageHeight));
+			GL.uniform2f(resolutionUsUniform, Std.int(openfl.Lib.current.stage.stageWidth / (Engine.SCALE * Engine.screenScaleX)), Std.int(openfl.Lib.current.stage.stageHeight / (Engine.SCALE * Engine.screenScaleY)));
+
+			//for (u in uniforms) GL.uniform1f(u.id, u.value);
+			var it = uniforms.iterator();
+			var u = it.next();
+			while (u != null)
+			{
+				if (Std.is(u.value, Array))
+				{
+					#if (lime_opengl || lime_opengles)
+					GL.uniform1fv(u.id, u.value.length, new Float32Array(null, null, u.value));
+					#elseif lime_webgl
+					GL.uniform1fvWEBGL(u.id, new Float32Array(null, u.value));
+					#end
+				}
+				else
+				{
+					GL.uniform1f(u.id, u.value);
+				}
+				u = it.next();
+			}
+
+			GL.drawArrays(GL.TRIANGLES, 0, 6);
+
+			GL.bindBuffer(GL.ARRAY_BUFFER, null);
+			if (GL.type == OPENGL)
+				GL.disable(GL.TEXTURE_2D);
+			GL.bindTexture(GL.TEXTURE_2D, null);
+
+			GL.disableVertexAttribArray(vertexSlot);
+			GL.disableVertexAttribArray(texCoordSlot);
+
+			GL.useProgram(null);
+		}
+	}
+	
+	@:noCompletion private override function __renderGLMask (renderer:OpenGLRenderer):Void
+	{
 	}
 
 	/**
@@ -235,8 +390,13 @@ class PostProcess extends OpenGLView
 	{
 		texture = GL.createTexture();
 		GL.bindTexture(GL.TEXTURE_2D, texture);
+		
+		#if (lime_opengl || lime_opengles)
 		GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB,  width, height,  0,  GL.RGB, GL.UNSIGNED_BYTE, 0);
-
+		#elseif lime_webgl
+		GL.texImage2DWEBGL(GL.TEXTURE_2D, 0, GL.RGB,  width, height,  0,  GL.RGB, GL.UNSIGNED_BYTE);
+		#end
+		
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER , GL.LINEAR);
@@ -256,70 +416,6 @@ class PostProcess extends OpenGLView
 		//These seem to have no effect.
 		GL.viewport(0, 0, Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
 		GL.clear(GL.DEPTH_BUFFER_BIT | GL.COLOR_BUFFER_BIT);
-	}
-
-	/**
-	 * Renders to a framebuffer or the screen every frame
-	 */
-	public function _render(rect:Rectangle)
-	{
-		time += Engine.elapsedTime * timeScale;
-		GL.bindFramebuffer(GL.FRAMEBUFFER, renderTo);
-
-		GL.viewport(0, 0, Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
-
-		GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
-
-		fullScreenShader.bind();
-
-		GL.enableVertexAttribArray(vertexSlot);
-		GL.enableVertexAttribArray(texCoordSlot);
-
-		GL.activeTexture(GL.TEXTURE0);
-		GL.bindTexture(GL.TEXTURE_2D, texture);
-		if (GL.type == OPENGL)
-			GL.enable(GL.TEXTURE_2D);
-
-		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
-		GL.vertexAttribPointer(vertexSlot, 2, GL.FLOAT, false, 16, 0);
-		GL.vertexAttribPointer(texCoordSlot, 2, GL.FLOAT, false, 16, 8);
-
-		GL.uniform1i(imageUniform, 0);
-		GL.uniform1f(timeUniform, time);
-		GL.uniform2f(resolutionUniform, Std.int(openfl.Lib.current.stage.stageWidth), Std.int(openfl.Lib.current.stage.stageHeight));
-		GL.uniform2f(resolutionUsUniform, Std.int(openfl.Lib.current.stage.stageWidth / (Engine.SCALE * Engine.screenScaleX)), Std.int(openfl.Lib.current.stage.stageHeight / (Engine.SCALE * Engine.screenScaleY)));
-
-		//for (u in uniforms) GL.uniform1f(u.id, u.value);
-		var it = uniforms.iterator();
-		var u = it.next();
-		while (u != null)
-		{
-			if (Std.is(u.value, Array))
-			{
-				#if (js && html5)
-				GL.uniform1fvWEBGL(u.id, new Float32Array(null, u.value));
-				#else
-				GL.uniform1fv(u.id, u.value.length, new Float32Array(null, null, u.value));
-				#end
-			}
-			else
-			{
-				GL.uniform1f(u.id, u.value);
-			}
-			u = it.next();
-		}
-
-		GL.drawArrays(GL.TRIANGLES, 0, 6);
-
-		GL.bindBuffer(GL.ARRAY_BUFFER, null);
-		if (GL.type == OPENGL)
-			GL.disable(GL.TEXTURE_2D);
-		GL.bindTexture(GL.TEXTURE_2D, null);
-
-		GL.disableVertexAttribArray(vertexSlot);
-		GL.disableVertexAttribArray(texCoordSlot);
-
-		GL.useProgram(null);
 	}
 
 	private var framebuffer:GLFramebuffer;

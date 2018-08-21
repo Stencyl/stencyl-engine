@@ -679,7 +679,7 @@ class Engine
 		#if(!flash)
 		com.stencyl.graphics.GLUtil.initialize();
 		
-		if(openfl.display.OpenGLView.isSupported)
+		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
 		{
 			shaderLayer = new Sprite();
 		}
@@ -723,7 +723,7 @@ class Engine
 		begin(Config.initSceneID);
 		
 		#if(!flash)
-		if(openfl.display.OpenGLView.isSupported)
+		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
 		{
 			root.addChild(shaderLayer);
 		}
@@ -742,7 +742,7 @@ class Engine
 	#else
 	public function addShader(s:PostProcess, addToDisplayTree:Bool = true) 
 	{
-		if(openfl.display.OpenGLView.isSupported)
+		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
 		{
 			//Clear out existing shader if one is currently active, otherwise we hit graphical glitches.
 			if(shaders != null && s.renderTo == null)

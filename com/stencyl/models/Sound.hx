@@ -1,7 +1,7 @@
 package com.stencyl.models;
 
 import lime.media.AudioBuffer;
-import lime.media.codecs.vorbis.VorbisFile;
+import lime.media.vorbis.VorbisFile;
 import openfl.media.SoundChannel;
 import openfl.media.Sound in OpenFLSound;
 import com.stencyl.behavior.Script;

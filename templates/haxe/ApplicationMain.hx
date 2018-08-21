@@ -11,7 +11,6 @@ import com.stencyl.utils.ToolsetInterface;
 
 import haxe.Timer;
 
-import lime.app.Config in LimeConfig;
 import lime.system.System;
 
 import openfl.Lib;
@@ -51,50 +50,8 @@ using StringTools;
 		Config.load();
 		Input.loadInputConfig();
 		Universal.setupTracing();
-
-		var projectName = "::APP_FILE::";
 		
-		var config = {
-			
-			build: "::meta.buildNumber::",
-			company: "::meta.company::",
-			file: "::APP_FILE::",
-			fps: ::WIN_FPS::,
-			name: "::meta.title::",
-			orientation: "::WIN_ORIENTATION::",
-			packageName: "::meta.packageName::",
-			version: "::meta.version::",
-			windows: [
-				::foreach windows::
-				{
-					allowHighDPI: ::allowHighDPI::,
-					alwaysOnTop: ::alwaysOnTop::,
-					antialiasing: ::antialiasing::,
-					background: ::background::,
-					borderless: ::borderless::,
-					colorDepth: ::colorDepth::,
-					depthBuffer: ::depthBuffer::,
-					display: ::display::,
-					fullscreen: ::fullscreen::,
-					hardware: ::hardware::,
-					height: ::height::,
-					hidden: #if munit true #else ::hidden:: #end,
-					maximized: ::maximized::,
-					minimized: ::minimized::,
-					parameters: ::parameters::,
-					resizable: ::resizable::,
-					stencilBuffer: ::stencilBuffer::,
-					title: "::title::",
-					vsync: ::vsync::,
-					width: ::width::,
-					x: ::x::,
-					y: ::y::
-				},::end::
-			]
-			
-		};
-
-		System.__registerEntryPoint (projectName, create, config);
+		System.__registerEntryPoint ("::APP_FILE::", create);
 		
 		#if (hxtelemetry)
 		var telemetry = new hxtelemetry.HxTelemetry.Config ();
@@ -103,7 +60,7 @@ using StringTools;
 		telemetry.app_name = config.name;
 		Reflect.setField (config, "telemetry", telemetry);
 		#end
-
+		
 		Lib.current;
 
 		#if (stencyltools)
@@ -113,7 +70,7 @@ using StringTools;
 		#if (js && html5)
 		//application is started from html script with System.embed, which calls create(config)
 		#else
-		create (config);
+		create (null);
 		#end
 
 	}
@@ -152,7 +109,7 @@ using StringTools;
 		universal.preloaderComplete();
 	}
 
-	public static function create (config:LimeConfig):Void
+	public static function create (config):Void
 	{
 		#if stencyltools
 		{
@@ -199,13 +156,6 @@ using StringTools;
 		#end
 
 		app = new Application ();
-		app.create (config);
-		
-		//XXX: On mac, creating the application seems to reset the cwd to the programPath at some point.
-		#if cppia
-		if(StencylCppia.gamePath != null)
-			Sys.setCwd(StencylCppia.gamePath);
-		#end
 		
 		#if flash
 		if(!Config.releaseMode)
@@ -215,12 +165,94 @@ using StringTools;
 		#end
 
 		ManifestResources.init (config);
-
+		
+		app.meta["build"] = "::meta.buildNumber::";
+		app.meta["company"] = "::meta.company::";
+		app.meta["file"] = "::APP_FILE::";
+		app.meta["name"] = "::meta.title::";
+		app.meta["packageName"] = "::meta.packageName::";
+		
+		#if !flash
+		::foreach windows::
+		var attributes:lime.ui.WindowAttributes = {
+			
+			allowHighDPI: ::allowHighDPI::,
+			alwaysOnTop: ::alwaysOnTop::,
+			borderless: ::borderless::,
+			// display: ::display::,
+			element: null,
+			frameRate: ::fps::,
+			#if !web fullscreen: ::fullscreen::, #end
+			height: ::height::,
+			hidden: ::hidden::,
+			maximized: ::maximized::,
+			minimized: ::minimized::,
+			parameters: ::parameters::,
+			resizable: ::resizable::,
+			title: "::title::",
+			width: ::width::,
+			x: ::x::,
+			y: ::y::,
+			
+		};
+		
+		attributes.context = {
+			
+			antialiasing: ::antialiasing::,
+			background: ::background::,
+			colorDepth: ::colorDepth::,
+			depth: ::depthBuffer::,
+			hardware: ::hardware::,
+			stencil: ::stencilBuffer::,
+			type: null,
+			vsync: ::vsync::
+			
+		};
+		
+		if (app.window == null) {
+			
+			if (config != null) {
+				
+				for (field in Reflect.fields (config)) {
+					
+					if (Reflect.hasField (attributes, field)) {
+						
+						Reflect.setField (attributes, field, Reflect.field (config, field));
+						
+					} else if (Reflect.hasField (attributes.context, field)) {
+						
+						Reflect.setField (attributes.context, field, Reflect.field (config, field));
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		app.createWindow (attributes);
+		::end::
+		#else
+		
+		app.window.context.attributes.background = ::WIN_BACKGROUND::;
+		app.window.frameRate = ::WIN_FPS::;
+		
+		#end
+		
+		/*
+		//XXX: On mac, creating the application seems to reset the cwd to the programPath at some point.
+		#if cppia
+		if(StencylCppia.gamePath != null)
+			Sys.setCwd(StencylCppia.gamePath);
+		#end
+		*/
+		
 		Universal.initWindow(app.window);
 		universal = new Universal();
 		Lib.current.addChild(universal);
 		var imgBase = Engine.IMG_BASE;
-
+		
 		#if (sys)
 		var preloadPaths = Utils.getConfigText("config/preloadPaths.txt");
 		for(library in ManifestResources.preloadLibraries)
@@ -240,20 +272,24 @@ using StringTools;
 		}
 
 		var preloader = new Preloader (new StencylPreloader ());
-		app.setPreloader (preloader);
-		preloader.create (config);
 		preloader.onComplete.add (universal.preloaderComplete);
+		app.preloader.onProgress.add (function (loaded, total) {
+			@:privateAccess preloader.update (loaded, total);
+		});
+		app.preloader.onComplete.add (function () {
+			@:privateAccess preloader.start ();
+		});
 		
 		for (library in ManifestResources.preloadLibraries)
 		{
-			preloader.addLibrary (library);
+			app.preloader.addLibrary (library);
 		}
 		for (name in ManifestResources.preloadLibraryNames)
 		{
-			preloader.addLibraryName (name);
+			app.preloader.addLibraryName (name);
 		}
 
-		preloader.load ();
+		app.preloader.load ();
 		
 		var result = app.exec ();
 

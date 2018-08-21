@@ -1,6 +1,6 @@
 package com.stencyl.graphics;
 
-#if (lime_opengl && use_actor_tilemap)
+#if ((lime_opengl || lime_opengles || lime_webgl) && use_actor_tilemap)
 
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
