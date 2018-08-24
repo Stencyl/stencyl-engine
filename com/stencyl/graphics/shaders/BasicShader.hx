@@ -4,6 +4,8 @@ import com.stencyl.Engine;
 
 class BasicShader
 {
+	public var multipassParent:BasicShader;
+	public var multipassTarget:BasicShader;
 	public var model:PostProcess;
 	
 	public function new()
@@ -42,7 +44,6 @@ class BasicShader
 	public function disable()
 	{
 		Engine.engine.clearShaders();
-		model.parent.removeChild(model);
 	}
 	
 	//Some shaders need to be set to 0.001 to work properly.
@@ -54,8 +55,8 @@ class BasicShader
 	//Enable only needs to be called on the final shader in the chain.
 	public function combine(shader:BasicShader):BasicShader
 	{
-		Engine.engine.addShader(model);
-		model.to = shader.model;
+		multipassTarget = shader;
+		shader.multipassParent = this;
 		return shader;
 	}
 }

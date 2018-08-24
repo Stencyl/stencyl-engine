@@ -126,7 +126,7 @@ class BloomShader extends BasicShader
 		";
 		#end
 	
-		model = new PostProcess(script, true);
+		model = new PostProcess(this, script, true);
 		
 		setProperty("currPixelWeight", currPixelWeight);
 		setProperty("neighborPixelWeight", neighborPixelWeight);
