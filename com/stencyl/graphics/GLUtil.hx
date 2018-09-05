@@ -13,13 +13,7 @@ import openfl.display3D.Context3D;
 
 class GLUtil
 {
-	#if lime_opengl
-	public static var gl (default, null):lime.graphics.OpenGLRenderContext;
-	#elseif lime_opengles
-	public static var gl (default, null):lime.graphics.OpenGLES2RenderContext;
-	#elseif lime_webgl
 	public static var gl (default, null):lime.graphics.WebGLRenderContext;
-	#end
 	
 	public static var renderer(default, null):OpenGLRenderer;
 	public static var context(default, null):RenderContext;
