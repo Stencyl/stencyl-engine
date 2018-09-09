@@ -1625,9 +1625,9 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		updateTweenProperties();		
 	}	
 	
-	public function updateDrawingMatrix()
+	public function updateDrawingMatrix(force:Bool = false)
 	{
-		if(paused)
+		if(paused && !force)
 		{
 			return;
 		}

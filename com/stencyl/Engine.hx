@@ -2379,6 +2379,7 @@ class Engine
 					}
 					
 					actor.updateTweenProperties();
+					actor.updateDrawingMatrix(true);
 					
 					//actor.setFilter(null);					
 
