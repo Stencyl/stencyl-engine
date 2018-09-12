@@ -1,5 +1,10 @@
 package com.stencyl.graphics.shaders;
 
+#if (js && html5)
+import js.html.CanvasElement;
+import js.Browser;
+#end
+
 import flash.geom.Rectangle;
 import com.stencyl.Config;
 import com.stencyl.Engine;
@@ -19,8 +24,9 @@ class PostProcess
 	public var timeScale:Float = 1;
 	public var parent:Dynamic;
 	public var to:Dynamic;
+	public static var isSupported (get, never):Bool;
 
-	public function new(fullScreenShader:String, literalText:Bool = false)
+	public function new(shader:BasicShader, fullScreenShader:String, literalText:Bool = false)
 	{
 		#if debug trace("Post processing not supported on Flash"); #end
 	}
@@ -30,48 +36,67 @@ class PostProcess
 	public function setUniform(variable:String, value:Float) { }
 	public function getUniform(variable:String):Float { return -1; }
 	public function tweenUniform(name:String, targetValue:Float, duration:Float = 1, easing:Dynamic = null) { }
+	
+	@:noCompletion private static function get_isSupported ():Bool
+	{
+		return false;
+	}
 }
 
 #else
 
 import lime.graphics.opengl.*;
+import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
-import openfl.display.OpenGLView;
+import openfl._internal.Lib;
+import openfl.display.DisplayObject;
+import openfl.display.OpenGLRenderer;
+import openfl.display3D.textures.RectangleTexture;
+import openfl.geom.Rectangle;
 
 typedef Uniform = {
 	var id:GLUniformLocation;
 	var value:Dynamic;
 };
 
+@:access(lime.graphics.opengl.gl)
+
 /**
  * Fullscreen post processing class
  * Uses glsl fullScreenShaders to produce post processing effects
  */
-class PostProcess extends OpenGLView
+class PostProcess extends DisplayObject
 {
 	static var UNIFORM_NOT_FOUND(default, never) = #if js null #else -1 #end;
-
+	public static inline var CONTEXT_LOST = "glcontextlost";
+	public static inline var CONTEXT_RESTORED = "glcontextrestored";
+	
+	public static var isSupported (get, never):Bool;
+	
+	@:noCompletion private var __added:Bool;
+	@:noCompletion private var __initialized:Bool;
+	@:noCompletion private var gl:WebGLRenderContext;
+	
 	/**
 	 * Create a new PostProcess object
 	 * @param fragmentShader  A glsl file in your assets path
 	 */
-	public function new(fragmentShader:String, literalText:Bool = false)
+	public function new(shader:BasicShader, fragmentShader:String, literalText:Bool = false)
 	{
 		super();
-		render = _render;
-
+		
+		basicShader = shader;
+		
+		@:privateAccess var renderer:OpenGLRenderer = cast Engine.stage.__renderer;
+		gl = renderer.gl;
+		
 		uniforms = new Map<String, Uniform>();
 
-#if ios
-		defaultFramebuffer = 1; // faked framebuffer
-#end
-
-		// create and bind the framebuffer
-		framebuffer = GL.createFramebuffer();
+		// create and the texture
 		rebuild();
 
 #if !ios
-		var status = GL.checkFramebufferStatus(GL.FRAMEBUFFER);
+		var status = gl.checkFramebufferStatus(GL.FRAMEBUFFER);
 		switch (status)
 		{
 			case GL.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
@@ -84,11 +109,11 @@ class PostProcess extends OpenGLView
 		}
 #end
 
-		buffer = GL.createBuffer();
-		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
+		buffer = gl.createBuffer();
+		gl.bindBuffer(GL.ARRAY_BUFFER, buffer);
 		var data = new Float32Array(vertices);
-		GL.bufferData(GL.ARRAY_BUFFER, data.byteLength, data, GL.STATIC_DRAW);
-		GL.bindBuffer(GL.ARRAY_BUFFER, null);
+		gl.bufferData(GL.ARRAY_BUFFER, data, GL.STATIC_DRAW);
+		gl.bindBuffer(GL.ARRAY_BUFFER, null);
 
 		if(literalText)
 		{
@@ -125,9 +150,137 @@ class PostProcess extends OpenGLView
 		timeUniform = fullScreenShader.uniform("uTime");
 		resolutionUniform = fullScreenShader.uniform("uResolution");
 		resolutionUsUniform = fullScreenShader.uniform("uResolutionUs");
-
+		
 		vertexSlot = fullScreenShader.attribute("aVertex");
 		texCoordSlot = fullScreenShader.attribute("aTexCoord");
+	}
+	
+	@:noCompletion private static function get_isSupported ():Bool
+	{
+		#if (js && html5)
+		
+		#if (canvas && !dom)
+		return false;
+		#else
+		
+		if (untyped (!window.WebGLRenderingContext)) {
+			
+			return false;
+			
+		}
+		
+		if (GL.context != null) {
+			
+			return true;
+			
+		} else {
+			
+			var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
+			var context = cast canvas.getContext ("webgl");
+			
+			if (context == null) {
+				
+				context = cast canvas.getContext ("experimental-webgl");
+				
+			}
+			
+			return (context != null);
+			
+		}
+		#end
+		
+		#else
+		
+		return true;
+		
+		#end
+		
+	}
+	
+	@:noCompletion private override function __enterFrame (deltaTime:Int):Void
+	{
+		__setRenderDirty ();
+	}
+	
+	@:access(openfl.display3D.Context3D)
+	@:access(openfl._internal.renderer.Context3DState)
+	@:noCompletion private override function __renderGL (renderer:OpenGLRenderer):Void
+	{
+		if (stage != null && __renderable)
+		{
+			var stage = Engine.stage;
+			var context3D = stage.context3D;
+			
+			//renderer.setShader (null);
+			renderer.__setBlendMode (null);
+			
+			if(basicShader.multipassTarget == null)
+				context3D.setRenderToBackBuffer();
+			else
+				context3D.setRenderToTexture(basicShader.multipassTarget.model.texture);
+			context3D.clear();
+			
+			time += Engine.elapsedTime * timeScale;
+			
+			fullScreenShader.bind();
+
+			gl.enableVertexAttribArray(vertexSlot);
+			gl.enableVertexAttribArray(texCoordSlot);
+
+			gl.activeTexture(GL.TEXTURE0);
+			@:privateAccess gl.bindTexture(GL.TEXTURE_2D, texture.__getTexture());
+			if(stage.window.context.type == OPENGL)
+				gl.enable(GL.TEXTURE_2D);
+
+			gl.bindBuffer(GL.ARRAY_BUFFER, buffer);
+			gl.vertexAttribPointer(vertexSlot, 2, GL.FLOAT, false, 16, 0);
+			gl.vertexAttribPointer(texCoordSlot, 2, GL.FLOAT, false, 16, 8);
+
+			gl.uniform1i(imageUniform, 0);
+			gl.uniform1f(timeUniform, time);
+			gl.uniform2f(resolutionUniform, Std.int(stage.stageWidth), Std.int(stage.stageHeight));
+			gl.uniform2f(resolutionUsUniform, Std.int(stage.stageWidth / (Engine.SCALE * Engine.screenScaleX)), Std.int(stage.stageHeight / (Engine.SCALE * Engine.screenScaleY)));
+
+			//for (u in uniforms) gl.uniform1f(u.id, u.value);
+			var it = uniforms.iterator();
+			var u = it.next();
+			while (u != null)
+			{
+				if (Std.is(u.value, Array))
+				{
+					gl.uniform1fv(u.id, new Float32Array(null, u.value));
+				}
+				else
+				{
+					gl.uniform1f(u.id, u.value);
+				}
+				u = it.next();
+			}
+
+			gl.drawArrays(GL.TRIANGLES, 0, 6);
+
+			gl.bindBuffer(GL.ARRAY_BUFFER, null);
+			if (stage.window.context.type == OPENGL)
+				gl.disable(GL.TEXTURE_2D);
+			gl.bindTexture(GL.TEXTURE_2D, null);
+
+			gl.disableVertexAttribArray(vertexSlot);
+			gl.disableVertexAttribArray(texCoordSlot);
+
+			//keep OpenFL's cache valid, restore needed state
+			
+			context3D.__contextState.program = null;
+			context3D.__flushGLProgram();
+			
+			context3D.__contextState.__currentGLElementArrayBuffer = null;
+			
+			//currently unimplemented in openfl
+			//context3D.__contextState.__currentGLTexture2D = null;
+		}
+	}
+	
+	@:noCompletion private override function __renderGLMask (renderer:OpenGLRenderer):Void
+	{
 	}
 
 	/**
@@ -177,160 +330,47 @@ class PostProcess extends OpenGLView
 	}
 
 	/**
-	 * Allows multi pass rendering by passing the framebuffer to another post processing class
-	 * Renders to a PostProcess framebuffer instead of the screen, if set
-	 * Set to null to render to the screen
-	 */
-	public var to(never, set):PostProcess;
-	private function set_to(value:PostProcess):PostProcess
-	{
-		renderTo = (value == null ? defaultFramebuffer : value.framebuffer);
-		return value;
-	}
-
-	/**
-	 * Enables the PostProcess object for rendering
-	 * @param to  (Optional) Render to PostProcess framebuffer instead of screen
-	 */
-	public function enable(?to:PostProcess):Void
-	{
-		var index = Engine.engine.root.numChildren;
-
-		if (index < 0) index = 0;
-		Engine.engine.root.addChildAt(this, index);
-
-		this.to = to;
-	}
-
-	/**
-	 * Rebuilds the renderbuffer to match screen dimensions
+	 * Rebuilds the texture to match screen dimensions
 	 */
 	public function rebuild()
 	{
-		GL.bindFramebuffer(GL.FRAMEBUFFER, framebuffer);
-
-		if (texture != null) GL.deleteTexture(texture);
-		if (renderbuffer != null) GL.deleteRenderbuffer(renderbuffer);
-
-		createTexture(Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
-		createRenderbuffer(Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
+		if (texture != null) texture.dispose();
 		
-		GL.bindFramebuffer(GL.FRAMEBUFFER, null);
-	}
-
-	/* @private creates a renderbuffer object */
-	private inline function createRenderbuffer(width:Int, height:Int)
-	{
-		// Bind the renderbuffer and create a depth buffer
-		renderbuffer = GL.createRenderbuffer();
-		GL.bindRenderbuffer(GL.RENDERBUFFER, renderbuffer);
-		GL.renderbufferStorage(GL.RENDERBUFFER, GL.DEPTH_COMPONENT16, width, height);
-
-		// Specify renderbuffer as depth attachement
-		GL.framebufferRenderbuffer(GL.FRAMEBUFFER, GL.DEPTH_ATTACHMENT, GL.RENDERBUFFER, renderbuffer);
+		createTexture(Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
 	}
 
 	/* @private creates a texture */
+	@:access(openfl.display3D.textures.RectangleTexture)
+	@:access(openfl.display3D.Context3D)
 	private inline function createTexture(width:Int, height:Int)
 	{
-		texture = GL.createTexture();
-		GL.bindTexture(GL.TEXTURE_2D, texture);
-		GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB,  width, height,  0,  GL.RGB, GL.UNSIGNED_BYTE, 0);
-
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER , GL.LINEAR);
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-
-		// specify texture as color attachment
-		GL.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture, 0);
+		texture = com.stencyl.Engine.stage.context3D.createRectangleTexture(width, height, BGRA, true);
+		//texture.uploadFromTypedArray(null);
+		
+		texture.__context.__bindGLTexture2D (texture.__textureID);
+		texture.__setSamplerState(new openfl._internal.renderer.SamplerState());
+		gl.texImage2D (texture.__textureTarget, 0, texture.__internalFormat, texture.__width, texture.__height, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
+		texture.__context.__bindGLTexture2D (null);
 	}
 
 	/**
-	 * Capture what is subsequently rendered to this framebuffer
+	 * Capture what is subsequently rendered to the screen in a texture
 	 */
 	public function capture()
 	{
-		GL.bindFramebuffer(GL.FRAMEBUFFER, framebuffer);
-		
-		//These seem to have no effect.
-		GL.viewport(0, 0, Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
-		GL.clear(GL.DEPTH_BUFFER_BIT | GL.COLOR_BUFFER_BIT);
+		com.stencyl.Engine.stage.context3D.setRenderToTexture(texture);
+		@:privateAccess var framebuffer = texture.__getGLFramebuffer(false, 0, 0);
+		gl.bindFramebuffer(GL.FRAMEBUFFER, framebuffer);
+		gl.clear(GL.DEPTH_BUFFER_BIT | GL.COLOR_BUFFER_BIT);
 	}
-
-	/**
-	 * Renders to a framebuffer or the screen every frame
-	 */
-	public function _render(rect:Rectangle)
-	{
-		time += Engine.elapsedTime * timeScale;
-		GL.bindFramebuffer(GL.FRAMEBUFFER, renderTo);
-
-		GL.viewport(0, 0, Std.int(Universal.windowWidth), Std.int(Universal.windowHeight));
-
-		GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
-
-		fullScreenShader.bind();
-
-		GL.enableVertexAttribArray(vertexSlot);
-		GL.enableVertexAttribArray(texCoordSlot);
-
-		GL.activeTexture(GL.TEXTURE0);
-		GL.bindTexture(GL.TEXTURE_2D, texture);
-		if (GL.type == OPENGL)
-			GL.enable(GL.TEXTURE_2D);
-
-		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
-		GL.vertexAttribPointer(vertexSlot, 2, GL.FLOAT, false, 16, 0);
-		GL.vertexAttribPointer(texCoordSlot, 2, GL.FLOAT, false, 16, 8);
-
-		GL.uniform1i(imageUniform, 0);
-		GL.uniform1f(timeUniform, time);
-		GL.uniform2f(resolutionUniform, Std.int(openfl.Lib.current.stage.stageWidth), Std.int(openfl.Lib.current.stage.stageHeight));
-		GL.uniform2f(resolutionUsUniform, Std.int(openfl.Lib.current.stage.stageWidth / (Engine.SCALE * Engine.screenScaleX)), Std.int(openfl.Lib.current.stage.stageHeight / (Engine.SCALE * Engine.screenScaleY)));
-
-		//for (u in uniforms) GL.uniform1f(u.id, u.value);
-		var it = uniforms.iterator();
-		var u = it.next();
-		while (u != null)
-		{
-			if (Std.is(u.value, Array))
-			{
-				#if (js && html5)
-				GL.uniform1fvWEBGL(u.id, new Float32Array(null, u.value));
-				#else
-				GL.uniform1fv(u.id, u.value.length, new Float32Array(null, null, u.value));
-				#end
-			}
-			else
-			{
-				GL.uniform1f(u.id, u.value);
-			}
-			u = it.next();
-		}
-
-		GL.drawArrays(GL.TRIANGLES, 0, 6);
-
-		GL.bindBuffer(GL.ARRAY_BUFFER, null);
-		if (GL.type == OPENGL)
-			GL.disable(GL.TEXTURE_2D);
-		GL.bindTexture(GL.TEXTURE_2D, null);
-
-		GL.disableVertexAttribArray(vertexSlot);
-		GL.disableVertexAttribArray(texCoordSlot);
-
-		GL.useProgram(null);
-	}
-
-	private var framebuffer:GLFramebuffer;
-	private var renderbuffer:GLRenderbuffer;
-	private var texture:GLTexture;
+	
+	private var texture:RectangleTexture;
 
 	private var fullScreenShader:Shader;
 	private var buffer:GLBuffer;
-	public var renderTo:GLFramebuffer;
-	private var defaultFramebuffer:GLFramebuffer = null;
-
+	
+	public var basicShader:BasicShader;
+	
 	/* @private Time accumulator passed to the fullScreenShader */
 	private var time:Float = 0;
 	public var timeScale:Float = 1;

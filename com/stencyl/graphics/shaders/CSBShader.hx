@@ -53,7 +53,7 @@ class CSBShader extends BasicShader
 			}
 		";
 	
-		model = new PostProcess(script, true);
+		model = new PostProcess(this, script, true);
 		
 		setContrast(contrast);
 		setBrightness(brightness);

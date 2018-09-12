@@ -33,7 +33,7 @@ class TintShader extends BasicShader
 			}
 		";
 	
-		model = new PostProcess(script, true);
+		model = new PostProcess(this, script, true);
 		
 		setColor(color);
 		setAmount(amount);

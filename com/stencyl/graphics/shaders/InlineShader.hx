@@ -5,6 +5,6 @@ class InlineShader extends BasicShader
 	public function new(script:String)
 	{
 		super();
-		model = new PostProcess(script, true);
+		model = new PostProcess(this, script, true);
 	}
 }

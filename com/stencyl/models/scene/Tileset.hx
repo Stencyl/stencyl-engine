@@ -74,7 +74,7 @@ class Tileset extends Resource
 				sheetMap.set(tile.tileID, flTileset.addRect(r));
 			}
 			
-			#if lime_opengl
+			#if (lime_opengl || lime_opengles || lime_webgl)
 			//var shouldDispose = flTileset.bitmapData != pixels;
 			//com.stencyl.graphics.GLUtil.uploadTexture(flTileset.bitmapData, shouldDispose);
 			#end

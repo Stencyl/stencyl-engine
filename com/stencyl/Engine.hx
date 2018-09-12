@@ -679,7 +679,7 @@ class Engine
 		#if(!flash)
 		com.stencyl.graphics.GLUtil.initialize();
 		
-		if(openfl.display.OpenGLView.isSupported)
+		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
 		{
 			shaderLayer = new Sprite();
 		}
@@ -723,7 +723,7 @@ class Engine
 		begin(Config.initSceneID);
 		
 		#if(!flash)
-		if(openfl.display.OpenGLView.isSupported)
+		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
 		{
 			root.addChild(shaderLayer);
 		}
@@ -735,50 +735,35 @@ class Engine
 	}
 	
 	#if(flash)
-	public function addShader(s:PostProcess, addToDisplayTree:Bool = true) {}
+	public function addShader(pp:PostProcess, addToDisplayTree:Bool = true) {}
 	public function clearShaders() {}
 	public function toggleShadersForHUD() {} 
 	public function resetShaders() {}
 	#else
-	public function addShader(s:PostProcess, addToDisplayTree:Bool = true) 
+	public function addShader(pp:PostProcess)
 	{
-		if(openfl.display.OpenGLView.isSupported)
+		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
 		{
+			var s = pp.basicShader;
+			
 			//Clear out existing shader if one is currently active, otherwise we hit graphical glitches.
-			if(shaders != null && s.renderTo == null)
+			if(shaders != null)
 			{
-				var removeAll = false;
-				
-				for(shader in shaders)
-				{
-					if(shader.renderTo == null)
-					{
-						removeAll = true;
-						break;
-					}
-				}
-				
-				if(removeAll)
-				{
-					trace("Enabling a shader over an existing shader. Clearing existing shader first.");
-					clearShaders();
-				}
+				trace("Enabling a shader over an existing shader. Clearing existing shader first.");
+				clearShaders();
 			}
 			
-			if(addToDisplayTree)
+			shaders = [s.model];
+			
+			s = s.multipassParent;
+			while(s != null)
 			{
-				shaderLayer.addChild(s);
-			}
-
-			if(shaders == null)
-			{
-				shaders = [s];
+				shaders.insert(0, s.model);
+				s = s.multipassParent;
 			}
 			
-			else
-			{
-				shaders.push(s);
-			}
+			for(postProcess in shaders)
+				shaderLayer.addChild(postProcess);
 		}
 		
 		else
@@ -790,6 +775,7 @@ class Engine
 	public function clearShaders()
 	{
 		Utils.removeAllChildren(shaderLayer);
+		stage.context3D.setRenderToBackBuffer();
 		shaders = [];
 	}
 	

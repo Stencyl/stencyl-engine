@@ -6,6 +6,6 @@ class ExternalShader extends BasicShader
 	{
 		super();
 		scriptPath = "assets/data/" + scriptPath;
-		model = new PostProcess(scriptPath);
+		model = new PostProcess(this, scriptPath);
 	}
 }

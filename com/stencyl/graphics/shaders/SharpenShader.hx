@@ -40,7 +40,7 @@ class SharpenShader extends BasicShader
 			}
 		";
 	
-		model = new PostProcess(script, true);
+		model = new PostProcess(this, script, true);
 		
 		setAmount(amount);
 	}

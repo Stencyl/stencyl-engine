@@ -89,15 +89,19 @@ class Universal extends Sprite
 		#if mobile
 		isFullScreen = true;
 		#end
+		
+		#if html5
+		isFullScreen = false;
+		#end
 
 		stage.displayState = isFullScreen ?
 			StageDisplayState.FULL_SCREEN_INTERACTIVE :
 			StageDisplayState.NORMAL;
-
+		
 		#if (!flash)
 		stage.__setLogicalSize (0, 0);
 		#end
-
+		
 		#if desktop
 		if(!isFullScreen)
 		{

@@ -145,7 +145,7 @@ class Animation
 		
 		imgData.dispose();
 		
-		#if (lime_opengl && !use_actor_tilemap)
+		#if ((lime_opengl || lime_opengles || lime_webgl) && !use_actor_tilemap)
 		if(Config.disposeImages && parent != null && !parent.readableImages)
 		{
 			var i = 0;

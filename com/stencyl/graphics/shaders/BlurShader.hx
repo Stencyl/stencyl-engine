@@ -60,7 +60,7 @@ class BlurShader extends BasicShader
 			}
 		";
 	
-		model = new PostProcess(script, true);
+		model = new PostProcess(this, script, true);
 		
 		setRadius(radius);
 		setDirectionX(dirX);
