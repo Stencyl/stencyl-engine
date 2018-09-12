@@ -31,6 +31,7 @@ class Sound extends Resource
 	{
 		super(ID, name, -1);
 		
+		trace("com.stencyl.models.Sound.new");
 		this.streaming = streaming;
 		this.looping = looping;
 		this.panning = panning;
@@ -54,6 +55,7 @@ class Sound extends Resource
 	
 	override public function loadGraphics()
 	{
+		trace("com.stencyl.models.Sound.loadGraphics");
 		if(!streaming)
 		{
 			//trace("Loading sound: " + ID);
@@ -63,6 +65,8 @@ class Sound extends Resource
 	
 	override public function unloadGraphics()
 	{
+		trace("com.stencyl.models.Sound.unloadGraphics");
+		
 		if(!streaming)
 		{
 			if(src != null)
@@ -77,6 +81,7 @@ class Sound extends Resource
 
 	public function play(channelNum:Int = 1, position:Float = 0):SoundChannel
 	{
+		trace("com.stencyl.models.Sound.play");
 		if(streaming)
 		{
 			#if(mobile || desktop || js)
@@ -103,6 +108,7 @@ class Sound extends Resource
 	
 	public function loop(channelNum:Int = 1, position:Float = 0):SoundChannel
 	{
+		trace("com.stencyl.models.Sound.loop");
 		if(streaming)
 		{
 			#if(mobile || desktop || js)
@@ -129,6 +135,7 @@ class Sound extends Resource
 	
 	public function stopInstances()
 	{
+		trace("com.stencyl.models.Sound.stopInstances");
 		for(i in 0...Script.CHANNELS)
 		{
 			var sc:com.stencyl.models.SoundChannel = com.stencyl.Engine.engine.channels[i];	

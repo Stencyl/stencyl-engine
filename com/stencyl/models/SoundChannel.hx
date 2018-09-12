@@ -33,6 +33,7 @@ class SoundChannel
 	
 	public function new(engine:Engine, channelNum:Int) 
 	{
+		trace("com.stencyl.models.SoundChannel.new");
 		currentSound = null;
 		currentClip = null;
 		
@@ -48,6 +49,7 @@ class SoundChannel
 	
 	public function playSound(clip:Sound):openfl.media.SoundChannel
 	{			
+		trace("com.stencyl.models.SoundChannel.playSound");
 		if(currentSound != null)
 		{
 			currentSound.stop();
@@ -85,6 +87,7 @@ class SoundChannel
 	
 	public function loopSound(clip:Sound):openfl.media.SoundChannel
 	{
+		trace("com.stencyl.models.SoundChannel.loopSound");
 		if(currentSound != null)
 		{
 			currentSound.stop();
@@ -121,6 +124,7 @@ class SoundChannel
 	
 	public function setPause(pause:Bool)
 	{
+		trace("com.stencyl.models.SoundChannel.setPause");
 		if(currentSound != null)
 		{
 			if(pause)
@@ -152,6 +156,7 @@ class SoundChannel
 	
 	private function looped(event:Event = null)
 	{
+		trace("com.stencyl.models.SoundChannel.looped");
 		if(currentSound != null)
 		{
         	currentSound.removeEventListener(Event.SOUND_COMPLETE, looped);
@@ -162,6 +167,7 @@ class SoundChannel
 	
 	private function stopped(event:Event = null)
 	{
+		trace("com.stencyl.models.SoundChannel.stopped");
 		//trace("Sound stopped: " + channelNum);
 	
 		if(currentSound != null)
@@ -174,6 +180,7 @@ class SoundChannel
 	
 	public function stopSound()
 	{
+		trace("com.stencyl.models.SoundChannel.stopSound");
 		//trace("STOP SOUND: " + currentSound +  " - " + channelNum);
 	
 		if(currentSound != null)
@@ -191,6 +198,7 @@ class SoundChannel
 	
 	public function fadeInSound(time:Float)
 	{
+		trace("com.stencyl.models.SoundChannel.fadeInSound");
 		if(currentSound != null)
 		{
 			Actuate.tween(transform, time, {volume:1}).onUpdate(onUpdate);
@@ -199,6 +207,7 @@ class SoundChannel
 	
 	public function fadeOutSound(time:Float)
 	{
+		trace("com.stencyl.models.SoundChannel.fadeOutSound");
 		if(currentSound != null)
 		{
 			Actuate.tween(transform, time, {volume:0}).onUpdate(onUpdate);
@@ -207,6 +216,7 @@ class SoundChannel
 	
 	public function fadeSound(time:Float, amount:Float)
 	{
+		trace("com.stencyl.models.SoundChannel.fadeSound");
 		if(currentSound != null)
 		{
 			Actuate.tween(transform, time, {volume:amount}).onUpdate(onUpdate);
@@ -214,7 +224,8 @@ class SoundChannel
 	}
 	
 	public function onUpdate()
-	{	
+	{
+		trace("com.stencyl.models.SoundChannel.onUpdate");
 		if(currentSound != null)
 		{
 			currentSound.soundTransform = transform;
@@ -223,6 +234,7 @@ class SoundChannel
 	
 	public function setVolume(volume:Float)
 	{
+		trace("com.stencyl.models.SoundChannel.setVolume");
 		this.volume = volume;
 		
 		if(currentSound != null)
