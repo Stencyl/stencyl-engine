@@ -241,8 +241,9 @@ class Engine
 	public static var movieClip:MovieClip;
 	public static var stage:Stage;
 	
-	public var root:Sprite; //The absolute root
+	public var root:Universal; //The absolute root
 	public var colorLayer:Shape;
+	public var maskLayer:Shape;
 	public var master:Sprite; // the root of the main node
 	public var hudLayer:Layer; //Shows above everything else
 	public var transitionLayer:Sprite; //Shows above everything else
@@ -579,7 +580,7 @@ class Engine
 		var oldScreenWidth = screenWidth;
 		var oldScreenHeight = screenHeight;
 
-		cast(root, Universal).initScreen(isFullScreen);
+		root.initScreen(isFullScreen);
 		
 		screenWidth = Std.int(Universal.logicalWidth);
 		screenWidthHalf = Std.int(screenWidth / 2);
@@ -674,7 +675,7 @@ class Engine
 	//* Init
 	//*-----------------------------------------------
 
-	public function new(root:Sprite) 
+	public function new(root:Universal) 
 	{
 		#if(!flash)
 		com.stencyl.graphics.GLUtil.initialize();
@@ -722,13 +723,6 @@ class Engine
 		
 		begin(Config.initSceneID);
 		
-		#if(!flash)
-		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
-		{
-			root.addChild(shaderLayer);
-		}
-		#end
-
 		#if flash
 		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);
 		#end
@@ -890,7 +884,16 @@ class Engine
 		
 		debugLayer = new Sprite();
 		root.addChild(debugLayer);
-				
+		
+		#if(!flash)
+		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
+		{
+			root.addChild(shaderLayer);
+		}
+		#end
+		
+		root.addChild(root.maskLayer);
+		
 		//Initialize things	
 		actorsToCreateInNextScene = new Array();			
 		gameAttributes = new Map<String,Dynamic>();

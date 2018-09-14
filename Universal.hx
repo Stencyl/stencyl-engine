@@ -1,6 +1,9 @@
 package;
 
+import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl.Lib;
+import openfl.display.OpenGLRenderer;
 import openfl.display.Sprite;
 import openfl.display.Stage;
 import openfl.display.StageAlign;
@@ -37,6 +40,8 @@ class Universal extends Sprite
 	public static var logicalHeight = 0.0;
 	public static var windowWidth = 0.0;
 	public static var windowHeight = 0.0;
+	
+	public var maskLayer:Shape;
 
 	public static function initWindow(window:Window):Void
 	{
@@ -62,7 +67,8 @@ class Universal extends Sprite
 		removeEventListener(Event.ADDED_TO_STAGE, onAdded);
 
 		initServices();
-
+		
+		maskLayer = new Shape();
 		initScreen(Config.startInFullScreen);
 	}
 	
@@ -311,9 +317,18 @@ class Universal extends Sprite
 			logicalWidth += (windowWidth / scaleX - scaledStageWidth) / Engine.SCALE;
 			logicalHeight += (windowHeight / scaleY - scaledStageHeight) / Engine.SCALE;
 		}
-
-		scrollRect = new Rectangle(0, 0, logicalWidth * Engine.SCALE, logicalHeight * Engine.SCALE);
-
+		
+		maskLayer.graphics.clear();
+		if(Config.scaleMode == ScaleMode.SCALE_TO_FIT_LETTERBOX && isFullScreen)
+		{
+			maskLayer.graphics.beginFill(stage.color);
+			maskLayer.graphics.drawRect(-x, -y, windowWidth, y);
+			maskLayer.graphics.drawRect(-x, 0, x, scaledStageHeight);
+			maskLayer.graphics.drawRect(scaledStageWidth, 0, x, scaledStageHeight);
+			maskLayer.graphics.drawRect(-x, scaledStageHeight, windowWidth, y);
+			maskLayer.graphics.endFill();
+		}
+		
 		trace("Logical Width: " + logicalWidth);
 		trace("Logical Height: " + logicalHeight);
 		trace("Scale X: " + scaleX);
@@ -403,7 +418,7 @@ class Universal extends Sprite
 
 		#end
 	}
-
+	
 	//for Cppia, don't directly call ApplicationMain functions
 
 	private static var am:Class<Dynamic>;
