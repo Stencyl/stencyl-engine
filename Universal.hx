@@ -1,7 +1,5 @@
 package;
 
-import openfl._internal.renderer.opengl.GLBitmap;
-import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl.Lib;
 import openfl.display.OpenGLRenderer;
 import openfl.display.Sprite;
