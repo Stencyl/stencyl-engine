@@ -203,7 +203,7 @@ class PostProcess extends DisplayObject
 	}
 	
 	@:access(openfl.display3D.Context3D)
-	@:access(openfl._internal.renderer.Context3DState)
+	@:access(openfl._internal.renderer.context3D.Context3DState)
 	@:noCompletion private override function __renderGL (renderer:OpenGLRenderer):Void
 	{
 		if (stage != null && __renderable)
