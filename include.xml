@@ -34,6 +34,7 @@
 			
 		<target name="cppia" handler="stencyl-cppia" />
 		<haxelib name="stencyl-cppia" />
+		<define name="lime-opengl" />
 		
 	</section>
 
