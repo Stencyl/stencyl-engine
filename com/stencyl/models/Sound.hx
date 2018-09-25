@@ -1,6 +1,7 @@
 package com.stencyl.models;
 
 import lime.media.AudioBuffer;
+import lime.media.howlerjs.Howl;
 import lime.media.vorbis.VorbisFile;
 import openfl.media.SoundChannel;
 import openfl.media.Sound in OpenFLSound;
@@ -26,7 +27,7 @@ class Sound extends Resource
 	public var ext:String;
 	
 	public var src:openfl.media.Sound;
-
+	
 	public function new(ID:Int, name:String, streaming:Bool, looping:Bool, panning:Float, volume:Float, ext:String, atlasID:Int)
 	{
 		super(ID, name, -1);
@@ -54,10 +55,10 @@ class Sound extends Resource
 	
 	override public function loadGraphics()
 	{
-		if(!streaming)
+		if(#if lime_vorbis !streaming #else true #end)
 		{
 			//trace("Loading sound: " + ID);
-			src = Assets.getSound("assets/sfx/sound-" + ID + "." + this.ext, false);
+			src = Assets.getSound("assets/" + (streaming? "music" : "sfx") + "/sound-" + ID + "." + this.ext, false);
 		}
 	}
 	
@@ -77,19 +78,9 @@ class Sound extends Resource
 
 	public function play(channelNum:Int = 1, position:Float = 0):SoundChannel
 	{
-		if(streaming)
+		if(streaming && src == null)
 		{
-			#if(mobile || desktop || js)
-			
-			var vorbisFile = VorbisFile.fromFile(Assets.getPath("assets/music/sound-" + ID + "." + ext));
-			var audioBuffer = AudioBuffer.fromVorbisFile(vorbisFile);
-			src = OpenFLSound.fromAudioBuffer(audioBuffer);
-			
-			#else
-			
-			src = Assets.getSound("assets/music/sound-" + ID + "." + ext, false);
-			
-			#end
+			src = getStreamingSource();
 		}
 		
 		if(src == null)
@@ -98,24 +89,14 @@ class Sound extends Resource
 			return null;
 		}
 		
-		return src.play(position);	
+		return src.play(position);
 	}
 	
 	public function loop(channelNum:Int = 1, position:Float = 0):SoundChannel
 	{
-		if(streaming)
+		if(streaming && src == null)
 		{
-			#if(mobile || desktop || js)
-			
-			var vorbisFile = VorbisFile.fromFile(Assets.getPath("assets/music/sound-" + ID + "." + ext));
-			var audioBuffer = AudioBuffer.fromVorbisFile(vorbisFile);
-			src = OpenFLSound.fromAudioBuffer(audioBuffer);
-			
-			#else
-			
-			src = Assets.getSound("assets/music/sound-" + ID + "." + ext, false);
-			
-			#end
+			src = getStreamingSource();
 		}
 		
 		if(src == null)
@@ -125,6 +106,34 @@ class Sound extends Resource
 		}
 		
 		return src.play(position, com.stencyl.utils.Utils.INTEGER_MAX);
+	}
+	
+	@:access(lime.media.AudioBuffer)
+	private function getStreamingSource():openfl.media.Sound
+	{
+		var path = "assets/music/sound-" + ID + "." + ext;
+		
+		#if lime_vorbis
+		
+		var vorbisFile = VorbisFile.fromFile(Assets.getPath(path));
+		var audioBuffer = AudioBuffer.fromVorbisFile(vorbisFile);
+		return OpenFLSound.fromAudioBuffer(audioBuffer);
+		
+		//This doesn't work right now because it seems that loading a new Howl has to be completed before playing the sound.
+		
+		/*#elseif lime_howlerjs
+		
+		var audioBuffer = new AudioBuffer();
+		audioBuffer.__srcHowl = new Howl({src: [path], preload: false, html5: true});
+		audioBuffer.__srcHowl.load();
+		
+		return OpenFLSound.fromAudioBuffer(audioBuffer);*/
+		
+		#else
+		
+		return Assets.getSound(path, false);
+		
+		#end
 	}
 	
 	public function stopInstances()
