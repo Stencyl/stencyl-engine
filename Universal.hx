@@ -187,7 +187,7 @@ class Universal extends Sprite
 			Engine.isIPhoneX = true;
 		}
 		
-		else if(smaller == 1242 && larger == 2688)
+		else if(smaller == 1242 && larger >= 2688 && larger <= 2690)
 		{
 			Engine.isIPhoneXMax = true;
 		}
