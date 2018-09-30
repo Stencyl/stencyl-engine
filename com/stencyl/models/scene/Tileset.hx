@@ -188,6 +188,8 @@ class Tileset extends Resource
 		{
 			unloadGraphics();
 			loadGraphics();
+			
+			for(t in tiles) if(t != null) t.updateSource = true;
 		}
 		else
 		{

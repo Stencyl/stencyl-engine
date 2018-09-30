@@ -353,6 +353,8 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 
 				if(cacheSource.get(t.parent.ID * TILESET_CACHE_MULTIPLIER + t.tileID) == null || t.updateSource)
 				{
+					t.updateSource = false;
+					
 					if(t.pixels == null && t.autotiles == null)
 					{
 						cacheSource.set(t.parent.ID * TILESET_CACHE_MULTIPLIER + t.tileID, t.parent.getImageSourceForTile(t.tileID, tw, th));
@@ -361,7 +363,6 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 					else
 					{
 						cacheSource.set(t.parent.ID * TILESET_CACHE_MULTIPLIER + t.tileID, t.getSource(tw, th));
-						t.updateSource = false;
 					}						
 				}
 				
