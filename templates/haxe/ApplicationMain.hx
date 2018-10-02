@@ -53,14 +53,6 @@ using StringTools;
 		
 		System.__registerEntryPoint ("::APP_FILE::", create);
 		
-		#if (hxtelemetry)
-		var telemetry = new hxtelemetry.HxTelemetry.Config ();
-		telemetry.allocations = ::if (config.hxtelemetry != null)::("::config.hxtelemetry.allocations::" == "true")::else::true::end::;
-		telemetry.host = ::if (config.hxtelemetry != null)::"::config.hxtelemetry.host::"::else::"localhost"::end::;
-		telemetry.app_name = config.name;
-		Reflect.setField (config, "telemetry", telemetry);
-		#end
-		
 		Lib.current;
 
 		#if (stencyltools)
@@ -171,6 +163,12 @@ using StringTools;
 		app.meta["file"] = "::APP_FILE::";
 		app.meta["name"] = "::meta.title::";
 		app.meta["packageName"] = "::meta.packageName::";
+		app.meta["version"] = "::meta.version::";
+		
+		::if (config.hxtelemetry != null)::#if hxtelemetry
+		app.meta["hxtelemetry-allocations"] = "::config.hxtelemetry.allocations::";
+		app.meta["hxtelemetry-host"] = "::config.hxtelemetry.host::";
+		#end::end::
 		
 		#if !flash
 		::foreach windows::
