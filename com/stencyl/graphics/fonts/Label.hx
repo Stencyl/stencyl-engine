@@ -148,7 +148,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Text to display.
 	 */
-	public var text(get_text, set_text):String;
+	public var text(get, set):String;
 	
 	public function get_text():String
 	{
@@ -452,7 +452,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Specifies whether the text field should have a filled background.
 	 */
-	public var background(get_background, set_background):Bool;
+	public var background(get, set):Bool;
 	
 	public function get_background():Bool
 	{
@@ -473,7 +473,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Specifies the color of the text field background.
 	 */
-	public var backgroundColor(get_backgroundColor, set_backgroundColor):Int;
+	public var backgroundColor(get, set):Int;
 	
 	public function get_backgroundColor():Int
 	{
@@ -497,7 +497,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Specifies whether the text should have a shadow.
 	 */
-	public var shadow(get_shadow, set_shadow):Bool;
+	public var shadow(get, set):Bool;
 	
 	public function get_shadow():Bool
 	{
@@ -521,7 +521,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Specifies the color of the text field shadow.
 	 */
-	public var shadowColor(get_shadowColor, set_shadowColor):Int;
+	public var shadowColor(get, set):Int;
 	
 	public function get_shadowColor():Int
 	{
@@ -544,7 +544,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Sets the padding of the text field. This is the distance between the text and the border of the background (if any).
 	 */
-	public var padding(get_padding, set_padding):Int;
+	public var padding(get, set):Int;
 	
 	public function get_padding():Int
 	{
@@ -565,7 +565,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Sets the color of the text.
 	 */
-	public var color(get_color, set_color):Int;
+	public var color(get, set):Int;
 	
 	public function get_color():Int
 	{
@@ -584,7 +584,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		return value;
 	}
 	
-	public var useColor(get_useColor, set_useColor):Bool;
+	public var useColor(get, set):Bool;
 	
 	private function get_useColor():Bool 
 	{
@@ -626,7 +626,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	 * Specifies how the text field should align text.
 	 * LEFT, RIGHT, CENTER.
 	 */
-	public var alignment(get_alignment, set_alignment):Int;
+	public var alignment(get, set):Int;
 	
 	public function get_alignment():Int
 	{
@@ -647,7 +647,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Specifies whether the text field will break into multiple lines or not on overflow.
 	 */
-	public var multiLine(get_multiLine, set_multiLine):Bool;
+	public var multiLine(get, set):Bool;
 	
 	public function get_multiLine():Bool
 	{
@@ -668,7 +668,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Specifies whether the text should have an outline.
 	 */
-	public var outline(get_outline, set_outline):Bool;
+	public var outline(get, set):Bool;
 	
 	public function get_outline():Bool
 	{
@@ -691,7 +691,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Specifies whether color of the text outline.
 	 */
-	public var outlineColor(get_outlineColor, set_outlineColor):Int;
+	public var outlineColor(get, set):Int;
 	
 	public function get_outlineColor():Int
 	{
@@ -713,7 +713,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Sets which font to use for rendering.
 	 */
-	public var font(get_font, set_font):BitmapFont;
+	public var font(get, set):BitmapFont;
 	
 	public function get_font():BitmapFont
 	{
@@ -735,7 +735,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Sets which font to use for rendering.
 	 */
-	public var stencylFont(get_stencylFont, set_stencylFont):Font;
+	public var stencylFont(get, set):Font;
 	
 	public function get_stencylFont():Font
 	{
@@ -755,7 +755,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Sets the distance between lines
 	 */
-	public var lineSpacing(get_lineSpacing, set_lineSpacing):Int;
+	public var lineSpacing(get, set):Int;
 	
 	public function get_lineSpacing():Int
 	{
@@ -795,7 +795,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	/**
 	 * Sets the "font size" of the text
 	 */
-	public var fontScale(get_fontScale, set_fontScale):Float;
+	public var fontScale(get, set):Float;
 	
 	public function get_fontScale():Float
 	{
@@ -815,7 +815,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		return pScale;
 	}
 	
-	public var letterSpacing(get_letterSpacing, set_letterSpacing):Int;
+	public var letterSpacing(get, set):Int;
 	
 	public function get_letterSpacing():Int
 	{
@@ -834,7 +834,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		return _letterSpacing;
 	}
 	
-	public var autoUpperCase(get_autoUpperCase, set_autoUpperCase):Bool;
+	public var autoUpperCase(get, set):Bool;
 	
 	private function get_autoUpperCase():Bool 
 	{
@@ -854,7 +854,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		return _autoUpperCase;
 	}
 	
-	public var wordWrap(get_wordWrap, set_wordWrap):Bool;
+	public var wordWrap(get, set):Bool;
 	
 	private function get_wordWrap():Bool 
 	{
@@ -872,7 +872,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		return _wordWrap;
 	}
 	
-	public var fixedWidth(get_fixedWidth, set_fixedWidth):Bool;
+	public var fixedWidth(get, set):Bool;
 	
 	private function get_fixedWidth():Bool 
 	{

@@ -4092,7 +4092,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	 * An optional Mask component, used for specialized collision. If this is
 	 * not assigned, collision checks will use the Entity's hitbox by default.
 	 */
-	public var shape(get_shape, set_shape):Mask;
+	public var shape(get, set):Mask;
 	private inline function get_shape():Mask { return _mask; }
 	private function set_shape(value:Mask):Mask
 	{

@@ -639,7 +639,7 @@ class BitmapFont
 	 * Returns number of letters available in this font.
 	 * @return Number of letters available in this font.
 	 */
-	public var numLetters(get_numLetters, null):Int;
+	public var numLetters(get, null):Int;
 	
 	public function get_numLetters():Int 
 	{

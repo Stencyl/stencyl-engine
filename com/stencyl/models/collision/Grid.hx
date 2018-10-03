@@ -173,13 +173,13 @@ class Grid extends Hitbox
 	/**
 	 * The tile width.
 	 */
-	public var tileWidth(get_tileWidth, never):Int;
+	public var tileWidth(get, never):Int;
 	private inline function get_tileWidth():Int { return Std.int(_tile.width); }
 
 	/**
 	 * The tile height.
 	 */
-	public var tileHeight(get_tileHeight, never):Int;
+	public var tileHeight(get, never):Int;
 	private inline function get_tileHeight():Int { return Std.int(_tile.height); }
 
 	/**

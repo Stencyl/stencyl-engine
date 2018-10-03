@@ -99,7 +99,7 @@ class Pixelmask extends Hitbox
 	/**
 	 * Current BitmapData mask.
 	 */
-	public var data(get_data, set_data):BitmapData;
+	public var data(get, set):BitmapData;
 	private function get_data():BitmapData { return _data; }
 	private function set_data(value:BitmapData):BitmapData
 	{

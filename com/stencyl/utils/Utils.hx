@@ -52,7 +52,7 @@ class Utils
 	 * Flash equivalent: Number.MAX_VALUE
 	 */
 #if flash
-	public static var NUMBER_MAX_VALUE(get_NUMBER_MAX_VALUE,never):Float;
+	public static var NUMBER_MAX_VALUE(get,never):Float;
 	public static inline function get_NUMBER_MAX_VALUE(): Float { return untyped __global__["Number"].MAX_VALUE; }
 #else
 	public static inline var NUMBER_MAX_VALUE = 1.79769313486231e+308;
@@ -319,7 +319,7 @@ class Utils
 	/**
 	 * Global volume factor for all sounds, a value from 0 to 1.
 	 */
-	public static var volume(get_volume, set_volume):Float;
+	public static var volume(get, set):Float;
 	private static inline function get_volume():Float { return _volume; }
 	private static function set_volume(value:Float):Float
 	{
@@ -335,7 +335,7 @@ class Utils
 	/**
 	 * Global panning factor for all sounds, a value from -1 to 1.
 	 */
-	public static var pan(get_pan, set_pan):Float;
+	public static var pan(get, set):Float;
 	private static inline function get_pan():Float { return _pan; }
 	private static function set_pan(value:Float):Float
 	{
@@ -857,7 +857,7 @@ class Utils
 		}
 	}*/
 
-	public static var time(null, set_time):Float;
+	public static var time(null, set):Float;
 	private static inline function set_time(value:Float):Float {
 		_time = value;
 		return _time;

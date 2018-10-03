@@ -4,6 +4,8 @@ import openfl.display.Graphics;
 import haxe.ds.StringMap;
 import haxe.CallStack;
 
+#if (haxe<4) import Map.IMap; #else import haxe.Constraints.IMap; #end
+
 class Behavior 
 {	
 	public var parent:Dynamic;
@@ -200,7 +202,7 @@ class Behavior
 						
 						if(realValue != null)
 						{
-							var realMap:Map.IMap<String,Dynamic> = realValue;
+							var realMap:IMap<String,Dynamic> = realValue;
 							map = new Map<String, Dynamic>();
 							
 							for (key in realMap.keys())
