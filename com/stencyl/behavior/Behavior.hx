@@ -3,8 +3,7 @@ package com.stencyl.behavior;
 import openfl.display.Graphics;
 import haxe.ds.StringMap;
 import haxe.CallStack;
-
-#if (haxe<4) import Map.IMap; #else import haxe.Constraints.IMap; #end
+import haxe.Constraints.IMap;
 
 class Behavior 
 {	

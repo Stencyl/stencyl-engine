@@ -54,6 +54,12 @@ import openfl.display.OpenGLRenderer;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Rectangle;
 
+#if (haxe_ver >= 4)
+import haxe.xml.Access;
+#else
+import haxe.xml.Fast in Access;
+#end
+
 typedef Uniform = {
 	var id:GLUniformLocation;
 	var value:Dynamic;
@@ -127,7 +133,7 @@ class PostProcess extends DisplayObject
 		{
 			if(fragmentShader.length > 6 && fragmentShader.substr(-6) == ".glslx")
 			{
-				var fullScreenShaderXml:haxe.xml.Fast = new haxe.xml.Fast(Xml.parse(Assets.getText(fragmentShader)).firstElement());
+				var fullScreenShaderXml:Access = new Access(Xml.parse(Assets.getText(fragmentShader)).firstElement());
 				var vertexData:String = (fullScreenShaderXml.hasNode.vertex) ? fullScreenShaderXml.node.vertex.innerData : vertexShader;
 				var fragmentData:String = fullScreenShaderXml.node.fragment.innerData;
 
