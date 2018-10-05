@@ -205,6 +205,21 @@ class Input
 			}
 		}
 		
+		#if desktop
+		for (key in _joyControlMap.keys())
+		{
+			if (_joyControlMap.get(key) == input)
+			{
+				var joyID:Int = Std.parseInt(key.split(", ")[0]);
+				var button:Int = Std.parseInt(key.split(", ")[1]);
+				if (_joyButtonState.get(joyID)[button])
+				{
+					return true;
+				}
+			}
+		}
+		#end
+		
 		return false;
 	}
 
@@ -243,6 +258,16 @@ class Input
 			}
 		}
 		
+		#if desktop
+		for (key in _joyControlMap.keys())
+		{
+			if (_joyControlMap.get(key) == input)
+			{
+				return (Utils.contains(_pressJoy, key));
+			}
+		}
+		#end
+		
 		return false;
 	}
 
@@ -280,6 +305,16 @@ class Input
 				return true;
 			}
 		}
+		
+		#if desktop
+		for (key in _joyControlMap.keys())
+		{
+			if (_joyControlMap.get(key) == input)
+			{
+				return (Utils.contains(_releaseJoy, key));
+			}
+		}
+		#end
 		
 		return false;
 	}
@@ -555,6 +590,9 @@ class Input
 		_pressNum = 0;
 		while (_releaseNum-- > -1) _release[_releaseNum] = -1;
 		_releaseNum = 0;
+		
+		_pressJoy = [];
+		_releaseJoy = [];
 
 		if(mousePressed) 
 		{
@@ -849,15 +887,19 @@ class Input
 	private static function joyPress(id:String)
 	{
 		if(_joyControlMap.exists(id))
-			simulateKeyPress(_joyControlMap.get(id));
-
+		{
+			_pressJoy.push(id);
+		}
+		
 		Engine.invokeListeners2(Engine.engine.whenAnyGamepadPressedListeners, id);
 	}
 
 	private static function joyRelease(id:String)
 	{
 		if(_joyControlMap.exists(id))
-			simulateKeyRelease(_joyControlMap.get(id));
+		{
+			_releaseJoy.push(id);
+		}
 
 		Engine.invokeListeners2(Engine.engine.whenAnyGamepadReleasedListeners, id);
 	}
@@ -1059,6 +1101,8 @@ class Input
 	private static var _pressNum:Int = 0;
 	private static var _release:Array<Int> = new Array<Int>();
 	private static var _releaseNum:Int = 0;
+	private static var _pressJoy:Array<String> = new Array<String>();
+	private static var _releaseJoy:Array<String> = new Array<String>();
 	
 	private static var _joyHatState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
 	private static var _joyAxisState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
