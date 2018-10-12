@@ -210,9 +210,7 @@ class Input
 		{
 			if (_joyControlMap.get(key) == input)
 			{
-				var joyID:Int = Std.parseInt(key.split(", ")[0]);
-				var button:Int = Std.parseInt(key.split(", ")[1]);
-				if (_joyButtonState.get(joyID)[button])
+				if (Utils.contains(_downJoy, key))
 				{
 					return true;
 				}
@@ -889,6 +887,7 @@ class Input
 		if(_joyControlMap.exists(id))
 		{
 			_pressJoy.push(id);
+			_downJoy.push(id);
 		}
 		
 		Engine.invokeListeners2(Engine.engine.whenAnyGamepadPressedListeners, id);
@@ -899,6 +898,7 @@ class Input
 		if(_joyControlMap.exists(id))
 		{
 			_releaseJoy.push(id);
+			_downJoy.remove(id);
 		}
 
 		Engine.invokeListeners2(Engine.engine.whenAnyGamepadReleasedListeners, id);
@@ -1103,6 +1103,7 @@ class Input
 	private static var _releaseNum:Int = 0;
 	private static var _pressJoy:Array<String> = new Array<String>();
 	private static var _releaseJoy:Array<String> = new Array<String>();
+	private static var _downJoy:Array<String> = new Array<String>();
 	
 	private static var _joyHatState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
 	private static var _joyAxisState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
