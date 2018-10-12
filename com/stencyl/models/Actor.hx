@@ -59,6 +59,7 @@ import com.stencyl.utils.ColorMatrix;
 import com.stencyl.utils.Utils;
 
 import motion.Actuate;
+import motion.MotionPath;
 import motion.easing.Back;
 import motion.easing.Cubic;
 import motion.easing.Elastic;
@@ -3509,6 +3510,26 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		Actuate.tween(tweenLoc, duration, {x:x, y:y}).ease(easing).onComplete(onTweenPositionComplete);		
 	}
 	
+	//The actor will touch the control point			
+	public function bezierPathMoveTo(destX:Float, destY:Float, controlX:Float, controlY:Float, duration:Float = 1, easing:Dynamic = null )
+	{
+		var x1 = getX(false);
+		var y1 = getY(false);
+		var tempX = Math.round(((x1 + destX) / 2));
+		var tempY = Math.round(((y1 + destY) / 2));
+		var tempCX = (tempX + ((cx - tempX) * 2));
+		var tempCY = (tempY + ((cy - tempY) * 2));
+		tweenLoc.x = getX(false);
+		tweenLoc.y = getY(false);
+		if(easing == null)
+		{
+			easing = Linear.easeNone;
+		}
+		activePositionTweens++;
+		var path = new MotionPath().bezier(destX, destY, tempCX, tempCY);
+		Actuate.motionPath(tweenLoc,duration,{x:path.x,y:path.y}).ease(easing).onComplete(onTweenPositionComplete);
+	}
+				
 	//In degrees
 	public function spinBy(angle:Float, duration:Float = 1, easing:Dynamic = null)
 	{
