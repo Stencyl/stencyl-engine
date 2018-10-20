@@ -516,6 +516,7 @@ class Engine
 	//*-----------------------------------------------
 	
 	private var isFullScreen:Bool = false;
+	private var ignoreResize:Bool = false;
 	private var stats:com.nmefermmmtools.debug.Stats;
 	
 	private function onKeyDown(e:KeyboardEvent = null)
@@ -529,7 +530,7 @@ class Engine
 	#if !flash
 	private function onWindowResize(event:Event):Void
 	{
-		if(isFullScreen && !stage.window.fullscreen)
+		if(isFullScreen && !stage.window.fullscreen && !ignoreResize)
 		{
 			setFullScreen(false);
 		}
@@ -564,9 +565,11 @@ class Engine
 		trace("Set fullScreen: " + value);
 		if(isFullScreen != value)
 		{
+			ignoreResize = true;
 			isFullScreen = value;
 			reloadScreen();
 			invokeListeners(fullscreenListeners);
+			ignoreResize = false;
 		}
 	}
 	
