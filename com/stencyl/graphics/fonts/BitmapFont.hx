@@ -10,6 +10,8 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
+using lime._internal.unifill.Unifill;
+
 #if (flash)
 typedef PixelColor = UInt;
 #else
@@ -455,28 +457,10 @@ class BitmapFont
 		var glyph:FontSymbol;
 		var glyphWidth:Int;
 		#end
-		
-		var realCount = 0;
 
-		for (i in 0...(pText.length)) 
-		{
-			if(i < realCount)
-			{
-				continue;
-			}
-		
-			var charCode:Int = pText.charCodeAt(i);
-			
-			//Pseudo Unicode
-			if(charCode == 126)
-			{
-				if(pText.charAt(i + 1) == 'x')
-				{
-					var unicodeChar = pText.substring(i + 2, i + 6);
-					charCode = Std.parseInt("0x" + unicodeChar);
-					realCount += 5;
-				}
-			}
+		for (c in pText.uIterator()) 
+		{		
+			var charCode:Int = c.toInt();
 			
 			#if (!use_tilemap)
 			glyph = pFontData[charCode];
@@ -529,8 +513,6 @@ class BitmapFont
 				_point.x += glyphWidth * pScale + pLetterSpacing;
 				#end
 			}
-			
-			realCount++;
 		}
 	}
 
