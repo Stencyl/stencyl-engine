@@ -4391,11 +4391,14 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			if (info != null && ((info.maskA == maskA && info.maskB == maskB) || (info.maskA == maskB && info.maskB == maskA)))			
 			{
 				// added to avoid up/down tile collisions from overwriting left/right tile collisions since each tile is not its own unique object
-				if (info.maskA.groupID == 1 || info.maskB.groupID == 1)
+				if (info.solidCollision)
 				{
-					if (!info.thisFromLeft && !info.thisFromRight)
+					if (info.maskA.groupID == 1 || info.maskB.groupID == 1)
 					{
-						return -1;
+						if (!info.thisFromLeft && !info.thisFromRight)
+						{
+							return -1;
+						}
 					}
 				}
 				
