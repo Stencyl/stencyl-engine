@@ -10,6 +10,8 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
+using lime._internal.unifill.Unifill;
+
 #if (flash)
 typedef PixelColor = UInt;
 #else
@@ -455,28 +457,10 @@ class BitmapFont
 		var glyph:FontSymbol;
 		var glyphWidth:Int;
 		#end
-		
-		var realCount = 0;
 
-		for (i in 0...(pText.length)) 
-		{
-			if(i < realCount)
-			{
-				continue;
-			}
-		
-			var charCode:Int = pText.charCodeAt(i);
-			
-			//Pseudo Unicode
-			if(charCode == 126)
-			{
-				if(pText.charAt(i + 1) == 'x')
-				{
-					var unicodeChar = pText.substring(i + 2, i + 6);
-					charCode = Std.parseInt("0x" + unicodeChar);
-					realCount += 5;
-				}
-			}
+		for (c in pText.uIterator()) 
+		{		
+			var charCode:Int = c.toInt();
 			
 			#if (!use_tilemap)
 			glyph = pFontData[charCode];
@@ -529,8 +513,6 @@ class BitmapFont
 				_point.x += glyphWidth * pScale + pLetterSpacing;
 				#end
 			}
-			
-			realCount++;
 		}
 	}
 
@@ -577,27 +559,12 @@ class BitmapFont
 	public function getTextWidth(pText:String, ?pLetterSpacing:Int = 0, ?pFontScale:Float = 1.0):Int 
 	{
 		var w:Int = 0;
-		var realCount = 0;
-		var textLength:Int = pText.length;
-		for (i in 0...(textLength)) 
+		var textLength:Int = pText.uLength();
+		for (c in pText.uIterator()) 
 		{
-			if(i < realCount)
-			{
-				continue;
-			}
 			
-			var charCode:Int = pText.charCodeAt(i);
+			var charCode:Int = c.toInt();
 			
-			//Pseudo Unicode
-			if(charCode == 126)
-			{
-				if(pText.charAt(i + 1) == 'x')
-				{
-					var unicodeChar = pText.substring(i + 2, i + 6);
-					charCode = Std.parseInt("0x" + unicodeChar);
-					realCount += 5;
-				}
-			}
 			
 			#if (!use_tilemap)
 			var glyph:BitmapData = _glyphs[charCode];
@@ -612,8 +579,6 @@ class BitmapFont
 				w += _glyphs.get(charCode).xadvance;
 			}
 			#end
-			
-			realCount++;
 		}
 		
 		w = Math.round(w * pFontScale);
