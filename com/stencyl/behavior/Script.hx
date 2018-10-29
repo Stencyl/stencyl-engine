@@ -60,15 +60,13 @@ import com.stencyl.models.Font;
 import com.stencyl.models.Sound;
 import com.stencyl.models.SoundChannel;
 
+import com.stencyl.utils.motion.*;
 import com.stencyl.utils.Assets;
 import com.stencyl.utils.Utils;
 import com.stencyl.utils.ColorMatrix;
 import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
 import com.stencyl.io.SpriteReader;
-
-import motion.Actuate;
-import motion.easing.Linear;
 
 import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2PolygonShape;
@@ -155,6 +153,8 @@ class Script
 	
 	public var nameMap:Map<String,Dynamic>;
 	
+	private var attributeTweens:Map<String, TweenFloat>;
+	
 	//*-----------------------------------------------
 	//* Init
 	//*-----------------------------------------------
@@ -167,6 +167,7 @@ class Script
 		nameMap = new Map<String,Dynamic>();	
 		propertyChangeListeners = new Map<String,Dynamic>();
 		equalityPairs = new ObjectMap<Dynamic, Dynamic>();
+		attributeTweens = new Map<String, TweenFloat>();
 	}
 
 	//*-----------------------------------------------
@@ -1554,14 +1555,12 @@ class Script
 	 * @param	duration		the duration of the fading (in milliseconds)
 	 * @param	easing			easing function to apply. Linear (no smoothing) is the default.
 	 */
-	public static function fadeTileLayerTo(layer:RegularLayer, alphaPct:Float, duration:Float, easing:Dynamic = null)
+	public static function fadeTileLayerTo(layer:RegularLayer, alphaPct:Float, duration:Float, easing:Easing = null)
 	{
-		if(easing == null)
-		{
-			easing = Linear.easeNone;
-		}
+		if(layer.alphaTween == null)
+			layer.alphaTween = cast new TweenFloat().doOnUpdate(function() {layer.alpha = layer.alphaTween.value;});
 		
-		Actuate.tween(layer, duration, {alpha:alphaPct}).ease(easing);
+		layer.alphaTween.tween(layer.alpha, alphaPct, easing, Std.int(duration*1000));
 	}
 
 	/**
@@ -2869,14 +2868,9 @@ class Script
 		}
 	}
 	
-	public static function fadeImageTo(img:BitmapWrapper, value:Float, duration:Float = 1, easing:Dynamic = null)
+	public static function fadeImageTo(img:BitmapWrapper, value:Float, duration:Float = 1, easing:Easing = null)
 	{
-		if(easing == null)
-		{
-			easing = Linear.easeNone;
-		}
-	
-		Actuate.tween(img, duration, {alpha:value}).ease(easing);
+		img.tweenProps.alpha.tween(img.alpha, value, easing, Std.int(duration*1000));
 	}
 
 	public static function setOriginForImage(img:BitmapWrapper, x:Float, y:Float)
@@ -2884,51 +2878,29 @@ class Script
 		img.setOrigin(x, y);
 	}
 	
-	public static function growImageTo(img:BitmapWrapper, scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:Dynamic = null)
+	public static function growImageTo(img:BitmapWrapper, scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:Easing = null)
 	{
-		if(easing == null)
-		{
-			easing = Linear.easeNone;
-		}
-	
-		Actuate.tween(img, duration, {scaleX:scaleX, scaleY:scaleY}).ease(easing);
+		img.tweenProps.scaleXY.tween(img.scaleX, scaleX, img.scaleY, scaleY, easing, Std.int(duration*1000));
 	}
 	
 	//In degrees
-	public static function spinImageTo(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:Dynamic = null)
+	public static function spinImageTo(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:Easing = null)
 	{
-		if(easing == null)
-		{
-			easing = Linear.easeNone;
-		}
-
-		Actuate.tween(img, duration, {rotation:angle}).ease(easing);
+		img.tweenProps.angle.tween(img.rotation, angle, easing, Std.int(duration*1000));
 	}
 
-	public static function moveImageTo(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
+	public static function moveImageTo(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Easing = null)
 	{
-		if(easing == null)
-		{
-			easing = Linear.easeNone;
-		}
-
-		Actuate
-			.tween(img, duration, {imgX:x, imgY:y}).ease(easing)
-			.onUpdate(function()
-				{
-					//Actuate isn't setting the property with its setter, so do it manually
-					img.imgX = img.imgX;
-					img.imgY = img.imgY;
-				});
+		img.tweenProps.xy.tween(img.imgX, x, img.imgY, y, easing, Std.int(duration*1000));
 	}
 	
 	//In degrees
-	public static function spinImageBy(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:Dynamic = null)
+	public static function spinImageBy(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:Easing = null)
 	{
 		spinImageTo(img, img.rotation + angle, duration, easing);
 	}
 	
-	public static function moveImageBy(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
+	public static function moveImageBy(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Easing = null)
 	{
 		moveImageTo(img, img.imgX + x, img.imgY + y, duration, easing);
 	}
@@ -3528,24 +3500,42 @@ class Script
 	/**
 	* Change a Number to another specific Number over time  
 	*/
-	public function tweenNumber(attributeName:String, value:Float, duration:Float = 1, easing:Dynamic = null) 
+	public function tweenNumber(attributeName:String, value:Float, duration:Float = 1, easing:Easing = null) 
 	{
-		/*var params:Object = { time: duration / 1000, transition: easing };
-		attributeName = toInternalName(attributeName);
-		params[attributeName] = toValue;
-		
-		return Tweener.addTween(this, params);*/
-		
-		//TODO
-		Actuate.tween(this, duration, {alpha:value}).ease(easing == null ? Linear.easeNone : easing);
+		var attributeTween = attributeTweens.get(attributeName);
+		if(attributeTween == null)
+		{
+			attributeTween = new TweenFloat();
+			attributeTween.doOnUpdate(function() {
+				Reflect.setField(this, attributeName, attributeTween.value);
+			});
+			attributeTweens.set(attributeName, attributeTween);
+		}
+		attributeTween.tween(Reflect.field(this, attributeName), value, easing, Std.int(duration*1000));
 	}
 	
 	/**
 	* Stops a tween 
 	*/
-	public static function abortTween(target:Dynamic)
+	public function abortTweenNumber(attributeName:String)
 	{
-		//TODO
+		var attributeTween = attributeTweens.get(attributeName);
+		if(attributeTween != null)
+		{
+			TweenManager.cancel(attributeTween);
+		}
+	}
+	
+	public function pauseTweens()
+	{
+		for(value in attributeTweens)
+			value.paused = true;
+	}
+	
+	public function unpauseTweens()
+	{
+		for(value in attributeTweens)
+			value.paused = false;
 	}
 	
 	//*-----------------------------------------------

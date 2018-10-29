@@ -8,17 +8,14 @@ import openfl.display.BitmapData;
 import openfl.display.Shape;
 
 import com.stencyl.Engine;
-
-import motion.Actuate;
-import motion.easing.Linear;
+import com.stencyl.utils.motion.*;
 
 class BubblesTransition extends Transition
 {
 	public var color:Int;
 	public var numBubbles:Int;
 		
-	//needs to be public so that it can be tweened
-	public var radius:Float;
+	private var radius:TweenFloat;
 		
 	private var beginRadius:Float;
 	private var endRadius:Float;
@@ -92,11 +89,11 @@ class BubblesTransition extends Transition
 		beginRadius = 0; 
 		endRadius = Math.ceil(Point.distance(new Point(0, 0), new Point(bubbleSize, bubbleSize)));
 			
-		radius = beginRadius;
+		radius = new TweenFloat();
 		
 		Engine.engine.transitionLayer.addChild(rect);
 		
-		Actuate.tween(this, duration, { radius:endRadius} ).ease(Linear.easeNone).onComplete(stop);
+		radius.tween(beginRadius, endRadius, Easing.linear, Std.int(duration*1000)).doOnComplete(stop);
 	}
 	
 	override public function draw(g:Graphics)
@@ -115,7 +112,7 @@ class BubblesTransition extends Transition
 			for (p in bubblePositions)
 			{
 				graphics.beginBitmapFill(drawBitmap);
-				graphics.drawCircle(p.x, p.y, radius);
+				graphics.drawCircle(p.x, p.y, radius.value);
 				graphics.endFill();
 			}
 		}
@@ -125,7 +122,7 @@ class BubblesTransition extends Transition
 			for (p in bubblePositions)
 			{
 				graphics.beginFill(color);
-				graphics.drawCircle(p.x, p.y, radius);
+				graphics.drawCircle(p.x, p.y, radius.value);
 				graphics.endFill();
 			}
 		}		

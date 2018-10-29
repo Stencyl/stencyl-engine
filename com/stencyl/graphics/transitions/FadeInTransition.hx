@@ -5,14 +5,13 @@ import openfl.geom.ColorTransform;
 import openfl.display.Shape;
 
 import com.stencyl.Engine;
-
-import motion.Actuate;
-import motion.easing.Linear;
+import com.stencyl.utils.motion.*;
 
 class FadeInTransition extends Transition
 {
 	public var color:Int;
 	public var rect:Shape;
+	public var rectAlpha:TweenFloat;
 	
 	public function new(duration:Float, color:Int=0xff000000)
 	{
@@ -37,7 +36,13 @@ class FadeInTransition extends Transition
 		
 		Engine.engine.transitionLayer.addChild(rect);
 		
-		Actuate.tween(rect, duration, {alpha:0}).ease(Linear.easeNone).onComplete(stop);
+		rectAlpha = new TweenFloat();
+		rectAlpha.tween(1, 0, Easing.linear, Std.int(duration*1000)).doOnComplete(stop);
+	}
+	
+	override public function update(elapsedTime:Float)
+	{
+		rect.alpha = rectAlpha.value;
 	}
 	
 	override public function cleanup()

@@ -8,9 +8,7 @@ import openfl.display.BitmapData;
 import openfl.display.Shape;
 
 import com.stencyl.Engine;
-
-import motion.Actuate;
-import motion.easing.Linear;
+import com.stencyl.utils.motion.*;
 
 class SlideTransition extends Transition
 {
@@ -23,9 +21,11 @@ class SlideTransition extends Transition
 	
 	public var oldSceneMatrix:Matrix;
 	public var newSceneMatrix:Matrix;
+	public var osm_xy:TweenFloat2;
+	public var nsm_xy:TweenFloat2;
 	private var tx:Float;
 	private var ty:Float;
-			
+	
 	public static var SLIDE_UP:String = "up";
 	public static var SLIDE_DOWN:String = "down";
 	public static var SLIDE_LEFT:String = "left";
@@ -88,11 +88,22 @@ class SlideTransition extends Transition
 		graphics.beginBitmapFill(oldBitmap);
 		graphics.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 		graphics.endFill();
-				
+		
 		Engine.engine.transitionLayer.addChild(rect);
 		
-		Actuate.tween(oldSceneMatrix, duration, { tx:tx, ty:ty } ).ease(Linear.easeNone).onComplete(stop);
-		Actuate.tween(newSceneMatrix, duration, { tx:0, ty:0 } ).ease(Linear.easeNone).onComplete(stop);
+		osm_xy = new TweenFloat2();
+		nsm_xy = new TweenFloat2();
+		osm_xy.tween(oldSceneMatrix.tx, tx, oldSceneMatrix.ty, ty, Easing.linear, Std.int(duration*1000));
+		nsm_xy.tween(newSceneMatrix.tx, 0, newSceneMatrix.ty, 0, Easing.linear, Std.int(duration*1000));
+		nsm_xy.doOnComplete(stop);
+	}
+	
+	override public function update(elapsedTime:Float)
+	{
+		oldSceneMatrix.tx = osm_xy.value1;
+		oldSceneMatrix.ty = osm_xy.value2;
+		newSceneMatrix.tx = nsm_xy.value1;
+		newSceneMatrix.ty = nsm_xy.value2;
 	}
 	
 	override public function draw(g:Graphics)	
@@ -100,7 +111,7 @@ class SlideTransition extends Transition
 		graphics.clear();			
 		
 		newBitmap.draw(sceneCol);
-		newBitmap.draw(sceneSpr);		
+		newBitmap.draw(sceneSpr);
 		drawBitmap.draw(newBitmap, newSceneMatrix);
 		drawBitmap.draw(oldBitmap, oldSceneMatrix);
 		

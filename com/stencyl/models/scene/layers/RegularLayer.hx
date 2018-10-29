@@ -3,7 +3,7 @@ package com.stencyl.models.scene.layers;
 import openfl.display.BlendMode;
 import openfl.display.Sprite;
 
-import openfl.display.BlendMode;
+import com.stencyl.utils.motion.*;
 
 class RegularLayer extends Sprite 
 {
@@ -13,6 +13,8 @@ class RegularLayer extends Sprite
 	public var scrollFactorX:Float;
 	public var scrollFactorY:Float;
 	public var opacity:Float;
+	
+	public var alphaTween:TweenFloat;
 	
 	public function new(ID:Int, name:String, order:Int, scrollFactorX:Float, scrollFactorY:Float, opacity:Float, blendMode:BlendMode) 
 	{

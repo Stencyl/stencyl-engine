@@ -7,9 +7,7 @@ import openfl.display.BitmapData;
 import openfl.display.Shape;
 
 import com.stencyl.Engine;
-
-import motion.Actuate;
-import motion.easing.Linear;
+import com.stencyl.utils.motion.*;
 
 class RectangleTransition extends Transition
 {
@@ -18,9 +16,7 @@ class RectangleTransition extends Transition
 	
 	public var color:Int;
 		
-	//needs to be public so that it can be tweened
-	public var width:Int;
-	public var height:Int;
+	private var size:TweenFloat2;
 		
 	private var beginWidth:Int;
 	private var endWidth:Int;
@@ -60,8 +56,7 @@ class RectangleTransition extends Transition
 	override public function start()
 	{
 		active = true;		
-		width = beginWidth;
-		height = beginHeight;
+		size = new TweenFloat2();
 			
 		rectangleImg = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
 		
@@ -77,7 +72,8 @@ class RectangleTransition extends Transition
 		
 		Engine.engine.transitionLayer.addChild(rect);
 		
-		Actuate.tween(this, duration, { width:endWidth, height:endHeight } ).ease(Linear.easeNone).onComplete(stop);
+		size.onComplete = stop;
+		size.tween(beginWidth, endWidth, beginHeight, endHeight, Easing.linear, Std.int(duration*1000));
 	}
 	
 	override public function draw(g:Graphics)	
@@ -91,7 +87,7 @@ class RectangleTransition extends Transition
 		rectangleImg.draw(Engine.engine.colorLayer);
 		rectangleImg.draw(Engine.engine.master);
 		graphics.beginBitmapFill(rectangleImg);
-		graphics.drawRect((Engine.screenWidth * Engine.SCALE - width) / 2, (Engine.screenHeight * Engine.SCALE - height) / 2, width, height);
+		graphics.drawRect((Engine.screenWidth * Engine.SCALE - size.value1) / 2, (Engine.screenHeight * Engine.SCALE - size.value2) / 2, size.value1, size.value2);
 		graphics.endFill();		
 	}
 	

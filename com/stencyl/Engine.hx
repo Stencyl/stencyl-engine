@@ -47,6 +47,7 @@ import com.stencyl.graphics.transitions.CircleTransition;
 import com.stencyl.graphics.transitions.FadeInTransition;
 import com.stencyl.graphics.transitions.FadeOutTransition;
 import com.stencyl.graphics.transitions.Transition;
+import com.stencyl.utils.motion.*;
 import com.stencyl.utils.Utils;
 
 import com.stencyl.models.Actor;
@@ -77,9 +78,6 @@ import com.stencyl.models.scene.layers.RegularLayer;
 
 //Do not remove - forces your behaviors to be included
 import scripts.MyScripts;
-
-import motion.Actuate;
-import motion.easing.Elastic;
 
 import box2D.dynamics.B2World;
 import box2D.common.math.B2Vec2;
@@ -2482,7 +2480,10 @@ class Engine
 		}
 		
 		//Update Tweens - Synced to engine
+		TweenManager.update(Std.int(elapsedTime));
+		#if actuate
 		motion.actuators.SimpleActuator.stage_onEnterFrame(null);
+		#end
 		
 		if(!NO_PHYSICS)
 		{
@@ -2757,8 +2758,10 @@ class Engine
 		if(leave != null)
 		{
 			//Update here, or you can have a transition that fails to finish
+			#if actuate
 			motion.actuators.SimpleActuator.stage_onEnterFrame(null);
-		
+			#end
+			
 			if(leave.isComplete())
 			{
 				leave.deactivate();

@@ -8,9 +8,7 @@ import openfl.display.Shape;
 import openfl.geom.Transform;
 
 import com.stencyl.Engine;
-
-import motion.Actuate;
-import motion.easing.Linear;
+import com.stencyl.utils.motion.*;
 
 class CrossfadeTransition extends Transition
 {	
@@ -18,6 +16,7 @@ class CrossfadeTransition extends Transition
 	private var bitmap:BitmapData;
 
 	public var rect:Shape;
+	public var rectAlpha:TweenFloat;
 		
 	public function new(oldImg:Sprite, duration:Float) 
 	{
@@ -41,7 +40,13 @@ class CrossfadeTransition extends Transition
 				
 		Engine.engine.transitionLayer.addChild(rect);					
 		
-		Actuate.tween(rect, duration, { alpha:0 } ).ease(Linear.easeNone).onComplete(stop);
+		rectAlpha = new TweenFloat();
+		rectAlpha.tween(1, 0, Easing.linear, Std.int(duration*1000)).doOnComplete(stop);
+	}
+	
+	override public function update(elapsedTime:Float)
+	{
+		rect.alpha = rectAlpha.value;
 	}
 	
 	override public function draw(g:Graphics)	

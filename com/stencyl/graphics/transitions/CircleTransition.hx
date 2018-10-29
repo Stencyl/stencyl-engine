@@ -12,14 +12,12 @@ import openfl.geom.Rectangle;
 
 import com.stencyl.Engine;
 import com.stencyl.utils.Utils;
-
-import motion.Actuate;
-import motion.easing.Linear;
+import com.stencyl.utils.motion.*;
 
 class CircleTransition extends Transition
 {
 	public var color:Int;
-	public var radius:Int;
+	public var radius:TweenFloat;
 		
 	private var beginRadius:Int;
 	private var endRadius:Int;
@@ -52,7 +50,7 @@ class CircleTransition extends Transition
 			
 		s = new Shape();
 		circleImg = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
-		radius = beginRadius;
+		radius = new TweenFloat();
 		
 		if (direction == Transition.IN)
 		{
@@ -66,7 +64,7 @@ class CircleTransition extends Transition
 		
 		//---
 
-		Actuate.tween(this, duration, {radius:endRadius}).ease(Linear.easeNone).onComplete(stop);
+		radius.tween(beginRadius, endRadius, Easing.linear, Std.int(duration*1000)).doOnComplete(stop);
 	}
 	
 	override public function draw(g:Graphics)
@@ -80,7 +78,7 @@ class CircleTransition extends Transition
 		circleImg.draw(Engine.engine.colorLayer);
 		circleImg.draw(Engine.engine.master);
 		s.graphics.beginBitmapFill(circleImg);
-		s.graphics.drawCircle(Engine.screenWidthHalf * Engine.SCALE, Engine.screenHeightHalf * Engine.SCALE, radius);
+		s.graphics.drawCircle(Engine.screenWidthHalf * Engine.SCALE, Engine.screenHeightHalf * Engine.SCALE, radius.value);
 		s.graphics.endFill();		
 	}
 	

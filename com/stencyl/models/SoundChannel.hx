@@ -3,7 +3,7 @@ package com.stencyl.models;
 import openfl.events.Event;
 import com.stencyl.Engine;
 import com.stencyl.models.Sound;
-import motion.Actuate;
+import com.stencyl.utils.motion.*;
 
 import openfl.media.SoundTransform;
 
@@ -30,6 +30,7 @@ class SoundChannel
 	
 	public var engine:Engine;
 	public var transform:SoundTransform;
+	public var tweenVolume:TweenFloat;
 	
 	public function new(engine:Engine, channelNum:Int) 
 	{
@@ -44,6 +45,8 @@ class SoundChannel
 		this.engine = engine;
 		
 		transform = new SoundTransform();
+		tweenVolume = new TweenFloat();
+		tweenVolume.doOnUpdate(tweenUpdated);
 	}
 	
 	public function playSound(clip:Sound):openfl.media.SoundChannel
@@ -189,11 +192,20 @@ class SoundChannel
 		}			
 	}	
 	
+	public function tweenUpdated()
+	{
+		transform.volume = tweenVolume.value;
+		if(currentSound != null)
+		{
+			currentSound.soundTransform = transform;
+		}
+	}
+	
 	public function fadeInSound(time:Float)
 	{
 		if(currentSound != null)
 		{
-			Actuate.tween(transform, time, {volume:1}).onUpdate(onUpdate);
+			tweenVolume.tween(transform.volume, 1, Easing.linear, Std.int(time*1000));
 		}
 	}
 	
@@ -201,7 +213,7 @@ class SoundChannel
 	{
 		if(currentSound != null)
 		{
-			Actuate.tween(transform, time, {volume:0}).onUpdate(onUpdate);
+			tweenVolume.tween(transform.volume, 0, Easing.linear, Std.int(time*1000));
 		}
 	}
 	
@@ -209,15 +221,7 @@ class SoundChannel
 	{
 		if(currentSound != null)
 		{
-			Actuate.tween(transform, time, {volume:amount}).onUpdate(onUpdate);
-		}
-	}
-	
-	public function onUpdate()
-	{	
-		if(currentSound != null)
-		{
-			currentSound.soundTransform = transform;
+			tweenVolume.tween(transform.volume, amount, Easing.linear, Std.int(time*1000));
 		}
 	}
 	

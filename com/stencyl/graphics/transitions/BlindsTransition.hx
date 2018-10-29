@@ -7,18 +7,14 @@ import openfl.display.BitmapData;
 import openfl.display.Shape;
 
 import com.stencyl.Engine;
-
-import motion.Actuate;
-import motion.easing.Linear;
-
+import com.stencyl.utils.motion.*;
 
 class BlindsTransition extends Transition
 {
 	public var color:Int;
 	public var numBlinds:Int;
 		
-	//needs to be public so that it can be tweened
-	public var blindWidth:Float;		
+	private var blindWidth:TweenFloat;
 	
 	private var beginBlindWidth:Float;
 	private var endBlindWidth:Float;	
@@ -57,7 +53,7 @@ class BlindsTransition extends Transition
 		active = true;
 		
 		blindRect = new Rectangle(0, 0, beginBlindWidth, Engine.screenHeight * Engine.SCALE);
-		blindWidth = beginBlindWidth;
+		blindWidth = new TweenFloat();
 		
 		rect = new Shape();
 		graphics = rect.graphics;
@@ -71,7 +67,7 @@ class BlindsTransition extends Transition
 		
 		Engine.engine.transitionLayer.addChild(rect);
 		
-		Actuate.tween(this, duration, { blindWidth:endBlindWidth} ).ease(Linear.easeNone).onComplete(stop);
+		blindWidth.tween(beginBlindWidth, endBlindWidth, Easing.linear, Std.int(duration*1000)).doOnComplete(stop);
 	}
 	
 	override public function draw(g:Graphics)
@@ -80,16 +76,15 @@ class BlindsTransition extends Transition
 		graphics.beginFill(color);
 		
 		blindRect.x = 0;
-		blindRect.width = blindWidth;
+		blindRect.width = blindWidth.value;
 		
 		if(direction == Transition.IN)
 		{
-			blindRect.x += ((Engine.screenWidth * Engine.SCALE) / numBlinds - blindWidth);
+			blindRect.x += ((Engine.screenWidth * Engine.SCALE) / numBlinds - blindWidth.value);
 		}			
 		
 		for(i in 0...numBlinds)
 		{
-			
 			graphics.drawRect(blindRect.x, blindRect.y, blindRect.width, blindRect.height);
 			blindRect.x += (Engine.screenWidth * Engine.SCALE) / numBlinds;
 		}

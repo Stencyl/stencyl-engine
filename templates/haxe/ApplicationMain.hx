@@ -4,6 +4,7 @@ import com.stencyl.Config;
 import com.stencyl.Data;
 import com.stencyl.Engine;
 import com.stencyl.Input;
+import com.stencyl.utils.motion.*;
 import com.stencyl.utils.Utils;
 #if stencyltools
 import com.stencyl.utils.ToolsetInterface;
@@ -88,6 +89,7 @@ using StringTools;
 		com.stencyl.models.collision.CollisionInfo.resetStatics();
 		com.stencyl.models.scene.TileLayer.resetStatics();
 		#if flash com.stencyl.utils.Kongregate.resetStatics(); #end
+		com.stencyl.utils.motion.TweenManager.resetStatics();
 		com.stencyl.utils.Utils.resetStatics();
 		#if stencyltools com.stencyl.utils.ToolsetInterface.resetStatics(); #end
 		com.stencyl.Data.resetStatics();
@@ -265,9 +267,11 @@ using StringTools;
 		}
 		#end
 		
+		#if actuate
 		motion.actuators.SimpleActuator.getTime = function():Float {
 			return Engine.totalElapsedTime / 1000;
 		}
+		#end
 
 		var preloader = new Preloader (new StencylPreloader ());
 		preloader.onComplete.add (universal.preloaderComplete);

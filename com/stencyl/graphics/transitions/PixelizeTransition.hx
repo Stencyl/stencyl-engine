@@ -7,14 +7,11 @@ import openfl.display.BitmapData;
 import openfl.display.Shape;
 
 import com.stencyl.Engine;
-
-import motion.Actuate;
-import motion.easing.Linear;
+import com.stencyl.utils.motion.*;
 
 class PixelizeTransition extends Transition
 {
-	//needs to be public so that it can be tweened
-	public var pixelSize:Int;
+	private var pixelSizeTween:TweenFloat;
 		
 	private var beginPixelSize:Int;
 	private var endPixelSize:Int;
@@ -38,7 +35,6 @@ class PixelizeTransition extends Transition
 			
 		this.beginPixelSize = beginPixelSize;
 		this.endPixelSize = endPixelSize;
-		pixelSize = beginPixelSize;
 	}
 	
 	override public function start()
@@ -52,11 +48,14 @@ class PixelizeTransition extends Transition
 		
 		Engine.engine.transitionLayer.addChild(rect);
 		
-		Actuate.tween(this, duration, { pixelSize:endPixelSize } ).ease(Linear.easeNone).onComplete(stop);
+		pixelSizeTween = new TweenFloat();
+		pixelSizeTween.tween(beginPixelSize, endPixelSize, Easing.linear, Std.int(duration*1000)).doOnComplete(stop);
 	}
 	
 	override public function draw(g:Graphics)
 	{
+		var pixelSize = pixelSizeTween.value;
+		
 		if(pixelSize == 1)
 		{
 			return;

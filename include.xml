@@ -4,7 +4,7 @@
 	<haxeflag name="--remap" value="nme:openfl" />
 	
 	<haxelib name="openfl" />
-	<haxelib name="actuate" />
+	<haxelib name="tweenxcore" />
 	<haxelib name="console" />
 	<haxelib name="polygonal-ds" />
 	<haxelib name="box2d" />

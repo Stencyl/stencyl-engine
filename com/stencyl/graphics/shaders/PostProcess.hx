@@ -8,8 +8,8 @@ import js.Browser;
 import flash.geom.Rectangle;
 import com.stencyl.Config;
 import com.stencyl.Engine;
+import com.stencyl.utils.motion.*;
 import com.stencyl.utils.Assets;
-import motion.Actuate;
 
 import com.stencyl.graphics.shaders.Shader in FullScreenShader;
 
@@ -97,6 +97,7 @@ class PostProcess extends DisplayObject
 		gl = renderer.gl;
 		
 		uniforms = new Map<String, Uniform>();
+		uniformTweens = new Map<String, TweenFloat>();
 
 		// create and the texture
 		rebuild();
@@ -326,12 +327,21 @@ class PostProcess extends DisplayObject
 		return -1;
 	}
 	
-	public function tweenUniform(name:String, targetValue:Float, duration:Float = 1, easing:Dynamic = null)
+	public function tweenUniform(name:String, targetValue:Float, duration:Float = 1, easing:Easing = null)
 	{
 		if(uniforms.exists(name))
 		{
 			var uniform = uniforms.get(name);
-			Actuate.tween(uniform, duration, {value:targetValue}).ease(easing);
+			var uniformTween = uniformTweens.get(name);
+			if(uniformTween == null)
+			{
+				uniformTween = new TweenFloat();
+				uniformTween.doOnUpdate(function() {
+					uniform.value = uniformTween.value;
+				});
+				uniformTweens.set(name, uniformTween);
+			}
+			uniformTween.tween(uniform.value, targetValue, easing, Std.int(duration*1000));
 		}
 	}
 
@@ -388,6 +398,7 @@ class PostProcess extends DisplayObject
 	private var resolutionUsUniform:GLUniformLocation;
 	private var timeUniform:GLUniformLocation;
 	private var uniforms:Map<String, Uniform>;
+	private var uniformTweens:Map<String, TweenFloat>;
 
 	/* @private Simple full screen vertex fullScreenShader */
 	private static inline var vertexShader:String = "

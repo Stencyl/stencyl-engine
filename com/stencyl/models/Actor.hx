@@ -46,7 +46,7 @@ import com.stencyl.behavior.TimedTask;
 import com.stencyl.models.actor.Group;
 import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.CollisionPoint;
-import com.stencyl.models.actor.AngleHolder;
+import com.stencyl.models.actor.ActorTweenProperties;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.actor.Animation;
 import com.stencyl.models.actor.Sprite as StencylSprite;
@@ -55,20 +55,9 @@ import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.scene.Layer;
 import com.stencyl.models.GameModel;
 
+import com.stencyl.utils.motion.*;
 import com.stencyl.utils.ColorMatrix;
 import com.stencyl.utils.Utils;
-
-import motion.Actuate;
-import motion.easing.Back;
-import motion.easing.Cubic;
-import motion.easing.Elastic;
-import motion.easing.Expo;
-import motion.easing.Linear;
-import motion.easing.Quad;
-import motion.easing.Quart;
-import motion.easing.Quint;
-import motion.easing.Sine;
-import motion.actuators.GenericActuator;
 
 import box2D.dynamics.B2Body;
 import box2D.dynamics.B2BodyDef;
@@ -192,10 +181,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	
 	public var continuousCollision:Bool;
 	
-	public var tweenLoc:Point;
-	public var tweenAngle:AngleHolder;
-	public var activeAngleTweens:Int;
-	public var activePositionTweens:Int;
+	public var tweenProps:ActorTweenProperties;
 	
 	//Cache values
 	public var cacheWidth:Float;
@@ -377,9 +363,6 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		
 		colX = 0;
 		colY = 0;
-
-		activeAngleTweens = 0;
-		activePositionTweens = 0;
 		
 		//---
 		
@@ -388,8 +371,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		lastY = -1000;
 		lastAngle = 0;		
 		
-		tweenLoc = new Point(0, 0);
-		tweenAngle = new AngleHolder();
+		tweenProps = new ActorTweenProperties();
 				
 		transformPoint = new Point(0, 0);
 		transformMatrix = new Matrix();
@@ -1621,8 +1603,8 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		{
    			currAnimation.update(elapsedTime);
 		}
-			
-		updateTweenProperties();		
+		
+		updateTweenProperties();
 	}	
 	
 	public function updateDrawingMatrix(force:Bool = false)
@@ -1797,24 +1779,30 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	{		
 		//Since we can't tween directly on the Box2D values and can't make direct function calls,
 		//we have to reverse the normal flow of information from body -> NME to tween -> body
-		var a:Bool = activePositionTweens > 0;
-		var b:Bool = activeAngleTweens > 0;
-				
-		if(autoScale && physicsMode == NORMAL_PHYSICS && body != null && bodyDef.type != B2Body.b2_staticBody && (bodyScale.x != realScaleX || bodyScale.y != realScaleY))
-		{			
-			if(realScaleX != 0 && realScaleY != 0)
+		
+		if(tweenProps.alpha.updated)
+			alpha = tweenProps.alpha.value;
+		if(tweenProps.realScaleXY.updated)
+		{
+			realScaleX = tweenProps.realScaleXY.value1;
+			realScaleY = tweenProps.realScaleXY.value2;
+			
+			if(autoScale && physicsMode == NORMAL_PHYSICS && body != null && bodyDef.type != B2Body.b2_staticBody)
 			{
-				scaleBody(realScaleX, realScaleY);
+				if(realScaleX != 0 && realScaleY != 0)
+				{
+					scaleBody(realScaleX, realScaleY);
+				}
 			}
 		}
 		
-		if(a && b)
-		{					
+		if(tweenProps.angle.updated && tweenProps.xy.updated)
+		{
 			if(physicsMode == NORMAL_PHYSICS)
 			{
-				realX = tweenLoc.x;
-				realY = tweenLoc.y;
-				realAngle = tweenAngle.angle;
+				realX = tweenProps.xy.value1;
+				realY = tweenProps.xy.value2;
+				realAngle = tweenProps.angle.value;
 				
 				dummy.x = Engine.toPhysicalUnits(realX + Math.floor(cacheWidth/2) + currOffset.x);
 				dummy.y = Engine.toPhysicalUnits(realY + Math.floor(cacheHeight/2) + currOffset.y);
@@ -1828,8 +1816,8 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			
 			else
 			{
-				moveActorBy(tweenLoc.x - getX(false), tweenLoc.y - getY(false), groupsToCollideWith);
-				setAngle(tweenAngle.angle, false);
+				moveActorBy(tweenProps.xy.value1 - getX(false), tweenProps.xy.value2 - getY(false), groupsToCollideWith);
+				setAngle(tweenProps.angle.value, false);
 			}
 
 			updateMatrix = true;
@@ -1837,24 +1825,31 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		
 		else
 		{
-			if(a)
+			if(tweenProps.xy.updated)
 			{
 				if(physicsMode == NORMAL_PHYSICS)
 				{
-					setX(tweenLoc.x);
-					setY(tweenLoc.y);
+					setXY(tweenProps.xy.value1, tweenProps.xy.value2);
 				}
 				
 				else
 				{
-					moveActorBy(tweenLoc.x - getX(false), tweenLoc.y - getY(false), groupsToCollideWith);
+					moveActorBy(tweenProps.xy.value1 - getX(false), tweenProps.xy.value2 - getY(false), groupsToCollideWith);
 					updateMatrix = true;
 				}				
 			}
 			
-			if(b)
+			if(tweenProps.angle.updated)
 			{
-				setAngle(tweenAngle.angle, false);
+				setAngle(tweenProps.angle.value, false);
+			}
+		}
+		
+		if(tweenProps.xy.updated && tweenProps.xy.finished)
+		{
+			if (currOffset != null)
+			{
+				resetReal(realX, realY);
 			}
 		}
 	}
@@ -2283,15 +2278,12 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	{
 		if(isPausable())
 		{
-			Actuate.pause(this);		
-
-			Actuate.pause(tweenAngle);
-			Actuate.pause(tweenLoc);
+			tweenProps.pause();
 			
 			for (b in behaviors.behaviors)
 			{
 				if(b.script != null)
-					Actuate.pause(b.script);
+					b.script.pauseTweens();
 			}
 			
 			this.paused = true;
@@ -2307,15 +2299,12 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	{
 		if(isPausable())
 		{
-			Actuate.resume(this);		
-
-			Actuate.resume(tweenAngle);
-			Actuate.resume(tweenLoc);
+			tweenProps.unpause();
 			
 			for (b in behaviors.behaviors)
 			{
 				if(b.script != null)
-					Actuate.resume(b.script);
+					b.script.unpauseTweens();
 			}
 			
 			this.paused = false;
@@ -3435,106 +3424,39 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	
 	public function cancelTweens()
 	{
-		Actuate.stop(this, ["alpha", "realScaleX", "realScaleY"], false, false);		
-
-		Actuate.stop(tweenAngle, null, false, false);
-		Actuate.stop(tweenLoc, null, false, false);
-		
-		activePositionTweens = 0;
-		activeAngleTweens = 0;
-		
-		actuateUnloadForTarget(this);
-		actuateUnloadForTarget(tweenAngle);
-		actuateUnloadForTarget(tweenLoc);
+		tweenProps.cancel();
 	}
 
-	@:access(motion.Actuate.targetLibraries)
-	public static function actuateUnloadForTarget(target:Dynamic):Void
+	public function fadeTo(value:Float, duration:Float = 1, easing:Easing = null)
 	{
-		var targetLibraries = Actuate.targetLibraries;
-		
-		if(targetLibraries.exists (target))
-		{
-			targetLibraries.remove(target);
-		}
+		tweenProps.alpha.tween(alpha, value, easing, Std.int(duration*1000));
 	}
 	
-	public function fadeTo(value:Float, duration:Float = 1, easing:Dynamic = null)
-	{	
-		if(easing == null)
-		{
-			easing = Linear.easeNone;
-		}
-	
-		Actuate.tween(this, duration, {alpha:value}).ease(easing);
-	}
-	
-	public function growTo(scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:Dynamic = null)
+	public function growTo(scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:Easing = null)
 	{
-		if(easing == null)
-		{
-			easing = Linear.easeNone;
-		}
-	
-		Actuate.tween(this, duration, {realScaleX:scaleX, realScaleY:scaleY}).ease(easing);
+		tweenProps.realScaleXY.tween(realScaleX, scaleX, realScaleY, scaleY, easing, Std.int(duration*1000));
 	}
 	
 	//In degrees
-	public function spinTo(angle:Float, duration:Float = 1, easing:Dynamic = null)
+	public function spinTo(angle:Float, duration:Float = 1, easing:Easing = null)
 	{
-		tweenAngle.angle = realAngle;
-
-		if(easing == null)
-		{
-			easing = Linear.easeNone;
-		}
-		
-		activeAngleTweens++;		
-		
-		Actuate.tween(tweenAngle, duration, {angle:angle}).ease(easing).onComplete(onTweenAngleComplete);		
+		tweenProps.angle.tween(realAngle, angle, easing, Std.int(duration*1000));		
 	}
 	
-	public function moveTo(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
+	public function moveTo(x:Float, y:Float, duration:Float = 1, easing:Easing = null)
 	{
-		tweenLoc.x = getX(false);
-		tweenLoc.y = getY(false);
-		
-		if(easing == null)
-		{
-			easing = Linear.easeNone;
-		}
-		
-		activePositionTweens++;		
-		
-		Actuate.tween(tweenLoc, duration, {x:x, y:y}).ease(easing).onComplete(onTweenPositionComplete);		
+		tweenProps.xy.tween(getX(false), x, getY(false), y, easing, Std.int(duration*1000));
 	}
 	
 	//In degrees
-	public function spinBy(angle:Float, duration:Float = 1, easing:Dynamic = null)
+	public function spinBy(angle:Float, duration:Float = 1, easing:Easing = null)
 	{
-		spinTo(realAngle + angle, duration, easing);
+		spinTo(realAngle + angle, Std.int(duration*1000), easing);
 	}
 	
-	public function moveBy(x:Float, y:Float, duration:Float = 1, easing:Dynamic = null)
+	public function moveBy(x:Float, y:Float, duration:Float = 1, easing:Easing = null)
 	{		
-		moveTo(getX(false) + x, getY(false) + y, duration, easing);	
-	}
-	
-	public function onTweenAngleComplete()
-	{
-		updateTweenProperties();
-		activeAngleTweens = 0;
-	}
-	
-	public function onTweenPositionComplete()
-	{
-		updateTweenProperties();
-		activePositionTweens = 0;
-		
-		if (currOffset != null)
-		{
-			resetReal(realX, realY);
-		}
+		moveTo(getX(false) + x, getY(false) + y, Std.int(duration*1000), easing);	
 	}
 	
 	
