@@ -2,7 +2,7 @@ package com.stencyl.utils.motion;
 
 class TweenObject
 {
-	public var easing:Easing;
+	public var easing:EasingFunction;
 	public var time:Int;
 	public var duration:Int;
 	
@@ -21,7 +21,7 @@ class TweenObject
 		paused = false;
 	}
 	
-	public function _tween(easing:Easing, duration:Int)
+	public function _tween(easing:EasingFunction, duration:Int)
 	{
 		if(duration == 0)
 			duration = 1;

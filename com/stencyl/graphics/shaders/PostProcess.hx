@@ -327,7 +327,7 @@ class PostProcess extends DisplayObject
 		return -1;
 	}
 	
-	public function tweenUniform(name:String, targetValue:Float, duration:Float = 1, easing:Easing = null)
+	public function tweenUniform(name:String, targetValue:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
 		if(uniforms.exists(name))
 		{

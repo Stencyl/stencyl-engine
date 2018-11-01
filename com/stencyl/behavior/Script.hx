@@ -1555,7 +1555,7 @@ class Script
 	 * @param	duration		the duration of the fading (in milliseconds)
 	 * @param	easing			easing function to apply. Linear (no smoothing) is the default.
 	 */
-	public static function fadeTileLayerTo(layer:RegularLayer, alphaPct:Float, duration:Float, easing:Easing = null)
+	public static function fadeTileLayerTo(layer:RegularLayer, alphaPct:Float, duration:Float, easing:EasingFunction = null)
 	{
 		if(layer.alphaTween == null)
 			layer.alphaTween = cast new TweenFloat().doOnUpdate(function() {layer.alpha = layer.alphaTween.value;});
@@ -2868,7 +2868,7 @@ class Script
 		}
 	}
 	
-	public static function fadeImageTo(img:BitmapWrapper, value:Float, duration:Float = 1, easing:Easing = null)
+	public static function fadeImageTo(img:BitmapWrapper, value:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
 		img.tweenProps.alpha.tween(img.alpha, value, easing, Std.int(duration*1000));
 	}
@@ -2878,29 +2878,29 @@ class Script
 		img.setOrigin(x, y);
 	}
 	
-	public static function growImageTo(img:BitmapWrapper, scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:Easing = null)
+	public static function growImageTo(img:BitmapWrapper, scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:EasingFunction = null)
 	{
 		img.tweenProps.scaleXY.tween(img.scaleX, scaleX, img.scaleY, scaleY, easing, Std.int(duration*1000));
 	}
 	
 	//In degrees
-	public static function spinImageTo(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:Easing = null)
+	public static function spinImageTo(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
 		img.tweenProps.angle.tween(img.rotation, angle, easing, Std.int(duration*1000));
 	}
 
-	public static function moveImageTo(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Easing = null)
+	public static function moveImageTo(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
 		img.tweenProps.xy.tween(img.imgX, x, img.imgY, y, easing, Std.int(duration*1000));
 	}
 	
 	//In degrees
-	public static function spinImageBy(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:Easing = null)
+	public static function spinImageBy(img:BitmapWrapper, angle:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
 		spinImageTo(img, img.rotation + angle, duration, easing);
 	}
 	
-	public static function moveImageBy(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:Easing = null)
+	public static function moveImageBy(img:BitmapWrapper, x:Float, y:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
 		moveImageTo(img, img.imgX + x, img.imgY + y, duration, easing);
 	}
@@ -3500,7 +3500,7 @@ class Script
 	/**
 	* Change a Number to another specific Number over time  
 	*/
-	public function tweenNumber(attributeName:String, value:Float, duration:Float = 1, easing:Easing = null) 
+	public function tweenNumber(attributeName:String, value:Float, duration:Float = 1, easing:EasingFunction = null) 
 	{
 		var attributeTween = attributeTweens.get(attributeName);
 		if(attributeTween == null)

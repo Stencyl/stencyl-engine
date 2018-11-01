@@ -13,7 +13,7 @@ class TweenFloat extends TweenObject
 		super();
 	}
 	
-	public function tween(startValue:Float, endValue:Float, easing:Easing, duration:Int):TweenFloat
+	public function tween(startValue:Float, endValue:Float, easing:EasingFunction, duration:Int):TweenFloat
 	{
 		_tween(easing, duration);
 		
