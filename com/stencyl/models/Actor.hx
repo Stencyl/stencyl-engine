@@ -3451,12 +3451,12 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	//In degrees
 	public function spinBy(angle:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
-		spinTo(realAngle + angle, Std.int(duration*1000), easing);
+		spinTo(realAngle + angle, duration, easing);
 	}
 	
 	public function moveBy(x:Float, y:Float, duration:Float = 1, easing:EasingFunction = null)
 	{		
-		moveTo(getX(false) + x, getY(false) + y, Std.int(duration*1000), easing);	
+		moveTo(getX(false) + x, getY(false) + y, duration, easing);
 	}
 	
 	
