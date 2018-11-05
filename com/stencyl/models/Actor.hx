@@ -3429,23 +3429,52 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 
 	public function fadeTo(value:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
-		tweenProps.alpha.tween(alpha, value, easing, Std.int(duration*1000));
+		if (duration == 0)
+		{
+			alpha = value;
+		}
+		else
+		{
+			tweenProps.alpha.tween(alpha, value, easing, Std.int(duration*1000));
+		}
 	}
 	
 	public function growTo(scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:EasingFunction = null)
 	{
-		tweenProps.realScaleXY.tween(realScaleX, scaleX, realScaleY, scaleY, easing, Std.int(duration*1000));
+		if (duration == 0)
+		{
+			realScaleX = scaleX;
+			realScaleY = scaleY;
+		}
+		else
+		{
+			tweenProps.realScaleXY.tween(realScaleX, scaleX, realScaleY, scaleY, easing, Std.int(duration*1000));
+		}
 	}
 	
 	//In degrees
 	public function spinTo(angle:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
-		tweenProps.angle.tween(realAngle, angle, easing, Std.int(duration*1000));		
+		if (duration == 0)
+		{
+			realAngle = angle;
+		}
+		else
+		{
+			tweenProps.angle.tween(realAngle, angle, easing, Std.int(duration*1000));
+		}
 	}
 	
 	public function moveTo(x:Float, y:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
-		tweenProps.xy.tween(getX(false), x, getY(false), y, easing, Std.int(duration*1000));
+		if (duration == 0)
+		{
+			setXY(x, y);
+		}
+		else
+		{
+			tweenProps.xy.tween(getX(false), x, getY(false), y, easing, Std.int(duration*1000));
+		}
 	}
 	
 	//In degrees
