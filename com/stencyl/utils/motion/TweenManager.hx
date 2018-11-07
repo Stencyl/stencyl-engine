@@ -21,6 +21,11 @@ class TweenManager
 		var i = activeObjects.indexOf(o);
 		if(i != -1)
 		{
+			o.active = false;
+			o.updated = false;
+			o.finished = false;
+			o.paused = false;
+		
 			//fast splice
 			activeObjects[i] = activeObjects[activeObjects.length - 1];
 			activeObjects.pop();
