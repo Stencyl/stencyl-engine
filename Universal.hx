@@ -327,7 +327,7 @@ class Universal extends Sprite
 		}
 		
 		maskLayer.graphics.clear();
-		if(Config.scaleMode == ScaleMode.SCALE_TO_FIT_LETTERBOX && isFullScreen)
+		if(isFullScreen && (Config.scaleMode == ScaleMode.SCALE_TO_FIT_LETTERBOX || Config.scaleMode == ScaleMode.NO_SCALING))
 		{
 			maskLayer.graphics.beginFill(stage.color);
 			maskLayer.graphics.drawRect(-x, -y, windowWidth, y);
