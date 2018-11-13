@@ -295,15 +295,14 @@ using StringTools;
 	#if (flash || html5)
 	static function uncaughtErrorHandler(event:UncaughtErrorEvent):Void
 	{
-		#if html5
+		#if (html5 && stencyltools)
 		
-		if(Reflect.hasField(event.error, "stack"))
+		if(Config.useGciLogging && Reflect.hasField(event.error, "stack"))
 		{
 			trace(event.error.stack);
-			return;
 		}
 		
-		#end
+		#elseif flash
 		
 		if (Std.is(event.error, Error))
 		{
@@ -317,6 +316,8 @@ using StringTools;
 		{
 			trace(event.error.toString());
 		}
+		
+		#end
 	}
 	#end
 }
