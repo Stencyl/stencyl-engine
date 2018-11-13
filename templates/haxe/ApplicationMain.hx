@@ -21,7 +21,7 @@ import openfl.display.StageDisplayState;
 
 import scripts.StencylPreloader;
 
-#if flash
+#if (flash || html5)
 import flash.events.UncaughtErrorEvent;
 import flash.events.ErrorEvent;
 import flash.errors.Error;
@@ -151,13 +151,6 @@ using StringTools;
 
 		app = new Application ();
 		
-		#if flash
-		if(!Config.releaseMode)
-		{
-			Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
-		}
-		#end
-
 		ManifestResources.init (config);
 		
 		app.meta["build"] = "::meta.buildNumber::";
@@ -240,13 +233,12 @@ using StringTools;
 		
 		#end
 		
-		/*
-		//XXX: On mac, creating the application seems to reset the cwd to the programPath at some point.
-		#if cppia
-		if(StencylCppia.gamePath != null)
-			Sys.setCwd(StencylCppia.gamePath);
+		#if (flash || html5)
+		if(!Config.releaseMode)
+		{
+			Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
+		}
 		#end
-		*/
 		
 		Universal.initWindow(app.window);
 		universal = new Universal();
@@ -300,14 +292,24 @@ using StringTools;
 		#end
 	}
 
-	#if flash
+	#if (flash || html5)
 	static function uncaughtErrorHandler(event:UncaughtErrorEvent):Void
 	{
+		#if html5
+		
+		if(Reflect.hasField(event.error, "stack"))
+		{
+			trace(event.error.stack);
+			return;
+		}
+		
+		#end
+		
 		if (Std.is(event.error, Error))
 		{
 			trace(cast(event.error, Error).getStackTrace());
 		}
-		else if (Std.is(event.error,ErrorEvent))
+		else if (Std.is(event.error, ErrorEvent))
 		{
 			trace(cast(event.error, ErrorEvent).text);
 		}
