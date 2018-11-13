@@ -528,7 +528,7 @@ class Engine
 	#if !flash
 	private function onWindowResize(event:Event):Void
 	{
-		if(isFullScreen && !stage.window.fullscreen && !ignoreResize)
+		if(isFullScreen && !stage.window.fullscreen && !stage.window.minimized && !ignoreResize)
 		{
 			setFullScreen(false);
 		}
