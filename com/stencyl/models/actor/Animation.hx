@@ -131,19 +131,27 @@ class Animation
 			return;
 		}
 		
-		var fw = Std.int(frameWidth * Engine.SCALE);
-		var fh = Std.int(frameHeight * Engine.SCALE);
-		
-		var point = new Point(0, 0);
-		for(i in 0...frameCount)
+		if(frameCount == 1)
 		{
-			var sourceRect = new Rectangle(fw * (i % framesAcross), Math.floor(i / framesAcross) * fh, fw, fh);
-			var frameImg = new BitmapData(fw, fh, true, 0);
-			frameImg.copyPixels(imgData, sourceRect, point);
-			frames[i] = frameImg;
+			frames[0] = imgData;
 		}
-		
-		imgData.dispose();
+		else
+		{
+			var fw = Std.int(frameWidth * Engine.SCALE);
+			var fh = Std.int(frameHeight * Engine.SCALE);
+			
+			var point = new Point(0, 0);
+			
+			for(i in 0...frameCount)
+			{
+				var sourceRect = new Rectangle(fw * (i % framesAcross), Math.floor(i / framesAcross) * fh, fw, fh);
+				var frameImg = new BitmapData(fw, fh, true, 0);
+				frameImg.copyPixels(imgData, sourceRect, point);
+				frames[i] = frameImg;
+			}
+			
+			imgData.dispose();
+		}
 		
 		#if ((lime_opengl || lime_opengles || lime_webgl) && !use_actor_tilemap)
 		if(Config.disposeImages && parent != null && !parent.readableImages)
