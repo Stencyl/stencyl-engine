@@ -196,6 +196,10 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	public var currAnimation:ActorAnimation;
 	public var currAnimationName:String;
 	public var animationMap:Map<String,ActorAnimation>;
+	
+	#if (!use_actor_tilemap && !flash)
+	public var bitmapFilters:Array<BitmapFilter>;
+	#end
 
 	public var sprite:StencylSprite;
 	
@@ -722,6 +726,9 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		collisionListenerCount = 0;
 	}
 	
+	private var defaultHitbox:Hitbox;
+	private var defaultMasklist:Masklist;
+	
 	public function addAnim(anim:Animation)
 	{
 		var shapes = (physicsMode == NORMAL_PHYSICS) ? anim.physicsShapes : anim.simpleShapes;
@@ -1190,6 +1197,9 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			
 			currAnimationName = name;
 			currAnimation = newAnimation;
+			#if (!use_actor_tilemap && !flash)
+			currAnimation.filter = bitmapFilters;
+			#end
 
 			#if (!use_actor_tilemap)
 			addChild(newAnimation);
@@ -3590,12 +3600,24 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 
 	public function setFilter(filter:Array<BitmapFilter>)
 	{
+		#if (!use_actor_tilemap && !flash)
+		if(bitmapFilters == null)
+			bitmapFilters = [];
+		bitmapFilters = bitmapFilters.concat(filter);
+		currAnimation.filter = bitmapFilters;
+		#else
 		filters = filters.concat(filter);
+		#end
 	}
 	
 	public function clearFilters()
 	{
+		#if (!use_actor_tilemap && !flash)
+		bitmapFilters = null;
+		currAnimation.filter = null;
+		#else
 		filters = null;
+		#end
 	}
 	
 	public function setBlendMode(blendMode:BlendMode)

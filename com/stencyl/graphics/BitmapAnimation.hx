@@ -3,10 +3,12 @@ package com.stencyl.graphics;
 import com.stencyl.models.actor.Animation;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
+import openfl.filters.BitmapFilter;
 import openfl.geom.Rectangle;
 import openfl.geom.Point;
 import com.stencyl.Config;
 import com.stencyl.Engine;
+import com.stencyl.utils.Utils;
 
 class BitmapAnimation extends Bitmap implements AbstractAnimation
 {
@@ -19,7 +21,12 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	
 	private var durations:Array<Int>;
 	private var individualDurations:Bool;
+	
+	private var frames:Array<BitmapData>;
 	private var numFrames:Int;
+	
+	public var filter(null, set):Array<BitmapFilter>;
+	private var filteredFrames:Array<Bool>;
 	
 	public function new(model:Animation) 
 	{
@@ -145,9 +152,50 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	
 	public inline function updateBitmap()
 	{
-		bitmapData = model.frames[frameIndex];
+		if(filter != null)
+		{
+			if(!filteredFrames[frameIndex])
+			{
+				frames[frameIndex] = applyFilters(frames[frameIndex], model.frames[frameIndex], filter);
+				filteredFrames[frameIndex] = true;
+			}
+			bitmapData = frames[frameIndex];
+		}
+		else
+		{
+			bitmapData = model.frames[frameIndex];
+		}
 		smoothing = Config.antialias;
 		needsUpdate = false;
+	}
+	
+	public function set_filter(filter:Array<BitmapFilter>)
+	{
+		this.filter = filter;
+		if(filteredFrames == null)
+		{
+			filteredFrames = [for (i in 0...numFrames) false];
+			frames = [for (i in 0...numFrames) null];
+		}
+		else
+		{
+			for (i in 0...numFrames) filteredFrames[i] = false;
+		}
+		updateBitmap();
+		return filter;
+	}
+	
+	public function applyFilters(destBitmapData:BitmapData, sourceBitmapData:BitmapData, filters:Array<BitmapFilter>):BitmapData
+	{
+		if(destBitmapData == null)
+			destBitmapData = new BitmapData(sourceBitmapData.width, sourceBitmapData.height);
+		
+		for(f in filters)
+		{
+			@:privateAccess sourceBitmapData = f.__applyFilter(destBitmapData, sourceBitmapData, sourceBitmapData.rect, Utils.zero);
+		}
+		
+		return destBitmapData;
 	}
 	
 	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
