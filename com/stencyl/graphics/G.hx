@@ -271,6 +271,7 @@ class G
 	}
 
 	private static var drawnStringCache = new Map<String, TemporaryImage>();
+	private static var drawnStringCacheKeys = new Array<String>();
 
 	private inline function getCacheKey(string:String, font:Font, alpha:Float):String
 	{
@@ -340,6 +341,7 @@ class G
 				temp.lifetime = 5;
 
 				drawnStringCache.set(cacheKey, temp);
+				drawnStringCacheKeys.push(cacheKey);
 				//trace("Added drawString image to cache: " + cacheKey);
 			}
 		}
@@ -354,14 +356,18 @@ class G
 
 	public static function visitStringCache():Void
 	{
-		for(key in drawnStringCache.keys())
+		var i = drawnStringCacheKeys.length;
+		
+		while(i-- > 0)
 		{
-			var temp = drawnStringCache.get(key);
+			var temp = drawnStringCache.get(drawnStringCacheKeys[i]);
 			--temp.lifetime;
 			if(temp.lifetime == 0)
 			{
 				temp.img.dispose();
-				drawnStringCache.remove(key);
+				drawnStringCache.remove(drawnStringCacheKeys[i]);
+				drawnStringCacheKeys[i] = drawnStringCacheKeys[drawnStringCacheKeys.length - 1];
+				drawnStringCacheKeys.pop();
 				//trace("Removed drawString image from cache: " + key);
 			}
 		}
