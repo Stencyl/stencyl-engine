@@ -23,7 +23,8 @@ import com.stencyl.models.Font;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.actor.Sprite;
 import com.stencyl.utils.Assets;
-import com.stencyl.utils.LazyMap;
+import com.stencyl.utils.LazyIntMap;
+import com.stencyl.utils.LazyStringMap;
 
 import mbs.core.MbsObject;
 import mbs.core.MbsType;
@@ -81,13 +82,13 @@ class Data
 	//*-----------------------------------------------
 	
 	//Map of each resource in memory by ID
-	public var resources:LazyMap<Int,Resource>;
+	public var resources:LazyIntMap<Resource>;
 
 	//Map of each resource in memory by name
-	public var resourceMap:LazyMap<String,Resource>;
+	public var resourceMap:LazyStringMap<Resource>;
 
 	//Map of each behavior by ID
-	public var behaviors:LazyMap<Int,Behavior>;
+	public var behaviors:LazyIntMap<Behavior>;
 	
 
 	private var resourceLookup:Map<Int,Int> = null; //id -> address
@@ -123,9 +124,9 @@ class Data
 		behaviorListMbs = new MbsReader(Typedefs.get(), false, false);
 		behaviorListMbs.readData(Assets.getBytes("assets/data/behaviors.mbs"));
 
-		behaviors = LazyMap.fromFunction(loadBehaviorFromMbs);
-		resources = LazyMap.fromFunction(loadResourceFromMbs);
-		resourceMap = LazyMap.fromFunction(loadResourceFromMbsByName);
+		behaviors = LazyIntMap.fromFunction(loadBehaviorFromMbs);
+		resources = LazyIntMap.fromFunction(loadResourceFromMbs);
+		resourceMap = LazyStringMap.fromFunction(loadResourceFromMbsByName);
 
 		loadReaders();
 
