@@ -3410,7 +3410,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	
 	public function isMouseHover():Bool
 	{
-		return isMouseOver() && Input.mouseUp;
+		return isMouseOver() && !Input.mouseDown;
 	}
 	
 	public function isMouseDown():Bool

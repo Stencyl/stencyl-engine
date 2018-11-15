@@ -28,36 +28,32 @@ import openfl.Lib;
 
 class Input
 {
-
-	public static var keyString:String = "";
-
-	public static var lastEvent:KeyboardEvent;
-	public static var lastKey:Int;
+	//global state
+	private static var _enabled:Bool = false;
+	private static var _joystickEnabled:Bool = false;
 	
+	//mouse state
 	public static var mouseX:Float = 0;
 	public static var mouseY:Float = 0;
-
+	public static var mouseWheel:Bool;
+	public static var mouseWheelDelta:Int = 0;
+	
 	public static var mouseDown:Bool;
-	public static var mouseUp:Bool;
 	public static var mousePressed:Bool;
 	public static var mouseReleased:Bool;
-	public static var mouseWheel:Bool;
 	public static var rightMouseDown:Bool;
-	public static var rightMouseUp:Bool;
 	public static var rightMousePressed:Bool;
 	public static var rightMouseReleased:Bool;
 	public static var middleMouseDown:Bool;
-	public static var middleMouseUp:Bool;
 	public static var middleMousePressed:Bool;
 	public static var middleMouseReleased:Bool;
-	public static var mouseWheelDelta:Int = 0;
 	
+	//accelerometer state
 	public static var accelX:Float;
 	public static var accelY:Float;
 	public static var accelZ:Float;
 	
-	public static var joySensitivity:Float = .12;
-
+	//gestures state
 	#if !js
 	public static var multiTouchEnabled:Bool;
 	public static var multiTouchPoints:Map<String,TouchEvent>;
@@ -71,7 +67,34 @@ class Input
 	public static var swipedDown:Bool;
 	public static var swipedLeft:Bool;
 	public static var swipedRight:Bool;
+	
+	//joystick state
+	public static var joySensitivity:Float = .12;
 
+	private static var _joyHatState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
+	private static var _joyAxisState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
+	private static var _joyAxisPressure:Map<Int,Array<Float>> = new Map<Int,Array<Float>>();
+	private static var _joyButtonState:Map<Int,Array<Bool>> = new Map<Int,Array<Bool>>();
+	
+	//keyboard state
+	private static var _key:Array<Bool> = new Array<Bool>();
+	
+	//key string
+	private static inline var kKeyStringMax = 100;
+	public static var keyString:String = "";
+	
+	public static var lastEvent:KeyboardEvent;
+	public static var lastKey:Int;
+	
+	//control state
+	private static var _controlsToReset:Array<Control> = new Array<Control>();
+	private static var _controlMap:Map<String,Control> = new Map<String,Control>();
+	
+	private static var _keyControlMap:Map<Int,Control> = new Map<Int,Control>();
+	#if desktop
+	private static var _joyControlMap:Map<String,Control> = new Map<String,Control>();
+	#end
+	
 	public static function resetStatics():Void
 	{
 		//global effects
@@ -115,9 +138,9 @@ class Input
 		lastEvent = null;
 		lastKey = 0;
 		mouseX = 0; mouseY = 0;
-		mouseUp = mouseDown = mousePressed = mouseReleased = mouseWheel = false;
-		rightMouseUp = rightMouseDown = rightMousePressed = rightMouseReleased = false;
-		middleMouseUp = middleMouseDown = middleMousePressed = middleMouseReleased = false;
+		mouseDown = mousePressed = mouseReleased = mouseWheel = false;
+		rightMouseDown = rightMousePressed = rightMouseReleased = false;
+		middleMouseDown = middleMousePressed = middleMouseReleased = false;
 		mouseWheelDelta = 0;
 		accelX = accelY = accelZ = 0;
 		joySensitivity = .12;
@@ -135,29 +158,27 @@ class Input
 		_joystickEnabled = false;
 		_enabled = false;
 		_key = new Array<Bool>();
-		_keyNum = 0;
-		_press = new Array<Int>();
-		_pressNum = 0;
-		_release = new Array<Int>();
-		_releaseNum = 0;
 		
 		_joyHatState = new Map<Int,Array<Int>>();
 		_joyAxisState = new Map<Int,Array<Int>>();
 		_joyAxisPressure = new Map<Int,Array<Float>>();
 		_joyButtonState = new Map<Int,Array<Bool>>();
 
-		_joyControlMap = new Map<String,String>();
-		_controlButtonMap = new Map<String,Array<JoystickButton>>();
+		#if desktop
+		_joyControlMap = new Map<String,Control>();
+		#end
+		_keyControlMap = new Map<Int,Control>();
 
-		_control = new Map<String,Array<Int>>();
+		_controlMap = new Map<String,Control>();
+		_controlsToReset = new Array<Control>();
 	}
 
 	/**
 	 * Returns the control->key map.
 	 */
-	public static function getControlMap():Map<String,Array<Int>>
+	public static function getControlMap():Map<String,Control>
 	{
-		return _control;
+		return _controlMap;
 	}
 	
 	/**
@@ -165,9 +186,11 @@ class Input
 	 * @param	name		String to map the input to.
 	 * @param	...keys		The keys to use for the Input.
 	 */
-	public static function define(name:String, keys:Array<Int>)
+	public static function define(controlName:String):Control
 	{
-		_control.set(name, keys);
+		var control = new Control(controlName);
+		_controlMap.set(controlName, control);
+		return control;
 	}
 
 	/**
@@ -175,60 +198,11 @@ class Input
 	 * @param	input		An input name to check for.
 	 * @return	True or false.
 	 */
-	public static function check(input:String):Bool
+	public static function check(controlName:String):Bool
 	{
-		var v:Array<Int> = _control.get(input);
+		var control = _controlMap.get(controlName);
 		
-		if(v == null)
-		{
-			//trace("No control selected for a control attribute");
-			return false;
-		}
-		
-		var i:Int = v.length;
-		
-		while(i-- > 0)
-		{
-			if(v[i] < 0)
-			{
-				if(_keyNum > 0) 
-				{
-					return true;
-				}
-				
-				continue;
-			}
-			
-			if(_key[v[i]]) 
-			{
-				return true;
-			}
-		}
-		
-		#if desktop
-		for (key in _joyControlMap.keys())
-		{
-			if (_joyControlMap.get(key) == input)
-			{
-				if (Utils.contains(_downJoy, key))
-				{
-					return true;
-				}
-			}
-		}
-		#end
-		
-		return false;
-	}
-
-	/**
-	 * If the key is held down.
-	 * @param	input		A key to check for.
-	 * @return	True or false.
-	 */
-	public static function checkKey(input:Int):Bool
-	{
-		return input < 0 ? _keyNum > 0 : _key[input];
+		return control != null && control.down;
 	}
 
 	/**
@@ -236,47 +210,11 @@ class Input
 	 * @param	input		An input name to check for.
 	 * @return	True or false.
 	 */
-	public static function pressed(input:String):Bool
+	public static function pressed(controlName:String):Bool
 	{
-		var v:Array<Int> = _control.get(input);
+		var control = _controlMap.get(controlName);
 		
-		if(v == null)
-		{
-			//trace("No control selected for a control attribute");
-			return false;
-		}
-		
-		var i:Int = v.length;
-		
-		while(i-- > 0)
-		{
-			if((v[i] < 0) ? _pressNum != 0 : indexOf(_press, v[i]) >= 0) 
-			{
-				return true;
-			}
-		}
-		
-		#if desktop
-		for (key in _joyControlMap.keys())
-		{
-			if (_joyControlMap.get(key) == input)
-			{
-				return (Utils.contains(_pressJoy, key));
-			}
-		}
-		#end
-		
-		return false;
-	}
-
-	/**
-	 * If the key was pressed this frame.
-	 * @param	input		A key to check for.
-	 * @return	True or false.
-	 */
-	public static function pressedKey(input:Int):Bool
-	{
-		return (input < 0) ? _pressNum != 0 : indexOf(_press, input) >= 0;
+		return control != null && control.pressed;
 	}
 
 	/**
@@ -284,72 +222,13 @@ class Input
 	 * @param	input		An input name to check for.
 	 * @return	True or false.
 	 */
-	public static function released(input:String):Bool
+	public static function released(controlName:String):Bool
 	{
-		var v:Array<Int> = _control.get(input);
+		var control = _controlMap.get(controlName);
 		
-		if(v == null)
-		{
-			//trace("No control selected for a control attribute");
-			return false;
-		}
-		
-		var i:Int = v.length;
-		
-		while(i-- > 0)
-		{
-			if((v[i] < 0) ? _releaseNum != 0 : indexOf(_release, v[i]) >= 0) 
-			{
-				return true;
-			}
-		}
-		
-		#if desktop
-		for (key in _joyControlMap.keys())
-		{
-			if (_joyControlMap.get(key) == input)
-			{
-				return (Utils.contains(_releaseJoy, key));
-			}
-		}
-		#end
-		
-		return false;
+		return control != null && control.released;
 	}
 
-	/**
-	 * If the key was released this frame.
-	 * @param	input		A key to check for.
-	 * @return	True or false.
-	 */
-	public static function releasedKey(input:Int):Bool
-	{
-		return (input < 0) ? _releaseNum != 0 : indexOf(_release, input) >= 0;
-	}
-
-	/**
-	 * Copy of Lambda.indexOf for speed/memory reasons
-	 * @param	a array to use
-	 * @param	v value to find index of
-	 * @return	index of value in the array
-	 */
-	private static function indexOf(a:Array<Int>, v:Int):Int
-	{
-		var i = 0;
-		
-		for(v2 in a) 
-		{
-			if(v == v2)
-			{
-				return i;
-			}
-			
-			i++;
-		}
-		
-		return -1;
-	}
-	
 	public static function enableSwipeDetection()
 	{
 		#if(mobile && !air)
@@ -488,20 +367,15 @@ class Input
 		{
 			lastEvent.preventDefault();
 
-			for (key in _control.keys())
+			var control = _keyControlMap.get(lime.ui.KeyCode.ESCAPE);
+			
+			if (lastEvent.type == KeyboardEvent.KEY_DOWN)
 			{
-				if (_control.get(key)[0] == lime.ui.KeyCode.ESCAPE)
-				{
-					if (lastEvent.type == KeyboardEvent.KEY_DOWN)
-					{
-						simulateKeyPress(key);
-					}
-					else
-					{
-						simulateKeyRelease(key);
-					}
-					
-				}
+				controlPressed(control);
+			}
+			else
+			{
+				controlReleased(control);
 			}
 		}
 	}
@@ -584,59 +458,47 @@ class Input
 		mouseX = (Engine.stage.mouseX - Engine.screenOffsetX) / Engine.screenScaleX;
 		mouseY = (Engine.stage.mouseY - Engine.screenOffsetY) / Engine.screenScaleY;
 	
-		while (_pressNum-- > -1) _press[_pressNum] = -1;
-		_pressNum = 0;
-		while (_releaseNum-- > -1) _release[_releaseNum] = -1;
-		_releaseNum = 0;
-		
-		_pressJoy = [];
-		_releaseJoy = [];
-
-		if(mousePressed) 
+		var i = _controlsToReset.length;
+		while(--i >= 0)
 		{
-			mousePressed = false;
+			var control = _controlsToReset.pop();
+			control.pressed = false;
+			control.released = false;
 		}
 		
-		if(mouseReleased) 
-		{
-			mouseReleased = false;
-		}
-		
-		if(rightMousePressed) 
-		{
-			rightMousePressed = false;
-		}
-		
-		if(rightMouseReleased) 
-		{
-			rightMouseReleased = false;
-		}
-		
-		if(middleMousePressed) 
-		{
-			middleMousePressed = false;
-		}
-		
-		if(middleMouseReleased) 
-		{
-			middleMouseReleased = false;
-		}
+		if(mousePressed) mousePressed = false;
+		if(mouseReleased) mouseReleased = false;
+		if(rightMousePressed) rightMousePressed = false;
+		if(rightMouseReleased) rightMouseReleased = false;
+		if(middleMousePressed) middleMousePressed = false;
+		if(middleMouseReleased) middleMouseReleased = false;
 		
 		mouseWheelDelta = 0;
 	}
 	
-	public static function simulateKeyPress(key:String)
+	public static function simulateKeyPress(controlName:String)
 	{
-		var v:Int = _control.get(key)[0];
+		controlPressed(_controlMap.get(controlName));
+	}
+	
+	private static function controlPressed(control:Control)
+	{
+		if(control == null) return;
 		
-		Input.onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, v, v));
+		if(!control.down)
+		{
+			control.down = true;
+			control.pressed = true;
+			control.pressure = 1.0;
+			_controlsToReset.push(control);
+		}
 		
 		if(Engine.engine.keyPollOccurred)
 		{
 			//Due to order of execution, events will never get thrown since the
 			//pressed/released flag is reset before the event checker sees it. So
 			//throw the event immediately.
-			var listeners = Engine.engine.whenKeyPressedListeners.get(key);
+			var listeners = Engine.engine.whenKeyPressedListeners.get(control.name);
 			
 			if(listeners != null)
 			{
@@ -645,18 +507,29 @@ class Input
 		}
 	}
 	
-	public static function simulateKeyRelease(key:String)
+	public static function simulateKeyRelease(controlName:String)
 	{
-		var v:Int = _control.get(key)[0];
+		controlReleased(_controlMap.get(controlName));
+	}
+	
+	private static function controlReleased(control:Control)
+	{
+		if(control == null) return;
 		
-		Input.onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, v, v));
+		if(control.down)
+		{
+			control.down = false;
+			control.released = true;
+			control.pressure = 0.0;
+			_controlsToReset.push(control);
+		}
 		
 		if(Engine.engine.keyPollOccurred)
 		{
 			//Due to order of execution, events will never get thrown since the
 			//pressed/released flag is reset before the event checker sees it. So
 			//throw the event immediately.
-			var listeners = Engine.engine.whenKeyPressedListeners.get(key);
+			var listeners = Engine.engine.whenKeyPressedListeners.get(control.name);
 			
 			if(listeners != null)
 			{
@@ -697,8 +570,7 @@ class Input
 		if(!_key[code])
 		{
 			_key[code] = true;
-			_keyNum++;
-			_press[_pressNum++] = code;
+			controlPressed(_keyControlMap.get(code));
 		}
 		
 		Engine.invokeListeners2(Engine.engine.whenAnyKeyPressedListeners, e);
@@ -718,8 +590,7 @@ class Input
 		if(_key[code])
 		{
 			_key[code] = false;
-			_keyNum--;
-			_release[_releaseNum++] = code;
+			controlReleased(_keyControlMap.get(code));
 		}
 		
 		Engine.invokeListeners2(Engine.engine.whenAnyKeyReleasedListeners, e);
@@ -737,7 +608,6 @@ class Input
 		if(!mouseDown)
 		{
 			mouseDown = true;
-			mouseUp = false;
 			mousePressed = true;
 		}
 	}
@@ -752,7 +622,6 @@ class Input
 		#end
 		
 		mouseDown = false;
-		mouseUp = true;
 		mouseReleased = true;
 	}
 
@@ -761,7 +630,6 @@ class Input
 		if(!rightMouseDown)
 		{
 			rightMouseDown = true;
-			rightMouseUp = false;
 			rightMousePressed = true;
 		}
 	}
@@ -769,7 +637,6 @@ class Input
 	private static function onRightMouseUp(e:MouseEvent)
 	{
 		rightMouseDown = false;
-		rightMouseUp = true;
 		rightMouseReleased = true;
 	}
 	
@@ -778,7 +645,6 @@ class Input
 		if(!middleMouseDown)
 		{
 			middleMouseDown = true;
-			middleMouseUp = false;
 			middleMousePressed = true;
 		}
 	}
@@ -786,7 +652,6 @@ class Input
 	private static function onMiddleMouseUp(e:MouseEvent)
 	{
 		middleMouseDown = false;
-		middleMouseUp = true;
 		middleMouseReleased = true;
 	}
 	
@@ -821,16 +686,16 @@ class Input
 			else if(old == 1)
 				joyRelease(joystick.id + ", +axis " + axis);
 			if(cur == -1)
-				joyPress(joystick.id + ", -axis " + axis);
+				joyPress(joystick.id + ", -axis " + axis, Math.abs(value));
 			else if(cur == 1)
-				joyPress(joystick.id + ", +axis " + axis);
+				joyPress(joystick.id + ", +axis " + axis, Math.abs(value));
 		}
 
 		oldState[axis] = cur;
 
 		_joyAxisPressure.get(joystick.id)[axis] = value;
 	}
-
+	
 	private static function onJoyBallMove(joystick:Joystick, trackball:Int, x:Float, y:Float)
 	{
 		//not sure what to do with this
@@ -882,12 +747,13 @@ class Input
 		joyRelease(joystick.id + ", " + button);
 	}
 
-	private static function joyPress(id:String)
+	private static function joyPress(id:String, ?pressure:Float = 0.0)
 	{
-		if(_joyControlMap.exists(id))
+		var control = _joyControlMap.get(id);
+		controlPressed(control);
+		if(pressure != 0.0)
 		{
-			_pressJoy.push(id);
-			_downJoy.push(id);
+			control.pressure = pressure;
 		}
 		
 		Engine.invokeListeners2(Engine.engine.whenAnyGamepadPressedListeners, id);
@@ -895,11 +761,7 @@ class Input
 
 	private static function joyRelease(id:String)
 	{
-		if(_joyControlMap.exists(id))
-		{
-			_releaseJoy.push(id);
-			_downJoy.remove(id);
-		}
+		controlReleased(_joyControlMap.get(id));
 
 		Engine.invokeListeners2(Engine.engine.whenAnyGamepadReleasedListeners, id);
 	}
@@ -912,29 +774,18 @@ class Input
 		#end
 	}
 
-	public static function mapJoystickButton(id:String, control:String)
+	public static function mapJoystickButton(id:String, controlName:String)
 	{
 		#if desktop
 		var button:JoystickButton = JoystickButton.fromID(id);
-
-		if(_joyControlMap.exists(id))
-		{
-			var buttons:Array<JoystickButton> = _controlButtonMap.get(_joyControlMap.get(id));
-
-			var i:Int = 0;
-			while(i < buttons.length)
-			{
-				if(buttons[i].equals(button))
-					buttons.splice(i--, 1);
-				++i;
-			}
-		}
+		var control = _joyControlMap.get(id);
+		if(control != null)
+			control.buttons.remove(button);
 		
-		if(!_controlButtonMap.exists(control))
-			_controlButtonMap.set(control, new Array<JoystickButton>());
-		_controlButtonMap.get(control).push(button);
-
-		_joyControlMap.set(id, control);
+		var newControl = _controlMap.get(controlName);
+		newControl.buttons.push(button);
+		
+		_joyControlMap.set(id, newControl);
 		#end
 	}
 	
@@ -942,116 +793,85 @@ class Input
 	{
 		#if desktop
 		var button:JoystickButton = JoystickButton.fromID(id);
-		var control:String = _joyControlMap.get(id);
+		var control = _joyControlMap.get(id);
+		if(control != null)
+			control.buttons.remove(button);
 		
-		if(_controlButtonMap.exists(control))
-		{
-			_controlButtonMap.get(control).remove(button);
-		}
-
 		_joyControlMap.remove(id);
 		#end
 	}
 	
-	public static function unMapControl(control:String)
+	public static function unMapControl(controlName:String)
 	{
 		#if desktop
-		_controlButtonMap.remove(control);
+		var control = _controlMap.get(controlName);
 
 		for(k in _joyControlMap.keys())
 		{
 			if (_joyControlMap.get(k) == control)
 			{
 				_joyControlMap.remove(k);
+				control.buttons.remove(JoystickButton.fromID(k));
 			}
 		}
 		#end
 	}
 
-	public static function getButtonPressure(control:String):Float
+	public static function getButtonPressure(controlName:String):Float
 	{
-		#if desktop
-
-		if(_controlButtonMap.exists(control))
+		var control = _controlMap.get(controlName);
+		
+		if(control != null)
 		{
-			var buttons = _controlButtonMap.get(control);
-
-			var highestPressure:Float = 0;
-			
-			for(b in buttons)
-			{
-				switch(b.a[JoystickButton.TYPE])
-				{
-					case JoystickButton.AXIS:
-						if(_joyAxisState.get(b.a[0])[b.a[2]] == b.a[3])
-							highestPressure = Math.max(highestPressure, Math.abs(_joyAxisPressure.get(b.a[0])[b.a[2]]));
-					case JoystickButton.HAT:
-						if(_joyHatState.get(b.a[0])[b.a[2]] == b.a[3])
-							return 1;
-					case JoystickButton.BUTTON:
-						if(_joyButtonState.get(b.a[0])[b.a[2]])
-							return 1;
-				}
-			}
-
-			if(highestPressure == 0 && check(control))
-				return 1;
-
-			return highestPressure;
+			return control.pressure;
 		}
-		else
-			return check(control) ? 1 : 0;
-
-		#else
-
-		return check(control) ? 1 : 0;
-
-		#end
+		
+		return 0.0;
 	}
-
-	private static var joyData:Map<String, Dynamic>;
 
 	public static function saveJoystickConfig(filename:String):Void
 	{
 		#if desktop
-		joyData = new Map<String, Dynamic>();
-		joyData.set("_joyControlMap", _joyControlMap);
+		var joyData = new Map<String, Dynamic>();
+		joyData.set("_joyControlMap", [for (key in _joyControlMap.keys()) key => _joyControlMap.get(key).name]);
 		joyData.set("joySensitivity", joySensitivity);
 		Utils.saveMap(joyData, "_jc-" + filename);
-		joyData = null;
 		#end
 	}
 
 	public static function loadJoystickConfig(filename:String):Void
 	{
 		#if desktop
-		joyData = new Map<String, Dynamic>();
+		clearJoystickConfig();
+		var joyData = new Map<String, Dynamic>();
 		Utils.loadMap(joyData, "_jc-" + filename, function(success:Bool):Void
 		{
 			if (Utils.mapCount(joyData) > 0)
 			{
-				_joyControlMap = joyData.get("_joyControlMap");
-				_controlButtonMap = new Map<String,Array<JoystickButton>>();
-				for(k in _joyControlMap.keys())
+				var joyStringMap:Map<String,String> = joyData.get("_joyControlMap");
+				for(k in joyStringMap.keys())
 				{
-					var control:String = _joyControlMap.get(k);
-					var button:JoystickButton = JoystickButton.fromID(k);
-
-					if(!_controlButtonMap.exists(control))
-						_controlButtonMap.set(control, new Array<JoystickButton>());
-					_controlButtonMap.get(control).push(button);
+					var controlName = joyStringMap.get(k);
+					var control = _controlMap.get(controlName);
+					_joyControlMap.set(k, control);
+					
+					var button = JoystickButton.fromID(k);
+					
+					control.buttons.push(button);
 				}
 				joySensitivity = joyData.get("joySensitivity");
 			}
-			joyData = null;
 		});
 		#end
 	}
 
 	public static function clearJoystickConfig():Void
 	{
-		_joyControlMap = new Map<String,String>();
-		_controlButtonMap = new Map<String,Array<JoystickButton>>();
+		for(control in _controlMap)
+		{
+			control.buttons = [];
+		}
+		_joyControlMap = new Map<String,Control>();
 		joySensitivity = .12;
 	}
 
@@ -1062,7 +882,12 @@ class Input
 			var value = Config.keys.get(stencylControl);
 			var keyboardConstList = [for (keyname in value) Key.keyFromName(keyname)];
 			
-			define(stencylControl, keyboardConstList);
+			var control = define(stencylControl);
+			control.keys = keyboardConstList;
+			for(key in control.keys)
+			{
+				_keyControlMap.set(key, control);
+			}
 		}
 	}
 
@@ -1090,30 +915,28 @@ class Input
 		numTouches--;
 	}
 	#end
+}
 
-	private static inline var kKeyStringMax = 100;
-
-	private static var _joystickEnabled:Bool = false;
-	private static var _enabled:Bool = false;
-	private static var _key:Array<Bool> = new Array<Bool>();
-	private static var _keyNum:Int = 0;
-	private static var _press:Array<Int> = new Array<Int>();
-	private static var _pressNum:Int = 0;
-	private static var _release:Array<Int> = new Array<Int>();
-	private static var _releaseNum:Int = 0;
-	private static var _pressJoy:Array<String> = new Array<String>();
-	private static var _releaseJoy:Array<String> = new Array<String>();
-	private static var _downJoy:Array<String> = new Array<String>();
+class Control
+{
+	public var name:String;
+	public var keys:Array<Int>;
+	#if desktop
+	public var buttons:Array<JoystickButton>;
+	#end
+	public var pressed:Bool;
+	public var released:Bool;
+	public var down:Bool;
+	public var pressure:Float;
 	
-	private static var _joyHatState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
-	private static var _joyAxisState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
-	private static var _joyAxisPressure:Map<Int,Array<Float>> = new Map<Int,Array<Float>>();
-	private static var _joyButtonState:Map<Int,Array<Bool>> = new Map<Int,Array<Bool>>();
-
-	private static var _joyControlMap:Map<String,String> = new Map<String,String>();
-	private static var _controlButtonMap:Map<String,Array<JoystickButton>> = new Map<String,Array<JoystickButton>>();
-
-	private static var _control:Map<String,Array<Int>> = new Map<String,Array<Int>>();
+	public function new(name:String)
+	{
+		this.name = name;
+		keys = [];
+		#if desktop
+		buttons = [];
+		#end
+	}
 }
 
 class JoystickButton
@@ -1130,9 +953,14 @@ class JoystickButton
 	public static inline var HAT:Int = 1;
 	public static inline var BUTTON:Int = 2;
 	public static inline var BALL:Int = 3;
+	
+	private static var cacheFromID:Map<String, JoystickButton> = new Map<String, JoystickButton>();
 
 	public static function fromID(id:String):JoystickButton
 	{
+		if(cacheFromID.exists(id))
+			return cacheFromID.get(id);
+		
 		var b:JoystickButton = new JoystickButton();
 		b.id = id;
 
@@ -1164,7 +992,8 @@ class JoystickButton
 
 			b.a = [device, BUTTON, button];
 		}
-
+		
+		cacheFromID.set(id, b);
 		return b;
 	}
 

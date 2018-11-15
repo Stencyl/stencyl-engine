@@ -803,8 +803,8 @@ class Engine
 		atlasesToUnload = new Map<Int,Int>();
 
 		Input.enable();
-		Input.define(INTERNAL_SHIFT, [Key.SHIFT]);
-		Input.define(INTERNAL_CTRL, [Key.CONTROL]);
+		Input.define(INTERNAL_SHIFT).keys.push(Key.SHIFT);
+		Input.define(INTERNAL_CTRL).keys.push(Key.CONTROL);
 		
 		landscape = Config.landscape;
 		var stageWidth = Universal.logicalWidth;
