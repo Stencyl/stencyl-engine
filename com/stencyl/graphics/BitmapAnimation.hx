@@ -25,8 +25,10 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	private var frames:Array<BitmapData>;
 	private var numFrames:Int;
 	
+	#if !flash
 	public var filter(null, set):Array<BitmapFilter>;
 	private var filteredFrames:Array<Bool>;
+	#end
 	
 	public function new(model:Animation) 
 	{
@@ -152,6 +154,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	
 	public inline function updateBitmap()
 	{
+		#if !flash
 		if(filter != null)
 		{
 			if(!filteredFrames[frameIndex])
@@ -162,6 +165,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 			bitmapData = frames[frameIndex];
 		}
 		else
+		#end
 		{
 			bitmapData = model.frames[frameIndex];
 		}
@@ -169,6 +173,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		needsUpdate = false;
 	}
 	
+	#if !flash
 	public function set_filter(filter:Array<BitmapFilter>)
 	{
 		this.filter = filter;
@@ -197,6 +202,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		
 		return destBitmapData;
 	}
+	#end
 	
 	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
