@@ -2908,7 +2908,7 @@ class Engine
 					
 					if(body != null)
 					{
-						value = cast(body.getUserData()).groupID;
+						value = body.getUserData().groupID;
 					}
 				}
 				
@@ -2930,7 +2930,7 @@ class Engine
 					
 					if(body != null)
 					{
-						value = cast(body.getUserData()).groupID;
+						value = body.getUserData().groupID;
 					}
 				}
 				
@@ -3724,14 +3724,14 @@ class Engine
 		
 		if(one.getType() == 0)
 		{
-			v1.x = cast(one.getUserData(), Actor).getPhysicsWidth() / 2;
-			v1.y = cast(one.getUserData(), Actor).getPhysicsHeight() / 2;
+			v1.x = one.getUserData().getPhysicsWidth() / 2;
+			v1.y = one.getUserData().getPhysicsHeight() / 2;
 		}
 		
 		if(two.getType() == 0)
 		{
-			v2.x = cast(two.getUserData(), Actor).getPhysicsWidth() / 2;
-			v2.y = cast(two.getUserData(), Actor).getPhysicsHeight() / 2;
+			v2.x = two.getUserData().getPhysicsWidth() / 2;
+			v2.y = two.getUserData().getPhysicsHeight() / 2;
 		}
 		
 		v1 = one.getWorldPoint(v1);
@@ -3885,20 +3885,20 @@ class Engine
 		//Static body
 		if(one.getType() == 0)
 		{
-			if(cast(one.getUserData(), Actor) != null)
+			if(one.getUserData() != null)
 			{
-				pt1.x = cast(one.getUserData(), Actor).getPhysicsWidth() / 2;
-				pt1.y = cast(one.getUserData(), Actor).getPhysicsHeight() / 2;
+				pt1.x = one.getUserData().getPhysicsWidth() / 2;
+				pt1.y = one.getUserData().getPhysicsHeight() / 2;
 				pt1 = one.getWorldPoint(pt1);	
 			}
 		}
 		
 		if(two.getType() == 0)
 		{
-			if(cast(two.getUserData(), Actor) != null)
+			if(two.getUserData() != null)
 			{
-				pt2.x = cast(two.getUserData(), Actor).getPhysicsWidth() / 2;
-				pt2.y = cast(two.getUserData(), Actor).getPhysicsHeight() / 2;
+				pt2.x = two.getUserData().getPhysicsWidth() / 2;
+				pt2.y = two.getUserData().getPhysicsHeight() / 2;
 				pt2 = two.getWorldPoint(pt2);	
 			}
 		}

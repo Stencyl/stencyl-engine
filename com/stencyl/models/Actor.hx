@@ -1239,7 +1239,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 				{
 					if(Std.is(contact.other.getUserData(), Region) && contact.contact.isTouching())
 					{
-						regions.push(contact.other.getUserData());
+						regions.push(cast contact.other.getUserData());
 					}
 					
 					Engine.engine.world.m_contactManager.m_contactListener.endContact(contact.contact);
@@ -2051,8 +2051,8 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 					continue;
 				}
 				
-				var a1:Actor = cast p.getFixtureA().getUserData();
-				var a2:Actor = cast p.getFixtureB().getUserData();
+				var a1:Actor = p.getFixtureA().getUserData();
+				var a2:Actor = p.getFixtureB().getUserData();
 				
 				if(a1 == this)
 				{

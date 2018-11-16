@@ -388,7 +388,7 @@ class Script
 					
 					if(body != null)
 					{
-						return engine.getGroup(cast(body.getUserData()).groupID);
+						return engine.getGroup(body.getUserData().groupID);
 					}
 					
 					trace("internalGetGroup - Warning - shape inherits groupID from actor but is not attached to a body");
