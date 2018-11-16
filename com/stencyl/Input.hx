@@ -867,12 +867,14 @@ class Input
 
 	public static function clearJoystickConfig():Void
 	{
+		#if desktop
 		for(control in _controlMap)
 		{
 			control.buttons = [];
 		}
 		_joyControlMap = new Map<String,Control>();
 		joySensitivity = .12;
+		#end
 	}
 
 	public static function loadInputConfig():Void
