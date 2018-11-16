@@ -97,6 +97,7 @@ class PostProcess extends DisplayObject
 		gl = renderer.gl;
 		
 		uniforms = new Map<String, Uniform>();
+		changedUniforms = [];
 		uniformTweens = new Map<String, TweenFloat>();
 
 		// create and the texture
@@ -248,11 +249,10 @@ class PostProcess extends DisplayObject
 			gl.uniform2f(resolutionUniform, Std.int(stage.stageWidth), Std.int(stage.stageHeight));
 			gl.uniform2f(resolutionUsUniform, Std.int(stage.stageWidth / (Engine.SCALE * Engine.screenScaleX)), Std.int(stage.stageHeight / (Engine.SCALE * Engine.screenScaleY)));
 
-			//for (u in uniforms) gl.uniform1f(u.id, u.value);
-			var it = uniforms.iterator();
-			var u = it.next();
-			while (u != null)
+			var i = changedUniforms.length;
+			while(i-- > 0)
 			{
+				var u = changedUniforms.pop();
 				if (Std.is(u.value, Array))
 				{
 					gl.uniform1fv(u.id, new Float32Array(null, u.value));
@@ -261,9 +261,8 @@ class PostProcess extends DisplayObject
 				{
 					gl.uniform1f(u.id, u.value);
 				}
-				u = it.next();
 			}
-
+			
 			gl.drawArrays(GL.TRIANGLES, 0, 6);
 
 			gl.bindBuffer(GL.ARRAY_BUFFER, null);
@@ -301,13 +300,16 @@ class PostProcess extends DisplayObject
 		{
 			var uniform = uniforms.get(uniform);
 			uniform.value = value;
+			changedUniforms.push(uniform);
 		}
 		else
 		{
 			var id:GLUniformLocation = fullScreenShader.uniform(uniform);
 			if(id != UNIFORM_NOT_FOUND)
 			{
-				uniforms.set(uniform, {id: id, value: value});
+				var newUniform = {id: id, value: value};
+				uniforms.set(uniform, newUniform);
+				changedUniforms.push(newUniform);
 			}
 		}
 	}
@@ -338,6 +340,7 @@ class PostProcess extends DisplayObject
 				uniformTween = new TweenFloat();
 				uniformTween.doOnUpdate(function() {
 					uniform.value = uniformTween.value;
+					changedUniforms.push(uniform);
 				});
 				uniformTweens.set(name, uniformTween);
 			}
@@ -398,6 +401,7 @@ class PostProcess extends DisplayObject
 	private var resolutionUsUniform:GLUniformLocation;
 	private var timeUniform:GLUniformLocation;
 	private var uniforms:Map<String, Uniform>;
+	private var changedUniforms:Array<Uniform>;
 	private var uniformTweens:Map<String, TweenFloat>;
 
 	/* @private Simple full screen vertex fullScreenShader */
