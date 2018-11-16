@@ -668,6 +668,13 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		
 		registry = null;
 		
+		for(k in collisions.keys()) 
+		{
+			var d = collisions.get(k);
+			while(d.points.length > 0)
+				CollisionPoint.free(d.points.pop());
+		}
+		
 		collisions = null;
 		simpleCollisions = null;		
 		
@@ -1243,6 +1250,9 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 				//SECRET/showthread.php?tid=9773&page=3
 				for(k in collisions.keys()) 
 				{
+					var d = collisions.get(k);
+					while(d.points.length > 0)
+						CollisionPoint.free(d.points.pop());
 					collisions.unset(k);
 				}
 				
@@ -1989,7 +1999,10 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		
 		//Even iteration over blank maps can impact low-end devices. Guard against it.
 		if(contactCount > 0)
-		{		
+		{
+			var cp_count = 0;
+			var cp:CollisionPoint = null;
+		
 			for(p in contacts)
 			{
 				var key = p.key;
@@ -1999,7 +2012,8 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 					//need to update points for pre-existing contacts.
 
 					var d:Collision = collisions.get(key);
-					d.points = [];
+					//while(d.points.length > 0)
+					//d.points.pop();
 					
 					p.getWorldManifold(manifold);
 
@@ -2007,16 +2021,33 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 					{
 						if (point.x != 0 && point.y != 0)
 						{
-							d.points.push(new CollisionPoint
-							(
-								point.x, 
-								point.y, 
-								manifold.m_normal.x,
-								manifold.m_normal.y
-							));
+							cp = d.points[cp_count];
+							if(cp == null)
+							{
+								d.points[cp_count] = CollisionPoint.get
+								(
+									point.x, 
+									point.y, 
+									manifold.m_normal.x,
+									manifold.m_normal.y
+								);
+							}
+							else
+							{
+								cp = d.points[cp_count];
+								cp.x = point.x;
+								cp.y = point.y;
+								cp.normalX = manifold.m_normal.x;
+								cp.normalY = manifold.m_normal.y;
+							}
+							++cp_count;
 						}
 					}
-
+					
+					while(d.points.length > cp_count)
+						CollisionPoint.free(d.points.pop());
+					cp_count = 0;
+					
 					continue;
 				}
 				
@@ -2051,7 +2082,6 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 				p.getWorldManifold(manifold);
 				
 				var pt = null;
-				var cp:CollisionPoint;
 
 				collisions.set(key, d);
 				collisionsCount++;
@@ -2069,8 +2099,8 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 					if ((point.x != 0 && point.y != 0) && !(thisShape.isSensor()))
 					{
 						pt = point;
-
-						cp = new CollisionPoint
+						
+						cp = CollisionPoint.get
 						(
 							pt.x, 
 							pt.y, 
@@ -2187,9 +2217,13 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	{
 		if(collisions != null)
 		{
-			if(collisions.unset(point.key))
+			var d = collisions.get(point.key);
+			if(d != null)
 			{
+				collisions.unset(point.key);
 				collisionsCount--;
+				while(d.points.length > 0)
+					CollisionPoint.free(d.points.pop());
 			}
 		}
 		

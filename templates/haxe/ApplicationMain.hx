@@ -86,6 +86,7 @@ using StringTools;
 		com.stencyl.models.SoundChannel.resetStatics();
 		com.stencyl.models.actor.Animation.resetStatics();
 		com.stencyl.models.actor.Collision.resetStatics();
+		com.stencyl.models.actor.CollisionPoint.resetStatics();
 		com.stencyl.models.collision.CollisionInfo.resetStatics();
 		com.stencyl.models.scene.TileLayer.resetStatics();
 		#if flash com.stencyl.utils.Kongregate.resetStatics(); #end

@@ -19,4 +19,33 @@ class CollisionPoint
 		this.normalX = normalX;
 		this.normalY = normalY;
 	}
+	
+	private static var freedCollisionPoints = new Array<CollisionPoint>();
+	
+	public static function resetStatics()
+	{
+		freedCollisionPoints = new Array<CollisionPoint>();
+	}
+	
+	public static function get(x:Float, y:Float, normalX:Float, normalY:Float)
+	{
+		if(freedCollisionPoints.length > 0)
+		{
+			var cp = freedCollisionPoints.pop();
+			cp.x = x;
+			cp.y = y;
+			cp.normalX = normalX;
+			cp.normalY = normalY;
+			return cp;
+		}
+		else
+		{
+			return new CollisionPoint(x, y, normalX, normalY);
+		}
+	}
+	
+	public static function free(cp:CollisionPoint)
+	{
+		freedCollisionPoints.push(cp);
+	}
 }
