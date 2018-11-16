@@ -1207,6 +1207,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			#if (!use_actor_tilemap && !flash)
 			currAnimation.filter = bitmapFilters;
 			#end
+			currAnimation.visible = drawActor;
 
 			#if (!use_actor_tilemap)
 			addChild(newAnimation);
@@ -3595,14 +3596,6 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		{
 			currAnimation.visible = true;
 		}
-		
-		for(anim in animationMap)
-		{
-			if(anim != null)
-			{
-				anim.visible = true;
-			}
-		}
 	}
 	
 	public function disableActorDrawing()
@@ -3612,14 +3605,6 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		if(currAnimation != null)
 		{
 			currAnimation.visible = false;
-		}
-		
-		for(anim in animationMap)
-		{
-			if(anim != null)
-			{
-				anim.visible = false;
-			}
 		}
 	}
 	
