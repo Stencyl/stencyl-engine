@@ -371,7 +371,7 @@ class Input
 			
 			if (lastEvent.type == KeyboardEvent.KEY_DOWN)
 			{
-				controlPressed(control);
+				controlPressed(control, 1.0);
 			}
 			else
 			{
@@ -478,10 +478,10 @@ class Input
 	
 	public static function simulateKeyPress(controlName:String)
 	{
-		controlPressed(_controlMap.get(controlName));
+		controlPressed(_controlMap.get(controlName), 1.0);
 	}
 	
-	private static function controlPressed(control:Control)
+	private static function controlPressed(control:Control, pressure:Float)
 	{
 		if(control == null) return;
 		
@@ -489,7 +489,7 @@ class Input
 		{
 			control.down = true;
 			control.pressed = true;
-			control.pressure = 1.0;
+			control.pressure = pressure;
 			_controlsToReset.push(control);
 		}
 		
@@ -570,7 +570,7 @@ class Input
 		if(!_key[code])
 		{
 			_key[code] = true;
-			controlPressed(_keyControlMap.get(code));
+			controlPressed(_keyControlMap.get(code), 1.0);
 		}
 		
 		Engine.invokeListeners2(Engine.engine.whenAnyKeyPressedListeners, e);
@@ -716,9 +716,9 @@ class Input
 			else if(oldX == 1)
 				joyRelease(joystick.id + ", right hat");
 			if(newX == -1)
-				joyPress(joystick.id + ", left hat");
+				joyPress(joystick.id + ", left hat", 1.0);
 			else if(newX == 1)
-				joyPress(joystick.id + ", right hat");
+				joyPress(joystick.id + ", right hat", 1.0);
 		}
 		if(newY != oldY)
 		{
@@ -727,9 +727,9 @@ class Input
 			else if(oldY == 1)
 				joyRelease(joystick.id + ", down hat");
 			if(newY == -1)
-				joyPress(joystick.id + ", up hat");
+				joyPress(joystick.id + ", up hat", 1.0);
 			else if(newY == 1)
-				joyPress(joystick.id + ", down hat");
+				joyPress(joystick.id + ", down hat", 1.0);
 		}
 
 		_joyHatState.set(joystick.id, [newX, newY]);
@@ -738,7 +738,7 @@ class Input
 	private static function onJoyButtonDown(joystick:Joystick, button:Int)
 	{
 		_joyButtonState.get(joystick.id)[button] = true;
-		joyPress(joystick.id + ", " + button);
+		joyPress(joystick.id + ", " + button, 1.0);
 	}
 
 	private static function onJoyButtonUp(joystick:Joystick, button:Int)
@@ -747,14 +747,10 @@ class Input
 		joyRelease(joystick.id + ", " + button);
 	}
 
-	private static function joyPress(id:String, ?pressure:Float = 0.0)
+	private static function joyPress(id:String, pressure:Float)
 	{
 		var control = _joyControlMap.get(id);
-		controlPressed(control);
-		if(pressure != 0.0)
-		{
-			control.pressure = pressure;
-		}
+		controlPressed(control, pressure);
 		
 		Engine.invokeListeners2(Engine.engine.whenAnyGamepadPressedListeners, id);
 	}
