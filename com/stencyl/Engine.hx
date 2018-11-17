@@ -2214,12 +2214,7 @@ class Engine
 		a.clearFilters();
 		a.resetBlendMode();
 		
-		//Only the fading is necessary. Don't fully understand why...
-		//a.moveTo(1000000, 1000000, 0.01);
-		//a.growTo(1, 1, 0.02);
-		//a.spinTo(0, 0.01);
-		a.fadeTo(1, 0.01);
-		
+		a.alpha = 1;
 		a.realScaleX = 1;
 		a.realScaleY = 1;
 		

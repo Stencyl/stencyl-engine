@@ -3477,6 +3477,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		if (duration == 0)
 		{
 			alpha = value;
+			if(tweenProps.alpha.active) TweenManager.cancel(tweenProps.alpha);
 		}
 		else
 		{
@@ -3490,6 +3491,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		{
 			realScaleX = scaleX;
 			realScaleY = scaleY;
+			if(tweenProps.realScaleXY.active) TweenManager.cancel(tweenProps.realScaleXY);
 		}
 		else
 		{
@@ -3503,6 +3505,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		if (duration == 0)
 		{
 			realAngle = angle;
+			if(tweenProps.angle.active) TweenManager.cancel(tweenProps.angle);
 		}
 		else
 		{
@@ -3515,6 +3518,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		if (duration == 0)
 		{
 			setXY(x, y);
+			if(tweenProps.xy.active) TweenManager.cancel(tweenProps.xy);
 		}
 		else
 		{
