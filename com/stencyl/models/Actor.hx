@@ -1013,8 +1013,14 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 					}
 					else
 					{
+						var currFixture = getBody().getFixtureList();
 						var currShape:B2Shape = getBody().getFixtureList().getShape();
 						var defaultShape:B2Shape = defaultDef.shape;
+						
+						if (currFixture.groupID != defaultDef.groupID)
+						{
+							return true;
+						}
 
 						if (getBody().getFixtureList().isSensor() != defaultDef.isSensor)
 						{
