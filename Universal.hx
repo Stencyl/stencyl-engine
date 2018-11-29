@@ -314,17 +314,28 @@ class Universal extends Sprite
 			}
 		}
 
-		Engine.screenScaleX = scaleX;
-		Engine.screenScaleY = scaleY;
-		
 		logicalWidth = Config.stageWidth;
 		logicalHeight = Config.stageHeight;
 
 		if(isFullScreen && (Config.scaleMode == ScaleMode.SCALE_TO_FIT_FULLSCREEN || Config.scaleMode == ScaleMode.FULLSCREEN))
 		{
-			logicalWidth += (windowWidth / scaleX - scaledStageWidth) / Engine.SCALE;
-			logicalHeight += (windowHeight / scaleY - scaledStageHeight) / Engine.SCALE;
+			logicalWidth = (windowWidth / scaleX) / Engine.SCALE;
+			logicalHeight = (windowHeight / scaleY) / Engine.SCALE;
+
+			//bring logical size to the nearest full pixel of the desired value.
+
+			if(Std.int(logicalWidth) != logicalWidth || Std.int(logicalHeight) != logicalHeight)
+			{
+				logicalWidth = Std.int(logicalWidth);
+				logicalHeight = Std.int(logicalHeight);
+
+				scaleX = windowWidth / Engine.SCALE / logicalWidth;
+				scaleY = windowHeight / Engine.SCALE / logicalHeight;
+			}
 		}
+		
+		Engine.screenScaleX = scaleX;
+		Engine.screenScaleY = scaleY;
 		
 		maskLayer.graphics.clear();
 		if(isFullScreen && (Config.scaleMode == ScaleMode.SCALE_TO_FIT_LETTERBOX || Config.scaleMode == ScaleMode.NO_SCALING))
