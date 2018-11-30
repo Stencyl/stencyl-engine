@@ -197,15 +197,17 @@ class Universal extends Sprite
 			Engine.isIPhoneXR = true;
 		}
 		
-		else if(smaller == 768 && larger == 1024)
+		else if
+		(
+			(smaller == 768 && larger == 1024) ||
+			(smaller == 1536 && larger == 2048) ||
+			(smaller == 1668 && larger == 2224) ||
+			(smaller == 1668 && larger == 2388) ||
+			(smaller == 2048 && larger == 2732)
+		)
 		{
 			Engine.isTabletIOS = true;
-		}	
-		
-		else if(smaller == 1536 && larger == 2048)
-		{
-			Engine.isTabletIOS = true;
-		}		
+		}
 		
 		#end
 		
