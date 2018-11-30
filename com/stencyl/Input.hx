@@ -182,9 +182,23 @@ class Input
 	}
 	
 	/**
+	 * Defines a new input, or returns an existing one.
+	 * @param	name		String to map the input to.
+	 */
+	public static function getControl(controlName:String):Control
+	{
+		var control = _controlMap.get(controlName);
+		if(control == null)
+		{
+			control = new Control(controlName);
+			_controlMap.set(controlName, control);
+		}
+		return control;
+	}
+	
+	/**
 	 * Defines a new input.
 	 * @param	name		String to map the input to.
-	 * @param	...keys		The keys to use for the Input.
 	 */
 	public static function define(controlName:String):Control
 	{
