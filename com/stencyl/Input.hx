@@ -28,10 +28,6 @@ import openfl.Lib;
 
 class Input
 {
-	//global state
-	private static var _enabled:Bool = false;
-	private static var _joystickEnabled:Bool = false;
-	
 	//mouse state
 	public static var mouseX:Float = 0;
 	public static var mouseY:Float = 0;
@@ -55,22 +51,26 @@ class Input
 	
 	//gestures state
 	#if !js
-	public static var multiTouchEnabled:Bool;
 	public static var multiTouchPoints:Map<String,TouchEvent>;
 	#end
 	
 	public static var numTouches:Int;
 
-	private static var roxAgent:RoxGestureAgent;
-	private static var swipeDirection:Int;
 	public static var swipedUp:Bool;
 	public static var swipedDown:Bool;
 	public static var swipedLeft:Bool;
 	public static var swipedRight:Bool;
 	
+	//private
+	
+	private static var _enabled:Bool = false;
+	
+	//gestures state
+	private static var _roxAgent:RoxGestureAgent;
+	private static var _swipeDirection:Int;
+	
 	//joystick state
-	public static var joySensitivity:Float = .12;
-
+	private static var _joySensitivity:Float = .12;
 	private static var _joyHatState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
 	private static var _joyAxisState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
 	private static var _joyAxisPressure:Map<Int,Array<Float>> = new Map<Int,Array<Float>>();
@@ -79,17 +79,9 @@ class Input
 	//keyboard state
 	private static var _key:Array<Bool> = new Array<Bool>();
 	
-	//key string
-	private static inline var kKeyStringMax = 100;
-	public static var keyString:String = "";
-	
-	public static var lastEvent:KeyboardEvent;
-	public static var lastKey:Int;
-	
 	//control state
 	private static var _controlsToReset:Array<Control> = new Array<Control>();
 	private static var _controlMap:Map<String,Control> = new Map<String,Control>();
-	
 	private static var _keyControlMap:Map<Int,Control> = new Map<Int,Control>();
 	#if desktop
 	private static var _joyControlMap:Map<String,Control> = new Map<String,Control>();
@@ -115,7 +107,7 @@ class Input
 		Engine.stage.removeEventListener(MouseEvent.MIDDLE_MOUSE_UP, onMiddleMouseUp);
 		#end
 
-		#if(mobile && android)
+		#if(android)
 		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, ignoreBackKey);
 		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_UP, ignoreBackKey);
 		#end
@@ -129,36 +121,31 @@ class Input
 		}
 		#end
 
-		roxAgent.detach();
+		_roxAgent.detach();
 		Engine.engine.root.removeEventListener(RoxGestureEvent.GESTURE_SWIPE, onSwipe);
 
 		//statics
 
-		keyString = "";
-		lastEvent = null;
-		lastKey = 0;
 		mouseX = 0; mouseY = 0;
 		mouseDown = mousePressed = mouseReleased = mouseWheel = false;
 		rightMouseDown = rightMousePressed = rightMouseReleased = false;
 		middleMouseDown = middleMousePressed = middleMouseReleased = false;
 		mouseWheelDelta = 0;
 		accelX = accelY = accelZ = 0;
-		joySensitivity = .12;
 		
 		#if !js
-		multiTouchEnabled = false;
 		multiTouchPoints = null;
 		#end
 
 		numTouches = 0;
-		swipeDirection = 0;
+		_swipeDirection = 0;
 		swipedUp = swipedDown = swipedRight = swipedLeft = false;
-		roxAgent = null;
+		_roxAgent = null;
 		
-		_joystickEnabled = false;
 		_enabled = false;
 		_key = new Array<Bool>();
 		
+		_joySensitivity = .12;
 		_joyHatState = new Map<Int,Array<Int>>();
 		_joyAxisState = new Map<Int,Array<Int>>();
 		_joyAxisPressure = new Map<Int,Array<Float>>();
@@ -174,37 +161,167 @@ class Input
 	}
 
 	/**
-	 * Returns the control->key map.
-	 */
-	public static function getControlMap():Map<String,Control>
-	{
-		return _controlMap;
-	}
-	
-	/**
-	 * Defines a new input, or returns an existing one.
-	 * @param	name		String to map the input to.
-	 */
-	public static function getControl(controlName:String):Control
-	{
-		var control = _controlMap.get(controlName);
-		if(control == null)
-		{
-			control = new Control(controlName);
-			_controlMap.set(controlName, control);
-		}
-		return control;
-	}
-	
-	/**
 	 * Defines a new input.
 	 * @param	name		String to map the input to.
 	 */
-	public static function define(controlName:String):Control
+	public static function define(controlName:String, keyCodes:Array<Int>)
 	{
-		var control = new Control(controlName);
-		_controlMap.set(controlName, control);
-		return control;
+		if(_controlMap.get(controlName) == null)
+			_controlMap.set(controlName, new Control(controlName));
+		else
+			unmapControl(controlName);
+		
+		for(keyCode in keyCodes)
+			mapKey(keyCode, controlName);
+	}
+	
+	public static function mapKey(keyCode:Int, controlName:String)
+	{
+		var control = _keyControlMap.get(keyCode);
+		if(control != null)
+		{
+			if(_key[keyCode]) controlReleased(control);
+			control.keys.remove(keyCode);
+		}
+		
+		var newControl = _controlMap.get(controlName);
+		newControl.keys.push(keyCode);
+		if(_key[keyCode]) controlPressed(newControl, 1.0);
+		
+		_keyControlMap.set(keyCode, newControl);
+	}
+	
+	public static function unmapKey(keyCode:Int)
+	{
+		var control = _keyControlMap.get(keyCode);
+		if(control != null)
+		{
+			control.keys.remove(keyCode);
+			if(_key[keyCode]) controlReleased(control);
+		}
+		
+		_keyControlMap.remove(keyCode);
+	}
+	
+	public static function getKeys(controlName:String):Array<Int>
+	{
+		var control = _controlMap.get(controlName);
+		if(control != null)
+			return control.keys;
+		
+		return null;
+	}
+	
+	public static function mapJoystickButton(id:String, controlName:String)
+	{
+		#if desktop
+		var button:JoystickButton = JoystickButton.fromID(id);
+		var control = _joyControlMap.get(id);
+		if(control != null)
+			control.buttons.remove(button);
+		
+		var newControl = _controlMap.get(controlName);
+		newControl.buttons.push(button);
+		
+		_joyControlMap.set(id, newControl);
+		#end
+	}
+	
+	public static function unmapJoystickButton(id:String)
+	{
+		#if desktop
+		var button:JoystickButton = JoystickButton.fromID(id);
+		var control = _joyControlMap.get(id);
+		if(control != null)
+			control.buttons.remove(button);
+		
+		_joyControlMap.remove(id);
+		#end
+	}
+	
+	public static function unmapControl(controlName:String)
+	{
+		var control = _controlMap.get(controlName);
+		
+		while(control.keys.length > 0)
+			_keyControlMap.remove(control.keys.pop());
+		
+		#if desktop
+		while(control.buttons.length > 0)
+			_joyControlMap.remove(control.buttons.pop());
+		#end
+	}
+	
+	public static function setJoySensitivity(val:Float)
+	{
+		#if desktop
+		_joySensitivity = val;
+		#end
+	}
+
+	public static function saveJoystickConfig(filename:String):Void
+	{
+		#if desktop
+		var joyData = new Map<String, Dynamic>();
+		joyData.set("_joyControlMap", [for (key in _joyControlMap.keys()) key => _joyControlMap.get(key).name]);
+		joyData.set("_joySensitivity", _joySensitivity);
+		Utils.saveMap(joyData, "_jc-" + filename);
+		#end
+	}
+
+	public static function loadJoystickConfig(filename:String):Void
+	{
+		#if desktop
+		clearJoystickConfig();
+		var joyData = new Map<String, Dynamic>();
+		Utils.loadMap(joyData, "_jc-" + filename, function(success:Bool):Void
+		{
+			if (Utils.mapCount(joyData) > 0)
+			{
+				var joyStringMap:Map<String,String> = joyData.get("_joyControlMap");
+				for(k in joyStringMap.keys())
+				{
+					var controlName = joyStringMap.get(k);
+					var control = _controlMap.get(controlName);
+					_joyControlMap.set(k, control);
+					
+					var button = JoystickButton.fromID(k);
+					
+					control.buttons.push(button);
+				}
+				_joySensitivity = joyData.get("_joySensitivity");
+			}
+		});
+		#end
+	}
+
+	public static function clearJoystickConfig():Void
+	{
+		#if desktop
+		for(control in _controlMap)
+		{
+			control.buttons = [];
+		}
+		_joyControlMap = new Map<String,Control>();
+		_joySensitivity = .12;
+		#end
+	}
+
+	public static function loadInputConfig():Void
+	{
+		for(stencylControl in Config.keys.keys())
+		{
+			var value = Config.keys.get(stencylControl);
+			var keyboardConstList = [for (keyname in value) Key.keyFromName(keyname)];
+			
+			var control = new Control(stencylControl);
+			_controlMap.set(stencylControl, control);
+			control.keys = keyboardConstList;
+			for(key in control.keys)
+			{
+				_keyControlMap.set(key, control);
+			}
+		}
 	}
 
 	/**
@@ -242,75 +359,30 @@ class Input
 		
 		return control != null && control.released;
 	}
-
-	public static function enableSwipeDetection()
+	
+	public static function getButtonPressure(controlName:String):Float
 	{
-		#if(mobile && !air)
-		//var gestures = HyperTouch.getInstance();
-		//gestures.addEventListener(GestureSwipeEvent.SWIPE, onSwipe, false);
-		#end
+		var control = _controlMap.get(controlName);
+		
+		if(control != null)
+		{
+			return control.pressure;
+		}
+		
+		return 0.0;
+	}
+
+	public static function simulateKeyPress(controlName:String)
+	{
+		controlPressed(_controlMap.get(controlName), 1.0);
 	}
 	
-	public static function disableSwipeDetection()
+	public static function simulateKeyRelease(controlName:String)
 	{
-		#if(mobile && !air)
-		//var gestures = HyperTouch.getInstance();
-		//gestures.removeEventListener(GestureSwipeEvent.SWIPE, onSwipe, false);
-		#end
+		controlReleased(_controlMap.get(controlName));
 	}
 
-	public static function enableJoystick()
-	{
-		if(!_joystickEnabled && Engine.stage != null)
-		{
-			_joystickEnabled = true;
-			#if desktop
-
-			var addJoystick = function (joystick:Joystick) {
-
-				trace ("Connected Joystick: " + joystick.name);
-
-				_joyAxisState.set(joystick.id, [for(i in 0...joystick.numAxes) 0]);
-				_joyAxisPressure.set(joystick.id, [for(i in 0...joystick.numAxes) 0.0]);
-				_joyHatState.set(joystick.id, [0, 0]);
-				_joyButtonState.set(joystick.id, []);
-
-				joystick.onAxisMove.add (function (axis:Int, value:Float) {
-					onJoyAxisMove(joystick, axis, value);
-				});
-
-				joystick.onButtonDown.add (function (button:Int) {
-					onJoyButtonDown(joystick, button);
-				});
-
-				joystick.onButtonUp.add (function (button:Int) {
-					onJoyButtonUp(joystick, button);
-				});
-
-				joystick.onHatMove.add (function (hat:Int, position:JoystickHatPosition) {
-					onJoyHatMove(joystick, hat, position);
-				});
-
-				joystick.onTrackballMove.add (function (trackball:Int, x:Float, y:Float) {
-					onJoyBallMove(joystick, trackball, x, y);
-				});
-
-				joystick.onDisconnect.add (function () {
-					trace ("Disconnected Joystick: " + joystick.name);
-				});
-
-			}
-
-			Joystick.onConnect.add (addJoystick);
-
-			for(joystick in Joystick.devices)
-			{
-				addJoystick(joystick);
-			}
-
-			#end
-		}
-	}
+	@:deprecated("Gamepads no longer need to be manually enabled.") public static function enableJoystick() {}
 
 	public static function enable()
 	{
@@ -333,7 +405,7 @@ class Input
 			#end
 
 			//Disable default behavior for Android Back Button
-			#if(mobile && android)
+			#if(android)
 			if(Config.disableBackButton)
 			{
 				Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, ignoreBackKey);
@@ -342,9 +414,7 @@ class Input
 			#end
 			
 			#if !js
-			multiTouchEnabled = Multitouch.supportsTouchEvents;
-			
-			if(multiTouchEnabled)
+			if(Multitouch.supportsTouchEvents)
 	        {
 	        	multiTouchPoints = new Map<String,TouchEvent>();
 	        	Multitouch.inputMode = openfl.ui.MultitouchInputMode.TOUCH_POINT;
@@ -354,10 +424,21 @@ class Input
 	        }
 	        #end
 	        
-			roxAgent = new RoxGestureAgent(Engine.engine.root, RoxGestureAgent.GESTURE);
+	        #if desktop
+
+			Joystick.onConnect.add(onJoystickConnected);
+
+			for(joystick in Joystick.devices)
+			{
+				onJoystickConnected(joystick);
+			}
+
+			#end
+	        
+			_roxAgent = new RoxGestureAgent(Engine.engine.root, RoxGestureAgent.GESTURE);
 			Engine.engine.root.addEventListener(RoxGestureEvent.GESTURE_SWIPE, onSwipe);
 			
-			swipeDirection = -1;
+			_swipeDirection = -1;
 			swipedLeft = false;
 			swipedRight = false;
 			swipedUp = false;
@@ -373,62 +454,6 @@ class Input
 		}
 	}
 
-	private static function ignoreBackKey(event:KeyboardEvent = null)
-	{
-		lastEvent = event;
-
-		if(lastEvent.keyCode == lime.ui.KeyCode.APP_CONTROL_BACK)
-		{
-			lastEvent.preventDefault();
-
-			var control = _keyControlMap.get(lime.ui.KeyCode.ESCAPE);
-			
-			if (lastEvent.type == KeyboardEvent.KEY_DOWN)
-			{
-				controlPressed(control, 1.0);
-			}
-			else
-			{
-				controlReleased(control);
-			}
-		}
-	}
-	
-	private static function onSwipe(e:RoxGestureEvent):Void
-	{
-		var pt = cast(e.extra, Point);
-        
-        if(Math.abs(pt.x) <= Math.abs(pt.y))
-        {
-        	//Up
-        	if(pt.y <= 0)
-        	{
-        		swipeDirection = 2;
-        	}
-        	
-        	//Down
-        	else
-        	{
-        		swipeDirection = 3;
-        	}
-        }
-        
-        else if(Math.abs(pt.x) > Math.abs(pt.y))
-        {
-        	//Left
-        	if(pt.x <= 0)
-        	{
-        		swipeDirection = 0;
-        	}
-        	
-        	//Right
-        	else
-        	{
-        		swipeDirection = 1;
-        	}
-        }
-	}
-
 	@:access(openfl.sensors.Accelerometer)
 	public static function update()
 	{
@@ -437,9 +462,9 @@ class Input
 		swipedUp = false;
 		swipedDown = false;
 		
-		if(swipeDirection > -1)
+		if(_swipeDirection > -1)
 		{
-			switch(swipeDirection)
+			switch(_swipeDirection)
 			{
 				case 0:
 					swipedLeft = true;
@@ -456,7 +481,7 @@ class Input
 				Engine.invokeListeners(Engine.engine.whenSwipedListeners);
 			}
 			
-			swipeDirection = -1;
+			_swipeDirection = -1;
 		}
 		
 		#if (cpp || neko)
@@ -489,10 +514,59 @@ class Input
 		
 		mouseWheelDelta = 0;
 	}
-	
-	public static function simulateKeyPress(controlName:String)
+
+	private static function ignoreBackKey(event:KeyboardEvent = null)
 	{
-		controlPressed(_controlMap.get(controlName), 1.0);
+		if(event.keyCode == lime.ui.KeyCode.APP_CONTROL_BACK)
+		{
+			event.preventDefault();
+
+			var control = _keyControlMap.get(lime.ui.KeyCode.ESCAPE);
+			
+			if (event.type == KeyboardEvent.KEY_DOWN)
+			{
+				controlPressed(control, 1.0);
+			}
+			else
+			{
+				controlReleased(control);
+			}
+		}
+	}
+	
+	private static function onSwipe(e:RoxGestureEvent):Void
+	{
+		var pt = cast(e.extra, Point);
+        
+        if(Math.abs(pt.x) <= Math.abs(pt.y))
+        {
+        	//Up
+        	if(pt.y <= 0)
+        	{
+        		_swipeDirection = 2;
+        	}
+        	
+        	//Down
+        	else
+        	{
+        		_swipeDirection = 3;
+        	}
+        }
+        
+        else if(Math.abs(pt.x) > Math.abs(pt.y))
+        {
+        	//Left
+        	if(pt.x <= 0)
+        	{
+        		_swipeDirection = 0;
+        	}
+        	
+        	//Right
+        	else
+        	{
+        		_swipeDirection = 1;
+        	}
+        }
 	}
 	
 	private static function controlPressed(control:Control, pressure:Float)
@@ -521,11 +595,6 @@ class Input
 		}
 	}
 	
-	public static function simulateKeyRelease(controlName:String)
-	{
-		controlReleased(_controlMap.get(controlName));
-	}
-	
 	private static function controlReleased(control:Control)
 	{
 		if(control == null) return;
@@ -552,34 +621,14 @@ class Input
 		}
 	}
 
-	public static function onKeyDown(e:KeyboardEvent = null)
+	private static function onKeyDown(e:KeyboardEvent = null)
 	{
-		var code:Int = lastKey = e.keyCode;
+		var code:Int = e.keyCode;
 		
 		if (code > 7000)
 		{
 			return;
 		}
-
-		// Update keyString
-		
-		if(code == Key.BACKSPACE) 
-		{
-			keyString = keyString.substr(0, keyString.length - 1);
-		}
-		
-		else if ((code > 47 && code < 58) || (code > 64 && code < 91) || code == 32)
-		{
-			if (keyString.length > kKeyStringMax) keyString = keyString.substr(1);
-			var char:String = String.fromCharCode(code);
-			#if flash
-			if (e.shiftKey || Keyboard.capsLock) char = char.toUpperCase();
-			else char = char.toLowerCase();
-			#end
-			keyString += char;
-		}
-
-		// Update key state
 
 		if(!_key[code])
 		{
@@ -590,7 +639,7 @@ class Input
 		Engine.invokeListeners2(Engine.engine.whenAnyKeyPressedListeners, e);
 	}
 
-	public static function onKeyUp(e:KeyboardEvent = null)
+	private static function onKeyUp(e:KeyboardEvent = null)
 	{
 		var code:Int = e.keyCode;
 		
@@ -599,8 +648,6 @@ class Input
 			return;
 		}
 		
-		// Update key state
-
 		if(_key[code])
 		{
 			_key[code] = false;
@@ -677,6 +724,40 @@ class Input
 
 	#if desktop
 	
+	private static function onJoystickConnected(joystick:Joystick)
+	{
+		trace("Connected Joystick: " + joystick.name);
+
+		_joyAxisState.set(joystick.id, [for(i in 0...joystick.numAxes) 0]);
+		_joyAxisPressure.set(joystick.id, [for(i in 0...joystick.numAxes) 0.0]);
+		_joyHatState.set(joystick.id, [0, 0]);
+		_joyButtonState.set(joystick.id, []);
+
+		joystick.onAxisMove.add (function (axis:Int, value:Float) {
+			onJoyAxisMove(joystick, axis, value);
+		});
+
+		joystick.onButtonDown.add (function (button:Int) {
+			onJoyButtonDown(joystick, button);
+		});
+
+		joystick.onButtonUp.add (function (button:Int) {
+			onJoyButtonUp(joystick, button);
+		});
+
+		joystick.onHatMove.add (function (hat:Int, position:JoystickHatPosition) {
+			onJoyHatMove(joystick, hat, position);
+		});
+
+		joystick.onTrackballMove.add (function (trackball:Int, x:Float, y:Float) {
+			onJoyBallMove(joystick, trackball, x, y);
+		});
+
+		joystick.onDisconnect.add (function () {
+			trace("Disconnected Joystick: " + joystick.name);
+		});
+	}
+	
 	private static function onJoyAxisMove(joystick:Joystick, axis:Int, value:Float)
 	{
 		var oldState:Array<Int> = _joyAxisState.get(joystick.id);
@@ -684,9 +765,9 @@ class Input
 		var cur:Int;
 		var old:Int;
 
-		if(value < -joySensitivity)
+		if(value < -_joySensitivity)
 			cur = -1;
-		else if(value > joySensitivity)
+		else if(value > _joySensitivity)
 			cur = 1;
 		else
 			cur = 0;
@@ -776,132 +857,6 @@ class Input
 		Engine.invokeListeners2(Engine.engine.whenAnyGamepadReleasedListeners, id);
 	}
 	#end
-
-	public static function setJoySensitivity(val:Float)
-	{
-		#if desktop
-		joySensitivity = val;
-		#end
-	}
-
-	public static function mapJoystickButton(id:String, controlName:String)
-	{
-		#if desktop
-		var button:JoystickButton = JoystickButton.fromID(id);
-		var control = _joyControlMap.get(id);
-		if(control != null)
-			control.buttons.remove(button);
-		
-		var newControl = _controlMap.get(controlName);
-		newControl.buttons.push(button);
-		
-		_joyControlMap.set(id, newControl);
-		#end
-	}
-	
-	public static function unMapJoystickButton(id:String)
-	{
-		#if desktop
-		var button:JoystickButton = JoystickButton.fromID(id);
-		var control = _joyControlMap.get(id);
-		if(control != null)
-			control.buttons.remove(button);
-		
-		_joyControlMap.remove(id);
-		#end
-	}
-	
-	public static function unMapControl(controlName:String)
-	{
-		#if desktop
-		var control = _controlMap.get(controlName);
-
-		for(k in _joyControlMap.keys())
-		{
-			if (_joyControlMap.get(k) == control)
-			{
-				_joyControlMap.remove(k);
-				control.buttons.remove(JoystickButton.fromID(k));
-			}
-		}
-		#end
-	}
-
-	public static function getButtonPressure(controlName:String):Float
-	{
-		var control = _controlMap.get(controlName);
-		
-		if(control != null)
-		{
-			return control.pressure;
-		}
-		
-		return 0.0;
-	}
-
-	public static function saveJoystickConfig(filename:String):Void
-	{
-		#if desktop
-		var joyData = new Map<String, Dynamic>();
-		joyData.set("_joyControlMap", [for (key in _joyControlMap.keys()) key => _joyControlMap.get(key).name]);
-		joyData.set("joySensitivity", joySensitivity);
-		Utils.saveMap(joyData, "_jc-" + filename);
-		#end
-	}
-
-	public static function loadJoystickConfig(filename:String):Void
-	{
-		#if desktop
-		clearJoystickConfig();
-		var joyData = new Map<String, Dynamic>();
-		Utils.loadMap(joyData, "_jc-" + filename, function(success:Bool):Void
-		{
-			if (Utils.mapCount(joyData) > 0)
-			{
-				var joyStringMap:Map<String,String> = joyData.get("_joyControlMap");
-				for(k in joyStringMap.keys())
-				{
-					var controlName = joyStringMap.get(k);
-					var control = _controlMap.get(controlName);
-					_joyControlMap.set(k, control);
-					
-					var button = JoystickButton.fromID(k);
-					
-					control.buttons.push(button);
-				}
-				joySensitivity = joyData.get("joySensitivity");
-			}
-		});
-		#end
-	}
-
-	public static function clearJoystickConfig():Void
-	{
-		#if desktop
-		for(control in _controlMap)
-		{
-			control.buttons = [];
-		}
-		_joyControlMap = new Map<String,Control>();
-		joySensitivity = .12;
-		#end
-	}
-
-	public static function loadInputConfig():Void
-	{
-		for(stencylControl in Config.keys.keys())
-		{
-			var value = Config.keys.get(stencylControl);
-			var keyboardConstList = [for (keyname in value) Key.keyFromName(keyname)];
-			
-			var control = define(stencylControl);
-			control.keys = keyboardConstList;
-			for(key in control.keys)
-			{
-				_keyControlMap.set(key, control);
-			}
-		}
-	}
 
 	#if !js
 	private static function onTouchBegin(e:TouchEvent)
