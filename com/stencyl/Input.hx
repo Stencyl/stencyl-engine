@@ -252,6 +252,16 @@ class Input
 		#end
 	}
 	
+	public static function unmapJoystickFromControl(controlName:String)
+	{
+		var control = _controlMap.get(controlName);
+		
+		#if desktop
+		while(control.buttons.length > 0)
+			_joyControlMap.remove(control.buttons.pop());
+		#end
+	}
+	
 	public static function setJoySensitivity(val:Float)
 	{
 		#if desktop
