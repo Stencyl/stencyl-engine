@@ -180,13 +180,13 @@ class Input
 		var control = _keyControlMap.get(keyCode);
 		if(control != null)
 		{
-			if(_key[keyCode]) controlReleased(control);
 			control.keys.remove(keyCode);
+			controlStateUpdated(control);
 		}
 		
 		var newControl = _controlMap.get(controlName);
 		newControl.keys.push(keyCode);
-		if(_key[keyCode]) controlPressed(newControl, 1.0);
+		controlStateUpdated(newControl);
 		
 		_keyControlMap.set(keyCode, newControl);
 	}
@@ -197,7 +197,7 @@ class Input
 		if(control != null)
 		{
 			control.keys.remove(keyCode);
-			if(_key[keyCode]) controlReleased(control);
+			controlStateUpdated(control);
 		}
 		
 		_keyControlMap.remove(keyCode);
@@ -218,10 +218,14 @@ class Input
 		var button:JoystickButton = JoystickButton.fromID(id);
 		var control = _joyControlMap.get(id);
 		if(control != null)
+		{
 			control.buttons.remove(button);
+			controlStateUpdated(control);
+		}
 		
 		var newControl = _controlMap.get(controlName);
 		newControl.buttons.push(button);
+		controlStateUpdated(newControl);
 		
 		_joyControlMap.set(id, newControl);
 		#end
@@ -233,7 +237,10 @@ class Input
 		var button:JoystickButton = JoystickButton.fromID(id);
 		var control = _joyControlMap.get(id);
 		if(control != null)
+		{
 			control.buttons.remove(button);
+			controlStateUpdated(control);
+		}
 		
 		_joyControlMap.remove(id);
 		#end
@@ -250,6 +257,18 @@ class Input
 		while(control.buttons.length > 0)
 			_joyControlMap.remove(control.buttons.pop().id);
 		#end
+		
+		if(control.down) controlReleased(control);
+	}
+	
+	public static function unmapKeyboardFromControl(controlName:String)
+	{
+		var control = _controlMap.get(controlName);
+		
+		while(control.keys.length > 0)
+			_keyControlMap.remove(control.keys.pop());
+		
+		controlStateUpdated(control);
 	}
 	
 	public static function unmapJoystickFromControl(controlName:String)
@@ -260,6 +279,8 @@ class Input
 		while(control.buttons.length > 0)
 			_joyControlMap.remove(control.buttons.pop().id);
 		#end
+		
+		controlStateUpdated(control);
 	}
 	
 	public static function setJoySensitivity(val:Float)
@@ -589,20 +610,22 @@ class Input
 			control.pressed = true;
 			control.pressure = pressure;
 			_controlsToReset.push(control);
-		}
-		
-		if(Engine.engine.keyPollOccurred)
-		{
-			//Due to order of execution, events will never get thrown since the
-			//pressed/released flag is reset before the event checker sees it. So
-			//throw the event immediately.
-			var listeners = Engine.engine.whenKeyPressedListeners.get(control.name);
 			
-			if(listeners != null)
+			if(Engine.engine.keyPollOccurred)
 			{
-				Engine.invokeListeners3(listeners, true, false);
+				//Due to order of execution, events will never get thrown since the
+				//pressed/released flag is reset before the event checker sees it. So
+				//throw the event immediately.
+				var listeners = Engine.engine.whenKeyPressedListeners.get(control.name);
+				
+				if(listeners != null)
+				{
+					Engine.invokeListeners3(listeners, true, false);
+				}
 			}
 		}
+		else
+			control.pressure = pressure;
 	}
 	
 	private static function controlReleased(control:Control)
@@ -615,20 +638,60 @@ class Input
 			control.released = true;
 			control.pressure = 0.0;
 			_controlsToReset.push(control);
-		}
-		
-		if(Engine.engine.keyPollOccurred)
-		{
-			//Due to order of execution, events will never get thrown since the
-			//pressed/released flag is reset before the event checker sees it. So
-			//throw the event immediately.
-			var listeners = Engine.engine.whenKeyPressedListeners.get(control.name);
 			
-			if(listeners != null)
+			if(Engine.engine.keyPollOccurred)
 			{
-				Engine.invokeListeners3(listeners, false, true);
+				//Due to order of execution, events will never get thrown since the
+				//pressed/released flag is reset before the event checker sees it. So
+				//throw the event immediately.
+				var listeners = Engine.engine.whenKeyPressedListeners.get(control.name);
+				
+				if(listeners != null)
+				{
+					Engine.invokeListeners3(listeners, false, true);
+				}
 			}
 		}
+	}
+	
+	//This is called if a control may have changed it's state due to
+	//it's key/button mappings changing.
+	private static function controlStateUpdated(control:Control)
+	{
+		var pressure = 0.0;
+		
+		for(keyCode in control.keys)
+		{
+			if(_key[keyCode]) pressure = 1.0;
+		}
+		#if desktop
+		for(button in control.buttons)
+		{
+			var device = button.a[JoystickButton.DEVICE];
+			var controlType = button.a[JoystickButton.TYPE];
+			var buttonID = button.a[2];
+			
+			switch(controlType)
+			{
+				case JoystickButton.AXIS:
+					if(_joyAxisState.get(device)[buttonID] == button.a[3])
+						pressure = Math.max(pressure, Math.abs(_joyAxisPressure.get(device)[buttonID]));
+				case JoystickButton.HAT:
+					if(_joyHatState.get(device)[buttonID] == button.a[3])
+						pressure = 1.0;
+				case JoystickButton.BUTTON:
+					if(_joyButtonState.get(device)[buttonID])
+						pressure = 1.0;
+			}
+		}
+		#end
+		
+		control.pressure = pressure;
+		
+		if(pressure > 0 && !control.down)
+			controlPressed(control, pressure);
+		else if(pressure == 0 && control.down)
+			controlReleased(control);
 	}
 
 	private static function onKeyDown(e:KeyboardEvent = null)
@@ -794,6 +857,17 @@ class Input
 				joyPress(joystick.id + ", -axis " + axis, Math.abs(value));
 			else if(cur == 1)
 				joyPress(joystick.id + ", +axis " + axis, Math.abs(value));
+		}
+		else if(cur != 0)
+		{
+			var control = null;
+			
+			if(cur == -1)
+				control = _joyControlMap.get(joystick.id + ", -axis " + axis);
+			else if(cur == 1)
+				control = _joyControlMap.get(joystick.id + ", +axis " + axis);
+				
+			if(control != null) control.pressure = Math.abs(value);
 		}
 
 		oldState[axis] = cur;
