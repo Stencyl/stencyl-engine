@@ -266,14 +266,10 @@ using StringTools;
 		}
 		#end
 
-		var preloader = new Preloader (new StencylPreloader ());
-		preloader.onComplete.add (universal.preloaderComplete);
-		app.preloader.onProgress.add (function (loaded, total) {
-			@:privateAccess preloader.update (loaded, total);
-		});
-		app.preloader.onComplete.add (function () {
-			@:privateAccess preloader.start ();
-		});
+		var preloader = new StencylPreloader();
+		preloader.onComplete.add(universal.preloaderComplete);
+		app.preloader.onProgress.add(preloader.onUpdate);
+		app.preloader.onComplete.add(preloader.onLoaded);
 		
 		for (library in ManifestResources.preloadLibraries)
 		{
