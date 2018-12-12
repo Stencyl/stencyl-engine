@@ -248,7 +248,7 @@ class Input
 		
 		#if desktop
 		while(control.buttons.length > 0)
-			_joyControlMap.remove(control.buttons.pop());
+			_joyControlMap.remove(control.buttons.pop().id);
 		#end
 	}
 	
@@ -258,7 +258,7 @@ class Input
 		
 		#if desktop
 		while(control.buttons.length > 0)
-			_joyControlMap.remove(control.buttons.pop());
+			_joyControlMap.remove(control.buttons.pop().id);
 		#end
 	}
 	
