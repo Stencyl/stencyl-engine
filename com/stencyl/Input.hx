@@ -671,6 +671,9 @@ class Input
 			var controlType = button.a[JoystickButton.TYPE];
 			var buttonID = button.a[2];
 			
+			if(!_joyButtonState.exists(device))
+				continue;
+			
 			switch(controlType)
 			{
 				case JoystickButton.AXIS:
