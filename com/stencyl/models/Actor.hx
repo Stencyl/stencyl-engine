@@ -4362,7 +4362,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	{
 		var check:Int;
 		
-		if ((check = alreadyCollided(info.maskA, info.maskB)) != -1) {			
+		if ((check = alreadyCollided(info)) != -1) {
 			var oldInfo:Collision = simpleCollisions.get(check);
 			
 			info.switchData(oldInfo.linkedCollision);
@@ -4384,27 +4384,40 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		return info;
 	}
 	
-	public function alreadyCollided(maskA:Mask, maskB:Mask):Int
+	public function alreadyCollided(info2:Collision):Int
 	{
 		for (key in simpleCollisions.keys())
 		{
 			var info:Collision = simpleCollisions.get(key);
 			
-			if (info != null && ((info.maskA == maskA && info.maskB == maskB) || (info.maskA == maskB && info.maskB == maskA)))			
+			if (info != null && ((info.maskA == info2.maskA && info.maskB == info2.maskB) || (info.maskA == info2.maskB && info.maskB == info2.maskA)))			
 			{
 				// added to avoid up/down tile collisions from overwriting left/right tile collisions since each tile is not its own unique object
 				if (info.solidCollision)
 				{
 					if (info.maskA.groupID == 1 || info.maskB.groupID == 1)
 					{
-						if (!info.thisFromLeft && !info.thisFromRight)
+						if (info.thisFromLeft || info.thisFromRight)
 						{
-							return -1;
+							if (info2.thisFromLeft || info2.thisFromRight)
+							{
+								return key;
+							}
+						}
+						
+						if (info.thisFromTop || info.thisFromBottom)
+						{
+							if (info2.thisFromTop || info2.thisFromBottom)
+							{
+								return key;
+							}
 						}
 					}
 				}
-				
-				return key;
+				else
+				{
+					return key;
+				}
 			}
 		}
 		
