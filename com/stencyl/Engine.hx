@@ -1654,10 +1654,8 @@ class Engine
 				//Eventually, this will become the correct value
 				topLayer = layer;
 
-				if(NO_PHYSICS)
-				{
-					layer.tiles.mountGrid();
-				}
+				// changed to work in box2D mode too to fix collisions with simple actors: http://community.stencyl.com/index.php?issue=99.0
+				layer.tiles.mountGrid();
 
 				numLayersProcessed++;
 			}
