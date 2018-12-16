@@ -121,8 +121,6 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	public var typeID:Int;
 	public var type:ActorType;
 	
-	private var groupsToCollideWith:Array<Int>; //cached value
-	
 	public static inline var GROUP_OFFSET:Int = 1000000; //for collision reporting
 	
 	
@@ -438,8 +436,6 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		this.groupID = groupID;
 		this.typeID = actorType != null ? actorType.ID : -1;
 		this.engine = engine;
-		
-		groupsToCollideWith = GameModel.get().groupsCollidesWith.get(groupID);
 		
 		collidedList = new Array<Actor>();
 		
@@ -1588,7 +1584,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			{
 				resetReal(realX, realY);			
 				
-				moveActorBy(elapsedTime * xSpeed * (10 / Engine.STEP_SIZE) * 0.01, elapsedTime * ySpeed * (10 / Engine.STEP_SIZE) * 0.01, groupsToCollideWith);
+				moveActorBy(elapsedTime * xSpeed * (10 / Engine.STEP_SIZE) * 0.01, elapsedTime * ySpeed * (10 / Engine.STEP_SIZE) * 0.01, false);
 			}			
 						
 			if(rSpeed != 0)
@@ -1843,7 +1839,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			
 			else
 			{
-				moveActorBy(tweenProps.xy.value1 - getX(false), tweenProps.xy.value2 - getY(false), groupsToCollideWith);
+				moveActorBy(tweenProps.xy.value1 - getX(false), tweenProps.xy.value2 - getY(false), false);
 				setAngle(tweenProps.angle.value, false);
 			}
 
@@ -1861,7 +1857,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 				
 				else
 				{
-					moveActorBy(tweenProps.xy.value1 - getX(false), tweenProps.xy.value2 - getY(false), groupsToCollideWith);
+					moveActorBy(tweenProps.xy.value1 - getX(false), tweenProps.xy.value2 - getY(false), false);
 					updateMatrix = true;
 				}				
 			}
@@ -2632,7 +2628,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	{	
 		if(physicsMode == SIMPLE_PHYSICS)
 		{
-			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY, !noCollision && continuousCollision ? groupsToCollideWith: null);
+			moveActorTo(x + Math.floor(cacheWidth/2) + currOffset.x, realY, noCollision || !continuousCollision);
 		}
 		
 		else if(physicsMode == MINIMAL_PHYSICS)
@@ -2675,7 +2671,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	{		
 		if(physicsMode == SIMPLE_PHYSICS)
 		{
-			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y, !noCollision && continuousCollision ? groupsToCollideWith : null);
+			moveActorTo(realX, y + Math.floor(cacheHeight/2) + currOffset.y, noCollision || !continuousCollision);
 		}
 		
 		else if(physicsMode == MINIMAL_PHYSICS)
@@ -2720,7 +2716,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			moveActorTo(
 				x + Math.floor(cacheWidth/2) + currOffset.x,
 				y + Math.floor(cacheHeight/2) + currOffset.y,
-				!noCollision && continuousCollision ? groupsToCollideWith : null);
+				noCollision || !continuousCollision);
 		}
 		
 		else if(physicsMode == MINIMAL_PHYSICS)
@@ -4186,41 +4182,24 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	 * @param	y			Virtual y position to place this Entity.
 	 * @return	The first Entity collided with, or null if none were collided.
 	 */
-	public function collideTypes(types:Dynamic, x:Float, y:Float):Actor
+	public function collideTypes(types:Array<Int>, x:Float, y:Float):Actor
 	{
 		var cc:Int = collidedList.length;
 		
-		//Mike: Do we need this?
-		if (Std.is(types, String))
+		var e:Actor;
+		var type:Int;
+		for (type in types)
 		{
-			collideInto(types, x, y, collidedList);
+			if (type == GameModel.REGION_ID) continue;
 			
-			if (collidedList.length > cc)
-			{
-				return collidedList[collidedList.length - 1];
-			}
+			collideInto(type, x, y, collidedList);
 		}
-		else
-		{			
-			var a:Array<Int> = HITBOX.collideTypes;
-			if (a != null)
-			{
-				var e:Actor;
-				var type:Int;
-				for (type in a)
-				{
-					if (type == GameModel.REGION_ID) continue;
-					
-					collideInto(type, x, y, collidedList);
-				}
-				
-				if (collidedList.length > cc)
-				{					
-					return collidedList[collidedList.length - 1];
-				}
-			}
+		
+		if (collidedList.length > cc)
+		{					
+			return collidedList[collidedList.length - 1];
 		}
-
+		
 		return null;
 	}
 	
@@ -4503,7 +4482,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		return solidCollision;			
 	}
 
-	public function moveActorBy(x:Float, y:Float, solidType:Dynamic = null, sweep:Bool = false)
+	public function moveActorBy(x:Float, y:Float, noCollision = true, sweep:Bool = false)
 	{
 		if (x == 0 && y == 0)
 		{
@@ -4511,17 +4490,20 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		}		
 		
 		clearCollisionInfoList();		
-		clearCollidedList();
 		
-		if (solidType != null)
+		if (!noCollision && collidable && HITBOX.collideTypes != null)
 		{
+			var solidType = HITBOX.collideTypes;
+		
 			var sign:Float, signIncr:Float, next:Float, e:Actor;			
 			
 			if (x != 0)
 			{
 				next = x > 0 ? Math.ceil(realX + x) : Math.floor(realX + x);
 				
-				if (collidable && (sweep || collideTypes(solidType, next, realY) != null))
+				clearCollidedList();
+				
+				if (sweep || collideTypes(solidType, next, realY) != null)
 				{
 					clearCollidedList();
 					
@@ -4574,7 +4556,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 				
 				clearCollidedList();
 				
-				if (collidable && (sweep || collideTypes(solidType, realX, next) != null))
+				if (sweep || collideTypes(solidType, realX, next) != null)
 				{
 					clearCollidedList();
 					while (y != 0)
@@ -4639,9 +4621,9 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	 * @param	solidType	An optional collision type to stop flush against upon collision.
 	 * @param	sweep		If sweeping should be used (prevents fast-moving objects from going through solidType).
 	 */
-	public inline function moveActorTo(x:Float, y:Float, solidType:Dynamic = null, sweep:Bool = false)
+	public inline function moveActorTo(x:Float, y:Float, noCollision = true, sweep:Bool = false)
 	{
-		moveActorBy(x - realX, y - realY, solidType, sweep);
+		moveActorBy(x - realX, y - realY, noCollision, sweep);
 	}
 
 	/**
@@ -4652,12 +4634,12 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	 * @param	solidType	An optional collision type to stop flush against upon collision.
 	 * @param	sweep		If sweeping should be used (prevents fast-moving objects from going through solidType).
 	 */
-	public inline function moveActorTowards(x:Float, y:Float, amount:Float, solidType:Dynamic = null, sweep:Bool = false)
+	public inline function moveActorTowards(x:Float, y:Float, amount:Float, noCollision = true, sweep:Bool = false)
 	{
 		_point.x = x - realX;
 		_point.y = y - realY;
 		_point.normalize(amount);
-		moveActorBy(_point.x, _point.y, solidType, sweep);
+		moveActorBy(_point.x, _point.y, noCollision, sweep);
 	}
 
 	/**
