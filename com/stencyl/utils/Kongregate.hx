@@ -9,6 +9,7 @@ class Kongregate
 	public static function resetStatics():Void
 	{
 		kongregate = null;
+		loader = null;
 	}
 
 	public static function initAPI():Void
@@ -44,6 +45,7 @@ class Kongregate
 		{
 			Kongregate.kongregate = loader.content;
 			Kongregate.kongregate.services.connect();
+			loader = null;
 		}
 		
 		catch(msg:Dynamic) 
