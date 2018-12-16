@@ -1541,6 +1541,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			{
 				handleCollisionsSimple();
 			}
+			disposeRemovedCollisionInfo();
 		}
 		
 		if(physicsMode != MINIMAL_PHYSICS)
@@ -4325,6 +4326,30 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 				}
 			}
 		}	
+	}
+	
+	public function disposeRemovedCollisionInfo()
+	{
+		if (collisionsCount > 0)
+		{
+			var maxKey = -1;
+		
+			for(key in simpleCollisions.keys()) 
+			{
+				var info = simpleCollisions.get(key);
+				
+				if(info.remove)
+				{
+					simpleCollisions.unset(key);
+				}
+				else if(key > maxKey)
+				{
+					maxKey = key;
+				}
+			}
+			
+			collisionsCount = maxKey + 1;
+		}
 	}
 	
 	private function clearCollidedList()
