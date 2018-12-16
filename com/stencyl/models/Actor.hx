@@ -4417,6 +4417,10 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 							}
 						}
 					}
+					else
+					{
+						return key;
+					}
 				}
 				else
 				{
