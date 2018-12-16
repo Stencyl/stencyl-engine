@@ -4,6 +4,7 @@ package com.stencyl.utils;
 class Kongregate 
 {
 	private static var kongregate:Dynamic;
+	private static var loader:flash.display.Loader;
 	
 	public static function resetStatics():Void
 	{
@@ -30,7 +31,7 @@ class Kongregate
 		}
 			
 		var request = new flash.net.URLRequest(url);
-		var loader = new flash.display.Loader();
+		loader = new flash.display.Loader();
 		loader.contentLoaderInfo.addEventListener(flash.events.Event.COMPLETE, onLoadComplete);
 		loader.load(request);
 		
@@ -41,7 +42,7 @@ class Kongregate
 	{
 		try 
 		{
-			Kongregate.kongregate = cast(e.target, flash.display.Loader).content;
+			Kongregate.kongregate = loader.content;
 			Kongregate.kongregate.services.connect();
 		}
 		
