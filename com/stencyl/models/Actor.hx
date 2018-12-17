@@ -374,7 +374,11 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		lastAngle = 0;		
 		
 		tweenProps = new ActorTweenProperties();
-				
+		tweenProps.xy.doOnUpdate(updateTweenXY);
+		tweenProps.angle.doOnUpdate(updateTweenAngle);
+		tweenProps.alpha.doOnUpdate(updateTweenAlpha);
+		tweenProps.realScaleXY.doOnUpdate(updateTweenScaleXY);
+		
 		transformPoint = new Point(0, 0);
 		transformMatrix = new Matrix();
 		drawMatrix = new Matrix();
@@ -1221,11 +1225,6 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			
 			var animOrigin:B2Vec2 = originMap.get(name);		
 			
-			if(physicsMode == NORMAL_PHYSICS)
-			{
-				updateTweenProperties();
-			}
-						
 			var centerx = (currAnimation.width / Engine.SCALE / 2) - animOrigin.x;
 			var centery = (currAnimation.height / Engine.SCALE / 2) - animOrigin.y;
 			
@@ -1394,6 +1393,8 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			{
 				realX = getX(false);
 				realY = getY(false);
+				
+				updateBodyScale();
 			}
 			
 			if(animOrigin != null)
@@ -1627,8 +1628,6 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		{
    			currAnimation.update(elapsedTime);
 		}
-		
-		updateTweenProperties();
 	}	
 	
 	public function updateDrawingMatrix(force:Bool = false)
@@ -1799,85 +1798,57 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		#end
 	}
 	
-	public function updateTweenProperties()
-	{		
-		//Since we can't tween directly on the Box2D values and can't make direct function calls,
-		//we have to reverse the normal flow of information from body -> NME to tween -> body
+	public function updateTweenAlpha()
+	{
+		alpha = tweenProps.alpha.value;
+	}
+	
+	public function updateTweenScaleXY()
+	{
+		realScaleX = tweenProps.realScaleXY.value1;
+		realScaleY = tweenProps.realScaleXY.value2;
 		
-		if(tweenProps.alpha.updated)
-			alpha = tweenProps.alpha.value;
-		if(tweenProps.realScaleXY.updated)
+		updateBodyScale();
+	}
+	
+	public function updateTweenAngle()
+	{
+		setAngle(tweenProps.angle.value, false);
+	}
+	
+	public function updateTweenXY()
+	{
+		if(physicsMode == NORMAL_PHYSICS)
 		{
-			realScaleX = tweenProps.realScaleXY.value1;
-			realScaleY = tweenProps.realScaleXY.value2;
-			
-			if(autoScale && physicsMode == NORMAL_PHYSICS && body != null && bodyDef.type != B2Body.b2_staticBody)
-			{
-				if(realScaleX != 0 && realScaleY != 0)
-				{
-					scaleBody(realScaleX, realScaleY);
-				}
-			}
-		}
-		
-		if(tweenProps.angle.updated && tweenProps.xy.updated)
-		{
-			if(physicsMode == NORMAL_PHYSICS)
-			{
-				realX = tweenProps.xy.value1;
-				realY = tweenProps.xy.value2;
-				realAngle = tweenProps.angle.value;
-				
-				dummy.x = Engine.toPhysicalUnits(realX + Math.floor(cacheWidth/2) + currOffset.x);
-				dummy.y = Engine.toPhysicalUnits(realY + Math.floor(cacheHeight/2) + currOffset.y);
-			
-				body.setPositionAndAngle
-				(
-					dummy,
-					Utils.RAD * realAngle
-				);
-			}
-			
-			else
-			{
-				moveActorBy(tweenProps.xy.value1 - getX(false), tweenProps.xy.value2 - getY(false), false);
-				setAngle(tweenProps.angle.value, false);
-			}
-
-			updateMatrix = true;
+			setXY(tweenProps.xy.value1, tweenProps.xy.value2);
 		}
 		
 		else
 		{
-			if(tweenProps.xy.updated)
-			{
-				if(physicsMode == NORMAL_PHYSICS)
-				{
-					setXY(tweenProps.xy.value1, tweenProps.xy.value2);
-				}
-				
-				else
-				{
-					moveActorBy(tweenProps.xy.value1 - getX(false), tweenProps.xy.value2 - getY(false), false);
-					updateMatrix = true;
-				}				
-			}
-			
-			if(tweenProps.angle.updated)
-			{
-				setAngle(tweenProps.angle.value, false);
-			}
+			moveActorBy(tweenProps.xy.value1 - getX(false), tweenProps.xy.value2 - getY(false), false);
+			updateMatrix = true;
 		}
 		
-		if(tweenProps.xy.updated && tweenProps.xy.finished)
+		if(tweenProps.xy.finished)
 		{
-			if (currOffset != null)
+			if(currOffset != null)
 			{
 				resetReal(realX, realY);
 			}
 		}
 	}
-		
+	
+	public function updateBodyScale()
+	{
+		if(autoScale && physicsMode == NORMAL_PHYSICS && body != null && bodyDef.type != B2Body.b2_staticBody)
+		{
+			if(realScaleX != 0 && realScaleY != 0)
+			{
+				scaleBody(realScaleX, realScaleY);
+			}
+		}
+	}
+	
 	//*-----------------------------------------------
 	//* Events - Other
 	//*-----------------------------------------------
@@ -3477,56 +3448,23 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 
 	public function fadeTo(value:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
-		if (duration == 0)
-		{
-			alpha = value;
-			if(tweenProps.alpha.active) TweenManager.cancel(tweenProps.alpha);
-		}
-		else
-		{
-			tweenProps.alpha.tween(alpha, value, easing, Std.int(duration*1000));
-		}
+		tweenProps.alpha.tween(alpha, value, easing, Std.int(duration*1000));
 	}
 	
 	public function growTo(scaleX:Float = 1, scaleY:Float = 1, duration:Float = 1, easing:EasingFunction = null)
 	{
-		if (duration == 0)
-		{
-			realScaleX = scaleX;
-			realScaleY = scaleY;
-			if(tweenProps.realScaleXY.active) TweenManager.cancel(tweenProps.realScaleXY);
-		}
-		else
-		{
-			tweenProps.realScaleXY.tween(realScaleX, scaleX, realScaleY, scaleY, easing, Std.int(duration*1000));
-		}
+		tweenProps.realScaleXY.tween(realScaleX, scaleX, realScaleY, scaleY, easing, Std.int(duration*1000));
 	}
 	
 	//In degrees
 	public function spinTo(angle:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
-		if (duration == 0)
-		{
-			realAngle = angle;
-			if(tweenProps.angle.active) TweenManager.cancel(tweenProps.angle);
-		}
-		else
-		{
-			tweenProps.angle.tween(realAngle, angle, easing, Std.int(duration*1000));
-		}
+		tweenProps.angle.tween(realAngle, angle, easing, Std.int(duration*1000));
 	}
 	
 	public function moveTo(x:Float, y:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
-		if (duration == 0)
-		{
-			setXY(x, y);
-			if(tweenProps.xy.active) TweenManager.cancel(tweenProps.xy);
-		}
-		else
-		{
-			tweenProps.xy.tween(getX(false), x, getY(false), y, easing, Std.int(duration*1000));
-		}
+		tweenProps.xy.tween(getX(false), x, getY(false), y, easing, Std.int(duration*1000));
 	}
 	
 	//In degrees

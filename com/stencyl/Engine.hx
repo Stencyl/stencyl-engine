@@ -2363,7 +2363,6 @@ class Engine
 						actor.continuousCollision = actor.bodyDef.bullet;
 					}
 					
-					actor.updateTweenProperties();
 					actor.updateDrawingMatrix(true);
 					
 					//actor.setFilter(null);					

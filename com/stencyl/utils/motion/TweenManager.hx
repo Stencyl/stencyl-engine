@@ -32,6 +32,21 @@ class TweenManager
 		}
 	}
 	
+	public static function finish(o:TweenObject):Void
+	{
+		var i = activeObjects.indexOf(o);
+		if(i != -1)
+		{
+			o.update(o.duration - o.time);
+			
+			//fast splice
+			activeObjects[i] = activeObjects[activeObjects.length - 1];
+			activeObjects.pop();
+			
+			finishedObjects.push(o);
+		}
+	}
+	
 	public static function update(dt:Int):Void
 	{
 		var i = finishedObjects.length;

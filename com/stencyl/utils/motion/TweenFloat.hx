@@ -15,11 +15,11 @@ class TweenFloat extends TweenObject
 	
 	public function tween(startValue:Float, endValue:Float, easing:EasingFunction, duration:Int):TweenFloat
 	{
-		_tween(easing, duration);
-		
 		this.startValue = startValue;
 		this.endValue = endValue;
 		value = startValue;
+		
+		_tween(easing, duration);
 		
 		return this;
 	}

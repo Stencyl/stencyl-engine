@@ -23,8 +23,6 @@ class TweenObject
 	
 	public function _tween(easing:EasingFunction, duration:Int)
 	{
-		if(duration == 0)
-			duration = 1;
 		if(easing == null)
 			easing = Easing.linear;
 		
@@ -41,6 +39,12 @@ class TweenObject
 		updated = false;
 		finished = false;
 		paused = false;
+		
+		if(duration == 0)
+		{
+			this.duration = 1;
+			TweenManager.finish(this);
+		}
 	}
 	
 	public function update(dt:Int):Void

@@ -19,8 +19,6 @@ class TweenFloat2 extends TweenObject
 	
 	public function tween(startValue1:Float, endValue1:Float, startValue2:Float, endValue2:Float, easing:EasingFunction, duration:Int):TweenFloat2
 	{
-		_tween(easing, duration);
-		
 		this.startValue1 = startValue1;
 		this.endValue1 = endValue1;
 		value1 = startValue1;
@@ -28,6 +26,8 @@ class TweenFloat2 extends TweenObject
 		this.startValue2 = startValue2;
 		this.endValue2 = endValue2;
 		value2 = startValue2;
+		
+		_tween(easing, duration);
 		
 		return this;
 	}
