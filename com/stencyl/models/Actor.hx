@@ -3459,7 +3459,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	//In degrees
 	public function spinTo(angle:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
-		tweenProps.angle.tween(realAngle, angle, easing, Std.int(duration*1000));
+		tweenProps.angle.tween(getAngleInDegrees(), angle, easing, Std.int(duration*1000));
 	}
 	
 	public function moveTo(x:Float, y:Float, duration:Float = 1, easing:EasingFunction = null)
@@ -3470,7 +3470,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	//In degrees
 	public function spinBy(angle:Float, duration:Float = 1, easing:EasingFunction = null)
 	{
-		spinTo(realAngle + angle, duration, easing);
+		spinTo(getAngleInDegrees() + angle, duration, easing);
 	}
 	
 	public function moveBy(x:Float, y:Float, duration:Float = 1, easing:EasingFunction = null)
