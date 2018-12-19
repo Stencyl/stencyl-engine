@@ -49,7 +49,7 @@ class SoundChannel
 		tweenVolume.doOnUpdate(tweenUpdated);
 	}
 	
-	public function playSound(clip:Sound):openfl.media.SoundChannel
+	public function playSound(clip:Sound, position:Float = 0):openfl.media.SoundChannel
 	{			
 		if(currentSound != null)
 		{
@@ -61,7 +61,7 @@ class SoundChannel
 		{
 			clip.volume = volume * masterVolume;
 			currentClip = clip;
-			currentSound = clip.play(channelNum);
+			currentSound = clip.play(channelNum, position);
 			
 			if(currentSound == null)
 			{
@@ -86,7 +86,7 @@ class SoundChannel
 		return currentSound;
 	}
 	
-	public function loopSound(clip:Sound):openfl.media.SoundChannel
+	public function loopSound(clip:Sound, position:Float = 0):openfl.media.SoundChannel
 	{
 		if(currentSound != null)
 		{
@@ -97,7 +97,7 @@ class SoundChannel
 		{
 			clip.volume = volume * masterVolume;
 			currentClip = clip;
-			currentSound = clip.loop(channelNum);
+			currentSound = clip.play(channelNum, position);
 			
 			if(currentSound == null)
 			{
@@ -107,7 +107,7 @@ class SoundChannel
 			
 			setVolume(volume);
 			
-			currentSound.addEventListener(Event.SOUND_COMPLETE, stopped);
+			currentSound.addEventListener(Event.SOUND_COMPLETE, looped);
 		}
 
 		position = 0;

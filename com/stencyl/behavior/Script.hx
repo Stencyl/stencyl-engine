@@ -2198,6 +2198,8 @@ class Script
 		
 		if(sc != null && sc.currentSound != null)
 		{
+			if(sc.paused) return sc.position;
+			
 			return sc.currentSound.position;
 		}
 		
@@ -2212,14 +2214,20 @@ class Script
 	*/
 	public static function setPositionForChannel(channelNum:Int, position:Int)
 	{
-		#if !flash
-		var sc:SoundChannel = engine.channels[channelNum];	
+		var sc:SoundChannel = engine.channels[channelNum];
 		
 		if(sc != null && sc.currentSound != null)
 		{
-			sc.currentSound.position = position;
+			if(sc.paused)
+				sc.position = position;
+			else
+			{
+				if(sc.looping)
+					sc.loopSound(sc.currentClip, position);
+				else
+					sc.playSound(sc.currentClip, position);
+			}
 		}
-		#end
 	}
 	
 	/**
