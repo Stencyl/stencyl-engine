@@ -546,6 +546,7 @@ class Input
 		mouseWheelDelta = 0;
 	}
 
+	#if android
 	private static function ignoreBackKey(event:KeyboardEvent = null)
 	{
 		if(event.keyCode == lime.ui.KeyCode.APP_CONTROL_BACK)
@@ -564,6 +565,7 @@ class Input
 			}
 		}
 	}
+	#end
 	
 	private static function onSwipe(e:RoxGestureEvent):Void
 	{
