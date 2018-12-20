@@ -739,7 +739,7 @@ class Input
 	{
 		//On mobile, mouse position isn't always updated till you touch, so we need to update immediately
 		//so that events are properly notified
-		#if mobile
+		#if (mobile || html5)
 		mouseX = (Engine.stage.mouseX - Engine.screenOffsetX) / Engine.screenScaleX;
 		mouseY = (Engine.stage.mouseY - Engine.screenOffsetY) / Engine.screenScaleY;
 		#end
@@ -755,7 +755,7 @@ class Input
 	{
 		//On mobile, mouse position isn't always updated till you touch, so we need to update immediately
 		//so that events are properly notified
-		#if mobile
+		#if (mobile || html5)
 		mouseX = (Engine.stage.mouseX - Engine.screenOffsetX) / Engine.screenScaleX;
 		mouseY = (Engine.stage.mouseY - Engine.screenOffsetY) / Engine.screenScaleY;
 		#end
