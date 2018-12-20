@@ -2105,6 +2105,12 @@ class Script
 		sc.setVolume(volume);
 	}
 	
+	public static function setPanningForChannel(pan:Float, channelNum:Int)
+	{
+		var sc:SoundChannel = engine.channels[channelNum];		
+		sc.setPanning(pan);
+	}
+	
 	/**
 	* Stop all the sounds currently playing (use mute() to mute the game).
 	*/

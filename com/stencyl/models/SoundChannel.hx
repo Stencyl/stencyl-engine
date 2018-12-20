@@ -22,6 +22,7 @@ class SoundChannel
 	public var currentSound:openfl.media.SoundChannel;
 	public var currentClip:com.stencyl.models.Sound;
 	public var volume:Float;
+	public var panning:Float;
 	public var channelNum:Int;
 	public var looping:Bool;
 	public var paused:Bool = false;
@@ -39,6 +40,7 @@ class SoundChannel
 		
 		looping = false;
 		volume = 1;
+		panning = 0;
 		position = 0;
 		
 		this.channelNum = channelNum;
@@ -70,6 +72,7 @@ class SoundChannel
 			}
 			
 			setVolume(volume);
+			setPanning(panning);
 			
 			currentSound.addEventListener(Event.SOUND_COMPLETE, stopped);
 		}
@@ -106,6 +109,7 @@ class SoundChannel
 			}
 			
 			setVolume(volume);
+			setPanning(panning);
 			
 			currentSound.addEventListener(Event.SOUND_COMPLETE, looped);
 		}
@@ -232,6 +236,17 @@ class SoundChannel
 		if(currentSound != null)
 		{
 			transform.volume = volume * masterVolume;
+			currentSound.soundTransform = transform;
+		}
+	}
+	
+	public function setPanning(pan:Float)
+	{
+		this.panning = pan;
+		
+		if(currentSound != null)
+		{
+			transform.pan = pan;
 			currentSound.soundTransform = transform;
 		}
 	}
