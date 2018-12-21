@@ -999,7 +999,7 @@ class Utils
 		#end
 	}
 
-	#if (flash || js)
+	#if (flash || js || !testing)
 	private static function getFlatName(path:String):String
 	{
 		path = StringTools.replace(path, "/", "_");
@@ -1016,7 +1016,7 @@ class Utils
 
 	public static function getConfigBytes(path:String):Bytes
 	{
-		#if (flash || html5)
+		#if (flash || html5 || !testing)
 
 		return haxe.Resource.getBytes(getFlatName(path));
 
@@ -1029,7 +1029,7 @@ class Utils
 
 	public static function getConfigText(path:String):String
 	{
-		#if (flash || html5)
+		#if (flash || html5 || !testing)
 
 		return haxe.Resource.getString(getFlatName(path));
 
@@ -1066,7 +1066,13 @@ class Utils
 			trace("(You probably have a old browser) Error occurred: " + msg);
 			return cast Future.withError("(You probably have a old browser) Error occurred: " + msg);
 		}
-
+		
+		#elseif !testing
+		
+		var data = haxe.Resource.getBytes(getFlatName(path));
+		return BitmapData.loadFromBytes(data)
+			.then(function (bmp) return Future.withValue((new Bitmap(bmp) : DisplayObject)));
+		
 		#else
 
 		#if ios path = 'assets/$path'; #end
