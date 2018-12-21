@@ -192,7 +192,7 @@ using StringTools;
 		
 		attributes.context = {
 			
-			antialiasing: ::antialiasing::,
+			antialiasing: Config.antialias ? 2 : 0,
 			background: ::background::,
 			colorDepth: ::colorDepth::,
 			depth: ::depthBuffer::,
