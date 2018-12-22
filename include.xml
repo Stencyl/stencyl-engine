@@ -5,7 +5,7 @@
 	
 	<haxelib name="openfl" />
 	<haxelib name="tweenxcore" />
-	<haxelib name="console" />
+	<haxelib name="debug-console" />
 	<haxelib name="polygonal-ds" />
 	<haxelib name="box2d" />
 	<haxelib name="cloner" />
