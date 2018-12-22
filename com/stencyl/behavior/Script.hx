@@ -2795,13 +2795,13 @@ class Script
 				{
 					for(k in y...y2)
 					{
-						img.setPixel(j, k, color);
+						img.setPixel32(j, k, color | 0xFF000000);
 					}
 				}
 			}
 			else
 			{
-				img.setPixel(x, y, color);
+				img.setPixel32(x, y, color | 0xFF000000);
 			}
 		}
 	}
