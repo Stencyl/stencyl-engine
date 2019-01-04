@@ -2815,11 +2815,6 @@ class Engine
 					continue;
 				}
 				
-				if(a.currAnimation != null && a.currAnimation.needsBitmapUpdate())
-				{
-					a.currAnimation.updateBitmap();
-				}
-				
 				if(a.dead || a.dying)
 				{
 					removeActor(a);

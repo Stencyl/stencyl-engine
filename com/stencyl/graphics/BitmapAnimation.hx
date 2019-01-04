@@ -17,7 +17,6 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	private var frameIndex:Int;
 	private var timer:Float;
 	private var finished:Bool;
-	private var needsUpdate:Bool;
 	
 	private var durations:Array<Int>;
 	private var individualDurations:Bool;
@@ -89,7 +88,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 				
 				if(old != frameIndex)
 				{
-					needsUpdate = true;
+					updateBitmap();
 				}
 			}
 		
@@ -103,7 +102,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		
 		if(old != frameIndex)
 		{
-			needsUpdate = true;
+			updateBitmap();
 		}
 	}
 	
@@ -127,7 +126,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		if(frame != frameIndex)
 		{
 			frameIndex = frame;
-			needsUpdate = true;
+			updateBitmap();
 		}
 
 		timer = 0;
@@ -139,17 +138,12 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		return finished;
 	}
 	
-	public function needsBitmapUpdate():Bool
-	{
-		return needsUpdate;
-	}
-	
 	public inline function reset()
 	{
 		timer = 0;
 		frameIndex = 0;
 		finished = false;
-		needsUpdate = true;
+		updateBitmap();
 	}
 	
 	public inline function updateBitmap()
@@ -170,7 +164,6 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 			bitmapData = model.frames[frameIndex];
 		}
 		smoothing = Config.antialias;
-		needsUpdate = false;
 	}
 	
 	#if !flash

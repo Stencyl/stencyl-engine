@@ -22,7 +22,6 @@ class SheetAnimation extends Tile implements AbstractAnimation
 	private var frameIndex:Int;
 	private var timer:Float;
 	private var finished:Bool;
-	private var needsUpdate:Bool;
 	
 	private var durations:Array<Int>;
 	private var numFrames:Int;
@@ -80,7 +79,7 @@ class SheetAnimation extends Tile implements AbstractAnimation
 
 				if(old != frameIndex)
 				{
-					needsUpdate = true;
+					updateBitmap();
 				}
 			}
 		
@@ -94,7 +93,7 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		
 		if(old != frameIndex)
 		{
-			needsUpdate = true;
+			updateBitmap();
 		}
 	}
 	
@@ -118,7 +117,7 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		if(frame != frameIndex)
 		{
 			frameIndex = frame;
-			needsUpdate = true;
+			updateBitmap();
 		}
 		
 		timer = 0;
@@ -134,11 +133,6 @@ class SheetAnimation extends Tile implements AbstractAnimation
 	public function isFinished():Bool
 	{
 		return finished;
-	}
-	
-	public function needsBitmapUpdate():Bool 
-	{
-		return needsUpdate;
 	}
 	
 	public inline function activate()
@@ -170,13 +164,12 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		timer = 0;
 		frameIndex = 0;
 		finished = false;
-		needsUpdate = true;
+		updateBitmap();
 	}
 	
 	public inline function updateBitmap()
 	{
 		id = frameIndex + model.frameIndexOffset;
-		needsUpdate = false;
 	}
 
 	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
