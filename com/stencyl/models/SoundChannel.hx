@@ -198,7 +198,7 @@ class SoundChannel
 	
 	public function tweenUpdated()
 	{
-		transform.volume = tweenVolume.value;
+		transform.volume = tweenVolume.value * masterVolume;
 		if(currentSound != null)
 		{
 			currentSound.soundTransform = transform;
