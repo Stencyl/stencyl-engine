@@ -198,11 +198,7 @@ class SoundChannel
 	
 	public function tweenUpdated()
 	{
-		transform.volume = tweenVolume.value * masterVolume;
-		if(currentSound != null)
-		{
-			currentSound.soundTransform = transform;
-		}
+		setVolume(tweenVolume.value);
 	}
 	
 	public function fadeInSound(time:Float)
