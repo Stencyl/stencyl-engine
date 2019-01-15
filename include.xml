@@ -2,6 +2,7 @@
 <project>
 	
 	<haxeflag name="--remap" value="nme:openfl" />
+	<define name="openfl-enable-handle-error" if="debug" />
 	
 	<haxelib name="openfl" />
 	<haxelib name="tweenxcore" />
