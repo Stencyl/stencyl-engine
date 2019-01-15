@@ -1463,56 +1463,57 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		{
 			//Previously was checkMouseState() - inlined for performance. See Region:innerUpdate for other instance
 			var mouseOver:Bool = isMouseOver();
-				
-			if(mouseState <= 0 && mouseOver)
-			{
-				//Just Entered
-				mouseState = 1;
-			}
 			
-			#if !mobile	
-			else if(mouseState >= 1 && mouseOver)
-			#end
-			
-			//in the context of single touches, this does not exist on mobile
-			#if mobile
 			if(mouseOver)
-			#end
 			{
-				//Over
-				mouseState = 2;
-						
+				if(mouseState <= 0)
+				{
+					//Just Entered
+					mouseState = 1;
+					Engine.invokeListeners2(mouseOverListeners, mouseState);
+				}
+				else
+				{
+					//Over
+					mouseState = 2;
+				}
+				
 				if(Input.mousePressed)
 				{
 					//Clicked On
 					mouseState = 3;
+					Engine.invokeListeners2(mouseOverListeners, mouseState);
 				}
-						
+				
 				else if(Input.mouseDown)
 				{
 					//Dragged
 					mouseState = 4;
+					Engine.invokeListeners2(mouseOverListeners, mouseState);
 				}
-						
+				
 				if(Input.mouseReleased)
 				{
 					//Released
 					mouseState = 5;
+					Engine.invokeListeners2(mouseOverListeners, mouseState);
 				}
 			}
 			
-			else if(mouseState > 0 && !mouseOver)
+			else
 			{
-				//Just Exited
-				mouseState = -1;
-			}
+				if(mouseState > 0)
+				{
+					//Just Exited
+					mouseState = -1;
+					Engine.invokeListeners2(mouseOverListeners, mouseState);
+				}
 				
-			else if(mouseState == -1 && !mouseOver)
-			{
-				mouseState = 0;
-			}	
-			
-			Engine.invokeListeners2(mouseOverListeners, mouseState);
+				else if(mouseState == -1)
+				{
+					mouseState = 0;
+				}
+			}
 		}
 		
 		var checkType = type.ID;

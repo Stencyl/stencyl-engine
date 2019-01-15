@@ -342,49 +342,57 @@ class Region extends Actor
 		{
 			//Previously was checkMouseState() - inlined for performance. See Actor:innerUpdate for other instance.
 			var mouseOver:Bool = isMouseOver();
+			
+			if(mouseOver)
+			{
+				if(mouseState <= 0)
+				{
+					//Just Entered
+					mouseState = 1;
+					Engine.invokeListeners2(mouseOverListeners, mouseState);
+				}
+				else
+				{
+					//Over
+					mouseState = 2;
+				}
 				
-			if(mouseState <= 0 && mouseOver)
-			{
-				//Just Entered
-				mouseState = 1;
-			}
-					
-			else if(mouseState >= 1 && mouseOver)
-			{
-				//Over
-				mouseState = 2;
-						
 				if(Input.mousePressed)
 				{
 					//Clicked On
 					mouseState = 3;
+					Engine.invokeListeners2(mouseOverListeners, mouseState);
 				}
-						
+				
 				else if(Input.mouseDown)
 				{
 					//Dragged
 					mouseState = 4;
+					Engine.invokeListeners2(mouseOverListeners, mouseState);
 				}
-						
+				
 				if(Input.mouseReleased)
 				{
 					//Released
 					mouseState = 5;
+					Engine.invokeListeners2(mouseOverListeners, mouseState);
 				}
 			}
-					
-			else if(mouseState > 0 && !mouseOver)
-			{
-				//Just Exited
-				mouseState = -1;
-			}
-				
-			else if(mouseState == -1 && !mouseOver)
-			{
-				mouseState = 0;
-			}	
 			
-			Engine.invokeListeners2(mouseOverListeners, mouseState);
+			else
+			{
+				if(mouseState > 0)
+				{
+					//Just Exited
+					mouseState = -1;
+					Engine.invokeListeners2(mouseOverListeners, mouseState);
+				}
+				
+				else if(mouseState == -1)
+				{
+					mouseState = 0;
+				}
+			}
 		}
 	}
 }
