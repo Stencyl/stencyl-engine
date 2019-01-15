@@ -99,7 +99,7 @@ class G
 		
 		mtx = new Matrix();
 		
-		#if (!use_tilemap)
+		#if !use_tilemap
 		if(fontCache == null)
 		{
 			fontCache = new Map<Int,Array<BitmapData>>();
@@ -134,7 +134,7 @@ class G
 		{
 			font = newFont;
 		
-			#if (!use_tilemap)
+			#if !use_tilemap
 			if(font == defaultFont)
 			{
 				fontData = fontCache.get(-1);
@@ -330,7 +330,7 @@ class G
 			{
 				toDraw = new BitmapData(w, h, true, 0);
 				
-				#if (!use_tilemap)
+				#if !use_tilemap
 				font.font.render(toDraw, fontData, s, 0x000000, alpha, 0, 0, font.letterSpacing, font.fontScale, 0);
 				#else
 				font.font.renderToImg(toDraw, s, 0x000000, alpha, 0, 0, font.letterSpacing, font.fontScale, 0, false); //0, false
@@ -665,7 +665,7 @@ class G
 		if (font.fontScale != Engine.SCALE)
 		{
 			font.fontScale = Engine.SCALE;
-			#if (!use_tilemap)
+			#if !use_tilemap
 			font = null;
 			fontCache.set(-1, null);
 			setFont(defaultFont);

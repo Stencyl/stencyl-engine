@@ -56,11 +56,11 @@ using StringTools;
 		
 		Lib.current;
 
-		#if (stencyltools)
+		#if stencyltools
 		new ToolsetInterface();
 		#end
 
-		#if (js && html5)
+		#if html5
 		//application is started from html script with System.embed, which calls create(config)
 		#else
 		create (null);
@@ -123,7 +123,7 @@ using StringTools;
 				var timer = new Timer(10);
 				timer.run = function()
 				{
-					#if (!flash)
+					#if !flash
 					ToolsetInterface.preloadedUpdate();
 					#end
 
@@ -246,7 +246,7 @@ using StringTools;
 		Lib.current.addChild(universal);
 		var imgBase = Engine.IMG_BASE;
 		
-		#if (sys)
+		#if sys
 		var preloadPaths = Utils.getConfigText("config/preloadPaths.txt");
 		for(library in ManifestResources.preloadLibraries)
 		{
@@ -284,7 +284,7 @@ using StringTools;
 		
 		var result = app.exec ();
 
-		#if (sys && !ios && !nodejs && !emscripten)
+		#if (sys && !ios)
 		System.exit (result);
 		#end
 	}

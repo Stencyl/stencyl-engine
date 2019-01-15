@@ -8,7 +8,7 @@ class FastIntHash<T> extends IntHash<T>
 	
 	override public function iterator():Iterator<T> 
 	{
-		#if (cpp)
+		#if cpp
 		untyped return __global__.__int_hash_fast_values(h);
 		#else
 		return super.iterator();
@@ -18,7 +18,7 @@ class FastIntHash<T> extends IntHash<T>
 	
 	override public function keys():Iterator<Int> 
 	{
-		#if (cpp)
+		#if cpp
 		untyped return __global__.__int_hash_fast_keys(h);
 		#else
 		return super.keys();

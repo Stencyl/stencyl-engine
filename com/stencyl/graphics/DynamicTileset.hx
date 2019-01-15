@@ -168,7 +168,7 @@ class DynamicTileset
 				var r = newRects[i];
 				var newFrame = newFrames[i];
 				
-				#if (js && html5)
+				#if html5
 				
 				if(newFrame.image.type == DATA)
 				{

@@ -81,7 +81,7 @@ class Layer extends RegularLayer
 		}
 		attachedImages = new Array<BitmapWrapper>();
 		
-		#if(use_actor_tilemap)
+		#if use_actor_tilemap
 		Utils.removeAllTiles(actorContainer);
 		#else
 		Utils.removeAllChildren(actorContainer);

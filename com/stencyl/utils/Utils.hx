@@ -110,7 +110,7 @@ class Utils
 	}*/
 	
 	public static inline function clear(arr:Array<Dynamic>){
-        #if (cpp || php)
+        #if cpp
            arr.splice(0,arr.length);           
         #else
            untyped arr.length = 0;
@@ -999,7 +999,7 @@ class Utils
 		#end
 	}
 
-	#if (flash || js || !testing)
+	#if (flash || html5 || !testing)
 	private static function getFlatName(path:String):String
 	{
 		path = StringTools.replace(path, "/", "_");
@@ -1109,7 +1109,7 @@ class Utils
 
 	public static function loadBitmapData(path:String):BitmapData
 	{
-		#if (flash)
+		#if flash
 
 		return cast Type.createInstance(getAssetClass(path), []);
 

@@ -23,7 +23,7 @@ class Tileset extends Resource
 	
 	public var graphicsLoaded:Bool;
 	
-	#if (use_tilemap)
+	#if use_tilemap
 	public var flTileset:FLTileset;
 	
 	//tileID -> sheetID
@@ -42,7 +42,7 @@ class Tileset extends Resource
 		this.tiles = tiles;
 	}
 	
-	#if (use_tilemap)
+	#if use_tilemap
 	public function setupFLTileset()
 	{
 		sheetMap = new Map<Int,Int>();
@@ -101,7 +101,7 @@ class Tileset extends Resource
 			var row:Int = Math.floor(tile.frameIndex / framesAcross);
 			var col:Int = Math.floor(tile.frameIndex % framesAcross);
 			
-			#if (use_tilemap)
+			#if use_tilemap
 			// The tile line fix now affects all scale modes.  Set to false if this causes any problems.
 			if(true)
 			{
@@ -146,7 +146,7 @@ class Tileset extends Resource
 			}
 		}
 		
-		#if (use_tilemap)
+		#if use_tilemap
 		setupFLTileset();
 		
 		if(Config.disposeImages && !readableImages)
@@ -167,7 +167,7 @@ class Tileset extends Resource
 			pixels.dispose();
 		pixels = null;
 	
-		#if (use_tilemap)
+		#if use_tilemap
 		flTileset = null;
 		#end
 		

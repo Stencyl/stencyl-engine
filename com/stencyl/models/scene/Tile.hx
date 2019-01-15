@@ -156,7 +156,7 @@ class Tile
 		{
 			this.pixels = pixels;
 
-			#if (use_tilemap)
+			#if use_tilemap
 			data = new FLTileset(pixels);
 			
 			for(i in 0 ... durations.length)

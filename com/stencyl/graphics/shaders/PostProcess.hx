@@ -1,6 +1,6 @@
 package com.stencyl.graphics.shaders;
 
-#if (js && html5)
+#if html5
 import js.html.CanvasElement;
 import js.Browser;
 #end
@@ -73,7 +73,7 @@ typedef Uniform = {
  */
 class PostProcess extends DisplayObject
 {
-	static var UNIFORM_NOT_FOUND(default, never) = #if js null #else -1 #end;
+	static var UNIFORM_NOT_FOUND(default, never) = #if html5 null #else -1 #end;
 	public static inline var CONTEXT_LOST = "glcontextlost";
 	public static inline var CONTEXT_RESTORED = "glcontextrestored";
 	
@@ -165,7 +165,7 @@ class PostProcess extends DisplayObject
 	
 	@:noCompletion private static function get_isSupported ():Bool
 	{
-		#if (js && html5)
+		#if html5
 		
 		#if (canvas && !dom)
 		return false;

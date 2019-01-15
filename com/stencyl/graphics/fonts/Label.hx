@@ -48,7 +48,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	@:isVar public var labelX (get, set):Float;
 	@:isVar public var labelY (get, set):Float;
 	
-	#if (!use_tilemap)
+	#if !use_tilemap
 	public var bitmapData:BitmapData;
 	private var _bitmap:Bitmap;
 	
@@ -107,7 +107,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 			_font = pFont;
 		}
 		
-		#if (!use_tilemap)
+		#if !use_tilemap
 		updateGlyphs(true, _shadow, _outline);
 		
 		bitmapData = new BitmapData(1, 1, true);
@@ -128,7 +128,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	{
 		_stencylFont = null;
 		_font = null;
-		#if (!use_tilemap)
+		#if !use_tilemap
 		removeChild(_bitmap);
 		_bitmap = null;
 		bitmapData.dispose();
@@ -185,7 +185,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		
 		var calcFieldWidth:Int = _fieldWidth;
 		var rows:Array<String> = [];
-		#if (!use_tilemap)
+		#if !use_tilemap
 		var fontHeight:Int = Math.floor(_font.getFontHeight() * _fontScale);
 		#else
 		var fontHeight:Int = _font.getFontHeight();
@@ -314,13 +314,13 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		}
 		
 		var finalWidth:Int = calcFieldWidth + _padding * 2 + (_outline ? 2 : 0);
-		#if (!use_tilemap)
+		#if !use_tilemap
 		var finalHeight:Int = Math.floor(_padding * 2 + Math.max(1, (rows.length * fontHeight + (_shadow ? 1 : 0)) + (_outline ? 2 : 0))) + ((rows.length >= 1) ? _lineSpacing * (rows.length - 1) : 0);
 		#else
 		var finalHeight:Int = Math.floor(_padding * 2 + Math.max(1, (rows.length * fontHeight * _fontScale + (_shadow ? 1 : 0)) + (_outline ? 2 : 0))) + ((rows.length >= 1) ? _lineSpacing * (rows.length - 1) : 0);
 		#end
 		
-		#if (!use_tilemap)
+		#if !use_tilemap
 		if (bitmapData != null) 
 		{
 			if (finalWidth != bitmapData.width || finalHeight != bitmapData.height) 
@@ -403,7 +403,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 				{
 					for (px in 0...(2 + 1)) 
 					{
-						#if (!use_tilemap)
+						#if !use_tilemap
 						_font.render(bitmapData, _preparedOutlineGlyphs, t, _outlineColor, _alpha, px + ox + _padding, py + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 						#else
 						_font.render(_outlineTilemap, t, _alpha, px + ox + _padding, py + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
@@ -415,20 +415,20 @@ class Label extends Sprite implements EngineScaleUpdateListener
 			}
 			if (_shadow) 
 			{
-				#if (!use_tilemap)
+				#if !use_tilemap
 				_font.render(bitmapData, _preparedShadowGlyphs, t, _shadowColor, _alpha, 1 + ox + _padding, 1 + oy + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 				#else
 				_font.render(_shadowTilemap, t, _alpha, 1 + ox + _padding, 1 + oy + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 				#end
 			}
-			#if (!use_tilemap)
+			#if !use_tilemap
 			_font.render(bitmapData, _preparedTextGlyphs, t, _color, _alpha, ox + _padding, oy + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 			#else
 			_font.render(_characterTilemap, t, _alpha, ox + _padding, oy + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
 			#end
 			row++;
 		}
-		#if (!use_tilemap)
+		#if !use_tilemap
 		bitmapData.unlock();
 		#end
 		
@@ -443,7 +443,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		if (_pendingTextChange) 
 		{
 			updateBitmapData();
-			#if (!use_tilemap)
+			#if !use_tilemap
 			_bitmap.bitmapData = bitmapData;
 			#end
 		}
@@ -778,7 +778,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		if (_alpha != pAlpha)
 		{
 			_alpha = pAlpha;
-			#if (!use_tilemap)
+			#if !use_tilemap
 			this.alpha = _alpha;
 			#else
 			_pendingTextChange = true;
@@ -931,7 +931,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	
 	private function updateGlyphs(?textGlyphs:Bool = false, ?shadowGlyphs:Bool = false, ?outlineGlyphs:Bool = false):Void
 	{
-		#if (!use_tilemap)
+		#if !use_tilemap
 		if (textGlyphs)
 		{
 			clearPreparedGlyphs(_preparedTextGlyphs);
@@ -952,7 +952,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		#end
 	}
 	
-	#if (!use_tilemap)
+	#if !use_tilemap
 	private function clearPreparedGlyphs(pGlyphs:Array<BitmapData>):Void
 	{
 		if (pGlyphs != null)

@@ -1,6 +1,6 @@
 package com.stencyl.utils;
 
-#if (!stencyltools)
+#if !stencyltools
 
 typedef Assets = openfl.utils.Assets;
 

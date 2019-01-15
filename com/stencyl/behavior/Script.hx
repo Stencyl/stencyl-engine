@@ -618,7 +618,7 @@ class Script
 	
 	public function addMultiTouchStartListener(func:Dynamic->Array<Dynamic>->Void)
 	{
-		#if(mobile && !air)
+		#if mobile
 		engine.whenMTStartListeners.push(func);
 		
 		if(Std.is(this, ActorScript))
@@ -630,7 +630,7 @@ class Script
 	
 	public function addMultiTouchMoveListener(func:Dynamic->Array<Dynamic>->Void)
 	{
-		#if(mobile && !air)
+		#if mobile
 		engine.whenMTDragListeners.push(func);
 		
 		if(Std.is(this, ActorScript))
@@ -642,7 +642,7 @@ class Script
 	
 	public function addMultiTouchEndListener(func:Dynamic->Array<Dynamic>->Void)
 	{
-		#if(mobile && !air)
+		#if mobile
 		engine.whenMTEndListeners.push(func);
 		
 		if(Std.is(this, ActorScript))
@@ -2482,7 +2482,7 @@ class Script
 	
 	public static function setOrderForImage(img:BitmapWrapper, order:Int)
 	{
-		#if (!use_actor_tilemap)
+		#if !use_actor_tilemap
 		if(img != null && img.parent != null)
 		{
 			if(order >= 0 && order < img.parent.numChildren)
@@ -2495,7 +2495,7 @@ class Script
 
 	public static function getOrderForImage(img:BitmapWrapper)
 	{
-		#if (!use_actor_tilemap)
+		#if !use_actor_tilemap
 		if(img != null && img.parent != null)
 		{
 			return img.parent.getChildIndex(img);
@@ -2507,7 +2507,7 @@ class Script
 	
 	public static function bringImageBack(img:BitmapWrapper)
 	{
-		#if (!use_actor_tilemap)
+		#if !use_actor_tilemap
 		if(img != null && img.parent != null)
 		{
 			setOrderForImage(img, img.parent.getChildIndex(img) - 1);
@@ -2517,7 +2517,7 @@ class Script
 	
 	public static function bringImageForward(img:BitmapWrapper)
 	{
-		#if (!use_actor_tilemap)
+		#if !use_actor_tilemap
 		if(img != null && img.parent != null)
 		{
 			setOrderForImage(img, img.parent.getChildIndex(img) + 1);
@@ -2527,7 +2527,7 @@ class Script
 	
 	public static function bringImageToBack(img:BitmapWrapper)
 	{
-		#if (!use_actor_tilemap)
+		#if !use_actor_tilemap
 		if(img != null && img.parent != null)
 		{
 			setOrderForImage(img, 0);
@@ -2537,7 +2537,7 @@ class Script
 	
 	public static function bringImagetoFront(img:BitmapWrapper)
 	{
-		#if (!use_actor_tilemap)
+		#if !use_actor_tilemap
 		if(img != null && img.parent != null)
 		{
 			setOrderForImage(img, img.parent.numChildren - 1);
@@ -2547,7 +2547,7 @@ class Script
 	
 	public static function attachImageToActor(img:BitmapWrapper, a:Actor, x:Int, y:Int, pos:Int = 1)
 	{
-		#if (!use_actor_tilemap)
+		#if !use_actor_tilemap
 		if(img != null)
 		{
 			//Behind the Actor - Send to the very back.
@@ -2674,7 +2674,7 @@ class Script
 		{
 			var fontScale = font.fontScale;
 			
-			#if(!use_tilemap)
+			#if !use_tilemap
 			var fontData = G.fontCache.get(font.ID);
 				
 			if(fontData == null)
@@ -3770,7 +3770,7 @@ class Script
 	//*-----------------------------------------------
 	
 	
-	#if(flash)
+	#if flash
 	private static var medalPopup:com.newgrounds.components.MedalPopup = null;
 	private static var clickArea:TextField = null;
 	private static var scoreBrowser:com.newgrounds.components.ScoreBrowser = null;
@@ -3778,7 +3778,7 @@ class Script
 	
 	public static function newgroundsShowAd()
 	{
-		#if(flash)
+		#if flash
 		var flashAd = new com.newgrounds.components.FlashAd();
 		flashAd.fullScreen = true;
 		flashAd.showPlayButton = true;
@@ -3790,7 +3790,7 @@ class Script
 	
 	public static function newgroundsSetMedalPosition(x:Int, y:Int)
 	{
-		#if(flash)
+		#if flash
 		if(medalPopup == null)
 		{
 			medalPopup = new com.newgrounds.components.MedalPopup();
@@ -3804,7 +3804,7 @@ class Script
 	
 	public static function newgroundsUnlockMedal(medalName:String)
 	{
-		#if(flash)
+		#if flash
 		if(medalPopup == null)
 		{
 			medalPopup = new com.newgrounds.components.MedalPopup();
@@ -3817,14 +3817,14 @@ class Script
 	
 	public static function newgroundsSubmitScore(boardName:String, value:Float)
 	{
-		#if(flash)
+		#if flash
 		com.newgrounds.API.API.postScore(boardName, value);
 		#end
 	}
 	
 	public static function newgroundsShowScore(boardName:String)
 	{
-		#if(flash)
+		#if flash
 		if(scoreBrowser == null)
 		{
 			scoreBrowser = new com.newgrounds.components.ScoreBrowser();
@@ -3872,7 +3872,7 @@ class Script
 		
 	private static function newgroundsHelper(event:openfl.events.MouseEvent)
 	{
-		#if(flash)
+		#if flash
 		Engine.engine.root.parent.removeChild(scoreBrowser);
 		#end
 	}
@@ -3883,21 +3883,21 @@ class Script
 
 	public static function kongregateInitAPI()
 	{
-		#if(flash && !air)
+		#if flash
 		com.stencyl.utils.Kongregate.initAPI();
 		#end
 	}
 	
 	public static function kongregateSubmitStat(name:String, stat:Float) 
 	{
-		#if(flash && !air)
+		#if flash
 		com.stencyl.utils.Kongregate.submitStat(name, stat);
 		#end
 	}
 	
 	public static function kongregateIsGuest():Bool
 	{
-		#if(flash && !air)
+		#if flash
 		return com.stencyl.utils.Kongregate.isGuest();
 		#else
 		return true;
@@ -3906,7 +3906,7 @@ class Script
 	
 	public static function kongregateGetUsername():String
 	{
-		#if(flash && !air)
+		#if flash
 		return com.stencyl.utils.Kongregate.getUsername();
 		#else
 		return "Guest";
@@ -3915,7 +3915,7 @@ class Script
 	
 	public static function kongregateGetUserID():Int
 	{
-		#if(flash && !air)
+		#if flash
 		return com.stencyl.utils.Kongregate.getUserID();
 		#else
 		return 0;
@@ -3932,16 +3932,12 @@ class Script
 	//Does not happen immediately.
 	public static function loadAtlas(atlasID:Int)
 	{
-		//#if mobile
 		engine.atlasesToLoad.set(atlasID, atlasID);
-		//#end
 	}
 	
 	public static function unloadAtlas(atlasID:Int)
 	{
-		//#if mobile
 		engine.atlasesToUnload.set(atlasID, atlasID);
-		//#end
 	}
 	
 	public static function atlasIsLoaded(atlasID:Int):Bool
@@ -4049,14 +4045,14 @@ class Script
 	
 	public static function gameCenterInitialize():Void 
 	{
-		#if (mobile && !android && !air)
+		#if ios
 		GameCenter.initialize();
 		#end	
 	}
 	
 	public static function gameCenterIsAuthenticated():Bool 
 	{
-		#if (mobile && !android && !air)
+		#if ios
 		return GameCenter.isAuthenticated();
 		#else
 		return false;
@@ -4065,7 +4061,7 @@ class Script
 	
 	public static function gameCenterGetPlayerName():String 
 	{
-		#if (mobile && !android && !air)
+		#if ios
 		return GameCenter.getPlayerName();
 		#else
 		return "None";
@@ -4074,7 +4070,7 @@ class Script
 	
 	public static function gameCenterGetPlayerID():String 
 	{
-		#if (mobile && !android && !air)
+		#if ios
 		return GameCenter.getPlayerID();
 		#else
 		return "None";
@@ -4083,42 +4079,42 @@ class Script
 	
 	public static function gameCenterShowLeaderboard(categoryID:String):Void 
 	{
-		#if (mobile && !android && !air)
+		#if ios
 		GameCenter.showLeaderboard(categoryID);
 		#end	
 	}
 	
 	public static function gameCenterShowAchievements():Void 
 	{
-		#if (mobile && !android && !air)
+		#if ios
 		GameCenter.showAchievements();
 		#end	
 	}
 	
 	public static function gameCenterSubmitScore(score:Float, categoryID:String):Void 
 	{
-		#if (mobile && !android && !air)
+		#if ios
 		GameCenter.reportScore(categoryID, Std.int(score));
 		#end	
 	}
 	
 	public static function gameCenterSubmitAchievement(achievementID:String, percent:Float):Void 
 	{
-		#if (mobile && !android && !air)
+		#if ios
 		GameCenter.reportAchievement(achievementID, percent);
 		#end	
 	}
 	
 	public static function gameCenterResetAchievements():Void 
 	{
-		#if (mobile && !android && !air)
+		#if ios
 		GameCenter.resetAchievements();
 		#end	
 	}
 	
 	public static function gameCenterShowBanner(title:String, msg:String):Void 
 	{
-		#if (mobile && !android && !air)
+		#if ios
 		GameCenter.showAchievementBanner(title, msg);
 		#end	
 	}
@@ -4130,7 +4126,7 @@ class Script
 	
 	public static function purchasesAreInitialized():Bool 
 	{
-		#if (mobile && cpp && !air)
+		#if mobile
 		return Purchases.canBuy();
 		#else
 		return false;
@@ -4139,21 +4135,21 @@ class Script
 	
 	public static function purchasesRestore():Void 
 	{
-		#if (mobile && cpp && !air)
+		#if mobile
 		Purchases.restorePurchases();
 		#end	
 	}
 	
 	public static function purchasesBuy(productID:String):Void 
 	{
-		#if (mobile && cpp)
+		#if mobile
 		Purchases.buy(productID);
 		#end	
 	}
 	
 	public static function purchasesHasBought(productID:String):Bool 
 	{
-		#if (mobile && cpp && !air)
+		#if mobile
 		return Purchases.hasBought(productID);
 		#else
 		return false;
@@ -4162,7 +4158,7 @@ class Script
 	
 	public static function purchasesGetTitle(productID:String):String 
 	{
-		#if (mobile && cpp && !air)
+		#if mobile
 		return Purchases.getTitle(productID);
 		#else
 		return "";
@@ -4171,7 +4167,7 @@ class Script
 	
 	public static function purchasesGetDescription(productID:String):String 
 	{
-		#if (mobile && cpp && !air)
+		#if mobile
 		return Purchases.getDescription(productID);
 		#else
 		return "";
@@ -4180,7 +4176,7 @@ class Script
 	
 	public static function purchasesGetPrice(productID:String):String 
 	{
-		#if (mobile && cpp && !air)
+		#if mobile
 		return Purchases.getPrice(productID);
 		#else
 		return "";
@@ -4189,7 +4185,7 @@ class Script
 	
 	public static function purchasesRequestProductInfo(productIDlist:Array<Dynamic>):Void 
   	{
-    	#if (mobile && cpp && !air)
+    	#if mobile
       	Purchases.requestProductInfo(productIDlist);
     	#end
 	}
@@ -4198,7 +4194,7 @@ class Script
 	
 	public static function purchasesUse(productID:String):Void 
 	{
-		#if (mobile && cpp && !air)
+		#if mobile
 		Purchases.use(productID);
 		#end	
 	}
@@ -4206,14 +4202,14 @@ class Script
 	//For V3 Google IAP
 	public static function purchasesGoogleConsume(productID:String):Void 
 	{
-		#if (mobile && cpp && !air)
+		#if mobile
 		Purchases.consume(productID);
 		#end	
 	}
 	
 	public static function purchasesGetQuantity(productID:String):Int 
 	{
-		#if (mobile && cpp && !air)
+		#if mobile
 		return Purchases.getQuantity(productID);
 		#else
 		return 0;
@@ -4226,42 +4222,42 @@ class Script
 	
 	public static function showAlert(title:String, msg:String)
 	{
-		#if(mobile && !air)
+		#if mobile
 		Native.showAlert(title, msg);
 		#end
 	}
 	
 	public static function vibrate(time:Float = 1)
 	{
-		#if(mobile && !air)
+		#if mobile
 		Native.vibrate(time);
 		#end
 	}
 	
 	public static function showKeyboard()
 	{
-		#if(mobile && !air)
+		#if mobile
 		Native.showKeyboard();
 		#end
 	}
 	
 	public static function hideKeyboard()
 	{
-		#if(mobile && !air)
+		#if mobile
 		Native.hideKeyboard();
 		#end
 	}
 	
 	public static function setKeyboardText(text:String)
 	{
-		#if(mobile && !air)
+		#if mobile
 		Native.setKeyboardText(text);
 		#end
 	}
 	
 	public static function setIconBadgeNumber(n:Int)
 	{
-		#if(mobile && !air)
+		#if mobile
 		Native.setIconBadgeNumber(n);
 		#end
 	}
@@ -4315,7 +4311,7 @@ class Script
 		{
 			trace("Could not exit game: " + e.message); 
 		}
-		#elseif !js
+		#elseif sys
 		Sys.exit(0);
 		#end
 	}

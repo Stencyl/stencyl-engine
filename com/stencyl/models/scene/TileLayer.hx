@@ -33,7 +33,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 	public var numCols:Int;
 
 	//Internal/Temporary stuff
-	#if(!use_tilemap)
+	#if !use_tilemap
 	public var bitmapData:BitmapData;
 	private var flashPoint:Point;
 	#else
@@ -60,14 +60,14 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 		this.numCols = numCols;
 		clear();
 		
-		#if(!use_tilemap)
+		#if !use_tilemap
 		flashPoint = new Point();
 		#else
 		tilemaps = new Map<FLTileset, Tilemap>();
 		#end
 	}
 	
-	#if (!use_tilemap)
+	#if !use_tilemap
 	public function initBitmap()
 	{
 		if(!noTiles)
@@ -104,7 +104,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 	
 	public function clear()
 	{
-		#if (!use_tilemap)
+		#if !use_tilemap
 		
 		if(bitmapData != null)
 			clearBitmap();
@@ -137,7 +137,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 	
 	public function setPosition(x:Int, y:Int)
 	{
-		#if (!use_tilemap)
+		#if !use_tilemap
 		this.x = x - x % (scene.tileWidth * Engine.SCALE);
 		this.y = y - y % (scene.tileHeight * Engine.SCALE);
 		#else
@@ -195,7 +195,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 		{
 			noTiles = false;
 
-			#if (!use_tilemap)
+			#if !use_tilemap
 			if(bitmapData == null)
 				initBitmap();
 			#end
@@ -299,7 +299,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 			return;
 		}
 		
-		#if (use_tilemap)
+		#if use_tilemap
 		
 		for(tm in tilemaps)
 			tm.removeTiles();
@@ -381,7 +381,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 					t = t.autotiles[autotileData[y][x]];
 				}
 				
-				#if (!use_tilemap)
+				#if !use_tilemap
 				//If animated or an autotile, used animated tile pixels
 				var pixels = (t.pixels == null) ? t.parent.pixels : t.pixels;
 				
@@ -420,7 +420,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 
 	public function updateScale():Void
 	{
-		#if (!use_tilemap)
+		#if !use_tilemap
 		
 		clearBitmap();
 		initBitmap();
@@ -436,7 +436,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 		#end
 	}
 
-	#if (use_tilemap)
+	#if use_tilemap
 	private function getTilemap(fltileset:FLTileset):Tilemap
 	{
 		if(!tilemaps.exists(fltileset))

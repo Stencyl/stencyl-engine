@@ -189,7 +189,7 @@ class Animation
 		if(frames[0].readable)
 			return true;
 		
-		#if (stencyltools)
+		#if stencyltools
 		/*com.stencyl.utils.ToolsetInterface.instance.sendData
 		(
 			["Content-Type" => "Issue",
@@ -206,7 +206,7 @@ class Animation
 		return false;
 	}
 	
-	#if (use_actor_tilemap)
+	#if use_actor_tilemap
 	public var tilesetInitialized = false;
 	public var tileset:DynamicTileset = null;
 	public var frameIndexOffset:Int;

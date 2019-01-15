@@ -10,15 +10,12 @@ import lime.ui.JoystickHatPosition;
 #end
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
+import openfl.events.TouchEvent;
 import openfl.display.DisplayObject;
 import openfl.geom.Point;
-
-//#if !js
-import openfl.events.TouchEvent;
 import openfl.ui.Multitouch;
-//#end
 
-#if (cpp || neko)
+#if cpp
 import openfl.sensors.Accelerometer;
 #end
 
@@ -50,7 +47,7 @@ class Input
 	public static var accelZ:Float;
 	
 	//gestures state
-	#if !js
+	#if !html5
 	public static var multiTouchPoints:Map<String,TouchEvent>;
 	#end
 	
@@ -96,7 +93,7 @@ class Input
 		Engine.stage.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 		Engine.stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 		Engine.stage.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
-		#if js
+		#if html5
 		Engine.stage.removeEventListener(TouchEvent.TOUCH_BEGIN, onMouseDown);
 		Engine.stage.removeEventListener(TouchEvent.TOUCH_END, onMouseUp);
 		#end
@@ -107,12 +104,12 @@ class Input
 		Engine.stage.removeEventListener(MouseEvent.MIDDLE_MOUSE_UP, onMiddleMouseUp);
 		#end
 
-		#if(android)
+		#if android
 		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, ignoreBackKey);
 		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_UP, ignoreBackKey);
 		#end
 		
-		#if !js
+		#if !html5
 		if(Multitouch.supportsTouchEvents)
 		{
 			Engine.stage.removeEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
@@ -133,7 +130,7 @@ class Input
 		mouseWheelDelta = 0;
 		accelX = accelY = accelZ = 0;
 		
-		#if !js
+		#if !html5
 		multiTouchPoints = null;
 		#end
 
@@ -424,7 +421,7 @@ class Input
 			Engine.stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 2);
 			Engine.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false,  2);
 			Engine.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 2);
-			#if js
+			#if html5
 			Engine.stage.addEventListener(TouchEvent.TOUCH_BEGIN, onMouseDown);
 			Engine.stage.addEventListener(TouchEvent.TOUCH_END, onMouseUp);
 			#end
@@ -436,7 +433,7 @@ class Input
 			#end
 
 			//Disable default behavior for Android Back Button
-			#if(android)
+			#if android
 			if(Config.disableBackButton)
 			{
 				Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, ignoreBackKey);
@@ -444,7 +441,7 @@ class Input
 			}
 			#end
 			
-			#if !js
+			#if !html5
 			if(Multitouch.supportsTouchEvents)
 	        {
 	        	multiTouchPoints = new Map<String,TouchEvent>();
@@ -515,7 +512,7 @@ class Input
 			_swipeDirection = -1;
 		}
 		
-		#if (cpp || neko)
+		#if cpp
 		if(Accelerometer.isSupported)
 		{
 			accelX = Accelerometer.currentX;
@@ -947,7 +944,7 @@ class Input
 	}
 	#end
 
-	#if !js
+	#if !html5
 	private static function onTouchBegin(e:TouchEvent)
 	{
 		Engine.invokeListeners2(Engine.engine.whenMTStartListeners, e);

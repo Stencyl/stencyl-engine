@@ -39,7 +39,7 @@ class Sound extends Resource
 		this.ext = ext;
 		this.atlasID = atlasID;
 
-		#if(mobile || desktop || js)
+		#if (mobile || desktop || html5)
 		this.ext = "ogg";
 		#else
 		this.ext = "mp3";

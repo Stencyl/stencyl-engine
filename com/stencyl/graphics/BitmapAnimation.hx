@@ -35,7 +35,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		
 		this.model = model;
 		
-		#if js
+		#if html5
 		x = Math.round(-model.frameWidth / 2 * Engine.SCALE);
 		y = Math.round(-model.frameHeight / 2 * Engine.SCALE);
 		#else
@@ -246,7 +246,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	public function framesUpdated():Void
 	{
 		//html5 rounds strangely when pixel snapping
-		#if js
+		#if html5
 		x = Math.round(-model.frameWidth / 2 * Engine.SCALE);
 		y = Math.round(-model.frameHeight / 2 * Engine.SCALE);
 		#else

@@ -1,6 +1,6 @@
 package com.stencyl.graphics;
 
-#if(use_actor_tilemap)
+#if use_actor_tilemap
 
 import com.stencyl.models.actor.Animation;
 import com.stencyl.models.Actor;

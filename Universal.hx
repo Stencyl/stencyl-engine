@@ -48,7 +48,7 @@ class Universal extends Sprite
 		window.stage.align = StageAlign.TOP_LEFT;
 		window.stage.scaleMode = StageScaleMode.NO_SCALE;
 		
-		#if(mobile && !air)
+		#if mobile
 		window.stage.opaqueBackground = 0x000000;
 		#end
 	}
@@ -74,7 +74,7 @@ class Universal extends Sprite
 	{
 		//Newgrounds and other APIs
 		
-		#if(flash)
+		#if flash
 		
 		if(APIKeys.newgroundsID != "")
         {
@@ -102,7 +102,7 @@ class Universal extends Sprite
 			StageDisplayState.FULL_SCREEN_INTERACTIVE :
 			StageDisplayState.NORMAL;
 		
-		#if (!flash)
+		#if !flash
 		stage.__setLogicalSize (0, 0);
 		#end
 		
@@ -389,12 +389,10 @@ class Universal extends Sprite
 			return 2;
 		}
 		
-		//#if(android || flash || desktop)
 		else if(checkWidth >= x15 && checkHeight >= y15)
 		{
 			return 1.5;
 		}
-		//#end
 		
 		else
 		{

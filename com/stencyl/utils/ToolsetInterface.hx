@@ -1,4 +1,4 @@
-#if (stencyltools)
+#if stencyltools
 package com.stencyl.utils;
 
 import haxe.io.Bytes;
@@ -83,7 +83,7 @@ class ToolsetInterface
 	@:access(openfl.net.Socket)
 	public static function preloadedUpdate()
 	{
-		#if(!flash)
+		#if !flash
 		instance.socket.this_onEnterFrame(new Event(Event.ENTER_FRAME));
 		#end
 	}

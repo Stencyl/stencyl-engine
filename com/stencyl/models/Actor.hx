@@ -23,7 +23,7 @@ import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.utils.ByteArray;
 
-#if (flash || cpp || neko)
+#if (flash || cpp)
 import openfl.Memory;
 #end
 
@@ -83,13 +83,13 @@ import com.stencyl.models.collision.Mask;
 
 import haxe.CallStack;
 
-#if (use_actor_tilemap)
+#if use_actor_tilemap
 typedef ActorAnimation = SheetAnimation;
 #else
 typedef ActorAnimation = BitmapAnimation;
 #end
 
-class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
+class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 {	
 	//*-----------------------------------------------
 	//* Globals
@@ -110,7 +110,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	//Used for recycled actors to tell them apart
 	public var createTime:Float;
 	
-	#if(use_actor_tilemap)
+	#if use_actor_tilemap
 	public var name:String;
 	#end
 	
@@ -568,7 +568,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		{
 			if(shape != null && Std.is(shape, com.stencyl.models.collision.Mask))
 			{
-				#if(!use_actor_tilemap)
+				#if !use_actor_tilemap
 				//TODO: Very inefficient for CPP/mobile - can we force width/height a different way?
 				var dummy = new Bitmap(new BitmapData(1, 1, true, 0));
 				dummy.x = width;
@@ -613,7 +613,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			anim.visible = false;
 		}
 		
-		#if(!use_actor_tilemap)
+		#if !use_actor_tilemap
 		Utils.removeAllChildren(this);
 		#else
 		Utils.removeAllTiles(this);
@@ -1096,7 +1096,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			
 			if(currAnimation != null)
 			{
-				#if (!use_actor_tilemap)
+				#if !use_actor_tilemap
 				removeChild(currAnimation);
 				#else
 				removeTile(currAnimation);
@@ -1215,7 +1215,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			#end
 			currAnimation.visible = drawActor;
 
-			#if (!use_actor_tilemap)
+			#if !use_actor_tilemap
 			addChild(newAnimation);
 			#else
 			addTile(newAnimation);
@@ -1432,7 +1432,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 
 	public function removeAttachedImages()
 	{
-		#if (!use_actor_tilemap)
+		#if !use_actor_tilemap
 		for(b in attachedImages)
 		{
 			b.cacheParentAnchor = Utils.zero;
@@ -1786,7 +1786,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			transformMatrix.translate(drawX * Engine.SCALE, drawY * Engine.SCALE);
 		}
 		
-		#if(!use_actor_tilemap)
+		#if !use_actor_tilemap
 		if(transformObj == null)
 		{
 			transformObj = transform;
@@ -2400,7 +2400,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	
 	public function moveToBottom()
 	{
-		#if(use_actor_tilemap)
+		#if use_actor_tilemap
 		this.parent.setTileIndex(this, 0);
 		#else
 		this.parent.setChildIndex(this, 0);
@@ -2409,7 +2409,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	
 	public function moveToTop()
 	{
-		#if(use_actor_tilemap)
+		#if use_actor_tilemap
 		this.parent.setTileIndex(this, this.parent.numTiles-1);
 		#else
 		this.parent.setChildIndex(this, this.parent.numChildren-1);
@@ -2418,7 +2418,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	
 	public function moveDown()
 	{
-		#if(!use_actor_tilemap)
+		#if !use_actor_tilemap
 		var index:Int = this.parent.getChildIndex(this);
 		if (index > 0)
 		{
@@ -2435,7 +2435,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	
 	public function moveUp()
 	{
-		#if(!use_actor_tilemap)
+		#if !use_actor_tilemap
 		var index:Int = this.parent.getChildIndex(this);
 		var max:Int = this.parent.numChildren-1;
 		if (index < max)
@@ -2454,7 +2454,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	
 	public function getZIndex():Int
 	{
-		#if(!use_actor_tilemap)
+		#if !use_actor_tilemap
 		return this.parent.getChildIndex(this);
 		#else
 		return this.parent.getTileIndex(this);
@@ -2463,7 +2463,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	
 	public function setZIndex(zindex:Int)
 	{
-		#if(!use_actor_tilemap)
+		#if !use_actor_tilemap
 		var max:Int = this.parent.numChildren-1;
 		#else
 		var max:Int = this.parent.numTiles-1;
@@ -2476,7 +2476,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		{
 			zindex = 0;
 		}
-		#if(!use_actor_tilemap)
+		#if !use_actor_tilemap
 		this.parent.setChildIndex(this, zindex);
 		#else
 		this.parent.setTileIndex(this, zindex);
@@ -3490,7 +3490,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 			var x:Float = 0;
 			var y:Float = 0;
 			
-			#if (use_actor_tilemap)
+			#if use_actor_tilemap
 			if(g.drawActor)
 			{
 				x = g.x - Engine.cameraX;
@@ -3586,14 +3586,14 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 	
 	public function setBlendMode(blendMode:BlendMode)
 	{
-		#if (!use_actor_tilemap)
+		#if !use_actor_tilemap
 		this.blendMode = blendMode;
 		#end
 	}
 	
 	public function resetBlendMode()
 	{
-		#if (!use_actor_tilemap)
+		#if !use_actor_tilemap
 		this.blendMode = BlendMode.NORMAL;
 		#end
 	}
@@ -3895,7 +3895,7 @@ class Actor extends #if (use_actor_tilemap) TileContainer #else Sprite #end
 		killLeaveScreen = true;
 	}
 	
-	#if(!use_actor_tilemap) override #end public function toString():String
+	#if !use_actor_tilemap override #end public function toString():String
 	{
 		if(name == null)
 		{

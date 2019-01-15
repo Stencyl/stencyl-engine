@@ -2,8 +2,6 @@ package com.stencyl;
 
 #if cpp
 import cpp.vm.Gc;
-#elseif neko
-import neko.vm.Gc;
 #end
 
 import de.polygonal.ds.IntHashTable;
@@ -308,7 +306,7 @@ class Engine
 	public var atlasesToLoad:Map<Int,Int>;
 	public var atlasesToUnload:Map<Int,Int>;
 	
-	#if (use_actor_tilemap)
+	#if use_actor_tilemap
 	public var actorTilesets:Array<DynamicTileset>;
 	public var loadedAnimations:Array<Animation>;
 	public var nextTileset = 0;
@@ -413,7 +411,7 @@ class Engine
 		stage.removeEventListener(Event.ENTER_FRAME, engine.onUpdate);
 		stage.removeEventListener(Event.DEACTIVATE, engine.onFocusLost);
 		stage.removeEventListener(Event.ACTIVATE, engine.onFocus);
-		#if(!flash)
+		#if !flash
 		stage.removeEventListener(Event.RESIZE, engine.onWindowResize);
 		stage.window.onRestore.remove(engine.onWindowRestore);
 		stage.window.onMaximize.remove(engine.onWindowMaximize);
@@ -494,7 +492,7 @@ class Engine
 		debug = false;
 		debugDrawer = null;
 		
-		#if (use_actor_tilemap)
+		#if use_actor_tilemap
 		resetActorTilesets();
 		#end
 	}
@@ -503,7 +501,7 @@ class Engine
 	//* Full Screen Shaders - C++
 	//*-----------------------------------------------
 	
-	#if(!flash)
+	#if !flash
 	private var shader:PostProcess;
 	public var shaderLayer:Sprite;
 	public var shaders:Array<PostProcess>;
@@ -657,7 +655,7 @@ class Engine
 			stats.y = 0;
 		}
 
-		#if(!flash)
+		#if !flash
 		resetShaders();
 		#end
 		
@@ -667,7 +665,7 @@ class Engine
 			invokeListeners(screenSizeListeners);
 	}
 	
-	#if (use_actor_tilemap)
+	#if use_actor_tilemap
 	public static function resetActorTilesets()
 	{
 		for(ts in engine.actorTilesets)
@@ -690,7 +688,7 @@ class Engine
 
 	public function new(root:Universal) 
 	{
-		#if(!flash)
+		#if !flash
 		com.stencyl.graphics.GLUtil.initialize();
 		
 		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
@@ -723,14 +721,14 @@ class Engine
 		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
 		stage.addEventListener(Event.DEACTIVATE, onFocusLost);
 		stage.addEventListener(Event.ACTIVATE, onFocus);
-		#if(!flash)
+		#if !flash
 		stage.addEventListener(Event.RESIZE, onWindowResize);
 		stage.window.onRestore.add(onWindowRestore);
 		stage.window.onMaximize.add(onWindowMaximize);
 		stage.window.onFullscreen.add(onWindowFullScreen);
 		#end
 		
-		#if (use_actor_tilemap)
+		#if use_actor_tilemap
 		actorTilesets = new Array<DynamicTileset>();
 		loadedAnimations = new Array<Animation>();
 		#end
@@ -742,7 +740,7 @@ class Engine
 		#end
 	}
 	
-	#if(flash)
+	#if flash
 	public function addShader(pp:PostProcess, addToDisplayTree:Bool = true) {}
 	public function clearShaders() {}
 	public function toggleShadersForHUD() {} 
@@ -826,7 +824,7 @@ class Engine
 		screenWidthHalf = Std.int(stageWidth/2);
 		screenHeightHalf = Std.int(stageHeight/2);
 		
-		#if (mobile && !air)
+		#if mobile
 		if(!Config.autorotate)
 		{
 			//These are no longer implemented in OpenFL.
@@ -845,14 +843,14 @@ class Engine
 		Data.get();
 		GameModel.get().loadScenes();
 
-		#if (cpp || neko)
+		#if cpp
 		{
 			for(atlas in GameModel.get().atlases)
 			{
 				if(atlas.active)
 					atlasesToLoad.set(atlas.ID, atlas.ID);
-				}
 			}
+		}
 		#end
 		
 		g = new G();
@@ -899,7 +897,7 @@ class Engine
 		debugLayer = new Sprite();
 		root.addChild(debugLayer);
 		
-		#if(!flash)
+		#if !flash
 		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
 		{
 			root.addChild(shaderLayer);
@@ -915,7 +913,7 @@ class Engine
 		//Profiler
 		setStatsVisible(Config.showConsole);
 		
-		#if (flash)
+		#if flash
 		movieClip = new MovieClip();
 		movieClip.mouseEnabled = false;
 		movieClip.mouseChildren = false;
@@ -937,7 +935,7 @@ class Engine
 		}
 		
 		//Purchases
-		#if (mobile)
+		#if mobile
 		Purchases.initialize(#if android APIKeys.androidPublicKey #end);
 		#end
 		
@@ -994,13 +992,13 @@ class Engine
 			}
 		}
 		
-		#if (use_actor_tilemap)
+		#if use_actor_tilemap
 		resetActorTilesets();
 		#end
 		
 		scene.load();
 
-		#if(!flash)
+		#if !flash
 		{
 			//figure out which atlases we want for this scene
 			var desiredAtlasList = new Map<Int,Int>();
@@ -1041,7 +1039,7 @@ class Engine
 				}
 			}
 
-			#if (cpp || neko)
+			#if cpp
 			Gc.run(true);
 			#end
 			
@@ -1156,7 +1154,7 @@ class Engine
 		initBehaviors(behaviors, scene.behaviorValues, this, this, true);			
 		initActorScripts();
 		
-		#if (cpp || neko)
+		#if cpp
 		Gc.run(true);
 		#end
 	}
@@ -2130,7 +2128,7 @@ class Engine
 		//Be gentle and don't error out if it's not in here (in case of a double-remove)
 		if(layer.actorContainer.contains(a))
 		{
-			#if (use_actor_tilemap)
+			#if use_actor_tilemap
 			layer.actorContainer.removeTile(a);
 			#else
 			layer.actorContainer.removeChild(a);
@@ -2167,7 +2165,7 @@ class Engine
 			removeActorFromLayer(a, a.layer);
 		}
 		
-		#if (use_actor_tilemap)
+		#if use_actor_tilemap
 		layer.actorContainer.addTile(a);
 		#else
 		layer.actorContainer.addChild(a);
@@ -3305,7 +3303,7 @@ class Engine
 			enter.draw(null);
 		}
 		
-		#if(!flash)
+		#if !flash
 		if(shaders != null && shaders.length > 0)
 		{
 			//Only need to capture the first shader in the chain
@@ -3482,7 +3480,7 @@ class Engine
 	public function getNumberOfActorsWithinLayer(layer:RegularLayer):Int
 	{
 		if(Std.is(layer, Layer))
-			#if (use_actor_tilemap)
+			#if use_actor_tilemap
 			return cast(layer, Layer).actorContainer.numTiles;
 			#else
 			return cast(layer, Layer).actorContainer.numChildren;
