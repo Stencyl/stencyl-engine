@@ -349,7 +349,7 @@ class ToolsetInterface
 				"Class" => pos.className,
 				"Method" => pos.methodName,
 				"Line" => ""+pos.lineNumber],
-				v
+				"" + v
 			);
 		}
 		else
