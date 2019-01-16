@@ -2414,7 +2414,7 @@ class Script
 		// The new method grabs the actual screen height and width and goes from there.
 
 		var img:BitmapData = new BitmapData(Std.int(getStageWidth()) , Std.int(getStageHeight()));
-		img.draw(openfl.Lib.current.stage);
+		img.draw(openfl.Lib.current.stage, null, null, null, null, Config.antialias);
 		return img;
 	}
 	
