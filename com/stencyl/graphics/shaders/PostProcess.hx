@@ -255,7 +255,15 @@ class PostProcess extends DisplayObject
 				var u = changedUniforms.pop();
 				if (Std.is(u.value, Array))
 				{
+					if (u.value.length == 0)
+					{
+						continue;
+					}
+					#if (html5)
 					gl.uniform1fv(u.id, new Float32Array(null, u.value));
+					#else
+					gl.uniform1fv(u.id, new Float32Array(null, null, u.value));
+					#end
 				}
 				else
 				{
