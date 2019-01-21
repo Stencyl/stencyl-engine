@@ -980,7 +980,7 @@ class Control
 	public var pressed:Bool;
 	public var released:Bool;
 	public var down:Bool;
-	public var pressure:Float;
+	public var pressure:Float = 0;
 	
 	public function new(name:String)
 	{
