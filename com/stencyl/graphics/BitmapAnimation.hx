@@ -170,15 +170,8 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	public function set_filter(filter:Array<BitmapFilter>)
 	{
 		this.filter = filter;
-		if(filteredFrames == null)
-		{
-			filteredFrames = [for (i in 0...numFrames) false];
-			frames = [for (i in 0...numFrames) null];
-		}
-		else
-		{
-			for (i in 0...numFrames) filteredFrames[i] = false;
-		}
+		filteredFrames = [for (i in 0...numFrames) false];
+		frames = [for (i in 0...numFrames) null];
 		updateBitmap();
 		return filter;
 	}
