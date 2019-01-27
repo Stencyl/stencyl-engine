@@ -2721,6 +2721,8 @@ class Script
 	
 	public static function clearImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
+		#if flash
+		
 		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
@@ -2745,6 +2747,33 @@ class Script
 		dummyPoint.y = 0;
 		
 		dest.copyPixels(result, dest.rect, dummyPoint);
+		
+		#else
+		
+		var w:Int = Std.int(mask.width);
+		var h:Int = Std.int(mask.height);
+		var maskPixels = mask.getPixels(mask.rect);
+		var destRect = new Rectangle(x, y, w, h);
+		var destPixels = dest.getPixels(destRect);
+		var maskAlpha:Int;
+		var destAlpha:Int;
+		var finalAlpha:Int;
+
+		for (i in 0...(w * h))
+		{
+			maskPixels.position = i * 4;
+			destPixels.position = i * 4;
+			maskAlpha = maskPixels.readUnsignedByte();
+			destAlpha = destPixels.readUnsignedByte();
+			finalAlpha = ((256 - maskAlpha) * destAlpha) >> 8;
+			destPixels.position = i * 4;
+			destPixels.writeByte(finalAlpha);
+		}
+		maskPixels.position = 0;
+		destPixels.position = 0;
+		dest.setPixels(destRect, destPixels);
+		
+		#end
 	}
 	
 	public static function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
