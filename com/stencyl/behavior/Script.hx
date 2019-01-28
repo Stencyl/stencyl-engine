@@ -2750,9 +2750,42 @@ class Script
 		
 		#else
 		
-		var w:Int = Std.int(mask.width);
-		var h:Int = Std.int(mask.height);
-		var maskPixels = mask.getPixels(mask.rect);
+		var w:Int = mask.width;
+		var h:Int = mask.height;
+		var maskX = 0;
+		var maskY = 0;
+
+		if (x < 0)
+		{
+			w = w + x;
+			maskX = maskX - x;
+			x = 0;
+		}
+		else if (x > dest.width - w)
+		{
+			w = w - (x - (dest.width - w));
+			x = dest.width - w;
+		}
+		
+		if (y < 0)
+		{
+			h = h + y;
+			maskY = maskY - y;
+			y = 0;
+		}
+		else if (y > dest.height - h)
+		{
+			h = h - (y - (dest.height - h));
+			y = dest.height - h;
+		}
+
+		if (w <= 0 || h <= 0)
+		{
+			return;
+		}
+		
+		var maskRect = new Rectangle(maskX, maskY, w, h);
+		var maskPixels = mask.getPixels(maskRect);
 		var destRect = new Rectangle(x, y, w, h);
 		var destPixels = dest.getPixels(destRect);
 		var maskAlpha:Int;
