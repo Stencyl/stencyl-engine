@@ -2721,13 +2721,13 @@ class Script
 	
 	public static function clearImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
-		#if flash
-		
 		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
 			y = Std.int(y * Engine.SCALE);
 		}
+		
+		#if flash
 		
 		//Inspired by http://franto.com/inverse-masking-disclosed/
 		var temp = new Sprite();
