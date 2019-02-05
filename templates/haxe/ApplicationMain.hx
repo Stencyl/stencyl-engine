@@ -110,7 +110,7 @@ using StringTools;
 		{
 			var startTime = Timer.stamp();
 			var tryTimeout = function() {
-				if(!ToolsetInterface.connected && Timer.stamp() - startTime > 2)
+				if(!ToolsetInterface.connected && Timer.stamp() - startTime > #if flash 5 #else 2 #end)
 				{
 					ToolsetInterface.cancelConnection();
 				}
