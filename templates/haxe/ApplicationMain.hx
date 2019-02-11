@@ -10,6 +10,7 @@ import com.stencyl.utils.Utils;
 import com.stencyl.utils.ToolsetInterface;
 #end
 
+import haxe.CallStack;
 import haxe.Timer;
 
 import lime.system.System;
@@ -18,14 +19,11 @@ import openfl.Lib;
 import openfl.display.Application;
 import openfl.display.Preloader;
 import openfl.display.StageDisplayState;
+import openfl.events.UncaughtErrorEvent;
+import openfl.events.ErrorEvent;
+import openfl.errors.Error;
 
 import scripts.StencylPreloader;
-
-#if (flash || html5)
-import flash.events.UncaughtErrorEvent;
-import flash.events.ErrorEvent;
-import flash.errors.Error;
-#end
 
 using StringTools;
 
@@ -234,12 +232,10 @@ using StringTools;
 		
 		#end
 		
-		#if (flash || html5)
 		if(!Config.releaseMode)
 		{
 			Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
 		}
-		#end
 		
 		Universal.initWindow(app.window);
 		universal = new Universal();
@@ -289,7 +285,6 @@ using StringTools;
 		#end
 	}
 
-	#if (flash || html5)
 	static function uncaughtErrorHandler(event:UncaughtErrorEvent):Void
 	{
 		#if (html5 && stencyltools)
@@ -299,7 +294,7 @@ using StringTools;
 			trace(event.error.stack);
 		}
 		
-		#elseif flash
+		#else
 		
 		if (Std.is(event.error, Error))
 		{
@@ -315,6 +310,12 @@ using StringTools;
 		}
 		
 		#end
+		
+		#if (debug && stencyltools && cpp)
+		
+		trace(CallStack.toString(CallStack.exceptionStack()));
+		ToolsetInterface.preloadedUpdate();
+		
+		#end
 	}
-	#end
 }
