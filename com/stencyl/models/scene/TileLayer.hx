@@ -350,6 +350,16 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 					px += tw;
 					continue;
 				}
+				
+				#if debug
+				if(!t.parent.graphicsLoaded)
+				{
+					trace("Warning: atlas unloaded for tileset \"" + t.parent.name + "\"");
+					x++;
+					px += tw;
+					continue;
+				}
+				#end
 
 				if(cacheSource.get(t.parent.ID * TILESET_CACHE_MULTIPLIER + t.tileID) == null || t.updateSource)
 				{
