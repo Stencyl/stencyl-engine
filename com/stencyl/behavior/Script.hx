@@ -2757,7 +2757,15 @@ class Script
 
 		if (x < 0)
 		{
-			w = w + x;
+			if (x > dest.width - w)
+			{
+				w = dest.width;
+			}
+			else
+			{
+				w = w + x;
+			}
+			
 			maskX = maskX - x;
 			x = 0;
 		}
@@ -2769,7 +2777,15 @@ class Script
 		
 		if (y < 0)
 		{
-			h = h + y;
+			if (y > dest.height - h)
+			{
+				h = dest.height;
+			}
+			else
+			{
+				h = h + y;
+			}
+		
 			maskY = maskY - y;
 			y = 0;
 		}
