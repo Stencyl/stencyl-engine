@@ -2550,6 +2550,8 @@ class Script
 		#if !use_actor_tilemap
 		if(img != null)
 		{
+			if(img.parent != null) removeImage(img);
+			
 			//Behind the Actor - Send to the very back.
 			if(pos == 2)
 			{
@@ -2577,6 +2579,8 @@ class Script
 	{
 		if(img != null)
 		{
+			if(img.parent != null) removeImage(img);
+			
 			engine.hudLayer.addChild(img);
 			engine.hudLayer.attachedImages.push(img);
 			img.imgX = x;
@@ -2589,6 +2593,8 @@ class Script
 	{
 		if(img != null)
 		{
+			if(img.parent != null) removeImage(img);
+			
 			//Behind all Actors & Tiles in this layer.
 			if(pos == 2)
 			{
