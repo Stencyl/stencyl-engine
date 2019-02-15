@@ -2372,6 +2372,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		if(!isHUD)
 		{
 			engine.bringToFront(this);
+			moveToTop();
 		}
 	}
 	
@@ -2388,6 +2389,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		if(!isHUD)
 		{
 			engine.sendToBack(this);
+			moveToBottom();
 		}
 	}
 	
