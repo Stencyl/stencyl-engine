@@ -12,6 +12,7 @@ class ActorInstance
 	public var scaleX:Float;
 	public var scaleY:Float;
 	public var layerID:Int;
+	public var orderInLayer:Int;
 	public var angle:Int;
 	public var groupID:Int;
 	public var actorID:Int;
@@ -28,6 +29,7 @@ class ActorInstance
 		scaleX:Float,
 		scaleY:Float,
 		layerID:Int,
+		orderInLayer:Int,
 		angle:Int,
 		groupID:Int,
 		actorID:Int,
@@ -41,6 +43,7 @@ class ActorInstance
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
 		this.layerID = layerID;
+		this.orderInLayer = orderInLayer;
 		this.angle = angle;
 		this.groupID = groupID;
 		

@@ -22,6 +22,7 @@ class MbsActorInstance extends MbsObject
 	public static var x:MbsField;
 	public static var y:MbsField;
 	public static var z:MbsField;
+	public static var orderInLayer:MbsField;
 	public static var snippets:MbsField;
 	
 	public static var MBS_ACTOR_INSTANCE:ComposedType;
@@ -42,6 +43,7 @@ class MbsActorInstance extends MbsObject
 		x = MBS_ACTOR_INSTANCE.createField("x", INTEGER);
 		y = MBS_ACTOR_INSTANCE.createField("y", INTEGER);
 		z = MBS_ACTOR_INSTANCE.createField("z", INTEGER);
+		orderInLayer = MBS_ACTOR_INSTANCE.createField("orderInLayer", INTEGER);
 		snippets = MBS_ACTOR_INSTANCE.createField("snippets", LIST);
 		
 	}
@@ -177,6 +179,16 @@ class MbsActorInstance extends MbsObject
 	public function setZ(_val:Int):Void
 	{
 		data.writeInt(address + z.address, _val);
+	}
+	
+	public function getOrderInLayer():Int
+	{
+		return data.readInt(address + orderInLayer.address);
+	}
+	
+	public function setOrderInLayer(_val:Int):Void
+	{
+		data.writeInt(address + orderInLayer.address, _val);
 	}
 	
 	public function getSnippets():MbsList<MbsSnippet>

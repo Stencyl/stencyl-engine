@@ -1325,6 +1325,15 @@ class Engine
 		{
 			actorsToCreate.push(createActor(instance, true));
 		}
+		for(layer in interactiveLayers)
+		{
+			for(i in 0...layer.actorContainer.numChildren)
+			{
+				var actor:Actor = cast layer.actorContainer.getChildAt(i);
+				var actorInstance = scene.actors.get(actor.ID);
+				layer.actorContainer.swapChildrenAt(i, actorInstance.orderInLayer);
+			}
+		}
 	}
 	
 	private function loadDeferredActors()
@@ -2422,6 +2431,7 @@ class Engine
 			1,
 			1,
 			layerID,
+			-1,
 			0,
 			type.groupID,
 			type.ID,

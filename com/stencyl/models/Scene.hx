@@ -693,6 +693,7 @@ class Scene
 		var scaleY = r.getScaleY();
 		
 		var layerID = r.getZ();
+		var orderInLayer = r.getOrderInLayer();
 		var angle = Std.int(r.getAngle());
 		var groupID = r.getGroupID();
 		var actorID = r.getId();
@@ -729,6 +730,7 @@ class Scene
 			scaleX,
 			scaleY,
 			layerID,
+			orderInLayer,
 			angle,
 			groupID,
 			actorID,
