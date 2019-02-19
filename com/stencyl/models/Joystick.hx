@@ -149,8 +149,6 @@ class Joystick extends Sprite
         
         outerImage.alpha = outerAlphaWhenPressed;
         innerImage.alpha = innerAlphaWhenPressed;
-        
-        isPressed = true;
 
         if(joystickType == fixedCenter)
         {
@@ -174,6 +172,8 @@ class Joystick extends Sprite
                 innerImage.x = x - viewOffsetX - innerImage.width * 0.5;
                 innerImage.y = y - viewOffsetY - innerImage.height * 0.5;
             }
+			
+			isPressed = true;
             
             joystickTouchID = currentTouch;
             joystickDistance = distance / (outerRadius - innerRadius);
@@ -186,6 +186,8 @@ class Joystick extends Sprite
             {
                 return;
             }
+			
+			isPressed = true;
             
             center.x = x - viewOffsetX;
             center.y = y - viewOffsetY;
