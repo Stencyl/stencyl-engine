@@ -3133,7 +3133,7 @@ class Engine
 		}
 	}
 	
-	public function setZoom(m:Float)
+	public function setZoom(m:Float, changeSize:Bool = true)
 	{
 		if (m <= 0)
 		{
@@ -3146,10 +3146,14 @@ class Engine
 		root.scaleX = screenScaleX = m * unzoomedScaleX;
 		root.scaleY = screenScaleY = m * unzoomedScaleY;
 		
-		screenWidth = Std.int(Universal.logicalWidth * (1 / m));
-		screenWidthHalf = Std.int(screenWidth / 2);
-		screenHeight = Std.int(Universal.logicalHeight * (1 / m));
-		screenHeightHalf = Std.int(screenHeight / 2);
+		if (changeSize)
+		{
+			screenWidth = Std.int(Universal.logicalWidth * (1 / m));
+			screenWidthHalf = Std.int(screenWidth / 2);
+			screenHeight = Std.int(Universal.logicalHeight * (1 / m));
+			screenHeightHalf = Std.int(screenHeight / 2);
+		}
+
 		setColorBackground(scene.colorBackground);
 		root.scrollRect = new Rectangle(0, 0, screenWidth * SCALE, screenHeight * SCALE);
 		moveCamera(camera.realX, camera.realY);
