@@ -260,9 +260,6 @@ class Engine
 	public var allActors:IntHashTable<Actor>;
 	public var nextID:Int;
 	
-	//Used to be called actorsToRender
-	public var actorsPerLayer:Map<Int,ActorLayer>;
-	
 	//HashMap<Integer, HashSet<Actor>>
 	public var actorsOfType:Map<Int,Array<Actor>>;
 	
@@ -1092,7 +1089,6 @@ class Engine
 		animatedTiles = new Array<Tile>();
 		allActors = new IntHashTable<Actor>(256); 
 		allActors.reuseIterator = true;
-		actorsPerLayer = new Map<Int,ActorLayer>();
 		nextID = 0;
 		
 		//Events
@@ -1667,7 +1663,6 @@ class Engine
 				}
 
 				master.addChild(layer);
-				actorsPerLayer.set(layer.ID, layer.actorContainer);
 				
 				//Eventually, this will become the correct value
 				topLayer = layer;
@@ -1802,7 +1797,6 @@ class Engine
 		layersByName = null;
 		interactiveLayers = null;
 		backgroundLayers = null;
-		actorsPerLayer = null;
 		layersToDraw = null;
 		
 		dynamicTiles = null;
