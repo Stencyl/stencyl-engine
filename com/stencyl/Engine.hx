@@ -1354,7 +1354,7 @@ class Engine
 	
 	private function loadCamera()
 	{
-		camera = new Actor(this, -1, GameModel.DOODAD_ID, 0, 0, topLayer.ID, 2, 2, null, null, null, null, true, false, true, false, null, true, false);
+		camera = new Actor(this, -1, GameModel.DOODAD_ID, 0, 0, -1, 2, 2, null, null, null, null, true, false, true, false, null, true, false);
 		camera.name = "Camera";
 		camera.isCamera = true;
 		cameraX = 0;
@@ -1529,7 +1529,7 @@ class Engine
 					GameModel.TERRAIN_ID,
 					wireframe.x, 
 					wireframe.y, 
-					topLayer.ID, 
+					-1, 
 					Std.int(p.width), 
 					Std.int(p.height), 
 					null, 
@@ -1555,7 +1555,7 @@ class Engine
 					GameModel.TERRAIN_ID,
 					wireframe.x, 
 					wireframe.y, 
-					topLayer.ID, 
+					-1, 
 					Std.int(wireframe.width), 
 					Std.int(wireframe.height), 
 					null, 
