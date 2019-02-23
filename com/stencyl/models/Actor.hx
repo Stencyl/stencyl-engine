@@ -3369,8 +3369,8 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		//TODO: Mike - Make this work with arbitrary origin points
 		//The problem was that mouse detect was off for higher scales
 		//and would only work within the centered, original bounds.
-		var scaleXAbs = Math.abs(scaleX);
-		var scaleYAbs = Math.abs(scaleY);
+		var scaleXAbs = Math.abs(realScaleX);
+		var scaleYAbs = Math.abs(realScaleY);
 		var offsetLeft = currOrigin.x * (scaleXAbs - 1);
 		var offsetRight = (cacheWidth - currOrigin.x) * (scaleXAbs - 1);
 		var offsetUp = currOrigin.y * (scaleYAbs - 1);
