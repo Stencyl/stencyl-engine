@@ -1665,7 +1665,7 @@ class Script
 	
 	public static function isCtrlDown():Bool
 	{
-		return Input.check(Engine.INTERNAL_CTRL);
+		return Input.check(Engine.INTERNAL_CTRL) || Input.check(Engine.INTERNAL_COMMAND);
 	}
 	
 	public static function isShiftDown():Bool

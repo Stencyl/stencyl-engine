@@ -13,6 +13,7 @@ class Key
 	
 	public inline static var ENTER = 13;
 	public inline static var CONTROL = 17;
+	public inline static var COMMAND = 15;
 	public inline static var SPACE = 32;
 	public inline static var SHIFT = 16;
 	public inline static var BACKSPACE = 8;
@@ -148,6 +149,7 @@ class Key
 				
 			case ENTER:     return "ENTER";
 			case CONTROL:   return "CONTROL";
+			case COMMAND:   return "COMMAND";
 			case SPACE:     return "SPACE";
 			case SHIFT:     return "SHIFT";
 			case BACKSPACE: return "BACKSPACE";
