@@ -113,6 +113,7 @@ class Engine
 	
 	public static inline var INTERNAL_SHIFT:String = "iSHIFT";
 	public static inline var INTERNAL_CTRL:String = "iCTRL";
+	public static inline var INTERNAL_COMMAND:String = "iCOMMAND";
 	
 	//*-----------------------------------------------
 	//* Important Values
@@ -811,6 +812,7 @@ class Engine
 		Input.enable();
 		Input.define(INTERNAL_SHIFT, [Key.SHIFT]);
 		Input.define(INTERNAL_CTRL, [Key.CONTROL]);
+		Input.define(INTERNAL_COMMAND, [Key.COMMAND]);
 		
 		landscape = Config.landscape;
 		var stageWidth = Universal.logicalWidth;
