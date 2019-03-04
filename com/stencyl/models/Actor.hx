@@ -2692,6 +2692,12 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				x + Math.floor(cacheWidth/2) + currOffset.x,
 				y + Math.floor(cacheHeight/2) + currOffset.y,
 				noCollision || !continuousCollision);
+				
+			if (colX == 0 && colY == 0)
+			{
+				// fix for http://community.stencyl.com/index.php?issue=1506.0
+				resetReal(realX, realY);
+			}
 		}
 		
 		else if(physicsMode == MINIMAL_PHYSICS)
