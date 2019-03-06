@@ -145,6 +145,7 @@ class SoundChannel
 				{
 					currentSound = currentClip.play(channelNum, position);
 					currentSound.soundTransform = transform;
+					currentSound.addEventListener(Event.SOUND_COMPLETE, stopped);
 				
 					if(looping)
 					{
