@@ -3420,6 +3420,41 @@ class Script
 			return "";
 	}
 	
+	public static function getTilePositionForCollision(axis:Dynamic, event:Collision, point:CollisionPoint):Int
+	{
+		if (event.thisCollidedWithTile || event.otherCollidedWithTile)
+		{
+			var xNormal:Int = Math.round(Engine.toPixelUnits(point.normalX));
+			var yNormal:Int = Math.round(Engine.toPixelUnits(point.normalY));
+			var x:Int = Math.round(Engine.toPixelUnits(point.x));
+			var y:Int = Math.round(Engine.toPixelUnits(point.y));
+		
+			if(event.thisCollidedWithTile)
+			{
+				xNormal = -xNormal;
+				yNormal = -yNormal;
+			}
+	
+			if(xNormal < 0 && (x % engine.scene.tileWidth == 0))
+				x -= 1;
+			if(yNormal < 0 && (y % engine.scene.tileHeight == 0))
+				y -= 1;
+	
+			x = getTilePosition(0, x);
+			y = getTilePosition(1, y);
+			
+			if(axis == 0)
+			{
+				return x;
+			}
+			else
+			{
+				return y;
+			}
+		}
+		return -1;
+	}
+	
 	//TODO: For simple physics, we stick in either a box or nothing at all - maybe it autohandles this?
 	private static function createDynamicTile(shape:B2Shape, x:Float, y:Float, layerID:Int, width:Float, height:Float)
 	{
