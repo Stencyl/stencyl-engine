@@ -1191,6 +1191,11 @@ class Script
 	{
 		return engine.getGameAttribute(name);
 	}
+	
+	public static function setSavable(name:String, value:Bool)
+	{
+		engine.savableAttributes.set(name, value);
+	}
 		
 	//*-----------------------------------------------
 	//* Timing
@@ -3688,6 +3693,11 @@ class Script
 		
 		for(key in engine.gameAttributes.keys())
 		{
+			if (engine.savableAttributes.get(key) == false)
+			{
+				continue;
+			}
+		
 			Utils.saveToSharedObject(so, key, engine.gameAttributes.get(key));
 		}	
 

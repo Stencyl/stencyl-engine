@@ -323,6 +323,7 @@ class Engine
 	//*-----------------------------------------------
 	
 	public var gameAttributes:Map<String,Dynamic>;
+	public var savableAttributes:Map<String,Bool>;
 	public var behaviors:BehaviorManager;
 	
 	
@@ -908,6 +909,7 @@ class Engine
 		//Initialize things	
 		actorsToCreateInNextScene = new Array();			
 		gameAttributes = new Map<String,Dynamic>();
+		savableAttributes = new Map<String,Bool>();
 		
 		//Profiler
 		setStatsVisible(Config.showConsole);
