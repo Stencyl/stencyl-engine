@@ -3171,6 +3171,7 @@ class Engine
 	{
 		if(isTransitioning())
 		{
+			trace("Cannot pause while scene is transitioning.");
 			return;
 		}
 		
