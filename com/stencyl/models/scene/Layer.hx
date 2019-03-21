@@ -25,8 +25,8 @@ class Layer extends RegularLayer
 	public var attachedImages:Array<BitmapWrapper>;
 	
 	public var cameraMoved:Bool = true;
-	public var cameraOldX:Int = -1;
-	public var cameraOldY:Int = -1;
+	public var cameraOldX:Float = -1;
+	public var cameraOldY:Float = -1;
 	
 	public function new(ID:Int, name:String, order:Int, scrollFactorX:Float, scrollFactorY:Float, opacity:Float, blendMode:BlendMode, tileLayer:TileLayer)
 	{
@@ -51,21 +51,21 @@ class Layer extends RegularLayer
 
 	override public function updatePosition(x:Float, y:Float, elapsedTime:Float)
 	{	
-		var xScrolled = Std.int(x * scrollFactorX);
-		var yScrolled = Std.int(y * scrollFactorY);
-
-		if(Config.pixelsnap) x = Math.round(x) else x = Std.int(x);
-		if(Config.pixelsnap) y = Math.round(y) else y = Std.int(y);	
+		if(Config.pixelsnap) x = Math.round(x);
+		if(Config.pixelsnap) y = Math.round(y);	
 		
+		var xScrolled = x * scrollFactorX;
+		var yScrolled = y * scrollFactorY;
+
 		overlay.x = x;
 		overlay.y = y;
 		tiles.setPosition(xScrolled, yScrolled);
 		
-		this.x = -Std.int(x * scrollFactorX);
-		this.y = -Std.int(y * scrollFactorY);
+		this.x = -x * scrollFactorX;
+		this.y = -y * scrollFactorY;
 		
-		var tempX = Std.int(xScrolled / (Engine.engine.scene.tileWidth * Engine.SCALE));
-		var tempY = Std.int(yScrolled / (Engine.engine.scene.tileHeight * Engine.SCALE));
+		var tempX = xScrolled / (Engine.engine.scene.tileWidth * Engine.SCALE);
+		var tempY = yScrolled / (Engine.engine.scene.tileHeight * Engine.SCALE);
 		
 		cameraMoved = cameraMoved || cameraOldX != tempX || cameraOldY != tempY;
 		

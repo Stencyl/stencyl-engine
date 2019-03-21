@@ -135,7 +135,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 		}
 	}
 	
-	public function setPosition(x:Int, y:Int)
+	public function setPosition(x:Float, y:Float)
 	{
 		#if !use_tilemap
 		this.x = x - x % (scene.tileWidth * Engine.SCALE);
