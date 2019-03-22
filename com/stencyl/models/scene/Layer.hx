@@ -51,21 +51,40 @@ class Layer extends RegularLayer
 
 	override public function updatePosition(x:Float, y:Float, elapsedTime:Float)
 	{	
-		if(Config.pixelsnap) x = Math.round(x);
-		if(Config.pixelsnap) y = Math.round(y);	
+		var xScrolled:Float = 0;
+		var yScrolled:Float = 0;
+		var tempX:Float = 0;
+		var tempY:Float = 0;
 		
-		var xScrolled = x * scrollFactorX;
-		var yScrolled = y * scrollFactorY;
+		if (Config.pixelsnap)
+		{
+			xScrolled = Std.int(x * scrollFactorX);
+			yScrolled = Std.int(y * scrollFactorY);
 
+			x = Math.round(x);
+			y = Math.round(y);
+			
+			this.x = -Std.int(x * scrollFactorX);
+			this.y = -Std.int(y * scrollFactorY);
+			
+			tempX = Std.int(xScrolled / (Engine.engine.scene.tileWidth * Engine.SCALE));
+			tempY = Std.int(yScrolled / (Engine.engine.scene.tileHeight * Engine.SCALE));
+		}
+		else
+		{
+			xScrolled = x * scrollFactorX;
+			yScrolled = y * scrollFactorY;
+
+			this.x = -x * scrollFactorX;
+			this.y = -y * scrollFactorY;
+			
+			tempX = xScrolled / (Engine.engine.scene.tileWidth * Engine.SCALE);
+			tempY = yScrolled / (Engine.engine.scene.tileHeight * Engine.SCALE);
+		}
+		
+		tiles.setPosition(xScrolled, yScrolled);
 		overlay.x = x;
 		overlay.y = y;
-		tiles.setPosition(xScrolled, yScrolled);
-		
-		this.x = -x * scrollFactorX;
-		this.y = -y * scrollFactorY;
-		
-		var tempX = xScrolled / (Engine.engine.scene.tileWidth * Engine.SCALE);
-		var tempY = yScrolled / (Engine.engine.scene.tileHeight * Engine.SCALE);
 		
 		cameraMoved = cameraMoved || cameraOldX != tempX || cameraOldY != tempY;
 		
