@@ -1331,7 +1331,12 @@ class Engine
 			{
 				var actor:Actor = cast layer.actorContainer.getChildAt(i);
 				var actorInstance = scene.actors.get(actor.ID);
-				layer.actorContainer.swapChildrenAt(i, actorInstance.orderInLayer);
+				while(actorInstance.orderInLayer != i)
+				{
+					layer.actorContainer.swapChildrenAt(i, actorInstance.orderInLayer);
+					actor = cast layer.actorContainer.getChildAt(i);
+					actorInstance = scene.actors.get(actor.ID);
+				}
 			}
 		}
 	}
