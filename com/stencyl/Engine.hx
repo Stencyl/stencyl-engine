@@ -3144,6 +3144,11 @@ class Engine
 			return;
 		}
 		
+		if(zoomMultiplier == m)
+		{
+			return;
+		}
+		
 		zoomMultiplier = m;
 		
 		root.scaleX = screenScaleX = m * unzoomedScaleX;
@@ -3155,6 +3160,13 @@ class Engine
 			screenWidthHalf = Std.int(screenWidth / 2);
 			screenHeight = Std.int(Universal.logicalHeight * (1 / m));
 			screenHeightHalf = Std.int(screenHeight / 2);
+			
+			#if !use_tilemap
+			Utils.applyToAllChildren(root, function(obj) {
+				if(Std.is(obj, TileLayer))
+					cast(obj, TileLayer).expandBitmap();
+			});
+			#end
 		}
 
 		setColorBackground(scene.colorBackground);

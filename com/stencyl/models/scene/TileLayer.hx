@@ -445,6 +445,23 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 		
 		#end
 	}
+	
+	#if !use_tilemap
+	public function expandBitmap():Void
+	{
+		if(!noTiles)
+		{
+			var desiredWidth = Std.int((Engine.screenWidth * Engine.SCALE) + (scene.tileWidth * Engine.SCALE));
+			var desiredHeight = Std.int((Engine.screenHeight * Engine.SCALE) + (scene.tileHeight * Engine.SCALE));
+			
+			if(bitmapData.width < desiredWidth || bitmapData.height < desiredHeight)
+			{
+				clearBitmap();
+				initBitmap();
+			}
+		}
+	}
+	#end
 
 	#if use_tilemap
 	private function getTilemap(fltileset:FLTileset):Tilemap
