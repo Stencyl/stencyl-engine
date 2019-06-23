@@ -32,8 +32,8 @@
 	</section>
 
 	<section if="cppia">
-			
-		<target name="cppia" handler="stencyl-cppia" />
+		
+		<target name="stencyl-cppia" handler="stencyl-cppia" />
 		<haxelib name="stencyl-cppia" />
 		
 	</section>

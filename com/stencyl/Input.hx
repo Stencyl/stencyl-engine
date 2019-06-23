@@ -47,10 +47,7 @@ class Input
 	public static var accelZ:Float;
 	
 	//gestures state
-	#if !html5
 	public static var multiTouchPoints:Map<String,TouchEvent>;
-	#end
-	
 	public static var numTouches:Int;
 
 	public static var swipedUp:Bool;
@@ -93,10 +90,6 @@ class Input
 		Engine.stage.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 		Engine.stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 		Engine.stage.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
-		#if html5
-		Engine.stage.removeEventListener(TouchEvent.TOUCH_BEGIN, onMouseDown);
-		Engine.stage.removeEventListener(TouchEvent.TOUCH_END, onMouseUp);
-		#end
 		#if desktop
 		Engine.stage.removeEventListener(MouseEvent.RIGHT_MOUSE_DOWN, onRightMouseDown);
 		Engine.stage.removeEventListener(MouseEvent.RIGHT_MOUSE_UP, onRightMouseUp);
@@ -109,15 +102,13 @@ class Input
 		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_UP, ignoreBackKey);
 		#end
 		
-		#if !html5
 		if(Multitouch.supportsTouchEvents)
 		{
 			Engine.stage.removeEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
 			Engine.stage.removeEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
 			Engine.stage.removeEventListener(TouchEvent.TOUCH_END, onTouchEnd);
 		}
-		#end
-
+		
 		_roxAgent.detach();
 		Engine.engine.root.removeEventListener(RoxGestureEvent.GESTURE_SWIPE, onSwipe);
 
@@ -130,10 +121,7 @@ class Input
 		mouseWheelDelta = 0;
 		accelX = accelY = accelZ = 0;
 		
-		#if !html5
 		multiTouchPoints = null;
-		#end
-
 		numTouches = 0;
 		_swipeDirection = 0;
 		swipedUp = swipedDown = swipedRight = swipedLeft = false;
@@ -421,10 +409,6 @@ class Input
 			Engine.stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 2);
 			Engine.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false,  2);
 			Engine.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 2);
-			#if html5
-			Engine.stage.addEventListener(TouchEvent.TOUCH_BEGIN, onMouseDown);
-			Engine.stage.addEventListener(TouchEvent.TOUCH_END, onMouseUp);
-			#end
 			#if desktop
 			Engine.stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, onRightMouseDown, false, 2);
 			Engine.stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, onRightMouseUp, false, 2);
@@ -441,7 +425,6 @@ class Input
 			}
 			#end
 			
-			#if !html5
 			if(Multitouch.supportsTouchEvents)
 	        {
 	        	multiTouchPoints = new Map<String,TouchEvent>();
@@ -450,7 +433,6 @@ class Input
 	        	Engine.stage.addEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
          		Engine.stage.addEventListener(TouchEvent.TOUCH_END, onTouchEnd);
 	        }
-	        #end
 	        
 	        #if desktop
 
@@ -944,7 +926,6 @@ class Input
 	}
 	#end
 
-	#if !html5
 	private static function onTouchBegin(e:TouchEvent)
 	{
 		Engine.invokeListeners2(Engine.engine.whenMTStartListeners, e);
@@ -967,7 +948,6 @@ class Input
 		multiTouchPoints.remove(Std.string(e.touchPointID));
 		numTouches--;
 	}
-	#end
 }
 
 class Control

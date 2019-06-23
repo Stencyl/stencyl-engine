@@ -8,6 +8,7 @@ import lime.graphics.RenderContext;
 import openfl.display.BitmapData;
 import openfl.display.OpenGLRenderer;
 import openfl.display3D.Context3D;
+import openfl.display3D.textures.RectangleTexture;
 
 @:access(openfl.display.BitmapData)
 
@@ -82,7 +83,8 @@ class GLUtil
 	
 	public static function clearTexture(img:BitmapData):Void
 	{
-		img.__texture.uploadFromTypedArray(null);
+		var rt:RectangleTexture = cast img.__texture;
+		rt.uploadFromTypedArray(null);
 		
 		/*gl.bindTexture(gl.TEXTURE_2D, img.__texture);
 		gl.clearTexImage(gl.TEXTURE_2D, 0, BitmapData.__textureFormat, gl.UNSIGNED_BYTE, 0);*/

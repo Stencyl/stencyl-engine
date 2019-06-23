@@ -210,6 +210,7 @@ class PostProcess extends DisplayObject
 		__setRenderDirty ();
 	}
 	
+	@:access(openfl.display.DisplayObjectRenderer)
 	@:access(openfl.display3D.Context3D)
 	@:access(openfl._internal.renderer.context3D.Context3DState)
 	@:noCompletion private override function __renderGL (renderer:OpenGLRenderer):Void
