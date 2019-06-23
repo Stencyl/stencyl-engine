@@ -4,7 +4,7 @@ package com.stencyl;
 import cpp.vm.Gc;
 #end
 
-import de.polygonal.ds.IntHashTable;
+import polygonal.ds.IntHashTable;
 
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
