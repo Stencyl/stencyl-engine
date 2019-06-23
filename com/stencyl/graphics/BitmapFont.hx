@@ -191,7 +191,7 @@ class BitmapFont extends Bitmap
 		}
     }
     
-    public var text(get_text, set_text):String;
+    public var text(get, set):String;
 	
 	/**
 	 * Set this value to update the text in this sprite. Carriage returns are automatically stripped out if multiLine is false. Text is converted to upper case if autoUpperCase is true.
