@@ -1,6 +1,6 @@
 package com.stencyl.models;
 
-import de.polygonal.ds.IntHashTable;
+import polygonal.ds.IntHashTable;
 
 import openfl.display.BlendMode;
 import openfl.display.Bitmap;

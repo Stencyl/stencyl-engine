@@ -1,7 +1,7 @@
 package com.stencyl.models;
 
-import de.polygonal.ds.IntHashTable;
-import de.polygonal.ds.HashTable;
+import polygonal.ds.IntHashTable;
+import polygonal.ds.HashTable;
 
 import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.graphics.BlendModes;
