@@ -55,6 +55,8 @@ class Input
 	public static var swipedLeft:Bool;
 	public static var swipedRight:Bool;
 	
+	public static var multipleGamepadsEnabled:Bool = false;
+	
 	//private
 	
 	private static var _enabled:Bool = false;
@@ -64,11 +66,10 @@ class Input
 	private static var _swipeDirection:Int;
 	
 	//joystick state
+	#if desktop
 	private static var _joySensitivity:Float = .12;
-	private static var _joyHatState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
-	private static var _joyAxisState:Map<Int,Array<Int>> = new Map<Int,Array<Int>>();
-	private static var _joyAxisPressure:Map<Int,Array<Float>> = new Map<Int,Array<Float>>();
-	private static var _joyButtonState:Map<Int,Array<Bool>> = new Map<Int,Array<Bool>>();
+	private static var _joyState:Map<Int,JoystickState> = new Map<Int,JoystickState>();
+	#end
 	
 	//keyboard state
 	private static var _key:Array<Bool> = new Array<Bool>();
@@ -130,13 +131,9 @@ class Input
 		_enabled = false;
 		_key = new Array<Bool>();
 		
-		_joySensitivity = .12;
-		_joyHatState = new Map<Int,Array<Int>>();
-		_joyAxisState = new Map<Int,Array<Int>>();
-		_joyAxisPressure = new Map<Int,Array<Float>>();
-		_joyButtonState = new Map<Int,Array<Bool>>();
-
 		#if desktop
+		_joySensitivity = .12;
+		_joyState = new Map<Int,JoystickState>();
 		_joyControlMap = new Map<String,Control>();
 		#end
 		_keyControlMap = new Map<Int,Control>();
@@ -200,6 +197,11 @@ class Input
 	public static function mapJoystickButton(id:String, controlName:String)
 	{
 		#if desktop
+		if(!multipleGamepadsEnabled && id.indexOf(", ") != -1)
+		{
+			id = id.substring(id.indexOf(", ") + 2);
+		}
+		
 		var button:JoystickButton = JoystickButton.fromID(id);
 		var control = _joyControlMap.get(id);
 		if(control != null)
@@ -219,6 +221,11 @@ class Input
 	public static function unmapJoystickButton(id:String)
 	{
 		#if desktop
+		if(!multipleGamepadsEnabled && id.indexOf(", ") != -1)
+		{
+			id = id.substring(id.indexOf(", ") + 2);
+		}
+		
 		var button:JoystickButton = JoystickButton.fromID(id);
 		var control = _joyControlMap.get(id);
 		if(control != null)
@@ -299,6 +306,12 @@ class Input
 				{
 					var controlName = joyStringMap.get(k);
 					var control = _controlMap.get(controlName);
+					
+					if(!multipleGamepadsEnabled && k.indexOf(", ") != -1)
+					{
+						k = k.substring(k.indexOf(", ") + 2);
+					}
+					
 					_joyControlMap.set(k, control);
 					
 					var button = JoystickButton.fromID(k);
@@ -652,19 +665,21 @@ class Input
 			var controlType = button.a[JoystickButton.TYPE];
 			var buttonID = button.a[2];
 			
-			if(!_joyButtonState.exists(device))
+			if(!_joyState.exists(device))
 				continue;
+			
+			var deviceState = _joyState.get(device);
 			
 			switch(controlType)
 			{
 				case JoystickButton.AXIS:
-					if(_joyAxisState.get(device)[buttonID] == button.a[3])
-						pressure = Math.max(pressure, Math.abs(_joyAxisPressure.get(device)[buttonID]));
+					if(deviceState.axisState[buttonID] == button.a[3])
+						pressure = Math.max(pressure, Math.abs(deviceState.axisPressure[buttonID]));
 				case JoystickButton.HAT:
-					if(_joyHatState.get(device)[buttonID] == button.a[3])
+					if(deviceState.hatState[buttonID] == button.a[3])
 						pressure = 1.0;
 				case JoystickButton.BUTTON:
-					if(_joyButtonState.get(device)[buttonID])
+					if(deviceState.buttonState[buttonID])
 						pressure = 1.0;
 			}
 		}
@@ -778,46 +793,51 @@ class Input
 		mouseWheel = true;
 		mouseWheelDelta = e.delta;
 	}
-
+	
 	#if desktop
 	
 	private static function onJoystickConnected(joystick:Joystick)
 	{
 		trace("Connected Joystick: " + joystick.name);
-
-		_joyAxisState.set(joystick.id, [for(i in 0...joystick.numAxes) 0]);
-		_joyAxisPressure.set(joystick.id, [for(i in 0...joystick.numAxes) 0.0]);
-		_joyHatState.set(joystick.id, [0, 0]);
-		_joyButtonState.set(joystick.id, []);
-
+		
+		var joystate = new JoystickState(joystick);
+		_joyState.set(joystick.id, joystate);
+		
 		joystick.onAxisMove.add (function (axis:Int, value:Float) {
-			onJoyAxisMove(joystick, axis, value);
+			trace('onAxisMove $axis $value');
+			onJoyAxisMove(joystate, axis, value);
 		});
 
 		joystick.onButtonDown.add (function (button:Int) {
-			onJoyButtonDown(joystick, button);
+			trace('onButtonDown $button');
+			onJoyButtonDown(joystate, button);
 		});
 
 		joystick.onButtonUp.add (function (button:Int) {
-			onJoyButtonUp(joystick, button);
+			trace('onButtonUp $button');
+			onJoyButtonUp(joystate, button);
 		});
 
 		joystick.onHatMove.add (function (hat:Int, position:JoystickHatPosition) {
-			onJoyHatMove(joystick, hat, position);
+			trace('onHatMove $hat $position');
+			onJoyHatMove(joystate, hat, position);
 		});
 
 		joystick.onTrackballMove.add (function (trackball:Int, x:Float, y:Float) {
-			onJoyBallMove(joystick, trackball, x, y);
+			trace('onTrackballMove $trackball $x $y');
+			onJoyBallMove(joystate, trackball, x, y);
 		});
 
 		joystick.onDisconnect.add (function () {
 			trace("Disconnected Joystick: " + joystick.name);
+			_joyState.remove(joystick.id);
 		});
 	}
 	
-	private static function onJoyAxisMove(joystick:Joystick, axis:Int, value:Float)
+	private static function onJoyAxisMove(joystate:JoystickState, axis:Int, value:Float)
 	{
-		var oldState:Array<Int> = _joyAxisState.get(joystick.id);
+		var gpid = multipleGamepadsEnabled ? (joystate.joystick.id + ", ") : "";
+		var oldState:Array<Int> = joystate.axisState;
 		
 		var cur:Int;
 		var old:Int;
@@ -834,40 +854,41 @@ class Input
 		if(cur != old)
 		{
 			if(old == -1)
-				joyRelease(joystick.id + ", -axis " + axis);
+				joyRelease(gpid + "-axis " + axis);
 			else if(old == 1)
-				joyRelease(joystick.id + ", +axis " + axis);
+				joyRelease(gpid + "+axis " + axis);
 			if(cur == -1)
-				joyPress(joystick.id + ", -axis " + axis, Math.abs(value));
+				joyPress(gpid + "-axis " + axis, Math.abs(value));
 			else if(cur == 1)
-				joyPress(joystick.id + ", +axis " + axis, Math.abs(value));
+				joyPress(gpid + "+axis " + axis, Math.abs(value));
 		}
 		else if(cur != 0)
 		{
 			var control = null;
 			
 			if(cur == -1)
-				control = _joyControlMap.get(joystick.id + ", -axis " + axis);
+				control = _joyControlMap.get(gpid + "-axis " + axis);
 			else if(cur == 1)
-				control = _joyControlMap.get(joystick.id + ", +axis " + axis);
-				
+				control = _joyControlMap.get(gpid + "+axis " + axis);
+			
 			if(control != null) control.pressure = Math.abs(value);
 		}
 
 		oldState[axis] = cur;
 
-		_joyAxisPressure.get(joystick.id)[axis] = value;
+		joystate.axisPressure[axis] = value;
 	}
 	
-	private static function onJoyBallMove(joystick:Joystick, trackball:Int, x:Float, y:Float)
+	private static function onJoyBallMove(joystate:JoystickState, trackball:Int, x:Float, y:Float)
 	{
 		//not sure what to do with this
 	}
 
-	private static function onJoyHatMove(joystick:Joystick, hat:Int, position:JoystickHatPosition)
+	private static function onJoyHatMove(joystate:JoystickState, hat:Int, position:JoystickHatPosition)
 	{
-		var oldX:Int = _joyHatState.get(joystick.id)[0];
-		var oldY:Int = _joyHatState.get(joystick.id)[1];
+		var gpid = multipleGamepadsEnabled ? (joystate.joystick.id + ", ") : "";
+		var oldX:Int = joystate.hatState[0];
+		var oldY:Int = joystate.hatState[1];
 
 		var newX:Int = position.left ? -1 : position.right ? 1 : 0;
 		var newY:Int = position.up ? -1 : position.down ? 1 : 0;
@@ -875,39 +896,41 @@ class Input
 		if(newX != oldX)
 		{
 			if(oldX == -1)
-				joyRelease(joystick.id + ", left hat");
+				joyRelease(gpid + "left hat");
 			else if(oldX == 1)
-				joyRelease(joystick.id + ", right hat");
+				joyRelease(gpid + "right hat");
 			if(newX == -1)
-				joyPress(joystick.id + ", left hat", 1.0);
+				joyPress(gpid + "left hat", 1.0);
 			else if(newX == 1)
-				joyPress(joystick.id + ", right hat", 1.0);
+				joyPress(gpid + "right hat", 1.0);
 		}
 		if(newY != oldY)
 		{
 			if(oldY == -1)
-				joyRelease(joystick.id + ", up hat");
+				joyRelease(gpid + "up hat");
 			else if(oldY == 1)
-				joyRelease(joystick.id + ", down hat");
+				joyRelease(gpid + "down hat");
 			if(newY == -1)
-				joyPress(joystick.id + ", up hat", 1.0);
+				joyPress(gpid + "up hat", 1.0);
 			else if(newY == 1)
-				joyPress(joystick.id + ", down hat", 1.0);
+				joyPress(gpid + "down hat", 1.0);
 		}
 
-		_joyHatState.set(joystick.id, [newX, newY]);
+		joystate.hatState = [newX, newY];
 	}
 
-	private static function onJoyButtonDown(joystick:Joystick, button:Int)
+	private static function onJoyButtonDown(joystate:JoystickState, button:Int)
 	{
-		_joyButtonState.get(joystick.id)[button] = true;
-		joyPress(joystick.id + ", " + button, 1.0);
+		var gpid = multipleGamepadsEnabled ? (joystate.joystick.id + ", ") : "";
+		joystate.buttonState[button] = true;
+		joyPress(gpid + button, 1.0);
 	}
 
-	private static function onJoyButtonUp(joystick:Joystick, button:Int)
+	private static function onJoyButtonUp(joystate:JoystickState, button:Int)
 	{
-		_joyButtonState.get(joystick.id)[button] = false;
-		joyRelease(joystick.id + ", " + button);
+		var gpid = multipleGamepadsEnabled ? (joystate.joystick.id + ", ") : "";
+		joystate.buttonState[button] = false;
+		joyRelease(gpid + button);
 	}
 
 	private static function joyPress(id:String, pressure:Float)
@@ -972,6 +995,26 @@ class Control
 	}
 }
 
+#if desktop
+class JoystickState
+{
+	public var joystick:Joystick;
+	
+	public var hatState:Array<Int>;
+	public var axisState:Array<Int>;
+	public var axisPressure:Array<Float>;
+	public var buttonState:Array<Bool>;
+	
+	public function new(joystick:Joystick)
+	{
+		this.joystick = joystick;
+		hatState = [0, 0];
+		axisState = [for(i in 0...joystick.numAxes) 0];
+		axisPressure = [for(i in 0...joystick.numAxes) 0.0];
+		buttonState = [];
+	}
+}
+
 class JoystickButton
 {
 	public static inline var DEVICE:Int = 0;
@@ -996,20 +1039,25 @@ class JoystickButton
 		
 		var b:JoystickButton = new JoystickButton();
 		b.id = id;
-
+		
+		var device:Int = 0;
+		if(Input.multipleGamepadsEnabled)
+		{
+			device = Std.parseInt(id.substr(0, id.indexOf(",")));
+			id = id.substr(id.indexOf(",") + 2);
+		}
+		
 		if(id.indexOf("axis") != -1)
 		{
-			var device:Int = Std.parseInt(id.substr(0, id.indexOf(",")));
 			var axis:Int = Std.parseInt(id.substr(id.lastIndexOf(" ") + 1));
-			var sign:Int = id.substr(id.indexOf("axis") - 1, 1) == "+" ? 1 : -1;
+			var sign:Int = id.charAt(0) == "+" ? 1 : -1;
 			b.a = [device, AXIS, axis, sign];
 		}
 		else if(id.indexOf("hat") != -1)
 		{
-			var device:Int = Std.parseInt(id.substr(0, id.indexOf(",")));
 			var hat:Int = 0;
 			var sign:Int = 0;
-			switch(id.split(" ")[1])
+			switch(id.split(" ")[0])
 			{
 				case "up": hat = 1; sign = -1;
 				case "down": hat = 1; sign = 1;
@@ -1020,13 +1068,12 @@ class JoystickButton
 		}
 		else
 		{
-			var device:Int = Std.parseInt(id.substr(0, id.indexOf(",")));
-			var button:Int = Std.parseInt(id.substr(id.lastIndexOf(" ")));
+			var button:Int = Std.parseInt(id);
 
 			b.a = [device, BUTTON, button];
 		}
 		
-		cacheFromID.set(id, b);
+		cacheFromID.set(b.id, b);
 		return b;
 	}
 
@@ -1044,3 +1091,4 @@ class JoystickButton
 	public var id:String;
 	public var a:Array<Int>;
 }
+#end
