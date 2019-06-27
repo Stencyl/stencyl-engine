@@ -4170,6 +4170,15 @@ class Engine
 		return gameAttributes.get(name);
 	}
 	
+	public function restoreGameAttributes()
+	{
+		var gma = GameModel.get().gameAttributes;
+		for(key in gma.keys())
+		{
+			gameAttributes.set(key, gma.get(key));
+		}
+	}
+	
 	//*-----------------------------------------------
 	//* On/Off Screen
 	//*-----------------------------------------------
