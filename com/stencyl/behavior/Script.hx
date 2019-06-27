@@ -3722,6 +3722,22 @@ class Script
 			onComplete(true);
 	}
 	
+	/**
+	 * Restore all savable game attributes to their original state.
+	 */
+	public static function restoreGame():Void
+	{
+		for(key in GameModel.get().gameAttributes.keys())
+		{
+			if (engine.savableAttributes.get(key) == false)
+			{
+				continue;
+			}
+			
+			engine.setGameAttribute(key, GameModel.get().gameAttributes.get(key));
+		}
+	}
+	
 	public static function saveData(fileName:String, name:String, value:Dynamic, onComplete:Bool->Void=null):Void
 	{
 		var so:SharedObject = SharedObject.getLocal(fileName);
