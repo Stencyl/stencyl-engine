@@ -866,8 +866,27 @@ class Utils
 	/** Saves a key/value pair in a SharedObject (does not flush the SharedObject) */
 	public static function saveToSharedObject(so:SharedObject, name:String, value:Dynamic):Void
 	{
-		Reflect.setField(so.data, name, clone(value));
-
+		#if debug
+		try {
+		#end
+			Reflect.setField(so.data, name, clone(value));
+		#if debug
+		} catch (error:String) {
+			if(error == "deep clone")
+			{
+				trace("Error: can't save attribute due to recursion [name=" + name + "]");
+			}
+			#if cpp
+			else if(error.indexOf("Invalid field:") == 0)
+			{
+				trace("Error: can't save attribute due to contained properties [name=" + name + ", value=" + value+"]");
+				trace(error);
+			}
+			#end
+			else throw error;
+		}
+		#end
+		
 		#if flash
 		if (Std.is(value, haxe.ds.StringMap))
 		{
