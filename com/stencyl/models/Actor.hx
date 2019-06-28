@@ -236,6 +236,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	//*-----------------------------------------------
 	
 	public var behaviors:BehaviorManager;
+	public var customizedBehaviors:Bool = false;
 	
 	
 	//*-----------------------------------------------
@@ -585,8 +586,11 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 			}
 		}
 		
-		//No IC - Default to what the ActorType uses
-		if(behaviorValues == null && actorType != null)
+		if(behaviorValues != null)
+		{
+			customizedBehaviors = true;
+		}
+		else if(actorType != null) //No IC - Default to what the ActorType uses
 		{
 			behaviorValues = actorType.behaviorValues;
 		}
