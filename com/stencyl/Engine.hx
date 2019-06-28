@@ -2343,8 +2343,18 @@ class Engine
 					actor.dying = false;
 					actor.recycled = false;
 					actor.killLeaveScreen = false;
-					actor.switchToDefaultAnimation();						
-					actor.enableAllBehaviors();
+					actor.switchToDefaultAnimation();
+					
+					if(actor.customizedBehaviors)
+					{
+						actor.customizedBehaviors = false;
+						actor.behaviors = new BehaviorManager();
+						Engine.initBehaviors(actor.behaviors, type.behaviorValues, actor, this, false);
+					}
+					else
+					{
+						actor.enableAllBehaviors();
+					}
 					
 					if(actor.physicsMode == NORMAL_PHYSICS)
 					{
