@@ -77,8 +77,6 @@ class SoundChannel
 			currentSound.addEventListener(Event.SOUND_COMPLETE, stopped);
 		}
 		
-		position = 0;
-		
 		if(clip != null)
 		{
 			currentSource = clip.src;
@@ -113,8 +111,6 @@ class SoundChannel
 			
 			currentSound.addEventListener(Event.SOUND_COMPLETE, looped);
 		}
-
-		position = 0;
 		
 		if(clip != null)
 		{
