@@ -2014,6 +2014,8 @@ class Script
 				{
 					//trace("Play sound on channel: " + i);
 					sc.playSound(clip);
+					sc.setVolume(1);
+					sc.setPanning(0);
 					return;
 				}
 			}
@@ -2037,6 +2039,8 @@ class Script
 				{
 					//trace("Loop sound on channel: " + i);
 					sc.loopSound(clip);
+					sc.setVolume(1);
+					sc.setPanning(0);
 					return;
 				}
 			}
@@ -2051,7 +2055,9 @@ class Script
 	public static function playSoundOnChannel(clip:Sound, channelNum:Int)
 	{
 		var sc:SoundChannel = engine.channels[channelNum];		
-		sc.playSound(clip);			
+		sc.playSound(clip);
+		sc.setVolume(1);
+		sc.setPanning(0);
 	}
 	
 	/**
@@ -2060,7 +2066,9 @@ class Script
 	public static function loopSoundOnChannel(clip:Sound, channelNum:Int)
 	{
 		var sc:SoundChannel = engine.channels[channelNum];	
-		sc.loopSound(clip);			
+		sc.loopSound(clip);
+		sc.setVolume(1);
+		sc.setPanning(0);
 	}
 	
 	/**
