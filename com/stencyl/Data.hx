@@ -35,6 +35,8 @@ import mbs.io.MbsReader;
 import mbs.io.MbsList;
 import mbs.io.MbsListBase.MbsDynamicList;
 
+import haxe.CallStack;
+
 class Data
 {
 	//*-----------------------------------------------
@@ -208,7 +210,7 @@ class Data
 		var address:Null<Int> = resourceLookup.get(id);
 		if(address == null)
 		{
-			trace("Error: resource with id " + id + " doesn't exist.");
+			trace("Error: resource with id " + id + " doesn't exist." #if debug + "\n" + CallStack.toString(CallStack.callStack()) #end);
 			return null;
 		}
 		var obj:MbsObject = cast MbsDynamicHelper.readDynamicUsingPool(resourceListMbs, address, resourceReaderPool);
