@@ -872,12 +872,12 @@ class Script
 	{
 		if(!engine.collisionListeners.exists(obj))
 		{
-			engine.collisionListeners.set(obj, new Map<Int,Dynamic>());									
+			engine.collisionListeners.set(obj, new Map<Int,Array<Dynamic>>());									
 		}
 		
 		if(!engine.collisionListeners.exists(obj2))
 		{
-			engine.collisionListeners.set(obj2, new Map<Int,Dynamic>());
+			engine.collisionListeners.set(obj2, new Map<Int,Array<Dynamic>>());
 		}	
 		
 		if(!engine.collisionListeners.get(obj).exists(obj2))
@@ -885,7 +885,7 @@ class Script
 			engine.collisionListeners.get(obj).set(obj2, new Array<Dynamic>());		
 		}
 		
-		var listeners = cast(engine.collisionListeners.get(obj).get(obj2), Array<Dynamic>);
+		var listeners = engine.collisionListeners.get(obj).get(obj2);
 		listeners.push(func);	
 		
 		if(Std.is(this, ActorScript))

@@ -361,18 +361,18 @@ class Engine
 
 	public var keyPollOccurred:Bool = false;
 	
-	public var whenKeyPressedListeners:Map<String, Dynamic>;
+	public var whenKeyPressedListeners:Map<String, Array<Dynamic>>;
 	public var hasKeyPressedListeners:Bool;
 	public var whenAnyKeyPressedListeners:Array<Dynamic>;
 	public var whenAnyKeyReleasedListeners:Array<Dynamic>;
 	public var whenAnyGamepadPressedListeners:Array<Dynamic>;
 	public var whenAnyGamepadReleasedListeners:Array<Dynamic>;
-	public var whenTypeGroupCreatedListeners:ObjectMap<Dynamic, Dynamic>;
-	public var whenTypeGroupDiesListeners:ObjectMap<Dynamic, Dynamic>;
-	public var typeGroupPositionListeners:Map<Int,Dynamic>;
-	public var collisionListeners:Map<Int,Dynamic>;
-	public var soundListeners:Map<Sound, Dynamic>;
-	public var channelListeners:Map<Int, Dynamic>;
+	public var whenTypeGroupCreatedListeners:ObjectMap<Dynamic, Array<Dynamic>>;
+	public var whenTypeGroupDiesListeners:ObjectMap<Dynamic, Array<Dynamic>>;
+	public var typeGroupPositionListeners:Map<Int, Array<Dynamic>>;
+	public var collisionListeners:Map<Int, Map<Int, Array<Dynamic>>>;
+	public var soundListeners:Map<Sound, Array<Dynamic>>;
+	public var channelListeners:Map<Int, Array<Dynamic>>;
 			
 	public var whenUpdatedListeners:Array<Dynamic>;
 	public var whenDrawingListeners:Array<Dynamic>;
@@ -1094,19 +1094,19 @@ class Engine
 		nextID = 0;
 		
 		//Events
-		whenKeyPressedListeners = new Map<String, Dynamic>();
+		whenKeyPressedListeners = new Map<String, Array<Dynamic>>();
 		hasKeyPressedListeners = false;
 		whenAnyKeyPressedListeners = new Array<Dynamic>();
 		whenAnyKeyReleasedListeners = new Array<Dynamic>();
 		whenAnyGamepadPressedListeners = new Array<Dynamic>();
 		whenAnyGamepadReleasedListeners = new Array<Dynamic>();
 	
-		whenTypeGroupCreatedListeners = new ObjectMap<Dynamic, Dynamic>();
-		whenTypeGroupDiesListeners = new ObjectMap<Dynamic, Dynamic>();
-		typeGroupPositionListeners = new Map<Int,Dynamic>();
-		collisionListeners = new Map<Int,Dynamic>();
-		soundListeners = new Map<Sound, Dynamic>();
-		channelListeners = new Map<Int, Dynamic>();
+		whenTypeGroupCreatedListeners = new ObjectMap<Dynamic, Array<Dynamic>>();
+		whenTypeGroupDiesListeners = new ObjectMap<Dynamic, Array<Dynamic>>();
+		typeGroupPositionListeners = new Map<Int, Array<Dynamic>>();
+		collisionListeners = new Map<Int, Map<Int, Array<Dynamic>>>();
+		soundListeners = new Map<Sound, Array<Dynamic>>();
+		channelListeners = new Map<Int, Array<Dynamic>>();
 		nativeListeners = new Array<NativeListener>();
 		
 		whenUpdatedListeners = new Array<Dynamic>();
