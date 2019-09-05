@@ -5,6 +5,7 @@ import haxe.ds.Vector;
 import haxe.io.Output;
 import haxe.io.Path;
 import haxe.Timer;
+import lime.app.Application;
 import lime.app.Future;
 import lime.app.Promise;
 import lime.graphics.Image;
@@ -949,7 +950,8 @@ class Utils
 	 */
 	public static function saveMap(map:Map<String, Dynamic>, fileName:String, onComplete:Bool->Void=null):Void
 	{
-		var so:SharedObject = SharedObject.getLocal(fileName);
+		var localPath = Application.current.meta.get("localSavePath");
+		var so:SharedObject = SharedObject.getLocal(fileName, localPath);
 		
 		for(key in map.keys())
 		{
@@ -966,7 +968,8 @@ class Utils
 	 */
 	public static function loadMap(map:Map<String, Dynamic>, fileName:String, onComplete:Bool->Void=null):Void
 	{
-		var so:SharedObject = SharedObject.getLocal(fileName);
+		var localPath = Application.current.meta.get("localSavePath");
+		var so:SharedObject = SharedObject.getLocal(fileName, localPath);
 		
 		for(key in Reflect.fields(so.data))
 		{
