@@ -81,6 +81,7 @@ import flash.utils.ByteArray;
 import haxe.crypto.BaseCode;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
+import lime.app.Application;
 
 using lime._internal.unifill.Unifill;
 
@@ -3691,7 +3692,8 @@ class Script
 	 */
 	public static function saveGame(fileName:String, onComplete:Bool->Void=null):Void
 	{
-		var so:SharedObject = SharedObject.getLocal(fileName);
+		var localPath = Application.current.meta.get("localSavePath");
+		var so:SharedObject = SharedObject.getLocal(fileName, localPath);
 		
 		for(key in engine.gameAttributes.keys())
 		{
@@ -3713,7 +3715,8 @@ class Script
 	 */
 	public static function loadGame(fileName:String, onComplete:Bool->Void=null):Void
 	{
-		var so:SharedObject = SharedObject.getLocal(fileName);
+		var localPath = Application.current.meta.get("localSavePath");
+		var so:SharedObject = SharedObject.getLocal(fileName, localPath);
 		
 		for(key in Reflect.fields(so.data))
 		{
@@ -3726,7 +3729,8 @@ class Script
 	
 	public static function saveData(fileName:String, name:String, value:Dynamic, onComplete:Bool->Void=null):Void
 	{
-		var so:SharedObject = SharedObject.getLocal(fileName);
+		var localPath = Application.current.meta.get("localSavePath");
+		var so:SharedObject = SharedObject.getLocal(fileName, localPath);
 	
 		Utils.saveToSharedObject(so, name, value);
 		
@@ -3734,8 +3738,9 @@ class Script
 	}
 
 	public static function loadData(fileName:String, name:String, onComplete:Bool->Void=null):Dynamic
-	{			
-		var so:SharedObject = SharedObject.getLocal(fileName);
+	{
+		var localPath = Application.current.meta.get("localSavePath");
+		var so:SharedObject = SharedObject.getLocal(fileName, localPath);
 	
 		var value:Dynamic = Utils.loadFromSharedObject(so, name);
 		
@@ -3747,8 +3752,9 @@ class Script
 	
 	public static function checkData(fileName:String, name:String):Dynamic
 	{	
-		var so:SharedObject = SharedObject.getLocal(fileName);
-					
+		var localPath = Application.current.meta.get("localSavePath");
+		var so:SharedObject = SharedObject.getLocal(fileName, localPath);
+		
 		return Reflect.field(so.data, name) != null;
 	}
 	
