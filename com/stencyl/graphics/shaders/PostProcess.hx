@@ -49,10 +49,12 @@ import lime.graphics.opengl.*;
 import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.Lib;
+import openfl._internal.renderer.context3D.Context3DRenderer;
 import openfl.display.DisplayObject;
 import openfl.display.OpenGLRenderer;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Rectangle;
+import openfl.events.RenderEvent;
 
 #if (haxe_ver >= 4)
 import haxe.xml.Access;
@@ -161,6 +163,8 @@ class PostProcess extends DisplayObject
 		
 		vertexSlot = fullScreenShader.attribute("aVertex");
 		texCoordSlot = fullScreenShader.attribute("aTexCoord");
+		
+		addEventListener(RenderEvent.RENDER_OPENGL, renderGL);
 	}
 	
 	@:noCompletion private static function get_isSupported ():Bool
@@ -213,8 +217,10 @@ class PostProcess extends DisplayObject
 	@:access(openfl.display.DisplayObjectRenderer)
 	@:access(openfl.display3D.Context3D)
 	@:access(openfl._internal.renderer.context3D.Context3DState)
-	@:noCompletion private override function __renderGL (renderer:OpenGLRenderer):Void
+	@:noCompletion private function renderGL(renderEvent:RenderEvent):Void
 	{
+		var renderer:Context3DRenderer = cast renderEvent.renderer;
+		
 		if (stage != null && __renderable)
 		{
 			var stage = Engine.stage;
@@ -292,10 +298,6 @@ class PostProcess extends DisplayObject
 			//currently unimplemented in openfl
 			//context3D.__contextState.__currentGLTexture2D = null;
 		}
-	}
-	
-	@:noCompletion private override function __renderGLMask (renderer:OpenGLRenderer):Void
-	{
 	}
 
 	/**
@@ -390,6 +392,12 @@ class PostProcess extends DisplayObject
 		@:privateAccess var framebuffer = texture.__getGLFramebuffer(false, 0, 0);
 		gl.bindFramebuffer(GL.FRAMEBUFFER, framebuffer);
 		gl.clear(GL.DEPTH_BUFFER_BIT | GL.COLOR_BUFFER_BIT);
+		
+		//XXX: openfl bug? Force it to not clear when rendering is passed to the renderGL function.
+		@:privateAccess if (Engine.stage != null && Engine.stage.__renderer != null)
+		{
+			@:privateAccess Engine.stage.__renderer.__cleared = true;
+		}
 	}
 	
 	private var texture:RectangleTexture;
