@@ -1,6 +1,6 @@
 package com.stencyl.graphics;
 
-@:enum abstract ScaleMode(Int)
+@:enum abstract ScaleMode(Int) from Int to Int
 {
 	public var NO_SCALING = 0;
 	public var FULLSCREEN = 1;
