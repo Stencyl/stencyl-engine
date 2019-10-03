@@ -149,9 +149,13 @@ using StringTools;
 		#end
 
 		app = new Application ();
-		
+
 		ManifestResources.init (config);
-		
+		#if ios
+		//XXX: probably a lime bug.
+		@:privateAccess lime.utils.Assets.defaultRootPath = ManifestResources.rootPath = "";
+		#end
+
 		app.meta["build"] = "::meta.buildNumber::";
 		app.meta["company"] = "::meta.company::";
 		app.meta["file"] = "::APP_FILE::";
