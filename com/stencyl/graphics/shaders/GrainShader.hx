@@ -25,8 +25,8 @@ class GrainShader extends BasicShader
 			const float permTexUnit = 1.0/256.0;        // Perm texture texel-size
 			const float permTexUnitHalf = 0.5/256.0;    // Half perm texture texel-size
 			
-			float width = uResolution.x;
-			float height = uResolution.y;
+			float width;
+			float height;
 			
 			uniform float grainamount; //grain amount
 			uniform float colored; //colored noise?
@@ -111,6 +111,9 @@ class GrainShader extends BasicShader
 			
 			void main()
 			{
+				width = uResolution.x;
+				height = uResolution.y;
+				
 				vec2 texCoord = vTexCoord.st;
 			
 				vec3 rotOffset = vec3(1.425,3.892,5.835); //rotation offset values
