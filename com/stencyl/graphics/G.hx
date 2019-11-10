@@ -182,7 +182,7 @@ class G
 		
 		else
 		{
-			graphics.lineStyle(strokeSize, strokeColor, alpha);
+			graphics.lineStyle(strokeSize * Engine.SCALE, strokeColor, alpha);
 		}
 	}
 	
