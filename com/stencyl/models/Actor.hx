@@ -1419,7 +1419,10 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	
 	public function updateChildrenPositions()
 	{
-		var newAnchor = new Point(-currAnimation.x, -currAnimation.y);
+		var newAnchor = (currAnimation != null) ?
+			new Point(-currAnimation.x, -currAnimation.y) :
+			new Point(0, 0);
+		
 		if(!newAnchor.equals(cacheAnchor))
 		{
 			cacheAnchor.copyFrom(newAnchor);
