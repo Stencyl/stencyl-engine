@@ -507,7 +507,7 @@ class BitmapFont
 					if (!isDefault) mtx.scale(pScale, pScale);
 					mtx.translate(_point.x, _point.y);
 					var colorTransformation = (pAlpha == 1 ? null : new ColorTransform(1,1,1,pAlpha,0,0,0,0));
-					pBitmapData.draw(glyph, mtx, colorTransformation, null, new Rectangle(_point.x, _point.y, glyph.width * pScale, glyph.height * pScale));
+					pBitmapData.draw(glyph, mtx, colorTransformation, null, null);
 				}
 				
 				var scaledWidth = glyph.width * Math.min(pScale, 1);
