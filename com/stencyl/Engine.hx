@@ -632,7 +632,10 @@ class Engine
 			{
 				for (a in actors)
 				{
-					a.currAnimation.framesUpdated();
+					if(a.currAnimation != null)
+					{
+						a.currAnimation.framesUpdated();
+					}
 					a.updateMatrix = true;
 				}
 			}
