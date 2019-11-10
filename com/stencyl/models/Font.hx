@@ -38,7 +38,20 @@ class Font extends Resource
 	{
 		if(font != null)
 		{
-			return font.getFontHeight();
+			return Std.int(font.getFontHeight() * fontScale);
+		}
+		
+		else
+		{
+			return 0;
+		}
+	}
+	
+	public function getTextWidth(text:String):Int
+	{
+		if(font != null)
+		{
+			return font.getTextWidth(text, letterSpacing, fontScale);
 		}
 		
 		else
