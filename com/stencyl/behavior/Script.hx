@@ -424,22 +424,46 @@ class Script
 	
 	public function addMobileKeyboardListener(type:Int, func:String->Void)
 	{
-		engine.nativeListeners.push(new NativeListener(EventMaster.TYPE_KEYBOARD, type, func));
+		var nativeListener = new NativeListener(EventMaster.TYPE_KEYBOARD, type, func);
+		engine.nativeListeners.push(nativeListener);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
+		}
 	}
 	
 	public function addMobileAdListener(type:Int, func:Void->Void)
 	{
-		engine.nativeListeners.push(new NativeListener(EventMaster.TYPE_ADS, type, func));
+		var nativeListener = new NativeListener(EventMaster.TYPE_ADS, type, func);
+		engine.nativeListeners.push(nativeListener);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
+		}
 	}
 	
 	public function addGameCenterListener(type:Int, func:String->Void)
 	{
-		engine.nativeListeners.push(new NativeListener(EventMaster.TYPE_GAMECENTER, type, func));
+		var nativeListener = new NativeListener(EventMaster.TYPE_GAMECENTER, type, func);
+		engine.nativeListeners.push(nativeListener);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
+		}
 	}
 	
 	public function addPurchaseListener(type:Int, func:String->Void)
 	{
-		engine.nativeListeners.push(new NativeListener(EventMaster.TYPE_PURCHASES, type, func));
+		var nativeListener = new NativeListener(EventMaster.TYPE_PURCHASES, type, func);
+		engine.nativeListeners.push(nativeListener);
+		
+		if(Std.is(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
+		}
 	}
 	
 	public function addWhenCreatedListener(a:Actor, func:Dynamic->Void)
