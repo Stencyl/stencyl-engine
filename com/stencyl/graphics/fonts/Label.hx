@@ -9,6 +9,7 @@ import openfl.display.Tileset;
 import openfl.display.Tile;
 import openfl.geom.Point;
 
+import com.stencyl.Config;
 import com.stencyl.Engine;
 import com.stencyl.models.Actor;
 import com.stencyl.models.Font;
@@ -350,17 +351,17 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		removeChildren();
 		if (_outline)
 		{
-			_outlineTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset());
+			_outlineTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset(), Config.antialias);
 			tint(_outlineTilemap, _outlineColor);
 			addChild(_outlineTilemap);
 		}
 		if (_shadow)
 		{
-			_shadowTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset());
+			_shadowTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset(), Config.antialias);
 			tint(_shadowTilemap, _shadowColor);
 			addChild(_shadowTilemap);
 		}
-		_characterTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset());
+		_characterTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset(), Config.antialias);
 		if(_useColor)
 		{
 			tint(_characterTilemap, _color);

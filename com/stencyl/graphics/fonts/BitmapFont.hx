@@ -1,5 +1,7 @@
 package com.stencyl.graphics.fonts;
 
+import com.stencyl.Config;
+
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.display.Tilemap;
@@ -537,7 +539,7 @@ class BitmapFont
 	#if use_tilemap
 	public function renderToImg(pBitmapData:BitmapData, pText:String, pColor:PixelColor, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0, ?pUseColorTransform:Bool = true):Void 
 	{
-		var tilemap = new Tilemap(pBitmapData.width, pBitmapData.height, _tileset);
+		var tilemap = new Tilemap(pBitmapData.width, pBitmapData.height, _tileset, Config.antialias);
 
 		render(tilemap, pText, pAlpha, pOffsetX, pOffsetY, pLetterSpacing, pScale, pAngle);
 
