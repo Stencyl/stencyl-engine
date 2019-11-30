@@ -3,7 +3,6 @@ package com.stencyl.models;
 import com.stencyl.graphics.G;
 import com.stencyl.graphics.fonts.Label;
 import com.stencyl.graphics.fonts.BitmapFont;
-import com.stencyl.graphics.fonts.DefaultFontGenerator;
 import com.stencyl.utils.Assets;
 
 class Font extends Resource
@@ -17,7 +16,8 @@ class Font extends Resource
 
 	public var font:BitmapFont;
 	public var fontScale:Float;
-	public var letterSpacing:Int;
+	public var letterSpacing(get,set):Int;
+	public var lineSpacing(get,set):Int;
 	public var isDefault:Bool;
 	
 	public var graphicsLoaded:Bool;
@@ -38,7 +38,7 @@ class Font extends Resource
 	{
 		if(font != null)
 		{
-			return Std.int(font.getFontHeight() * fontScale);
+			return font.getFontHeight(fontScale);
 		}
 		
 		else
@@ -51,7 +51,7 @@ class Font extends Resource
 	{
 		if(font != null)
 		{
-			return font.getTextWidth(text, letterSpacing, fontScale);
+			return font.getTextWidth(text, fontScale);
 		}
 		
 		else
@@ -73,7 +73,6 @@ class Font extends Resource
 			var xml = Xml.parse(textBytes);
 			defaultFont = font = new BitmapFont().loadAngelCode(Assets.getBitmapData("assets/graphics/default-font.png"), xml);
 			fontScale = 1 * Engine.SCALE;
-			letterSpacing = 0;
 			defaultFont.isDefault = true;
 		}
 		
@@ -89,7 +88,6 @@ class Font extends Resource
 			
 			font = new BitmapFont().loadAngelCode(img, xml);
 			fontScale = 1;
-			letterSpacing = 0;
 		}
 		
 		graphicsLoaded = true;
@@ -103,7 +101,6 @@ class Font extends Resource
 		//Use the default font - no extra memory, graceful fallback.
 		font = defaultFont;
 		fontScale = 1;
-		letterSpacing = 0;
 		
 		graphicsLoaded = false;
 	}
@@ -126,9 +123,24 @@ class Font extends Resource
 		#end
 	}
 	
-	public function setLetterSpacing(spacing:Float)
+	public function get_letterSpacing()
 	{
-		letterSpacing = Std.int(spacing);
+		return font.xSpacing;
+	}
+	
+	public function set_letterSpacing(spacing:Int)
+	{
+		return font.xSpacing = spacing;
+	}
+	
+	public function get_lineSpacing()
+	{
+		return font.ySpacing;
+	}
+	
+	public function set_lineSpacing(spacing:Int)
+	{
+		return font.ySpacing = spacing;
 	}
 	
 	public function isBitmapFont(xml:Xml = null):Bool

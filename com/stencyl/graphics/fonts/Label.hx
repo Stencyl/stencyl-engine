@@ -9,6 +9,7 @@ import openfl.display.Tileset;
 import openfl.display.Tile;
 import openfl.geom.Point;
 
+import com.stencyl.Config;
 import com.stencyl.Engine;
 import com.stencyl.models.Actor;
 import com.stencyl.models.Font;
@@ -32,8 +33,6 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	private var _alignment:Int;
 	private var _padding:Int;
 	
-	private var _lineSpacing:Int;
-	private var _letterSpacing:Int;
 	private var _fontScale:Float;
 	private var _autoUpperCase:Bool;
 	private var _wordWrap:Bool;
@@ -44,7 +43,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	private var _multiLine:Bool;
 	
 	private var _alpha:Float;
-
+	
 	@:isVar public var labelX (get, set):Float;
 	@:isVar public var labelY (get, set):Float;
 	
@@ -52,9 +51,9 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	public var bitmapData:BitmapData;
 	private var _bitmap:Bitmap;
 	
-	private var _preparedTextGlyphs:Array<BitmapData>;
-	private var _preparedShadowGlyphs:Array<BitmapData>;
-	private var _preparedOutlineGlyphs:Array<BitmapData>;
+	private var _preparedTextGlyphs:Map<Int, BitmapData>;
+	private var _preparedShadowGlyphs:Map<Int, BitmapData>;
+	private var _preparedOutlineGlyphs:Map<Int, BitmapData>;
 	#else
 	public var _shadowTilemap:Tilemap;
 	public var _outlineTilemap:Tilemap;
@@ -86,21 +85,16 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		_fieldWidth = 1;
 		_multiLine = false;
 		
-		_lineSpacing = 0;
-		_letterSpacing = 0;
 		_fontScale = 1;
 		_autoUpperCase = false;
 		_fixedWidth = true;
 		_wordWrap = true;
 		_alpha = 1;
 		
-		if (pFont == null)
+		if (pFont == null || pFont == Font.defaultFont)
 		{
-			if (BitmapFont.fetch("default") == null)
-			{
-				DefaultFontGenerator.generateAndStoreDefaultFont();
-			}
-			_font = BitmapFont.fetch("default");
+			_font = Font.defaultFont;
+			_fontScale = Engine.SCALE;
 		}
 		else
 		{
@@ -183,13 +177,12 @@ class Label extends Sprite implements EngineScaleUpdateListener
 			return;
 		}
 		
-		var calcFieldWidth:Int = _fieldWidth;
+		var sFieldWidth = Std.int(_fieldWidth * Engine.SCALE);
+		var sPadding = Std.int(_padding * Engine.SCALE);
+		
+		var calcFieldWidth:Int = sFieldWidth;
 		var rows:Array<String> = [];
-		#if !use_tilemap
-		var fontHeight:Int = Math.floor(_font.getFontHeight() * _fontScale);
-		#else
-		var fontHeight:Int = _font.getFontHeight();
-		#end
+		
 		var alignment:Int = _alignment;
 		
 		// cut text into pices
@@ -226,7 +219,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 						
 						if (_wordWrap)
 						{
-							if (_font.getTextWidth(currentRow, _letterSpacing, _fontScale) > _fieldWidth) 
+							if (_font.getTextWidth(currentRow, _fontScale) > sFieldWidth) 
 							{
 								if (txt == "")
 								{
@@ -258,7 +251,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 						}
 						else
 						{
-							if (_font.getTextWidth(currentRow, _letterSpacing, _fontScale) > _fieldWidth) 
+							if (_font.getTextWidth(currentRow, _fontScale) > sFieldWidth) 
 							{
 								j = 0;
 								tempStr = "";
@@ -266,7 +259,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 								while (j < wordLength)
 								{
 									currentRow = txt + word.charAt(j);
-									if (_font.getTextWidth(currentRow, _letterSpacing, _fontScale) > _fieldWidth) 
+									if (_font.getTextWidth(currentRow, _fontScale) > sFieldWidth) 
 									{
 										rows.push(txt.substr(0, txt.length - 1));
 										txt = "";
@@ -294,7 +287,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 							if (!changed) 
 							{
 								var subText:String = txt.substr(0, txt.length - 1);
-								calcFieldWidth = Math.floor(Math.max(calcFieldWidth, _font.getTextWidth(subText, _letterSpacing, _fontScale)));
+								calcFieldWidth = Math.floor(Math.max(calcFieldWidth, _font.getTextWidth(subText, _fontScale)));
 								rows.push(subText);
 							}
 							lineComplete = true;
@@ -308,17 +301,17 @@ class Label extends Sprite implements EngineScaleUpdateListener
 			}
 			else
 			{
-				calcFieldWidth = Math.floor(Math.max(calcFieldWidth, _font.getTextWidth(lines[i], _letterSpacing, _fontScale)));
+				calcFieldWidth = Math.floor(Math.max(calcFieldWidth, _font.getTextWidth(lines[i], _fontScale)));
 				rows.push(lines[i]);
 			}
 		}
 		
-		var finalWidth:Int = calcFieldWidth + _padding * 2 + (_outline ? 2 : 0);
-		#if !use_tilemap
-		var finalHeight:Int = Math.floor(_padding * 2 + Math.max(1, (rows.length * fontHeight + (_shadow ? 1 : 0)) + (_outline ? 2 : 0))) + ((rows.length >= 1) ? _lineSpacing * (rows.length - 1) : 0);
-		#else
-		var finalHeight:Int = Math.floor(_padding * 2 + Math.max(1, (rows.length * fontHeight * _fontScale + (_shadow ? 1 : 0)) + (_outline ? 2 : 0))) + ((rows.length >= 1) ? _lineSpacing * (rows.length - 1) : 0);
-		#end
+		var finalWidth:Int = calcFieldWidth + sPadding * 2 + (_outline ? 2 : 0);
+		var finalHeight:Int = Math.floor(
+			sPadding * 2 +
+			Math.max(1, (rows.length * _font.lineHeight * _fontScale + (_shadow ? 1 : 0)) + (_outline ? 2 : 0)) +
+			((rows.length >= 1) ? _font.ySpacing * (rows.length - 1) * _fontScale : 0)
+		);
 		
 		#if !use_tilemap
 		if (bitmapData != null) 
@@ -350,17 +343,17 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		removeChildren();
 		if (_outline)
 		{
-			_outlineTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset());
+			_outlineTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset(), Config.antialias);
 			tint(_outlineTilemap, _outlineColor);
 			addChild(_outlineTilemap);
 		}
 		if (_shadow)
 		{
-			_shadowTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset());
+			_shadowTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset(), Config.antialias);
 			tint(_shadowTilemap, _shadowColor);
 			addChild(_shadowTilemap);
 		}
-		_characterTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset());
+		_characterTilemap = new Tilemap(finalWidth, finalHeight, _font.getTileset(), Config.antialias);
 		if(_useColor)
 		{
 			tint(_characterTilemap, _color);
@@ -379,24 +372,26 @@ class Label extends Sprite implements EngineScaleUpdateListener
 			{
 				if (_fixedWidth)
 				{
-					ox = Math.floor((_fieldWidth - _font.getTextWidth(t, _letterSpacing, _fontScale)) / 2);
+					ox = Math.floor((sFieldWidth - _font.getTextWidth(t, _fontScale)) / 2);
 				}
 				else
 				{
-					ox = Math.floor((finalWidth - _font.getTextWidth(t, _letterSpacing, _fontScale)) / 2);
+					ox = Math.floor((finalWidth - _font.getTextWidth(t, _fontScale)) / 2);
 				}
 			}
 			if (alignment == TextAlign.RIGHT) 
 			{
 				if (_fixedWidth)
 				{
-					ox = _fieldWidth - Math.floor(_font.getTextWidth(t, _letterSpacing, _fontScale));
+					ox = sFieldWidth - Math.floor(_font.getTextWidth(t, _fontScale));
 				}
 				else
 				{
-					ox = finalWidth - Math.floor(_font.getTextWidth(t, _letterSpacing, _fontScale)) - 2 * padding;
+					ox = finalWidth - Math.floor(_font.getTextWidth(t, _fontScale)) - 2 * sPadding;
 				}
 			}
+			ox += sPadding;
+			oy += sPadding + Std.int(row * (_font.lineHeight + _font.ySpacing) * _fontScale);
 			if (_outline) 
 			{
 				for (py in 0...(2 + 1)) 
@@ -404,9 +399,9 @@ class Label extends Sprite implements EngineScaleUpdateListener
 					for (px in 0...(2 + 1)) 
 					{
 						#if !use_tilemap
-						_font.render(bitmapData, _preparedOutlineGlyphs, t, _outlineColor, _alpha, px + ox + _padding, py + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing, _fontScale);
+						_font.render(bitmapData, _preparedOutlineGlyphs, t, _outlineColor, _alpha, ox + px, oy + py, _fontScale);
 						#else
-						_font.render(_outlineTilemap, t, _alpha, px + ox + _padding, py + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
+						_font.render(_outlineTilemap, t, _alpha, ox + px, oy + py, _fontScale);
 						#end
 					}
 				}
@@ -416,15 +411,15 @@ class Label extends Sprite implements EngineScaleUpdateListener
 			if (_shadow) 
 			{
 				#if !use_tilemap
-				_font.render(bitmapData, _preparedShadowGlyphs, t, _shadowColor, _alpha, 1 + ox + _padding, 1 + oy + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing, _fontScale);
+				_font.render(bitmapData, _preparedShadowGlyphs, t, _shadowColor, _alpha, ox + 1, oy + 1, _fontScale);
 				#else
-				_font.render(_shadowTilemap, t, _alpha, 1 + ox + _padding, 1 + oy + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
+				_font.render(_shadowTilemap, t, _alpha, ox + 1, oy + 1, _fontScale);
 				#end
 			}
 			#if !use_tilemap
-			_font.render(bitmapData, _preparedTextGlyphs, t, _color, _alpha, ox + _padding, oy + row * (fontHeight + _lineSpacing) + _padding, _letterSpacing, _fontScale);
+			_font.render(bitmapData, _preparedTextGlyphs, t, _color, _alpha, ox, oy, _fontScale);
 			#else
-			_font.render(_characterTilemap, t, _alpha, ox + _padding, oy + row * (Math.floor(fontHeight * _fontScale) + _lineSpacing) + _padding, _letterSpacing, _fontScale);
+			_font.render(_characterTilemap, t, _alpha, ox, oy, _fontScale);
 			#end
 			row++;
 		}
@@ -747,30 +742,21 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		if (_stencylFont != pFont)
 		{
 			_stencylFont = pFont;
-			set_font(pFont.font);
-		}
-		return pFont;
-	}
-	
-	/**
-	 * Sets the distance between lines
-	 */
-	public var lineSpacing(get, set):Int;
-	
-	public function get_lineSpacing():Int
-	{
-		return _lineSpacing;
-	}
-	
-	public function set_lineSpacing(pSpacing:Int):Int
-	{
-		if (_lineSpacing != pSpacing)
-		{
-			_lineSpacing = Math.floor(Math.abs(pSpacing));
+			if(pFont == null)
+			{
+				_font = Font.defaultFont;
+				_fontScale = Engine.SCALE;
+			}
+			else
+			{
+				_font = pFont.font;
+				_fontScale = pFont.fontScale;
+			}
+			updateGlyphs(true, _shadow, _outline);
 			_pendingTextChange = true;
 			update();
 		}
-		return pSpacing;
+		return pFont;
 	}
 	
 	public function setAlpha(pAlpha:Float):Void
@@ -813,25 +799,6 @@ class Label extends Sprite implements EngineScaleUpdateListener
 			update();
 		}
 		return pScale;
-	}
-	
-	public var letterSpacing(get, set):Int;
-	
-	public function get_letterSpacing():Int
-	{
-		return _letterSpacing;
-	}
-	
-	public function set_letterSpacing(pSpacing:Int):Int
-	{
-		var tmp:Int = Math.floor(pSpacing);
-		if (tmp != _letterSpacing)
-		{
-			_letterSpacing = tmp;
-			_pendingTextChange = true;
-			update();
-		}
-		return _letterSpacing;
 	}
 	
 	public var autoUpperCase(get, set):Bool;
@@ -927,6 +894,10 @@ class Label extends Sprite implements EngineScaleUpdateListener
 		{
 			set_font(_stencylFont.font);
 		}
+		else if(_font == Font.defaultFont)
+		{
+			set_fontScale(Engine.SCALE);
+		}
 	}
 	
 	private function updateGlyphs(?textGlyphs:Bool = false, ?shadowGlyphs:Bool = false, ?outlineGlyphs:Bool = false):Void
@@ -953,7 +924,7 @@ class Label extends Sprite implements EngineScaleUpdateListener
 	}
 	
 	#if !use_tilemap
-	private function clearPreparedGlyphs(pGlyphs:Array<BitmapData>):Void
+	private function clearPreparedGlyphs(pGlyphs:Map<Int, BitmapData>):Void
 	{
 		if (pGlyphs != null)
 		{

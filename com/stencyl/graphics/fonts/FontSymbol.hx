@@ -4,6 +4,22 @@ import flash.display.BitmapData;
 
 class FontSymbol 
 {
+	#if use_tilemap
+	
+	/**
+	 * tile id in tileSheet
+	 */
+	public var tileID:Int;
+	
+	#else
+	
+	/**
+	 * symbol image
+	 */
+	public var bitmap:BitmapData;
+	
+	#end
+	
 	/**
 	 * x offset to draw symbol with
 	 */
@@ -15,16 +31,12 @@ class FontSymbol
 	public var yoffset:Int;
 	
 	/**
-	 * real width of symbol
+	 * how much to advance cursor after drawing symbol
 	 */
 	public var xadvance:Int;
-	
-	/**
-	 * tile id in tileSheet
-	 */
-	public var tileID:Int;
 	
 	public function new() 
 	{
 	}	
 }
+	

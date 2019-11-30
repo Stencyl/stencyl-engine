@@ -1,5 +1,7 @@
 package com.stencyl.graphics.fonts;
 
+import com.stencyl.Config;
+
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.display.Tilemap;
@@ -26,15 +28,12 @@ class BitmapFont
 	
 	private static var ZERO_POINT:Point = new Point();
 	
-	#if !use_tilemap
-	private var _glyphs:Array<BitmapData>;
-	#else
 	private var _glyphs:Map<Int,FontSymbol>;
 	private var _num_letters:Int;
+	#if use_tilemap
 	private var _tileset:Tileset;
 	#end
 	private var _glyphString:String;
-	private var _maxHeight:Int;
 	
 	#if !use_tilemap
 	private var _matrix:Matrix;
@@ -44,7 +43,10 @@ class BitmapFont
 	private var _point:Point;
 	
 	public var isDefault = false;
-	public var lineSpacing = 0;
+	public var xSpacing = 0;
+	public var ySpacing = 0;
+	public var lineHeight = 0;
+	public var baseline = 0;
 	
 	/**
 	 * Creates a new bitmap font using specified bitmap data and letter input.
@@ -53,57 +55,13 @@ class BitmapFont
 	 */
 	public function new() 
 	{
-		_maxHeight = 0;
 		_point = new Point();
 		#if !use_tilemap
 		_matrix = new Matrix();
 		_colorTransform = new ColorTransform();
-		_glyphs = [];
-		#else
+		#end
 		_glyphs = new Map<Int,FontSymbol>();
 		_num_letters = 0;
-		#end
-	}
-	
-	/**
-	 * Loads font data in Pixelizer's format
-	 * @param	pBitmapData	font source image
-	 * @param	pLetters	all letters contained in this font
-	 * @return				this font
-	 */
-	public function loadPixelizer(pBitmapData:BitmapData, pLetters:String):BitmapFont
-	{
-		reset();
-		_glyphString = pLetters;
-		
-		if (pBitmapData != null) 
-		{
-			var tileRects:Array<Rectangle> = [];
-			var result:BitmapData = prepareBitmapData(pBitmapData, tileRects);
-			var currRect:Rectangle;
-			
-			#if use_tilemap
-			_tileset = new Tileset(result);
-			#end
-			
-			for (letterID in 0...(tileRects.length))
-			{
-				currRect = tileRects[letterID];
-				
-				// create glyph
-				#if !use_tilemap
-				var bd:BitmapData = new BitmapData(Math.floor(currRect.width), Math.floor(currRect.height), true, 0x0);
-				bd.copyPixels(pBitmapData, currRect, ZERO_POINT, null, null, true);
-				
-				// store glyph
-				setGlyph(_glyphString.charCodeAt(letterID), bd);
-				#else
-				setGlyph(_glyphString.charCodeAt(letterID), currRect, letterID, 0, 0, Math.floor(currRect.width));
-				#end
-			}
-		}
-		
-		return this;
 	}
 	
 	/**
@@ -120,8 +78,6 @@ class BitmapFont
 		{
 			_glyphString = "";
 			var rect:Rectangle = new Rectangle();
-			var point:Point = new Point();
-			var bd:BitmapData;
 			var letterID:Int = 0;
 			var charCode:Int;
 			var charString:String;
@@ -137,9 +93,16 @@ class BitmapFont
 				{
 					for (nodeChild in node.elements())
 					{
-						if (nodeChild.nodeName == "common")
+						if (nodeChild.nodeName == "info")
 						{
-							lineSpacing = Std.parseInt(nodeChild.get("lineHeight"));
+							var spacing = [for(s in nodeChild.get("spacing").split(",")) Std.parseInt(s)];
+							xSpacing = spacing[0];
+							ySpacing = spacing[1];
+						}
+						else if (nodeChild.nodeName == "common")
+						{
+							lineHeight = Std.parseInt(nodeChild.get("lineHeight"));
+							baseline = Std.parseInt(nodeChild.get("base"));
 						}
 						else if (nodeChild.nodeName == "chars")
 						{
@@ -155,54 +118,50 @@ class BitmapFont
 				{
 					if (node.nodeName == "char")
 					{
+						var symbol:FontSymbol = new FontSymbol();
+						#if use_tilemap
+						symbol.tileID = letterID;
+						#end
+						symbol.xoffset = Std.parseInt(node.get("xoffset"));
+						symbol.yoffset = Std.parseInt(node.get("yoffset"));
+						symbol.xadvance = Std.parseInt(node.get("xadvance"));
+						
 						rect.x = Std.parseInt(node.get("x"));
 						rect.y = Std.parseInt(node.get("y"));
 						rect.width = Std.parseInt(node.get("width"));
 						rect.height = Std.parseInt(node.get("height"));
 						
-						point.x = Std.parseInt(node.get("xoffset"));
-						point.y = Std.parseInt(node.get("yoffset"));
-						
 						charCode = Std.parseInt(node.get("id"));
 						charString = String.fromCharCode(charCode);
 						_glyphString += charString;
 						
-						var xadvance:Int = Std.parseInt(node.get("xadvance"));
-						//var padding:Int = Std.parseInt(node.get("padding"));
-						
-						var charWidth:Int = xadvance;
-
-						if(rect.width > xadvance)
-						{
-							charWidth = Std.int(rect.width);
-							point.x = 0;
-						}
-						
-						// create glyph
 						#if !use_tilemap
-						bd = null;
 						if (charString != " " && charString != "")
 						{
-							bd = new BitmapData(charWidth, Std.parseInt(node.get("height")) + Std.parseInt(node.get("yoffset")), true, 0x0);
+							symbol.bitmap = new BitmapData(Std.int(rect.width), Std.int(rect.height), true, 0x0);
+							symbol.bitmap.copyPixels(pBitmapData, rect, ZERO_POINT, null, null, true);
 						}
 						else
 						{
-							bd = new BitmapData(charWidth, 1, true, 0x0);
+							symbol.bitmap = null;
 						}
-						bd.copyPixels(pBitmapData, rect, point, null, null, true);
 						
-						// store glyph
-						setGlyph(charCode, bd);
+						var oldSymbol = _glyphs.get(charCode);
+						if(oldSymbol != null && oldSymbol.bitmap != null)
+							oldSymbol.bitmap.dispose();
 						#else
-						if (charString != " " && charString != "")
+						if (charString != " " && charString != "" && rect.width > 0 && rect.height > 0)
 						{
-							setGlyph(charCode, rect, letterID, Math.floor(point.x), Math.floor(point.y), charWidth);
+							symbol.tileID = _tileset.addRect(rect);
 						}
 						else
 						{
-							setGlyph(charCode, rect, letterID, Math.floor(point.x), 1, charWidth);
+							symbol.tileID = -1;
 						}
 						#end
+						
+						_glyphs.set(charCode, symbol);
+						_num_letters++;
 						
 						letterID++;
 					}
@@ -219,12 +178,8 @@ class BitmapFont
 	private function reset():Void
 	{
 		dispose();
-		_maxHeight = 0;
-		#if !use_tilemap
-		_glyphs = [];
-		#else
 		_glyphs = new Map<Int,FontSymbol>();
-		#end
+		_num_letters = 0;
 		_glyphString = "";
 	}
 	
@@ -265,10 +220,6 @@ class BitmapFont
 					{
 						rowHeight = gh;
 					}
-					if (gh > _maxHeight) 
-					{
-						_maxHeight = gh;
-					}
 					
 					// go to next glyph
 					cx += gw;
@@ -305,9 +256,9 @@ class BitmapFont
 	}
 	
 	#if !use_tilemap
-	public function getPreparedGlyphs(pScale:Float, pColor:Int, ?pUseColorTransform:Bool = true):Array<BitmapData>
+	public function getPreparedGlyphs(pScale:Float, pColor:Int, ?pUseColorTransform:Bool = true):Map<Int, BitmapData>
 	{
-		var result:Array<BitmapData> = [];
+		var result:Map<Int, BitmapData> = [];
 		
 		_matrix.identity();
 		_matrix.scale(pScale, pScale);
@@ -322,21 +273,20 @@ class BitmapFont
 		
 		var glyph:BitmapData;
 		var preparedGlyph:BitmapData;
-		for (i in 0...(_glyphs.length))
+		for (i => glyph in _glyphs)
 		{
-			glyph = _glyphs[i];
-			if (glyph != null)
+			if (glyph.bitmap != null)
 			{
-				preparedGlyph = new BitmapData(Math.floor(glyph.width * pScale), Math.floor(glyph.height * pScale), true, 0x00000000);
+				preparedGlyph = new BitmapData(Math.floor(glyph.bitmap.width * pScale), Math.floor(glyph.bitmap.height * pScale), true, 0x00000000);
 				if (pUseColorTransform)
 				{
-					preparedGlyph.draw(glyph,  _matrix, _colorTransform);
+					preparedGlyph.draw(glyph.bitmap, _matrix, _colorTransform);
 				}
 				else
 				{
-					preparedGlyph.draw(glyph,  _matrix);
+					preparedGlyph.draw(glyph.bitmap, _matrix);
 				}
-				result[i] = preparedGlyph;
+				result.set(i, preparedGlyph);
 			}
 		}
 		
@@ -350,88 +300,17 @@ class BitmapFont
 	public function dispose():Void 
 	{
 		#if !use_tilemap
-		var bd:BitmapData;
-		for (i in 0...(_glyphs.length)) 
+		for (glyph in _glyphs) 
 		{
-			bd = _glyphs[i];
-			if (bd != null) 
-			{
-				_glyphs[i].dispose();
-			}
+			if(glyph.bitmap != null)
+				glyph.bitmap.dispose();
 		}
 		#else
 		_tileset = null;
-		_num_letters = 0;
 		#end
+		_num_letters = 0;
 		_glyphs = null;
 	}
-	
-	#if !use_tilemap
-	/**
-	 * Serializes font data to cryptic bit string.
-	 * @return	Cryptic string with font as bits.
-	 */
-	public function getFontData():String 
-	{
-		var output:String = "";
-		for (i in 0...(_glyphString.length)) 
-		{
-			var charCode:Int = _glyphString.charCodeAt(i);
-			var glyph:BitmapData = _glyphs[charCode];
-			output += _glyphString.substr(i, 1);
-			output += glyph.width;
-			output += glyph.height;
-			for (py in 0...(glyph.height)) 
-			{
-				for (px in 0...(glyph.width)) 
-				{
-					output += (glyph.getPixel32(px, py) != 0 ? "1":"0");
-				}
-			}
-		}
-		return output;
-	}
-	#end
-	
-	#if !use_tilemap
-	private function setGlyph(pCharID:Int, pBitmapData:BitmapData):Void 
-	{
-		if (_glyphs[pCharID] != null) 
-		{
-			_glyphs[pCharID].dispose();
-		}
-		
-		_glyphs[pCharID] = pBitmapData;
-		
-		if (pBitmapData.height > _maxHeight) 
-		{
-			_maxHeight = pBitmapData.height;
-		}
-	}
-	#else
-	private function setGlyph(pCharID:Int, pRect:Rectangle, pGlyphID:Int, ?pOffsetX:Int = 0, ?pOffsetY:Int = 0, ?pAdvanceX:Int = 0):Void 
-	{
-		if(pRect.width == 0)
-			pRect.width = 1;
-		if(pRect.height == 0)
-			pRect.height = 1;
-		_tileset.addRect(pRect);
-		
-		var symbol:FontSymbol = new FontSymbol();
-		symbol.tileID = pGlyphID;
-		symbol.xoffset = pOffsetX;
-		symbol.yoffset = pOffsetY;
-		symbol.xadvance = pAdvanceX;
-		
-		_glyphs.set(pCharID, symbol);
-		_num_letters++;
-		
-		if ((Math.floor(pRect.height) + pOffsetY) > _maxHeight) 
-		{
-			_maxHeight = Math.floor(pRect.height) + pOffsetY;
-		}
-	}
-	#end
 	
 	/**
 	 * Renders a string of text onto bitmap data using the font.
@@ -442,19 +321,14 @@ class BitmapFont
 	 * @param	pOffsetY	Y position of text output.
 	 */
 	#if !use_tilemap 
-	public function render(pBitmapData:BitmapData, pFontData:Array<BitmapData>, pText:String, pColor:PixelColor, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0):Void 
+	public function render(pBitmapData:BitmapData, pFontData:Map<Int,BitmapData>, pText:String, pColor:PixelColor, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pScale:Float, ?pAngle:Float = 0):Void 
 	#else
-	public function render(tilemap:Tilemap, pText:String, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0):Void 
+	public function render(tilemap:Tilemap, pText:String, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pScale:Float, ?pAngle:Float = 0):Void 
 	#end
 	{
-		_point.x = pOffsetX;
-		_point.y = pOffsetY;
-		#if !use_tilemap
-		var glyph:BitmapData;
-		#else
+		var curX:Float = pOffsetX;
+		var curY:Float = pOffsetY;
 		var glyph:FontSymbol;
-		var glyphWidth:Int;
-		#end
 		
 		var realCount = 0;
 
@@ -478,56 +352,57 @@ class BitmapFont
 				}
 			}
 			
-			#if !use_tilemap
-			glyph = pFontData[charCode];
-			if (glyph != null) 
-			#else
 			glyph = _glyphs.get(charCode);
-			if (_glyphs.exists(charCode))
-			#end
+			if (glyph != null) 
 			{
+				_point.x = curX + glyph.xoffset * pScale;
+				_point.y = curY + glyph.yoffset * pScale;
+				
 				#if !use_tilemap
-
-				if(pAlpha == 1 && pScale == 1)
+				
+				var glyphBitmap = pFontData.get(charCode);
+				
+				if(glyphBitmap != null)
 				{
-					pBitmapData.copyPixels(glyph, glyph.rect, _point, null, null, true);
+					if(pAlpha == 1 && pScale == 1)
+					{
+						pBitmapData.copyPixels(glyphBitmap, glyphBitmap.rect, _point, null, null, true);
+					}
+					
+					else if(pScale == 1)
+					{
+						var colorTransformation = new ColorTransform(1,1,1,pAlpha,0,0,0,0);
+						var copy = glyphBitmap.clone();
+						copy.colorTransform(copy.rect, colorTransformation);
+						pBitmapData.copyPixels(copy, copy.rect, _point, null, null, true);
+					}
+
+					else
+					{
+						var mtx = new Matrix();
+						if (!isDefault) mtx.scale(pScale, pScale);
+						mtx.translate(_point.x, _point.y);
+						var colorTransformation = (pAlpha == 1 ? null : new ColorTransform(1,1,1,pAlpha,0,0,0,0));
+						pBitmapData.draw(glyphBitmap, mtx, colorTransformation, null, null);
+					}
 				}
 				
-				else if(pScale == 1)
-				{
-					var colorTransformation = new ColorTransform(1,1,1,pAlpha,0,0,0,0);
-					var copy = glyph.clone();
-					copy.colorTransform(copy.rect, colorTransformation);
-					pBitmapData.copyPixels(copy, copy.rect, _point, null, null, true);
-				}
-
-				else
-				{
-					var mtx = new Matrix();
-					if (!isDefault) mtx.scale(pScale, pScale);
-					mtx.translate(_point.x, _point.y);
-					var colorTransformation = (pAlpha == 1 ? null : new ColorTransform(1,1,1,pAlpha,0,0,0,0));
-					pBitmapData.draw(glyph, mtx, colorTransformation, null, null);
-				}
-				
-				var scaledWidth = glyph.width * Math.min(pScale, 1);
-				_point.x += scaledWidth + pLetterSpacing;
 				#else
-				glyphWidth = glyph.xadvance;
 				
-				if(charCode != 32)
+				if(glyph.tileID != -1)
 				{
-					var tile = new Tile(glyph.tileID, _point.x + glyph.xoffset * pScale, _point.y + glyph.yoffset * pScale);
+					var tile = new Tile(glyph.tileID, _point.x, _point.y);
 					
 					tile.scaleX = pScale;
 					tile.scaleY = pScale;
 					tile.alpha = pAlpha;
-
+					
 					tilemap.addTile(tile);
 				}
 				
-				_point.x += glyphWidth * pScale + pLetterSpacing;
 				#end
+				
+				curX += (glyph.xadvance + xSpacing) * pScale;
 			}
 			
 			realCount++;
@@ -535,11 +410,11 @@ class BitmapFont
 	}
 
 	#if use_tilemap
-	public function renderToImg(pBitmapData:BitmapData, pText:String, pColor:PixelColor, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pLetterSpacing:Int, pScale:Float, ?pAngle:Float = 0, ?pUseColorTransform:Bool = true):Void 
+	public function renderToImg(pBitmapData:BitmapData, pText:String, pColor:PixelColor, pAlpha:Float, pOffsetX:Int, pOffsetY:Int, pScale:Float, ?pAngle:Float = 0, ?pUseColorTransform:Bool = true):Void 
 	{
-		var tilemap = new Tilemap(pBitmapData.width, pBitmapData.height, _tileset);
+		var tilemap = new Tilemap(pBitmapData.width, pBitmapData.height, _tileset, Config.antialias);
 
-		render(tilemap, pText, pAlpha, pOffsetX, pOffsetY, pLetterSpacing, pScale, pAngle);
+		render(tilemap, pText, pAlpha, pOffsetX, pOffsetY, pScale, pAngle);
 
 		if (pUseColorTransform)
 		{
@@ -570,11 +445,10 @@ class BitmapFont
 	/**
 	 * Returns the width of a certain test string.
 	 * @param	pText	String to measure.
-	 * @param	pLetterSpacing	distance between letters
 	 * @param	pFontScale	"size" of the font
 	 * @return	Width in pixels.
 	 */
-	public function getTextWidth(pText:String, ?pLetterSpacing:Int = 0, ?pFontScale:Float = 1.0):Int 
+	public function getTextWidth(pText:String, ?pFontScale:Float = 1.0):Int 
 	{
 		var w:Int = 0;
 		var realCount = 0;
@@ -599,29 +473,21 @@ class BitmapFont
 				}
 			}
 			
-			#if !use_tilemap
-			var glyph:BitmapData = _glyphs[charCode];
-			if (glyph != null) 
+			var glyph:FontSymbol = _glyphs.get(charCode);
+			if (glyph != null)
 			{
-				w += glyph.width;
+				w += glyph.xadvance;
 			}
-			#else
-			if (_glyphs.exists(charCode)) 
-			{
-				
-				w += _glyphs.get(charCode).xadvance;
-			}
-			#end
 			
 			realCount++;
 		}
 		
-		w = Math.round(w * pFontScale);
-		
 		if (textLength > 1)
 		{
-			w += (textLength - 1) * pLetterSpacing;
+			w += (textLength - 1) * xSpacing;
 		}
+		
+		w = Std.int(w * pFontScale);
 		
 		return w;
 	}
@@ -630,9 +496,9 @@ class BitmapFont
 	 * Returns height of font in pixels.
 	 * @return Height of font in pixels.
 	 */
-	public function getFontHeight():Int 
+	public function getFontHeight(?pFontScale:Float = 1.0):Int 
 	{
-		return _maxHeight;
+		return Std.int(lineHeight * pFontScale);
 	}
 	
 	/**
@@ -643,11 +509,7 @@ class BitmapFont
 	
 	public function get_numLetters():Int 
 	{
-		#if !use_tilemap
-		return _glyphs.length;
-		#else
 		return _num_letters;
-		#end
 	}
 	
 	/**

@@ -20,7 +20,6 @@ import com.stencyl.utils.Utils;
 
 import com.stencyl.graphics.fonts.Label;
 import com.stencyl.graphics.fonts.BitmapFont;
-import com.stencyl.graphics.fonts.DefaultFontGenerator;
 
 class G 
 {
@@ -39,7 +38,7 @@ class G
 	public var strokeColor:Int;
 	public var font:Font;
 	
-	private var fontData:Array<BitmapData>;
+	private var fontData:Map<Int,BitmapData>;
 	private var mtx:Matrix;
 
 	//Temp to avoid creating objects
@@ -59,7 +58,7 @@ class G
 	private var actor:Actor;
 	
 	//Cache for speed
-	public static var fontCache:Map<Int,Array<BitmapData>> = null;
+	public static var fontCache:Map<Int,Map<Int,BitmapData>> = null;
 	
 	public static function resetStatics():Void
 	{
@@ -102,7 +101,7 @@ class G
 		#if !use_tilemap
 		if(fontCache == null)
 		{
-			fontCache = new Map<Int,Array<BitmapData>>();
+			fontCache = new Map<Int,Map<Int,BitmapData>>();
 		}
 		
 		var temp = fontCache.get(-1);
@@ -115,8 +114,6 @@ class G
 		
 		fontData = temp;
 		#end
-		
-		//defaultFont.font = new BitmapFont("assets/graphics/default-font.png", 16, 16, BitmapFont.TEXT_SET25, 55, 0, 0);
 	}
 	
 	 public inline function resetGraphicsSettings():Void
@@ -275,7 +272,7 @@ class G
 
 	private inline function getCacheKey(string:String, font:Font, alpha:Float):String
 	{
-		return string + ":" + font.ID + ":" + alpha + ":" + font.letterSpacing + ":" + Engine.SCALE;
+		return string + ":" + font.ID + ":" + alpha + ":" + Engine.SCALE;
 	}
 	
 	public inline function drawString(s:String, x:Float, y:Float)
@@ -323,7 +320,7 @@ class G
 		}
 		else
 		{
-			var w = font.font.getTextWidth(s, font.letterSpacing, font.fontScale);
+			var w = font.font.getTextWidth(s, font.fontScale);
 			var h = Std.int(font.font.getFontHeight() * font.fontScale);
 			
 			if(w > 0 && h > 0)
@@ -331,9 +328,9 @@ class G
 				toDraw = new BitmapData(w, h, true, 0);
 				
 				#if !use_tilemap
-				font.font.render(toDraw, fontData, s, 0x000000, alpha, 0, 0, font.letterSpacing, font.fontScale, 0);
+				font.font.render(toDraw, fontData, s, 0x000000, alpha, 0, 0, font.fontScale, 0);
 				#else
-				font.font.renderToImg(toDraw, s, 0x000000, alpha, 0, 0, font.letterSpacing, font.fontScale, 0, false); //0, false
+				font.font.renderToImg(toDraw, s, 0x000000, alpha, 0, 0, font.fontScale, 0, false); //0, false
 				#end
 				
 				var temp = new TemporaryImage();
