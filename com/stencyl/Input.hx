@@ -804,27 +804,22 @@ class Input
 		_joyState.set(joystick.id, joystate);
 		
 		joystick.onAxisMove.add (function (axis:Int, value:Float) {
-			trace('onAxisMove $axis $value');
 			onJoyAxisMove(joystate, axis, value);
 		});
 
 		joystick.onButtonDown.add (function (button:Int) {
-			trace('onButtonDown $button');
 			onJoyButtonDown(joystate, button);
 		});
 
 		joystick.onButtonUp.add (function (button:Int) {
-			trace('onButtonUp $button');
 			onJoyButtonUp(joystate, button);
 		});
 
 		joystick.onHatMove.add (function (hat:Int, position:JoystickHatPosition) {
-			trace('onHatMove $hat $position');
 			onJoyHatMove(joystate, hat, position);
 		});
 
 		joystick.onTrackballMove.add (function (trackball:Int, x:Float, y:Float) {
-			trace('onTrackballMove $trackball $x $y');
 			onJoyBallMove(joystate, trackball, x, y);
 		});
 
