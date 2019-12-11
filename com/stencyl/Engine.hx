@@ -187,7 +187,9 @@ class Engine
 	
 	public static var ITERATIONS:Int = 3;
 	public static var physicsScale:Float = 10.0;
-		
+	
+	public static var preservePadding = false;
+	
 	public static var paddingLeft:Int = 0;
 	public static var paddingRight:Int = 0;
 	public static var paddingTop:Int = 0;
@@ -470,6 +472,7 @@ class Engine
 		ITERATIONS = 3;
 		physicsScale = 10.0;
 		
+		preservePadding = false;
 		paddingLeft = 0;
 		paddingRight = 0;
 		paddingTop = 0;
@@ -977,7 +980,10 @@ class Engine
 		
 		//---
 		
-		setOffscreenTolerance(0, 0, 0, 0);
+		if(!preservePadding)
+		{
+			setOffscreenTolerance(0, 0, 0, 0);
+		}
 		
 		tasks = new Array<TimedTask>();
 		
