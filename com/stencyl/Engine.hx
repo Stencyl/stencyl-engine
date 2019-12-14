@@ -693,7 +693,14 @@ class Engine
 	public function new(root:Universal) 
 	{
 		#if !flash
-		com.stencyl.graphics.GLUtil.initialize();
+		if (stage.window.context.type == OPENGL || stage.window.context.type == OPENGLES || stage.window.context.type == WEBGL)
+		{
+			com.stencyl.graphics.GLUtil.initialize();
+		}
+		else
+		{
+			trace("WARNING: Unexpectedly running without a GL context.");
+		}
 		
 		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
 		{
