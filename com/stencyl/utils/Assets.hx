@@ -6,6 +6,8 @@ typedef Assets = openfl.utils.Assets;
 
 #else
 
+import haxe.io.Bytes;
+
 import lime.media.AudioBuffer;
 import lime.utils.Assets as LimeAssets;
 import lime.utils.Bytes;
@@ -69,10 +71,15 @@ class Assets
 		switch(type)
 		{
 			case "IMAGE":
+				#if flash
+				modifiedAssetCache.set(id, loadBitmapDataFromBytes(content));
+				callback();
+				#else
 				BitmapData.loadFromBytes(content, null).onComplete(function(img) {
 					modifiedAssetCache.set(id, img);
 					callback();
 				});
+				#end
 
 			case "BINARY":
 				modifiedAssetCache.set(id, content);
@@ -87,6 +94,33 @@ class Assets
 				callback();
 		}
 	}
+
+	#if flash
+	@:access(lime.graphics.Image)
+	@:access(lime.graphics.ImageBuffer)
+	public static function loadBitmapDataFromBytes(bytes:Bytes):BitmapData
+	{
+		var bytesInput = new haxe.io.BytesInput(bytes);
+		var pngReader = new format.png.Reader(bytesInput);
+		var data = pngReader.read();
+		var header = format.png.Tools.getHeader(data);
+		var argb = (format.png.Tools.extract32(data):ByteArray);
+		argb.position = 0;
+
+		var bd:BitmapData = new BitmapData(header.width, header.height);
+		bd.setPixels(new openfl.geom.Rectangle(0, 0, header.width, header.height), argb);
+
+		if (bd == null) return null;
+		
+		var buffer = new lime.graphics.ImageBuffer(null, bd.width, bd.height);
+		buffer.__srcBitmapData = bd;
+		buffer.transparent = bd.transparent;
+		var img = new lime.graphics.Image(buffer);
+
+		var bdToReturn = BitmapData.fromImage(img);
+		return bdToReturn;
+	}
+	#end
 }
 
 #end

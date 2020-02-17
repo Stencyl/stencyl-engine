@@ -12,6 +12,7 @@
 	<haxelib name="cloner" />
 	<haxelib name="mbs" />
 	<haxelib name="hscript" unless="cppia" />
+	<haxelib name="format" if="flash" unless="publishing" />
 
 	<template path="templates" />
 	
