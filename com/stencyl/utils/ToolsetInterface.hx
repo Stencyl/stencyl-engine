@@ -98,7 +98,11 @@ class ToolsetInterface
 		trace("connectHandler: " + event);
 		if(Config.buildConfig != null)
 		{
-			sendData(["Content-Type" => "Client-Registration"], haxe.Json.stringify(Config.buildConfig));
+			sendData
+			(
+				["Content-Type" => "Client-Registration", "Project-Name" => Config.projectName],
+				haxe.Json.stringify(Config.buildConfig)
+			);
 		}
 	}
 

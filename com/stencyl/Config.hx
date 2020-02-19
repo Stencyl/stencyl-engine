@@ -35,6 +35,7 @@ class Config
 
 	public static var toolsetInterfaceHost:String;
 	public static var toolsetInterfacePort:Null<Int>;
+	public static var projectName:String;
 	public static var buildConfig:Dynamic;
 
 	//Other
@@ -166,6 +167,7 @@ class Config
 		scales = (data.scales : Array<String>).map(Scale.fromString).array();
 		toolsetInterfaceHost = data.toolsetInterfaceHost;
 		toolsetInterfacePort = data.toolsetInterfacePort;
+		projectName = data.projectName;
 		buildConfig = data.buildConfig;
 	}
 
