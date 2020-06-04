@@ -25,6 +25,7 @@ import com.stencyl.models.actor.Sprite;
 import com.stencyl.utils.Assets;
 import com.stencyl.utils.LazyIntMap;
 import com.stencyl.utils.LazyStringMap;
+import com.stencyl.utils.Utils;
 
 import mbs.core.MbsObject;
 import mbs.core.MbsType;
@@ -198,7 +199,7 @@ class Data
 		var id:Null<Int> = resourceNameLookup.get(name);
 		if(id == null)
 		{
-			trace("Resource with name " + name + " doesn't exist.");
+			trace("Error: Resource with name " + name + " doesn't exist." + Utils.printCallstackIfAvailable());
 			return null;
 		}
 		
@@ -210,7 +211,7 @@ class Data
 		var address:Null<Int> = resourceLookup.get(id);
 		if(address == null)
 		{
-			trace("Error: resource with id " + id + " doesn't exist." #if debug + "\n" + CallStack.toString(CallStack.callStack()) #end);
+			trace("Error: resource with id " + id + " doesn't exist." + Utils.printCallstackIfAvailable());
 			return null;
 		}
 		var obj:MbsObject = cast MbsDynamicHelper.readDynamicUsingPool(resourceListMbs, address, resourceReaderPool);
