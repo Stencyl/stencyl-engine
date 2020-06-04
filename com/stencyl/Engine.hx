@@ -3405,7 +3405,7 @@ class Engine
 	{
 		if(type == null)
 		{
-			trace("Error: getActorsOfType was passed a null type");
+			trace("Error: getActorsOfType was passed a null type" + Utils.printCallstackIfAvailable());
 			return [];
 		}
 	

@@ -1,5 +1,7 @@
 package com.stencyl.behavior;
 
+import com.stencyl.utils.Utils;
+
 import openfl.display.Graphics;
 import haxe.ds.StringMap;
 import haxe.CallStack;
@@ -112,8 +114,7 @@ class Behavior
 			{
 				trace
 				(
-					"Error in when created for behavior: " + name + "\n" + e
-					#if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end
+					"Error in when created for behavior: " + name + "\n" + e + Utils.printExceptionstackIfAvailable()
 				);
 			}
 		}
@@ -227,7 +228,7 @@ class Behavior
 			
 			catch(e:String)
 			{
-				trace("Could not init attribute: " + a.fieldName + " - " + e);
+				trace("Could not init attribute: " + a.fieldName + " - " + e + Utils.printExceptionstackIfAvailable());
 			}
 		}
 	}

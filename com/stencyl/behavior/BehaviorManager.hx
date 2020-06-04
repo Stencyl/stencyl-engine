@@ -1,5 +1,7 @@
 package com.stencyl.behavior;
 
+import com.stencyl.utils.Utils;
+
 class BehaviorManager
 {
 	public var behaviors:Array<Behavior>;
@@ -59,7 +61,7 @@ class BehaviorManager
 				catch(e:String)
 				{
 					trace("Error in when created for behavior: " + bObj.name);
-					trace(e);
+					trace(e + Utils.printExceptionstackIfAvailable());
 				}
 			}
 			
@@ -112,19 +114,17 @@ class BehaviorManager
 			
 			var field = Reflect.field(b.script, attributeName);
 
-			#if flash
 			if(field == null && !Reflect.hasField(b.script, attributeName))
 			{
-				trace("Get Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
+				trace("Get Warning: Attribute " + attributeName + " does not exist for " + behaviorName + Utils.printCallstackIfAvailable());
 			}
-			#end
 			
 			return field;
 		}
 		
 		else
 		{
-			trace("Warning: Behavior does not exist - " + behaviorName);
+			trace("Warning: Behavior does not exist - " + behaviorName + Utils.printCallstackIfAvailable());
 		}
 		
 		return null;
@@ -147,19 +147,13 @@ class BehaviorManager
 			
 			else
 			{
-				//Just insist on doing it
-				#if !flash
-				Reflect.setField(b.script, attributeName, value);
-				b.script.propertyChanged(attributeName, value);
-				#else
-				trace("Set Warning: Attribute " + attributeName + " does not exist for " + behaviorName);
-				#end
+				trace("Set Warning: Attribute " + attributeName + " does not exist for " + behaviorName + Utils.printCallstackIfAvailable());
 			}
 		}
 		
 		else
 		{
-			trace("Warning: Behavior does not exist - " + behaviorName);	
+			trace("Warning: Behavior does not exist - " + behaviorName + Utils.printCallstackIfAvailable());	
 		}
 	}
 
