@@ -3584,7 +3584,8 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		if(bitmapFilters == null)
 			bitmapFilters = [];
 		bitmapFilters = bitmapFilters.concat(filter);
-		currAnimation.filter = bitmapFilters;
+		if(currAnimation != null)
+			currAnimation.filter = bitmapFilters;
 		#else
 		filters = filters.concat(filter);
 		#end
@@ -3594,7 +3595,8 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	{
 		#if (!use_actor_tilemap && !flash)
 		bitmapFilters = null;
-		currAnimation.filter = null;
+		if(currAnimation != null)
+			currAnimation.filter = null;
 		#else
 		filters = null;
 		#end
