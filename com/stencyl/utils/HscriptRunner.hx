@@ -14,11 +14,13 @@ class HscriptRunner
 		parser = new Parser();
 		interp = new Interp();
 		
-		interp.variables.set("imageTrace", Reflect.makeVarArgs(function(el) {
+		interp.variables.set("trace", Reflect.makeVarArgs(function(el) {
 			var inf = interp.posInfos();
+			inf.className = "Script";
+			inf.methodName = "run";
 			var v = el.shift();
 			if( el.length > 0 ) inf.customParams = el;
-			ToolsetInterface.imageTrace(cast v, inf);
+			haxe.Log.trace(v, inf);
 		}));
 	}
 	

@@ -3,6 +3,7 @@ package com.stencyl.utils;
 
 import haxe.io.Bytes;
 import openfl.display.*;
+import openfl.geom.*;
 import openfl.errors.*;
 import openfl.events.*;
 import openfl.net.Socket;
@@ -347,14 +348,38 @@ class ToolsetInterface
 	{
 		if(ToolsetInterface.connected)
 		{
-			instance.sendData
-			(
-				["Content-Type" => "Log",
-				"Class" => pos.className,
-				"Method" => pos.methodName,
-				"Line" => ""+pos.lineNumber],
-				"" + v
-			);
+			if(Std.is(v, BitmapData))
+			{
+				imageTrace((v : BitmapData), pos);
+			}
+			else if(Std.is(v, DisplayObject))
+			{
+				var dobj:DisplayObject = cast v;
+				
+				@:privateAccess dobj.__update(false, true);
+				var mtx = @:privateAccess dobj.__getRenderTransform().clone();
+				var rect = dobj.getBounds(null);
+				
+				var bounds = new Rectangle();
+				@:privateAccess rect.__transform(bounds, mtx);
+				mtx.translate(-bounds.x, -bounds.y);
+				
+				var img:BitmapData = new BitmapData(Std.int(bounds.width), Std.int(bounds.height));
+				img.draw(dobj, mtx, null, null, null, Config.antialias);
+				
+				imageTrace(img, pos);
+			}
+			else
+			{
+				instance.sendData
+				(
+					["Content-Type" => "Log",
+					"Class" => pos.className,
+					"Method" => pos.methodName,
+					"Line" => ""+pos.lineNumber],
+					"" + v
+				);
+			}
 		}
 		else
 		{
