@@ -426,14 +426,6 @@ class Universal extends Sprite
 			stage.__handleError (e);
 			
 		}
-		
-		stage.dispatchEvent (new openfl.events.Event (openfl.events.Event.RESIZE, false, false));
-		
-		if (stage.window.fullscreen) {
-			
-			stage.dispatchEvent (new openfl.events.FullScreenEvent (openfl.events.FullScreenEvent.FULL_SCREEN, false, false, true, true));
-			
-		}
 
 		#end
 	}
