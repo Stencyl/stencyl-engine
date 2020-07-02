@@ -738,6 +738,8 @@ class Engine
 		stage.window.onRestore.add(onWindowRestore);
 		stage.window.onMaximize.add(onWindowMaximize);
 		stage.window.onFullscreen.add(onWindowFullScreen);
+		if(isFullScreen && !stage.window.fullscreen)
+			@:privateAccess stage.window.__fullscreen = true;
 		#end
 		
 		#if use_actor_tilemap
