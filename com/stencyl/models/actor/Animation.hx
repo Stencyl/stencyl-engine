@@ -7,6 +7,7 @@ import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.actor.Sprite;
 import com.stencyl.graphics.DynamicTileset;
 import com.stencyl.utils.Assets;
+import com.stencyl.utils.Utils;
 import com.stencyl.Engine;
 import box2D.dynamics.B2FixtureDef;
 
@@ -124,6 +125,12 @@ class Animation
 			"assets/graphics/" + Engine.IMG_BASE + "/sprite-" + parent.ID + "-" + animID + ".png",
 			false
 		);
+
+		if(imgData.rect == null)
+		{
+			trace("Error: trying to load from a disposed BitmapData. " + Utils.printCallstackIfAvailable());
+			imgData = null;
+		}
 		
 		if(imgData == null)
 		{
