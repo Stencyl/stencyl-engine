@@ -306,7 +306,7 @@ class ToolsetInterface
 							var resourceType = parts[0];
 							var resourceID = Std.parseInt(parts[1]);
 							var subID = -1;
-							if(parts.length == 2)
+							if(parts.length == 3)
 								subID = Std.parseInt(parts[2]);
 
 							var resource = Data.get().resources.get(resourceID);
