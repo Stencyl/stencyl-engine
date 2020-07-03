@@ -356,12 +356,15 @@ class ToolsetInterface
 			{
 				var dobj:DisplayObject = cast v;
 				
-				@:privateAccess dobj.__update(false, true);
-				var mtx = @:privateAccess dobj.__getRenderTransform().clone();
-				var rect = dobj.getBounds(null);
+				var mtx = dobj.transform.concatenatedMatrix;
 				
+				#if flash
+				var bounds = dobj.transform.pixelBounds;
+				#else
 				var bounds = new Rectangle();
-				@:privateAccess rect.__transform(bounds, mtx);
+				@:privateAccess dobj.getBounds(null).__transform(bounds, mtx);
+				#end
+				
 				mtx.translate(-bounds.x, -bounds.y);
 				
 				var img:BitmapData = new BitmapData(Std.int(bounds.width), Std.int(bounds.height));
