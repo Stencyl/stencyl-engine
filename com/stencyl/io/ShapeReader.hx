@@ -196,6 +196,7 @@ class ShapeReader
 	{
 		if(!CheckVertexDirection(v))
 		{
+			trace("HAD TO REVERSE VERTICES: " + v);
 			ReverseVertices(v);
 			return false;
 		}
