@@ -26,19 +26,26 @@ class Callable<T>
 		
 		#if stencyltools
 		
-		if(!callTable.exists(id))
-			callTable.set(id, []);
-		callTable.get(id).push(this);
-		
-		if(!callTemplates.exists(id) && callTemplatesRaw.exists(id))
+		if(id != -1 && parent != null)
 		{
-			parseCallable(id);
-		}
-		
-		if(callTemplates.exists(id))
-		{
-			var expr = callTemplates.get(id);
-			this.f = parent.interp.expr(expr);
+			if(!callTable.exists(id))
+				callTable.set(id, []);
+			callTable.get(id).push(this);
+			
+			if(!callTemplates.exists(id) && callTemplatesRaw.exists(id))
+			{
+				parseCallable(id);
+			}
+			
+			if(callTemplates.exists(id))
+			{
+				var expr = callTemplates.get(id);
+				this.f = parent.interp.expr(expr);
+			}
+			else
+			{
+				this.f = f;
+			}
 		}
 		else
 		{

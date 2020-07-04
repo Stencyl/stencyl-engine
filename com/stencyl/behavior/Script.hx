@@ -1259,7 +1259,7 @@ class Script
 	 * @param	delay		Delay in execution (in milliseconds)
 	 * @param	toExecute	The function to execute after the delay
 	 */
-	public static function runLater(delay:Float, toExecute:TimedTask->Void, actor:Actor = null):TimedTask
+	public static function runLater(delay:Float, toExecute:Callable<TimedTask->Void>, actor:Actor = null):TimedTask
 	{
 		var t:TimedTask = new TimedTask(toExecute, Std.int(delay), false, actor);
 		engine.addTask(t);
@@ -1273,7 +1273,7 @@ class Script
 	 * @param	interval	How frequently to execute (in milliseconds)
 	 * @param	toExecute	The function to execute after the delay
 	 */
-	public static function runPeriodically(interval:Float, toExecute:TimedTask->Void, actor:Actor = null):TimedTask
+	public static function runPeriodically(interval:Float, toExecute:Callable<TimedTask->Void>, actor:Actor = null):TimedTask
 	{
 		var t:TimedTask = new TimedTask(toExecute, Std.int(interval), true, actor);
 		engine.addTask(t);
@@ -3857,10 +3857,10 @@ class Script
 			loader.addEventListener(IOErrorEvent.IO_ERROR, defaultURLError);
 			#elseif android
 			//making sure the connection closes after 0.5 secs so the game doesn't freeze
-		    runLater(500, function(timeTask:TimedTask):Void
+		    runLater(500, new Callable(-1, null, function(timeTask:TimedTask):Void
 			{
 				loader.close();
-			});
+			}));
 			#end
 		} 
 		
@@ -3898,10 +3898,10 @@ class Script
 			loader.addEventListener(IOErrorEvent.IO_ERROR, defaultURLError);
 			#else
 			//making sure the connection closes after 0.5 secs so the game doesn't freeze
-		    runLater(500, function(timeTask:TimedTask):Void
+		    runLater(500, new Callable(-1, null, function(timeTask:TimedTask):Void
 			{
 				loader.close();
-			});
+			}));
 			#end
 		} 
 		

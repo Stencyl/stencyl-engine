@@ -4,7 +4,7 @@ import com.stencyl.models.Actor;
 
 class TimedTask
 {
-	public var toExecute:TimedTask->Void;
+	public var toExecute:Callable<TimedTask->Void>;
 	public var interval:Int;
 	public var repeats:Bool;
 	public var actor:Actor;
@@ -16,7 +16,7 @@ class TimedTask
 	//Used as an efficient way to tell different "incarnations" of recycled actors apart.
 	public var actorCreateTime:Float;
 	
-	public function new(toExecute:TimedTask->Void, interval:Int, repeats:Bool, actor:Actor = null)
+	public function new(toExecute:Callable<TimedTask->Void>, interval:Int, repeats:Bool, actor:Actor = null)
 	{
 		this.toExecute = toExecute;
 		this.interval = interval;
@@ -45,7 +45,7 @@ class TimedTask
 		
 		if(timer <= 0)
 		{
-			toExecute(this);
+			toExecute.f(this);
 			done = !repeats;
 			
 			if(repeats)
