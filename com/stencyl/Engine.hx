@@ -31,6 +31,7 @@ import com.stencyl.behavior.Attribute;
 import com.stencyl.behavior.Behavior;
 import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.behavior.BehaviorManager;
+import com.stencyl.behavior.Callable;
 import com.stencyl.behavior.Script;
 import com.stencyl.behavior.TimedTask;
 import com.stencyl.event.EventMaster;
@@ -4246,11 +4247,12 @@ class Engine
 		{
 			try
 			{
-				var f:Array<Dynamic>->Void = listeners[r];			
-				f(listeners);
+				var c:Callable<Void->Void> = listeners[r];
+				c.f();
 				
-				if(Utils.indexOf(listeners, f) == -1)
+				if(c.finished)
 				{
+					listeners.remove(c);
 					r--;
 				}
 			}
@@ -4273,11 +4275,12 @@ class Engine
 		{
 			try
 			{
-				var f:Dynamic->Array<Dynamic>->Void = listeners[r];
-				f(value, listeners);
+				var c:Callable<Dynamic->Void> = listeners[r];
+				c.f(value);
 				
-				if(Utils.indexOf(listeners, f) == -1)
+				if(c.finished)
 				{
+					listeners.remove(c);
 					r--;
 				}
 			}
@@ -4300,11 +4303,12 @@ class Engine
 		{
 			try
 			{
-				var f:Dynamic->Dynamic->Array<Dynamic>->Void = listeners[r];			
-				f(value, value2, listeners);
+				var c:Callable<Dynamic->Dynamic->Void> = listeners[r];
+				c.f(value, value2);
 				
-				if(Utils.indexOf(listeners, f) == -1)
+				if(c.finished)
 				{
+					listeners.remove(c);
 					r--;
 				}
 			}
@@ -4327,11 +4331,12 @@ class Engine
 		{
 			try
 			{
-				var f:Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void = listeners[r];			
-				f(value, value2, value3, listeners);
+				var c:Callable<Dynamic->Dynamic->Dynamic->Void> = listeners[r];
+				c.f(value, value2, value3);
 				
-				if(Utils.indexOf(listeners, f) == -1)
+				if(c.finished)
 				{
+					listeners.remove(c);
 					r--;
 				}
 			}
@@ -4354,11 +4359,12 @@ class Engine
 		{
 			try
 			{
-				var f:Dynamic->Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void = listeners[r];			
-				f(value, value2, value3, value4, listeners);
+				var c:Callable<Dynamic->Dynamic->Dynamic->Dynamic->Void> = listeners[r];
+				c.f(value, value2, value3, value4);
 				
-				if(Utils.indexOf(listeners, f) == -1)
+				if(c.finished)
 				{
+					listeners.remove(c);
 					r--;
 				}
 			}
@@ -4381,11 +4387,12 @@ class Engine
 		{
 			try
 			{
-				var f:Dynamic->Dynamic->Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void = listeners[r];			
-				f(value, value2, value3, value4, value5, listeners);
+				var c:Callable<Dynamic->Dynamic->Dynamic->Dynamic->Dynamic->Void> = listeners[r];
+				c.f(value, value2, value3, value4, value5);
 				
-				if(Utils.indexOf(listeners, f) == -1)
+				if(c.finished)
 				{
+					listeners.remove(c);
 					r--;
 				}
 			}

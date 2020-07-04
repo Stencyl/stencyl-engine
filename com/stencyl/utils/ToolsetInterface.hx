@@ -337,7 +337,13 @@ class ToolsetInterface
 
 					});
 				}
-
+				
+			case "Modified Event":
+			
+				var callableID = header.get("Callable-ID");
+				var receivedText = content.readUTFBytes(content.length);
+				com.stencyl.behavior.Callable.reloadCallable(Std.parseInt(callableID), receivedText);
+				
 			default:
 		}
 	}

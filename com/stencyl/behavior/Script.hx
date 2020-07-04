@@ -5,6 +5,8 @@ import openfl.net.SharedObject;
 import openfl.ui.Mouse;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
+import openfl.events.KeyboardEvent;
+import openfl.events.TouchEvent;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
 import openfl.net.URLRequestMethod;
@@ -158,6 +160,15 @@ class Script
 	
 	private var attributeTweens:Map<String, TweenFloat>;
 	
+	// Live Coding
+	
+	#if stencyltools
+	
+	var parser:hscript.Parser;
+	var interp:hscript.Interp;
+	
+	#end
+	
 	//*-----------------------------------------------
 	//* Init
 	//*-----------------------------------------------
@@ -172,6 +183,27 @@ class Script
 		equalityPairs = new ObjectMap<Dynamic, Dynamic>();
 		attributeTweens = new Map<String, TweenFloat>();
 	}
+	
+	#if stencyltools
+	
+	public function initHscript():Void
+	{
+		interp = new hscript.Interp();
+		com.stencyl.utils.HscriptRunner.loadDefaults(interp);
+		
+		interp.variables.set("this", this);
+		interp.variables.set("engine", engine);
+		interp.variables.set("FRONT", FRONT);
+		interp.variables.set("MIDDLE", MIDDLE);
+		interp.variables.set("BACK", BACK);
+		interp.variables.set("CHANNELS", CHANNELS);
+		
+		interp.variables.set("wrapper", wrapper);
+		interp.variables.set("nameMap", nameMap);
+		interp.variables.set("propertyChanged", propertyChanged);
+	}
+	
+	#end
 
 	//*-----------------------------------------------
 	//* Internals
@@ -422,7 +454,7 @@ class Script
 	//Native Listeners poll on a special place where events are infrequent. Do NOT attempt to use
 	//for anything normal in the engine!
 	
-	public function addMobileKeyboardListener(type:Int, func:String->Void)
+	public function addMobileKeyboardListener(type:Int, func:Callable<String->Void>)
 	{
 		var nativeListener = new NativeListener(EventMaster.TYPE_KEYBOARD, type, func);
 		engine.nativeListeners.push(nativeListener);
@@ -433,7 +465,7 @@ class Script
 		}
 	}
 	
-	public function addMobileAdListener(type:Int, func:Void->Void)
+	public function addMobileAdListener(type:Int, func:Callable<Void->Void>)
 	{
 		var nativeListener = new NativeListener(EventMaster.TYPE_ADS, type, func);
 		engine.nativeListeners.push(nativeListener);
@@ -444,7 +476,7 @@ class Script
 		}
 	}
 	
-	public function addGameCenterListener(type:Int, func:String->Void)
+	public function addGameCenterListener(type:Int, func:Callable<String->Void>)
 	{
 		var nativeListener = new NativeListener(EventMaster.TYPE_GAMECENTER, type, func);
 		engine.nativeListeners.push(nativeListener);
@@ -455,7 +487,7 @@ class Script
 		}
 	}
 	
-	public function addPurchaseListener(type:Int, func:String->Void)
+	public function addPurchaseListener(type:Int, func:Callable<String->Void>)
 	{
 		var nativeListener = new NativeListener(EventMaster.TYPE_PURCHASES, type, func);
 		engine.nativeListeners.push(nativeListener);
@@ -466,7 +498,7 @@ class Script
 		}
 	}
 	
-	public function addWhenCreatedListener(a:Actor, func:Dynamic->Void)
+	public function addWhenCreatedListener(a:Actor, func:Callable<Void->Void>)
 	{			
 		var isActorScript = Std.is(this, ActorScript);
 		
@@ -484,7 +516,7 @@ class Script
 		}
 	}
 	
-	public function addWhenKilledListener(a:Actor, func:Dynamic->Void)
+	public function addWhenKilledListener(a:Actor, func:Callable<Void->Void>)
 	{	
 		var isActorScript = Std.is(this, ActorScript);
 		
@@ -502,7 +534,7 @@ class Script
 		}	
 	}
 					
-	public function addWhenUpdatedListener(a:Actor, func:Float->Dynamic->Void)
+	public function addWhenUpdatedListener(a:Actor, func:Callable<Float->Void>)
 	{
 		var isActorScript = Std.is(this, ActorScript);
 	
@@ -534,7 +566,7 @@ class Script
 		}
 	}
 	
-	public function addWhenDrawingListener(a:Actor, func:G->Int->Int->Dynamic->Void)
+	public function addWhenDrawingListener(a:Actor, func:Callable<G->Int->Int->Void>)
 	{
 		var isActorScript = Std.is(this, ActorScript);
 	
@@ -566,7 +598,7 @@ class Script
 		}
 	}
 	
-	public function addActorEntersRegionListener(reg:Region, func:Dynamic->Array<Dynamic>->Void)
+	public function addActorEntersRegionListener(reg:Region, func:Callable<Actor->Void>)
 	{
 		if(reg == null)
 		{
@@ -582,7 +614,7 @@ class Script
 		}
 	}
 	
-	public function addActorExitsRegionListener(reg:Region, func:Dynamic->Array<Dynamic>->Void)
+	public function addActorExitsRegionListener(reg:Region, func:Callable<Actor->Void>)
 	{
 		if(reg == null)
 		{
@@ -598,7 +630,7 @@ class Script
 		}
 	}
 	
-	public function addActorPositionListener(a:Actor, func:Dynamic->Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void)
+	public function addActorPositionListener(a:Actor, func:Callable<Bool->Bool->Bool->Bool->Void>)
 	{
 		if(a == null)
 		{
@@ -615,7 +647,7 @@ class Script
 		}
 	}
 	
-	public function addActorTypeGroupPositionListener(obj:Dynamic, func:Actor->Dynamic->Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void)
+	public function addActorTypeGroupPositionListener(obj:Dynamic, func:Callable<Actor->Bool->Bool->Bool->Bool->Void>)
 	{
 		if(!engine.typeGroupPositionListeners.exists(obj))
 		{
@@ -631,7 +663,7 @@ class Script
 		}
 	}
 	
-	public function addSwipeListener(func:Array<Dynamic>->Void)
+	public function addSwipeListener(func:Callable<Void->Void>)
 	{
 		engine.whenSwipedListeners.push(func);
 		
@@ -641,7 +673,7 @@ class Script
 		}
 	}
 	
-	public function addMultiTouchStartListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addMultiTouchStartListener(func:Callable<TouchEvent->Void>)
 	{
 		engine.whenMTStartListeners.push(func);
 		
@@ -651,7 +683,7 @@ class Script
 		}
 	}
 	
-	public function addMultiTouchMoveListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addMultiTouchMoveListener(func:Callable<TouchEvent->Void>)
 	{
 		engine.whenMTDragListeners.push(func);
 		
@@ -661,7 +693,7 @@ class Script
 		}
 	}
 	
-	public function addMultiTouchEndListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addMultiTouchEndListener(func:Callable<TouchEvent->Void>)
 	{
 		engine.whenMTEndListeners.push(func);
 		
@@ -671,7 +703,7 @@ class Script
 		}
 	}
 	
-	public function addKeyStateListener(key:String, func:Dynamic->Dynamic->Array<Dynamic>->Void)
+	public function addKeyStateListener(key:String, func:Callable<Bool->Bool->Void>)
 	{			
 		if(engine.whenKeyPressedListeners.get(key) == null)
 		{
@@ -689,7 +721,7 @@ class Script
 		}
 	}
 	
-	public function addAnyKeyPressedListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addAnyKeyPressedListener(func:Callable<KeyboardEvent->Void>)
 	{
 		engine.whenAnyKeyPressedListeners.push(func);
 		
@@ -699,7 +731,7 @@ class Script
 		}
 	}
 	
-	public function addAnyKeyReleasedListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addAnyKeyReleasedListener(func:Callable<KeyboardEvent->Void>)
 	{
 		engine.whenAnyKeyReleasedListeners.push(func);
 		
@@ -709,7 +741,7 @@ class Script
 		}
 	}
 
-	public function addAnyGamepadPressedListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addAnyGamepadPressedListener(func:Callable<String->Void>)
 	{
 		engine.whenAnyGamepadPressedListeners.push(func);
 		
@@ -719,7 +751,7 @@ class Script
 		}
 	}
 	
-	public function addAnyGamepadReleasedListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addAnyGamepadReleasedListener(func:Callable<String->Void>)
 	{
 		engine.whenAnyGamepadReleasedListeners.push(func);
 		
@@ -729,7 +761,7 @@ class Script
 		}
 	}
 	
-	public function addMousePressedListener(func:Array<Dynamic>->Void)
+	public function addMousePressedListener(func:Callable<Void->Void>)
 	{
 		engine.whenMousePressedListeners.push(func);
 		
@@ -739,7 +771,7 @@ class Script
 		}
 	}
 	
-	public function addMouseReleasedListener(func:Array<Dynamic>->Void)
+	public function addMouseReleasedListener(func:Callable<Void->Void>)
 	{
 		engine.whenMouseReleasedListeners.push(func);
 		
@@ -749,7 +781,7 @@ class Script
 		}
 	}
 	
-	public function addMouseMovedListener(func:Array<Dynamic>->Void)
+	public function addMouseMovedListener(func:Callable<Void->Void>)
 	{
 		engine.whenMouseMovedListeners.push(func);
 		
@@ -759,7 +791,7 @@ class Script
 		}
 	}
 	
-	public function addMouseDraggedListener(func:Array<Dynamic>->Void)
+	public function addMouseDraggedListener(func:Callable<Void->Void>)
 	{
 		engine.whenMouseDraggedListeners.push(func);
 		
@@ -769,7 +801,7 @@ class Script
 		}
 	}
 	
-	public function addMouseOverActorListener(a:Actor, func:Int->Array<Dynamic>->Void)
+	public function addMouseOverActorListener(a:Actor, func:Callable<Int->Void>)
 	{	
 		if(a == null)
 		{
@@ -785,7 +817,7 @@ class Script
 		}
 	}
 	
-	public function addPropertyChangeListener(propertyKey:String, propertyKey2:String, func:Dynamic->Array<Dynamic>->Void)
+	public function addPropertyChangeListener(propertyKey:String, propertyKey2:String, func:Callable<Dynamic->Void>)
 	{
 		if(!propertyChangeListeners.exists(propertyKey))
 		{
@@ -841,25 +873,26 @@ class Script
 				{
 					try
 					{
-						var f:Dynamic->Array<Dynamic>->Void = listeners[r];			
-						f(property, listeners);
+						var c:Callable<Dynamic->Void> = listeners[r];			
+						c.f(property);
 					
-						if(com.stencyl.utils.Utils.indexOf(listeners, f) == -1)
+						if(c.finished)
 						{
+							listeners.remove(c);
 							r--;
 						
 							//If equality, remove from other list as well
-							if(equalityPairs.get(f) != null)
+							if(equalityPairs.get(c) != null)
 							{
-								for(list in cast(equalityPairs.get(f), Array<Dynamic>))
+								for(list in cast(equalityPairs.get(c), Array<Dynamic>))
 								{
 									if(list != listeners)
 									{
-										list.splice(com.stencyl.utils.Utils.indexOf(list, f), 1);
+										list.splice(com.stencyl.utils.Utils.indexOf(list, c), 1);
 									}
 								}
 								
-								equalityPairs.remove(f);
+								equalityPairs.remove(c);
 							}
 						}
 					}
@@ -875,7 +908,7 @@ class Script
 		}
 	}
 	
-	public function addCollisionListener(a:Actor, func:Collision->Array<Dynamic>->Void)
+	public function addCollisionListener(a:Actor, func:Callable<Collision->Void>)
 	{					
 		if(a == null)
 		{				
@@ -893,7 +926,7 @@ class Script
 	}
 	
 	//Only used for type/group type/group collisions
-	public function addSceneCollisionListener(obj:Dynamic, obj2:Dynamic, func:Collision->Array<Dynamic>->Void)
+	public function addSceneCollisionListener(obj:Dynamic, obj2:Dynamic, func:Callable<Collision->Void>)
 	{
 		if(!engine.collisionListeners.exists(obj))
 		{
@@ -920,7 +953,7 @@ class Script
 		}
 	}
 	
-	public function addWhenTypeGroupCreatedListener(obj:Dynamic, func:Actor->Array<Dynamic>->Void)
+	public function addWhenTypeGroupCreatedListener(obj:Dynamic, func:Callable<Actor->Void>)
 	{
 		if(!engine.whenTypeGroupCreatedListeners.exists(obj))
 		{
@@ -936,7 +969,7 @@ class Script
 		}
 	}
 	
-	public function addWhenTypeGroupKilledListener(obj:Dynamic, func:Actor->Array<Dynamic>->Void)
+	public function addWhenTypeGroupKilledListener(obj:Dynamic, func:Callable<Actor->Void>)
 	{
 		if(!engine.whenTypeGroupDiesListeners.exists(obj))
 		{
@@ -952,7 +985,7 @@ class Script
 		}
 	}
 	
-	public function addSoundListener(obj:Dynamic, func:Array<Dynamic>->Void)
+	public function addSoundListener(obj:Dynamic, func:Callable<Void->Void>)
 	{
 		if (Std.is(obj, Sound))
 		{
@@ -986,7 +1019,7 @@ class Script
 		}
 	}
 	
-	public function addFocusChangeListener(func:Bool->Array<Dynamic>->Void)
+	public function addFocusChangeListener(func:Callable<Bool->Void>)
 	{						
 		engine.whenFocusChangedListeners.push(func);
 		
@@ -996,7 +1029,7 @@ class Script
 		}
 	}
 	
-	public function addPauseListener(func:Bool->Array<Dynamic>->Void)
+	public function addPauseListener(func:Callable<Bool->Void>)
 	{						
 		engine.whenPausedListeners.push(func);
 		

@@ -21,7 +21,6 @@ class Behavior
 	public var type:String;
 	
 	public var classname:String;
-	public var cls:Class<Dynamic>;
 	public var script:Script;
 	
 	public var attributes:Map<String,Attribute>;
@@ -45,20 +44,6 @@ class Behavior
 		this.engine = engine;
 		this.classname = classname;
 	
-		if(engine != null)
-		{
-			try
-			{
-				cls = Type.resolveClass(classname);
-			}
-			
-			catch(e:String)
-			{
-				trace("Could not load: " + classname);
-				trace(e);
-			}
-		}
-		
 		this.enabled = enabled;
 		this.drawable = drawable;
 
@@ -71,33 +56,7 @@ class Behavior
 
 	public function initScript(initJustScript:Bool = false)
 	{
-		if(cls == null)
-		{
-			trace("Could not init Behavior: " + name + " with " + classname);
-			script = new SceneScript();
-			return;
-		}
-		
-		if(type == "actor")
-		{
-			if (Type.getClass(parent) == Engine)
-			{
-				trace("Actor behavior " + name + " failed to init because parent is scene.  Open and save the scene to resolve this error.");
-				script = new SceneScript();
-				return;
-			}
-			script = Type.createInstance(cls, [0, parent, null]);
-		}
-		else
-		{
-			if (Type.getClass(parent) == com.stencyl.models.Actor)
-			{
-				trace("Scene behavior " + name + " failed to init because parent is actor.  Open and save the actor to resolve this error.");
-				script = new SceneScript();
-				return;
-			}
-			script = Type.createInstance(cls, [0, null]);
-		}
+		script = BehaviorLoader.createInstance(name, type, classname, parent);
 		
 		script.wrapper = this;
 		initAttributes();
