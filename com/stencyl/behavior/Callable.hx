@@ -69,9 +69,14 @@ class Callable<T>
 			
 			var parser = new hscript.Parser();
 			parser.allowTypes = true;
-			for(name in c.parent.nameMap)
+			
+			for(name in ReflectionHelper.getStaticFieldMap("com.stencyl.behavior.Script").keys())
 			{
-				parser.classFields.set(name, name);
+				parser.knownFields.set(name, "Script");
+			}
+			for(name in ReflectionHelper.getFieldMap(c.parent.wrapper.classname).keys())
+			{
+				parser.knownFields.set(name, "this");
 			}
 			
 			callTemplates.set(id, parser.parseString(callTemplatesRaw.get(id)));
