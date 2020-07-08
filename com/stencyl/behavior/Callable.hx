@@ -1,8 +1,18 @@
 package com.stencyl.behavior;
 
+import haxe.ds.Either;
+
 #if stencyltools
 import hscript.*;
 #end
+
+abstract CFunction<A>(Either<Callable<A>, A>) from Either<Callable<A>, A> to Either<Callable<A>, A> {
+  @:from inline static function fromCallable<A>(a:Callable<A>) : CFunction<A> return Left(a);
+  @:from inline static function fromFunction<A>(a:A) : CFunction<A> return Right(a);
+    
+  @:to inline function toCallable():Null<Callable<A>> return switch(this) {case Left(a): a; default: null;}
+  @:to inline function toFunction():Null<A> return switch(this) {case Right(a): a; default: null;}
+}
 
 @:access(com.stencyl.behavior.Script)
 

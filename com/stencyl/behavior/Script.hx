@@ -36,6 +36,7 @@ import com.stencyl.graphics.G;
 import com.stencyl.models.scene.ScrollingBitmap;
 
 import com.stencyl.Config;
+import com.stencyl.behavior.Callable.CFunction;
 import com.stencyl.models.Actor;
 import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.CollisionPoint;
@@ -164,8 +165,8 @@ class Script
 	
 	#if stencyltools
 	
-	var parser:hscript.Parser;
-	var interp:hscript.Interp;
+	private var parser:hscript.Parser;
+	private var interp:hscript.Interp;
 	
 	#end
 	
@@ -454,9 +455,18 @@ class Script
 	//Native Listeners poll on a special place where events are infrequent. Do NOT attempt to use
 	//for anything normal in the engine!
 	
-	public function addMobileKeyboardListener(type:Int, func:Callable<String->Void>)
+	private static function asCallable<T>(func:CFunction<T>):Callable<T>
 	{
-		var nativeListener = new NativeListener(EventMaster.TYPE_KEYBOARD, type, func);
+		return switch((func : haxe.ds.Either<Callable<T>, T>))
+		{
+			case Left(callable): callable;
+			case Right(functionType): new Callable(-1, null, functionType);
+		}
+	}
+	
+	public function addMobileKeyboardListener(type:Int, func:CFunction<String->Void>)
+	{
+		var nativeListener = new NativeListener(EventMaster.TYPE_KEYBOARD, type, asCallable(func));
 		engine.nativeListeners.push(nativeListener);
 		
 		if(Std.is(this, ActorScript))
@@ -465,9 +475,9 @@ class Script
 		}
 	}
 	
-	public function addMobileAdListener(type:Int, func:Callable<Void->Void>)
+	public function addMobileAdListener(type:Int, func:CFunction<Void->Void>)
 	{
-		var nativeListener = new NativeListener(EventMaster.TYPE_ADS, type, func);
+		var nativeListener = new NativeListener(EventMaster.TYPE_ADS, type, asCallable(func));
 		engine.nativeListeners.push(nativeListener);
 		
 		if(Std.is(this, ActorScript))
@@ -476,9 +486,9 @@ class Script
 		}
 	}
 	
-	public function addGameCenterListener(type:Int, func:Callable<String->Void>)
+	public function addGameCenterListener(type:Int, func:CFunction<String->Void>)
 	{
-		var nativeListener = new NativeListener(EventMaster.TYPE_GAMECENTER, type, func);
+		var nativeListener = new NativeListener(EventMaster.TYPE_GAMECENTER, type, asCallable(func));
 		engine.nativeListeners.push(nativeListener);
 		
 		if(Std.is(this, ActorScript))
@@ -487,9 +497,9 @@ class Script
 		}
 	}
 	
-	public function addPurchaseListener(type:Int, func:Callable<String->Void>)
+	public function addPurchaseListener(type:Int, func:CFunction<String->Void>)
 	{
-		var nativeListener = new NativeListener(EventMaster.TYPE_PURCHASES, type, func);
+		var nativeListener = new NativeListener(EventMaster.TYPE_PURCHASES, type, asCallable(func));
 		engine.nativeListeners.push(nativeListener);
 		
 		if(Std.is(this, ActorScript))
@@ -498,9 +508,10 @@ class Script
 		}
 	}
 	
-	public function addWhenCreatedListener(a:Actor, func:Callable<Void->Void>)
+	public function addWhenCreatedListener(a:Actor, func:CFunction<Void->Void>)
 	{			
 		var isActorScript = Std.is(this, ActorScript);
+		var callable = asCallable(func);
 		
 		if(a == null)
 		{
@@ -508,17 +519,18 @@ class Script
 			return;
 		}
 		
-		a.whenCreatedListeners.push(func);
+		a.whenCreatedListeners.push(callable);
 		
 		if(isActorScript)
 		{
-			cast(this, ActorScript).actor.registerListener(a.whenCreatedListeners, func);
+			cast(this, ActorScript).actor.registerListener(a.whenCreatedListeners, callable);
 		}
 	}
 	
-	public function addWhenKilledListener(a:Actor, func:Callable<Void->Void>)
+	public function addWhenKilledListener(a:Actor, func:CFunction<Void->Void>)
 	{	
 		var isActorScript = Std.is(this, ActorScript);
+		var callable = asCallable(func);
 		
 		if(a == null)
 		{
@@ -526,18 +538,19 @@ class Script
 			return;
 		}
 		
-		a.whenKilledListeners.push(func);
+		a.whenKilledListeners.push(callable);
 		
 		if(isActorScript)
 		{
-			cast(this, ActorScript).actor.registerListener(a.whenKilledListeners, func);
+			cast(this, ActorScript).actor.registerListener(a.whenKilledListeners, callable);
 		}	
 	}
 					
-	public function addWhenUpdatedListener(a:Actor, func:Callable<Float->Void>)
+	public function addWhenUpdatedListener(a:Actor, func:CFunction<Float->Void>)
 	{
 		var isActorScript = Std.is(this, ActorScript);
-	
+		var callable = asCallable(func);
+		
 		if(a == null)
 		{
 			if(isActorScript)
@@ -558,18 +571,19 @@ class Script
 			listeners = engine.whenUpdatedListeners;
 		}
 		
-		listeners.push(func);
+		listeners.push(callable);
 			
 		if(isActorScript)
 		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
+			cast(this, ActorScript).actor.registerListener(listeners, callable);
 		}
 	}
 	
-	public function addWhenDrawingListener(a:Actor, func:Callable<G->Float->Float->Void>)
+	public function addWhenDrawingListener(a:Actor, func:CFunction<G->Float->Float->Void>)
 	{
 		var isActorScript = Std.is(this, ActorScript);
-	
+		var callable = asCallable(func);
+		
 		if(a == null)
 		{
 			if(isActorScript)
@@ -590,15 +604,15 @@ class Script
 			listeners = engine.whenDrawingListeners;
 		}
 		
-		listeners.push(func);
+		listeners.push(callable);
 						
 		if(isActorScript)
 		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
+			cast(this, ActorScript).actor.registerListener(listeners, callable);
 		}
 	}
 	
-	public function addActorEntersRegionListener(reg:Region, func:Callable<Actor->Void>)
+	public function addActorEntersRegionListener(reg:Region, func:CFunction<Actor->Void>)
 	{
 		if(reg == null)
 		{
@@ -606,15 +620,17 @@ class Script
 			return;
 		}
 		
-		reg.whenActorEntersListeners.push(func);
+		var callable = asCallable(func);
+		
+		reg.whenActorEntersListeners.push(callable);
 								
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(reg.whenActorEntersListeners, func);
+			cast(this, ActorScript).actor.registerListener(reg.whenActorEntersListeners, callable);
 		}
 	}
 	
-	public function addActorExitsRegionListener(reg:Region, func:Callable<Actor->Void>)
+	public function addActorExitsRegionListener(reg:Region, func:CFunction<Actor->Void>)
 	{
 		if(reg == null)
 		{
@@ -622,15 +638,17 @@ class Script
 			return;
 		}
 		
-		reg.whenActorExitsListeners.push(func);
+		var callable = asCallable(func);
+		
+		reg.whenActorExitsListeners.push(callable);
 								
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(reg.whenActorExitsListeners, func);
+			cast(this, ActorScript).actor.registerListener(reg.whenActorExitsListeners, callable);
 		}
 	}
 	
-	public function addActorPositionListener(a:Actor, func:Callable<Bool->Bool->Bool->Bool->Void>)
+	public function addActorPositionListener(a:Actor, func:CFunction<Bool->Bool->Bool->Bool->Void>)
 	{
 		if(a == null)
 		{
@@ -638,73 +656,87 @@ class Script
 			return;
 		}
 		
-		a.positionListeners.push(func);
+		var callable = asCallable(func);
+		
+		a.positionListeners.push(callable);
 		a.positionListenerCount++;
 								
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(a.positionListeners, func);
+			cast(this, ActorScript).actor.registerListener(a.positionListeners, callable);
 		}
 	}
 	
-	public function addActorTypeGroupPositionListener(obj:Dynamic, func:Callable<Actor->Bool->Bool->Bool->Bool->Void>)
+	public function addActorTypeGroupPositionListener(obj:Dynamic, func:CFunction<Actor->Bool->Bool->Bool->Bool->Void>)
 	{
 		if(!engine.typeGroupPositionListeners.exists(obj))
 		{
 			engine.typeGroupPositionListeners.set(obj, new Array<Dynamic>());
 		}
 		
+		var callable = asCallable(func);
+		
 		var listeners = cast(engine.typeGroupPositionListeners.get(obj), Array<Dynamic>);
-		listeners.push(func);		
+		listeners.push(callable);		
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
+			cast(this, ActorScript).actor.registerListener(listeners, callable);
 		}
 	}
 	
-	public function addSwipeListener(func:Callable<Void->Void>)
+	public function addSwipeListener(func:CFunction<Void->Void>)
 	{
-		engine.whenSwipedListeners.push(func);
+		var callable = asCallable(func);
+		
+		engine.whenSwipedListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenSwipedListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenSwipedListeners, callable);
 		}
 	}
 	
-	public function addMultiTouchStartListener(func:Callable<TouchEvent->Void>)
+	public function addMultiTouchStartListener(func:CFunction<TouchEvent->Void>)
 	{
-		engine.whenMTStartListeners.push(func);
+		var callable = asCallable(func);
+		
+		engine.whenMTStartListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMTStartListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenMTStartListeners, callable);
 		}
 	}
 	
-	public function addMultiTouchMoveListener(func:Callable<TouchEvent->Void>)
+	public function addMultiTouchMoveListener(func:CFunction<TouchEvent->Void>)
 	{
-		engine.whenMTDragListeners.push(func);
+		var callable = asCallable(func);
+		
+		engine.whenMTDragListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMTDragListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenMTDragListeners, callable);
 		}
 	}
 	
-	public function addMultiTouchEndListener(func:Callable<TouchEvent->Void>)
+	public function addMultiTouchEndListener(func:CFunction<TouchEvent->Void>)
 	{
-		engine.whenMTEndListeners.push(func);
+		var callable = asCallable(func);
+		
+		engine.whenMTEndListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMTEndListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenMTEndListeners, callable);
 		}
 	}
 	
-	public function addKeyStateListener(key:String, func:Callable<Bool->Bool->Void>)
-	{			
+	public function addKeyStateListener(key:String, func:CFunction<Bool->Bool->Void>)
+	{
+		var callable = asCallable(func);
+		
 		if(engine.whenKeyPressedListeners.get(key) == null)
 		{
 			engine.whenKeyPressedListeners.set(key, new Array<Dynamic>());
@@ -713,95 +745,103 @@ class Script
 		engine.hasKeyPressedListeners = true;
 		
 		var listeners = engine.whenKeyPressedListeners.get(key);
-		listeners.push(func);
+		listeners.push(callable);
 								
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
+			cast(this, ActorScript).actor.registerListener(listeners, callable);
 		}
 	}
 	
-	public function addAnyKeyPressedListener(func:Callable<KeyboardEvent->Void>)
+	public function addAnyKeyPressedListener(func:CFunction<KeyboardEvent->Void>)
 	{
-		engine.whenAnyKeyPressedListeners.push(func);
+		var callable = asCallable(func);
+		engine.whenAnyKeyPressedListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenAnyKeyPressedListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenAnyKeyPressedListeners, callable);
 		}
 	}
 	
-	public function addAnyKeyReleasedListener(func:Callable<KeyboardEvent->Void>)
+	public function addAnyKeyReleasedListener(func:CFunction<KeyboardEvent->Void>)
 	{
-		engine.whenAnyKeyReleasedListeners.push(func);
+		var callable = asCallable(func);
+		engine.whenAnyKeyReleasedListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenAnyKeyReleasedListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenAnyKeyReleasedListeners, callable);
 		}
 	}
 
-	public function addAnyGamepadPressedListener(func:Callable<String->Void>)
+	public function addAnyGamepadPressedListener(func:CFunction<String->Void>)
 	{
-		engine.whenAnyGamepadPressedListeners.push(func);
+		var callable = asCallable(func);
+		engine.whenAnyGamepadPressedListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenAnyGamepadPressedListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenAnyGamepadPressedListeners, callable);
 		}
 	}
 	
-	public function addAnyGamepadReleasedListener(func:Callable<String->Void>)
+	public function addAnyGamepadReleasedListener(func:CFunction<String->Void>)
 	{
-		engine.whenAnyGamepadReleasedListeners.push(func);
+		var callable = asCallable(func);
+		engine.whenAnyGamepadReleasedListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenAnyGamepadReleasedListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenAnyGamepadReleasedListeners, callable);
 		}
 	}
 	
-	public function addMousePressedListener(func:Callable<Void->Void>)
+	public function addMousePressedListener(func:CFunction<Void->Void>)
 	{
-		engine.whenMousePressedListeners.push(func);
+		var callable = asCallable(func);
+		engine.whenMousePressedListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMousePressedListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenMousePressedListeners, callable);
 		}
 	}
 	
-	public function addMouseReleasedListener(func:Callable<Void->Void>)
+	public function addMouseReleasedListener(func:CFunction<Void->Void>)
 	{
-		engine.whenMouseReleasedListeners.push(func);
+		var callable = asCallable(func);
+		engine.whenMouseReleasedListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMouseReleasedListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenMouseReleasedListeners, callable);
 		}
 	}
 	
-	public function addMouseMovedListener(func:Callable<Void->Void>)
+	public function addMouseMovedListener(func:CFunction<Void->Void>)
 	{
-		engine.whenMouseMovedListeners.push(func);
+		var callable = asCallable(func);
+		engine.whenMouseMovedListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMouseMovedListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenMouseMovedListeners, callable);
 		}
 	}
 	
-	public function addMouseDraggedListener(func:Callable<Void->Void>)
+	public function addMouseDraggedListener(func:CFunction<Void->Void>)
 	{
-		engine.whenMouseDraggedListeners.push(func);
+		var callable = asCallable(func);
+		engine.whenMouseDraggedListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMouseDraggedListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenMouseDraggedListeners, callable);
 		}
 	}
 	
-	public function addMouseOverActorListener(a:Actor, func:Callable<Int->Void>)
+	public function addMouseOverActorListener(a:Actor, func:CFunction<Int->Void>)
 	{	
 		if(a == null)
 		{
@@ -809,15 +849,16 @@ class Script
 			return;
 		}
 		
-		a.mouseOverListeners.push(func);
+		var callable = asCallable(func);
+		a.mouseOverListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(a.mouseOverListeners, func);
+			cast(this, ActorScript).actor.registerListener(a.mouseOverListeners, callable);
 		}
 	}
 	
-	public function addPropertyChangeListener(propertyKey:String, propertyKey2:String, func:Callable<Dynamic->Void>)
+	public function addPropertyChangeListener(propertyKey:String, propertyKey2:String, func:CFunction<Dynamic->Void>)
 	{
 		if(!propertyChangeListeners.exists(propertyKey))
 		{
@@ -833,26 +874,27 @@ class Script
 		var listeners = propertyChangeListeners.get(propertyKey);
 		var listeners2 = propertyChangeListeners.get(propertyKey2);
 		
-		listeners.push(func);			
+		var callable = asCallable(func);
+		listeners.push(callable);
 		
 		if(propertyKey2 != null)
 		{
-			listeners2.push(func);
+			listeners2.push(callable);
 			
 			//If equality, keep note of other listener list
 			var arr = new Array<Dynamic>();
 			arr.push(listeners);
 			arr.push(listeners2);
-			equalityPairs.set(func, arr);
+			equalityPairs.set(callable, arr);
 		}
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
+			cast(this, ActorScript).actor.registerListener(listeners, callable);
 			
 			if(propertyKey2 != null)
 			{
-				cast(this, ActorScript).actor.registerListener(listeners2, func);
+				cast(this, ActorScript).actor.registerListener(listeners2, callable);
 			}
 		}
 		
@@ -908,7 +950,7 @@ class Script
 		}
 	}
 	
-	public function addCollisionListener(a:Actor, func:Callable<Collision->Void>)
+	public function addCollisionListener(a:Actor, func:CFunction<Collision->Void>)
 	{					
 		if(a == null)
 		{				
@@ -916,17 +958,18 @@ class Script
 			return;
 		}
 		
-		a.collisionListeners.push(func);
+		var callable = asCallable(func);
+		a.collisionListeners.push(callable);
 		a.collisionListenerCount++;
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(a.collisionListeners, func);
+			cast(this, ActorScript).actor.registerListener(a.collisionListeners, callable);
 		}
 	}
 	
 	//Only used for type/group type/group collisions
-	public function addSceneCollisionListener(obj:Dynamic, obj2:Dynamic, func:Callable<Collision->Void>)
+	public function addSceneCollisionListener(obj:Dynamic, obj2:Dynamic, func:CFunction<Collision->Void>)
 	{
 		if(!engine.collisionListeners.exists(obj))
 		{
@@ -944,16 +987,17 @@ class Script
 		}
 		
 		var listeners = engine.collisionListeners.get(obj).get(obj2);
-		listeners.push(func);	
+		var callable = asCallable(func);
+		listeners.push(callable);	
 		
 		if(Std.is(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.collisionListenerCount++;
-			cast(this, ActorScript).actor.registerListener(listeners, func);
+			cast(this, ActorScript).actor.registerListener(listeners, callable);
 		}
 	}
 	
-	public function addWhenTypeGroupCreatedListener(obj:Dynamic, func:Callable<Actor->Void>)
+	public function addWhenTypeGroupCreatedListener(obj:Dynamic, func:CFunction<Actor->Void>)
 	{
 		if(!engine.whenTypeGroupCreatedListeners.exists(obj))
 		{
@@ -961,15 +1005,16 @@ class Script
 		}
 		
 		var listeners = engine.whenTypeGroupCreatedListeners.get(obj);
-		listeners.push(func);		
+		var callable = asCallable(func);
+		listeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
+			cast(this, ActorScript).actor.registerListener(listeners, callable);
 		}
 	}
 	
-	public function addWhenTypeGroupKilledListener(obj:Dynamic, func:Callable<Actor->Void>)
+	public function addWhenTypeGroupKilledListener(obj:Dynamic, func:CFunction<Actor->Void>)
 	{
 		if(!engine.whenTypeGroupDiesListeners.exists(obj))
 		{
@@ -977,16 +1022,19 @@ class Script
 		}
 		
 		var listeners = engine.whenTypeGroupDiesListeners.get(obj);
-		listeners.push(func);		
+		var callable = asCallable(func);
+		listeners.push(callable);		
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
+			cast(this, ActorScript).actor.registerListener(listeners, callable);
 		}
 	}
 	
-	public function addSoundListener(obj:Dynamic, func:Callable<Void->Void>)
+	public function addSoundListener(obj:Dynamic, func:CFunction<Void->Void>)
 	{
+		var callable = asCallable(func);
+		
 		if (Std.is(obj, Sound))
 		{
 			if(!engine.soundListeners.exists(obj))
@@ -995,11 +1043,11 @@ class Script
 			}
 			
 			var listeners:Array<Dynamic> = engine.soundListeners.get(obj);
-			listeners.push(func);
+			listeners.push(callable);
 			
 			if(Std.is(this, ActorScript))
 			{
-				cast(this, ActorScript).actor.registerListener(listeners, func);
+				cast(this, ActorScript).actor.registerListener(listeners, callable);
 			}
 		}
 		else
@@ -1010,62 +1058,67 @@ class Script
 			}
 			
 			var listeners:Array<Dynamic> = engine.channelListeners.get(obj);
-			listeners.push(func);
+			listeners.push(callable);
 			
 			if(Std.is(this, ActorScript))
 			{
-				cast(this, ActorScript).actor.registerListener(listeners, func);
+				cast(this, ActorScript).actor.registerListener(listeners, callable);
 			}
 		}
 	}
 	
-	public function addFocusChangeListener(func:Callable<Bool->Void>)
+	public function addFocusChangeListener(func:CFunction<Bool->Void>)
 	{						
-		engine.whenFocusChangedListeners.push(func);
+		var callable = asCallable(func);
+		engine.whenFocusChangedListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenFocusChangedListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenFocusChangedListeners, callable);
 		}
 	}
 	
-	public function addPauseListener(func:Callable<Bool->Void>)
+	public function addPauseListener(func:CFunction<Bool->Void>)
 	{						
-		engine.whenPausedListeners.push(func);
+		var callable = asCallable(func);
+		engine.whenPausedListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.whenPausedListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.whenPausedListeners, callable);
 		}
 	}
 	
-	public function addFullscreenListener(func:Array<Dynamic>->Void)
+	public function addFullscreenListener(func:CFunction<Void->Void>)
 	{
-		engine.fullscreenListeners.push(func);
+		var callable = asCallable(func);
+		engine.fullscreenListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.fullscreenListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.fullscreenListeners, callable);
 		}
 	}
 	
-	public function addGameScaleListener(func:Array<Dynamic>->Void)
+	public function addGameScaleListener(func:CFunction<Void->Void>)
 	{
-		engine.gameScaleListeners.push(func);
+		var callable = asCallable(func);
+		engine.gameScaleListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.gameScaleListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.gameScaleListeners, callable);
 		}
 	}
 	
-	public function addScreenSizeListener(func:Array<Dynamic>->Void)
+	public function addScreenSizeListener(func:CFunction<Void->Void>)
 	{
-		engine.screenSizeListeners.push(func);
+		var callable = asCallable(func);
+		engine.screenSizeListeners.push(callable);
 		
 		if(Std.is(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.screenSizeListeners, func);
+			cast(this, ActorScript).actor.registerListener(engine.screenSizeListeners, callable);
 		}
 	}
 	
@@ -1259,9 +1312,9 @@ class Script
 	 * @param	delay		Delay in execution (in milliseconds)
 	 * @param	toExecute	The function to execute after the delay
 	 */
-	public static function runLater(delay:Float, toExecute:Callable<TimedTask->Void>, actor:Actor = null):TimedTask
+	public static function runLater(delay:Float, toExecute:CFunction<TimedTask->Void>, actor:Actor = null):TimedTask
 	{
-		var t:TimedTask = new TimedTask(toExecute, Std.int(delay), false, actor);
+		var t:TimedTask = new TimedTask(asCallable(toExecute), Std.int(delay), false, actor);
 		engine.addTask(t);
 
 		return t;
@@ -1273,9 +1326,9 @@ class Script
 	 * @param	interval	How frequently to execute (in milliseconds)
 	 * @param	toExecute	The function to execute after the delay
 	 */
-	public static function runPeriodically(interval:Float, toExecute:Callable<TimedTask->Void>, actor:Actor = null):TimedTask
+	public static function runPeriodically(interval:Float, toExecute:CFunction<TimedTask->Void>, actor:Actor = null):TimedTask
 	{
-		var t:TimedTask = new TimedTask(toExecute, Std.int(interval), true, actor);
+		var t:TimedTask = new TimedTask(asCallable(toExecute), Std.int(interval), true, actor);
 		engine.addTask(t);
 		
 		return t;
@@ -3857,10 +3910,10 @@ class Script
 			loader.addEventListener(IOErrorEvent.IO_ERROR, defaultURLError);
 			#elseif android
 			//making sure the connection closes after 0.5 secs so the game doesn't freeze
-		    runLater(500, new Callable(-1, null, function(timeTask:TimedTask):Void
+		    runLater(500, function(timeTask:TimedTask):Void
 			{
 				loader.close();
-			}));
+			});
 			#end
 		} 
 		
@@ -3898,10 +3951,10 @@ class Script
 			loader.addEventListener(IOErrorEvent.IO_ERROR, defaultURLError);
 			#else
 			//making sure the connection closes after 0.5 secs so the game doesn't freeze
-		    runLater(500, new Callable(-1, null, function(timeTask:TimedTask):Void
+		    runLater(500, function(timeTask:TimedTask):Void
 			{
 				loader.close();
-			}));
+			});
 			#end
 		} 
 		
