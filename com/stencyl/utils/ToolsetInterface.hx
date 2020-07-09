@@ -341,8 +341,10 @@ class ToolsetInterface
 			case "Modified Callable":
 			
 				var callableID = header.get("Callable-ID");
+				var methodName = header.get("Method-Name");
+				var lineNumber = header.get("Line-Number");
 				var receivedText = content.readUTFBytes(content.length);
-				com.stencyl.behavior.Callable.reloadCallable(Std.parseInt(callableID), receivedText);
+				com.stencyl.behavior.Callable.reloadCallable(Std.parseInt(callableID), methodName, Std.parseInt(lineNumber), receivedText);
 				
 			default:
 		}

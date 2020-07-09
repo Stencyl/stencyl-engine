@@ -93,7 +93,7 @@ class Callable<T>
 		}
 	}
 	
-	public static function reloadCallable(id:Int, script:String)
+	public static function reloadCallable(id:Int, methodName:String, lineNumber:Int, script:String)
 	{
 		callTemplatesRaw.set(id, script);
 		parseCallable(id);
@@ -104,6 +104,16 @@ class Callable<T>
 		{
 			if(c.parent.interp == null)
 				c.parent.initHscript();
+			
+			c.parent.interp.variables.set("trace", Reflect.makeVarArgs(function(el) {
+				var inf = c.parent.interp.posInfos();
+				inf.className = c.parent.wrapper.classname;
+				inf.methodName = methodName;
+				inf.lineNumber += lineNumber - 1;
+				var v = el.shift();
+				if( el.length > 0 ) inf.customParams = el;
+				haxe.Log.trace(v, inf);
+			}));
 			
 			c.f = c.parent.interp.expr(expr);
 		}
