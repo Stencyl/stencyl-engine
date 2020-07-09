@@ -638,7 +638,7 @@ class ColorMatrix
 		return out;
 	}
 	
-	#if flash10
+	#if flash
 	public function transformVector(values:flash.Vector<Float>):flash.Vector<Float>
 	#else
 	public function transformVector(values:Array<Float>):Array<Float>
@@ -673,7 +673,7 @@ class ColorMatrix
 			preHue.rotateRed(45.0);
 			preHue.rotateGreen(-greenRotation);
 			
-			#if flash10
+			#if flash
 			var lum = new flash.Vector<Float>(4, true);
 			#else
 			var lum = new Array<Float>();

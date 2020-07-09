@@ -56,11 +56,7 @@ import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Rectangle;
 import openfl.events.RenderEvent;
 
-#if (haxe_ver >= 4)
 import haxe.xml.Access;
-#else
-import haxe.xml.Fast in Access;
-#end
 
 typedef Uniform = {
 	var id:GLUniformLocation;

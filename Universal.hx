@@ -444,9 +444,7 @@ class Universal extends Sprite
 		
 		if(enable)
 		{
-			#if (flash9 || flash10)
-			HaxeLog.trace = function(v,?pos) { untyped __global__["trace"]("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"):",v); }
-			#elseif flash
+			#if flash
 			HaxeLog.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
 			#else
 			HaxeLog.trace = oldTrace;
