@@ -59,13 +59,6 @@ class BehaviorLoader
 			script = Type.createInstance(cls, [0, null]);
 		}
 		
-		#if stencyltools
-
-		//script.hscriptParser = new Parser();
-		//script.hscriptInterp = new Interp();
-		
-		#end
-		
 		return script;
 	}
 

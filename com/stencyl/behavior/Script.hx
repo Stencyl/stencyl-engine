@@ -161,15 +161,6 @@ class Script
 	
 	private var attributeTweens:Map<String, TweenFloat>;
 	
-	// Live Coding
-	
-	#if stencyltools
-	
-	private var parser:hscript.Parser;
-	private var interp:hscript.Interp;
-	
-	#end
-	
 	//*-----------------------------------------------
 	//* Init
 	//*-----------------------------------------------
@@ -185,11 +176,13 @@ class Script
 		attributeTweens = new Map<String, TweenFloat>();
 	}
 	
+	// Live Coding
+	
 	#if stencyltools
 	
-	public function initHscript():Void
+	public function initHscript():hscript.Interp
 	{
-		interp = new hscript.Interp();
+		var interp = new hscript.Interp();
 		com.stencyl.utils.HscriptRunner.loadDefaults(interp);
 		
 		interp.variables.set("this", this);
@@ -202,6 +195,8 @@ class Script
 		interp.variables.set("wrapper", wrapper);
 		interp.variables.set("nameMap", nameMap);
 		interp.variables.set("propertyChanged", propertyChanged);
+		
+		return interp;
 	}
 	
 	#end
