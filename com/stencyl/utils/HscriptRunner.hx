@@ -41,6 +41,8 @@ class HscriptRunner
 	//XXX: Naive list of known types that should work in most cases
 	public static function loadDefaults(interp:Interp)
 	{
+		var openflPackage = #if flash "flash." #else "openfl." #end ;
+		
 		for(type in [
 			"com.stencyl.graphics.G",
 			"com.stencyl.graphics.BitmapWrapper",
@@ -63,19 +65,20 @@ class HscriptRunner
 			"com.stencyl.Input",
 			"com.stencyl.Key",
 			"com.stencyl.utils.Utils",
-			"openfl.ui.Mouse",
-			"openfl.display.Graphics",
-			"openfl.display.BlendMode",
-			"openfl.display.BitmapData",
-			"openfl.display.Bitmap",
-			"openfl.events.Event",
-			"openfl.events.KeyboardEvent",
-			"openfl.events.TouchEvent",
-			"openfl.net.URLLoader",
+			openflPackage+"ui.Mouse",
+			openflPackage+"display.Graphics",
+			openflPackage+"display.BlendMode",
+			openflPackage+"display.BitmapData",
+			openflPackage+"display.Bitmap",
+			openflPackage+"events.Event",
+			openflPackage+"events.KeyboardEvent",
+			openflPackage+"events.TouchEvent",
+			openflPackage+"net.URLLoader",
 			"box2D.common.math.B2Vec2",
 			"box2D.dynamics.B2Body",
 			"box2D.dynamics.B2Fixture",
 			"box2D.dynamics.joints.B2Joint",
+			#if actuate
 			"motion.Actuate",
 			"motion.easing.Back",
 			"motion.easing.Cubic",
@@ -86,6 +89,7 @@ class HscriptRunner
 			"motion.easing.Quart",
 			"motion.easing.Quint",
 			"motion.easing.Sine",
+			#end
 			"com.stencyl.graphics.shaders.BasicShader",
 			"com.stencyl.graphics.shaders.GrayscaleShader",
 			"com.stencyl.graphics.shaders.SepiaShader",
