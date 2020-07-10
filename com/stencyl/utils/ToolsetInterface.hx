@@ -347,6 +347,14 @@ class ToolsetInterface
 				var receivedText = content.readUTFBytes(content.length);
 				com.stencyl.behavior.Callable.reloadCallable(Std.parseInt(callableID), className, methodName, Std.parseInt(lineNumber), receivedText);
 				
+			case "Modified Function":
+			
+				var className = header.get("Class-Name");
+				var methodName = header.get("Method-Name");
+				var lineNumber = header.get("Line-Number");
+				var receivedText = content.readUTFBytes(content.length);
+				com.stencyl.behavior.Callable.reloadNamedFunction(className, methodName, Std.parseInt(lineNumber), receivedText);
+				
 			default:
 		}
 	}

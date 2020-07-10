@@ -61,6 +61,19 @@ class Behavior
 		script.wrapper = this;
 		initAttributes();
 		
+		#if stencyltools
+		var reboundFunctions = Callable.namedFunctionTemplates.get(classname);
+		if(reboundFunctions != null)
+		{
+			script.initHscript();
+			for(functionName in reboundFunctions.keys())
+			{
+				var functionTemplate = reboundFunctions.get(functionName);
+				Reflect.setField(script, functionName, script.interp.expr(functionTemplate.expr));
+			}
+		}
+		#end
+		
 		if(!initJustScript)
 		{
 			try

@@ -180,9 +180,11 @@ class Script
 	
 	#if stencyltools
 	
-	public function initHscript():hscript.Interp
+	public var interp:hscript.Interp;
+	
+	public function initHscript()
 	{
-		var interp = new hscript.Interp();
+		interp = new hscript.Interp();
 		com.stencyl.utils.HscriptRunner.loadDefaults(interp);
 		
 		interp.variables.set("this", this);
@@ -195,8 +197,6 @@ class Script
 		interp.variables.set("wrapper", wrapper);
 		interp.variables.set("nameMap", nameMap);
 		interp.variables.set("propertyChanged", propertyChanged);
-		
-		return interp;
 	}
 	
 	#end

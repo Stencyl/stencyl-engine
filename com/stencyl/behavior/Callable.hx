@@ -32,16 +32,15 @@ class Callable<T>
 	#if stencyltools
 	public static var callTemplates:Map<Int, CallTemplate> = new Map<Int, CallTemplate>();
 	public static var callTable:Map<Int, Array<Callable<Dynamic>>> = new Map<Int, Array<Callable<Dynamic>>>();
+	
+	//className -> functionName
+	public static var namedFunctionTemplates:Map<String, Map<String, CallTemplate>> = new Map<String, Map<String, CallTemplate>>();
 	#end
 
 	public var id:Int;
 	public var parent:Script;
 	public var f:T;
 	public var finished:Bool;
-	
-	#if stencyltools
-	private var interp:Interp;
-	#end
 	
 	public function new(id:Int, parent:Script, f:T)
 	{
@@ -59,8 +58,8 @@ class Callable<T>
 			if(callTemplates.exists(id))
 			{
 				var ct = callTemplates.get(id);
-				if(interp == null) interp = parent.initHscript();
-				this.f = interp.expr(ct.expr);
+				if(parent.interp == null) parent.initHscript();
+				this.f = parent.interp.expr(ct.expr);
 			}
 			else
 			{
@@ -110,8 +109,25 @@ class Callable<T>
 		
 		for(c in callTable.get(id))
 		{
-			c.interp = c.parent.initHscript();
-			c.f = c.interp.expr(ct.expr);
+			if(c.parent.interp == null) c.parent.initHscript();
+			c.f = c.parent.interp.expr(ct.expr);
+		}
+	}
+	
+	public static function reloadNamedFunction(className:String, methodName:String, lineNumber:Int, script:String)
+	{
+		var ct = {code: script, className: className, methodName: methodName, lineNumber: lineNumber, expr: null};
+		ct.expr = parseCallable(ct);
+		if(!namedFunctionTemplates.exists(className)) namedFunctionTemplates.set(className, []);
+		namedFunctionTemplates.get(className).set(methodName, ct);
+		
+		if(BehaviorManager.liveScripts.exists(className))
+		{
+			for(script in BehaviorManager.liveScripts.get(className))
+			{
+				if(script.interp == null) script.initHscript();
+				Reflect.setField(script, methodName, script.interp.expr(ct.expr));
+			}
 		}
 	}
 	

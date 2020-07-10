@@ -7,7 +7,11 @@ class BehaviorManager
 	public var behaviors:Array<Behavior>;
 
 	public var cache:Map<String,Behavior>;
-
+	
+	#if stencyltools
+	public static var liveScripts:Map<String, Array<Script>> = new Map<String, Array<Script>>();
+	#end
+	
 	//*-----------------------------------------------
 	//* Init
 	//*-----------------------------------------------
@@ -20,6 +24,12 @@ class BehaviorManager
 	
 	public function destroy()
 	{
+		#if stencyltools
+		for(behavior in behaviors)
+		{
+			liveScripts.get(behavior.classname).remove(behavior.script);
+		}
+		#end
 		behaviors = null;
 		cache = null;
 	}
@@ -97,7 +107,17 @@ class BehaviorManager
 		{
 			var b:Behavior = behaviors[i];
 			b.initScript(!b.enabled);
-		}	
+			
+			#if stencyltools
+			var scriptList = liveScripts.get(b.classname);
+			if(scriptList == null)
+			{
+				scriptList = [];
+				liveScripts.set(b.classname, scriptList);
+			}
+			scriptList.push(b.script);
+			#end
+		}
 	}
 	
 	//*-----------------------------------------------
