@@ -69,7 +69,7 @@ class Behavior
 			for(functionName in reboundFunctions.keys())
 			{
 				var functionTemplate = reboundFunctions.get(functionName);
-				Reflect.setField(script, functionName, script.interp.expr(functionTemplate.expr));
+				Reflect.setField(script, functionName, script.interp.asFunction(functionTemplate.expr));
 			}
 		}
 		#end

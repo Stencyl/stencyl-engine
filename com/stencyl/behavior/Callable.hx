@@ -59,7 +59,7 @@ class Callable<T>
 			{
 				var ct = callTemplates.get(id);
 				if(parent.interp == null) parent.initHscript();
-				this.f = parent.interp.expr(ct.expr);
+				this.f = parent.interp.asFunction(ct.expr);
 			}
 			else
 			{
@@ -110,7 +110,7 @@ class Callable<T>
 		for(c in callTable.get(id))
 		{
 			if(c.parent.interp == null) c.parent.initHscript();
-			c.f = c.parent.interp.expr(ct.expr);
+			c.f = c.parent.interp.asFunction(ct.expr);
 		}
 	}
 	
@@ -126,7 +126,7 @@ class Callable<T>
 			for(script in BehaviorManager.liveScripts.get(className))
 			{
 				if(script.interp == null) script.initHscript();
-				Reflect.setField(script, methodName, script.interp.expr(ct.expr));
+				Reflect.setField(script, methodName, script.interp.asFunction(ct.expr));
 			}
 		}
 	}
