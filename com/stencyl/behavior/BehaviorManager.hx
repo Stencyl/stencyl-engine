@@ -134,7 +134,7 @@ class BehaviorManager
 			
 			var field = Reflect.field(b.script, attributeName);
 
-			if(field == null && !ReflectionHelper.hasField(b.script.wrapper.classname, attributeName))
+			if(field == null && !ReflectionHelper.hasField(b.classname, attributeName))
 			{
 				trace("Get Warning: Attribute " + attributeName + " does not exist for " + behaviorName + Utils.printCallstackIfAvailable());
 			}
@@ -156,7 +156,7 @@ class BehaviorManager
 		
 		if(b != null && b.script != null)
 		{
-			if(ReflectionHelper.hasField(b.script.wrapper.classname, attributeName))
+			if(ReflectionHelper.hasField(b.classname, attributeName))
 			{
 				Reflect.setField(b.script, attributeName, value);
 				b.script.propertyChanged(attributeName, value);
