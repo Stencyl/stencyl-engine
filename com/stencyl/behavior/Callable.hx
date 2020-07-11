@@ -30,6 +30,8 @@ typedef CallTemplate =
 class Callable<T>
 {
 	#if stencyltools
+	private static var haxeDefines = com.stencyl.utils.HaxeDefines.getDefines();
+	
 	public static var callTemplates:Map<Int, CallTemplate> = new Map<Int, CallTemplate>();
 	public static var callTable:Map<Int, Array<Callable<Dynamic>>> = new Map<Int, Array<Callable<Dynamic>>>();
 	
@@ -84,6 +86,7 @@ class Callable<T>
 	{
 		var parser = new hscript.Parser();
 		parser.allowTypes = true;
+		parser.preprocesorValues = haxeDefines;
 		
 		for(name in ReflectionHelper.getStaticFieldMap("com.stencyl.behavior.Script").keys())
 		{
