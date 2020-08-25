@@ -2561,7 +2561,7 @@ class Script
 		#end
 	}
 	
-	public static function bringImagetoFront(img:BitmapWrapper)
+	public static function bringImageToFront(img:BitmapWrapper)
 	{
 		#if !use_actor_tilemap
 		if(img != null && img.parent != null)
