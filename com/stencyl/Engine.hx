@@ -2659,10 +2659,11 @@ class Engine
 				if(a != null && !a.dead && !a.recycled) 
 				{
 					//--- HAND INLINED THIS SINCE ITS CALLED SO MUCH
+					
 					var isOnScreen =
 						(a.physicsMode != NORMAL_PHYSICS || a.body.isActive()) && 
-						a.colX + a.cacheWidth >= cameraX / SCALE - paddingLeft && 
-						a.colY + a.cacheHeight >= cameraY / SCALE - paddingTop &&
+						a.colX + a.cacheWidth * a.realScaleX >= cameraX / SCALE - paddingLeft && 
+						a.colY + a.cacheHeight * a.realScaleY >= cameraY / SCALE - paddingTop &&
 						a.colX < cameraX / SCALE + screenWidth + paddingRight &&
 						a.colY < cameraY / SCALE + screenHeight + paddingBottom;
 					
