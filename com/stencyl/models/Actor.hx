@@ -1935,6 +1935,8 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		
 		bodyScale.x = width;
 		bodyScale.y = height;
+		body.size.x = Engine.toPhysicalUnits(cacheWidth * width);
+		body.size.y = Engine.toPhysicalUnits(cacheHeight * height);
 	}
 	
 	private function checkScreenState()
@@ -3886,8 +3888,8 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		var bottom = Engine.paddingBottom;
 	
 		return (physicsMode != NORMAL_PHYSICS || body.isActive()) && 
-			   getX(true) + cacheWidth >= cameraX - left && 
-			   getY(true) + cacheHeight >= cameraY - top &&
+			   getX(true) + cacheWidth * realScaleX >= cameraX - left && 
+			   getY(true) + cacheHeight * realScaleY >= cameraY - top &&
 			   getX(true) < cameraX + Engine.screenWidth + right &&
 			   getY(true) < cameraY + Engine.screenHeight + bottom;
 	}
@@ -3895,8 +3897,8 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	public function isInScene():Bool
 	{
 		return (physicsMode != NORMAL_PHYSICS || body.isActive()) && 
-			   getX(true) + cacheWidth >= 0 && 
-			   getY(true) + cacheHeight >= 0 &&
+			   getX(true) + cacheWidth * realScaleX >= 0 && 
+			   getY(true) + cacheHeight * realScaleY >= 0 &&
 			   getX(true) < Engine.sceneWidth &&
 			   getY(true) < Engine.sceneHeight;
 	}
