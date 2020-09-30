@@ -15,7 +15,7 @@ class Atlas
 		this.allScenes = allScenes;
 		this.members = members;
 		
-		#if cpp
+		#if (cpp || hl)
 		active = allScenes;
 		#else
 		active = true;

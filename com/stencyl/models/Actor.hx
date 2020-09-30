@@ -23,10 +23,6 @@ import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.utils.ByteArray;
 
-#if (flash || cpp)
-import openfl.Memory;
-#end
-
 import com.stencyl.Config;
 import com.stencyl.Input;
 import com.stencyl.Engine;

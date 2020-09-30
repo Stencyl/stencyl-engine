@@ -111,7 +111,7 @@ class Utils
 	}*/
 	
 	public static inline function clear(arr:Array<Dynamic>){
-        #if cpp
+        #if (cpp || hl)
            arr.splice(0,arr.length);           
         #else
            untyped arr.length = 0;
@@ -895,7 +895,7 @@ class Utils
 			{
 				trace("Error: can't save attribute due to recursion [name=" + name + "]");
 			}
-			#if cpp
+			#if (cpp || hl)
 			else if(error.indexOf("Invalid field:") == 0)
 			{
 				trace("Error: can't save attribute due to contained properties [name=" + name + ", value=" + value+"]");

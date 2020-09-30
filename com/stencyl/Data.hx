@@ -326,7 +326,7 @@ class Data
 	
 	public function unloadAtlas(atlasID:Int)
 	{
-		#if cpp
+		#if (cpp || hl)
 		trace("Unload Atlas: " + atlasID);
 		
 		var atlas = GameModel.get().atlases.get(atlasID);

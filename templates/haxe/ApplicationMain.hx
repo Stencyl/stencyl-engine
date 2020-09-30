@@ -316,12 +316,12 @@ using StringTools;
 		}
 		else
 		{
-			trace(event.error.toString());
+			trace(Std.string(event.error));
 		}
 		
 		#end
 		
-		#if (debug && stencyltools && cpp)
+		#if (debug && stencyltools && (cpp || hl))
 		
 		trace(CallStack.toString(CallStack.exceptionStack()));
 		ToolsetInterface.preloadedUpdate();

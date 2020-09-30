@@ -4,6 +4,10 @@ import com.stencyl.utils.Utils;
 
 class BehaviorManager
 {
+	#if hl
+	private static var noArgs:Array<Dynamic> = [];
+	#end
+
 	public var behaviors:Array<Behavior>;
 
 	public var cache:Map<String,Behavior>;
@@ -161,6 +165,10 @@ class BehaviorManager
 			return null;
 		}
 
+		#if hl
+		if(args == null) args = noArgs;
+		#end
+
 		var toReturn:Dynamic = null;
 		
 		for(i in 0...behaviors.length)
@@ -211,6 +219,10 @@ class BehaviorManager
 		{
 			return null;
 		}
+
+		#if hl
+		if(args == null) args = noArgs;
+		#end
 
 		var toReturn:Dynamic = null;
 		var item:Behavior = cache.get(behaviorName);

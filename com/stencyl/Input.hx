@@ -16,7 +16,7 @@ import openfl.display.DisplayObject;
 import openfl.geom.Point;
 import openfl.ui.Multitouch;
 
-#if cpp
+#if (cpp || hl)
 import openfl.sensors.Accelerometer;
 #end
 
@@ -506,7 +506,7 @@ class Input
 			_swipeDirection = -1;
 		}
 		
-		#if cpp
+		#if (cpp || hl)
 		if(Accelerometer.isSupported)
 		{
 			accelX = Accelerometer.currentX;
