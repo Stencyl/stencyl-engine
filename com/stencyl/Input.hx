@@ -90,8 +90,8 @@ class Input
 		Engine.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 		Engine.stage.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 		Engine.stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+		#if !mobile
 		Engine.stage.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
-		#if desktop
 		Engine.stage.removeEventListener(MouseEvent.RIGHT_MOUSE_DOWN, onRightMouseDown);
 		Engine.stage.removeEventListener(MouseEvent.RIGHT_MOUSE_UP, onRightMouseUp);
 		Engine.stage.removeEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, onMiddleMouseDown);
@@ -421,8 +421,8 @@ class Input
 			Engine.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp, false,  2);
 			Engine.stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 2);
 			Engine.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false,  2);
+			#if !mobile
 			Engine.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 2);
-			#if desktop
 			Engine.stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, onRightMouseDown, false, 2);
 			Engine.stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, onRightMouseUp, false, 2);
 			Engine.stage.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, onMiddleMouseDown, false, 2);
