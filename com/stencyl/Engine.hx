@@ -839,22 +839,6 @@ class Engine
 		screenWidthHalf = Std.int(stageWidth/2);
 		screenHeightHalf = Std.int(stageHeight/2);
 		
-		#if mobile
-		if(!Config.autorotate)
-		{
-			//These are no longer implemented in OpenFL.
-			/*if(landscape)
-			{
-				Stage.setFixedOrientation(Stage.OrientationLandscapeLeft);
-			}
-			
-			else
-			{
-				Stage.setFixedOrientation(Stage.OrientationPortrait);
-			}*/
-		}
-		#end
-
 		Data.get();
 		GameModel.get().loadScenes();
 

@@ -148,6 +148,16 @@ using StringTools;
 		}
 		#end
 
+		#if mobile
+		var orientation:String;
+		if(Config.autorotate)
+			orientation = Config.landscape ? "LandscapeLeft LandscapeRight" : "Portrait PortraitUpsideDown";
+		else
+			orientation = Config.landscape ? "LandscapeLeft" : "Portrait";
+
+		Sys.putEnv("SDL_IOS_ORIENTATIONS", orientation);
+		#end
+
 		app = new Application ();
 		
 		ManifestResources.init (config);
