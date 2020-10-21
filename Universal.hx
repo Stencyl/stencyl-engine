@@ -38,6 +38,10 @@ class Universal extends Sprite
 	public static var logicalHeight = 0.0;
 	public static var windowWidth = 0.0;
 	public static var windowHeight = 0.0;
+	public static var leftInset = 0.0;
+	public static var topInset = 0.0;
+	public static var rightInset = 0.0;
+	public static var bottomInset = 0.0;
 	
 	public var maskLayer:Shape;
 
@@ -134,7 +138,7 @@ class Universal extends Sprite
 
 		windowWidth = isFullScreen ? stage.fullScreenWidth : Config.stageWidth * Config.gameScale;
 		windowHeight = isFullScreen ? stage.fullScreenHeight : Config.stageHeight * Config.gameScale;
-		
+
 		trace("Game Width: " + Config.stageWidth);
 		trace("Game Height: " + Config.stageHeight);
 		trace("Game Scale: " + Config.gameScale);
@@ -338,6 +342,50 @@ class Universal extends Sprite
 		
 		Engine.screenScaleX = scaleX;
 		Engine.screenScaleY = scaleY;
+
+		#if mobile
+		var insets = Native.getSafeInsets();
+		leftInset = insets.x;
+		rightInset = insets.width;
+		topInset = insets.y;
+		bottomInset = insets.height;
+		trace('Safe Area Insets: original = (left: $leftInset, top: $topInset, right: $rightInset, bottom: $bottomInset)');
+
+		if(Config.autorotate)
+		{
+			/*
+			TODO: We don't have a way to notify Stencyl of orientation changes at the moment.
+			Eventually, we should have lime listen for and pass on SDL's display events, including
+			the orientation one.
+
+			For now, to assure the safe areas are actually safe, we'll mirror the
+			max inset along an axis to both sides.
+			*/
+
+			leftInset = rightInset = Math.max(leftInset, rightInset);
+			topInset = bottomInset = Math.max(topInset, bottomInset);
+			trace('Safe Area Insets: mirrored = (left: $leftInset, top: $topInset, right: $rightInset, bottom: $bottomInset)');
+		}
+		
+		if(x != 0 || y != 0)
+		{
+			// we don't need to inset if we're letterboxing over the inset area.
+			leftInset = Math.max(0, leftInset - x);
+			rightInset = Math.max(0, rightInset - x);
+			topInset = Math.max(0, topInset - y);
+			bottomInset = Math.max(0, bottomInset - y);
+			trace('Safe Area Insets: offset = (left: $leftInset, top: $topInset, right: $rightInset, bottom: $bottomInset)');
+		}
+		
+		// scale to Stencyl's logical coordinates
+		leftInset = Math.ceil(leftInset / (Engine.SCALE * scaleX));
+		rightInset = Math.ceil(rightInset / (Engine.SCALE * scaleX));
+		topInset = Math.ceil(topInset / (Engine.SCALE * scaleY));
+		bottomInset = Math.ceil(bottomInset / (Engine.SCALE * scaleY));
+
+		trace('Safe Area Insets: scaled = (left: $leftInset, top: $topInset, right: $rightInset, bottom: $bottomInset)');
+
+		#end
 		
 		maskLayer.graphics.clear();
 		if(isFullScreen && (Config.scaleMode == ScaleMode.SCALE_TO_FIT_LETTERBOX || Config.scaleMode == ScaleMode.NO_SCALING))
