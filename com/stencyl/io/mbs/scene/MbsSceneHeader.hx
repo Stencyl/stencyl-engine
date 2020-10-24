@@ -13,7 +13,6 @@ class MbsSceneHeader extends MbsObject
 	public static var id:MbsField;
 	public static var name:MbsField;
 	public static var description:MbsField;
-	public static var format:MbsField;
 	
 	public static var MBS_SCENE_HEADER:ComposedType;
 	public static function initializeType():Void
@@ -25,7 +24,6 @@ class MbsSceneHeader extends MbsObject
 		id = MBS_SCENE_HEADER.createField("id", INTEGER);
 		name = MBS_SCENE_HEADER.createField("name", STRING);
 		description = MBS_SCENE_HEADER.createField("description", STRING);
-		format = MBS_SCENE_HEADER.createField("format", STRING);
 		
 	}
 	
@@ -77,16 +75,6 @@ class MbsSceneHeader extends MbsObject
 	public function setDescription(_val:String):Void
 	{
 		data.writeString(address + description.address, _val);
-	}
-	
-	public function getFormat():String
-	{
-		return data.readString(address + format.address);
-	}
-	
-	public function setFormat(_val:String):Void
-	{
-		data.writeString(address + format.address, _val);
 	}
 	
 }
