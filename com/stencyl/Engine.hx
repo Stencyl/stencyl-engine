@@ -946,9 +946,6 @@ class Engine
 		
 		loadScene(initSceneID);
 		sceneInitialized = true;
-		#if ios
-		Native.hideLaunchStoryboard();
-		#end
 	}	
 
 	public function setStatsVisible(value:Bool):Void
