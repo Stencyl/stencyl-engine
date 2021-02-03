@@ -48,8 +48,6 @@ class PostProcess
 import lime.graphics.opengl.*;
 import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
-import openfl._internal.Lib;
-import openfl._internal.renderer.context3D.Context3DRenderer;
 import openfl.display.DisplayObject;
 import openfl.display.OpenGLRenderer;
 import openfl.display3D.textures.RectangleTexture;
@@ -216,10 +214,10 @@ class PostProcess extends DisplayObject
 	
 	@:access(openfl.display.DisplayObjectRenderer)
 	@:access(openfl.display3D.Context3D)
-	@:access(openfl._internal.renderer.context3D.Context3DState)
+	@:access(openfl.display3D._internal.Context3DState)
 	@:noCompletion private function renderGL(renderEvent:RenderEvent):Void
 	{
-		var renderer:Context3DRenderer = cast renderEvent.renderer;
+		var renderer:OpenGLRenderer = cast renderEvent.renderer;
 		
 		if (stage != null && __renderable)
 		{
@@ -378,7 +376,7 @@ class PostProcess extends DisplayObject
 		//texture.uploadFromTypedArray(null);
 		
 		texture.__context.__bindGLTexture2D (texture.__textureID);
-		texture.__setSamplerState(new openfl._internal.renderer.SamplerState());
+		texture.__setSamplerState(new openfl.display._internal.SamplerState());
 		gl.texImage2D (texture.__textureTarget, 0, texture.__internalFormat, texture.__width, texture.__height, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
 		texture.__context.__bindGLTexture2D (null);
 	}
