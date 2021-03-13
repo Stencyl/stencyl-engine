@@ -258,7 +258,7 @@ class PostProcess extends DisplayObject
 			while(i-- > 0)
 			{
 				var u = changedUniforms.pop();
-				if (Std.is(u.value, Array))
+				if (Std.isOfType(u.value, Array))
 				{
 					if (u.value.length == 0)
 					{

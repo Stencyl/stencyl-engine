@@ -94,7 +94,7 @@ class Region extends Actor
 		
 		else
 		{
-			if(Std.is(shapes[0], B2PolygonShape))
+			if(Std.isOfType(shapes[0], B2PolygonShape))
 			{
 				isCircle = false;
 				var trans = new B2Transform();
@@ -133,7 +133,7 @@ class Region extends Actor
 				cacheHeight = originalHeight = regionHeight = Math.round(Engine.toPixelUnits(Math.abs(lowerYBound - upperYBound)));
 			}
 				
-			else if(Std.is(shapes[0], B2CircleShape))
+			else if(Std.isOfType(shapes[0], B2CircleShape))
 			{
 				isCircle = true;
 				

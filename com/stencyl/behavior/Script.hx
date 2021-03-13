@@ -234,22 +234,22 @@ class Script
 			return 0;
 		}
 
-		else if(Std.is(o, Float))
+		else if(Std.isOfType(o, Float))
 		{
 			return cast(o, Float);
 		}
 		
-		else if(Std.is(o, Int))
+		else if(Std.isOfType(o, Int))
 		{
 			return cast(o, Int);
 		}
 		
-		else if(Std.is(o, Bool))
+		else if(Std.isOfType(o, Bool))
 		{
 			return cast(o, Bool) ? 1 : 0;
 		}
 		
-		else if(Std.is(o, String))
+		else if(Std.isOfType(o, String))
 		{
 			return Std.parseFloat(o);
 		}
@@ -267,7 +267,7 @@ class Script
 			return true;
 		}
 		
-		else if(Std.is(o, String))
+		else if(Std.isOfType(o, String))
 		{
 			return cast(o, String) != "";
 		}
@@ -280,17 +280,17 @@ class Script
 	
 	public static function isPrimitive(o:Dynamic):Bool
 	{
-		if(Std.is(o, Bool))
+		if(Std.isOfType(o, Bool))
 		{
 			return true;
 		}
 		
-		else if(Std.is(o, Float))
+		else if(Std.isOfType(o, Float))
 		{
 			return true;
 		}
 		
-		else if(Std.is(o, Int))
+		else if(Std.isOfType(o, Int))
 		{
 			return true;
 		}
@@ -300,22 +300,22 @@ class Script
 
 	public static function getDefaultValue(o:Dynamic):Dynamic
 	{
-		if(Std.is(o, Bool))
+		if(Std.isOfType(o, Bool))
 		{
 			return false;
 		}
 		
-		else if(Std.is(o, Float))
+		else if(Std.isOfType(o, Float))
 		{
 			return 0.0;
 		}
 		
-		else if(Std.is(o, Int))
+		else if(Std.isOfType(o, Int))
 		{
 			return 0;
 		}
 		
-		else if(Std.is(o, String))
+		else if(Std.isOfType(o, String))
 		{
 			return "";
 		}
@@ -427,7 +427,7 @@ class Script
 		var nativeListener = new NativeListener(EventMaster.TYPE_KEYBOARD, type, func);
 		engine.nativeListeners.push(nativeListener);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
 		}
@@ -438,7 +438,7 @@ class Script
 		var nativeListener = new NativeListener(EventMaster.TYPE_ADS, type, func);
 		engine.nativeListeners.push(nativeListener);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
 		}
@@ -449,7 +449,7 @@ class Script
 		var nativeListener = new NativeListener(EventMaster.TYPE_GAMECENTER, type, func);
 		engine.nativeListeners.push(nativeListener);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
 		}
@@ -460,7 +460,7 @@ class Script
 		var nativeListener = new NativeListener(EventMaster.TYPE_PURCHASES, type, func);
 		engine.nativeListeners.push(nativeListener);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
 		}
@@ -468,7 +468,7 @@ class Script
 	
 	public function addWhenCreatedListener(a:Actor, func:Dynamic->Void)
 	{			
-		var isActorScript = Std.is(this, ActorScript);
+		var isActorScript = Std.isOfType(this, ActorScript);
 		
 		if(a == null)
 		{
@@ -486,7 +486,7 @@ class Script
 	
 	public function addWhenKilledListener(a:Actor, func:Dynamic->Void)
 	{	
-		var isActorScript = Std.is(this, ActorScript);
+		var isActorScript = Std.isOfType(this, ActorScript);
 		
 		if(a == null)
 		{
@@ -504,7 +504,7 @@ class Script
 					
 	public function addWhenUpdatedListener(a:Actor, func:Float->Dynamic->Void)
 	{
-		var isActorScript = Std.is(this, ActorScript);
+		var isActorScript = Std.isOfType(this, ActorScript);
 	
 		if(a == null)
 		{
@@ -536,7 +536,7 @@ class Script
 	
 	public function addWhenDrawingListener(a:Actor, func:G->Int->Int->Dynamic->Void)
 	{
-		var isActorScript = Std.is(this, ActorScript);
+		var isActorScript = Std.isOfType(this, ActorScript);
 	
 		if(a == null)
 		{
@@ -576,7 +576,7 @@ class Script
 		
 		reg.whenActorEntersListeners.push(func);
 								
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(reg.whenActorEntersListeners, func);
 		}
@@ -592,7 +592,7 @@ class Script
 		
 		reg.whenActorExitsListeners.push(func);
 								
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(reg.whenActorExitsListeners, func);
 		}
@@ -609,7 +609,7 @@ class Script
 		a.positionListeners.push(func);
 		a.positionListenerCount++;
 								
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(a.positionListeners, func);
 		}
@@ -625,7 +625,7 @@ class Script
 		var listeners = cast(engine.typeGroupPositionListeners.get(obj), Array<Dynamic>);
 		listeners.push(func);		
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(listeners, func);
 		}
@@ -635,7 +635,7 @@ class Script
 	{
 		engine.whenSwipedListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenSwipedListeners, func);
 		}
@@ -645,7 +645,7 @@ class Script
 	{
 		engine.whenMTStartListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenMTStartListeners, func);
 		}
@@ -655,7 +655,7 @@ class Script
 	{
 		engine.whenMTDragListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenMTDragListeners, func);
 		}
@@ -665,7 +665,7 @@ class Script
 	{
 		engine.whenMTEndListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenMTEndListeners, func);
 		}
@@ -683,7 +683,7 @@ class Script
 		var listeners = engine.whenKeyPressedListeners.get(key);
 		listeners.push(func);
 								
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(listeners, func);
 		}
@@ -693,7 +693,7 @@ class Script
 	{
 		engine.whenAnyKeyPressedListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenAnyKeyPressedListeners, func);
 		}
@@ -703,7 +703,7 @@ class Script
 	{
 		engine.whenAnyKeyReleasedListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenAnyKeyReleasedListeners, func);
 		}
@@ -713,7 +713,7 @@ class Script
 	{
 		engine.whenAnyGamepadPressedListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenAnyGamepadPressedListeners, func);
 		}
@@ -723,7 +723,7 @@ class Script
 	{
 		engine.whenAnyGamepadReleasedListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenAnyGamepadReleasedListeners, func);
 		}
@@ -733,7 +733,7 @@ class Script
 	{
 		engine.whenMousePressedListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenMousePressedListeners, func);
 		}
@@ -743,7 +743,7 @@ class Script
 	{
 		engine.whenMouseReleasedListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenMouseReleasedListeners, func);
 		}
@@ -753,7 +753,7 @@ class Script
 	{
 		engine.whenMouseMovedListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenMouseMovedListeners, func);
 		}
@@ -763,7 +763,7 @@ class Script
 	{
 		engine.whenMouseDraggedListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenMouseDraggedListeners, func);
 		}
@@ -779,7 +779,7 @@ class Script
 		
 		a.mouseOverListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(a.mouseOverListeners, func);
 		}
@@ -814,7 +814,7 @@ class Script
 			equalityPairs.set(func, arr);
 		}
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(listeners, func);
 			
@@ -886,7 +886,7 @@ class Script
 		a.collisionListeners.push(func);
 		a.collisionListenerCount++;
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(a.collisionListeners, func);
 		}
@@ -913,7 +913,7 @@ class Script
 		var listeners = engine.collisionListeners.get(obj).get(obj2);
 		listeners.push(func);	
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.collisionListenerCount++;
 			cast(this, ActorScript).actor.registerListener(listeners, func);
@@ -930,7 +930,7 @@ class Script
 		var listeners = engine.whenTypeGroupCreatedListeners.get(obj);
 		listeners.push(func);		
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(listeners, func);
 		}
@@ -946,7 +946,7 @@ class Script
 		var listeners = engine.whenTypeGroupDiesListeners.get(obj);
 		listeners.push(func);		
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(listeners, func);
 		}
@@ -954,7 +954,7 @@ class Script
 	
 	public function addSoundListener(obj:Dynamic, func:Array<Dynamic>->Void)
 	{
-		if (Std.is(obj, Sound))
+		if (Std.isOfType(obj, Sound))
 		{
 			if(!engine.soundListeners.exists(obj))
 			{
@@ -964,7 +964,7 @@ class Script
 			var listeners:Array<Dynamic> = engine.soundListeners.get(obj);
 			listeners.push(func);
 			
-			if(Std.is(this, ActorScript))
+			if(Std.isOfType(this, ActorScript))
 			{
 				cast(this, ActorScript).actor.registerListener(listeners, func);
 			}
@@ -979,7 +979,7 @@ class Script
 			var listeners:Array<Dynamic> = engine.channelListeners.get(obj);
 			listeners.push(func);
 			
-			if(Std.is(this, ActorScript))
+			if(Std.isOfType(this, ActorScript))
 			{
 				cast(this, ActorScript).actor.registerListener(listeners, func);
 			}
@@ -990,7 +990,7 @@ class Script
 	{						
 		engine.whenFocusChangedListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenFocusChangedListeners, func);
 		}
@@ -1000,7 +1000,7 @@ class Script
 	{						
 		engine.whenPausedListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.whenPausedListeners, func);
 		}
@@ -1010,7 +1010,7 @@ class Script
 	{
 		engine.fullscreenListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.fullscreenListeners, func);
 		}
@@ -1020,7 +1020,7 @@ class Script
 	{
 		engine.gameScaleListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.gameScaleListeners, func);
 		}
@@ -1030,7 +1030,7 @@ class Script
 	{
 		engine.screenSizeListeners.push(func);
 		
-		if(Std.is(this, ActorScript))
+		if(Std.isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(engine.screenSizeListeners, func);
 		}
@@ -1545,7 +1545,7 @@ class Script
     {
 		layer.blendMode = mode;
 		
-		if (Std.is(layer, Layer))
+		if (Std.isOfType(layer, Layer))
 		{
 			cast(layer, Layer).tiles.blendMode = mode;
 		}
@@ -1606,7 +1606,7 @@ class Script
 	
 	public static function setDrawingLayer(layer:RegularLayer)
 	{
-		if(Std.is(layer, Layer))
+		if(Std.isOfType(layer, Layer))
 		{
 			var l:Layer = cast layer;
 			Engine.engine.g.graphics = l.overlay.graphics;
@@ -2341,7 +2341,7 @@ class Script
 		}
 		else
 		{
-			if(Std.is(layer, BackgroundLayer))
+			if(Std.isOfType(layer, BackgroundLayer))
 			{
 				cast(layer, BackgroundLayer).setScrollSpeed(xSpeed, ySpeed);
 			}
@@ -2353,11 +2353,11 @@ class Script
 	*/
 	public static function setScrollFactorForLayer(layer:RegularLayer, scrollFactorX:Float, scrollFactorY:Float)
 	{
-		if(Std.is(layer, BackgroundLayer))
+		if(Std.isOfType(layer, BackgroundLayer))
 		{
 			cast(layer, BackgroundLayer).setScrollFactor(scrollFactorX, scrollFactorY);
 		}
-		else if(Std.is(layer, Layer))
+		else if(Std.isOfType(layer, Layer))
 		{
 			layer.scrollFactorX = scrollFactorX;
 			layer.scrollFactorY = scrollFactorY;
@@ -2374,7 +2374,7 @@ class Script
 		if(bg == null)
 			return;
 
-		if(Std.is(layer, BackgroundLayer))
+		if(Std.isOfType(layer, BackgroundLayer))
 		{
 			cast(layer, BackgroundLayer).reload(bg.ID);
 		}
@@ -2388,7 +2388,7 @@ class Script
 		if(newImg == null)
 			return;
 
-		if(Std.is(layer, BackgroundLayer))
+		if(Std.isOfType(layer, BackgroundLayer))
 		{
 			cast(layer, BackgroundLayer).setImage(newImg);
 		}
@@ -2652,9 +2652,9 @@ class Script
 	{
 		if(img != null #if (use_actor_tilemap) && img.parent != null #end)
 		{
-			if(Std.is(img.parent, Actor))
+			if(Std.isOfType(img.parent, Actor))
 				cast(img.parent, Actor).attachedImages.remove(img);
-			else if(Std.is(img.parent, Layer))
+			else if(Std.isOfType(img.parent, Layer))
 				cast(img.parent, Layer).attachedImages.remove(img);
 			img.parent.removeChild(img);
 		}
@@ -3181,7 +3181,7 @@ class Script
 
 	public static function getTileLayerAt(layer:RegularLayer):TileLayer
 	{
-		if(layer == null || !Std.is(layer, Layer))
+		if(layer == null || !Std.isOfType(layer, Layer))
 			return null;
 		return cast(layer, Layer).tiles;
 	}
@@ -3189,7 +3189,7 @@ class Script
 	public static function getTilesetIDByName(tilesetName:String):Int
 	{
 		var r = Data.get().resourceMap.get(tilesetName);
-		if(Std.is(r, Tileset))
+		if(Std.isOfType(r, Tileset))
 		{
 			return r.ID;
 		}
@@ -3198,7 +3198,7 @@ class Script
 
 	public static function setTileAt(row:Int, col:Int, layer:RegularLayer, tilesetID:Int, tileID:Int)
 	{
-		if(layer == null || !Std.is(layer, Layer))
+		if(layer == null || !Std.isOfType(layer, Layer))
 		{
 			return;
 		}
@@ -3370,7 +3370,7 @@ class Script
 	
 	public static function removeTileAt(row:Int, col:Int, layer:RegularLayer)
 	{
-		if(layer == null || !Std.is(layer, Layer))
+		if(layer == null || !Std.isOfType(layer, Layer))
 		{
 			return;
 		}

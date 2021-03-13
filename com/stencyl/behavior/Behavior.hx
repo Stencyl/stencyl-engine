@@ -132,7 +132,7 @@ class Behavior
 					continue;
 				}
 				
-				if(a.type == "actor" && a.fieldName == "actor" && Std.is(script, ActorScript))
+				if(a.type == "actor" && a.fieldName == "actor" && Std.isOfType(script, ActorScript))
 				{
 					continue;
 				}

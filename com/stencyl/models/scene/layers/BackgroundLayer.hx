@@ -91,7 +91,7 @@ class BackgroundLayer extends RegularLayer
 				parallaxY = 1 - ((sceneHeight - bgHeight) / (sceneHeight - screenHeight));
 		}
 
-		if(Std.is(model, ScrollingBackground))
+		if(Std.isOfType(model, ScrollingBackground))
 		{
 			var scroller = cast(model, ScrollingBackground);
 
@@ -128,7 +128,7 @@ class BackgroundLayer extends RegularLayer
 		scrollFactorX = x;
 		scrollFactorY = y;
 
-		if(Std.is(bgChild, ScrollingBitmap))
+		if(Std.isOfType(bgChild, ScrollingBitmap))
 		{
 			var bmp = cast(bgChild, ScrollingBitmap);
 			bmp.parallaxX = x;
@@ -139,7 +139,7 @@ class BackgroundLayer extends RegularLayer
 
 	public function setScrollSpeed(x:Float, y:Float)
 	{
-		if(Std.is(bgChild, ScrollingBitmap))
+		if(Std.isOfType(bgChild, ScrollingBitmap))
 		{
 			var bg = cast(bgChild, ScrollingBitmap);
 			
@@ -194,7 +194,7 @@ class BackgroundLayer extends RegularLayer
 				currIndex = 0;
 			}
 			
-			if (Std.is(bgChild, ScrollingBitmap))
+			if (Std.isOfType(bgChild, ScrollingBitmap))
 			{
 				cacheIndex = currIndex;
 				
@@ -246,7 +246,7 @@ class BackgroundLayer extends RegularLayer
 
 	override public function updatePosition(x:Float, y:Float, elapsedTime:Float)
 	{
-		if(Std.is(bgChild, ScrollingBitmap))
+		if(Std.isOfType(bgChild, ScrollingBitmap))
 		{
 			var bg = cast(bgChild, ScrollingBitmap);
 			bg.update(x, y, elapsedTime);

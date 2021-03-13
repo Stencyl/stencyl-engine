@@ -348,11 +348,11 @@ class ToolsetInterface
 	{
 		if(ToolsetInterface.connected)
 		{
-			if(Std.is(v, BitmapData))
+			if(Std.isOfType(v, BitmapData))
 			{
 				imageTrace((v : BitmapData), pos);
 			}
-			else if(Std.is(v, DisplayObject))
+			else if(Std.isOfType(v, DisplayObject))
 			{
 				var dobj:DisplayObject = cast v;
 				

@@ -198,7 +198,7 @@ class Scene
 
 		var shapeData = r.getShape();
 		
-		if(Std.is(shapeData, MbsPolyRegion))
+		if(Std.isOfType(shapeData, MbsPolyRegion))
 		{
 			var polygon:MbsPolyRegion = cast shapeData;
 			var w = currW = polygon.getWidth();
@@ -295,7 +295,7 @@ class Scene
 
 		var shapeData = r.getShape();
 		
-		if(Std.is(shapeData, MbsPolyRegion))
+		if(Std.isOfType(shapeData, MbsPolyRegion))
 		{
 			var polygon:MbsPolyRegion = cast shapeData;
 			currW = polygon.getWidth();
@@ -341,7 +341,7 @@ class Scene
 		var a2 = r.getActor2();
 		var collide = r.getCollide();
 		
-		if(Std.is(r, MbsStickJoint))
+		if(Std.isOfType(r, MbsStickJoint))
 		{
 			var j = new B2DistanceJointDef();
 			var r2:MbsStickJoint = cast r;
@@ -361,7 +361,7 @@ class Scene
 			return j;
 		}
 		
-		else if(Std.is(r, MbsHingeJoint))
+		else if(Std.isOfType(r, MbsHingeJoint))
 		{
 			var j2 = new B2RevoluteJointDef();
 			var r2:MbsHingeJoint = cast r;
@@ -385,7 +385,7 @@ class Scene
 			return j2;
 		}
 		
-		else if(Std.is(r, MbsSlidingJoint))
+		else if(Std.isOfType(r, MbsSlidingJoint))
 		{
 			var j3 = new B2LineJointDef();
 			var r2:MbsSlidingJoint = cast r;
@@ -425,7 +425,7 @@ class Scene
 		{
 			var dyn = list.readObject();
 			
-			if(Std.is(dyn, MbsColorBackground) || Std.is(dyn, MbsGradientBackground))
+			if(Std.isOfType(dyn, MbsColorBackground) || Std.isOfType(dyn, MbsGradientBackground))
 				colorBackground = readColorBackground(dyn);
 			else
 			{
@@ -439,7 +439,7 @@ class Scene
 				var opacity:Float = r.getOpacity() / 100;
 				var blendMode:BlendMode = BlendModes.get(r.getBlendmode());
 
-				if(Std.is(dyn, MbsInteractiveLayer))
+				if(Std.isOfType(dyn, MbsInteractiveLayer))
 				{
 					var tileLayer:TileLayer = rawLayers.get(ID);
 					if(tileLayer == null)
@@ -450,7 +450,7 @@ class Scene
 
 					map.set(layer.ID, layer);
 				}
-				else if(Std.is(dyn, MbsImageBackground))
+				else if(Std.isOfType(dyn, MbsImageBackground))
 				{
 					//Need to change order, atlases aren't loaded yet
 					var bgR:MbsImageBackground = cast dyn;
@@ -469,14 +469,14 @@ class Scene
 
 	public function readColorBackground(r:MbsObject):Background
 	{
-		if(Std.is(r, MbsColorBackground))
+		if(Std.isOfType(r, MbsColorBackground))
 		{
 			var r2:MbsColorBackground = cast r;
 			var color = r2.getColor();
 			return new ColorBackground(color);
 		}
 		
-		else if(Std.is(r, MbsGradientBackground))
+		else if(Std.isOfType(r, MbsGradientBackground))
 		{
 			var r2:MbsGradientBackground = cast r;
 			var color1 = r2.getColor1();

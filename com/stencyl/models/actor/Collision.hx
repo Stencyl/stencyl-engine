@@ -72,20 +72,20 @@ class Collision
 		var groupID1:Int = -1;
 		var groupID2:Int = -1;
 	
-		if (Std.is(firstObject, ActorType))
+		if (Std.isOfType(firstObject, ActorType))
 		{
 			groupID1 = firstObject.groupID;
 		}
-		else if (Std.is(firstObject, Group))
+		else if (Std.isOfType(firstObject, Group))
 		{
 			groupID1 = firstObject.ID;
 		}
 		
-		if (Std.is(secondObject, ActorType))
+		if (Std.isOfType(secondObject, ActorType))
 		{
 			groupID2 = secondObject.groupID;
 		}
-		else if (Std.is(secondObject, Group))
+		else if (Std.isOfType(secondObject, Group))
 		{
 			groupID2 = secondObject.ID;
 		}
