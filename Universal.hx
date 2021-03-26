@@ -344,7 +344,7 @@ class Universal extends Sprite
 		Engine.screenScaleY = scaleY;
 
 		#if mobile
-		var insets = Native.getSafeInsets();
+		var insets = com.stencyl.native.Native.getSafeInsets();
 		leftInset = insets.x;
 		rightInset = insets.width;
 		topInset = insets.y;

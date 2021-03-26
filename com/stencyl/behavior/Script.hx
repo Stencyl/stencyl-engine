@@ -68,6 +68,17 @@ import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
 import com.stencyl.io.SpriteReader;
 
+#if mobile
+import com.stencyl.native.Native;
+import com.stencyl.purchases.Purchases;
+#end
+#if android
+import com.stencyl.googleplaygames.GooglePlayGames;
+#end
+#if ios
+import com.stencyl.gamecenter.GameCenter;
+#end
+
 import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2PolygonShape;
 import box2D.dynamics.joints.B2Joint;

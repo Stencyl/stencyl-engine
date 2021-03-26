@@ -1,5 +1,6 @@
 package com.stencyl;
 
+import com.stencyl.gestures.*;
 import com.stencyl.Config;
 import com.stencyl.utils.Utils;
 

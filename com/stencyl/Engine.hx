@@ -936,7 +936,7 @@ class Engine
 		
 		//Purchases
 		#if mobile
-		Purchases.initialize(#if android APIKeys.androidPublicKey #end);
+		com.stencyl.purchases.Purchases.initialize(#if android APIKeys.androidPublicKey #end);
 		#end
 		
 		//Now, let's start

@@ -1007,7 +1007,7 @@ class Utils
 		
 		if(overwrite || !FileSystem.exists(path))
 		{
-			var data = Native.getUserPreference(name);
+			var data = com.stencyl.native.Native.getUserPreference(name);
 			
 			if(data != null && data != "")
 			{
