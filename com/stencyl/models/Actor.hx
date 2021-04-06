@@ -43,6 +43,8 @@ import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.behavior.BehaviorManager;
 import com.stencyl.behavior.TimedTask;
 
+import com.stencyl.event.Event;
+
 import com.stencyl.models.actor.Group;
 import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.CollisionPoint;
@@ -82,6 +84,8 @@ import com.stencyl.models.collision.Masklist;
 import com.stencyl.models.collision.Mask;
 
 import haxe.CallStack;
+
+using com.stencyl.event.EventDispatcher;
 
 #if use_actor_tilemap
 typedef ActorAnimation = SheetAnimation;
@@ -251,19 +255,15 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	//*-----------------------------------------------	
 	
 	public var allListeners:Map<Int,Dynamic>;
-	public var allListenerReferences:Array<Dynamic>;
+	public var allEventReferences:Array<Dynamic>;
 	
-	public var whenCreatedListeners:Array<Dynamic>;
-	public var whenUpdatedListeners:Array<Dynamic>;
-	public var whenDrawingListeners:Array<Dynamic>;
-	public var whenKilledListeners:Array<Dynamic>;		
-	public var mouseOverListeners:Array<Dynamic>;
-	public var positionListeners:Array<Dynamic>;
-	public var collisionListeners:Array<Dynamic>;
-	
-	public var positionListenerCount:Int;
-	//Fixed for html5
-	public var collisionListenerCount:Int = 0;
+	public var whenCreated:Event<()->Void>;
+	public var whenUpdated:Event<(elapsedTime:Float)->Void>;
+	public var whenDrawing:Event<(graphics:G, x:Float, y:Float)->Void>;
+	public var whenKilled:Event<()->Void>;
+	public var whenMousedOver:Event<(mouseState:Int)->Void>;
+	public var whenPositionStateChanged:Event<(enteredScreen:Bool, exitedScreen:Bool, enteredScene:Bool, exitedScene:Bool)->Void>;
+	public var whenCollided:Event<(event:Collision)->Void>;
 	
 	public var mouseState:Int;
 	public var lastScreenState:Bool;
@@ -420,15 +420,15 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		//---
 		
 		allListeners = new Map<Int,Dynamic>();
-		allListenerReferences = new Array<Dynamic>();
+		allEventReferences = new Array<Dynamic>();
 		
-		whenCreatedListeners = new Array<Dynamic>();
-		whenUpdatedListeners = new Array<Dynamic>();
-		whenDrawingListeners = new Array<Dynamic>();
-		whenKilledListeners = new Array<Dynamic>();
-		mouseOverListeners = new Array<Dynamic>();
-		positionListeners = new Array<Dynamic>();
-		collisionListeners = new Array<Dynamic>();
+		whenCreated = new Event<()->Void>();
+		whenUpdated = new Event<(Float)->Void>();
+		whenDrawing = new Event<(G, Float, Float)->Void>();
+		whenKilled = new Event<()->Void>();
+		whenMousedOver = new Event<(Int)->Void>();
+		whenPositionStateChanged = new Event<(Bool, Bool, Bool, Bool)->Void>();
+		whenCollided = new Event<(Collision)->Void>();
 		
 		//---
 		
@@ -657,18 +657,15 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		transformPoint = null;
 		transformMatrix = null;
 		
-		whenCreatedListeners = null;
-		whenUpdatedListeners = null;
-		whenDrawingListeners = null;
-		whenKilledListeners = null;
-		mouseOverListeners = null;
-		positionListeners = null;
-		collisionListeners = null;
+		whenCreated = null;
+		whenUpdated = null;
+		whenDrawing = null;
+		whenKilled = null;
+		whenMousedOver = null;
+		whenPositionStateChanged = null;
+		whenCollided = null;
 		allListeners = null;
-		allListenerReferences = null;
-		
-		positionListenerCount = 0;
-		collisionListenerCount = 0;
+		allEventReferences = null;
 		
 		registry = null;
 		
@@ -698,43 +695,40 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 			allListeners.remove(key);
 		}
 		
-		while (allListenerReferences.length > 0)
+		while (allEventReferences.length > 0)
 		{
-			allListenerReferences.pop();
+			allEventReferences.pop();
 		}
 		
-		while (whenUpdatedListeners.length > 0)
+		if (whenUpdated.length > 0)
 		{
-			whenUpdatedListeners.pop();
+			whenUpdated.removeAll();
 		}
 		
-		while (whenDrawingListeners.length > 0)
+		if (whenDrawing.length > 0)
 		{
-			whenDrawingListeners.pop();
+			whenDrawing.removeAll();
 		}
 		
-		while (whenKilledListeners.length > 0)
+		if (whenKilled.length > 0)
 		{
-			whenKilledListeners.pop();
+			whenKilled.removeAll();
 		}
 		
-		while (mouseOverListeners.length > 0)
+		if (whenMousedOver.length > 0)
 		{
-			mouseOverListeners.pop();
+			whenMousedOver.removeAll();
 		}
 		
-		while (positionListeners.length > 0)
+		if (whenPositionStateChanged.length > 0)
 		{
-			positionListeners.pop();
+			whenPositionStateChanged.removeAll();
 		}
 		
-		while (collisionListeners.length > 0)
+		if (whenCollided.length > 0)
 		{
-			collisionListeners.pop();
+			whenCollided.removeAll();
 		}
-		
-		positionListenerCount = 0;
-		collisionListenerCount = 0;
 	}
 	
 	private var defaultHitbox:Hitbox;
@@ -824,28 +818,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		handlesCollisions = true;
 		behaviors.initScripts();
 		
-		var r = 0;
-		
-		while(r < whenCreatedListeners.length)
-		{
-			try
-			{
-				var f:Array<Dynamic>->Void = whenCreatedListeners[r];			
-				f(whenCreatedListeners);
-				
-				if(Utils.indexOf(whenCreatedListeners, f) == -1)
-				{
-					r--;
-				}
-			}
-			
-			catch(e:String)
-			{
-				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
-			}
-			
-			r++;
-		}			
+		whenCreated.dispatch();
 	}
 	
 	static public function createBox(width:Float, height:Float):B2PolygonShape
@@ -1466,7 +1439,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 			return;
 		}
 		
-		if(mouseOverListeners.length > 0)
+		if(whenMousedOver.length > 0)
 		{
 			//Previously was checkMouseState() - inlined for performance. See Region:innerUpdate for other instance
 			var mouseOver:Bool = isMouseOver();
@@ -1477,7 +1450,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				{
 					//Just Entered
 					mouseState = 1;
-					Engine.invokeListeners2(mouseOverListeners, mouseState);
+					whenMousedOver.dispatch(mouseState);
 				}
 				else
 				{
@@ -1489,21 +1462,21 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				{
 					//Clicked On
 					mouseState = 3;
-					Engine.invokeListeners2(mouseOverListeners, mouseState);
+					whenMousedOver.dispatch(mouseState);
 				}
 				
 				else if(Input.mouseDown)
 				{
 					//Dragged
 					mouseState = 4;
-					Engine.invokeListeners2(mouseOverListeners, mouseState);
+					whenMousedOver.dispatch(mouseState);
 				}
 				
 				if(Input.mouseReleased)
 				{
 					//Released
 					mouseState = 5;
-					Engine.invokeListeners2(mouseOverListeners, mouseState);
+					whenMousedOver.dispatch(mouseState);
 				}
 			}
 			
@@ -1513,7 +1486,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				{
 					//Just Exited
 					mouseState = -1;
-					Engine.invokeListeners2(mouseOverListeners, mouseState);
+					whenMousedOver.dispatch(mouseState);
 				}
 				
 				else if(mouseState == -1)
@@ -1526,12 +1499,12 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		var checkType = type.ID;
 		var groupType = GROUP_OFFSET + groupID;
 		
-		var ec = engine.collisionListeners;
-		var ep = engine.typeGroupPositionListeners;
+		var ec = engine.whenCollidedEvents;
+		var ep = engine.whenTypeGroupPositionStateChangedEvents;
 				
 		if(physicsMode == NORMAL_PHYSICS)
 		{
-			if(collisionListenerCount > 0 || 
+			if(whenCollided.length > 0 || 
 			   ec.get(checkType) != null || 
 			   ec.get(groupType) != null) 
 			{
@@ -1544,7 +1517,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		
 		if (physicsMode == SIMPLE_PHYSICS)
 		{
-			if(collisionListenerCount > 0 || 
+			if(whenCollided.length > 0 || 
 			   ec.get(checkType) != null || 
 			   ec.get(groupType) != null) 
 			{
@@ -1555,10 +1528,10 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		
 		if(physicsMode != MINIMAL_PHYSICS)
 		{
-			Engine.invokeListeners2(whenUpdatedListeners, elapsedTime);		
+			whenUpdated.dispatch(elapsedTime);		
 		}
 		
-		if(positionListenerCount > 0 || 
+		if(whenPositionStateChanged.length > 0 || 
 		   ep.get(checkType) != null || 
 		   ep.get(groupType) != null)
 		{
@@ -1949,19 +1922,19 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		var exitedScreen:Bool = lastScreenState && !onScreen;
 		var exitedScene:Bool = lastSceneState && !inScene;
 		
-		Engine.invokeListeners5(positionListeners, enteredScreen, exitedScreen, enteredScene, exitedScene);
+		whenPositionStateChanged.dispatch(enteredScreen, exitedScreen, enteredScene, exitedScene);
 			
-		var typeListeners = engine.typeGroupPositionListeners.get(groupID + Actor.GROUP_OFFSET);
-		var groupListeners = engine.typeGroupPositionListeners.get(typeID);
+		var typeEvent = engine.whenTypeGroupPositionStateChangedEvents.get(groupID + Actor.GROUP_OFFSET);
+		var groupEvent = engine.whenTypeGroupPositionStateChangedEvents.get(typeID);
 		
-		if(typeListeners != null)
+		if(typeEvent != null)
 		{
-			Engine.invokeListeners6(typeListeners, this, enteredScreen, exitedScreen, enteredScene, exitedScene);
+			typeEvent.dispatch(this, enteredScreen, exitedScreen, enteredScene, exitedScene);
 		}
 		
-		if(groupListeners != null)
+		if(groupEvent != null)
 		{
-			Engine.invokeListeners6(groupListeners, this, enteredScreen, exitedScreen, enteredScene, exitedScene);
+			groupEvent.dispatch(this, enteredScreen, exitedScreen, enteredScene, exitedScene);
 		}
 		
 		lastScreenState = onScreen;
@@ -2182,7 +2155,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				}
 				
 				lastCollided = collision.otherActor;
-				Engine.invokeListeners2(collisionListeners, collision);
+				whenCollided.dispatch(collision);
 				
 				engine.handleCollision(this, collision);	
 			}
@@ -3740,9 +3713,9 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	//* Events Plumbing
 	//*-----------------------------------------------
 	
-	public function registerListener(type:Array<Dynamic>, listener:Dynamic)
+	public function registerListener(type:Event<Dynamic>, listener:Dynamic)
 	{
-		var ePos:Int = Utils.indexOf(allListenerReferences, type);
+		var ePos:Int = Utils.indexOf(allEventReferences, type);
 		
 		var listenerList:Array<Dynamic> = null; 
 		
@@ -3753,8 +3726,8 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		
 		else
 		{
-			allListenerReferences.push(type);
-			ePos = allListenerReferences.length - 1;
+			allEventReferences.push(type);
+			ePos = allEventReferences.length - 1;
 			
 			listenerList = new Array<Dynamic>();
 			allListeners.set(ePos, listenerList);
@@ -3765,11 +3738,11 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	
 	public function removeAllListeners()
 	{			
-		for(k in 0...allListenerReferences.length)
+		for(k in 0...allEventReferences.length)
 		{
-			var listener = allListenerReferences[k];
+			var event = allEventReferences[k];
 			
-			if(listener != null)
+			if(event != null)
 			{
 				var list:Array<Dynamic> = cast(allListeners.get(k), Array<Dynamic>);
 				
@@ -3777,13 +3750,13 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				{
 					for(r in 0...list.length)
 					{
-						Utils.removeValueFromArray(listener, list[r]);
+						Utils.removeValueFromArray(event, list[r]);
 					}
 				}
 			}
 		}
 		
-		Utils.clear(allListenerReferences);
+		Utils.clear(allEventReferences);
 	}	
 	
 	//*-----------------------------------------------
@@ -3848,19 +3821,19 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	{
 		dying = true;
 		
-		var a = engine.whenTypeGroupDiesListeners.get(getType());
-		var b = engine.whenTypeGroupDiesListeners.get(getGroup());
+		var a = engine.whenTypeGroupDiedEvents.get(getType());
+		var b = engine.whenTypeGroupDiedEvents.get(getGroup());
 	
-		Engine.invokeListeners(whenKilledListeners);
+		whenKilled.dispatch();
 
 		if(a != null)
 		{
-			Engine.invokeListeners2(a, this);
+			a.dispatch(this);
 		}
 		
 		if(b != null)
 		{
-			Engine.invokeListeners2(b, this);
+			b.dispatch(this);
 		}
 		
 		removeAllListeners();
@@ -4775,7 +4748,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				if (info == null || info.remove == true) continue;
 				
 				lastCollided = info.otherActor;
-				Engine.invokeListeners2(collisionListeners, info);
+				whenCollided.dispatch(info);
 				engine.handleCollision(this, info);								
 			}
 		}

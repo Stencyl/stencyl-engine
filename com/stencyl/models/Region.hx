@@ -1,5 +1,6 @@
 package com.stencyl.models;
 
+import com.stencyl.event.Event;
 import com.stencyl.models.Actor;
 import com.stencyl.models.collision.Hitbox;
 import com.stencyl.utils.Utils;
@@ -14,6 +15,8 @@ import box2D.collision.shapes.B2CircleShape;
 import box2D.collision.shapes.B2PolygonShape;
 
 import openfl.geom.Rectangle;
+
+using com.stencyl.event.EventDispatcher;
 
 class Region extends Actor
 {
@@ -35,8 +38,8 @@ class Region extends Actor
 	private var originalWidth:Float;
 	private var originalHeight:Float;
 			
-	public var whenActorEntersListeners:Array<Dynamic>;
-	public var whenActorExitsListeners:Array<Dynamic>;
+	public var whenActorEntered:Event<(eventActor:Actor)->Void>;
+	public var whenActorExited:Event<(eventActor:Actor)->Void>;
 	
 	private var justAdded:Array<Dynamic>;
 	private var justRemoved:Array<Dynamic>;
@@ -61,8 +64,8 @@ class Region extends Actor
 		copy = shapes[0];
 		
 		containedActors = new Map<Int,Int>();
-		whenActorEntersListeners = new Array<Dynamic>();
-		whenActorExitsListeners = new Array<Dynamic>();
+		whenActorEntered = new Event<(Actor)->Void>();
+		whenActorExited = new Event<(Actor)->Void>();
 		
 		justAdded = new Array<Dynamic>();
 		justRemoved = new Array<Dynamic>();
@@ -329,16 +332,16 @@ class Region extends Actor
 		while(justAdded != null && justAdded.length > 0)
 		{				
 			var a = cast(justAdded.pop(), Actor);
-			Engine.invokeListeners2(whenActorEntersListeners, a);
+			whenActorEntered.dispatch(a);
 		}
 		
 		while(justRemoved != null && justRemoved.length > 0)
 		{
 			var a = cast(justRemoved.pop(), Actor);
-			Engine.invokeListeners2(whenActorExitsListeners, a);
+			whenActorExited.dispatch(a);
 		}
 		
-		if(mouseOverListeners != null && mouseOverListeners.length > 0)
+		if(whenMousedOver != null && whenMousedOver.length > 0)
 		{
 			//Previously was checkMouseState() - inlined for performance. See Actor:innerUpdate for other instance.
 			var mouseOver:Bool = isMouseOver();
@@ -349,7 +352,7 @@ class Region extends Actor
 				{
 					//Just Entered
 					mouseState = 1;
-					Engine.invokeListeners2(mouseOverListeners, mouseState);
+					whenMousedOver.dispatch(mouseState);
 				}
 				else
 				{
@@ -361,21 +364,21 @@ class Region extends Actor
 				{
 					//Clicked On
 					mouseState = 3;
-					Engine.invokeListeners2(mouseOverListeners, mouseState);
+					whenMousedOver.dispatch(mouseState);
 				}
 				
 				else if(Input.mouseDown)
 				{
 					//Dragged
 					mouseState = 4;
-					Engine.invokeListeners2(mouseOverListeners, mouseState);
+					whenMousedOver.dispatch(mouseState);
 				}
 				
 				if(Input.mouseReleased)
 				{
 					//Released
 					mouseState = 5;
-					Engine.invokeListeners2(mouseOverListeners, mouseState);
+					whenMousedOver.dispatch(mouseState);
 				}
 			}
 			
@@ -385,7 +388,7 @@ class Region extends Actor
 				{
 					//Just Exited
 					mouseState = -1;
-					Engine.invokeListeners2(mouseOverListeners, mouseState);
+					whenMousedOver.dispatch(mouseState);
 				}
 				
 				else if(mouseState == -1)

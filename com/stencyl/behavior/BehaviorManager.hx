@@ -139,7 +139,7 @@ class BehaviorManager
 			if(ReflectionHelper.hasField(b.script.wrapper.classname, attributeName))
 			{
 				Reflect.setField(b.script, attributeName, value);
-				b.script.propertyChanged(attributeName, value);
+				b.script.propertyChanged(attributeName);
 			}
 			
 			else

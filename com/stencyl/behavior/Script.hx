@@ -3,8 +3,11 @@ package com.stencyl.behavior;
 import openfl.net.SharedObject;
 
 import openfl.ui.Mouse;
-import openfl.events.Event;
+import openfl.events.Event as FlashEvent;
 import openfl.events.IOErrorEvent;
+import openfl.events.KeyboardEvent;
+import openfl.events.MouseEvent;
+import openfl.events.TouchEvent;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
 import openfl.net.URLRequestMethod;
@@ -34,6 +37,7 @@ import com.stencyl.graphics.G;
 import com.stencyl.models.scene.ScrollingBitmap;
 
 import com.stencyl.Config;
+import com.stencyl.event.Event;
 import com.stencyl.models.Actor;
 import com.stencyl.models.actor.Collision;
 import com.stencyl.models.actor.CollisionPoint;
@@ -94,6 +98,7 @@ import haxe.io.Bytes;
 import haxe.io.BytesData;
 import lime.app.Application;
 
+using com.stencyl.event.EventDispatcher;
 using lime._internal.unifill.Unifill;
 
 //Actual scripts extend from this
@@ -158,7 +163,7 @@ class Script
 
 	// Property Change Support
 	
-	public var propertyChangeListeners:Map<String,Dynamic>;
+	public var propertyChangeEvents:Map<String, Event<()->Void>>;
 	public var equalityPairs:ObjectMap<Dynamic, Dynamic>; //hashmap does badly on some platforms when checking key equality (for primitives) - beware
 	
 	public var checkProperties:Bool;
@@ -179,7 +184,7 @@ class Script
 		scriptInit = false;
 		checkProperties = false;
 		nameMap = new Map<String,Dynamic>();	
-		propertyChangeListeners = new Map<String,Dynamic>();
+		propertyChangeEvents = new Map<String, Event<()->Void>>();
 		equalityPairs = new ObjectMap<Dynamic, Dynamic>();
 		attributeTweens = new Map<String, TweenFloat>();
 	}
@@ -361,7 +366,7 @@ class Script
 	
 	public function clearListeners()
 	{
-		propertyChangeListeners = new Map<String,Dynamic>();
+		propertyChangeEvents = new Map<String, Event<() -> Void>>();
 	}
 	
 	//Physics = Pass in event.~Shape (a b2Shape)
@@ -440,7 +445,7 @@ class Script
 		
 		if(Std.isOfType(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
+			// cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
 		}
 	}
 	
@@ -451,7 +456,7 @@ class Script
 		
 		if(Std.isOfType(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
+			// cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
 		}
 	}
 	
@@ -462,7 +467,7 @@ class Script
 		
 		if(Std.isOfType(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
+			// cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
 		}
 	}
 	
@@ -473,47 +478,79 @@ class Script
 		
 		if(Std.isOfType(this, ActorScript))
 		{
-			cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
+			// cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
 		}
 	}
-	
-	public function addWhenCreatedListener(a:Actor, func:Dynamic->Void)
-	{			
-		var isActorScript = Std.isOfType(this, ActorScript);
+
+	public function addListener<T>(event:Event<T>, func:T)
+	{
+		event.add(func);
+
+		if(Std.isOfType(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(event, func);
+		}
+	}
+
+	public function addListenerWithKey<K,T>(eventMap:Map<K,Event<T>>, key:K, func:T)
+	{
+		if(!eventMap.exists(key))
+		{
+			eventMap.set(key, new Event<T>());
+		}
+		var event = eventMap.get(key);
 		
+		event.add(func);
+
+		if(Std.isOfType(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(event, func);
+		}
+	}
+
+	public function addListenerWithKey2<T>(eventMap:Map<Int,Map<Int,Event<T>>>, key1:Int, key2:Int, func:T)
+	{
+		if(!eventMap.exists(key1))
+		{
+			eventMap.set(key1, new Map<Int,Event<T>>());
+		}
+		if(!eventMap.get(key1).exists(key2))
+		{
+			eventMap.get(key1).set(key2, new Event<T>());
+		}
+		var event = eventMap.get(key1).get(key2);
+		
+		event.add(func);
+
+		if(Std.isOfType(this, ActorScript))
+		{
+			cast(this, ActorScript).actor.registerListener(event, func);
+		}
+	}
+
+	public function addWhenCreatedListener(a:Actor, func:(Array<Dynamic>)->Void)
+	{
 		if(a == null)
 		{
 			trace("Error in " + wrapper.classname + ": Cannot add listener function to null actor.");
 			return;
 		}
 		
-		a.whenCreatedListeners.push(func);
-		
-		if(isActorScript)
-		{
-			cast(this, ActorScript).actor.registerListener(a.whenCreatedListeners, func);
-		}
+		addListener(a.whenCreated, func.bind(null));
 	}
 	
-	public function addWhenKilledListener(a:Actor, func:Dynamic->Void)
-	{	
-		var isActorScript = Std.isOfType(this, ActorScript);
-		
+	public function addWhenKilledListener(a:Actor, func:(Array<Dynamic>)->Void)
+	{
 		if(a == null)
 		{
 			trace("Error in " + wrapper.classname + ": Cannot add listener function to null actor.");
 			return;
 		}
 		
-		a.whenKilledListeners.push(func);
-		
-		if(isActorScript)
-		{
-			cast(this, ActorScript).actor.registerListener(a.whenKilledListeners, func);
-		}	
+		addListener(a.whenKilled, func.bind(null));
 	}
 					
-	public function addWhenUpdatedListener(a:Actor, func:Float->Dynamic->Void)
+	public function addWhenUpdatedListener(a:Actor, func:(Float, Array<Dynamic>)->Void)
 	{
 		var isActorScript = Std.isOfType(this, ActorScript);
 	
@@ -525,27 +562,18 @@ class Script
 			}
 		}
 								
-		var listeners:Array<Dynamic>;
-		
 		if(a != null)
 		{
-			listeners = a.whenUpdatedListeners;				
-		}	
+			addListener(a.whenUpdated, func.bind(_, null));
+		}
 				
 		else
 		{
-			listeners = engine.whenUpdatedListeners;
-		}
-		
-		listeners.push(func);
-			
-		if(isActorScript)
-		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
+			addListener(engine.whenUpdated, func.bind(_, null));
 		}
 	}
 	
-	public function addWhenDrawingListener(a:Actor, func:G->Int->Int->Dynamic->Void)
+	public function addWhenDrawingListener(a:Actor, func:(G, Float, Float, Array<Dynamic>)->Void)
 	{
 		var isActorScript = Std.isOfType(this, ActorScript);
 	
@@ -557,27 +585,18 @@ class Script
 			}
 		}
 								
-		var listeners:Array<Dynamic>;
-		
 		if(a != null)
 		{
-			listeners = a.whenDrawingListeners;				
+			addListener(a.whenDrawing, func.bind(_, _, _, null));
 		}	
 				
 		else
 		{
-			listeners = engine.whenDrawingListeners;
-		}
-		
-		listeners.push(func);
-						
-		if(isActorScript)
-		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
+			addListener(engine.whenDrawing, func.bind(_, _, _, null));
 		}
 	}
 	
-	public function addActorEntersRegionListener(reg:Region, func:Dynamic->Array<Dynamic>->Void)
+	public function addActorEntersRegionListener(reg:Region, func:(Actor, Array<Dynamic>)->Void)
 	{
 		if(reg == null)
 		{
@@ -585,12 +604,7 @@ class Script
 			return;
 		}
 		
-		reg.whenActorEntersListeners.push(func);
-								
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(reg.whenActorEntersListeners, func);
-		}
+		addListener(reg.whenActorEntered, func.bind(_, null));
 	}
 	
 	public function addActorExitsRegionListener(reg:Region, func:Dynamic->Array<Dynamic>->Void)
@@ -601,15 +615,10 @@ class Script
 			return;
 		}
 		
-		reg.whenActorExitsListeners.push(func);
-								
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(reg.whenActorExitsListeners, func);
-		}
+		addListener(reg.whenActorExited, func.bind(_, null));
 	}
 	
-	public function addActorPositionListener(a:Actor, func:Dynamic->Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void)
+	public function addActorPositionListener(a:Actor, func:(Bool, Bool, Bool, Bool, Array<Dynamic>)->Void)
 	{
 		if(a == null)
 		{
@@ -617,170 +626,80 @@ class Script
 			return;
 		}
 		
-		a.positionListeners.push(func);
-		a.positionListenerCount++;
-								
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(a.positionListeners, func);
-		}
+		addListener(a.whenPositionStateChanged, func.bind(_, _, _, _, null));
 	}
 	
-	public function addActorTypeGroupPositionListener(obj:Dynamic, func:Actor->Dynamic->Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void)
+	public function addActorTypeGroupPositionListener(obj:Dynamic, func:(Actor, Bool, Bool, Bool, Bool, Array<Dynamic>)->Void)
 	{
-		if(!engine.typeGroupPositionListeners.exists(obj))
-		{
-			engine.typeGroupPositionListeners.set(obj, new Array<Dynamic>());
-		}
-		
-		var listeners = cast(engine.typeGroupPositionListeners.get(obj), Array<Dynamic>);
-		listeners.push(func);		
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
-		}
+		addListenerWithKey(engine.whenTypeGroupPositionStateChangedEvents, obj, func.bind(_, _, _, _, _, null));
 	}
 	
-	public function addSwipeListener(func:Array<Dynamic>->Void)
+	public function addSwipeListener(func:(Array<Dynamic>)->Void)
 	{
-		engine.whenSwipedListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenSwipedListeners, func);
-		}
+		addListener(engine.whenSwiped, func.bind(null));
 	}
 	
-	public function addMultiTouchStartListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addMultiTouchStartListener(func:(TouchEvent, Array<Dynamic>)->Void)
 	{
-		engine.whenMTStartListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMTStartListeners, func);
-		}
+		addListener(engine.whenMTStarted, func.bind(_, null));
 	}
 	
-	public function addMultiTouchMoveListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addMultiTouchMoveListener(func:(TouchEvent, Array<Dynamic>)->Void)
 	{
-		engine.whenMTDragListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMTDragListeners, func);
-		}
+		addListener(engine.whenMTDragged, func.bind(_, null));
 	}
 	
-	public function addMultiTouchEndListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addMultiTouchEndListener(func:(TouchEvent, Array<Dynamic>)->Void)
 	{
-		engine.whenMTEndListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMTEndListeners, func);
-		}
+		addListener(engine.whenMTEnded, func.bind(_, null));
 	}
 	
-	public function addKeyStateListener(key:String, func:Dynamic->Dynamic->Array<Dynamic>->Void)
-	{			
-		if(engine.whenKeyPressedListeners.get(key) == null)
-		{
-			engine.whenKeyPressedListeners.set(key, new Array<Dynamic>());
-		}
-		
-		engine.hasKeyPressedListeners = true;
-		
-		var listeners = engine.whenKeyPressedListeners.get(key);
-		listeners.push(func);
-								
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
-		}
-	}
-	
-	public function addAnyKeyPressedListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addKeyStateListener(key:String, func:(Bool, Bool, Array<Dynamic>)->Void)
 	{
-		engine.whenAnyKeyPressedListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenAnyKeyPressedListeners, func);
-		}
+		addListenerWithKey(engine.whenKeyPressedEvents, key, func.bind(_, _, null));
 	}
 	
-	public function addAnyKeyReleasedListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addAnyKeyPressedListener(func:(KeyboardEvent, Array<Dynamic>)->Void)
 	{
-		engine.whenAnyKeyReleasedListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenAnyKeyReleasedListeners, func);
-		}
+		addListener(engine.whenAnyKeyPressed, func.bind(_, null));
+	}
+	
+	public function addAnyKeyReleasedListener(func:(KeyboardEvent, Array<Dynamic>)->Void)
+	{
+		addListener(engine.whenAnyKeyReleased, func.bind(_, null));
 	}
 
-	public function addAnyGamepadPressedListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addAnyGamepadPressedListener(func:(String, Array<Dynamic>)->Void)
 	{
-		engine.whenAnyGamepadPressedListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenAnyGamepadPressedListeners, func);
-		}
+		addListener(engine.whenAnyGamepadPressed, func.bind(_, null));
 	}
 	
-	public function addAnyGamepadReleasedListener(func:Dynamic->Array<Dynamic>->Void)
+	public function addAnyGamepadReleasedListener(func:(String, Array<Dynamic>)->Void)
 	{
-		engine.whenAnyGamepadReleasedListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenAnyGamepadReleasedListeners, func);
-		}
+		addListener(engine.whenAnyGamepadReleased, func.bind(_, null));
 	}
 	
-	public function addMousePressedListener(func:Array<Dynamic>->Void)
+	public function addMousePressedListener(func:(Array<Dynamic>)->Void)
 	{
-		engine.whenMousePressedListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMousePressedListeners, func);
-		}
+		addListener(engine.whenMousePressed, func.bind(null));
 	}
 	
-	public function addMouseReleasedListener(func:Array<Dynamic>->Void)
+	public function addMouseReleasedListener(func:(Array<Dynamic>)->Void)
 	{
-		engine.whenMouseReleasedListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMouseReleasedListeners, func);
-		}
+		addListener(engine.whenMouseReleased, func.bind(null));
 	}
 	
-	public function addMouseMovedListener(func:Array<Dynamic>->Void)
+	public function addMouseMovedListener(func:(Array<Dynamic>)->Void)
 	{
-		engine.whenMouseMovedListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMouseMovedListeners, func);
-		}
+		addListener(engine.whenMouseMoved, func.bind(null));
 	}
 	
-	public function addMouseDraggedListener(func:Array<Dynamic>->Void)
+	public function addMouseDraggedListener(func:(Array<Dynamic>)->Void)
 	{
-		engine.whenMouseDraggedListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenMouseDraggedListeners, func);
-		}
+		addListener(engine.whenMouseDragged, func.bind(null));
 	}
 	
-	public function addMouseOverActorListener(a:Actor, func:Int->Array<Dynamic>->Void)
+	public function addMouseOverActorListener(a:Actor, func:(Int, Array<Dynamic>)->Void)
 	{	
 		if(a == null)
 		{
@@ -788,263 +707,99 @@ class Script
 			return;
 		}
 		
-		a.mouseOverListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(a.mouseOverListeners, func);
-		}
+		addListener(a.whenMousedOver, func.bind(_, null));
 	}
 	
 	public function addPropertyChangeListener(propertyKey:String, propertyKey2:String, func:Dynamic->Array<Dynamic>->Void)
 	{
-		if(!propertyChangeListeners.exists(propertyKey))
-		{
-			propertyChangeListeners.set(propertyKey, new Array<Dynamic>());
-		}
-		
-		//Equality block needs to be added to two listener lists
-		if(propertyKey2 != null && !propertyChangeListeners.exists(propertyKey2))
-		{
-			propertyChangeListeners.set(propertyKey2, new Array<Dynamic>());
-		}
-		
-		var listeners = propertyChangeListeners.get(propertyKey);
-		var listeners2 = propertyChangeListeners.get(propertyKey2);
-		
-		listeners.push(func);			
-		
+		var callback = func.bind(null, null);
+		addListenerWithKey(propertyChangeEvents, propertyKey, callback);
 		if(propertyKey2 != null)
 		{
-			listeners2.push(func);
-			
-			//If equality, keep note of other listener list
-			var arr = new Array<Dynamic>();
-			arr.push(listeners);
-			arr.push(listeners2);
-			equalityPairs.set(func, arr);
+			addListenerWithKey(propertyChangeEvents, propertyKey2, callback);
 		}
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
-			
-			if(propertyKey2 != null)
-			{
-				cast(this, ActorScript).actor.registerListener(listeners2, func);
-			}
-		}
-		
 		checkProperties = true;
+
+		//TODO: previously, there was special case code here for equality pairs
 	}
-	
-	public function propertyChanged(propertyKey:String, property:Dynamic)
+
+	public function propertyChanged(propertyKey:String)
 	{
 		if (checkProperties)
 		{					
-			var listeners = propertyChangeListeners.get(propertyKey);
+			var event = propertyChangeEvents.get(propertyKey);
 		
-			if(listeners != null)
+			if(event != null)
 			{
-				var r = 0;
-		
-				while(r < listeners.length)
-				{
-					try
-					{
-						var f:Dynamic->Array<Dynamic>->Void = listeners[r];			
-						f(property, listeners);
-					
-						if(com.stencyl.utils.Utils.indexOf(listeners, f) == -1)
-						{
-							r--;
-						
-							//If equality, remove from other list as well
-							if(equalityPairs.get(f) != null)
-							{
-								for(list in cast(equalityPairs.get(f), Array<Dynamic>))
-								{
-									if(list != listeners)
-									{
-										list.splice(com.stencyl.utils.Utils.indexOf(list, f), 1);
-									}
-								}
-								
-								equalityPairs.remove(f);
-							}
-						}
-					}
-					
-					catch(e:String)
-					{
-						trace(e);
-					}
-					
-					r++;
-				}
+				event.dispatch();
+				
+				//TODO: previously, events that had finished here, if they were one of an equality pair, would also have the other part of the equality pair removed
 			}
 		}
 	}
 	
-	public function addCollisionListener(a:Actor, func:Collision->Array<Dynamic>->Void)
-	{					
+	public function addCollisionListener(a:Actor, func:(Collision, Array<Dynamic>)->Void)
+	{
 		if(a == null)
 		{				
 			trace("Error in " + wrapper.classname +": Cannot add listener function to null actor.");
 			return;
 		}
 		
-		a.collisionListeners.push(func);
-		a.collisionListenerCount++;
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(a.collisionListeners, func);
-		}
+		addListener(a.whenCollided, func.bind(_, null));
 	}
 	
 	//Only used for type/group type/group collisions
-	public function addSceneCollisionListener(obj:Dynamic, obj2:Dynamic, func:Collision->Array<Dynamic>->Void)
+	public function addSceneCollisionListener(groupTypeID:Int, groupTypeID2:Int, func:(Collision, Array<Dynamic>)->Void)
 	{
-		if(!engine.collisionListeners.exists(obj))
-		{
-			engine.collisionListeners.set(obj, new Map<Int,Array<Dynamic>>());									
-		}
-		
-		if(!engine.collisionListeners.exists(obj2))
-		{
-			engine.collisionListeners.set(obj2, new Map<Int,Array<Dynamic>>());
-		}	
-		
-		if(!engine.collisionListeners.get(obj).exists(obj2))
-		{				
-			engine.collisionListeners.get(obj).set(obj2, new Array<Dynamic>());		
-		}
-		
-		var listeners = engine.collisionListeners.get(obj).get(obj2);
-		listeners.push(func);	
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.collisionListenerCount++;
-			cast(this, ActorScript).actor.registerListener(listeners, func);
-		}
+		addListenerWithKey2(engine.whenCollidedEvents, groupTypeID, groupTypeID2, func.bind(_, null));
 	}
 	
-	public function addWhenTypeGroupCreatedListener(obj:Dynamic, func:Actor->Array<Dynamic>->Void)
+	public function addWhenTypeGroupCreatedListener(obj:Dynamic, func:(Actor, Array<Dynamic>)->Void)
 	{
-		if(!engine.whenTypeGroupCreatedListeners.exists(obj))
-		{
-			engine.whenTypeGroupCreatedListeners.set(obj, new Array<Dynamic>());
-		}
-		
-		var listeners = engine.whenTypeGroupCreatedListeners.get(obj);
-		listeners.push(func);		
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
-		}
+		addListenerWithKey(engine.whenTypeGroupCreatedEvents, obj, func.bind(_, null));
 	}
 	
-	public function addWhenTypeGroupKilledListener(obj:Dynamic, func:Actor->Array<Dynamic>->Void)
+	public function addWhenTypeGroupKilledListener(obj:Dynamic, func:(Actor, Array<Dynamic>)->Void)
 	{
-		if(!engine.whenTypeGroupDiesListeners.exists(obj))
-		{
-			engine.whenTypeGroupDiesListeners.set(obj, new Array<Dynamic>());
-		}
-		
-		var listeners = engine.whenTypeGroupDiesListeners.get(obj);
-		listeners.push(func);		
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(listeners, func);
-		}
+		addListenerWithKey(engine.whenTypeGroupDiedEvents, obj, func.bind(_, null));
 	}
 	
-	public function addSoundListener(obj:Dynamic, func:Array<Dynamic>->Void)
+	public function addSoundListener(obj:Dynamic, func:(Array<Dynamic>)->Void)
 	{
 		if (Std.isOfType(obj, Sound))
 		{
-			if(!engine.soundListeners.exists(obj))
-			{
-				engine.soundListeners.set(obj, new Array<Dynamic>());
-			}
-			
-			var listeners:Array<Dynamic> = engine.soundListeners.get(obj);
-			listeners.push(func);
-			
-			if(Std.isOfType(this, ActorScript))
-			{
-				cast(this, ActorScript).actor.registerListener(listeners, func);
-			}
+			addListenerWithKey(engine.whenSoundEndedEvents, obj, func.bind(null));
 		}
 		else
 		{
-			if(!engine.channelListeners.exists(obj))
-			{
-				engine.channelListeners.set(obj, new Array<Dynamic>());
-			}
-			
-			var listeners:Array<Dynamic> = engine.channelListeners.get(obj);
-			listeners.push(func);
-			
-			if(Std.isOfType(this, ActorScript))
-			{
-				cast(this, ActorScript).actor.registerListener(listeners, func);
-			}
+			addListenerWithKey(engine.whenChannelEndedEvents, obj, func.bind(null));
 		}
 	}
 	
-	public function addFocusChangeListener(func:Bool->Array<Dynamic>->Void)
+	public function addFocusChangeListener(func:(Bool, Array<Dynamic>)->Void)
+	{
+		addListener(engine.whenFocusChanged, func.bind(_, null));
+	}
+	
+	public function addPauseListener(func:(Bool, Array<Dynamic>)->Void)
 	{						
-		engine.whenFocusChangedListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenFocusChangedListeners, func);
-		}
+		addListener(engine.whenPaused, func.bind(_, null));
 	}
 	
-	public function addPauseListener(func:Bool->Array<Dynamic>->Void)
-	{						
-		engine.whenPausedListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.whenPausedListeners, func);
-		}
-	}
-	
-	public function addFullscreenListener(func:Array<Dynamic>->Void)
+	public function addFullscreenListener(func:(Array<Dynamic>)->Void)
 	{
-		engine.fullscreenListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.fullscreenListeners, func);
-		}
+		addListener(engine.whenFullscreenChanged, func.bind(null));
 	}
 	
-	public function addGameScaleListener(func:Array<Dynamic>->Void)
+	public function addGameScaleListener(func:(Array<Dynamic>)->Void)
 	{
-		engine.gameScaleListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.gameScaleListeners, func);
-		}
+		addListener(engine.whenGameScaleChanged, func.bind(null));
 	}
 	
-	public function addScreenSizeListener(func:Array<Dynamic>->Void)
+	public function addScreenSizeListener(func:(Array<Dynamic>)->Void)
 	{
-		engine.screenSizeListeners.push(func);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			cast(this, ActorScript).actor.registerListener(engine.screenSizeListeners, func);
-		}
+		addListener(engine.whenScreenSizeChanged, func.bind(null));
 	}
 	
 	//*-----------------------------------------------
@@ -2482,14 +2237,14 @@ class Script
 		lc.applicationDomain = flash.system.ApplicationDomain.currentDomain; 
     	#end
 		
-		var handler = function(event:Event):Void
+		var handler = function(event:FlashEvent):Void
 		{
 			var bitmapData = cast(cast(event.currentTarget, LoaderInfo).content, Bitmap).bitmapData;
     		onComplete(bitmapData);
 		}
 	
 		var loader:Loader = new Loader();
-    	loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handler);
+    	loader.contentLoaderInfo.addEventListener(FlashEvent.COMPLETE, handler);
     	loader.load(new URLRequest(URL));
 	}
 	
@@ -3794,7 +3549,7 @@ class Script
 	//* Web Services
 	//*-----------------------------------------------
 	
-	private static function defaultURLHandler(event:Event)
+	private static function defaultURLHandler(event:FlashEvent)
 	{
 		var loader:URLLoader = new URLLoader(cast event.target);
 		trace("Visited URL: " + loader.data);
@@ -3815,7 +3570,7 @@ class Script
 	/**
 	* Attempts to connect to a URL
 	*/
-	public static function visitURL(URL:String, fn:Event->Void = null)
+	public static function visitURL(URL:String, fn:FlashEvent->Void = null)
 	{
 		if(fn == null)
 		{
@@ -3828,7 +3583,7 @@ class Script
 			request.method = URLRequestMethod.GET;
 			
 			var loader = new URLLoader(request);
-			loader.addEventListener(Event.COMPLETE, fn);
+			loader.addEventListener(FlashEvent.COMPLETE, fn);
 			
 			#if flash
 			loader.addEventListener(IOErrorEvent.NETWORK_ERROR, defaultURLError);
@@ -3851,7 +3606,7 @@ class Script
 	/**
 	* Attempts to POST data to a URL
 	*/
-	public static function postToURL(URL:String, data:String = null, fn:Event->Void = null)
+	public static function postToURL(URL:String, data:String = null, fn:FlashEvent->Void = null)
 	{
 		if(fn == null)
 		{
@@ -3869,7 +3624,7 @@ class Script
 		try 
 		{
 			var loader = new URLLoader(request);
-			loader.addEventListener(Event.COMPLETE, fn);
+			loader.addEventListener(FlashEvent.COMPLETE, fn);
 			
 			#if flash
 			loader.addEventListener(IOErrorEvent.NETWORK_ERROR, defaultURLError);

@@ -20,10 +20,11 @@ import openfl.display.MovieClip;
 import openfl.display.StageDisplayState;
 import openfl.text.TextField;
 import openfl.display.DisplayObjectContainer;
-import openfl.events.Event;
+import openfl.events.Event as FlashEvent;
 import openfl.events.FullScreenEvent;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
+import openfl.events.TouchEvent;
 import openfl.Lib;
 import openfl.ui.Keyboard;
 
@@ -33,6 +34,7 @@ import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.behavior.BehaviorManager;
 import com.stencyl.behavior.Script;
 import com.stencyl.behavior.TimedTask;
+import com.stencyl.event.Event;
 import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
 import com.stencyl.graphics.BitmapWrapper;
@@ -102,6 +104,8 @@ import haxe.ds.ObjectMap;
 import haxe.CallStack;
 
 //import com.nmefermmmtools.debug.Console;
+
+using com.stencyl.event.EventDispatcher;
 
 class Engine
 {
@@ -364,37 +368,36 @@ class Engine
 
 	public var keyPollOccurred:Bool = false;
 	
-	public var whenKeyPressedListeners:Map<String, Array<Dynamic>>;
-	public var hasKeyPressedListeners:Bool;
-	public var whenAnyKeyPressedListeners:Array<Dynamic>;
-	public var whenAnyKeyReleasedListeners:Array<Dynamic>;
-	public var whenAnyGamepadPressedListeners:Array<Dynamic>;
-	public var whenAnyGamepadReleasedListeners:Array<Dynamic>;
-	public var whenTypeGroupCreatedListeners:ObjectMap<Dynamic, Array<Dynamic>>;
-	public var whenTypeGroupDiesListeners:ObjectMap<Dynamic, Array<Dynamic>>;
-	public var typeGroupPositionListeners:Map<Int, Array<Dynamic>>;
-	public var collisionListeners:Map<Int, Map<Int, Array<Dynamic>>>;
-	public var soundListeners:Map<Sound, Array<Dynamic>>;
-	public var channelListeners:Map<Int, Array<Dynamic>>;
-			
-	public var whenUpdatedListeners:Array<Dynamic>;
-	public var whenDrawingListeners:Array<Dynamic>;
-	public var whenMousePressedListeners:Array<Dynamic>;
-	public var whenMouseReleasedListeners:Array<Dynamic>;
-	public var whenMouseMovedListeners:Array<Dynamic>;
-	public var whenMouseDraggedListeners:Array<Dynamic>;	
-	public var whenPausedListeners:Array<Dynamic>;
+	public var whenKeyPressedEvents:Map<String, Event<(pressed:Bool, released:Bool)->Void>>;
+	public var whenAnyKeyPressed:Event<(event:KeyboardEvent)->Void>;
+	public var whenAnyKeyReleased:Event<(event:KeyboardEvent)->Void>;
+	public var whenAnyGamepadPressed:Event<(input:String)->Void>;
+	public var whenAnyGamepadReleased:Event<(input:String)->Void>;
+	public var whenTypeGroupCreatedEvents:ObjectMap<Dynamic, Event<(eventActor:Actor)->Void>>;
+	public var whenTypeGroupDiedEvents:ObjectMap<Dynamic, Event<(eventActor:Actor)->Void>>;
+	public var whenTypeGroupPositionStateChangedEvents:Map<Int, Event<(a:Actor, enteredScreen:Bool, exitedScreen:Bool, enteredScene:Bool, exitedScene:Bool)->Void>>;
+	public var whenCollidedEvents:Map<Int, Map<Int, Event<(event:Collision)->Void>>>;
+	public var whenSoundEndedEvents:Map<Sound, Event<()->Void>>;
+	public var whenChannelEndedEvents:Map<Int, Event<()->Void>>;
 	
-	public var fullscreenListeners:Array<Dynamic>;
-	public var screenSizeListeners:Array<Dynamic>;
-	public var gameScaleListeners:Array<Dynamic>;
+	public var whenUpdated:Event<(elapsedTime:Float)->Void>;
+	public var whenDrawing:Event<(graphics:G, x:Float, y:Float)->Void>;
+	public var whenMousePressed:Event<()->Void>;
+	public var whenMouseReleased:Event<()->Void>;
+	public var whenMouseMoved:Event<()->Void>;
+	public var whenMouseDragged:Event<()->Void>;	
+	public var whenPaused:Event<(paused:Bool)->Void>;
 	
-	public var whenSwipedListeners:Array<Dynamic>;
-	public var whenMTStartListeners:Array<Dynamic>;
-	public var whenMTDragListeners:Array<Dynamic>;
-	public var whenMTEndListeners:Array<Dynamic>;
+	public var whenFullscreenChanged:Event<()->Void>;
+	public var whenScreenSizeChanged:Event<()->Void>;
+	public var whenGameScaleChanged:Event<()->Void>;
 	
-	public var whenFocusChangedListeners:Array<Dynamic>;
+	public var whenSwiped:Event<()->Void>;
+	public var whenMTStarted:Event<(event:TouchEvent)->Void>;
+	public var whenMTDragged:Event<(event:TouchEvent)->Void>;
+	public var whenMTEnded:Event<(event:TouchEvent)->Void>;
+	
+	public var whenFocusChanged:Event<(lost:Bool)->Void>;
 	public var nativeListeners:Array<NativeListener>;
 	
 	//*-----------------------------------------------
@@ -409,11 +412,11 @@ class Engine
 		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, engine.onKeyDown);
 		#end
 
-		stage.removeEventListener(Event.ENTER_FRAME, engine.onUpdate);
-		stage.removeEventListener(Event.DEACTIVATE, engine.onFocusLost);
-		stage.removeEventListener(Event.ACTIVATE, engine.onFocus);
+		stage.removeEventListener(FlashEvent.ENTER_FRAME, engine.onUpdate);
+		stage.removeEventListener(FlashEvent.DEACTIVATE, engine.onFocusLost);
+		stage.removeEventListener(FlashEvent.ACTIVATE, engine.onFocus);
 		#if !flash
-		stage.removeEventListener(Event.RESIZE, engine.onWindowResize);
+		stage.removeEventListener(FlashEvent.RESIZE, engine.onWindowResize);
 		stage.window.onRestore.remove(engine.onWindowRestore);
 		stage.window.onMaximize.remove(engine.onWindowMaximize);
 		stage.window.onFullscreen.remove(engine.onWindowFullScreen);
@@ -527,7 +530,7 @@ class Engine
 	}
 
 	#if !flash
-	private function onWindowResize(event:Event):Void
+	private function onWindowResize(event:FlashEvent):Void
 	{
 		if(isFullScreen && !stage.window.fullscreen && !stage.window.minimized && !ignoreResize)
 		{
@@ -576,7 +579,7 @@ class Engine
 			ignoreResize = true;
 			isFullScreen = value;
 			reloadScreen();
-			invokeListeners(fullscreenListeners);
+			whenFullscreenChanged.dispatch();
 			ignoreResize = false;
 		}
 	}
@@ -665,9 +668,9 @@ class Engine
 		#end
 		
 		if(gameScaleUpdated)
-			invokeListeners(gameScaleListeners);
+			whenGameScaleChanged.dispatch();
 		if(screensizeUpdated)
-			invokeListeners(screenSizeListeners);
+			whenScreenSizeChanged.dispatch();
 	}
 	
 	#if use_actor_tilemap
@@ -730,11 +733,11 @@ class Engine
 		
 		NO_PHYSICS = Config.physicsMode == SIMPLE_PHYSICS;
 		
-		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
-		stage.addEventListener(Event.DEACTIVATE, onFocusLost);
-		stage.addEventListener(Event.ACTIVATE, onFocus);
+		stage.addEventListener(FlashEvent.ENTER_FRAME, onUpdate);
+		stage.addEventListener(FlashEvent.DEACTIVATE, onFocusLost);
+		stage.addEventListener(FlashEvent.ACTIVATE, onFocus);
 		#if !flash
-		stage.addEventListener(Event.RESIZE, onWindowResize);
+		stage.addEventListener(FlashEvent.RESIZE, onWindowResize);
 		stage.window.onRestore.add(onWindowRestore);
 		stage.window.onMaximize.add(onWindowMaximize);
 		stage.window.onFullscreen.add(onWindowFullScreen);
@@ -990,7 +993,7 @@ class Engine
 			if(scene == null)
 			{
 				trace("Could not load scene: " + sceneID);
-				stage.removeEventListener(Event.ENTER_FRAME, onUpdate);
+				stage.removeEventListener(FlashEvent.ENTER_FRAME, onUpdate);
 				return;
 			}
 		}
@@ -1098,39 +1101,38 @@ class Engine
 		nextID = 0;
 		
 		//Events
-		whenKeyPressedListeners = new Map<String, Array<Dynamic>>();
-		hasKeyPressedListeners = false;
-		whenAnyKeyPressedListeners = new Array<Dynamic>();
-		whenAnyKeyReleasedListeners = new Array<Dynamic>();
-		whenAnyGamepadPressedListeners = new Array<Dynamic>();
-		whenAnyGamepadReleasedListeners = new Array<Dynamic>();
-	
-		whenTypeGroupCreatedListeners = new ObjectMap<Dynamic, Array<Dynamic>>();
-		whenTypeGroupDiesListeners = new ObjectMap<Dynamic, Array<Dynamic>>();
-		typeGroupPositionListeners = new Map<Int, Array<Dynamic>>();
-		collisionListeners = new Map<Int, Map<Int, Array<Dynamic>>>();
-		soundListeners = new Map<Sound, Array<Dynamic>>();
-		channelListeners = new Map<Int, Array<Dynamic>>();
-		nativeListeners = new Array<NativeListener>();
 		
-		whenUpdatedListeners = new Array<Dynamic>();
-		whenDrawingListeners = new Array<Dynamic>();
-		whenMousePressedListeners = new Array<Dynamic>();
-		whenMouseReleasedListeners = new Array<Dynamic>();
-		whenMouseMovedListeners = new Array<Dynamic>();
-		whenMouseDraggedListeners = new Array<Dynamic>();
-		whenPausedListeners = new Array<Dynamic>();
-		whenSwipedListeners = new Array<Dynamic>();
-		whenMTStartListeners = new Array<Dynamic>();
-		whenMTDragListeners = new Array<Dynamic>();
-		whenMTEndListeners = new Array<Dynamic>();
-		whenFocusChangedListeners = new Array();
+		whenKeyPressedEvents = [];
+		whenAnyKeyPressed = new Event<(KeyboardEvent)->Void>();
+		whenAnyKeyReleased = new Event<(KeyboardEvent)->Void>();
+		whenAnyGamepadPressed = new Event<(String)->Void>();
+		whenAnyGamepadReleased = new Event<(String)->Void>();
+
+		whenTypeGroupCreatedEvents = new ObjectMap<Dynamic, Event<(Actor)->Void>>();
+		whenTypeGroupDiedEvents = new ObjectMap<Dynamic, Event<(Actor)->Void>>();
+		whenTypeGroupPositionStateChangedEvents = [];
+		whenCollidedEvents = [];
+		whenSoundEndedEvents = [];
+		whenChannelEndedEvents = [];
+		nativeListeners = [];
 		
-		fullscreenListeners = new Array<Dynamic>();
-		screenSizeListeners = new Array<Dynamic>();
-		gameScaleListeners = new Array<Dynamic>();
+		whenUpdated = new Event<(Float)->Void>();
+		whenDrawing = new Event<(G, Float, Float)->Void>();
+		whenMousePressed = new Event<()->Void>();
+		whenMouseReleased = new Event<()->Void>();
+		whenMouseMoved = new Event<()->Void>();
+		whenMouseDragged = new Event<()->Void>();	
+		whenPaused = new Event<(Bool)->Void>();
+		whenSwiped = new Event<()->Void>();
+		whenMTStarted = new Event<(TouchEvent)->Void>();
+		whenMTDragged = new Event<(TouchEvent)->Void>();
+		whenMTEnded = new Event<(TouchEvent)->Void>();
+		whenFocusChanged = new Event<(Bool)->Void>();
 		
-		
+		whenFullscreenChanged = new Event<()->Void>();
+		whenScreenSizeChanged = new Event<()->Void>();
+		whenGameScaleChanged = new Event<()->Void>();
+
 		if(!NO_PHYSICS)
 		{									
 			initPhysics();
@@ -1825,39 +1827,38 @@ class Engine
 		collisionPairs = null;
 		disableCollisionList = null;
 		
-		whenKeyPressedListeners = null;	
-		hasKeyPressedListeners = false;
-		whenAnyKeyPressedListeners = null;
-		whenAnyKeyReleasedListeners = null;
-		whenAnyGamepadPressedListeners = null;
-		whenAnyGamepadReleasedListeners = null;
-		whenTypeGroupCreatedListeners = null;
-		whenTypeGroupDiesListeners = null;
-		typeGroupPositionListeners = null;
-		collisionListeners = null;
-		soundListeners = null;
-		channelListeners = null;
-					
-		whenUpdatedListeners = null;
-		whenDrawingListeners = null;
-		whenMousePressedListeners = null;
-		whenMouseReleasedListeners = null;
-		whenMouseMovedListeners = null;
-		whenMouseDraggedListeners = null;		
-		whenPausedListeners = null;
+		whenKeyPressedEvents = null;
+		whenAnyKeyPressed = null;
+		whenAnyKeyReleased = null;
+		whenAnyGamepadPressed = null;
+		whenAnyGamepadReleased = null;
+		whenTypeGroupCreatedEvents = null;
+		whenTypeGroupDiedEvents = null;
+		whenTypeGroupPositionStateChangedEvents = null;
+		whenCollidedEvents = null;
+		whenSoundEndedEvents = null;
+		whenChannelEndedEvents = null;
 		
-		fullscreenListeners = null;
-		screenSizeListeners = null;
-		gameScaleListeners = null;
+		whenUpdated = null;
+		whenDrawing = null;
+		whenMousePressed = null;
+		whenMouseReleased = null;
+		whenMouseMoved = null;
+		whenMouseDragged = null;
+		whenPaused = null;
+
+		whenFullscreenChanged = null;
+		whenScreenSizeChanged = null;
+		whenGameScaleChanged = null;
+
+		whenSwiped = null;
+		whenMTStarted = null;
+		whenMTDragged = null;
+		whenMTEnded = null;
 		
-		whenSwipedListeners = null;
-		whenMTStartListeners = null;
-		whenMTDragListeners = null;
-		whenMTEndListeners = null;
-		
-		whenFocusChangedListeners = null;
+		whenFocusChanged = null;
 		nativeListeners = null;
-		
+
 		Script.lastCreatedActor = null;
 		Script.lastCreatedJoint = null;
 		Script.lastCreatedRegion = null;
@@ -2196,19 +2197,19 @@ class Engine
 			return;
 		}
 	
-		var l1 = engine.whenTypeGroupDiesListeners.get(a.getType());
-		var l2 = engine.whenTypeGroupDiesListeners.get(a.getGroup());
+		var l1 = engine.whenTypeGroupDiedEvents.get(a.getType());
+		var l2 = engine.whenTypeGroupDiedEvents.get(a.getGroup());
 	
-		invokeListeners(a.whenKilledListeners);
+		a.whenKilled.dispatch();
 
 		if(l1 != null)
 		{
-			invokeListeners2(l1, a);
+			l1.dispatch(a);
 		}
 		
 		if(l2 != null)
 		{
-			invokeListeners2(l2, a);
+			l2.dispatch(a);
 		}
 				
 		if(a.isHUD)
@@ -2405,17 +2406,17 @@ class Engine
 					
 					actor.initScripts();
 					
-					var f1 = whenTypeGroupCreatedListeners.get(type);
-					var f2 = whenTypeGroupCreatedListeners.get(actor.getGroup());
+					var f1 = whenTypeGroupCreatedEvents.get(type);
+					var f2 = whenTypeGroupCreatedEvents.get(actor.getGroup());
 		
 					if(f1 != null)
 					{
-						invokeListeners2(f1, actor);
+						f1.dispatch(actor);
 					}
 		
 					if(f2 != null)
 					{
-						invokeListeners2(f2, actor);
+						f2.dispatch(actor);
 					}
 
 					return actor;
@@ -2457,17 +2458,17 @@ class Engine
 		var a:Actor = createActor(ai, true);
 		a.initScripts();
 		
-		var f1 = whenTypeGroupCreatedListeners.get(type);
-		var f2 = whenTypeGroupCreatedListeners.get(a.getGroup());
+		var f1 = whenTypeGroupCreatedEvents.get(type);
+		var f2 = whenTypeGroupCreatedEvents.get(a.getGroup());
 		
 		if(f1 != null)
 		{
-			invokeListeners2(f1, a);
+			f1.dispatch(a);
 		}
 		
 		if(f2 != null)
 		{
-			invokeListeners2(f2, a);
+			f2.dispatch(a);
 		}
 		
 		return a;
@@ -2527,14 +2528,14 @@ class Engine
 		{
 			Script.mpx = inputx;
 			Script.mpy = inputy;
-			invokeListeners(whenMousePressedListeners);
+			whenMousePressed.dispatch();
 		}
 		
 		if(Input.mouseReleased)
 		{
 			Script.mrx = inputx;
 			Script.mry = inputy;
-			invokeListeners(whenMouseReleasedListeners);
+			whenMouseReleased.dispatch();
 		}
 
 		if(mx != inputx || my != inputy)
@@ -2542,11 +2543,11 @@ class Engine
 			mx = inputx;
 			my = inputy;
 			
-			invokeListeners(whenMouseMovedListeners);
+			whenMouseMoved.dispatch();
 			
 			if(Input.mouseDown && !Input.mousePressed)
 			{
-				invokeListeners(whenMouseDraggedListeners);
+				whenMouseDragged.dispatch();
 			}
 		}
 		
@@ -2572,18 +2573,18 @@ class Engine
 		}
 		
 		//Poll Keyboard Inputs
-		if(hasKeyPressedListeners)
+		if(true)
 		{
 			//Creates array per frame. Not optimal but hard to optimize out because of string keys.
-			for(key in whenKeyPressedListeners.keys())
+			for(key in whenKeyPressedEvents.keys())
 			{
 				var pressed = Input.pressed(key);
 				var released = Input.released(key);
 				
 				if(pressed || released)
 				{
-					var listeners = whenKeyPressedListeners.get(key);
-					invokeListeners3(listeners, pressed, released);
+					var keyPressedEvent = whenKeyPressedEvents.get(key);
+					keyPressedEvent.dispatch(pressed, released);
 				}				
 			}
 
@@ -2601,7 +2602,7 @@ class Engine
 		events.clear();
 		#end
 		
-		invokeListeners2(whenUpdatedListeners, elapsedTime);
+		whenUpdated.dispatch(elapsedTime);
 		
 		if(!NO_PHYSICS)
 		{
@@ -2753,7 +2754,7 @@ class Engine
 	}
 	
 	//Game Loop
-	private function onUpdate(event:Event):Void 
+	private function onUpdate(event:FlashEvent):Void 
 	{
 		var currTime:Float = Lib.getTimer();
 		var elapsedTime:Float = (currTime - lastTime);
@@ -2875,7 +2876,7 @@ class Engine
 	//* Events Finished
 	//*-----------------------------------------------
 	
-	public function onFocus(event:Event)
+	public function onFocus(event:FlashEvent)
 	{
 		if (!inFocus)
 		{
@@ -2884,7 +2885,7 @@ class Engine
 		}
 	}
 	
-	public function onFocusLost(event:Event)
+	public function onFocusLost(event:FlashEvent)
 	{
 		if (inFocus)
 		{
@@ -2895,12 +2896,12 @@ class Engine
 	
 	public function focusChanged(lost:Bool)
 	{
-		if(whenFocusChangedListeners == null)
+		if(whenFocusChanged == null)
 		{
 			return;
 		}
 		
-		invokeListeners2(whenFocusChangedListeners, lost);
+		whenFocusChanged.dispatch(lost);
 	}		
 	
 	//TODO: Redo this using ints as lookup keys rather than objects - I feel this is a really inefficient function.
@@ -2986,54 +2987,54 @@ class Engine
 		
 		if(type1 > -1 || type2 > -1)
 		{
-			if(!event.otherCollidedWithTerrain && collisionListeners.exists(type1) && collisionListeners.get(type1).exists(type2))
+			if(!event.otherCollidedWithTerrain && whenCollidedEvents.exists(type1) && whenCollidedEvents.get(type1).exists(type2))
 			{
-				var listeners = collisionListeners.get(type1).get(type2);
-				invokeListeners2(listeners, event);
+				var collidedEvent = whenCollidedEvents.get(type1).get(type2);
+				collidedEvent.dispatch(event);
 				
-				if(listeners.length == 0)
+				if(collidedEvent.length == 0)
 				{
-					collisionListeners.get(type1).remove(type2);
+					whenCollidedEvents.get(type1).remove(type2);
 				}
 			}
 			
-			if(type1 != type2 && collisionListeners.exists(type2) && collisionListeners.get(type2).exists(type1))
+			if(type1 != type2 && whenCollidedEvents.exists(type2) && whenCollidedEvents.get(type2).exists(type1))
 			{
-				var listeners = collisionListeners.get(type2).get(type1);
+				var collidedEvent = whenCollidedEvents.get(type2).get(type1);
 				var reverseEvent = event.switchData(Collision.get());
 				
-				invokeListeners2(listeners, reverseEvent);
+				collidedEvent.dispatch(reverseEvent);
 				
-				if(listeners.length == 0)
+				if(collidedEvent.length == 0)
 				{
-					collisionListeners.get(type2).remove(type1);
+					whenCollidedEvents.get(type2).remove(type1);
 				}
 			}
 		}
 		
 		if(group1 > 0 && group2 > 0)
 		{
-			if(collisionListeners.exists(group1) && collisionListeners.get(group1).exists(group2))
+			if(whenCollidedEvents.exists(group1) && whenCollidedEvents.get(group1).exists(group2))
 			{
-				var listeners = collisionListeners.get(group1).get(group2);
-				invokeListeners2(listeners, event);
+				var collidedEvent = whenCollidedEvents.get(group1).get(group2);
+				collidedEvent.dispatch(event);
 				
-				if(listeners.length == 0)
+				if(collidedEvent.length == 0)
 				{
-					collisionListeners.get(group1).remove(group2);
+					whenCollidedEvents.get(group1).remove(group2);
 				}
 			}
 			
-			if(group1 != group2 && collisionListeners.exists(group2) && collisionListeners.get(group2).exists(group1))
+			if(group1 != group2 && whenCollidedEvents.exists(group2) && whenCollidedEvents.get(group2).exists(group1))
 			{
-				var listeners = collisionListeners.get(group2).get(group1);
+				var collidedEvent = whenCollidedEvents.get(group2).get(group1);
 				var reverseEvent = event.switchData(Collision.get());
 				
-				invokeListeners2(listeners, reverseEvent);
+				collidedEvent.dispatch(reverseEvent);
 				
-				if(listeners.length == 0)
+				if(collidedEvent.length == 0)
 				{
-					collisionListeners.get(group2).remove(group1);
+					whenCollidedEvents.get(group2).remove(group1);
 				}
 			}
 		}
@@ -3050,15 +3051,15 @@ class Engine
 	{
 		var sc:SoundChannel = cast(channels[channelNum], SoundChannel);
 		
-		if(soundListeners != null)
+		if(whenSoundEndedEvents != null)
 		{
-			var clipListeners = soundListeners.get(sc.currentClip);
+			var soundEndedEvent = whenSoundEndedEvents.get(sc.currentClip);
 			
 			sc.currentSound = null;
 			
-			if(clipListeners != null)
+			if(soundEndedEvent != null)
 			{
-				invokeListeners(clipListeners);
+				soundEndedEvent.dispatch();
 			}
 		}
 		else
@@ -3066,13 +3067,13 @@ class Engine
 			sc.currentSound = null;
 		}
 		
-		if(channelListeners != null)
+		if(whenChannelEndedEvents != null)
 		{
-			var chanListeners = channelListeners.get(channelNum);
+			var channelEndedEvent = whenChannelEndedEvents.get(channelNum);
 			
-			if(chanListeners != null)
+			if(channelEndedEvent != null)
 			{
-				invokeListeners(chanListeners);
+				channelEndedEvent.dispatch();
 			}
 		}
 	}
@@ -3220,7 +3221,7 @@ class Engine
 			}
 		}
 		
-		invokeListeners2(whenPausedListeners, true);
+		whenPaused.dispatch(true);
 	}
 	
 	public function unpause()
@@ -3240,7 +3241,7 @@ class Engine
 			}
 		}
 		
-		invokeListeners2(whenPausedListeners, false);
+		whenPaused.dispatch(false);
 	}
 	
 	public function isPaused():Bool
@@ -3297,7 +3298,7 @@ class Engine
 		{
 			for(a in allActors)
 			{
-				if(a.whenDrawingListeners.length > 0)
+				if(a.whenDrawing.length > 0)
 				{
 					if(a.layer != null)
 					{
@@ -3305,7 +3306,7 @@ class Engine
 						g.translateToActor(a);
 						g.resetGraphicsSettings();
 
-						invokeListeners4(a.whenDrawingListeners, g, 0, 0);
+						a.whenDrawing.dispatch(g, 0, 0);
 					}
 				}
 			}
@@ -3330,7 +3331,7 @@ class Engine
      	g.graphics = transitionLayer.graphics;
      	g.translateToScreen();
 		g.resetGraphicsSettings();
-     	invokeListeners4(whenDrawingListeners, g, 0, 0);
+		whenDrawing.dispatch(g, 0, 0);
 
      	G.visitStringCache();
 		
@@ -4220,167 +4221,5 @@ class Engine
 			amountY = amountX;
 		layer.scrollFactorX = amountX;
 		layer.scrollFactorY = amountY;
-	}
-	
-	//0 args
-	public static inline function invokeListeners(listeners:Array<Dynamic>)
-	{
-		var r = 0;
-		
-		while(r < listeners.length)
-		{
-			try
-			{
-				var f:Array<Dynamic>->Void = listeners[r];			
-				f(listeners);
-				
-				if(Utils.indexOf(listeners, f) == -1)
-				{
-					r--;
-				}
-			}
-			
-			catch(e:String)
-			{
-				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
-			}
-			
-			r++;			
-		}
-	}
-	
-	//1 args
-	public static inline function invokeListeners2(listeners:Array<Dynamic>, value:Dynamic)
-	{
-		var r = 0;
-
-		while(r < listeners.length)
-		{
-			try
-			{
-				var f:Dynamic->Array<Dynamic>->Void = listeners[r];
-				f(value, listeners);
-				
-				if(Utils.indexOf(listeners, f) == -1)
-				{
-					r--;
-				}
-			}
-			
-			catch(e:String)
-			{
-				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
-			}
-			
-			r++;
-		}
-	}
-	
-	//2 args
-	public static inline function invokeListeners3(listeners:Array<Dynamic>, value:Dynamic, value2:Dynamic)
-	{
-		var r = 0;
-		
-		while(r < listeners.length)
-		{
-			try
-			{
-				var f:Dynamic->Dynamic->Array<Dynamic>->Void = listeners[r];			
-				f(value, value2, listeners);
-				
-				if(Utils.indexOf(listeners, f) == -1)
-				{
-					r--;
-				}
-			}
-			
-			catch(e:String)
-			{
-				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
-			}
-			
-			r++;
-		}
-	}
-	
-	//3 args
-	public static inline function invokeListeners4(listeners:Array<Dynamic>, value:Dynamic, value2:Dynamic, value3:Dynamic)
-	{
-		var r = 0;
-		
-		while(r < listeners.length)
-		{
-			try
-			{
-				var f:Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void = listeners[r];			
-				f(value, value2, value3, listeners);
-				
-				if(Utils.indexOf(listeners, f) == -1)
-				{
-					r--;
-				}
-			}
-			
-			catch(e:String)
-			{
-				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
-			}
-			
-			r++;
-		}
-	}
-	
-	//4 args
-	public static inline function invokeListeners5(listeners:Array<Dynamic>, value:Dynamic, value2:Dynamic, value3:Dynamic, value4:Dynamic)
-	{
-		var r = 0;
-		
-		while(r < listeners.length)
-		{
-			try
-			{
-				var f:Dynamic->Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void = listeners[r];			
-				f(value, value2, value3, value4, listeners);
-				
-				if(Utils.indexOf(listeners, f) == -1)
-				{
-					r--;
-				}
-			}
-			
-			catch(e:String)
-			{
-				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
-			}
-			
-			r++;
-		}
-	}
-	
-	//5 args
-	public static inline function invokeListeners6(listeners:Array<Dynamic>, value:Dynamic, value2:Dynamic, value3:Dynamic, value4:Dynamic, value5:Dynamic)
-	{
-		var r = 0;
-		
-		while(r < listeners.length)
-		{
-			try
-			{
-				var f:Dynamic->Dynamic->Dynamic->Dynamic->Dynamic->Array<Dynamic>->Void = listeners[r];			
-				f(value, value2, value3, value4, value5, listeners);
-				
-				if(Utils.indexOf(listeners, f) == -1)
-				{
-					r--;
-				}
-			}
-			
-			catch(e:String)
-			{
-				trace(e #if debug + "\n" + CallStack.toString(CallStack.exceptionStack()) #end);
-			}
-			
-			r++;
-		}
 	}
 }
