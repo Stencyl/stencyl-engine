@@ -23,6 +23,7 @@ import openfl.sensors.Accelerometer;
 import openfl.ui.Keyboard;
 import openfl.Lib;
 
+using com.stencyl.event.EventDispatcher;
 
 class Input
 {
@@ -500,10 +501,7 @@ class Input
 					swipedDown = true;
 			}
 			
-			if(Engine.engine.whenSwipedListeners != null)
-			{
-				Engine.invokeListeners(Engine.engine.whenSwipedListeners);
-			}
+			Engine.engine.whenSwiped.dispatch();
 			
 			_swipeDirection = -1;
 		}
@@ -611,11 +609,11 @@ class Input
 				//Due to order of execution, events will never get thrown since the
 				//pressed/released flag is reset before the event checker sees it. So
 				//throw the event immediately.
-				var listeners = Engine.engine.whenKeyPressedListeners.get(control.name);
+				var event = Engine.engine.whenKeyPressedEvents.getEvent(control.name);
 				
-				if(listeners != null)
+				if(event != null)
 				{
-					Engine.invokeListeners3(listeners, true, false);
+					event.dispatch(true, false);
 				}
 			}
 		}
@@ -639,11 +637,11 @@ class Input
 				//Due to order of execution, events will never get thrown since the
 				//pressed/released flag is reset before the event checker sees it. So
 				//throw the event immediately.
-				var listeners = Engine.engine.whenKeyPressedListeners.get(control.name);
+				var event = Engine.engine.whenKeyPressedEvents.getEvent(control.name);
 				
-				if(listeners != null)
+				if(event != null)
 				{
-					Engine.invokeListeners3(listeners, false, true);
+					event.dispatch(false, true);
 				}
 			}
 		}
@@ -709,7 +707,7 @@ class Input
 			controlPressed(_keyControlMap.get(code), 1.0);
 		}
 		
-		Engine.invokeListeners2(Engine.engine.whenAnyKeyPressedListeners, e);
+		Engine.engine.whenAnyKeyPressed.dispatch(e);
 	}
 
 	private static function onKeyUp(e:KeyboardEvent = null)
@@ -727,7 +725,7 @@ class Input
 			controlReleased(_keyControlMap.get(code));
 		}
 		
-		Engine.invokeListeners2(Engine.engine.whenAnyKeyReleasedListeners, e);
+		Engine.engine.whenAnyKeyReleased.dispatch(e);
 	}
 
 	private static function onMouseDown(e:MouseEvent)
@@ -934,20 +932,20 @@ class Input
 		var control = _joyControlMap.get(id);
 		controlPressed(control, pressure);
 		
-		Engine.invokeListeners2(Engine.engine.whenAnyGamepadPressedListeners, id);
+		Engine.engine.whenAnyGamepadPressed.dispatch(id);
 	}
 
 	private static function joyRelease(id:String)
 	{
 		controlReleased(_joyControlMap.get(id));
 
-		Engine.invokeListeners2(Engine.engine.whenAnyGamepadReleasedListeners, id);
+		Engine.engine.whenAnyGamepadReleased.dispatch(id);
 	}
 	#end
 
 	private static function onTouchBegin(e:TouchEvent)
 	{
-		Engine.invokeListeners2(Engine.engine.whenMTStartListeners, e);
+		Engine.engine.whenMTStarted.dispatch(e);
 	
 		multiTouchPoints.set(Std.string(e.touchPointID), e);
 		numTouches++;
@@ -955,14 +953,14 @@ class Input
 	
 	private static function onTouchMove(e:TouchEvent)
 	{
-		Engine.invokeListeners2(Engine.engine.whenMTDragListeners, e);
+		Engine.engine.whenMTDragged.dispatch(e);
 	
 		multiTouchPoints.set(Std.string(e.touchPointID), e);
 	}
 	
 	private static function onTouchEnd(e:TouchEvent)
 	{
-		Engine.invokeListeners2(Engine.engine.whenMTEndListeners, e);
+		Engine.engine.whenMTEnded.dispatch(e);
 		
 		multiTouchPoints.remove(Std.string(e.touchPointID));
 		numTouches--;
