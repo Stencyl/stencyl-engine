@@ -10,14 +10,13 @@ class Attribute
 	public var type:String;
 	
 	public var defaultValue:String;
-	public var value:Dynamic;
+	public var value:Any;
 	
-	public var realValue:Dynamic;
-	public var parent:Dynamic;
+	public var realValue:Any;
 
 	public var hidden:Bool;
 	
-	public function new(ID:Int, fieldName:String, fullName:String, value:Dynamic, type:String, parent:Dynamic, hidden:Bool)
+	public function new(ID:Int, fieldName:String, fullName:String, value:Any, type:String, /* old */ parent:Dynamic, hidden:Bool)
 	{
 		this.ID = ID;
 		this.fieldName = fieldName;
@@ -29,103 +28,95 @@ class Attribute
 		
 		this.hidden = hidden;
 	}
-	
-	public function getRealValue():Dynamic
+
+	public function getRealValue():Any
 	{
 		if(realValue == null)
 		{
 			if(type == "int")
 			{
-				realValue = value;
+				realValue = (value:Int);
 			}
 			
 			else if(type == "float" || type == "number")
 			{
-				realValue = value;
+				realValue = (value:Float);
 			}
 			
 			else if(type == "bool" || type == "boolean")
 			{
-				realValue = value;
+				realValue = (value:Bool);
 			}
 			
 			else if(type == "color")
 			{
-				realValue = value;
+				realValue = (value:Int);
 			}
 			
 			else if(type == "sound" || type == "actortype" || type == "font")
 			{
-				if(value != null)
+				if((value:Int) == -1)
 				{
-					if(value == -1)
-					{
-						realValue = null;
-					}
-					
-					else
-					{
-						realValue = Data.get().resources.get(value);
-					}
-					
-					if(type == "font" && !Std.isOfType(realValue, com.stencyl.models.Font))
-					{
-						realValue = null;
-					}
-					
-					if(type == "sound" && !Std.isOfType(realValue, com.stencyl.models.Sound))
-					{
-						realValue = null;
-					}
-					
-					if(type == "actortype" && !Std.isOfType(realValue, com.stencyl.models.actor.ActorType))
-					{
-						realValue = null;
-					}
+					realValue = null;
+				}
+				
+				else
+				{
+					realValue = Data.get().resources.get((value:Int));
+				}
+				
+				if(type == "font" && !Std.isOfType(realValue, com.stencyl.models.Font))
+				{
+					realValue = null;
+				}
+				
+				if(type == "sound" && !Std.isOfType(realValue, com.stencyl.models.Sound))
+				{
+					realValue = null;
+				}
+				
+				if(type == "actortype" && !Std.isOfType(realValue, com.stencyl.models.actor.ActorType))
+				{
+					realValue = null;
 				}
 			}
 			
 			else if(type == "actorgroup")
 			{
 				//Script will pull the right group. Keep as int.
-				realValue = value;
+				realValue = (value:Int);
 			}
 			
 			else if(type == "control")
 			{
-				realValue = value;
-			}
-			
-			else if(type == "effect")
-			{
-				realValue = value;
+				realValue = (value:Int);
 			}
 			
 			else if(type == "animation")
 			{
-				realValue = value;
+				realValue = (value:String);
 			}
 			
 			else if(type == "game-attribute")
 			{
-				realValue = value;
+				realValue = (value:Int);
 			}
 			
 			else if(type == "scene")
 			{
-				realValue = GameModel.get().scenes.get(value);
+				realValue = GameModel.get().scenes.get((value:Int));
 			}
 			
 			else if(type == "text") 
 			{
-				realValue = value;
+				realValue = (value:String);
 			}
 			
 			else if(type == "list")
 			{
-				realValue = value;
+				realValue = (value:Array<Dynamic>);
 				
-				if(value == null || value == "")
+				if(value == null)
 				{
 					realValue = new Array<Dynamic>();
 				}	
@@ -133,9 +124,9 @@ class Attribute
 			
 			else if (type == "map")
 			{
-				realValue = value;
+				realValue = (value:Map<String,Dynamic>);
 				
-				if (value == null || value == "")
+				if (value == null)
 				{
 					realValue = new Map<String, Dynamic>();
 				}
@@ -143,25 +134,17 @@ class Attribute
 			
 			else if(value != null && type == "actor")
 			{
-				if(value == "thisactor")
-				{
-					realValue = parent;
-				}
-				
-				else
-				{
-					realValue = Std.parseInt(value);
-				}
+				realValue = (value:Int);
 			}
 			
 			else if(value != null && type == "joint")
 			{
-				realValue = value;
+				realValue = (value:Int);
 			}
 			
 			else if(value != null && type == "region")
 			{
-				realValue = value;
+				realValue = (value:Int);
 			}
 		}
 		

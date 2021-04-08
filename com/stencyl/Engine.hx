@@ -1208,7 +1208,7 @@ class Engine
 					
 					if(type == "list")
 					{
-						attributes.set(key, new Attribute(ID, attribute.fieldName, attribute.fullName, [], type, null, attribute.hidden));
+						attributes.set(key, new Attribute(ID, attribute.fieldName, attribute.fullName, new Array<Dynamic>(), type, null, attribute.hidden));
 					}
 					
 					else if(type == "map")
