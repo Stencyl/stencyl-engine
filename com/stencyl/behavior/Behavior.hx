@@ -141,8 +141,8 @@ class Behavior
 				
 				if(a.type == "actor" || a.type == "joint" || a.type == "region")
 				{
-					var eID:Int = Std.parseInt("" + a.getRealValue());
-					
+					var eID:Int = a.getRealValue();
+
 					if(a.type == "actor")
 					{
 						Reflect.setField(script, attributeName, engine.getActor(eID));
@@ -168,13 +168,13 @@ class Behavior
 				
 				else if(a.type == "actorgroup")
 				{
-					var groupID:Int = Std.parseInt("" + a.getRealValue());
+					var groupID:Int = a.getRealValue();
 					Reflect.setField(script, attributeName, engine.getGroup(groupID));
 				}
 				
 				else
 				{
-					var realValue:Dynamic = a.getRealValue();
+					var realValue = a.getRealValue();
 					
 					//trace("Set att(" + a.fieldName + ") to " + realValue);
 
