@@ -35,6 +35,7 @@ import com.stencyl.behavior.BehaviorManager;
 import com.stencyl.behavior.Script;
 import com.stencyl.behavior.TimedTask;
 import com.stencyl.event.Event;
+import com.stencyl.event.EventMap;
 import com.stencyl.event.EventMaster;
 import com.stencyl.event.NativeListener;
 import com.stencyl.graphics.BitmapWrapper;
@@ -368,7 +369,7 @@ class Engine
 
 	public var keyPollOccurred:Bool = false;
 	
-	public var whenKeyPressedEvents:Map<String, Event<(pressed:Bool, released:Bool)->Void>>;
+	public var whenKeyPressedEvents:EventMap<String, (pressed:Bool, released:Bool)->Void>;
 	public var whenAnyKeyPressed:Event<(event:KeyboardEvent)->Void>;
 	public var whenAnyKeyReleased:Event<(event:KeyboardEvent)->Void>;
 	public var whenAnyGamepadPressed:Event<(input:String)->Void>;
@@ -1102,7 +1103,7 @@ class Engine
 		
 		//Events
 		
-		whenKeyPressedEvents = [];
+		whenKeyPressedEvents = new EventMap<String, (Bool, Bool)->Void>();
 		whenAnyKeyPressed = new Event<(KeyboardEvent)->Void>();
 		whenAnyKeyReleased = new Event<(KeyboardEvent)->Void>();
 		whenAnyGamepadPressed = new Event<(String)->Void>();
@@ -2573,17 +2574,17 @@ class Engine
 		}
 		
 		//Poll Keyboard Inputs
-		if(true)
+		if(whenKeyPressedEvents.hasEvents())
 		{
-			//Creates array per frame. Not optimal but hard to optimize out because of string keys.
-			for(key in whenKeyPressedEvents.keys())
+			for(i in 0...whenKeyPressedEvents.keys.length)
 			{
+				var key = whenKeyPressedEvents.keys[i];
 				var pressed = Input.pressed(key);
 				var released = Input.released(key);
 				
 				if(pressed || released)
 				{
-					var keyPressedEvent = whenKeyPressedEvents.get(key);
+					var keyPressedEvent = whenKeyPressedEvents.getEvent(key);
 					keyPressedEvent.dispatch(pressed, released);
 				}				
 			}

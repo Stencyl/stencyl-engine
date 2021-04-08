@@ -612,7 +612,7 @@ class Input
 				//Due to order of execution, events will never get thrown since the
 				//pressed/released flag is reset before the event checker sees it. So
 				//throw the event immediately.
-				var event = Engine.engine.whenKeyPressedEvents.get(control.name);
+				var event = Engine.engine.whenKeyPressedEvents.getEvent(control.name);
 				
 				if(event != null)
 				{
@@ -640,7 +640,7 @@ class Input
 				//Due to order of execution, events will never get thrown since the
 				//pressed/released flag is reset before the event checker sees it. So
 				//throw the event immediately.
-				var event = Engine.engine.whenKeyPressedEvents.get(control.name);
+				var event = Engine.engine.whenKeyPressedEvents.getEvent(control.name);
 				
 				if(event != null)
 				{

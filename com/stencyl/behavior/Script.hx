@@ -656,7 +656,7 @@ class Script
 	
 	public function addKeyStateListener(key:String, func:(Bool, Bool, Array<Dynamic>)->Void)
 	{
-		addListenerWithKey(engine.whenKeyPressedEvents, key, func.bind(_, _, null));
+		addListener(engine.whenKeyPressedEvents.getOrCreateEvent(key), func.bind(_, _, null));
 	}
 	
 	public function addAnyKeyPressedListener(func:(KeyboardEvent, Array<Dynamic>)->Void)
