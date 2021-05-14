@@ -39,8 +39,6 @@ class Config
 	public static var buildConfig:Dynamic;
 
 	//Other
-	public static var adPositionBottom:Bool;
-	public static var testAds:Bool;
 	public static var releaseMode:Bool;
 	public static var useGciLogging:Bool;
 	public static var showConsole:Bool;
@@ -156,8 +154,6 @@ class Config
 		pixelsnap = data.pixelsnap;
 		startInFullScreen = data.startInFullScreen;
 		disposeImages = data.disposeImages;
-		adPositionBottom = data.adPositionBottom;
-		testAds = data.testAds;
 		releaseMode = data.releaseMode;
 		showConsole = data.showConsole;
 		debugDraw = data.debugDraw;
