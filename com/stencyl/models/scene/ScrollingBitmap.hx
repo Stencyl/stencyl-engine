@@ -148,12 +148,12 @@ class ScrollingBitmap extends Sprite
 			{
 				if(xP < -width || xP > width)
 				{
-					xP = 0;
+					xP = xP % width;
 				}
 				
 				if(yP < -height || yP > height)
 				{
-					yP = 0;
+					yP = yP % height;
 				}
 			}
 	        
