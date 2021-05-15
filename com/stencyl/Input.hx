@@ -501,10 +501,7 @@ class Input
 					swipedDown = true;
 			}
 			
-			if(Engine.engine.whenSwipedListeners != null)
-			{
-				Engine.invokeListeners(Engine.engine.whenSwipedListeners);
-			}
+			Engine.engine.whenSwiped.dispatch();
 			
 			_swipeDirection = -1;
 		}
