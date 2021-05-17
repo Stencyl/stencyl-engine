@@ -3821,8 +3821,8 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	{
 		dying = true;
 		
-		var a = engine.whenTypeGroupDiedEvents.get(getType());
-		var b = engine.whenTypeGroupDiedEvents.get(getGroup());
+		var a = engine.whenTypeGroupKilledEvents.get(getType());
+		var b = engine.whenTypeGroupKilledEvents.get(getGroup());
 	
 		whenKilled.dispatch();
 

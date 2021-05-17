@@ -762,7 +762,7 @@ class Script
 	
 	public function addWhenTypeGroupKilledListener(obj:Dynamic, func:(Actor, Array<Dynamic>)->Void)
 	{
-		addListenerWithKey(engine.whenTypeGroupDiedEvents, obj, func.bind(_, null));
+		addListenerWithKey(engine.whenTypeGroupKilledEvents, obj, func.bind(_, null));
 	}
 	
 	public function addSoundListener(obj:Dynamic, func:(Array<Dynamic>)->Void)

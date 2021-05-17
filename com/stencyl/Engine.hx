@@ -375,7 +375,7 @@ class Engine
 	public var whenAnyGamepadPressed:Event<(input:String)->Void>;
 	public var whenAnyGamepadReleased:Event<(input:String)->Void>;
 	public var whenTypeGroupCreatedEvents:ObjectMap<Dynamic, Event<(eventActor:Actor)->Void>>;
-	public var whenTypeGroupDiedEvents:ObjectMap<Dynamic, Event<(eventActor:Actor)->Void>>;
+	public var whenTypeGroupKilledEvents:ObjectMap<Dynamic, Event<(eventActor:Actor)->Void>>;
 	public var whenTypeGroupPositionStateChangedEvents:Map<Int, Event<(a:Actor, enteredScreen:Bool, exitedScreen:Bool, enteredScene:Bool, exitedScene:Bool)->Void>>;
 	public var whenCollidedEvents:Map<Int, Map<Int, Event<(event:Collision)->Void>>>;
 	public var whenSoundEndedEvents:Map<Sound, Event<()->Void>>;
@@ -1110,7 +1110,7 @@ class Engine
 		whenAnyGamepadReleased = new Event<(String)->Void>();
 
 		whenTypeGroupCreatedEvents = new ObjectMap<Dynamic, Event<(Actor)->Void>>();
-		whenTypeGroupDiedEvents = new ObjectMap<Dynamic, Event<(Actor)->Void>>();
+		whenTypeGroupKilledEvents = new ObjectMap<Dynamic, Event<(Actor)->Void>>();
 		whenTypeGroupPositionStateChangedEvents = [];
 		whenCollidedEvents = [];
 		whenSoundEndedEvents = [];
@@ -1834,7 +1834,7 @@ class Engine
 		whenAnyGamepadPressed = null;
 		whenAnyGamepadReleased = null;
 		whenTypeGroupCreatedEvents = null;
-		whenTypeGroupDiedEvents = null;
+		whenTypeGroupKilledEvents = null;
 		whenTypeGroupPositionStateChangedEvents = null;
 		whenCollidedEvents = null;
 		whenSoundEndedEvents = null;
@@ -2198,8 +2198,8 @@ class Engine
 			return;
 		}
 	
-		var l1 = engine.whenTypeGroupDiedEvents.get(a.getType());
-		var l2 = engine.whenTypeGroupDiedEvents.get(a.getGroup());
+		var l1 = engine.whenTypeGroupKilledEvents.get(a.getType());
+		var l2 = engine.whenTypeGroupKilledEvents.get(a.getGroup());
 	
 		a.whenKilled.dispatch();
 
