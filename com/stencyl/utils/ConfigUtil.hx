@@ -2,18 +2,6 @@ package com.stencyl.utils;
 
 class ConfigUtil
 {
-	public static function xmlToMap(xml:Access, keyProperty:String, valueProperty:String):Map<String, String>
-	{
-		var map:Map<String, String> = [];
-
-		for(e in xml.elements)
-		{
-			map.set(e.att[keyProperty], e.att[valueProperty]);
-		}
-
-		return map;
-	}
-
 	public static inline function readString(map:Map<String, String>, propertyName:String):String
 	{
 		return map.get(propertyName);
@@ -24,7 +12,7 @@ class ConfigUtil
 		return Std.parseInt(map.get(propertyName));
 	}
 
-	public static inline function readFloat(map:Map<String, String>, propertyName:String):Int
+	public static inline function readFloat(map:Map<String, String>, propertyName:String):Float
 	{
 		return Std.parseFloat(map.get(propertyName));
 	}	
