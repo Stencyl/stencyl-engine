@@ -89,7 +89,7 @@ class Attribute
 			
 			else if(type == "control")
 			{
-				realValue = (value:Int);
+				realValue = (value:String);
 			}
 			
 			else if(type == "animation")
@@ -99,7 +99,7 @@ class Attribute
 			
 			else if(type == "game-attribute")
 			{
-				realValue = (value:Int);
+				realValue = (value:String);
 			}
 			
 			else if(type == "scene")
