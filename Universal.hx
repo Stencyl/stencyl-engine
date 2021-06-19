@@ -390,11 +390,16 @@ class Universal extends Sprite
 		maskLayer.graphics.clear();
 		if(isFullScreen && (Config.scaleMode == ScaleMode.SCALE_TO_FIT_LETTERBOX || Config.scaleMode == ScaleMode.NO_SCALING))
 		{
+			//maskLayer is added as a child of Universal later,
+			//so it needs to counteract Universal's scaleX/scaleY.
+			var drawX = x / scaleX;
+			var drawY = y / scaleY;
+			var drawWindowWidth = windowWidth / scaleX;
 			maskLayer.graphics.beginFill(stage.color);
-			maskLayer.graphics.drawRect(-x, -y, windowWidth, y);
-			maskLayer.graphics.drawRect(-x, 0, x, scaledStageHeight);
-			maskLayer.graphics.drawRect(scaledStageWidth, 0, x, scaledStageHeight);
-			maskLayer.graphics.drawRect(-x, scaledStageHeight, windowWidth, y);
+			maskLayer.graphics.drawRect(-drawX, -drawY, drawWindowWidth, drawY);
+			maskLayer.graphics.drawRect(-drawX, 0, drawX, scaledStageHeight);
+			maskLayer.graphics.drawRect(scaledStageWidth, 0, drawX, scaledStageHeight);
+			maskLayer.graphics.drawRect(-drawX, scaledStageHeight, drawWindowWidth, drawY);
 			maskLayer.graphics.endFill();
 		}
 		
