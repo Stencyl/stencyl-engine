@@ -16,9 +16,11 @@ class EventDispatcher
 		{
 			if($event.length > 0)
 			{
-				for (i in 0...$event.length)
+				var i = 0;
+				while(i < $event.length)
 				{
 					$event.listeners[i]($a{args});
+					++i;
 				}
 			}
 		}
