@@ -3740,7 +3740,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	{			
 		for(k in 0...allEventReferences.length)
 		{
-			var event = allEventReferences[k];
+			var event:Event<Dynamic> = allEventReferences[k];
 			
 			if(event != null)
 			{
@@ -3750,7 +3750,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				{
 					for(r in 0...list.length)
 					{
-						Utils.removeValueFromArray(event, list[r]);
+						Utils.removeValueFromArray(event.listeners, list[r]);
 					}
 				}
 			}
