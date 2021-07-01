@@ -250,7 +250,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	//* Events
 	//*-----------------------------------------------	
 	
-	public var allListeners:Map<Int,Dynamic>;
+	public var allListeners:Map<Int,Array<Dynamic>>;
 	public var allEventReferences:Array<Dynamic>;
 	
 	public var whenCreated:Event<()->Void>;
@@ -415,7 +415,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		
 		//---
 		
-		allListeners = new Map<Int,Dynamic>();
+		allListeners = new Map<Int,Array<Dynamic>>();
 		allEventReferences = new Array<Dynamic>();
 		
 		whenCreated = new Event<()->Void>();
@@ -686,7 +686,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	
 	public function resetListeners()
 	{
-		for (key in allListeners)
+		for (key in allListeners.keys())
 		{
 			allListeners.remove(key);
 		}
