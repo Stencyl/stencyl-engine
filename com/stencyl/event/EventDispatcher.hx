@@ -2,6 +2,7 @@ package com.stencyl.event;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
+import haxe.macro.PositionTools;
 
 class EventDispatcher
 {
@@ -13,6 +14,9 @@ class EventDispatcher
 	**/
 	macro public static function dispatch<T>(event:ExprOf<Event<T>>, args:Array<Expr>):Expr
 	{
+		//var posInfos = PositionTools.toLocation(Context.currentPos());
+		//var posInfos = Context.getPosInfos(Context.currentPos());
+
 		@:pos(Context.currentPos())
 		return macro
 		{
@@ -21,6 +25,10 @@ class EventDispatcher
 				var i = 0;
 				while(i < $event.length)
 				{
+					#if debug_event_dispatch
+					var posinfo = $event.posInfos[i];
+					trace("Call event from: " + posinfo.fileName + ":" + posinfo.lineNumber);
+					#end
 					try
 					{
 						$event.listeners[i]($a{args});

@@ -4,6 +4,9 @@ class Event<T>
 {
 	public var listeners:Array<T>;
 	public var length:Int;
+	#if debug_event_dispatch
+	public var posInfos:Array<haxe.PosInfos>;
+	#end
 	
 	/**
 		Creates a new Event instance
@@ -12,16 +15,24 @@ class Event<T>
 	{
 		listeners = new Array();
 		length = 0;
+
+		#if debug_event_dispatch
+		posInfos = new Array();
+		#end
 	}
 
 	/**
 		Adds a new event listener
 		@param	listener	A callback that matches the signature of the event
 	**/
-	public function add(listener:T):Void
+	public function add(listener:T #if debug_event_dispatch , posInfo:haxe.PosInfos #end):Void
 	{
 		listeners.push(listener);
 		++length;
+
+		#if debug_event_dispatch
+		posInfos.push(posInfo);
+		#end
 	}
 
 	/**
@@ -53,6 +64,10 @@ class Event<T>
 			{
 				listeners.splice(i, 1);
 				--length;
+
+				#if debug_event_dispatch
+				posInfos.splice(i, 1);
+				#end
 			}
 		}
 	}
@@ -64,5 +79,9 @@ class Event<T>
 	{
 		listeners.splice(0, length);
 		length = 0;
+
+		#if debug_event_dispatch
+		posInfos.splice(0, posInfos.length);
+		#end
 	}
 }
