@@ -90,6 +90,7 @@ class PostProcess extends DisplayObject
 	public function new(shader:BasicShader, fragmentShader:String, literalText:Bool = false)
 	{
 		super();
+		__drawableType = SHAPE;
 		
 		basicShader = shader;
 		
