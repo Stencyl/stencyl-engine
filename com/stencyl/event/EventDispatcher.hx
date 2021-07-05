@@ -1,5 +1,6 @@
 package com.stencyl.event;
 
+import haxe.macro.Context;
 import haxe.macro.Expr;
 
 class EventDispatcher
@@ -12,6 +13,7 @@ class EventDispatcher
 	**/
 	macro public static function dispatch<T>(event:ExprOf<Event<T>>, args:Array<Expr>):Expr
 	{
+		@:pos(Context.currentPos())
 		return macro
 		{
 			if($event.length > 0)
@@ -19,7 +21,14 @@ class EventDispatcher
 				var i = 0;
 				while(i < $event.length)
 				{
-					$event.listeners[i]($a{args});
+					try
+					{
+						$event.listeners[i]($a{args});
+					}
+					catch(e:String)
+					{
+						trace(e + com.stencyl.utils.Utils.printExceptionstackIfAvailable());
+					}
 					++i;
 				}
 			}
