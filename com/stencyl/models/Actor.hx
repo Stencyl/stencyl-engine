@@ -3746,7 +3746,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				{
 					for(r in 0...list.length)
 					{
-						Utils.removeValueFromArray(event.listeners, list[r]);
+						event.remove(list[r]);
 					}
 				}
 			}
