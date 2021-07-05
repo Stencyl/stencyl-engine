@@ -60,6 +60,7 @@ class Universal extends Sprite
 	public function new() 
 	{
 		super();
+		name = "Root";
 
 		addEventListener(Event.ADDED_TO_STAGE, onAdded);
 	}
@@ -71,6 +72,7 @@ class Universal extends Sprite
 		initServices();
 		
 		maskLayer = new Shape();
+		maskLayer.name = "Mask Layer";
 		initScreen(Config.startInFullScreen);
 	}
 	

@@ -35,12 +35,15 @@ class Layer extends RegularLayer
 		tiles = tileLayer;
 		if(tiles != null) //null only for HUD layer
 		{
+			tiles.name = name + " - TileLayer";
 			tiles.blendMode = blendMode;
 		}
 
 		actorContainer = new ActorLayer(#if (use_actor_tilemap) 0, 0, null, Config.antialias #end);
+		actorContainer.name = name + " - ActorLayer";
 		#if (use_actor_tilemap) actorContainer.tileColorTransformEnabled = false; #end
 		overlay = new Sprite();
+		overlay.name = name + " - Overlay";
 
 		if(tiles != null) addChild(tiles);
 		addChild(actorContainer);

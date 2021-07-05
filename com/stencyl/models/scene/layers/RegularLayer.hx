@@ -20,6 +20,7 @@ class RegularLayer extends Sprite
 	{
 		super();
 		this.ID = ID;
+		this.name = name;
 		this.layerName = name;
 		this.order = order;
 		this.scrollFactorX = scrollFactorX;

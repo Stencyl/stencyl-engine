@@ -710,6 +710,7 @@ class Engine
 		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
 		{
 			shaderLayer = new Sprite();
+			shaderLayer.name = "Shader Layer";
 		}
 		#end
 		
@@ -886,18 +887,23 @@ class Engine
 		
 		//Display List
 		colorLayer = new Shape();
+		colorLayer.name = "Color Layer";
 		root.addChild(colorLayer);
 
 		master = new Sprite();
+		master.name = "Master";
 		root.addChild(master);
 		
 		hudLayer = new Layer(-1, "__hud__", -1, 0.0, 0.0, 1.0, BlendMode.NORMAL, null);
+		hudLayer.name = "HUD Layer";
 		root.addChild(hudLayer);
 		
 		transitionLayer = new Sprite();
+		transitionLayer.name = "Transition Layer";
 		root.addChild(transitionLayer);
 		
 		debugLayer = new Sprite();
+		debugLayer.name = "Debug Layer";
 		root.addChild(debugLayer);
 		
 		#if !flash
