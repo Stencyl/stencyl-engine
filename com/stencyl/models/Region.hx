@@ -1,13 +1,11 @@
 package com.stencyl.models;
 
 import com.stencyl.models.Actor;
-import com.stencyl.models.collision.Hitbox;
 import com.stencyl.utils.Utils;
 
 import box2D.collision.B2AABB;
 import box2D.common.math.B2Transform;
-import box2D.dynamics.B2Body;
-import box2D.dynamics.B2Fixture;
+import box2D.common.math.B2Vec2;
 import box2D.dynamics.B2FixtureDef;
 import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2CircleShape;
@@ -108,7 +106,7 @@ class Region extends Actor
 				upperXBound = aabb.upperBound.x;
 				lowerYBound = aabb.lowerBound.y;
 				upperYBound = aabb.upperBound.y;
-				
+
 				for(i in 0...shapes.length)
 				{
 					var fixture = new B2FixtureDef();
@@ -121,7 +119,7 @@ class Region extends Actor
 					fixture.groupID = GameModel.INHERIT_ID;
 	
 					body.createFixture(fixture);
-					
+
 					cast(shapes[i], B2PolygonShape).computeAABB(aabb, trans);
 					lowerXBound = Math.min(lowerXBound, aabb.lowerBound.x);
 					upperXBound = Math.max(upperXBound, aabb.upperBound.x);
@@ -299,14 +297,73 @@ class Region extends Actor
 		
 		var xPos:Float = getX();
 		var yPos:Float = getY();
-		
-		//var xPos = colX;
-		//var yPos = colY;
 
-		return (mx >= xPos && 
-		   		my >= yPos && 
-		   		mx < xPos + regionWidth && 
-		   		my < yPos + regionHeight);
+		var inBoundingBox = (mx >= xPos &&
+		    my >= yPos &&
+		    mx < xPos + regionWidth &&
+		    my < yPos + regionHeight);
+
+		if (!inBoundingBox) {
+			return false;
+		}
+
+		var fixtureList = body.getFixtureList();
+		var shape = fixtureList.getShape();
+		if (Std.is(shape, B2PolygonShape)) {
+			while (fixtureList != null) {
+				shape = fixtureList.getShape();
+				var polygonShape:B2PolygonShape = cast(shape, B2PolygonShape);
+				// Points inside the vertices list are local AND around the center of the polygon, so we need to translate our coordinates before calling `pointInsidePolygon`
+				var result = pointInsidePolygon(mx - xPos - regionWidth / 2, my - yPos - regionHeight / 2, polygonShape.getVertices());
+				if (result) {
+					return true;
+				}
+				fixtureList = fixtureList.getNext();
+			}
+		} else if (Std.is(shape, B2CircleShape)) {
+			var radius = regionWidth/2;
+
+			var x1 = mx - (xPos+radius);
+			var y1 = my - (yPos+radius);
+
+			// Pythagorean theorem: `d = Math.sqrt((x_p - x_c)^2 + (y_p - y_c)^2)` where xy_p is the point to search for and xy_c is the center of the circle
+			return x1*x1 + y1*y1 < radius*radius;
+		} else {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Basic raytrace algorithm to find a point inside a polygon. From http://alienryderflex.com/polygon/
+	 *
+	 * We're guaranteed to be calling this on convex polygons, so this can be improved/simplified (the current algorithm works with concave/convex polygons)
+	 **/
+	private static function pointInsidePolygon(pixelX: Float, pixelY: Float, points: Array<B2Vec2>): Bool {
+		var length = points.length;
+		if (length <= 0) {
+			return false;
+		}
+		var prevPoint = points[length - 1];
+		var oddNodes = false;
+
+		// Points inside `points` are in physical units
+		var x = Engine.toPhysicalUnits(pixelX);
+		var y = Engine.toPhysicalUnits(pixelY);
+
+		for (i in 0...length) {
+			var currentPoint = points[i];
+
+			if ((currentPoint.y < y && prevPoint.y >= y || prevPoint.y < y && currentPoint.y >= y) && (currentPoint.x <= x || prevPoint.x <= x)) {
+				if (currentPoint.x + (y - currentPoint.y) / (prevPoint.y - currentPoint.y) * (prevPoint.x - currentPoint.x) < x) {
+					oddNodes = !oddNodes;
+				}
+			}
+
+			prevPoint = currentPoint;
+		}
+
+		return oddNodes;
 	}
 	
 	override public function innerUpdate(elapsedTime:Float, hudCheck:Bool)
