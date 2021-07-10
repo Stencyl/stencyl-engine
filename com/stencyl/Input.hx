@@ -199,21 +199,16 @@ class Input
 	public static function mapJoystickButton(id:String, controlName:String)
 	{
 		#if desktop
-		if(!multipleGamepadsEnabled && id.indexOf(", ") != -1)
-		{
-			id = id.substring(id.indexOf(", ") + 2);
-		}
-		
-		var button:JoystickButton = JoystickButton.fromID(id);
+		id = JoystickButton.normalize(id);
 		var control = _joyControlMap.get(id);
 		if(control != null)
 		{
-			control.buttons.remove(button);
+			control.buttons.remove(id);
 			controlStateUpdated(control);
 		}
 		
 		var newControl = _controlMap.get(controlName);
-		newControl.buttons.push(button);
+		newControl.buttons.push(id);
 		controlStateUpdated(newControl);
 		
 		_joyControlMap.set(id, newControl);
@@ -223,16 +218,11 @@ class Input
 	public static function unmapJoystickButton(id:String)
 	{
 		#if desktop
-		if(!multipleGamepadsEnabled && id.indexOf(", ") != -1)
-		{
-			id = id.substring(id.indexOf(", ") + 2);
-		}
-		
-		var button:JoystickButton = JoystickButton.fromID(id);
+		id = JoystickButton.normalize(id);
 		var control = _joyControlMap.get(id);
 		if(control != null)
 		{
-			control.buttons.remove(button);
+			control.buttons.remove(id);
 			controlStateUpdated(control);
 		}
 		
@@ -249,7 +239,7 @@ class Input
 		
 		#if desktop
 		while(control.buttons.length > 0)
-			_joyControlMap.remove(control.buttons.pop().id);
+			_joyControlMap.remove(control.buttons.pop());
 		#end
 		
 		if(control.down) controlReleased(control);
@@ -271,7 +261,7 @@ class Input
 		
 		#if desktop
 		while(control.buttons.length > 0)
-			_joyControlMap.remove(control.buttons.pop().id);
+			_joyControlMap.remove(control.buttons.pop());
 		#end
 		
 		controlStateUpdated(control);
@@ -309,16 +299,11 @@ class Input
 					var controlName = joyStringMap.get(k);
 					var control = _controlMap.get(controlName);
 					
-					if(!multipleGamepadsEnabled && k.indexOf(", ") != -1)
-					{
-						k = k.substring(k.indexOf(", ") + 2);
-					}
+					k = JoystickButton.normalize(k);
 					
 					_joyControlMap.set(k, control);
 					
-					var button = JoystickButton.fromID(k);
-					
-					control.buttons.push(button);
+					control.buttons.push(k);
 				}
 				_joySensitivity = joyData.get("_joySensitivity");
 			}
@@ -658,8 +643,9 @@ class Input
 			if(_key[keyCode]) pressure = 1.0;
 		}
 		#if desktop
-		for(button in control.buttons)
+		for(buttonName in control.buttons)
 		{
+			var button = JoystickButton.fromID(buttonName);
 			var device = button.a[JoystickButton.DEVICE];
 			var controlType = button.a[JoystickButton.TYPE];
 			var buttonID = button.a[2];
@@ -972,7 +958,7 @@ class Control
 	public var name:String;
 	public var keys:Array<Int>;
 	#if desktop
-	public var buttons:Array<JoystickButton>;
+	public var buttons:Array<String>;
 	#end
 	public var pressed:Bool;
 	public var released:Bool;
@@ -1025,6 +1011,15 @@ class JoystickButton
 	public static inline var BALL:Int = 3;
 	
 	private static var cacheFromID:Map<String, JoystickButton> = new Map<String, JoystickButton>();
+
+	public static inline function normalize(id:String):String
+	{
+		if(!Input.multipleGamepadsEnabled && id.indexOf(", ") != -1)
+		{
+			return id.substring(id.indexOf(", ") + 2);
+		}
+		return id;
+	}
 
 	public static function fromID(id:String):JoystickButton
 	{
