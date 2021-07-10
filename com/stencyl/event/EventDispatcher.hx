@@ -20,24 +20,25 @@ class EventDispatcher
 		@:pos(Context.currentPos())
 		return macro
 		{
+			@:privateAccess
 			if($event.length > 0)
 			{
-				var i = 0;
-				while(i < $event.length)
+				$event._dispatchIndex = 0;
+				while($event._dispatchIndex < $event.length)
 				{
 					#if debug_event_dispatch
-					var posinfo = $event.posInfos[i];
+					var posinfo = $event.posInfos[$event._dispatchIndex];
 					trace("Call event from: " + posinfo.fileName + ":" + posinfo.lineNumber);
 					#end
 					try
 					{
-						$event.listeners[i]($a{args});
+						$event.listeners[$event._dispatchIndex]($a{args});
 					}
 					catch(e:String)
 					{
 						trace(e + com.stencyl.utils.Utils.printExceptionstackIfAvailable());
 					}
-					++i;
+					++$event._dispatchIndex;
 				}
 			}
 		}

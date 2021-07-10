@@ -4,6 +4,7 @@ class Event<T>
 {
 	public var listeners:Array<T>;
 	public var length:Int;
+	private var _dispatchIndex:Int = -1;
 	#if debug_event_dispatch
 	public var posInfos:Array<haxe.PosInfos>;
 	#end
@@ -64,6 +65,8 @@ class Event<T>
 			{
 				listeners.splice(i, 1);
 				--length;
+				if(_dispatchIndex >= i)
+					--_dispatchIndex;
 
 				#if debug_event_dispatch
 				posInfos.splice(i, 1);
@@ -79,6 +82,7 @@ class Event<T>
 	{
 		listeners.splice(0, length);
 		length = 0;
+		_dispatchIndex = 0;
 
 		#if debug_event_dispatch
 		posInfos.splice(0, posInfos.length);
