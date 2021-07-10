@@ -80,11 +80,11 @@ class Input
 	private static var _controlsToReset:Array<Control> = new Array<Control>();
 	private static var _controlMap:Map<String,Control> = new Map<String,Control>();
 	private static var _keyInput = new InputMethod<Int>(
-		new Map<Int, Control>(),
+		new Map<Int, Array<Control>>(),
 		(control) -> control.keys);
 	#if desktop
 	private static var _joyInput = new InputMethod<String>(
-		new Map<String, Control>(),
+		new Map<String, Array<Control>>(),
 		(control) -> control.buttons);
 	#end
 	
@@ -140,9 +140,9 @@ class Input
 		#if desktop
 		_joySensitivity = .12;
 		_joyState = new Map<Int,JoystickState>();
-		_joyInput.inputControlMap = new Map<String,Control>();
+		_joyInput.inputControlMap = new Map<String,Array<Control>>();
 		#end
-		_keyInput.inputControlMap = new Map<Int,Control>();
+		_keyInput.inputControlMap = new Map<Int,Array<Control>>();
 
 		_controlMap = new Map<String,Control>();
 		_controlsToReset = new Array<Control>();
@@ -160,7 +160,7 @@ class Input
 			unmapControl(controlName);
 		
 		for(keyCode in keyCodes)
-			mapKey(keyCode, controlName);
+			addKeyToControl(keyCode, controlName);
 	}
 	
 	public static function mapKey(keyCode:Int, controlName:String)
@@ -171,6 +171,16 @@ class Input
 	public static function unmapKey(keyCode:Int)
 	{
 		_keyInput.unmapInput(keyCode);
+	}
+
+	public static function addKeyToControl(keyCode:Int, controlName:String)
+	{
+		_keyInput.addInputToControl(keyCode, _controlMap.get(controlName));
+	}
+
+	public static function removeKeyFromControl(keyCode:Int, controlName:String)
+	{
+		_keyInput.removeInputFromControl(keyCode, _controlMap.get(controlName));
 	}
 	
 	public static function mapJoystickButton(id:String, controlName:String)
@@ -184,6 +194,20 @@ class Input
 	{
 		#if desktop
 		_joyInput.unmapInput(JoystickButton.normalize(id));
+		#end
+	}
+
+	public static function addJoystickButtonToControl(id:String, controlName:String)
+	{
+		#if desktop
+		_joyInput.addInputToControl(JoystickButton.normalize(id), _controlMap.get(controlName));
+		#end
+	}
+	
+	public static function removeJoystickButtonFromControl(id:String)
+	{
+		#if desktop
+		_joyInput.removeInputFromControl(JoystickButton.normalize(id), _controlMap.get(controlName));
 		#end
 	}
 	
@@ -238,6 +262,7 @@ class Input
 		{
 			if (Utils.mapCount(joyData) > 0)
 			{
+				//TODO: determine if this can support multi-multi mappings in a backward-compatible way
 				var joyStringMap:Map<String,String> = joyData.get("_joyControlMap");
 				for(k in joyStringMap.keys())
 				{
@@ -279,7 +304,7 @@ class Input
 			_controlMap.set(stencylControl, control);
 			for(key in keyboardConstList)
 			{
-				_keyInput.mapInputToControl(key, control);
+				_keyInput.addInputToControl(key, control);
 			}
 		}
 	}
@@ -473,15 +498,15 @@ class Input
 		{
 			event.preventDefault();
 
-			var control = _keyInput.inputControlMap.get(lime.ui.KeyCode.ESCAPE);
+			var controls = _keyInput.inputControlMap.get(lime.ui.KeyCode.ESCAPE);
 			
 			if (event.type == KeyboardEvent.KEY_DOWN)
 			{
-				controlPressed(control, 1.0);
+				controlsPressed(controls, 1.0);
 			}
 			else
 			{
-				controlReleased(control);
+				controlsReleased(controls);
 			}
 		}
 	}
@@ -520,6 +545,20 @@ class Input
         		_swipeDirection = 1;
         	}
         }
+	}
+
+	private static inline function controlsPressed(controls:Array<Control>, pressure:Float)
+	{
+		if(controls != null)
+			for(control in controls)
+				controlPressed(control, pressure);
+	}
+
+	private static inline function controlsReleased(controls:Array<Control>)
+	{
+		if(controls != null)
+			for(control in controls)
+				controlReleased(control);
 	}
 	
 	private static function controlPressed(control:Control, pressure:Float)
@@ -634,7 +673,7 @@ class Input
 		if(!_key[code])
 		{
 			_key[code] = true;
-			controlPressed(_keyInput.inputControlMap.get(code), 1.0);
+			controlsPressed(_keyInput.inputControlMap.get(code), 1.0);
 		}
 		
 		Engine.engine.whenAnyKeyPressed.dispatch(e);
@@ -652,7 +691,7 @@ class Input
 		if(_key[code])
 		{
 			_key[code] = false;
-			controlReleased(_keyInput.inputControlMap.get(code));
+			controlsReleased(_keyInput.inputControlMap.get(code));
 		}
 		
 		Engine.engine.whenAnyKeyReleased.dispatch(e);
@@ -788,14 +827,14 @@ class Input
 		}
 		else if(cur != 0)
 		{
-			var control = null;
+			var controls = null;
 			
 			if(cur == -1)
-				control = _joyInput.inputControlMap.get(gpid + "-axis " + axis);
+				controls = _joyInput.inputControlMap.get(gpid + "-axis " + axis);
 			else if(cur == 1)
-				control = _joyInput.inputControlMap.get(gpid + "+axis " + axis);
+				controls = _joyInput.inputControlMap.get(gpid + "+axis " + axis);
 			
-			if(control != null) control.pressure = Math.abs(value);
+			if(controls != null) for(control in controls) control.pressure = Math.abs(value);
 		}
 
 		oldState[axis] = cur;
@@ -859,15 +898,15 @@ class Input
 
 	private static function joyPress(id:String, pressure:Float)
 	{
-		var control = _joyInput.inputControlMap.get(id);
-		controlPressed(control, pressure);
+		var controls = _joyInput.inputControlMap.get(id);
+		controlsPressed(controls, pressure);
 		
 		Engine.engine.whenAnyGamepadPressed.dispatch(id);
 	}
 
 	private static function joyRelease(id:String)
 	{
-		controlReleased(_joyInput.inputControlMap.get(id));
+		controlsReleased(_joyInput.inputControlMap.get(id));
 
 		Engine.engine.whenAnyGamepadReleased.dispatch(id);
 	}
@@ -923,39 +962,80 @@ class Control
 @:generic
 class InputMethod<T>
 {
-	public var inputControlMap:Map<T,Control>;
+	public var inputControlMap:Map<T,Array<Control>>;
 	public var getInputs:(Control)->Array<T>;
 
-	public function new(inputControlMap:Map<T,Control>, getInputs:(Control)->Array<T>)
+	public function new(inputControlMap:Map<T,Array<Control>>, getInputs:(Control)->Array<T>)
 	{
 		this.inputControlMap = inputControlMap;
 		this.getInputs = getInputs;
 	}
 
+	//map input to newControl alone, and no other control.
 	public function mapInputToControl(input:T, newControl:Control)
 	{
-		var control = inputControlMap.get(input);
-		if(control != null)
+		if(!inputControlMap.exists(input))
+			inputControlMap.set(input, []);
+		var controlList = inputControlMap.get(input);
+
+		for(control in controlList)
 		{
-			getInputs(control).remove(input);
-			Input.controlStateUpdated(control);
+			if(control != newControl)
+			{
+				getInputs(control).remove(input);
+				Input.controlStateUpdated(control);
+			}
 		}
 		
-		getInputs(newControl).push(input);
-		inputControlMap.set(input, newControl);
-		Input.controlStateUpdated(newControl);
+		if(!getInputs(newControl).contains(input))
+		{
+			getInputs(newControl).push(input);
+			controlList.push(newControl);
+			Input.controlStateUpdated(newControl);
+		}
 	}
 	
+	//unmap input from any controls it may have been mapped to
 	public function unmapInput(input:T)
 	{
-		var control = inputControlMap.get(input);
-		if(control != null)
+		var controlList = inputControlMap.get(input);
+		if(controlList != null)
 		{
-			getInputs(control).remove(input);
-			Input.controlStateUpdated(control);
+			for(control in controlList)
+			{
+				getInputs(control).remove(input);
+				Input.controlStateUpdated(control);
+			}
 		}
 		
 		inputControlMap.remove(input);
+	}
+
+	public function addInputToControl(input:T, control:Control)
+	{
+		if(!getInputs(control).contains(input))
+		{
+			getInputs(control).push(input);
+			Input.controlStateUpdated(control);
+			
+			if(!inputControlMap.exists(input))
+				inputControlMap.set(input, []);
+			inputControlMap.get(input).push(control);
+		}
+	}
+
+	public function removeInputFromControl(input:T, control:Control)
+	{
+		if(getInputs(control).contains(input))
+		{
+			getInputs(control).remove(input);
+			Input.controlStateUpdated(control);
+			
+			var controlList = inputControlMap.get(input);
+			controlList.remove(control);
+			if(controlList.length == 0)
+				inputControlMap.remove(input);
+		}
 	}
 	
 	public function getInputsForControl(control:Control):Array<T>
@@ -971,7 +1051,11 @@ class InputMethod<T>
 		var inputs = getInputs(control);
 		while(inputs.length > 0)
 		{
-			inputControlMap.remove(inputs.pop());
+			var input = inputs.pop();
+			var controls = inputControlMap.get(input);
+			controls.remove(control);
+			if(controls.length == 0)
+				inputControlMap.remove(input);
 		}
 		
 		Input.controlStateUpdated(control);
