@@ -204,7 +204,7 @@ class Input
 		#end
 	}
 	
-	public static function removeJoystickButtonFromControl(id:String)
+	public static function removeJoystickButtonFromControl(id:String, controlName:String)
 	{
 		#if desktop
 		_joyInput.removeInputFromControl(JoystickButton.normalize(id), _controlMap.get(controlName));
@@ -247,8 +247,15 @@ class Input
 	{
 		#if desktop
 		var joyData = new Map<String, Dynamic>();
-		joyData.set("_joyControlMap", [for (key in _joyInput.inputControlMap.keys()) key => _joyInput.inputControlMap.get(key).name]);
+		joyData.set("_joyControlMap", [
+			for (key in _joyInput.inputControlMap.keys())
+				key => [
+					for (control in _joyInput.inputControlMap.get(key))
+					control.name
+				]
+			]);
 		joyData.set("_joySensitivity", _joySensitivity);
+		joyData.set("_format", 2);
 		Utils.saveMap(joyData, "_jc-" + filename);
 		#end
 	}
@@ -262,18 +269,36 @@ class Input
 		{
 			if (Utils.mapCount(joyData) > 0)
 			{
-				//TODO: determine if this can support multi-multi mappings in a backward-compatible way
-				var joyStringMap:Map<String,String> = joyData.get("_joyControlMap");
-				for(k in joyStringMap.keys())
+				var format:Null<Int> = joyData.get("_format");
+				if(format == null || format == 1)
 				{
-					var controlName = joyStringMap.get(k);
-					var control = _controlMap.get(controlName);
-					
-					k = JoystickButton.normalize(k);
-					
-					_joyInput.inputControlMap.set(k, control);
-					
-					control.buttons.push(k);
+					var joyStringMap:Map<String,String> = joyData.get("_joyControlMap");
+					for(k in joyStringMap.keys())
+					{
+						var controlName = joyStringMap.get(k);
+						var control = _controlMap.get(controlName);
+						
+						k = JoystickButton.normalize(k);
+						
+						_joyInput.inputControlMap.set(k, [control]);
+						
+						control.buttons.push(k);
+					}
+				}
+				else if(format == 2)
+				{
+					var joyStringMap:Map<String,Array<String>> = joyData.get("_joyControlMap");
+					for(k in joyStringMap.keys())
+					{
+						var controlNames = joyStringMap.get(k);
+						var controls = [for (controlName in controlNames) _controlMap.get(controlName)];
+						
+						k = JoystickButton.normalize(k);
+						
+						_joyInput.inputControlMap.set(k, controls);
+						
+						for(control in controls) control.buttons.push(k);
+					}
 				}
 				_joySensitivity = joyData.get("_joySensitivity");
 			}
@@ -288,7 +313,7 @@ class Input
 		{
 			control.buttons = [];
 		}
-		_joyInput.inputControlMap = new Map<String,Control>();
+		_joyInput.inputControlMap = new Map<String,Array<Control>>();
 		_joySensitivity = .12;
 		#end
 	}
