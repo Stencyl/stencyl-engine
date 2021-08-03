@@ -182,6 +182,11 @@ class Input
 	{
 		_keyInput.removeInputFromControl(keyCode, _controlMap.get(controlName));
 	}
+
+	public static function getKeys(controlName:String):Array<Int>
+	{
+		return _keyInput.getInputsForControl(_controlMap.get(controlName));
+	}
 	
 	public static function mapJoystickButton(id:String, controlName:String)
 	{
@@ -209,6 +214,14 @@ class Input
 		#if desktop
 		_joyInput.removeInputFromControl(JoystickButton.normalize(id), _controlMap.get(controlName));
 		#end
+	}
+
+	public static function getJoystickButtons(controlName:String):Array<String>
+	{
+		#if desktop
+		return _joyInput.getInputsForControl(_controlMap.get(controlName));
+		#end
+		return null;
 	}
 	
 	public static function unmapControl(controlName:String)
