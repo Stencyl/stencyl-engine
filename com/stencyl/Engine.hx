@@ -48,6 +48,7 @@ import com.stencyl.graphics.transitions.CircleTransition;
 import com.stencyl.graphics.transitions.FadeInTransition;
 import com.stencyl.graphics.transitions.FadeOutTransition;
 import com.stencyl.graphics.transitions.Transition;
+import com.stencyl.io.AttributeValues;
 import com.stencyl.utils.motion.*;
 import com.stencyl.utils.Utils;
 
@@ -4193,7 +4194,10 @@ class Engine
 	
 	public function restoreGameAttributes()
 	{
-		var gma = GameModel.get().gameAttributes;
+		var mbsGame = Data.get().readGameMbs();
+		var gma = AttributeValues.readMap(mbsGame.getGameAttributes());
+		
+		gameAttributes.clear();
 		for(key in gma.keys())
 		{
 			gameAttributes.set(key, gma.get(key));

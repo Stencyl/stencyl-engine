@@ -1,6 +1,7 @@
 package com.stencyl;
 
 import com.stencyl.io.mbs.actortype.*;
+import com.stencyl.io.mbs.game.*;
 import com.stencyl.io.mbs.snippet.*;
 import com.stencyl.io.mbs.*;
 import com.stencyl.io.mbs.Typedefs;
@@ -135,6 +136,13 @@ class Data
 
 		scanBehaviorMbs();
 		scanResourceMbs();
+	}
+
+	public function readGameMbs():MbsGame
+	{
+		var gameMbsReader = new MbsReader(Typedefs.get(), false, true);
+		gameMbsReader.readData(Assets.getBytes("assets/data/game.mbs"));
+		return (gameMbsReader.getRoot() : MbsGame);
 	}
 	
 	private function loadReaders()
