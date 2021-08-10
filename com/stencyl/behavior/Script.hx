@@ -4123,14 +4123,6 @@ class Script
 		#end	
 	}
 	
-	//For V3 Google IAP
-	public static function purchasesGoogleConsume(productID:String):Void 
-	{
-		#if mobile
-		Purchases.consume(productID);
-		#end	
-	}
-	
 	public static function purchasesGetQuantity(productID:String):Int 
 	{
 		#if mobile
