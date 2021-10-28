@@ -5,7 +5,7 @@ import js.html.CanvasElement;
 import js.Browser;
 #end
 
-import flash.geom.Rectangle;
+import openfl.geom.Rectangle;
 import com.stencyl.Config;
 import com.stencyl.Engine;
 import com.stencyl.utils.motion.*;

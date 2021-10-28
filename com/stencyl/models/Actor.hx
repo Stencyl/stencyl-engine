@@ -365,7 +365,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		
 		//---
 		
-		lastScale = new flash.geom.Point(1, 1);
+		lastScale = new openfl.geom.Point(1, 1);
 		lastX = -1000;
 		lastY = -1000;
 		lastAngle = 0;		

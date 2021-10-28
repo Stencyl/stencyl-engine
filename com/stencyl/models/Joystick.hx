@@ -12,8 +12,8 @@ import openfl.events.Event;
 import openfl.events.TouchEvent;
 import openfl.events.MouseEvent;
 
-import flash.ui.Multitouch;
-import flash.ui.MultitouchInputMode;
+import openfl.ui.Multitouch;
+import openfl.ui.MultitouchInputMode;
 
 class Joystick extends Sprite
 {

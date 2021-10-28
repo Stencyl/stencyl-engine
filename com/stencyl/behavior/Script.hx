@@ -92,7 +92,7 @@ import box2D.dynamics.B2Fixture;
 
 import haxe.ds.ObjectMap;
 
-import flash.utils.ByteArray;
+import openfl.utils.ByteArray;
 import haxe.crypto.BaseCode;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
@@ -2193,8 +2193,8 @@ class Script
 	//* Image API
 	//*-----------------------------------------------
 	
-	public static var dummyRect = new flash.geom.Rectangle(0, 0, 1, 1);
-	public static var dummyPoint = new flash.geom.Point(0, 0);
+	public static var dummyRect = new openfl.geom.Rectangle(0, 0, 1, 1);
+	public static var dummyPoint = new openfl.geom.Point(0, 0);
 	
 	public static function newImage(width:Int, height:Int):BitmapData
 	{

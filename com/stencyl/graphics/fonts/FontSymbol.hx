@@ -1,6 +1,6 @@
 package com.stencyl.graphics.fonts;
 
-import flash.display.BitmapData;
+import openfl.display.BitmapData;
 
 class FontSymbol 
 {
