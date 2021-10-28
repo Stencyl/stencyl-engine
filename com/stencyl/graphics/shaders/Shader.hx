@@ -2,7 +2,7 @@ package com.stencyl.graphics.shaders;
 
 #if flash
 
-/**
+/*
  * Flash doesn't support post processing
  * This is an empty class to prevent compilation errors
  */
