@@ -1,0 +1,5 @@
+package scripts;
+
+class MyScripts
+{
+}

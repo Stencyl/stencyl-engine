@@ -1,0 +1,78 @@
+-D display
+-D doc_gen
+-D openfl_doc_gen
+ImportAll
+-lib box2d
+-lib cloner
+-lib com.stencyl.gestures
+-lib com.stencyl.joystick
+-lib com.stencyl.label
+-lib debug-console
+-lib lime
+-lib mbs
+-lib openfl
+-lib polygonal-ds
+-lib stencyl
+-lib tweenxcore
+--no-output
+
+--each
+
+# Flash doesn't actually define flash because some issues in openfl prevent flash docs from being merged with other platforms.
+# If those issues are ever resolved, change -cpp to -swf here. Otherwise, flash_doc_gen can be used to modify flash docs.
+
+-xml xml/Flash.xml
+-cpp obj/docs
+-D flash_doc_gen
+
+--next
+
+-xml xml/Windows.xml
+-cpp obj/docs
+-D native
+-D windows
+-lib com.stencyl.native
+
+--next
+
+-xml xml/Mac.xml
+-cpp obj/docs
+-D native
+-D mac
+-lib com.stencyl.native
+
+--next
+
+-xml xml/Linux.xml
+-cpp obj/docs
+-D native
+-D linux
+-lib com.stencyl.native
+
+--next
+
+-xml xml/iOS.xml
+-cpp obj/docs
+-D native
+-D ios
+-lib com.stencyl.admob
+-lib com.stencyl.gamecenter
+-lib com.stencyl.purchases
+-lib com.stencyl.native
+
+--next
+
+-xml xml/Android.xml
+-cpp obj/docs
+-D native
+-D android
+-lib com.stencyl.admob
+-lib com.stencyl.google-play-games
+-lib com.stencyl.purchases
+-lib com.stencyl.native
+
+--next
+
+-xml xml/HTML5.xml
+-js obj/docs
+-D html5

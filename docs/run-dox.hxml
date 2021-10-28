@@ -1,0 +1,1 @@
+-cmd haxelib run dox -i xml -in stencyl --title "Stencyl API Reference" -D website "https://www.stencyl.com/api/haxe" -D source-path "https://github.com/Stencyl/stencyl-engine/tree/develop/" -D textColor 0x777777 --toplevel-package com.stencyl
