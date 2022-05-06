@@ -1,7 +1,21 @@
 package com.stencyl.utils;
 
+import haxe.xml.Access;
+
 class ConfigUtil
 {
+	public static function xmlToMap(xml:Access, keyProperty:String, valueProperty:String):Map<String, String>
+	{
+		var map:Map<String, String> = [];
+
+		for(e in xml.elements)
+		{
+			map.set(e.x.get(keyProperty), e.x.get(valueProperty));
+		}
+
+		return map;
+	}
+
 	public static inline function readString(map:Map<String, String>, propertyName:String):String
 	{
 		return map.get(propertyName);
