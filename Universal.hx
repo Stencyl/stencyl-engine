@@ -206,7 +206,10 @@ class Universal extends Sprite
 		else if
 		(
 			(smaller == 768 && larger == 1024) ||
+			(smaller == 1488 && larger == 2266) ||
 			(smaller == 1536 && larger == 2048) ||
+			(smaller == 1620 && larger == 2160) ||
+			(smaller == 1640 && larger == 2360) ||
 			(smaller == 1668 && larger == 2224) ||
 			(smaller == 1668 && larger == 2388) ||
 			(smaller == 2048 && larger == 2732)
