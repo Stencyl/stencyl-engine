@@ -1046,7 +1046,7 @@ class Script
 	/**
 	 * Get the ID of a scene by name.
 	 *
-	 * @return The ID current scene or 0 if it doesn't exist.
+	 * @return The ID current scene or -1 if it doesn't exist.
 	 */
 	public static function getIDForScene(sceneName:String):Int
 	{
@@ -1058,7 +1058,7 @@ class Script
 			}
 		}
 		
-		return 0;
+		return -1;
 	}
 	
 	/**
