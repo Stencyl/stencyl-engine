@@ -2807,7 +2807,7 @@ class Script
 	{
 		if(img != null)
 		{
-			img.img.filters = img.filters.concat([filter]);
+			img.filters = img.filters.concat([filter]);
 		}
 	}
 	
@@ -2815,7 +2815,7 @@ class Script
 	{
 		if(img != null)
 		{
-			img.img.filters = [];
+			img.filters = [];
 		}
 	}
 	
