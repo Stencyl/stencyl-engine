@@ -329,28 +329,10 @@ class BitmapFont
 		var curX:Float = pOffsetX;
 		var curY:Float = pOffsetY;
 		var glyph:FontSymbol;
-		
-		var realCount = 0;
 
 		for (i in 0...(pText.length)) 
 		{
-			if(i < realCount)
-			{
-				continue;
-			}
-		
 			var charCode:Int = pText.charCodeAt(i);
-			
-			//Pseudo Unicode
-			if(charCode == 126)
-			{
-				if(pText.charAt(i + 1) == 'x')
-				{
-					var unicodeChar = pText.substring(i + 2, i + 6);
-					charCode = Std.parseInt("0x" + unicodeChar);
-					realCount += 5;
-				}
-			}
 			
 			glyph = _glyphs.get(charCode);
 			if (glyph != null) 
@@ -404,8 +386,6 @@ class BitmapFont
 				
 				curX += (glyph.xadvance + xSpacing) * pScale;
 			}
-			
-			realCount++;
 		}
 	}
 
@@ -451,35 +431,16 @@ class BitmapFont
 	public function getTextWidth(pText:String, ?pFontScale:Float = 1.0):Int 
 	{
 		var w:Int = 0;
-		var realCount = 0;
 		var textLength:Int = pText.length;
 		for (i in 0...(textLength)) 
 		{
-			if(i < realCount)
-			{
-				continue;
-			}
-			
 			var charCode:Int = pText.charCodeAt(i);
-			
-			//Pseudo Unicode
-			if(charCode == 126)
-			{
-				if(pText.charAt(i + 1) == 'x')
-				{
-					var unicodeChar = pText.substring(i + 2, i + 6);
-					charCode = Std.parseInt("0x" + unicodeChar);
-					realCount += 5;
-				}
-			}
 			
 			var glyph:FontSymbol = _glyphs.get(charCode);
 			if (glyph != null)
 			{
 				w += glyph.xadvance;
 			}
-			
-			realCount++;
 		}
 		
 		if (textLength > 1)

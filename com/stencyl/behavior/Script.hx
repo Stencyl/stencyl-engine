@@ -3644,37 +3644,10 @@ class Script
 		}		
 	}
 	
-	//Purpose: Support Unicode in downloaded text or text from external files.
-	//Author: out2lunch
-	//http://community.stencyl.com/index.php/topic,30954.0.html
+	//Does nothing. Previously: http://community.stencyl.com/index.php/topic,30954.0.html
 	public static function convertToPseudoUnicode(internationalText:String):String
 	{
-		#if flash
-		// Not needed in Flash, just return it
 		return internationalText;
-		#else
-		var convertedString:String = "";
-		try{
-		for (c in internationalText.uIterator()) 
-		{
-			var charCode:Int = c.toInt();
-			if (charCode < 128)
-			{
-				convertedString += c.toString();
-			}
-			else
-			{
-				convertedString += "~x" + StringTools.hex(charCode, 4);
-			}
-			
-		}}
-		catch(e:Dynamic)
-		{
-			return internationalText;
-		}
-			
-		return convertedString;
-		#end
 	}
 	
 	//*-----------------------------------------------
