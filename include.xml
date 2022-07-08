@@ -20,6 +20,7 @@
 	<haxedef name="actuate_manual_time" />
 	<haxedef name="actuate_manual_update" />
 	<haxedef name="hscriptPos" unless="publishing" />
+	<haxedef name="lime_disable_assets_version" />
 
 	<!--<library handler="stencyl" type="stencyl-assets" />
 	<library name="stencyl" type="stencyl-assets" preload="true" />-->
