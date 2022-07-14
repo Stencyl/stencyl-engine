@@ -866,7 +866,7 @@ class Utils
 
 	public static inline function printCallstackIfAvailable():String
 	{
-		#if debug
+		#if (debug || HXCPP_STACK_TRACE)
 			return "\n" + haxe.CallStack.toString(haxe.CallStack.callStack());
 		#else
 			return " (Run in Debug mode to see the call stack.)";
@@ -875,12 +875,12 @@ class Utils
 
 	public static inline function printExceptionstackIfAvailable():String
 	{
-		#if debug
+		#if (debug || HXCPP_STACK_TRACE)
 			return "\n" + haxe.CallStack.toString(haxe.CallStack.exceptionStack());
 		#else
 			return " (Run in Debug mode to see the exception stack.)";
 		#end
-	}	
+	}
 	
 	/** Saves a key/value pair in a SharedObject (does not flush the SharedObject) */
 	public static function saveToSharedObject(so:SharedObject, name:String, value:Dynamic):Void
