@@ -138,8 +138,8 @@ class Universal extends Sprite
 			scales.set(scale, true);
 		}
 
-		windowWidth = isFullScreen ? stage.fullScreenWidth : Config.stageWidth * Config.gameScale;
-		windowHeight = isFullScreen ? stage.fullScreenHeight : Config.stageHeight * Config.gameScale;
+		windowWidth = isFullScreen ? stage.fullScreenWidth : Config.stageWidth * Config.gameScale #if html5 * stage.window.scale #end;
+		windowHeight = isFullScreen ? stage.fullScreenHeight : Config.stageHeight * Config.gameScale #if html5 * stage.window.scale #end;
 
 		trace("Game Width: " + Config.stageWidth);
 		trace("Game Height: " + Config.stageHeight);
@@ -148,6 +148,7 @@ class Universal extends Sprite
 		trace("Window Height: " + windowHeight);
 		trace("FullScreen Width: " + stage.fullScreenWidth);
 		trace("FullScreen Height: " + stage.fullScreenHeight);
+		trace("Device Pixel Ratio: " + stage.window.scale);
 		trace("Enabled Scales: " + Config.scales);
 		trace("Scale Mode: " + Config.scaleMode);
 		
