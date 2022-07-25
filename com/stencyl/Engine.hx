@@ -691,6 +691,76 @@ class Engine
 		engine.nextTileset = 0;
 	}
 	#end
+
+	#if ios
+	public static function determineIosScreenType()
+	{
+		var larger = Math.max(stage.fullScreenWidth, stage.fullScreenHeight);
+		var smaller = Math.min(stage.fullScreenWidth, stage.fullScreenHeight);
+		
+		if(smaller == 320 && larger == 480)
+		{
+			Engine.isStandardIOS = true;
+		}
+		
+		else if(smaller == 640 && larger == 960)
+		{
+			Engine.isStandardIOS = true;
+		}
+		
+		//iPhone 5, 5s, or iPhone 6 with Display Zoom
+		else if(smaller == 640 && larger == 1136)
+		{
+			Engine.isExtendedIOS = true;
+		}	
+		
+		else if(smaller == 750 && larger == 1334)
+		{
+			Engine.isIPhone6 = true;
+		}	
+		
+		else if(smaller == 1242 && larger == 2208)
+		{
+			Engine.isIPhone6Plus = true;
+		}
+		
+		//iPhone 6+ with Display Zoom
+		else if(smaller == 1125 && larger == 2001)
+		{
+			Engine.isIPhone6Plus = true;
+		}
+
+		else if(smaller == 1125 && larger == 2436)
+		{
+			Engine.isIPhoneX = true;
+		}
+		
+		else if(smaller == 1242 && larger >= 2688 && larger <= 2690)
+		{
+			Engine.isIPhoneXMax = true;
+		}
+		
+		else if(smaller == 828 && larger == 1792)
+		{
+			Engine.isIPhoneXR = true;
+		}
+		
+		else if
+		(
+			(smaller == 768 && larger == 1024) ||
+			(smaller == 1488 && larger == 2266) ||
+			(smaller == 1536 && larger == 2048) ||
+			(smaller == 1620 && larger == 2160) ||
+			(smaller == 1640 && larger == 2360) ||
+			(smaller == 1668 && larger == 2224) ||
+			(smaller == 1668 && larger == 2388) ||
+			(smaller == 2048 && larger == 2732)
+		)
+		{
+			Engine.isTabletIOS = true;
+		}
+	}
+	#end
 	
 	//*-----------------------------------------------
 	//* Init
@@ -733,6 +803,9 @@ class Engine
 		screenScaleY = unzoomedScaleY = root.scaleY;
 		screenOffsetX = Std.int(root.x);
 		screenOffsetY = Std.int(root.y);
+		#if ios
+		determineIosScreenType()
+		#end
 		
 		NO_PHYSICS = Config.physicsMode == SIMPLE_PHYSICS;
 		
