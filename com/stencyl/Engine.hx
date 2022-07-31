@@ -804,7 +804,7 @@ class Engine
 		screenOffsetX = Std.int(root.x);
 		screenOffsetY = Std.int(root.y);
 		#if ios
-		determineIosScreenType()
+		determineIosScreenType();
 		#end
 		
 		NO_PHYSICS = Config.physicsMode == SIMPLE_PHYSICS;
