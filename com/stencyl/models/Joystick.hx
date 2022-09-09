@@ -251,9 +251,6 @@ class Joystick extends Sprite
         outerImage.alpha = outerAlphaWhenReleased;
         innerImage.alpha = innerAlphaWhenReleased;
 
-        center.x = outerImage.x + outerRadius;
-        center.y = outerImage.y + outerRadius;
-        
         innerImage.x = center.x - innerImage.width * 0.5;
         innerImage.y = center.y - innerImage.height * 0.5;
 
