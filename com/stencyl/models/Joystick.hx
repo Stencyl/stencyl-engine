@@ -144,16 +144,16 @@ class Joystick extends Sprite
             return;
         }
         
-        x /= Engine.screenScaleX;
-        y /= Engine.screenScaleY;
+        x = (x - viewOffsetX) / (Engine.screenScaleX * Engine.SCALE);
+        y = (y - viewOffsetY) / (Engine.screenScaleY * Engine.SCALE);
         
         outerImage.alpha = outerAlphaWhenPressed;
         innerImage.alpha = innerAlphaWhenPressed;
 
         if(joystickType == fixedCenter)
         {
-            var distance = Math.sqrt(Math.pow((center.x + viewOffsetX - x), 2) + Math.pow((center.y + viewOffsetY - y), 2));
-            var radians = Math.atan2(center.y + viewOffsetY - y, center.x + viewOffsetX - x);
+            var distance = Math.sqrt(Math.pow((center.x - x), 2) + Math.pow((center.y - y), 2));
+            var radians = Math.atan2(center.y - y, center.x - x);
             
             if(distance > outerRadius)
             {
@@ -169,8 +169,8 @@ class Joystick extends Sprite
             
             else
             {
-                innerImage.x = x - viewOffsetX - innerImage.width * 0.5;
-                innerImage.y = y - viewOffsetY - innerImage.height * 0.5;
+                innerImage.x = x - innerImage.width * 0.5;
+                innerImage.y = y - innerImage.height * 0.5;
             }
 			
 			isPressed = true;
@@ -189,8 +189,8 @@ class Joystick extends Sprite
 			
 			isPressed = true;
             
-            center.x = x - viewOffsetX;
-            center.y = y - viewOffsetY;
+            center.x = x;
+            center.y = y;
             
             outerImage.x = center.x - outerImage.width * 0.5;
             outerImage.y = center.y - outerImage.height * 0.5;
@@ -214,11 +214,11 @@ class Joystick extends Sprite
             return;
         }
         
-        x /= Engine.screenScaleX;
-        y /= Engine.screenScaleY;
+        x = (x - viewOffsetX) / (Engine.screenScaleX * Engine.SCALE);
+        y = (y - viewOffsetY) / (Engine.screenScaleY * Engine.SCALE);
         
-        var distance = Math.sqrt(Math.pow((center.x + viewOffsetX - x), 2) + Math.pow((center.y + viewOffsetY - y), 2));
-        var radians = Math.atan2(center.y + viewOffsetY - y, center.x + viewOffsetX - x);
+        var distance = Math.sqrt(Math.pow((center.x - x), 2) + Math.pow((center.y - y), 2));
+        var radians = Math.atan2(center.y - y, center.x - x);
         
         if(distance > (outerRadius - innerRadius))
         {
@@ -229,8 +229,8 @@ class Joystick extends Sprite
         
         else
         {
-            innerImage.x = x - viewOffsetX - innerImage.width * 0.5;
-            innerImage.y = y - viewOffsetY - innerImage.height * 0.5;
+            innerImage.x = x - innerImage.width * 0.5;
+            innerImage.y = y - innerImage.height * 0.5;
         }
         
         joystickDistance = distance / (outerRadius - innerRadius);
