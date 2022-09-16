@@ -493,7 +493,8 @@ class Input
 					swipedDown = true;
 			}
 			
-			Engine.engine.whenSwiped.dispatch();
+			if(Engine.engine.whenSwiped != null)
+				Engine.engine.whenSwiped.dispatch();
 			
 			_swipeDirection = -1;
 		}
