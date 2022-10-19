@@ -1,6 +1,7 @@
 #if stencyltools
 package com.stencyl.utils;
 
+import haxe.Exception;
 import haxe.io.Bytes;
 import openfl.display.*;
 import openfl.geom.*;
@@ -46,7 +47,17 @@ class ToolsetInterface
 		{
 			trace("GCI attempting to connect to toolset @" + host + ":" + port);
 			configureListeners();
-			socket.connect(host, port);
+			try
+			{
+				socket.connect(host, port);
+			}
+			catch(e:Exception)
+			{
+				trace("Couldn't establish gci connection.");
+				trace(e.stack);
+				unconfigureListeners();
+				ToolsetInterface.ready = true;
+			}
 		}
 		else
 		{
