@@ -46,7 +46,7 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		y = -height/2;
 	}
 	
-	public inline function update(elapsedTime:Float)
+	public function update(elapsedTime:Float)
 	{
 		//Non-synced animations
 		if(!model.sync || !model.looping)
@@ -133,7 +133,7 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		return finished;
 	}
 	
-	public inline function activate()
+	public function activate()
 	{
 		if(!model.tilesetInitialized)
 		{
@@ -157,7 +157,7 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		updateBitmap();
 	}
 	
-	public inline function reset()
+	public function reset()
 	{
 		timer = 0;
 		frameIndex = 0;
@@ -170,7 +170,7 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		id = frameIndex + model.frameIndexOffset;
 	}
 
-	public inline function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
+	public function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
 		if(Config.disposeImages && !model.checkImageReadable())
 			return;

@@ -118,7 +118,7 @@ class Utils
         #end
     }
     
-    public static inline function removeValueFromArray(arr:Array<Dynamic>, value:Dynamic)
+    public static function removeValueFromArray(arr:Array<Dynamic>, value:Dynamic)
 	{
 		var len:Int = arr.length;
 		
@@ -401,7 +401,7 @@ class Utils
 	 * @param	t				Interpolation value. Clamped to the range [0, 1].
 	 * return	RGB component-interpolated color value.
 	 */
-	public static inline function colorLerp(fromColor:Int, toColor:Int, t:Float = 1):Int
+	public static function colorLerp(fromColor:Int, toColor:Int, t:Float = 1):Int
 	{
 		if (t <= 0) { return fromColor; }
 		if (t >= 1) { return toColor; }
@@ -448,7 +448,7 @@ class Utils
 	 * @param	anchor		The anchor object.
 	 * @param	distance	The max distance object can be anchored to the anchor.
 	 */
-	public static inline function anchorTo(object:Dynamic, anchor:Dynamic, distance:Float = 0)
+	public static function anchorTo(object:Dynamic, anchor:Dynamic, distance:Float = 0)
 	{
 		point.x = object.x - anchor.x;
 		point.y = object.y - anchor.y;

@@ -113,7 +113,7 @@ class Mask
 
 	}
 
-	public inline function projectMask(axis:Point, collisionInfo:CollisionInfo):Void
+	public function projectMask(axis:Point, collisionInfo:CollisionInfo):Void
 	{
 		var cur:Float,
 			max:Float = -9999999999.,

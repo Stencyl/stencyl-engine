@@ -203,7 +203,7 @@ class Script
 		return (o == one) || (o == two);
 	}
 	
-	public static inline function asBoolean(o:Dynamic):Bool
+	public static function asBoolean(o:Dynamic):Bool
 	{
 		if (o == true)
 		{
@@ -220,7 +220,7 @@ class Script
 		//return (o == true || o == "true"); // This stopped working in 3.5: http://community.stencyl.com/index.php?issue=845.0
 	}
 	
-	public static inline function strCompare(one:String, two:String, whichWay:Int):Bool
+	public static function strCompare(one:String, two:String, whichWay:Int):Bool
 	{
 		if(whichWay < 0)
 		{
@@ -243,7 +243,7 @@ class Script
 		return(a > b);
 	} 
 	
-	public static inline function asNumber(o:Dynamic):Float
+	public static function asNumber(o:Dynamic):Float
 	{
 		if(o == null)
 		{
@@ -276,7 +276,7 @@ class Script
 		}
 	}
 	
-	public static inline function hasValue(o:Dynamic):Bool
+	public static function hasValue(o:Dynamic):Bool
 	{
 		if(isPrimitive(o))
 		{

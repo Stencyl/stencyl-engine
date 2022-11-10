@@ -116,7 +116,7 @@ class G
 		#end
 	}
 	
-	 public inline function resetGraphicsSettings():Void
+	 public function resetGraphicsSettings():Void
      {
      	alpha = 1;
      	strokeSize = 0;
@@ -125,7 +125,7 @@ class G
 		font = defaultFont;
      }
 	
-	public inline function setFont(newFont:Font)
+	public function setFont(newFont:Font)
 	{
 		if(newFont != null && newFont != font)
 		{
@@ -157,7 +157,7 @@ class G
 		}
 	}
 	
-	public inline function startGraphics()
+	public function startGraphics()
 	{
 		if(drawActor)
 		{
@@ -183,7 +183,7 @@ class G
 		}
 	}
 	
-	public inline function endGraphics()
+	public function endGraphics()
 	{
 		if(drawActor && !actor.isHUD)
 		{
@@ -194,13 +194,13 @@ class G
 		graphics.lineStyle();
 	}
 	
-	public inline function translate(x:Float, y:Float)
+	public function translate(x:Float, y:Float)
 	{
 		this.x += x * scaleX;
 		this.y += y * scaleY;
 	}
 	
-	public inline function moveTo(x:Float, y:Float)
+	public function moveTo(x:Float, y:Float)
 	{
 		if(drawActor)
 		{
@@ -220,7 +220,7 @@ class G
 		}
 	}
 	
-	public inline function translateToScreen()
+	public function translateToScreen()
 	{
 		drawActor = false;
 		actor = null;
@@ -229,7 +229,7 @@ class G
 		y = 0;
 	}
 	
-	public inline function translateToActor(a:Actor)
+	public function translateToActor(a:Actor)
 	{
 		drawActor = true;
 		actor = a;
@@ -275,7 +275,7 @@ class G
 		return string + ":" + font.ID + ":" + alpha + ":" + Engine.SCALE + ":" + font.letterSpacing;
 	}
 	
-	public inline function drawString(s:String, x:Float, y:Float)
+	public function drawString(s:String, x:Float, y:Float)
 	{
 		if(font == null)
 		{
@@ -370,7 +370,7 @@ class G
 		}
 	}
 	
-	public inline function drawLine(x1:Float, y1:Float, x2:Float, y2:Float)
+	public function drawLine(x1:Float, y1:Float, x2:Float, y2:Float)
 	{
 		x1 *= scaleX;
 		y1 *= scaleY;
@@ -385,7 +385,7 @@ class G
 		endGraphics();
 	}
 	
-	public inline function fillPixel(x:Float, y:Float)
+	public function fillPixel(x:Float, y:Float)
 	{
 		startGraphics();
 		
@@ -403,7 +403,7 @@ class G
 		endGraphics();
 	}
 	
-	public inline function drawRect(x:Float, y:Float, w:Float, h:Float)
+	public function drawRect(x:Float, y:Float, w:Float, h:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -417,7 +417,7 @@ class G
      	endGraphics();
 	}
 	
-	public inline function fillRect(x:Float, y:Float, w:Float, h:Float)
+	public function fillRect(x:Float, y:Float, w:Float, h:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -433,7 +433,7 @@ class G
      	endGraphics();
 	}
 	
-	public inline function drawRoundRect(x:Float, y:Float, w:Float, h:Float, arc:Float)
+	public function drawRoundRect(x:Float, y:Float, w:Float, h:Float, arc:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -447,7 +447,7 @@ class G
      	endGraphics();
 	}
 	
-	public inline function fillRoundRect(x:Float, y:Float, w:Float, h:Float, arc:Float)
+	public function fillRoundRect(x:Float, y:Float, w:Float, h:Float, arc:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -463,7 +463,7 @@ class G
      	endGraphics();
 	}
 	
-	public inline function drawCircle(x:Float, y:Float, r:Float)
+	public function drawCircle(x:Float, y:Float, r:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -476,7 +476,7 @@ class G
      	endGraphics();
 	}
 	
-	public inline function fillCircle(x:Float, y:Float, r:Float)
+	public function fillCircle(x:Float, y:Float, r:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -491,7 +491,7 @@ class G
      	endGraphics();
 	}
 	
-	public inline function beginFillPolygon()
+	public function beginFillPolygon()
 	{
 		drawPoly = false;
 		
@@ -500,7 +500,7 @@ class G
 		pointCounter = 0;
 	}
 	
-	public inline function endDrawingPolygon()
+	public function endDrawingPolygon()
 	{
 		if(pointCounter >= 2)
 		{
@@ -519,7 +519,7 @@ class G
 		}	
 	}
 	
-	public inline function beginDrawPolygon()
+	public function beginDrawPolygon()
 	{
 		drawPoly = true;
 	
@@ -528,7 +528,7 @@ class G
 		pointCounter = 0;
 	}
 	
-	public inline function addPointToPolygon(x:Float, y:Float)
+	public function addPointToPolygon(x:Float, y:Float)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -551,7 +551,7 @@ class G
 		graphics.lineTo(this.x + x, this.y + y);
 	}
 		
-	public inline function drawImage(img:BitmapData, x:Float, y:Float, angle:Float=0, matrix:Matrix = null)
+	public function drawImage(img:BitmapData, x:Float, y:Float, angle:Float=0, matrix:Matrix = null)
 	{
 		x *= scaleX;
 		y *= scaleY;
@@ -655,7 +655,7 @@ class G
 		return argb; 
 	}
 	
-	public inline function resetFont()
+	public function resetFont()
 	{
 		font = defaultFont;
 		

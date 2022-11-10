@@ -60,7 +60,7 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		updateBitmap();
 	}		
 
-	public inline function update(elapsedTime:Float)
+	public function update(elapsedTime:Float)
 	{
 		//Non-synced animations
 		if(!(model.sync && model.looping))
