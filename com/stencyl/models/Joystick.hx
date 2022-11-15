@@ -76,6 +76,8 @@ class Joystick extends Sprite
             viewOffsetY = (Engine.screenOffsetY);
         }
         
+        #if (mobile || html5)
+        
         if (Multitouch.supportsTouchEvents)
         {
             Engine.stage.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
@@ -91,6 +93,14 @@ class Joystick extends Sprite
             Engine.stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
             Engine.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
         }
+        
+        #else
+
+        Engine.stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+        Engine.stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+        Engine.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+        
+        #end
     }
 
     private function stop()
