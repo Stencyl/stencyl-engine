@@ -159,8 +159,8 @@ class Joystick extends Sprite
             return;
         }
         
-        x = (x - viewOffsetX) / (Engine.screenScaleX * Engine.SCALE);
-        y = (y - viewOffsetY) / (Engine.screenScaleY * Engine.SCALE);
+        x = (x - viewOffsetX) / Engine.screenScaleX;
+        y = (y - viewOffsetY) / Engine.screenScaleY;
         
         outerImage.alpha = outerAlphaWhenPressed;
         innerImage.alpha = innerAlphaWhenPressed;
@@ -229,8 +229,8 @@ class Joystick extends Sprite
             return;
         }
         
-        x = (x - viewOffsetX) / (Engine.screenScaleX * Engine.SCALE);
-        y = (y - viewOffsetY) / (Engine.screenScaleY * Engine.SCALE);
+        x = (x - viewOffsetX) / Engine.screenScaleX;
+        y = (y - viewOffsetY) / Engine.screenScaleY;
         
         var distance = Math.sqrt(Math.pow((center.x - x), 2) + Math.pow((center.y - y), 2));
         var radians = Math.atan2(center.y - y, center.x - x);
