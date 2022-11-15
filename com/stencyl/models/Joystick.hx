@@ -59,6 +59,11 @@ class Joystick extends Sprite
     private static var viewOffsetY:Int = 0;
     private static var initialized:Bool = false;
 
+    public function new()
+    {
+        super();
+    }
+
     private function start()
     {
         if(!initialized)
@@ -274,7 +279,7 @@ class Joystick extends Sprite
             removeJoystick(id);
         }
         
-        var joystick = Type.createEmptyInstance(Joystick);
+        var joystick = new Joystick();
         
         joystick.start();
 
