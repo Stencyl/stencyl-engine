@@ -34,7 +34,7 @@ class EventDispatcher
 					{
 						$event.listeners[$event._dispatchIndex]($a{args});
 					}
-					catch(e:String)
+					catch(e:Dynamic)
 					{
 						trace(e + com.stencyl.utils.Utils.printExceptionstackIfAvailable());
 					}
