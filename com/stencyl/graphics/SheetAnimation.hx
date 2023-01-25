@@ -29,9 +29,6 @@ class SheetAnimation extends Tile implements AbstractAnimation
 	
 	public var model(default, null):Animation;
 	
-	public var width(get, never):Int;
-	public var height(get, never):Int;
-	
 	public function new(model:Animation)
 	{
 		super();
@@ -271,12 +268,12 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		*/
 	}
 	
-	private function get_width():Int
+	private override function get_width():Int
 	{
 		return Std.int(model.frameWidth * Engine.SCALE);
 	}
 	
-	private function get_height():Int
+	private override function get_height():Int
 	{
 		return Std.int(model.frameHeight * Engine.SCALE);
 	}
