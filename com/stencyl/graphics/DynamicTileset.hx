@@ -2,14 +2,18 @@ package com.stencyl.graphics;
 
 #if ((lime_opengl || lime_opengles || lime_webgl) && use_actor_tilemap)
 
+import haxe.io.Bytes;
+
 import lime.graphics.opengl.GLTexture;
-import lime.graphics.GLRenderContext;
+import lime.utils.UInt8Array;
 
 import openfl.display.BitmapData;
 import openfl.display.Tileset;
 import openfl.display3D.textures.TextureBase;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.utils.ByteArray;
+import openfl.utils.Endian;
 import openfl.Vector;
 
 @:access(openfl.display.BitmapData)
@@ -117,7 +121,7 @@ class DynamicTileset
 		tileset.__data = new Array();
 	}
 	
-	/*public function addFramesFromStrip(imgData:BitmapData, frameWidth:Int, frameHeight:Int, framesAcross:Int, frameCount:Int):Int
+	public function addFramesFromStrip(imgData:BitmapData, frameWidth:Int, frameHeight:Int, framesAcross:Int, frameCount:Int):Int
 	{
 		//trace("Adding " + frameCount + " frames to dynamicTileset.");
 		
@@ -125,11 +129,11 @@ class DynamicTileset
 		
 		var newTexture = tileset.bitmapData.__texture == null;
 		var newRects = [];
-		var newFrames = [];
+		var frameDatas = [];
 		
 		for(i in 0...frameCount)
 		{
-			if(point.x + frameWidth > textureMaxSize)
+			if(point.x + frameWidth > GLUtil.textureMaxSize)
 			{
 				point.x = 0;
 				point.y = nextLine;
@@ -139,9 +143,12 @@ class DynamicTileset
 			
 			if(!newTexture)
 			{
-				var newFrame = new BitmapData(frameWidth, frameHeight, true, 0);
-				newFrame.copyPixels(imgData, sourceRect, zero);
-				newFrames.push(newFrame);
+				var pixels = ByteArray.fromBytes(imgData.image.getPixels(@:privateAccess sourceRect.__toLimeRectangle(), #if js RGBA32 #else BGRA32 #end));
+				pixels.endian = Endian.BIG_ENDIAN;
+				
+				//var pixels = imgData.getPixels(sourceRect);//argb32,big endian
+				var data = UInt8Array.fromBytes(Bytes.ofData(pixels));
+				frameDatas.push(data);
 			}
 			
 			sourceRect.setTo(point.x, point.y, sourceRect.width, sourceRect.height);
@@ -154,46 +161,27 @@ class DynamicTileset
 				nextLine = Std.int(point.y + frameHeight + FRAME_PADDING);
 		}
 		
-		//trace(newRects);
-		
 		if(!newTexture)
 		{
-			var gl = getGL();
-			var textureImage = tileset.bitmapData.image;
-			var internalFormat = BitmapData.__textureInternalFormat;
-			var format = BitmapData.__textureFormat;
+			var gl = GLUtil.gl;
+			var internalFormat = TextureBase.__textureInternalFormat;
+			var format = TextureBase.__textureFormat;
 			
-			gl.bindTexture (gl.TEXTURE_2D, tileset.bitmapData.__texture);
+			gl.bindTexture (gl.TEXTURE_2D, texture);
 			
 			for(i in 0...newRects.length)
 			{
 				var r = newRects[i];
-				var newFrame = newFrames[i];
-				
-				#if html5
-				
-				if(newFrame.image.type == DATA)
-				{
-					gl.texSubImage2D(gl.TEXTURE_2D, 0, Std.int(r.x), Std.int(r.y), Std.int(r.width), Std.int(r.height), format, gl.UNSIGNED_BYTE, newFrame.image.data);
-				}
-				else
-				{
-					(gl:WebGLContext).texSubImage2D(gl.TEXTURE_2D, 0, Std.int(r.x), Std.int(r.y), Std.int(r.width), Std.int(r.height), format, gl.UNSIGNED_BYTE, newFrame.image.src);
-				}
-				
-				#else
-				
-				gl.texSubImage2D(gl.TEXTURE_2D, 0, Std.int(r.x), Std.int(r.y), Std.int(r.width), Std.int(r.height), format, gl.UNSIGNED_BYTE, newFrame.image.data);
-				
-				#end
+				var frameData = frameDatas[i];
+				gl.texSubImage2D(gl.TEXTURE_2D, 0, Std.int(r.x), Std.int(r.y), Std.int(r.width), Std.int(r.height), format, gl.UNSIGNED_BYTE, frameData);
 			}
 			
-			tileset.bitmapData.__textureVersion = tileset.bitmapData.image.version;
+			//tileset.bitmapData.__textureVersion = tileset.bitmapData.image.version;
 		}
 		
 		//saveImage(tileset.bitmapData, "out-" + offset + ".png");
 		
 		return offset;
-	}*/
+	}
 }
 #end
