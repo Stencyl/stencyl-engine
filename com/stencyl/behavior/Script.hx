@@ -2184,7 +2184,7 @@ class Script
 		var tileLayer = new TileLayer(ID, engine.scene, cols, rows);
 		tileLayer.name = layerName;
 		
-		var layer:Layer = new Layer(ID, layerName, order, 1.0, 1.0, 1.0, BlendMode.NORMAL, tileLayer);
+		var layer:Layer = new Layer(ID, layerName, order, 1.0, 1.0, 1.0, BlendMode.NORMAL, tileLayer #if use_actor_tilemap, engine.scene.sceneWidth, engine.scene.sceneHeight #end);
 		
 		engine.insertLayer(layer, order);
 	}

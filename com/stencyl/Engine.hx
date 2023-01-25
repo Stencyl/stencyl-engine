@@ -968,7 +968,7 @@ class Engine
 		master.name = "Master";
 		root.addChild(master);
 		
-		hudLayer = new Layer(-1, "__hud__", -1, 0.0, 0.0, 1.0, BlendMode.NORMAL, null);
+		hudLayer = new Layer(-1, "__hud__", -1, 0.0, 0.0, 1.0, BlendMode.NORMAL, null #if use_actor_tilemap, 0, 0 #end);
 		hudLayer.name = "HUD Layer";
 		root.addChild(hudLayer);
 		
@@ -1084,6 +1084,11 @@ class Engine
 		#end
 		
 		scene.load();
+
+		#if use_actor_tilemap
+		hudLayer.actorContainer.width = scene.sceneWidth;
+		hudLayer.actorContainer.height = scene.sceneHeight;
+		#end
 
 		#if !flash
 		{
@@ -1706,7 +1711,7 @@ class Engine
 		{
 			//For scenes with no scene data
 			var tileLayer = new TileLayer(0, scene, Std.int(scene.sceneWidth / scene.tileWidth), Std.int(scene.sceneHeight / scene.tileHeight));
-			var layer = new Layer(0, "default", 0, 1.0, 1.0, 1.0, BlendMode.NORMAL, tileLayer);
+			var layer = new Layer(0, "default", 0, 1.0, 1.0, 1.0, BlendMode.NORMAL, tileLayer #if use_actor_tilemap, scene.sceneWidth, scene.sceneHeight #end);
 			layers.set(layer.ID, layer);
 		}
 
