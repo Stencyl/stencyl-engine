@@ -3558,7 +3558,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		if(currAnimation != null)
 			currAnimation.filter = bitmapFilters;
 		#else
-		filters = filters.concat(filter);
+		//filters = filters.concat(filter);
 		#end
 	}
 	
@@ -3569,7 +3569,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		if(currAnimation != null)
 			currAnimation.filter = null;
 		#else
-		filters = null;
+		//filters = null;
 		#end
 	}
 	
