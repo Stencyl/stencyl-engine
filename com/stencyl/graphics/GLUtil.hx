@@ -9,8 +9,10 @@ import openfl.display.BitmapData;
 import openfl.display.OpenGLRenderer;
 import openfl.display3D.Context3D;
 import openfl.display3D.textures.RectangleTexture;
+import openfl.display3D.textures.TextureBase;
 
 @:access(openfl.display.BitmapData)
+@:access(openfl.display3D.textures.TextureBase)
 
 class GLUtil
 {
@@ -38,7 +40,7 @@ class GLUtil
 		if(textureMaxSize > MAX_TEXTURE_CAP)
 			textureMaxSize = MAX_TEXTURE_CAP;
 		
-		if(BitmapData.__supportsBGRA == null)
+		if(TextureBase.__supportsBGRA == null)
 		{
 			new BitmapData(1, 1, true, 0).getTexture(context3D);
 		}

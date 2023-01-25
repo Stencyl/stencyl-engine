@@ -7,12 +7,14 @@ import lime.graphics.GLRenderContext;
 
 import openfl.display.BitmapData;
 import openfl.display.Tileset;
+import openfl.display3D.textures.TextureBase;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tileset)
+@:access(openfl.display3D.textures.TextureBase)
 
 class DynamicTileset
 {
@@ -28,7 +30,7 @@ class DynamicTileset
 		trace("Creating new dynamic tileset (size: " + GLUtil.textureMaxSize + ")");
 		
 		tileset = new Tileset(GLUtil.createNewTexture(GLUtil.textureMaxSize));
-		texture = tileset.bitmapData.__texture;
+		texture = @:privateAccess tileset.bitmapData.__texture.__textureID;
 		point = new Point(0, 0);
 		nextLine = 0;
 	}
@@ -89,8 +91,8 @@ class DynamicTileset
 		//trace(newRects);
 		
 		var gl = GLUtil.gl;
-		var internalFormat = BitmapData.__textureInternalFormat;
-		var format = BitmapData.__textureFormat;
+		var internalFormat = TextureBase.__textureInternalFormat;
+		var format = TextureBase.__textureFormat;
 		
 		gl.bindTexture (gl.TEXTURE_2D, texture);
 		
