@@ -174,21 +174,25 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		if(Config.disposeImages && !model.checkImageReadable())
 			return;
 		
-		var bitmapData;
-		
+		var bitmapData = model.imgData;
+		var srcXOffset = 0;
+		var srcYOffset = 0;
+
 		if (g.alpha == 1)
 		{
-			bitmapData = model.frames[frameIndex];
+			srcXOffset = frameIndex % model.framesAcross * get_width();
+			srcYOffset = Std.int(frameIndex / model.framesAcross) * get_height();
 		}
 		else
 		{
-			var orig = model.frames[frameIndex];
-			bitmapData = new BitmapData(orig.width, orig.height, true, 0);
+			bitmapData = new BitmapData(get_width(), get_height(), true, 0);
 			var colorTransformation = new openfl.geom.ColorTransform(1,1,1,g.alpha,0,0,0,0);
-			bitmapData.draw(orig, null, colorTransformation);
+			bitmapData.draw(model.imgData, new Matrix(1, 0, 0, 1, -srcXOffset, -srcYOffset), colorTransformation);
+			srcXOffset = 0;
+			srcYOffset = 0;
 		}
 
-		g.graphics.beginBitmapFill(bitmapData, new Matrix(1, 0, 0, 1, x, y));
+		g.graphics.beginBitmapFill(bitmapData, new Matrix(1, 0, 0, 1, x - srcXOffset, y - srcYOffset));
 		g.graphics.drawRect(x, y, bitmapData.width, bitmapData.height);
  	 	g.graphics.endFill();
   	}
@@ -236,7 +240,12 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		if(Config.disposeImages && !model.checkImageReadable())
 			return Animation.UNLOADED;
 		
-		return model.frames[frameIndex];
+		var srcXOffset = frameIndex % model.framesAcross * get_width();
+		var srcYOffset = Std.int(frameIndex / model.framesAcross) * get_height();
+		var bitmapData = new BitmapData(get_width(), get_height(), true, 0);
+		bitmapData.draw(model.imgData, new Matrix(1, 0, 0, 1, -srcXOffset, -srcYOffset));
+
+		return bitmapData;
 	}
 	
 	public function framesUpdated():Void
