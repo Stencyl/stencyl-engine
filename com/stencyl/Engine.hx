@@ -1417,6 +1417,19 @@ class Engine
 		}
 		for(layer in interactiveLayers)
 		{
+			#if use_actor_tilemap
+			for(i in 0...layer.actorContainer.numTiles)
+			{
+				var actor:Actor = cast layer.actorContainer.getTileAt(i);
+				var actorInstance = scene.actors.get(actor.ID);
+				while(actorInstance.orderInLayer != i)
+				{
+					layer.actorContainer.swapTilesAt(i, actorInstance.orderInLayer);
+					actor = cast layer.actorContainer.getTileAt(i);
+					actorInstance = scene.actors.get(actor.ID);
+				}
+			}
+			#else
 			for(i in 0...layer.actorContainer.numChildren)
 			{
 				var actor:Actor = cast layer.actorContainer.getChildAt(i);
@@ -1428,6 +1441,7 @@ class Engine
 					actorInstance = scene.actors.get(actor.ID);
 				}
 			}
+			#end
 		}
 	}
 	
