@@ -41,8 +41,8 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		this.durations = model.durations;
 		numFrames = durations.length;
 		
-		x = -width/2 * Engine.SCALE;
-		y = -height/2 * Engine.SCALE;
+		x = -width/2;
+		y = -height/2;
 	}
 	
 	public inline function update(elapsedTime:Float)
@@ -254,8 +254,8 @@ class SheetAnimation extends Tile implements AbstractAnimation
 			frameWidth = Std.int(width);
 			frameHeight = Std.int(height);
 			
-			x = -width/2 * Engine.SCALE;
-			y = -height/2 * Engine.SCALE;
+			x = -width/2;
+			y = -height/2;
 
 			var tiles = [for(i in 0...numFrames) new Rectangle(width * (i % across), Math.floor(i / across) * height, width, height)];
 			
