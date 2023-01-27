@@ -1,8 +1,8 @@
 package com.stencyl.graphics;
 
 import openfl.display.BitmapData;
-#if !use_actor_tilemap
 import openfl.display.Bitmap;
+#if !use_actor_tilemap
 import openfl.display.Sprite;
 #else
 import openfl.display.Tile;
@@ -33,17 +33,50 @@ class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #en
 	
 	@:isVar public var tweenProps (get, null):BitmapTweenProperties;
 
-	public function new(img:BitmapData)
+	public function new(?img:Bitmap, ?imgData:BitmapData, ?imgTile:Tile)
 	{
 		super();
 		
 		offsetX = 0;
 		offsetY = 0;
 		
+		if(img != null)
+		{
+			initializeFromBitmap(img);
+		}
+		else if(imgData != null)
+		{
+			initializeFromBitmapData(imgData);
+		}
+		else if(imgTile != null)
+		{
+			initializeFromTile(imgTile);
+		}
+		else
+		{
+			trace("Couldn't initialize bitmap wrapper");
+		}
+	}
+
+	private function initializeFromBitmap(img:Bitmap)
+	{
 		#if !use_actor_tilemap
 
-		this.img = new Bitmap(img);
-		addChild(this.img);
+		this.img = img;
+		addChild(img);
+
+		#else
+
+		initializeFromBitmapData(img.bitmapData);
+
+		#end
+	}	
+
+	private function initializeFromBitmapData(img:BitmapData)
+	{
+		#if !use_actor_tilemap
+
+		initializeFromBitmap(new Bitmap(img));
 
 		#else
 
@@ -67,13 +100,21 @@ class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #en
 			}
 		}
 
-		this.img = new Tile();
-		this.img.tileset = tilesetMapping.tileset.tileset;
-		this.img.id = tilesetMapping.frameIndexOffset;
-		addTile(this.img);
+		var tile = new Tile();
+		tile.tileset = tilesetMapping.tileset.tileset;
+		tile.id = tilesetMapping.frameIndexOffset;
+		initializeFromTile(tile);
 
 		#end
 	}
+
+	#if use_actor_tilemap
+	private function initializeFromTile(tile:Tile)
+	{
+		this.img = tile;
+		addTile(this.img);
+	}
+	#end
 
 	public function set_imgX(x:Float):Float
 	{
