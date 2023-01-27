@@ -2,10 +2,11 @@ package com.stencyl.graphics;
 
 #if use_actor_tilemap
 
+import com.stencyl.graphics.BitmapWrapper;
 import com.stencyl.models.actor.Animation;
 import com.stencyl.models.Actor;
-import openfl.display.BitmapData;
 
+import openfl.display.BitmapData;
 import openfl.display.Tile;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
@@ -246,6 +247,14 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		bitmapData.draw(model.imgData, new Matrix(1, 0, 0, 1, -srcXOffset, -srcYOffset));
 
 		return bitmapData;
+	}
+
+	public function getCurrentImageInstance():BitmapWrapper
+	{
+		var tile = new Tile();
+		tile.tileset = tileset;
+		tile.id = id;
+		return new BitmapWrapper(tile);
 	}
 	
 	public function framesUpdated():Void

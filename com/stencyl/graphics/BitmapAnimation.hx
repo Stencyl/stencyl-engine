@@ -2,6 +2,7 @@ package com.stencyl.graphics;
 
 #if !use_actor_tilemap
 
+import com.stencyl.graphics.BitmapWrapper;
 import com.stencyl.models.actor.Animation;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -258,6 +259,11 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 			return Animation.UNLOADED;
 		
 		return bitmapData;
+	}
+
+	public function getCurrentImageInstance():BitmapWrapper
+	{
+		return new BitmapWrapper(bitmapData);
 	}
 	
 	public inline function activate() {}
