@@ -1,5 +1,7 @@
 package com.stencyl.graphics;
 
+#if !use_actor_tilemap
+
 import com.stencyl.models.actor.Animation;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -260,3 +262,5 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	
 	public inline function activate() {}
 }
+
+#end

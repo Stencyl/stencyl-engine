@@ -167,7 +167,7 @@ class Animation
 			for(frame in frames)
 			{
 				com.stencyl.graphics.GLUtil.uploadTexture(frame, true);
-				//@:privateAccess trace("Uploaded texture for " + parent.name + " frame " + (i++) + " to gpu texture " + frame.__texture.id);
+				//@:privateAccess trace("Uploaded texture for " + parent.name + " frame " + (i++) + " to gpu texture " + frame.__texture.__textureID);
 			}
 		}
 		#end
@@ -231,7 +231,7 @@ class Animation
 		
 		Engine.engine.loadedAnimations.push(this);
 		
-		//@:privateAccess trace("Uploaded textures for " + parent.name + " (" + frames.length + " frames) to gpu texture " + tileset.tileset.bitmapData.__texture.id);
+		//@:privateAccess trace("Uploaded textures for " + parent.name + " (" + frames.length + " frames) to gpu texture " + tileset.tileset.bitmapData.__texture.__textureID);
 		
 		//trace(Config.disposeImages);
 		

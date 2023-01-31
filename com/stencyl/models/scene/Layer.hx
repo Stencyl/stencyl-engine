@@ -28,7 +28,7 @@ class Layer extends RegularLayer
 	public var cameraOldX:Float = -1;
 	public var cameraOldY:Float = -1;
 	
-	public function new(ID:Int, name:String, order:Int, scrollFactorX:Float, scrollFactorY:Float, opacity:Float, blendMode:BlendMode, tileLayer:TileLayer)
+	public function new(ID:Int, name:String, order:Int, scrollFactorX:Float, scrollFactorY:Float, opacity:Float, blendMode:BlendMode, tileLayer:TileLayer #if use_actor_tilemap , sceneWidth:Int, sceneHeight:Int #end)
 	{
 		super(ID, name, order, scrollFactorX, scrollFactorY, opacity, blendMode);
 		
@@ -39,7 +39,7 @@ class Layer extends RegularLayer
 			tiles.blendMode = blendMode;
 		}
 
-		actorContainer = new ActorLayer(#if (use_actor_tilemap) 0, 0, null, Config.antialias #end);
+		actorContainer = new ActorLayer(#if (use_actor_tilemap) sceneWidth, sceneHeight, null, Config.antialias #end);
 		actorContainer.name = name + " - ActorLayer";
 		#if (use_actor_tilemap) actorContainer.tileColorTransformEnabled = false; #end
 		overlay = new Sprite();

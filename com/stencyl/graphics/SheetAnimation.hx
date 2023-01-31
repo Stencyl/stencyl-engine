@@ -29,9 +29,6 @@ class SheetAnimation extends Tile implements AbstractAnimation
 	
 	public var model(default, null):Animation;
 	
-	public var width(get, never):Int;
-	public var height(get, never):Int;
-	
 	public function new(model:Animation)
 	{
 		super();
@@ -44,8 +41,8 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		this.durations = model.durations;
 		numFrames = durations.length;
 		
-		x = -width/2 * Engine.SCALE;
-		y = -height/2 * Engine.SCALE;
+		x = -width/2;
+		y = -height/2;
 	}
 	
 	public inline function update(elapsedTime:Float)
@@ -257,8 +254,8 @@ class SheetAnimation extends Tile implements AbstractAnimation
 			frameWidth = Std.int(width);
 			frameHeight = Std.int(height);
 			
-			x = -width/2 * Engine.SCALE;
-			y = -height/2 * Engine.SCALE;
+			x = -width/2;
+			y = -height/2;
 
 			var tiles = [for(i in 0...numFrames) new Rectangle(width * (i % across), Math.floor(i / across) * height, width, height)];
 			
@@ -271,12 +268,12 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		*/
 	}
 	
-	private function get_width():Int
+	private override function get_width():Int
 	{
 		return Std.int(model.frameWidth * Engine.SCALE);
 	}
 	
-	private function get_height():Int
+	private override function get_height():Int
 	{
 		return Std.int(model.frameHeight * Engine.SCALE);
 	}

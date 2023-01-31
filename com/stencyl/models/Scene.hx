@@ -446,7 +446,7 @@ class Scene
 						tileLayer = new TileLayer(ID, this, Std.int(Math.floor(sceneWidth / tileWidth)), Std.int(Math.floor(sceneHeight / tileHeight)));
 					tileLayer.name = name;
 
-					var layer:Layer = new Layer(ID, name, order, scrollFactorX, scrollFactorY, opacity, blendMode, tileLayer);
+					var layer:Layer = new Layer(ID, name, order, scrollFactorX, scrollFactorY, opacity, blendMode, tileLayer #if use_actor_tilemap, sceneWidth, sceneHeight #end);
 
 					map.set(layer.ID, layer);
 				}
