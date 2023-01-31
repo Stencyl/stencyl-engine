@@ -1,37 +1,120 @@
 package com.stencyl.graphics;
 
+import openfl.display.BitmapData;
 import openfl.display.Bitmap;
+#if !use_actor_tilemap
 import openfl.display.Sprite;
+#else
+import openfl.display.Tile;
+import openfl.display.TileContainer;
+#end
 import openfl.geom.Point;
-import openfl.geom.Matrix;
 
 import com.stencyl.Engine;
 import com.stencyl.utils.motion.*;
 import com.stencyl.utils.Utils;
 
-class BitmapWrapper extends Sprite implements EngineScaleUpdateListener
+class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #end implements EngineScaleUpdateListener
 {
+	#if !use_actor_tilemap
 	public var img:Bitmap;
+	#else
+	public var img:Tile;
+	#end
 
 	private var offsetX:Float;
 	private var offsetY:Float;
 
 	public var cacheParentAnchor:Point = Utils.zero;
-
+	
 	@:isVar public var smoothing (get, set):Bool;
 	@:isVar public var imgX (get, set):Float;
 	@:isVar public var imgY (get, set):Float;
 	
 	@:isVar public var tweenProps (get, null):BitmapTweenProperties;
 
-	public function new(img:Bitmap)
+	public function new(?img:Bitmap, ?imgData:BitmapData, ?imgTile:Tile)
 	{
 		super();
-		this.img = img;
+		
 		offsetX = 0;
 		offsetY = 0;
-		addChild(img);
+		
+		if(img != null)
+		{
+			initializeFromBitmap(img);
+		}
+		else if(imgData != null)
+		{
+			initializeFromBitmapData(imgData);
+		}
+		else if(imgTile != null)
+		{
+			initializeFromTile(imgTile);
+		}
+		else
+		{
+			trace("Couldn't initialize bitmap wrapper");
+		}
 	}
+
+	private function initializeFromBitmap(img:Bitmap)
+	{
+		#if !use_actor_tilemap
+
+		this.img = img;
+		addChild(img);
+
+		#else
+
+		initializeFromBitmapData(img.bitmapData);
+
+		#end
+	}	
+
+	private function initializeFromBitmapData(img:BitmapData)
+	{
+		#if !use_actor_tilemap
+
+		initializeFromBitmap(new Bitmap(img));
+
+		#else
+
+		var e = Engine.engine;
+		var tilesetMapping = e.loadedBitmaps.get(img);
+		if(tilesetMapping == null)
+		{
+			tilesetMapping = new BitmapTilesetMapping();
+			e.loadedBitmaps.set(img, tilesetMapping);
+		}
+		if(!tilesetMapping.tilesetInitialized)
+		{
+			while(e.nextTileset >= e.actorTilesets.length)
+			{
+				e.actorTilesets.push(new DynamicTileset());
+			}
+			if(!tilesetMapping.initializeInTileset(img, e.actorTilesets[e.nextTileset]))
+			{
+				e.actorTilesets.push(new DynamicTileset());
+				tilesetMapping.initializeInTileset(img, e.actorTilesets[++e.nextTileset]);
+			}
+		}
+
+		var tile = new Tile();
+		tile.tileset = tilesetMapping.tileset.tileset;
+		tile.id = tilesetMapping.frameIndexOffset;
+		initializeFromTile(tile);
+
+		#end
+	}
+
+	#if use_actor_tilemap
+	private function initializeFromTile(tile:Tile)
+	{
+		this.img = tile;
+		addTile(this.img);
+	}
+	#end
 
 	public function set_imgX(x:Float):Float
 	{
@@ -59,12 +142,20 @@ class BitmapWrapper extends Sprite implements EngineScaleUpdateListener
 
 	public function set_smoothing(smoothing:Bool):Bool
 	{
+		#if !use_actor_tilemap
 		return img.smoothing = smoothing;
+		#else
+		return this.smoothing = smoothing;
+		#end
 	}
 	
 	public function get_smoothing():Bool
 	{
+		#if !use_actor_tilemap
 		return img.smoothing;
+		#else
+		return this.smoothing;
+		#end
 	}
 
 	public function setOrigin(x:Float, y:Float):Void

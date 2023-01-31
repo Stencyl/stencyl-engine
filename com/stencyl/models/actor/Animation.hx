@@ -22,7 +22,11 @@ class Animation
 	public var looping:Bool;
 	public var sync:Bool;
 	public var durations:Array<Int>;
+	#if use_actor_tilemap
+	public var imgData:BitmapData;
+	#else
 	public var frames:Array<BitmapData>;
+	#end
 	public var frameWidth:Int; //logical size
 	public var frameHeight:Int; //logical size
 	
@@ -81,7 +85,11 @@ class Animation
 		//Graceful fallback - just a blank image that is numFrames across in px
 		if(UNLOADED == null)
 			UNLOADED = new BitmapData(1,1);
+		#if use_actor_tilemap
+		this.imgData = UNLOADED;
+		#else
 		this.frames = [for(i in 0...frameCount) UNLOADED];
+		#end
 		frameWidth = Std.int(imgWidth/framesAcross);
 		frameHeight = Std.int(imgHeight/framesDown);
 		
@@ -96,7 +104,11 @@ class Animation
 		
 		if(parent == null)
 		{
+			#if use_actor_tilemap
+			imgData = UNLOADED;
+			#else
 			frames = [UNLOADED];
+			#end
 		}
 		else
 		{
@@ -134,10 +146,17 @@ class Animation
 		
 		if(imgData == null)
 		{
+			#if use_actor_tilemap
+			this.imgData = UNLOADED;
+			#else
 			frames = [for(i in 0...frameCount) UNLOADED];
+			#end
 			return;
 		}
 		
+		#if use_actor_tilemap
+		this.imgData = imgData;
+		#else
 		if(frameCount == 1)
 		{
 			frames[0] = imgData;
@@ -159,6 +178,7 @@ class Animation
 			
 			imgData.dispose();
 		}
+		#end
 		
 		#if ((lime_opengl || lime_opengles || lime_webgl) && !use_actor_tilemap)
 		if(Config.disposeImages && parent != null && !parent.readableImages)
@@ -180,6 +200,11 @@ class Animation
 		if(!graphicsLoaded)
 			return;
 		
+		#if use_actor_tilemap
+		if(imgData.readable)
+			imgData.dispose();
+		imgData = UNLOADED;
+		#else
 		for(i in 0...frameCount)
 		{
 			if(frames[i].readable)
@@ -187,14 +212,20 @@ class Animation
 			
 			frames[i] = UNLOADED;
 		}
+		#end
 		
 		graphicsLoaded = false;
 	}
 	
 	public function checkImageReadable():Bool
 	{
+		#if use_actor_tilemap
+		if(imgData.readable)
+			return true;
+		#else
 		if(frames[0].readable)
 			return true;
+		#end
 		
 		#if stencyltools
 		/*com.stencyl.utils.ToolsetInterface.instance.sendData
@@ -225,22 +256,19 @@ class Animation
 			return false;
 		}
 		
-		frameIndexOffset = tileset.addFrames(frames);
+		frameIndexOffset = tileset.addFramesFromStrip(imgData, Std.int(frameWidth * Engine.SCALE), Std.int(frameHeight * Engine.SCALE), framesAcross, frameCount);
 		this.tileset = tileset;
 		tilesetInitialized = true;
 		
 		Engine.engine.loadedAnimations.push(this);
 		
-		//@:privateAccess trace("Uploaded textures for " + parent.name + " (" + frames.length + " frames) to gpu texture " + tileset.tileset.bitmapData.__texture.__textureID);
+		//@:privateAccess trace("Uploaded textures for " + parent.name + " (" + frameCount + " frames) to gpu texture " + tileset.tileset.bitmapData.__texture.__textureID);
 		
 		//trace(Config.disposeImages);
 		
 		if(Config.disposeImages && parent != null && !parent.readableImages)
 		{
-			for(frame in frames)
-			{
-				com.stencyl.graphics.GLUtil.disposeSoftwareBuffer(frame);
-			}
+			com.stencyl.graphics.GLUtil.disposeSoftwareBuffer(imgData);
 		}
 		
 		return true;

@@ -58,6 +58,9 @@ class GLUtil
 	
 	public static function disposeSoftwareBuffer(img:BitmapData):Void
 	{
+		@:privateAccess img.image.buffer.__srcCanvas = null; //Browser.document.createElement("canvas")
+		@:privateAccess img.image.buffer.__srcContext = null; //js.Syntax.code('buffer.__srcCanvas.getContext ("2d", { alpha: false })');
+															  //buffer.__srcCanvas.getContext("2d");
 		img.image = null;
 		img.readable = false;
 		img.__surface = null;

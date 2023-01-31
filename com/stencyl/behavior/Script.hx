@@ -2280,72 +2280,82 @@ class Script
 	
 	public static function setOrderForImage(img:BitmapWrapper, order:Int)
 	{
-		#if !use_actor_tilemap
 		if(img != null && img.parent != null)
 		{
+			#if !use_actor_tilemap
 			if(order >= 0 && order < img.parent.numChildren)
 			{
 				img.parent.setChildIndex(img, order);
 			}
+			#else
+			if(order >= 0 && order < img.parent.numTiles)
+			{
+				img.parent.setTileIndex(img, order);
+			}
+			#end
 		}
-		#end
 	}
 
 	public static function getOrderForImage(img:BitmapWrapper)
 	{
-		#if !use_actor_tilemap
 		if(img != null && img.parent != null)
 		{
+			#if !use_actor_tilemap
 			return img.parent.getChildIndex(img);
+			#else
+			return img.parent.getTileIndex(img);
+			#end
 		}
-		#end
 		
 		return -1;
 	}
 	
 	public static function bringImageBack(img:BitmapWrapper)
 	{
-		#if !use_actor_tilemap
 		if(img != null && img.parent != null)
 		{
+			#if !use_actor_tilemap
 			setOrderForImage(img, img.parent.getChildIndex(img) - 1);
+			#else
+			setOrderForImage(img, img.parent.getTileIndex(img) - 1);
+			#end
 		}
-		#end
 	}
 	
 	public static function bringImageForward(img:BitmapWrapper)
 	{
-		#if !use_actor_tilemap
 		if(img != null && img.parent != null)
 		{
+			#if !use_actor_tilemap
 			setOrderForImage(img, img.parent.getChildIndex(img) + 1);
+			#else
+			setOrderForImage(img, img.parent.getTileIndex(img) + 1);
+			#end
 		}
-		#end
 	}
 	
 	public static function bringImageToBack(img:BitmapWrapper)
 	{
-		#if !use_actor_tilemap
 		if(img != null && img.parent != null)
 		{
 			setOrderForImage(img, 0);
 		}
-		#end
 	}
 	
 	public static function bringImageToFront(img:BitmapWrapper)
 	{
-		#if !use_actor_tilemap
 		if(img != null && img.parent != null)
 		{
+			#if !use_actor_tilemap
 			setOrderForImage(img, img.parent.numChildren - 1);
+			#else
+			setOrderForImage(img, img.parent.numTiles - 1);
+			#end
 		}
-		#end
 	}
 	
 	public static function attachImageToActor(img:BitmapWrapper, a:Actor, x:Int, y:Int, pos:Int = 1)
 	{
-		#if !use_actor_tilemap
 		if(img != null)
 		{
 			if(img.parent != null) removeImage(img);
@@ -2353,13 +2363,22 @@ class Script
 			//Behind the Actor - Send to the very back.
 			if(pos == 2)
 			{
+				#if !use_actor_tilemap
 				a.addChild(img);
 				a.setChildIndex(img, 0);
+				#else
+				a.addTile(img);
+				a.setTileIndex(img, 0);
+				#end
 			}
 		
 			else
 			{
+				#if !use_actor_tilemap
 				a.addChild(img);
+				#else
+				a.addTile(img);
+				#end
 			}
 			
 			img.cacheParentAnchor = a.cacheAnchor;
@@ -2369,7 +2388,6 @@ class Script
 
 			a.attachedImages.push(img);
 		}
-		#end
 	}
 	
 	//Will be "fixed" like an HUD
@@ -2379,7 +2397,11 @@ class Script
 		{
 			if(img.parent != null) removeImage(img);
 			
+			#if !use_actor_tilemap
 			engine.hudLayer.addChild(img);
+			#else
+			engine.hudLayer.getFrontImageLayer().addTile(img);
+			#end
 			engine.hudLayer.attachedImages.push(img);
 			img.imgX = x;
 			img.imgY = y;
@@ -2396,11 +2418,19 @@ class Script
 			//Behind all Actors & Tiles in this layer.
 			if(pos == 2)
 			{
+				#if !use_actor_tilemap
 				layer.addChildAt(img, 0);
+				#else
+				layer.getBackImageLayer().addTileAt(img, 0);
+				#end
 			}
 			else
 			{
+				#if !use_actor_tilemap
 				layer.addChild(img);
+				#else
+				layer.getFrontImageLayer().addTile(img);
+				#end
 			}
 			
 			if (layer.attachedImages.indexOf(img) == -1)
@@ -2416,13 +2446,17 @@ class Script
 	
 	public static function removeImage(img:BitmapWrapper)
 	{
-		if(img != null #if (use_actor_tilemap) && img.parent != null #end)
+		if(img != null && img.parent != null)
 		{
 			if(Std.isOfType(img.parent, Actor))
 				cast(img.parent, Actor).attachedImages.remove(img);
 			else if(Std.isOfType(img.parent, Layer))
 				cast(img.parent, Layer).attachedImages.remove(img);
+			#if (use_actor_tilemap)
+			img.parent.removeTile(img);
+			#else
 			img.parent.removeChild(img);
+			#end
 		}
 	}
 	
@@ -2805,18 +2839,22 @@ class Script
 	
 	public static function setFilterForImage(img:BitmapWrapper, filter:BitmapFilter)
 	{
+		#if !use_actor_tilemap
 		if(img != null)
 		{
 			img.filters = img.filters.concat([filter]);
 		}
+		#end
 	}
 	
 	public static function clearFiltersForImage(img:BitmapWrapper)
 	{
+		#if !use_actor_tilemap
 		if(img != null)
 		{
 			img.filters = [];
 		}
+		#end
 	}
 	
 	//Base64 encodes raw image data. Does NOT convert to a PNG.
