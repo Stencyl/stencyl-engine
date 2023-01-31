@@ -10,11 +10,21 @@ import openfl.geom.ColorTransform;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
+#if use_actor_tilemap
+import openfl.display.Tilemap;
+#end
 
 import com.stencyl.models.scene.layers.RegularLayer;
 
 class Layer extends RegularLayer
 {
+	#if use_actor_tilemap
+	public var frontImageLayer:Tilemap;
+	public var backImageLayer:Tilemap;
+	private var _width:Int;
+	private var _height:Int;
+	#end
+
 	//Tiles
 	public var tiles:TileLayer;
 	//Actors
@@ -28,7 +38,7 @@ class Layer extends RegularLayer
 	public var cameraOldX:Float = -1;
 	public var cameraOldY:Float = -1;
 	
-	public function new(ID:Int, name:String, order:Int, scrollFactorX:Float, scrollFactorY:Float, opacity:Float, blendMode:BlendMode, tileLayer:TileLayer #if use_actor_tilemap , sceneWidth:Int, sceneHeight:Int #end)
+	public function new(ID:Int, name:String, order:Int, scrollFactorX:Float, scrollFactorY:Float, opacity:Float, blendMode:BlendMode, tileLayer:TileLayer #if use_actor_tilemap , width:Int, height:Int #end)
 	{
 		super(ID, name, order, scrollFactorX, scrollFactorY, opacity, blendMode);
 		
@@ -39,7 +49,7 @@ class Layer extends RegularLayer
 			tiles.blendMode = blendMode;
 		}
 
-		actorContainer = new ActorLayer(#if (use_actor_tilemap) sceneWidth, sceneHeight, null, Config.antialias #end);
+		actorContainer = new ActorLayer(#if (use_actor_tilemap) Std.int(width * Engine.SCALE), Std.int(height * Engine.SCALE), null, Config.antialias #end);
 		actorContainer.name = name + " - ActorLayer";
 		#if (use_actor_tilemap) actorContainer.tileColorTransformEnabled = false; #end
 		overlay = new Sprite();
@@ -50,6 +60,11 @@ class Layer extends RegularLayer
 		addChild(overlay);
 		
 		attachedImages = new Array<BitmapWrapper>();
+
+		#if (use_actor_tilemap)
+		_width = width;
+		_height = height;
+		#end
 	}
 
 	override public function updatePosition(x:Float, y:Float, elapsedTime:Float)
@@ -94,19 +109,79 @@ class Layer extends RegularLayer
 		cameraOldX = tempX;
 		cameraOldY = tempY;
 	}
+
+	#if use_actor_tilemap
+	public function getFrontImageLayer():Tilemap
+	{
+		if(frontImageLayer == null)
+		{
+			frontImageLayer = new Tilemap(Std.int(_width * Engine.SCALE), Std.int(_height * Engine.SCALE), null, Config.antialias);
+			frontImageLayer.name = name + " - Front ImageLayer";
+			frontImageLayer.tileColorTransformEnabled = false;
+			addChild(frontImageLayer);
+		}
+		return frontImageLayer;
+	}
+
+	public function getBackImageLayer():Tilemap
+	{
+		if(backImageLayer == null)
+		{
+			backImageLayer = new Tilemap(Std.int(_width * Engine.SCALE), Std.int(_height * Engine.SCALE), null, Config.antialias);
+			backImageLayer.name = name + " - Back ImageLayer";
+			backImageLayer.tileColorTransformEnabled = false;
+			addChildAt(backImageLayer, 0);
+		}
+		return backImageLayer;
+	}
+
+	public function setSize(width:Int, height:Int):Void
+	{
+		_width = width;
+		_height = height;
+
+		var scaledWidth = Std.int(width * Engine.SCALE);
+		var scaledHeight = Std.int(height * Engine.SCALE);
+
+		actorContainer.width = scaledWidth;
+		actorContainer.height = scaledHeight;
+		if(frontImageLayer != null)
+		{
+			frontImageLayer.width = scaledWidth;
+			frontImageLayer.height = scaledHeight;
+		}
+		if(backImageLayer != null)
+		{
+			backImageLayer.width = scaledWidth;
+			backImageLayer.height = scaledHeight;
+		}
+	}
+	#end
 	
 	public function clear()
 	{
+		#if use_actor_tilemap
+		
+		for(b in attachedImages)
+		{
+			if(b.parent != null) b.parent.removeTile(b);
+		}
+		attachedImages = new Array<BitmapWrapper>();
+		
+		Utils.removeAllTiles(actorContainer);
+		if(frontImageLayer != null) Utils.removeAllTiles(frontImageLayer);
+		if(backImageLayer != null) Utils.removeAllTiles(backImageLayer);
+
+		#else
+		
 		for(b in attachedImages)
 		{
 			removeChild(b);
 		}
 		attachedImages = new Array<BitmapWrapper>();
 		
-		#if use_actor_tilemap
-		Utils.removeAllTiles(actorContainer);
-		#else
 		Utils.removeAllChildren(actorContainer);
+		
 		#end
 		
 		overlay.graphics.clear();

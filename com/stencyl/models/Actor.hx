@@ -1408,14 +1408,16 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 
 	public function removeAttachedImages()
 	{
-		#if !use_actor_tilemap
 		for(b in attachedImages)
 		{
 			b.cacheParentAnchor = Utils.zero;
+			#if !use_actor_tilemap
 			removeChild(b);
+			#else
+			removeTile(b);
+			#end
 		}
 		attachedImages = new Array<BitmapWrapper>();
-		#end
 	}
 	
 	//*-----------------------------------------------
