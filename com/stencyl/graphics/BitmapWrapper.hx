@@ -33,7 +33,7 @@ class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #en
 	
 	@:isVar public var tweenProps (get, null):BitmapTweenProperties;
 
-	public function new(?img:Bitmap, ?imgData:BitmapData, ?imgTile:Tile)
+	public function new(?img:Bitmap, ?imgData:BitmapData #if use_actor_tilemap , ?imgTile:Tile #end)
 	{
 		super();
 		
@@ -48,10 +48,12 @@ class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #en
 		{
 			initializeFromBitmapData(imgData);
 		}
+		#if use_actor_tilemap
 		else if(imgTile != null)
 		{
 			initializeFromTile(imgTile);
 		}
+		#end
 		else
 		{
 			trace("Couldn't initialize bitmap wrapper");
