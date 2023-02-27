@@ -13,6 +13,7 @@ import com.stencyl.behavior.TimedTask;
 import com.stencyl.Config;
 import com.stencyl.Data;
 import com.stencyl.Engine;
+import com.stencyl.Extension;
 import com.stencyl.event.Event;
 import com.stencyl.event.EventDispatcher;
 import com.stencyl.event.EventMap;

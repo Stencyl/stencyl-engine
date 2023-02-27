@@ -264,6 +264,8 @@ class Engine
 	
 	public var g:G;
 	
+	public var extensions:Array<Extension>;
+	
 	
 	//*-----------------------------------------------
 	//* Model - Actors & Groups
@@ -774,8 +776,10 @@ class Engine
 	//* Init
 	//*-----------------------------------------------
 
-	public function new(root:Universal) 
+	public function new(root:Universal, extensions:Array<Extension>) 
 	{
+		this.extensions = extensions;
+		
 		#if !flash
 		if (stage.window.context.type == OPENGL || stage.window.context.type == OPENGLES || stage.window.context.type == WEBGL)
 		{
@@ -1032,6 +1036,11 @@ class Engine
 		com.stencyl.purchases.Purchases.initialize(#if android APIKeys.androidPublicKey #end);
 		#end
 		
+		for(extension in extensions)
+		{
+			extension.initialize();
+		}
+		
 		//Now, let's start
 		//enter = new FadeInTransition(0.5);
 		//enter.start();
@@ -1226,6 +1235,11 @@ class Engine
 		whenFullscreenChanged = new Event<()->Void>();
 		whenScreenSizeChanged = new Event<()->Void>();
 		whenGameScaleChanged = new Event<()->Void>();
+
+		for(extension in extensions)
+		{
+			extension.loadScene(scene);
+		}
 
 		if(!NO_PHYSICS)
 		{									
@@ -1966,6 +1980,11 @@ class Engine
 		
 		whenFocusChanged = null;
 		nativeListeners = null;
+
+		for(extension in extensions)
+		{
+			extension.cleanupScene();
+		}
 
 		Script.lastCreatedActor = null;
 		Script.lastCreatedJoint = null;
@@ -2709,6 +2728,11 @@ class Engine
 		
 		events.clear();
 		#end
+		
+		for(extension in extensions)
+		{
+			extension.preSceneUpdate();
+		}
 		
 		whenUpdated.dispatch(elapsedTime);
 		

@@ -4,6 +4,7 @@ import com.stencyl.APIKeys;
 import com.stencyl.Config;
 import com.stencyl.Data;
 import com.stencyl.Engine;
+import com.stencyl.Extension;
 import com.stencyl.Input;
 import com.stencyl.utils.motion.*;
 import com.stencyl.utils.Utils;
@@ -40,6 +41,7 @@ using StringTools;
 {
 	private static var app:Application;
 	private static var universal:Universal;
+	private static var extensions:Array<Extension>;
 	private static var originalHaxeTrace:Dynamic;
 	
 	public static function main ()
@@ -74,6 +76,11 @@ using StringTools;
 
 	public static function reloadGame()
 	{
+		for(extension in extensions)
+		{
+			extension.reloadGame();
+		}
+		
 		for(reloadListener in reloadListeners)
 		{
 			reloadListener();
@@ -285,6 +292,12 @@ using StringTools;
 
 		#end
 
+		extensions = [];
+		::if config.stencyl.extension___array::
+		::foreach (config.stencyl.extension___array)::extensions.push(new ::classname::());
+		::end::
+		::else::::if config.stencyl.extension::extensions.push(new ::config.stencyl.extension.classname::());::end::::end::
+		
 		@:privateAccess Engine.am = ApplicationMain;
 
 		var preloader = new StencylPreloader();
@@ -315,13 +328,13 @@ using StringTools;
 	{
 		#if flash
 		
-		new Engine(universal);
+		new Engine(universal, extensions);
 		
 		#else
 		
 		try {
 			
-			new Engine(universal);
+			new Engine(universal, extensions);
 			
 		} catch (e:Dynamic) {
 			
