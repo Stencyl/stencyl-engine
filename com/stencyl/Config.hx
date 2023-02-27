@@ -32,7 +32,7 @@ class Config
 	public static var disposeImages:Bool;
 	public static var keys:Map<String,Array<String>>;
 	public static var scales:Array<Scale>;
-
+	
 	public static var toolsetInterfaceHost:String;
 	public static var toolsetInterfacePort:Null<Int>;
 	public static var projectName:String;
@@ -46,7 +46,14 @@ class Config
 	public static var showConsole:Bool;
 	public static var debugDraw:Bool;
 	public static var disableBackButton:Bool;
-	
+
+	#if(flash || html5)
+	public static var preloader:com.stencyl.loader.PreloaderConfig;
+	#end
+	#if flash
+	public static var swfPreloader:com.stencyl.loader.SwfPreloaderConfig;
+	#end
+
 	private static var data:Dynamic;
 	private static var defines = com.stencyl.utils.HaxeDefines.getDefines();
 	
@@ -169,6 +176,25 @@ class Config
 		toolsetInterfacePort = data.toolsetInterfacePort;
 		projectName = data.projectName;
 		buildConfig = data.buildConfig;
+
+		#if(flash || html5)
+		if(data.preloader != null)
+		{
+			if(preloader == null) preloader = new com.stencyl.loader.PreloaderConfig();
+			preloader.setFields(data.preloader);
+		}
+		else
+			preloader = null;
+		#end
+		#if(flash)
+		if(data.swfPreloader != null)
+		{
+			if(swfPreloader == null) swfPreloader = new com.stencyl.loader.SwfPreloaderConfig();
+			swfPreloader.setFields(data.swfPreloader);
+		}
+		else
+			swfPreloader = null;
+		#end
 	}
 
 	private static function asMap<T>(anon:Dynamic):Map<String,T>

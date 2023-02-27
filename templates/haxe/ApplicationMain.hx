@@ -25,8 +25,6 @@ import openfl.events.UncaughtErrorEvent;
 import openfl.events.ErrorEvent;
 import openfl.errors.Error;
 
-import scripts.StencylPreloader;
-
 import haxe.Log in HaxeLog;
 import lime.utils.Log in LimeLog;
 
@@ -300,7 +298,7 @@ using StringTools;
 		
 		@:privateAccess Engine.am = ApplicationMain;
 
-		var preloader = new StencylPreloader();
+		var preloader = new ::APP_PRELOADER::();
 		preloader.onComplete.add(preloaderComplete);
 		app.preloader.onProgress.add(preloader.onUpdate);
 		app.preloader.onComplete.add(preloader.onLoaded);
