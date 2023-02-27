@@ -122,7 +122,7 @@ class Config
 							needsGameReload = true;
 
 						case "releaseMode", "useGciLogging":
-							Universal.setupTracing(!releaseMode);
+							Engine.reloadTracingConfig();
 
 						case "showConsole":
 							Engine.engine.setStatsVisible(showConsole);
@@ -132,7 +132,7 @@ class Config
 			}
 			if(needsGameReload)
 			{
-				Universal.reloadGame();
+				Engine.reloadGame();
 			}
 			else if(needsScreenReload)
 			{

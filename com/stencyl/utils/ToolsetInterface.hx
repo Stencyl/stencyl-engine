@@ -248,7 +248,7 @@ class ToolsetInterface
 
 				if(action == "Reset")
 				{
-					Universal.reloadGame();
+					Engine.reloadGame();
 				}
 				else if(action == "Load Scene")
 				{

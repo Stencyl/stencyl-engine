@@ -1,7 +1,6 @@
 package;
 
 import openfl.Lib;
-import openfl.display.OpenGLRenderer;
 import openfl.display.Sprite;
 import openfl.display.Stage;
 import openfl.display.StageAlign;
@@ -9,27 +8,12 @@ import openfl.display.StageScaleMode;
 import openfl.display.StageDisplayState;
 import openfl.display.Shape;
 import openfl.events.Event;
-import openfl.events.KeyboardEvent;
-import openfl.geom.Rectangle;
-import openfl.system.Capabilities;
-import openfl.ui.Keyboard;
 import lime.ui.Window;
 
-import com.stencyl.APIKeys;
 import com.stencyl.Config;
 import com.stencyl.Engine;
-import com.stencyl.Input;
 import com.stencyl.graphics.Scale;
 import com.stencyl.graphics.ScaleMode;
-#if stencyltools
-import com.stencyl.utils.ToolsetInterface;
-#end
-import com.stencyl.utils.Utils;
-import haxe.xml.Fast;
-import haxe.CallStack;
-
-import haxe.Log in HaxeLog;
-import lime.utils.Log in LimeLog;
 
 class Universal extends Sprite 
 {
@@ -68,26 +52,10 @@ class Universal extends Sprite
 	private function onAdded(event:Event):Void 
 	{
 		removeEventListener(Event.ADDED_TO_STAGE, onAdded);
-
-		initServices();
 		
 		maskLayer = new Shape();
 		maskLayer.name = "Mask Layer";
 		initScreen(Config.startInFullScreen);
-	}
-	
-	public function initServices()
-	{
-		//Newgrounds and other APIs
-		
-		#if flash
-		
-		if(APIKeys.newgroundsID != "")
-        {
-        	com.newgrounds.API.API.connect(root, APIKeys.newgroundsID, APIKeys.newgroundsKey);
-        }
-        
-        #end
 	}
 
 	//isFullScreen is used on Web/Desktop for full screen mode
@@ -388,82 +356,5 @@ class Universal extends Sprite
 		{
 			return 1;
 		}
-	}
-
-	@:access(openfl.display.Stage)
-	public function preloaderComplete():Void
-	{
-		#if flash
-		
-		new Engine(this);
-		
-		#else
-		
-		try {
-			
-			new Engine(this);
-			
-		} catch (e:Dynamic) {
-			
-			#if stencyltools
-			if(Config.useGciLogging)
-			{
-				trace(e + Utils.printExceptionstackIfAvailable());
-				ToolsetInterface.preloadedUpdate();
-			}
-			#end
-
-			stage.__handleError (e);
-			
-		}
-
-		#end
-	}
-	
-	//for Cppia, don't directly call ApplicationMain functions
-
-	private static var am:Class<Dynamic>;
-	private static var oldTrace:Dynamic;
-
-	public static function setupTracing(?forceEnable:Bool = false):Void
-	{
-		if(oldTrace == null)
-			oldTrace = HaxeLog.trace;
-
-		var enable = forceEnable || !Config.releaseMode;
-		
-		if(enable)
-		{
-			#if (flash9 || flash10)
-			HaxeLog.trace = function(v,?pos) { untyped __global__["trace"]("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"):",v); }
-			#elseif flash
-			HaxeLog.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
-			#else
-			HaxeLog.trace = oldTrace;
-			#end
-
-			#if stencyltools
-			if(Config.useGciLogging)
-				HaxeLog.trace = ToolsetInterface.gciTrace;
-			#end
-
-			LimeLog.level = VERBOSE;
-		}
-		else
-		{
-			HaxeLog.trace = function(v,?pos) { };
-			LimeLog.level = NONE;
-		}
-	}
-
-	public static function reloadGame()
-	{
-		Reflect.callMethod(am, Reflect.field(am, "reloadGame"), []);
-	}
-
-	public static function addReloadListener(reloadListener:Void->Void)
-	{
-		var reloadListeners:Array<Void->Void> = Reflect.field(am, "reloadListeners");
-		reloadListeners.push(reloadListener);
 	}
 }

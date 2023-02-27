@@ -1,5 +1,6 @@
 package;
 
+import com.stencyl.APIKeys;
 import com.stencyl.Config;
 import com.stencyl.Data;
 import com.stencyl.Engine;
@@ -25,6 +26,9 @@ import openfl.errors.Error;
 
 import scripts.StencylPreloader;
 
+import haxe.Log in HaxeLog;
+import lime.utils.Log in LimeLog;
+
 using StringTools;
 
 @:access(Universal)
@@ -36,6 +40,7 @@ using StringTools;
 {
 	private static var app:Application;
 	private static var universal:Universal;
+	private static var originalHaxeTrace:Dynamic;
 	
 	public static function main ()
 	{
@@ -43,12 +48,12 @@ using StringTools;
 		if(StencylCppia.gamePath != null)
 			Sys.setCwd(StencylCppia.gamePath);
 		#end
-		Universal.am = ApplicationMain;
-		Universal.setupTracing(true);
-
+		
+		configureHaxeTracing();
+		
 		Config.load();
 		Input.loadInputConfig();
-		Universal.setupTracing();
+		reloadTracingConfig();
 		
 		System.__registerEntryPoint ("::APP_FILE::", create);
 		
@@ -63,7 +68,6 @@ using StringTools;
 		#else
 		create (null);
 		#end
-
 	}
 
 	public static var reloadListeners = new Array<Void->Void>();
@@ -99,7 +103,7 @@ using StringTools;
 		Input.loadInputConfig();
 		universal = new Universal();
 		Lib.current.addChild(universal);
-		universal.preloaderComplete();
+		preloaderComplete();
 	}
 
 	public static function create (config):Void
@@ -272,8 +276,19 @@ using StringTools;
 		}
 		#end
 
+		#if flash
+
+		if(APIKeys.newgroundsID != "")
+		{
+			com.newgrounds.API.API.connect(Lib.current.root, APIKeys.newgroundsID, APIKeys.newgroundsKey);
+		}
+
+		#end
+
+		@:privateAccess Engine.am = ApplicationMain;
+
 		var preloader = new StencylPreloader();
-		preloader.onComplete.add(universal.preloaderComplete);
+		preloader.onComplete.add(preloaderComplete);
 		app.preloader.onProgress.add(preloader.onUpdate);
 		app.preloader.onComplete.add(preloader.onLoaded);
 		
@@ -293,6 +308,68 @@ using StringTools;
 		#if (sys && !ios)
 		System.exit (result);
 		#end
+	}
+	
+	@:access(openfl.display.Stage)
+	public static function preloaderComplete():Void
+	{
+		#if flash
+		
+		new Engine(universal);
+		
+		#else
+		
+		try {
+			
+			new Engine(universal);
+			
+		} catch (e:Dynamic) {
+			
+			#if stencyltools
+			if(Config.useGciLogging)
+			{
+				trace(e + Utils.printExceptionstackIfAvailable());
+				ToolsetInterface.preloadedUpdate();
+			}
+			#end
+
+			Lib.current.stage.__handleError (e);
+			
+		}
+
+		#end
+	}
+	
+	public static function configureHaxeTracing():Void
+	{
+		#if (flash9 || flash10)
+		HaxeLog.trace = function(v,?pos) { untyped __global__["trace"]("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"):",v); }
+		#elseif flash
+		HaxeLog.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
+		#end
+		
+		originalHaxeTrace = HaxeLog.trace;
+		LimeLog.level = VERBOSE;
+	}
+	
+	public static function reloadTracingConfig():Void
+	{
+		if(!Config.releaseMode)
+		{
+			HaxeLog.trace = originalHaxeTrace;
+			
+			#if stencyltools
+			if(Config.useGciLogging)
+				HaxeLog.trace = ToolsetInterface.gciTrace;
+			#end
+
+			LimeLog.level = VERBOSE;
+		}
+		else
+		{
+			HaxeLog.trace = function(v,?pos) { };
+			LimeLog.level = NONE;
+		}
 	}
 
 	static function uncaughtErrorHandler(event:UncaughtErrorEvent):Void

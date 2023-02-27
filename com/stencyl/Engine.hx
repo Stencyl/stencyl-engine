@@ -4333,4 +4333,28 @@ class Engine
 		layer.scrollFactorX = amountX;
 		layer.scrollFactorY = amountY;
 	}
+	
+	//*-----------------------------------------------
+	//* ApplicationMain Access
+	//*-----------------------------------------------
+	
+	//for Cppia, don't directly call ApplicationMain functions
+
+	private static var am:Class<Dynamic>;
+	
+	public static function reloadGame()
+	{
+		Reflect.callMethod(am, Reflect.field(am, "reloadGame"), []);
+	}
+
+	public static function addReloadListener(reloadListener:Void->Void)
+	{
+		var reloadListeners:Array<Void->Void> = Reflect.field(am, "reloadListeners");
+		reloadListeners.push(reloadListener);
+	}
+	
+	public static function reloadTracingConfig()
+	{
+		Reflect.callMethod(am, Reflect.field(am, "reloadTracingConfig"), []);
+	}
 }
