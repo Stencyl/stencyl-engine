@@ -96,7 +96,6 @@ using StringTools;
 		com.stencyl.models.actor.CollisionPoint.resetStatics();
 		com.stencyl.models.collision.CollisionInfo.resetStatics();
 		com.stencyl.models.scene.TileLayer.resetStatics();
-		#if flash com.stencyl.utils.Kongregate.resetStatics(); #end
 		com.stencyl.utils.motion.TweenManager.resetStatics();
 		com.stencyl.utils.Utils.resetStatics();
 		#if stencyltools com.stencyl.utils.ToolsetInterface.resetStatics(); #end
@@ -279,15 +278,6 @@ using StringTools;
 		motion.actuators.SimpleActuator.getTime = function():Float {
 			return Engine.totalElapsedTime / 1000;
 		}
-		#end
-
-		#if flash
-
-		if(APIKeys.newgroundsID != "")
-		{
-			com.newgrounds.API.API.connect(Lib.current.root, APIKeys.newgroundsID, APIKeys.newgroundsKey);
-		}
-
 		#end
 
 		extensions = [];

@@ -174,9 +174,6 @@ import com.stencyl.utils.ColorMatrix;
 import com.stencyl.utils.ConfigUtil;
 import com.stencyl.utils.HaxeDefines;
 import com.stencyl.utils.HscriptRunner;
-#if flash
-import com.stencyl.utils.Kongregate;
-#end
 import com.stencyl.utils.LazyIntMap;
 import com.stencyl.utils.LazyMap;
 import com.stencyl.utils.LazyStringMap;
