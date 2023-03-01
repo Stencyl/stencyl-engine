@@ -282,13 +282,18 @@ using StringTools;
 
 		extensions = [];
 		::if config.stencyl.extension___array::
-		::foreach (config.stencyl.extension___array)::extensions.push(new ::classname::());
+		 ::foreach (config.stencyl.extension___array)::
+		  ::if platform:: #if ::platform:: extensions.push(new ::classname::()); #end ::else:: extensions.push(new ::classname::()); ::end::
+		 ::end::
+		::else::
+		 ::if config.stencyl.extension::
+		  ::if config.stencyl.extension.platform:: #if ::config.stencyl.extension.platform:: extensions.push(new ::config.stencyl.extension.classname::()); #end ::else:: extensions.push(new ::config.stencyl.extension.classname::()); ::end::
+		 ::end::
 		::end::
-		::else::::if config.stencyl.extension::extensions.push(new ::config.stencyl.extension.classname::());::end::::end::
 		
 		@:privateAccess Engine.am = ApplicationMain;
 
-		var preloader = new ::APP_PRELOADER::();
+		var preloader = new #if flash ::APP_PRELOADER::() #else com.stencyl.loader.StencylPreloader() #end;
 		preloader.onComplete.add(preloaderComplete);
 		app.preloader.onProgress.add(preloader.onUpdate);
 		app.preloader.onComplete.add(preloader.onLoaded);
