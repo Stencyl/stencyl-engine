@@ -281,15 +281,30 @@ using StringTools;
 		#end
 
 		extensions = [];
-		::if config.stencyl.extension___array::
-		 ::foreach (config.stencyl.extension___array)::
-		  ::if platform:: #if ::platform:: extensions.push(new ::classname::()); #end ::else:: extensions.push(new ::classname::()); ::end::
-		 ::end::
-		::else::
-		 ::if config.stencyl.extension::
-		  ::if config.stencyl.extension.platform:: #if ::config.stencyl.extension.platform:: extensions.push(new ::config.stencyl.extension.classname::()); #end ::else:: extensions.push(new ::config.stencyl.extension.classname::()); ::end::
-		 ::end::
-		::end::
+
+		try
+		{
+			::if config.stencyl.extension___array::
+			 ::foreach (config.stencyl.extension___array)::
+			  ::if platform:: #if ::platform:: extensions.push(new ::classname::()); #end ::else:: extensions.push(new ::classname::()); ::end::
+			 ::end::
+			::else::
+			 ::if config.stencyl.extension::
+			  ::if config.stencyl.extension.platform:: #if ::config.stencyl.extension.platform:: extensions.push(new ::config.stencyl.extension.classname::()); #end ::else:: extensions.push(new ::config.stencyl.extension.classname::()); ::end::
+			 ::end::
+			::end::
+		}
+		catch(e:Dynamic)
+		{
+			#if stencyltools
+			if(Config.useGciLogging)
+			{
+				trace(e + Utils.printExceptionstackIfAvailable());
+				ToolsetInterface.preloadedUpdate();
+			}
+			#end
+			@:privateAccess Lib.current.stage.__handleError (e);
+		}
 		
 		@:privateAccess Engine.am = ApplicationMain;
 
