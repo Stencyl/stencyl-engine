@@ -76,9 +76,6 @@ import com.stencyl.io.SpriteReader;
 import com.stencyl.native.Native;
 import com.stencyl.purchases.Purchases;
 #end
-#if ios
-import com.stencyl.gamecenter.GameCenter;
-#end
 
 import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2PolygonShape;
@@ -432,17 +429,6 @@ class Script
 	public function addMobileKeyboardListener(type:Int, func:String->Void)
 	{
 		var nativeListener = new NativeListener(EventMaster.TYPE_KEYBOARD, type, func);
-		engine.nativeListeners.push(nativeListener);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			// cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
-		}
-	}
-	
-	public function addGameCenterListener(type:Int, func:String->Void)
-	{
-		var nativeListener = new NativeListener(EventMaster.TYPE_GAMECENTER, type, func);
 		engine.nativeListeners.push(nativeListener);
 		
 		if(Std.isOfType(this, ActorScript))
@@ -3708,84 +3694,6 @@ class Script
 		#end
 	}
 	
-	
-	//Game Center
-	
-	public static function gameCenterInitialize():Void 
-	{
-		#if ios
-		GameCenter.initialize();
-		#end	
-	}
-	
-	public static function gameCenterIsAuthenticated():Bool 
-	{
-		#if ios
-		return GameCenter.isAuthenticated();
-		#else
-		return false;
-		#end
-	}
-	
-	public static function gameCenterGetPlayerName():String 
-	{
-		#if ios
-		return GameCenter.getPlayerName();
-		#else
-		return "None";
-		#end
-	}
-	
-	public static function gameCenterGetPlayerID():String 
-	{
-		#if ios
-		return GameCenter.getPlayerID();
-		#else
-		return "None";
-		#end
-	}
-	
-	public static function gameCenterShowLeaderboard(categoryID:String):Void 
-	{
-		#if ios
-		GameCenter.showLeaderboard(categoryID);
-		#end	
-	}
-	
-	public static function gameCenterShowAchievements():Void 
-	{
-		#if ios
-		GameCenter.showAchievements();
-		#end	
-	}
-	
-	public static function gameCenterSubmitScore(score:Float, categoryID:String):Void 
-	{
-		#if ios
-		GameCenter.reportScore(categoryID, Std.int(score));
-		#end	
-	}
-	
-	public static function gameCenterSubmitAchievement(achievementID:String, percent:Float):Void 
-	{
-		#if ios
-		GameCenter.reportAchievement(achievementID, percent);
-		#end	
-	}
-	
-	public static function gameCenterResetAchievements():Void 
-	{
-		#if ios
-		GameCenter.resetAchievements();
-		#end	
-	}
-	
-	public static function gameCenterShowBanner(title:String, msg:String):Void 
-	{
-		#if ios
-		GameCenter.showAchievementBanner(title, msg);
-		#end	
-	}
 	
 	//Purchases
 	

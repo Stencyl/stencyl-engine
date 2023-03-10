@@ -9,7 +9,6 @@ class EventMaster
 	public var eventTable:Map<Int,Array<StencylEvent>>;
 	
 	public static var TYPE_PURCHASES:Int = 2;
-	public static var TYPE_GAMECENTER:Int = 3;
 	public static var TYPE_KEYBOARD:Int = 4;
 
 	public function new() 
@@ -17,18 +16,12 @@ class EventMaster
 		eventTable = new Map<Int,Array<StencylEvent>>();
 		
 		eventTable.set(TYPE_PURCHASES, new Array<StencylEvent>());
-		eventTable.set(TYPE_GAMECENTER, new Array<StencylEvent>());
 		eventTable.set(TYPE_KEYBOARD, new Array<StencylEvent>());
 	}	
 	
 	public function addPurchaseEvent(e:StencylEvent)
 	{
 		eventTable.get(TYPE_PURCHASES).push(e);
-	}	
-	
-	public function addGameCenterEvent(e:StencylEvent)
-	{
-		eventTable.get(TYPE_GAMECENTER).push(e);
 	}	
 	
 	public function addKeyboardEvent(e:StencylEvent)
@@ -39,7 +32,6 @@ class EventMaster
 	public function clear()
 	{
 		Utils.clear(eventTable.get(TYPE_PURCHASES));
-		Utils.clear(eventTable.get(TYPE_GAMECENTER));
 		Utils.clear(eventTable.get(TYPE_KEYBOARD));
 	}
 }

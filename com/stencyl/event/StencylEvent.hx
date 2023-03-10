@@ -14,17 +14,6 @@ class StencylEvent
 	public static var PURCHASE_PRODUCTS_VERIFIED:Int = 205;
 	public static var PURCHASE_PRODUCT_VALIDATED:Int = 206;
 	
-	//Game Center
-	public static var GAME_CENTER_READY:Int = 300;
-	public static var GAME_CENTER_SCORE:Int = 301;
-	public static var GAME_CENTER_ACHIEVEMENT:Int = 302;
-	public static var GAME_CENTER_ACHIEVEMENT_RESET:Int = 303;
-	
-	public static var GAME_CENTER_READY_FAIL:Int = 304;
-	public static var GAME_CENTER_SCORE_FAIL:Int = 305;
-	public static var GAME_CENTER_ACHIEVEMENT_FAIL:Int = 306;
-	public static var GAME_CENTER_ACHIEVEMENT_RESET_FAIL:Int = 307;
-	
 	//Other
 	public static var KEYBOARD_EVENT = 400;
 	public static var KEYBOARD_DONE = 401;
