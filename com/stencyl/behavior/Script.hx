@@ -76,9 +76,6 @@ import com.stencyl.io.SpriteReader;
 import com.stencyl.native.Native;
 import com.stencyl.purchases.Purchases;
 #end
-#if android
-import com.stencyl.googleplaygames.GooglePlayGames;
-#end
 #if ios
 import com.stencyl.gamecenter.GameCenter;
 #end
@@ -3723,96 +3720,6 @@ class Script
 	}
 	
 	
-	//Google Play Services
-	public static function initGooglePlayGames()
-	{
-		#if android
-		GooglePlayGames.initGooglePlayGames();
-		#end
-	}
-	
-	public static function stopGooglePlayGames()
-	{
-		#if android
-		GooglePlayGames.signOutGooglePlayGames();
-		#end
-	}
-	
-	public static function getGPGConnectionInfo(info:Int):Bool
-	{
-		#if android
-		return GooglePlayGames.getConnectionInfo(info);
-		#else
-		return false;
-		#end
-	}
-	
-	public static function showGPGAchievements()
-	{
-		#if android
-		GooglePlayGames.showAchievements();
-		#end
-	}
-	
-	public static function showGPGLeaderboards()
-	{
-		#if android
-		GooglePlayGames.showAllLeaderboards();
-		#end
-	}
-	
-	public static function showGPGLeaderboard(id:String)
-	{
-		#if android
-		GooglePlayGames.showLeaderboard(id);
-		#end
-	}
-	
-	public static function showGPGQuests()
-	{
-		#if android
-		GooglePlayGames.showQuests();
-		#end
-	}
-	
-	public static function unlockGPGAchievement(id:String)
-	{
-		#if android
-		GooglePlayGames.unlockAchievement(id);
-		#end
-	}
-	
-	public static function incrementGPGAchievement(id:String, amount:Int)
-	{
-		#if android
-		GooglePlayGames.incrementAchievement(id, amount);
-		#end
-	}
-	
-	public static function submitGPGScore(id:String, amount:Int)
-	{
-		#if android
-		GooglePlayGames.submitScore(id, amount);
-		#end
-	}
-	
-	public static function updateGPGEvent(id:String, amount:Int)
-	{
-		#if android
-		GooglePlayGames.updateEvent(id, amount);
-		#end
-	}
-	
-	public static function getCompletedGPGQuests():Array<String>
-	{
-		#if android
-		return GooglePlayGames.getCompletedQuestList();
-		#else
-		return new Array<String>();
-		#end
-	}
-	
-	
 	//Game Center
 	
 	public static function gameCenterInitialize():Void 
@@ -3890,9 +3797,6 @@ class Script
 		GameCenter.showAchievementBanner(title, msg);
 		#end	
 	}
-	
-	//Google Play Games
-	
 	
 	//Purchases
 	
