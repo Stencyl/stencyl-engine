@@ -24,12 +24,7 @@ class NativeListener
 			{
 				if(event.type == type)
 				{
-					if(metaType == EventMaster.TYPE_ADS)
-					{
-						fn();
-					}
-					
-					else if(metaType == EventMaster.TYPE_PURCHASES)
+					if(metaType == EventMaster.TYPE_PURCHASES)
 					{
 						fn(event.data1);
 					}

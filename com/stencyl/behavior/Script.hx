@@ -440,17 +440,6 @@ class Script
 		}
 	}
 	
-	public function addMobileAdListener(type:Int, func:Void->Void)
-	{
-		var nativeListener = new NativeListener(EventMaster.TYPE_ADS, type, func);
-		engine.nativeListeners.push(nativeListener);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			// cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
-		}
-	}
-	
 	public function addGameCenterListener(type:Int, func:String->Void)
 	{
 		var nativeListener = new NativeListener(EventMaster.TYPE_GAMECENTER, type, func);

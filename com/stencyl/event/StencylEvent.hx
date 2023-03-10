@@ -5,18 +5,6 @@ class StencylEvent
 	public var type:Int;
 	public var data1:String;
 	
-	//Ads
-	public static var AD_USER_OPEN:Int = 100;
-	public static var AD_USER_CLOSE:Int = 101;
-	public static var AD_LOADED:Int = 102;
-	public static var AD_FAILED:Int = 103;
-	public static var AD_CLICKED:Int = 104;
-	public static var FULL_AD_USER_OPEN:Int = 105;
-	public static var FULL_AD_USER_CLOSE:Int = 106;
-	public static var FULL_AD_LOADED:Int = 107;
-	public static var FULL_AD_FAILED:Int = 108;
-	public static var FULL_AD_CLICKED:Int = 109;
-	
 	//Purchases
 	public static var PURCHASE_READY:Int = 200;
 	public static var PURCHASE_SUCCESS:Int = 201;
