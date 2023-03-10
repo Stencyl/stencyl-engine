@@ -303,7 +303,9 @@ using StringTools;
 				ToolsetInterface.preloadedUpdate();
 			}
 			#end
+			#if !flash
 			@:privateAccess Lib.current.stage.__handleError (e);
+			#end
 		}
 		
 		@:privateAccess Engine.am = ApplicationMain;
