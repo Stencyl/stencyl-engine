@@ -1,6 +1,5 @@
 package;
 
-import com.stencyl.APIKeys;
 import com.stencyl.Config;
 import com.stencyl.Data;
 import com.stencyl.Engine;

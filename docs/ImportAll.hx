@@ -1,6 +1,5 @@
 package;
 
-import com.stencyl.APIKeys;
 import com.stencyl.behavior.ActorScript;
 import com.stencyl.behavior.Attribute;
 import com.stencyl.behavior.Behavior;

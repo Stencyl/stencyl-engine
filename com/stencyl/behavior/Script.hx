@@ -74,7 +74,6 @@ import com.stencyl.io.SpriteReader;
 
 #if mobile
 import com.stencyl.native.Native;
-import com.stencyl.purchases.Purchases;
 #end
 
 import box2D.collision.shapes.B2Shape;
@@ -437,17 +436,6 @@ class Script
 		}
 	}
 	
-	public function addPurchaseListener(type:Int, func:String->Void)
-	{
-		var nativeListener = new NativeListener(EventMaster.TYPE_PURCHASES, type, func);
-		engine.nativeListeners.push(nativeListener);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			// cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
-		}
-	}
-
 	public function addListener<T>(event:Event<T>, func:T #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		event.add(func #if debug_event_dispatch , posInfo #end);
@@ -3694,92 +3682,6 @@ class Script
 		#end
 	}
 	
-	
-	//Purchases
-	
-	public static function purchasesAreInitialized():Bool 
-	{
-		#if mobile
-		return Purchases.canBuy();
-		#else
-		return false;
-		#end
-	}
-	
-	public static function purchasesRestore():Void 
-	{
-		#if mobile
-		Purchases.restorePurchases();
-		#end	
-	}
-	
-	public static function purchasesBuy(productID:String):Void 
-	{
-		#if mobile
-		Purchases.buy(productID);
-		#end	
-	}
-	
-	public static function purchasesHasBought(productID:String):Bool 
-	{
-		#if mobile
-		return Purchases.hasBought(productID);
-		#else
-		return false;
-		#end
-	}
-	
-	public static function purchasesGetTitle(productID:String):String 
-	{
-		#if mobile
-		return Purchases.getTitle(productID);
-		#else
-		return "";
-		#end
-	}
-	
-	public static function purchasesGetDescription(productID:String):String 
-	{
-		#if mobile
-		return Purchases.getDescription(productID);
-		#else
-		return "";
-		#end
-	}
-	
-	public static function purchasesGetPrice(productID:String):String 
-	{
-		#if mobile
-		return Purchases.getPrice(productID);
-		#else
-		return "";
-		#end
-	}
-	
-	public static function purchasesRequestProductInfo(productIDlist:Array<Dynamic>):Void 
-  	{
-    	#if mobile
-      	Purchases.requestProductInfo(productIDlist);
-    	#end
-	}
-	
-	//Consumables
-	
-	public static function purchasesUse(productID:String):Void 
-	{
-		#if mobile
-		Purchases.use(productID);
-		#end	
-	}
-	
-	public static function purchasesGetQuantity(productID:String):Int 
-	{
-		#if mobile
-		return Purchases.getQuantity(productID);
-		#else
-		return 0;
-		#end
-	}
 	
 	//*-----------------------------------------------
 	//* Native

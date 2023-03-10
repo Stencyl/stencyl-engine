@@ -1031,11 +1031,6 @@ class Engine
 			channels.push(new SoundChannel(this, index)); 				
 		}
 		
-		//Purchases
-		#if mobile
-		com.stencyl.purchases.Purchases.initialize(#if android APIKeys.androidPublicKey #end);
-		#end
-		
 		for(extension in extensions)
 		{
 			extension.initialize();
