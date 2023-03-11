@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blocks>
+
+    <block tag="mobile-keyboard-text"
+           code="keyboardText"
+           type="normal"
+           returns="text"
+           category="mobile"
+           hidden="true"
+           helpURL="event-mobile">
+        <context>
+            <requiredContext type="has" value="keyboardText:String" />
+        </context>
+    </block>
+
+    <block tag="event-mobile-keyboard"
+           type="event"
+           returns="void"
+           category="events"
+           helpURL="event-mobile">
+        <code>
+            <event-def params="keyboardText:String" innerCode="#1" listener="addMobileKeyboardListener(#0, ${eventRef});" />
+        </code>
+        <fields>
+            <dropdown order="0">
+                <choices>
+                    <c text="@event.mobile.keyboard.typed" code="400" />
+                    <c text="@event.mobile.keyboard.done" code="401" />
+                    <c text="@event.mobile.keyboard.show" code="402" />
+                    <c text="@event.mobile.keyboard.hide" code="403" />
+                </choices>
+            </dropdown>
+            <code-block order="1" />
+            <attached-block order="2" tag="mobile-keyboard-text" />
+        </fields>
+        <context>
+            <innerContext type="class" value="com.stencyl.behavior.Script" />
+            <innerContext type="has" value="keyboardText:String" />
+        </context>
+    </block>
+
+    <block tag="clear-keyboard-text"
+           code="com.stencyl.native.Native.setKeyboardText(&quot;&quot;);"
+           type="action"
+           returns="void"
+           category="mobile"
+           helpURL="input-mobile">
+    </block>
+
+    <block tag="ios-badge-number"
+           code="com.stencyl.native.Native.setIconBadgeNumber(~);"
+           type="action"
+           returns="void"
+           category="mobile"
+           helpURL="game-mobile">
+        <fields>
+            <number order="0" />
+        </fields>
+    </block>
+
+    <block tag="set-keyboard-text"
+           code="com.stencyl.native.Native.setKeyboardText(~);"
+           type="action"
+           returns="void"
+           category="mobile"
+           helpURL="input-mobile">
+        <fields>
+            <text order="0" />
+        </fields>
+    </block>
+
+    <block tag="show-alert"
+           code="com.stencyl.native.Native.showAlert(~, ~);"
+           type="action"
+           returns="void"
+           category="mobile"
+           helpURL="game-mobile">
+        <fields>
+            <text order="0" />
+            <text order="1" />
+        </fields>
+    </block>
+
+    <block tag="show-hide-keyboard"
+           code="com.stencyl.native.Native.~Keyboard();"
+           type="action"
+           returns="void"
+           category="mobile"
+           helpURL="input-mobile">
+        <fields>
+            <dropdown order="0">
+                <choices>
+                    <c text="@block.hide" code="hide" />
+                    <c text="@block.show" code="show" />
+                </choices>
+            </dropdown>
+        </fields>
+    </block>
+
+    <block tag="vibrate"
+           code="com.stencyl.native.Native.vibrate(~);"
+           type="action"
+           returns="void"
+           category="mobile"
+           helpURL="input-mobile">
+        <fields>
+            <number order="0" />
+        </fields>
+    </block>
+
+</blocks>

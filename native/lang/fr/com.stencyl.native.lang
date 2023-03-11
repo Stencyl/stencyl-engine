@@ -1,0 +1,14 @@
+clear-keyboard-text=Efface le texte du clavier [c:mobile]
+clear-keyboard-text.help=Efface le texte du clavier virtuel.
+ios-badge-number=définir le numéro de l'icône du badge à %0 [c:mobile]
+ios-badge-number.help=Définit le numéro de badge de l'icône de l'application.(Ex: Ce que va faire le Mail de l'application pour les messages non lus).
+set-keyboard-text=définir le texte du clavier à %0 [c:mobile]
+set-keyboard-text.help=Définit le texte du clavier virtuel.
+show-alert=Affiche une alerte avec le titre: %0 message: %1 [c:mobile]
+show-alert.help=Affiche un message d'alerte à l'utilisateur.
+block.hide=cacher
+block.show=afficher
+show-hide-keyboard=%0 clavier [c:mobile]
+show-hide-keyboard.help=Affiche le Clavier Mobile. La frappe est considérée comme des évènements d'appuis.
+vibrate=vibrer l'appareil pour %0 secs [c:mobile]
+vibrate.help=Fait vibrer l'appareil, si les vibrations sont disponibles.

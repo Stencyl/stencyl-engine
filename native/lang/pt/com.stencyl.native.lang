@@ -1,0 +1,6 @@
+ios-badge-number=definir o número do crachá do icone para %0 [c:mobile]
+ios-badge-number.help=Define o número do crachá icone da aplicaçãoo (e.g. como a aplicação do Mail faz para as mensagens que não foram lidas)
+block.hide=Esconder
+block.show=Mostrar
+vibrate=vibrar diapositivo [c:mobile]
+vibrate.help=Vibra o diapositivo, se vibração estiver dispon�vel

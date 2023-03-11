@@ -1,0 +1,31 @@
+clear-keyboard-text=clear keyboard text [c:mobile]
+clear-keyboard-text.help=Sets the text for the mobile keyboard.
+ios-badge-number=set icon badge number to %0 [c:mobile]
+ios-badge-number.help=Sets the app icon's badge number (unread msgs for e-mail). iOS only.
+set-keyboard-text=set keyboard text to %0 [c:mobile]
+set-keyboard-text.help=Sets the text for the mobile keyboard.
+show-alert=show alert with title %0 and message %1 [c:mobile]
+show-alert.help=Shows an alert dialog to the user.
+block.hide=hide
+block.show=show
+show-hide-keyboard=%0 keyboard [c:mobile]
+show-hide-keyboard.help=Shows the mobile keyboard. Typing comes back as regular key strokes / events.
+vibrate=vibrate for %0 secs [c:mobile]
+vibrate.help=Vibrates the device, if vibration is available.
+
+event-mobile-keyboard=when %0 [e:dash] %2
+event-mobile-keyboard.help=When the mobile keyboard is used.
+
+mobile-keyboard-text=typed text [c:keyboard]
+mobile-keyboard-text.help=The text typed on the mobile keyboard.
+
+events.defs.mobilekey=Keyboard
+
+event.mobile.keyboard.show=mobile keyboard is shown
+event.mobile.keyboard.done=mobile keyboard is submitted
+event.mobile.keyboard.hide=mobile keyboard is hidden
+event.mobile.keyboard.typed=mobile keyboard is typed
+
+cat.controls.mobile.keyboard=Mobile Keyboard
+cat.controls.mobile.vibrate=Vibrate
+cat.game.mobile.alert=Alerts

@@ -1,0 +1,10 @@
+ios-badge-number=imposta il numero icona badge a %0 [c:mobile]
+ios-badge-number.help=Imposta il numero di icona del badge (messaggi non letti per e-mail). solo iOS.
+show-alert=mostra avviso con titolo: %0 msg: %1 [c:mobile]
+show-alert.help=Mostra una finestra di attenzione all'utente.
+block.hide=Nascondi
+block.show=Mostra
+show-hide-keyboard=%0 tastiera [c:mobile]
+show-hide-keyboard.help=Mostra la tastiera mobile. La digitazione restituisce eventi come combinazione di tasti standard.
+vibrate=vibrazione dispositivo [c:mobile]
+vibrate.help=Fa vibrare il dispositivo, se la vibrazione è disponibile.

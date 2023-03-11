@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stencyl-addons>
+
+	<events-addon target="stencyl-behavior-events">
+		<merge-section id="mobile.services">
+			<event block="event-mobile-keyboard" menuText="@events.defs.mobilekey" description="@events.defs.mobilekey" icon="keyboard" menuIcon="keyboard" />
+		</merge-section>
+	</events-addon>
+
+	<palette-addon target="stencyl-behavior-palette">
+		<merge-section id="user-input.mobile">
+			<header title="@cat.controls.mobile.keyboard" />
+			<block tag="show-hide-keyboard" />
+			<block tag="set-keyboard-text" />
+			<block tag="clear-keyboard-text" />
+			<header title="@cat.controls.mobile.vibrate" />
+			<block tag="vibrate" />
+		</merge-section>
+		<merge-section id="game.mobile">
+			<header title="@cat.game.mobile.alert" />
+			<block tag="show-alert" />
+			<block tag="ios-badge-number" />
+		</merge-section>
+	</palette-addon>
+
+</stencyl-addons>
