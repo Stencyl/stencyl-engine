@@ -36,8 +36,6 @@ import com.stencyl.behavior.Script;
 import com.stencyl.behavior.TimedTask;
 import com.stencyl.event.Event;
 import com.stencyl.event.EventMap;
-import com.stencyl.event.EventMaster;
-import com.stencyl.event.NativeListener;
 #if use_actor_tilemap
 import com.stencyl.graphics.BitmapTilesetMapping;
 #end
@@ -176,8 +174,6 @@ class Engine
 	public static var paused:Bool = false;
 	public static var started:Bool = false;
 	public static var inFocus:Bool = true;
-	
-	public static var events:EventMaster = new EventMaster();
 	
 	//*-----------------------------------------------
 	//* Zooming
@@ -400,7 +396,6 @@ class Engine
 	public var whenMTEnded:Event<(event:TouchEvent)->Void>;
 	
 	public var whenFocusChanged:Event<(lost:Bool)->Void>;
-	public var nativeListeners:Array<NativeListener>;
 	
 	//*-----------------------------------------------
 	//* Reloading
@@ -472,8 +467,6 @@ class Engine
 		paused = false;
 		started = false;
 		
-		events = new EventMaster();
-
 		ITERATIONS = 3;
 		physicsScale = 10.0;
 		
@@ -1200,7 +1193,6 @@ class Engine
 		whenCollidedEvents = [];
 		whenSoundEndedEvents = [];
 		whenChannelEndedEvents = [];
-		nativeListeners = [];
 		
 		whenUpdated = new Event<(Float)->Void>();
 		whenDrawing = new Event<(G, Float, Float)->Void>();
@@ -1962,7 +1954,6 @@ class Engine
 		whenMTEnded = null;
 		
 		whenFocusChanged = null;
-		nativeListeners = null;
 
 		for(extension in extensions)
 		{
@@ -2700,17 +2691,6 @@ class Engine
 
 			keyPollOccurred = true;
 		}
-		
-		//Native
-		#if mobile
-		for(n in 0...nativeListeners.length)
-		{
-			var listener = nativeListeners[n];
-			listener.checkEvents(events);
-		}
-		
-		events.clear();
-		#end
 		
 		for(extension in extensions)
 		{

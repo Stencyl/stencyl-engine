@@ -68,8 +68,6 @@ import com.stencyl.utils.motion.*;
 import com.stencyl.utils.Assets;
 import com.stencyl.utils.Utils;
 import com.stencyl.utils.ColorMatrix;
-import com.stencyl.event.EventMaster;
-import com.stencyl.event.NativeListener;
 import com.stencyl.io.SpriteReader;
 
 #if mobile
