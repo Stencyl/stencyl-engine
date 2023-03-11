@@ -209,15 +209,6 @@ class Engine
 	
 	
 	//*-----------------------------------------------
-	//* Online / API Values
-	//*-----------------------------------------------
-	
-	public static var ngID:String;
-	public static var ngKey:String;
-	//public static var medalPopup:MedalPopup;
-		
-	
-	//*-----------------------------------------------
 	//* Transitioning
 	//*-----------------------------------------------
 	
@@ -492,9 +483,6 @@ class Engine
 		paddingTop = 0;
 		paddingBottom = 0;
 		
-		ngID = "";
-		ngKey = "";
-
 		movieClip = null;
 		stage = null;
 
