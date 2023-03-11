@@ -1,0 +1,7 @@
+id=com.stencyl.native
+name=Native Extension
+description=Various native integrations for Stencyl
+author=Jon
+website=http://www.stencyl.com
+version=1.0.0
+compatibility=mobile

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<source path="src" />
+	
+	<!--
+	On Android, this extension is not treated as a dependency.
+	We want to refer to lime/sdl, which is in the "app" module
+	of the created gradle project. But you can't have circular
+	dependencies. So instead, the files in this extension are
+	bundled straight into the "app" module.
+
+	This means that any special configuration we would want in
+	the build.gradle file will have to be placed in the main
+	build.gradle file for the app.
+
+	To clean this up, lime would need to have a "lime" module
+	that "app" depends on. Then we could depend on "lime" here,
+	and "app" could depend on us.
+	-->
+	<section if="android">
+		<!-- <dependency name="native" path="dependencies/native" /> -->
+		<java path="dependencies/native" />
+		<android extension="com.androidnative.Native "/>
+	</section>
+	
+	<section if="ios">
+		<dependency name="SystemConfiguration.framework" />
+	</section>
+	
+</project>
