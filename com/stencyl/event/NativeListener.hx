@@ -24,10 +24,6 @@ class NativeListener
 			{
 				if(event.type == type)
 				{
-					if(metaType == EventMaster.TYPE_KEYBOARD)
-					{
-						fn(event.data1);
-					}
 				}
 			}
 		}

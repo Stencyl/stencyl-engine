@@ -19,15 +19,19 @@
            category="events"
            helpURL="event-mobile">
         <code>
-            <event-def params="keyboardText:String" innerCode="#1" listener="addMobileKeyboardListener(#0, ${eventRef});" />
+            <event-def
+                params="keyEventType:com.stencyl.native.Native.KeyEventType, keyboardText:String"
+                innerCode="#1"
+                condition="keyEventType.match(#0)"
+                listener="addListener(com.stencyl.native.Native.keyEvents, ${eventRef});" />
         </code>
         <fields>
             <dropdown order="0">
                 <choices>
-                    <c text="@event.mobile.keyboard.typed" code="400" />
-                    <c text="@event.mobile.keyboard.done" code="401" />
-                    <c text="@event.mobile.keyboard.show" code="402" />
-                    <c text="@event.mobile.keyboard.hide" code="403" />
+                    <c text="@event.mobile.keyboard.typed" code="KEY_PRESSED" />
+                    <c text="@event.mobile.keyboard.done" code="ENTER_PRESSED" />
+                    <c text="@event.mobile.keyboard.show" code="KEYBOARD_SHOWN" />
+                    <c text="@event.mobile.keyboard.hide" code="KEYBOARD_HIDDEN" />
                 </choices>
             </dropdown>
             <code-block order="1" />

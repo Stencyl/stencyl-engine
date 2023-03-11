@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services>
+	<service
+		classname="com.stencyl.native.Native"
+		provides="com.stencyl.Extension" />
+</services>

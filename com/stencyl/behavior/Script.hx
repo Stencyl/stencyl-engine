@@ -422,20 +422,6 @@ class Script
 	
 	//Intended for auto code generation. Programmers should use init/update/draw instead.
 	
-	//Native Listeners poll on a special place where events are infrequent. Do NOT attempt to use
-	//for anything normal in the engine!
-	
-	public function addMobileKeyboardListener(type:Int, func:String->Void)
-	{
-		var nativeListener = new NativeListener(EventMaster.TYPE_KEYBOARD, type, func);
-		engine.nativeListeners.push(nativeListener);
-		
-		if(Std.isOfType(this, ActorScript))
-		{
-			// cast(this, ActorScript).actor.registerListener(engine.nativeListeners, nativeListener);
-		}
-	}
-	
 	public function addListener<T>(event:Event<T>, func:T #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		event.add(func #if debug_event_dispatch , posInfo #end);

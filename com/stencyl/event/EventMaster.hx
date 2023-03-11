@@ -8,22 +8,12 @@ class EventMaster
 	//HashTable of Lists of Events. Key = EventType
 	public var eventTable:Map<Int,Array<StencylEvent>>;
 	
-	public static var TYPE_KEYBOARD:Int = 4;
-
 	public function new() 
 	{	
 		eventTable = new Map<Int,Array<StencylEvent>>();
-		
-		eventTable.set(TYPE_KEYBOARD, new Array<StencylEvent>());
-	}	
-	
-	public function addKeyboardEvent(e:StencylEvent)
-	{
-		eventTable.get(TYPE_KEYBOARD).push(e);
 	}	
 	
 	public function clear()
 	{
-		Utils.clear(eventTable.get(TYPE_KEYBOARD));
 	}
 }

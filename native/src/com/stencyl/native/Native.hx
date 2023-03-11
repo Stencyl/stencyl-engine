@@ -1,31 +1,69 @@
 package com.stencyl.native;
 
-#if android
+import com.stencyl.Engine;
+import com.stencyl.Extension;
+import com.stencyl.event.Event;
+import com.stencyl.models.Scene;
+
+#if ios
+import lime.system.CFFI;
+#elseif android
 import lime.system.JNI;
 #end
 
-import com.stencyl.Engine;
-import com.stencyl.event.EventMaster;
-import com.stencyl.event.StencylEvent;
-
-import openfl.utils.ByteArray;
-import openfl.display.BitmapData;
-import openfl.geom.Rectangle;
 import openfl.events.KeyboardEvent;
-import openfl.events.EventDispatcher;
-import com.stencyl.Input;
+import openfl.geom.Rectangle;
 
-import lime.system.CFFI;
+using com.stencyl.event.EventDispatcher;
+
+typedef KeyEventData = {
+	var eventType:KeyEventType;
+	var currentText:String;
+}
+
+enum KeyEventType {
+	KEY_PRESSED;
+	ENTER_PRESSED;
+	KEYBOARD_SHOWN;
+	KEYBOARD_HIDDEN;
+}
 
 #if ios
 @:buildXml('<include name="${haxelib:com.stencyl.native}/project/Build.xml"/>')
 //This is just here to prevent the otherwise indirectly referenced native code from bring stripped at link time.
 @:cppFileCode('extern "C" int native_register_prims();void com_stencyl_native_link(){native_register_prims();}')
 #end
-class Native
-{	
+class Native extends Extension
+{
+	//stencyl events
+	public static var keyEvents:Event<(eventType:KeyEventType,currentText:String)->Void>;
+	public static var nativeEventQueue:Array<KeyEventData> = [];
 
-	private function new() {}
+	public function new()
+	{
+		super();
+	}
+
+	//Stencyl event plumbing
+
+	public override function loadScene(scene:Scene)
+	{
+		keyEvents = new Event<(KeyEventType,String)->Void>();
+	}
+	
+	public override function cleanupScene()
+	{
+		keyEvents = null;
+	}
+
+	public override function preSceneUpdate()
+	{
+		for(event in nativeEventQueue)
+		{
+			keyEvents.dispatch(event.eventType, event.currentText);
+		}
+		nativeEventQueue.splice(0, nativeEventQueue.length);
+	}
 	
 	public static function osName():String
 	{
@@ -104,7 +142,7 @@ class Native
 		#if ios
 		initKeyboard();
 		native_device_show_keyboard();
-		Engine.events.addKeyboardEvent(new StencylEvent(StencylEvent.KEYBOARD_SHOW, ""));
+		nativeEventQueue.push({"eventType": KEYBOARD_SHOWN, "currentText": ""});
 		#end
 		
 		#if android
@@ -116,7 +154,7 @@ class Native
 		}
 		
 		funcShowKeyboard([]);
-		Engine.events.addKeyboardEvent(new StencylEvent(StencylEvent.KEYBOARD_SHOW, ""));
+		nativeEventQueue.push({"eventType": KEYBOARD_SHOWN, "currentText": ""});
 		#end
 	}
 	
@@ -125,7 +163,7 @@ class Native
 		#if ios
 		initKeyboard();
 		native_device_hide_keyboard();
-		Engine.events.addKeyboardEvent(new StencylEvent(StencylEvent.KEYBOARD_HIDE, ""));
+		nativeEventQueue.push({"eventType": KEYBOARD_HIDDEN, "currentText": ""});
 		#end
 		
 		#if android
@@ -137,7 +175,7 @@ class Native
 		}
 		
 		funcHideKeyboard([]);
-		Engine.events.addKeyboardEvent(new StencylEvent(StencylEvent.KEYBOARD_HIDE, ""));
+		nativeEventQueue.push({"eventType": KEYBOARD_HIDDEN, "currentText": ""});
 		#end
 	}
 	
@@ -187,11 +225,6 @@ class Native
 	{
 		#if ios
 		
-		//Fire Key Event
-		//var data:Int = Std.int(Reflect.field(inEvent, "data"));
-		//Input.onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, false, data, data));
-		//Input.onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_UP, true, false, data, data));
-		
 		//Fire a special event
 		var data = Reflect.field(inEvent, "data");
 		trace("Text: " + data);
@@ -199,12 +232,12 @@ class Native
 		if(data == "@SUBMIT@")
 		{
 			data = Reflect.field(inEvent, "data2");
-			Engine.events.addKeyboardEvent(new StencylEvent(StencylEvent.KEYBOARD_DONE, data));
+			nativeEventQueue.push({"eventType": ENTER_PRESSED, "currentText": data});
 		}
 		
 		else
 		{
-			Engine.events.addKeyboardEvent(new StencylEvent(StencylEvent.KEYBOARD_EVENT, data));
+			nativeEventQueue.push({"eventType": KEY_PRESSED, "currentText": data});
 		}
 		#end	
 	}
@@ -217,25 +250,25 @@ class Native
 		
 		trace(currentText);
 		
-        Engine.events.addKeyboardEvent(new StencylEvent(StencylEvent.KEYBOARD_EVENT, currentText));
+        nativeEventQueue.push({"eventType": KEY_PRESSED, "currentText": currentText});
         #end
     }
 
     public function onEnterPressed() {
         #if android
-        Engine.events.addKeyboardEvent(new StencylEvent(StencylEvent.KEYBOARD_DONE, currentText));
+        nativeEventQueue.push({"eventType": ENTER_PRESSED, "currentText": currentText});
         #end
     }
 
     public function onKeyboardShown() {
         #if android
-        Engine.events.addKeyboardEvent(new StencylEvent(StencylEvent.KEYBOARD_SHOW, currentText));
+        nativeEventQueue.push({"eventType": KEYBOARD_SHOWN, "currentText": currentText});
         #end
     }
 
     public function onKeyboardHidden() {
         #if android
-        Engine.events.addKeyboardEvent(new StencylEvent(StencylEvent.KEYBOARD_HIDE, currentText));
+        nativeEventQueue.push({"eventType": KEYBOARD_HIDDEN, "currentText": currentText});
         #end
     }
 	
