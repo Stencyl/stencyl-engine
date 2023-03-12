@@ -285,11 +285,11 @@ using StringTools;
 		{
 			::if config.stencyl.extension___array::
 			 ::foreach (config.stencyl.extension___array)::
-			  ::if platform:: #if ::platform:: extensions.push(new ::classname::()); #end ::else:: extensions.push(new ::classname::()); ::end::
+			  ::if condition:: #if ::condition:: extensions.push(new ::classname::()); #end ::else:: extensions.push(new ::classname::()); ::end::
 			 ::end::
 			::else::
 			 ::if config.stencyl.extension::
-			  ::if config.stencyl.extension.platform:: #if ::config.stencyl.extension.platform:: extensions.push(new ::config.stencyl.extension.classname::()); #end ::else:: extensions.push(new ::config.stencyl.extension.classname::()); ::end::
+			  ::if config.stencyl.extension.condition:: #if ::config.stencyl.extension.condition:: extensions.push(new ::config.stencyl.extension.classname::()); #end ::else:: extensions.push(new ::config.stencyl.extension.classname::()); ::end::
 			 ::end::
 			::end::
 		}
