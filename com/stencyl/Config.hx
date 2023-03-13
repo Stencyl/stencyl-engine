@@ -47,6 +47,7 @@ class Config
 
 	#if(flash || html5)
 	public static var preloader:com.stencyl.loader.PreloaderConfig;
+	public static var lockURL:String;
 	#end
 	#if flash
 	public static var swfPreloader:com.stencyl.loader.SwfPreloaderConfig;
@@ -174,6 +175,7 @@ class Config
 		buildConfig = data.buildConfig;
 
 		#if(flash || html5)
+		lockURL = data.lockURL;
 		if(data.preloader != null)
 		{
 			if(preloader == null) preloader = new com.stencyl.loader.PreloaderConfig();

@@ -10,7 +10,6 @@ class PreloaderConfig
 
 	public function setFields(data:Dynamic)
 	{
-		lockURL = data.lockURL;
 		authorURL = data.authorURL;
 		backgroundColor = data.backgroundColor;
 		backgroundImage = data.backgroundImage;
@@ -26,7 +25,6 @@ class PreloaderConfig
 		barBackgroundColor = data.barBackgroundColor;
 	}
 
-	public var lockURL:String;
 	public var authorURL:String;
 
 	public var backgroundColor:Int;

@@ -323,6 +323,11 @@ using StringTools;
 			app.preloader.addLibraryName (name);
 		}
 
+		#if (flash || html5)
+		var sitelock = new com.stencyl.loader.SiteLock();
+		sitelock.checkSiteLock();
+		if(!sitelock.isLocked())
+		#end
 		app.preloader.load ();
 		
 		var result = app.exec ();

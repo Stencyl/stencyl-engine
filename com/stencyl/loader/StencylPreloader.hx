@@ -1,22 +1,13 @@
 package com.stencyl.loader;
 
 import openfl.Lib;
-import openfl.display.Bitmap;
-import openfl.display.BitmapData;
-import openfl.display.Loader;
 import openfl.display.Sprite;
-import openfl.events.Event;
-import openfl.events.ProgressEvent;
 import openfl.events.MouseEvent;
 import openfl.geom.Rectangle;
-import openfl.text.TextField;
-import openfl.text.TextFormat;
 import openfl.net.URLRequest;
 
 import com.stencyl.Config;
 import com.stencyl.utils.Utils;
-
-using StringTools;
 
 @:access(openfl.display.LoaderInfo)
 
@@ -31,8 +22,6 @@ class StencylPreloader extends Sprite
 	private var barWidth:Int;
 	private var barHeight:Int;
 	
-	private var locked:Bool;
-	
 	#end
 	
 	public var onComplete = new lime.app.Event<Void->Void>();
@@ -46,8 +35,6 @@ class StencylPreloader extends Sprite
 		Lib.current.addChild(this);
 		
 		#if(flash || html5)
-		
-		locked = false;
 		
 		var config = Config.preloader;
 
@@ -139,10 +126,6 @@ class StencylPreloader extends Sprite
 		{
 			addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 2);
 		}
-		
-		//---
-		
-		checkSiteLock();
 	}
 	
 	public function showBadge()
@@ -159,129 +142,16 @@ class StencylPreloader extends Sprite
 			});
 		}
 	}
-
-	public function checkSiteLock()
-	{
-		var lockURL = getLockURL();
-		
-		if(isSiteLocked() && (lockURL != null && lockURL != ""))
-		{
-			var ok = false;
-			var currURL = Lib.current.loaderInfo.url;
-			
-			if(currURL == null)
-			{
-				ok = true;
-				//trace("Local - HTML5");
-			}
-			
-			else if(currURL.indexOf("http://") < 0 && currURL.indexOf("https://") < 0)
-			{
-				ok = true;
-				//trace("Local - Flash");
-			}
-			
-			//TODO: What if the site's URL coincidentally contains localhost? Tricked.
-			else if((currURL.indexOf("stencyl.com") > 0) || (currURL.indexOf("localhost") > 0))
-			{
-				ok = true;
-				//trace("OK - Stencyl.com or localhost");
-			}
-			
-			if(!ok)
-			{
-				//site lock value can be a comma delimited list of sites
-				var siteArray = lockURL.split(",");	
-				
-				//check to see if we're playing from a valid site
-				for(site in siteArray)
-				{
-					site = StringTools.trim(site);
-
-					var useRegex = site.indexOf("*") >= 0 || (site.startsWith("^") && site.endsWith("$"));
-
-					if(useRegex)
-					{
-						var r:EReg = new EReg(site, "");
-						ok = r.match(currURL);
-					}
-					else
-					{
-						ok = (currURL.indexOf(site) >= 0);
-					}
-					if(ok) break;
-				}
-				
-				//no matches found, show the error message
-				if(!ok)
-				{
-					showLockScreen(siteArray[0]);
-				}
-			}	
-		}
-	}
-	
-	public function getLockURL():String
-	{
-		return Config.preloader.lockURL;
-	}
-	
-	public function isSiteLocked():Bool
-	{
-		return Config.preloader.lockURL != "";
-	}
-	
-	public function showLockScreen(realURL:String)
-	{
-		//trace("Show Lock Screen");
-		locked = true;
-		
-		Utils.removeAllChildren(this);
-	
-		var tmp = new Bitmap(new BitmapData(Std.int(getWidth()), Std.int(getHeight()), false, 0x565656));
-		addChild(tmp);
-
-		var txt = new TextField();
-		txt.width = getWidth() - 16;
-		txt.height = getHeight() - 16;
-		txt.x = 8;
-		txt.y = 8;
-		txt.textColor = 0xffffff;
-		txt.multiline = true;
-		txt.wordWrap = true;
-
-		var lockText = "Hi there!  It looks like somebody copied this game without my permission. Just click anywhere, or copy-paste this URL into your browser.\n\n"+realURL+"\n\nThanks, and have fun!";
-		txt.text = lockText;
-		
-		var txtFormat = new TextFormat(null, 25);
-		txt.setTextFormat(txtFormat);
-	
-		addChild(txt);
-		
-		removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-		txt.addEventListener(MouseEvent.CLICK, goToLockURL);
-		tmp.addEventListener(MouseEvent.CLICK, goToLockURL);
-	}
 	
 	public function getURL():String
 	{
 		return Config.preloader.authorURL;
 	}
 	
-	public function goToLockURL(e:MouseEvent):Void
-	{
-		Lib.getURL(new URLRequest(getLockURL().split(",")[0]), "_parent");
-	}
-	
 	public function onMouseDown(e:MouseEvent):Void
 	{
 		removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 		Lib.getURL(new URLRequest(getURL()), "_blank");
-	}
-	
-	public function getBackgroundColor():Int
-	{
-		return 0x336699;
 	}
 	
 	public function getWidth():Float
@@ -352,13 +222,6 @@ class StencylPreloader extends Sprite
 	{
 		#if stencyldemo
 		new com.stencyl.loader.SplashBox();
-		#end
-		
-		#if(flash || html5)
-		if(isSiteLocked() && locked)
-		{
-			return;
-		}
 		#end
 		
 		if(parent == Lib.current)
