@@ -88,7 +88,6 @@ using StringTools;
 		com.stencyl.models.Actor.resetStatics();
 		com.stencyl.models.Font.resetStatics();
 		com.stencyl.models.GameModel.resetStatics();
-		com.stencyl.models.Joystick.resetStatics();
 		com.stencyl.models.SoundChannel.resetStatics();
 		com.stencyl.models.actor.Animation.resetStatics();
 		com.stencyl.models.actor.Collision.resetStatics();

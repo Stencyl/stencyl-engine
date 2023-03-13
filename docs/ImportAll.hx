@@ -141,7 +141,6 @@ import com.stencyl.models.CollisionGroupDef;
 import com.stencyl.models.Font;
 import com.stencyl.models.GameModel;
 import com.stencyl.models.GroupDef;
-import com.stencyl.models.Joystick;
 import com.stencyl.models.PhysicsMode;
 import com.stencyl.models.Region;
 import com.stencyl.models.Resource;
