@@ -324,11 +324,12 @@ using StringTools;
 		}
 
 		#if (flash || html5)
-		var sitelock = new com.stencyl.loader.SiteLock();
+		var sitelock = new ::SET_SITELOCK_CLASS::();
+		sitelock.onComplete.add(() -> { if(!sitelock.isLocked()) app.preloader.load(); });
 		sitelock.checkSiteLock();
-		if(!sitelock.isLocked())
-		#end
+		#else
 		app.preloader.load ();
+		#end
 		
 		var result = app.exec ();
 

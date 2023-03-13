@@ -19,6 +19,7 @@ using StringTools;
 
 class SiteLock extends Sprite
 {
+	public var onComplete = new lime.app.Event<Void->Void>();
 	private var locked:Bool = false;
 	
 	public function new()
@@ -100,6 +101,8 @@ class SiteLock extends Sprite
 				}
 			}
 		}
+
+		onComplete.dispatch();
 	}
 	
 	public function showLockScreen(realURL:String)
