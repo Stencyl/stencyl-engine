@@ -1,7 +1,6 @@
 package com.stencyl.models;
 
 import com.stencyl.graphics.G;
-import com.stencyl.graphics.fonts.Label;
 import com.stencyl.graphics.fonts.BitmapFont;
 import com.stencyl.utils.Assets;
 

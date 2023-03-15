@@ -32,7 +32,9 @@ import com.stencyl.graphics.BitmapAnimation;
 import com.stencyl.graphics.BitmapWrapper;
 import com.stencyl.graphics.G;
 import com.stencyl.graphics.SheetAnimation;
-import com.stencyl.graphics.fonts.Label;
+#if com.stencyl.label
+import com.stencyl.label.Label;
+#end
 
 import com.stencyl.behavior.Behavior;
 import com.stencyl.behavior.BehaviorInstance;
@@ -215,7 +217,9 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	public var updateMatrix:Bool;
 	public var drawMatrix:Matrix; //For use when drawing actor image
 	
+	#if com.stencyl.label
 	public var label:Label;
+	#end
 
 	public var attachedImages:Array<BitmapWrapper> = null;
 	
@@ -1399,10 +1403,12 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 			{
 				img.updatePosition();
 			}
+			#if com.stencyl.label
 			if(label != null)
 			{
 				label.updatePosition();
 			}
+			#end
 		}
 	}
 
@@ -1536,11 +1542,13 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 			checkScreenState();
 		}
 		
+		#if com.stencyl.label
 		//If this actor has a label, set the label's alpha to match the actor's alpha.
 		if(label != null)
 		{
 			label.setAlpha(alpha);
 		}
+		#end
 	}
 	
 	//doAll prevents super.update from being called, which can often muck with

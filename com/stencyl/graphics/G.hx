@@ -18,7 +18,6 @@ import com.stencyl.models.Actor;
 import com.stencyl.models.Font;
 import com.stencyl.utils.Utils;
 
-import com.stencyl.graphics.fonts.Label;
 import com.stencyl.graphics.fonts.BitmapFont;
 
 class G 
