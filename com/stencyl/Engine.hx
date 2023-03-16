@@ -820,7 +820,15 @@ class Engine
 		loadedBitmaps = new WeakMap<#if !js BitmapData, #end BitmapTilesetMapping>();
 		#end
 		
-		begin(Config.initSceneID);
+		var initSceneID = Config.initSceneID;
+		#if testing
+		var launchVars = getLaunchVars();
+		if(launchVars.exists("startingScene"))
+		{
+			initSceneID = Std.parseInt(launchVars.get("startingScene"));
+		}
+		#end
+		begin(initSceneID);
 		
 		#if flash
 		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 2);

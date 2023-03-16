@@ -254,11 +254,7 @@ class ToolsetInterface
 				{
 					var sceneID = Std.parseInt(header.get("Scene-ID"));
 
-					if(ToolsetInterface.ready)
-						Engine.engine.switchScene(sceneID);
-					else
-						Config.initSceneID = sceneID;
-					
+					Engine.engine.switchScene(sceneID);
 				}
 				
 			#if !(scriptable || cppia)
