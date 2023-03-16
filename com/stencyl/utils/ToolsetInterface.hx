@@ -108,14 +108,21 @@ class ToolsetInterface
 	private function connectHandler(event:Event):Void
 	{
 		trace("connectHandler: " + event);
-		if(Config.buildConfig != null)
-		{
-			sendData
-			(
-				["Content-Type" => "Client-Registration", "Project-Name" => Config.projectName],
-				haxe.Json.stringify(Config.buildConfig)
-			);
-		}
+		var connectionDetails:Map<String,String> = [
+			"Content-Type" => "Client-Registration",
+			"Project-Name" => Config.projectName,
+			"Build-Record" => Config.buildRecord,
+			"Build-Time" => Config.buildTime
+		];
+
+		#if testing
+		var launchVars:Map<String, String> = Reflect.field(Type.resolveClass("ApplicationMain"), "launchVars");
+		var gameSession = launchVars.get("gameSession");
+		if(gameSession != null)
+			connectionDetails.set("Attach-To-Session", gameSession);
+		#end
+
+		sendData(connectionDetails, null);
 	}
 
 	private function ioErrorHandler(event:IOErrorEvent):Void

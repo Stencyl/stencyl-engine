@@ -36,7 +36,8 @@ class Config
 	public static var toolsetInterfaceHost:String;
 	public static var toolsetInterfacePort:Null<Int>;
 	public static var projectName:String;
-	public static var buildConfig:Dynamic;
+	public static var buildRecord:String;
+	public static var buildTime:String;
 
 	//Other
 	public static var releaseMode:Bool;
@@ -172,7 +173,8 @@ class Config
 		toolsetInterfaceHost = data.toolsetInterfaceHost;
 		toolsetInterfacePort = data.toolsetInterfacePort;
 		projectName = data.projectName;
-		buildConfig = data.buildConfig;
+		buildRecord = data.buildRecord;
+		buildTime = data.buildTime;
 
 		#if(flash || html5)
 		lockURL = data.lockURL;
