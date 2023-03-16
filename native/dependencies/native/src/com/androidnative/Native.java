@@ -6,7 +6,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.haxe.lime.*;
 import org.haxe.extension.Extension;
@@ -252,6 +254,26 @@ public class Native extends Extension
         prefEditor.putString (inId, "");
         prefEditor.commit ();
         
+    }
+
+    public static String[] getIntentExtraStrings()
+    {
+    	Bundle extras = mainActivity.getIntent().getExtras();
+    	if(extras == null)
+    		return new String[0];
+
+    	List<String> keyValues = new ArrayList<>();
+    	for(String key : extras.keySet())
+    	{
+    		String value = extras.getString(key);
+    		if(value != null)
+    		{
+    			keyValues.add(key);
+    			keyValues.add(value);
+    		}
+    	}
+
+        return keyValues.toArray(new String[0]);
     }
     
     static public void setText(final String newText)

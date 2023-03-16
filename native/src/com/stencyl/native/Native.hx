@@ -383,6 +383,19 @@ class Native extends Extension
 		return true;
 	}
 
+	#if android
+	public static function getIntentExtras():Map<String, String>
+	{
+		if(funcGetIntentExtraStrings == null)
+		{
+			funcGetIntentExtraStrings = JNI.createStaticMethod("com/androidnative/Native", "getIntentExtraStrings", "()[Ljava/lang/String;", true);
+		}
+		
+		var extras = funcGetIntentExtraStrings([]);
+		return [for(i in 0...Std.int(extras.length/2)) extras[i*2] => extras[i*2+1]];
+	}
+	#end
+
 	/**
 	 * Insets from the four sides, in pixels, given the current device orientation.
 	 */
@@ -426,6 +439,7 @@ class Native extends Extension
 	private static var funcGetPreference:Dynamic;
 	private static var funcSetPreference:Dynamic;
 	private static var funcClearPreference:Dynamic;
+	private static var funcGetIntentExtraStrings:Dynamic;
 	private static var funcGetSafeInsetLeft:Dynamic;
 	private static var funcGetSafeInsetTop:Dynamic;
 	private static var funcGetSafeInsetRight:Dynamic;

@@ -4344,4 +4344,11 @@ class Engine
 	{
 		Reflect.callMethod(am, Reflect.field(am, "reloadTracingConfig"), []);
 	}
+
+	#if testing
+	public static function getLaunchVars():Map<String, String>
+	{
+		return Reflect.field(am, "launchVars");
+	}
+	#end
 }

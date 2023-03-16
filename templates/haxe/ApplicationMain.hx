@@ -40,9 +40,16 @@ using StringTools;
 	private static var universal:Universal;
 	private static var extensions:Array<Extension>;
 	private static var originalHaxeTrace:Dynamic;
-	
+	#if testing
+	private static var launchVars:Map<String, String>;
+	#end
+
 	public static function main ()
 	{
+		#if testing
+		loadLaunchVars();
+		#end
+
 		#if cppia
 		if(StencylCppia.gamePath != null)
 			Sys.setCwd(StencylCppia.gamePath);
@@ -107,6 +114,34 @@ using StringTools;
 		Lib.current.addChild(universal);
 		preloaderComplete();
 	}
+
+	#if testing
+	private static function loadLaunchVars()
+	{
+		launchVars = [];
+		#if flash
+		for(field in Reflect.fields(Lib.current.loaderInfo.parameters))
+		{
+			launchVars[field] = Reflect.field(Lib.current.loaderInfo.parameters, field);
+		}
+		#elseif html5
+		var params = new js.html.URL(js.Browser.location.href).searchParams;
+		params.forEach((value, key) -> {
+			launchVars.set(key, value);
+		});
+		#elseif android
+		launchVars = com.stencyl.native.Native.getIntentExtras();
+		#elseif sys
+		for(arg in Sys.args())
+		{
+			var equalsIndex = arg.indexOf("=");
+			if(equalsIndex < 1 || equalsIndex == arg.length - 1) continue;
+			launchVars[arg.substring(0, equalsIndex)] = arg.substring(equalsIndex + 1);
+		}
+		#end
+		trace("Launch Vars: " + launchVars);
+	}
+	#end
 
 	public static function create (config):Void
 	{
