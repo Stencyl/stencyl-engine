@@ -1,6 +1,6 @@
-#if use_actor_tilemap
-
 package com.stencyl.graphics;
+
+#if use_actor_tilemap
 
 import openfl.display.BitmapData;
 
