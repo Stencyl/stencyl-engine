@@ -408,6 +408,14 @@ using StringTools;
 		#if testing
 
 		#if flash
+		//Since flash output is written to a predetermined file that's the same
+		//for all sessions, we need to mark the session ID to determine which
+		//session the log output corresponds to.
+
+		var gameSession = launchVars.get("gameSession");
+		if(gameSession == null) gameSession = "0";
+		flash.Lib.trace("gameSession="+gameSession);
+
 		HaxeLog.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
 		#end
 
