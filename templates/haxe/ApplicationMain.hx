@@ -50,16 +50,17 @@ using StringTools;
 		loadLaunchVars();
 		#end
 
+		configureTracing();
+
+		trace("Launch Vars: " + launchVars);
+		
 		#if cppia
 		if(StencylCppia.gamePath != null)
 			Sys.setCwd(StencylCppia.gamePath);
 		#end
 		
-		configureHaxeTracing();
-		
 		Config.load();
 		Input.loadInputConfig();
-		reloadTracingConfig();
 		
 		System.__registerEntryPoint ("::APP_FILE::", create);
 		
@@ -139,7 +140,6 @@ using StringTools;
 			launchVars[arg.substring(0, equalsIndex)] = arg.substring(equalsIndex + 1);
 		}
 		#end
-		trace("Launch Vars: " + launchVars);
 	}
 	#end
 
@@ -331,7 +331,7 @@ using StringTools;
 		catch(e:Dynamic)
 		{
 			#if stencyltools
-			if(Config.useGciLogging)
+			if(ToolsetInterface.handlesLogging)
 			{
 				trace(e + Utils.printExceptionstackIfAvailable());
 				ToolsetInterface.preloadedUpdate();
@@ -389,7 +389,7 @@ using StringTools;
 		} catch (e:Dynamic) {
 			
 			#if stencyltools
-			if(Config.useGciLogging)
+			if(ToolsetInterface.handlesLogging)
 			{
 				trace(e + Utils.printExceptionstackIfAvailable());
 				ToolsetInterface.preloadedUpdate();
@@ -403,43 +403,38 @@ using StringTools;
 		#end
 	}
 	
-	public static function configureHaxeTracing():Void
+	public static function configureTracing():Void
 	{
-		#if (flash9 || flash10)
-		HaxeLog.trace = function(v,?pos) { untyped __global__["trace"]("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"):",v); }
-		#elseif flash
+		#if testing
+
+		#if flash
 		HaxeLog.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
 		#end
-		
+
 		originalHaxeTrace = HaxeLog.trace;
 		LimeLog.level = VERBOSE;
+
+		#if stencyltools
+		if(launchVars.get("trace") == "gci")
+		{
+			HaxeLog.trace = ToolsetInterface.gciTrace;
+			ToolsetInterface.handlesLogging = true;
+		}
+		#end
+
+		#else
+
+		HaxeLog.trace = function(v,?pos) { };
+		LimeLog.level = NONE;
+
+		#end
 	}
 	
-	public static function reloadTracingConfig():Void
-	{
-		if(!Config.releaseMode)
-		{
-			HaxeLog.trace = originalHaxeTrace;
-			
-			#if stencyltools
-			if(Config.useGciLogging)
-				HaxeLog.trace = ToolsetInterface.gciTrace;
-			#end
-
-			LimeLog.level = VERBOSE;
-		}
-		else
-		{
-			HaxeLog.trace = function(v,?pos) { };
-			LimeLog.level = NONE;
-		}
-	}
-
 	static function uncaughtErrorHandler(event:UncaughtErrorEvent):Void
 	{
 		#if (html5 && stencyltools)
 		
-		if(Config.useGciLogging && Reflect.hasField(event.error, "stack"))
+		if(ToolsetInterface.handlesLogging && Reflect.hasField(event.error, "stack"))
 		{
 			trace(event.error.stack);
 		}

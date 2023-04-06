@@ -41,7 +41,6 @@ class Config
 
 	//Other
 	public static var releaseMode:Bool;
-	public static var useGciLogging:Bool;
 	public static var showConsole:Bool;
 	public static var debugDraw:Bool;
 	public static var disableBackButton:Bool;
@@ -128,9 +127,6 @@ class Config
 						case "disposeImages", "physicsMode":
 							needsGameReload = true;
 
-						case "releaseMode", "useGciLogging":
-							Engine.reloadTracingConfig();
-
 						case "showConsole":
 							Engine.engine.setStatsVisible(showConsole);
 
@@ -167,7 +163,6 @@ class Config
 		showConsole = data.showConsole;
 		debugDraw = data.debugDraw;
 		disableBackButton = data.disableBackButton;
-		useGciLogging = data.useGciLogging;
 		keys = asMap(data.keys);
 		scales = (data.scales : Array<String>).map(Scale.fromString).array();
 		toolsetInterfaceHost = data.toolsetInterfaceHost;

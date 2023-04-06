@@ -24,6 +24,7 @@ class ToolsetInterface
 	public static var connected(default, null):Bool = false;
 	public static var ready(default, null):Bool = false;
 
+	public static var handlesLogging = false;
 	public static var assetUpdatedListeners = new Map<String, Array<Listener>>();
 
 	#if !(scriptable || cppia)
