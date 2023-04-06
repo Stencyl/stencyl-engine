@@ -147,9 +147,10 @@ using StringTools;
 	{
 		#if stencyltools
 		{
-			var startTime = Timer.stamp();
+			var startTime = 0.0;
 			var tryTimeout = function() {
-				if(!ToolsetInterface.connected && Timer.stamp() - startTime > #if flash 5 #else 2 #end)
+				if(startTime == 0.0) startTime = Timer.stamp() - 0.01;
+				if(!ToolsetInterface.connected && Timer.stamp() - startTime > 2)
 				{
 					ToolsetInterface.cancelConnection();
 				}
