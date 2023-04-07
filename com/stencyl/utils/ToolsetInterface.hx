@@ -389,12 +389,15 @@ class ToolsetInterface
 			}
 			else
 			{
+				var extra = Log.getExtraInfo(pos);
 				instance.sendData
 				(
 					["Content-Type" => "Log",
 					"Class" => pos.className,
 					"Method" => pos.methodName,
-					"Line" => ""+pos.lineNumber],
+					"Line" => ""+pos.lineNumber,
+					"Level" => ""+(extra.level:Int),
+					"Time" => ""+extra.time],
 					"" + v
 				);
 			}
@@ -403,6 +406,7 @@ class ToolsetInterface
 		{
 			if(traceQueue == null)
 				traceQueue = [];
+			Log.ensureStamped(pos, INFO);
 			traceQueue.push({v: v, pos: pos});
 		}
 	}
@@ -411,12 +415,15 @@ class ToolsetInterface
 	{
 		if(ToolsetInterface.connected)
 		{
+			var extra = Log.getExtraInfo(pos);
 			instance.sendBinaryData
 			(
 				["Content-Type" => "ImageLog",
 				"Class" => pos.className,
 				"Method" => pos.methodName,
-				"Line" => ""+pos.lineNumber],
+				"Line" => ""+pos.lineNumber,
+				"Level" => ""+(extra.level:Int),
+				"Time" => ""+extra.time],
 				img.encode(img.rect, new PNGEncoderOptions())
 			);
 		}

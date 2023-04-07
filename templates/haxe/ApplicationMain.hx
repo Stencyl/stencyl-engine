@@ -25,7 +25,7 @@ import openfl.events.ErrorEvent;
 import openfl.errors.Error;
 
 import haxe.Log in HaxeLog;
-import lime.utils.Log in LimeLog;
+import com.stencyl.utils.Log;
 
 using StringTools;
 
@@ -416,11 +416,14 @@ using StringTools;
 		if(gameSession == null) gameSession = "0";
 		flash.Lib.trace("gameSession="+gameSession);
 
-		HaxeLog.trace = function(v,?pos) { flash.Lib.trace("Stencyl:" + pos.className+"#"+pos.methodName+"("+pos.lineNumber+"): "+v); }
+		HaxeLog.trace = function(v:String,?pos:haxe.PosInfos) {
+			var extra = Log.getExtraInfo(pos);
+			flash.Lib.trace('Stencyl:${extra.time}:${extra.level}:${pos.className}:${pos.methodName}:${pos.lineNumber}:$v');
+		}
 		#end
 
 		originalHaxeTrace = HaxeLog.trace;
-		LimeLog.level = VERBOSE;
+		Log.level = VERBOSE;
 
 		#if stencyltools
 		if(launchVars.get("trace") == "gci")
@@ -433,7 +436,7 @@ using StringTools;
 		#else
 
 		HaxeLog.trace = function(v,?pos) { };
-		LimeLog.level = NONE;
+		Log.level = NONE;
 
 		#end
 	}
