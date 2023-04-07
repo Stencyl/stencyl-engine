@@ -34,7 +34,7 @@ class SpriteReader implements AbstractReader
 	
 	public function read(obj:Dynamic):Resource
 	{
-		//trace("Reading Sprite (" + ID + ") - " + name);
+		//Log.verbose("Reading Sprite (" + ID + ") - " + name);
 		
 		var r:MbsSprite = cast obj;
 		

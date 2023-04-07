@@ -18,7 +18,7 @@ class FontReader implements AbstractReader
 	
 	public function read(obj:Dynamic):Resource
 	{
-		//trace("Reading Font (" + ID + ") - " + name);
+		//Log.verbose("Reading Font (" + ID + ") - " + name);
 		
 		var r:MbsFont = cast obj;
 

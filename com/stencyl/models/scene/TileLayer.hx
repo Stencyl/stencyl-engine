@@ -17,6 +17,7 @@ import com.stencyl.behavior.BehaviorInstance;
 import com.stencyl.graphics.EngineScaleUpdateListener;
 import com.stencyl.models.Scene;
 import com.stencyl.models.collision.Grid;
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
 class TileLayer extends Sprite implements EngineScaleUpdateListener
@@ -230,7 +231,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 
 	public function updateAutotilesNear(yc:Int, xc:Int):Void
 	{
-		//trace('update near $xc, $yc');
+		//Log.verbose('update near $xc, $yc');
 		for(y in yc - 1...yc + 2)
 		{
 			for (x in xc - 1...xc + 2)
@@ -265,7 +266,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 			return;
 		}
 		
-		//trace('Update autotile: $x, $y');
+		//Log.verbose('Update autotile: $x, $y');
 
     	var autotileFlags = 0;
     	
@@ -285,7 +286,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
     		autotileFlags |= flag;
     	}
     	
-    	//trace('Adding flags: $autotileFlags');
+    	//Log.verbose('Adding flags: $autotileFlags');
 
     	autotileData[y][x] = t.autotileFormat.animIndex[autotileFlags];
     }
@@ -354,7 +355,7 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 				#if debug
 				if(!t.parent.graphicsLoaded)
 				{
-					trace("Warning: atlas unloaded for tileset \"" + t.parent.name + "\"");
+					Log.warn("Warning: atlas unloaded for tileset \"" + t.parent.name + "\"");
 					x++;
 					px += tw;
 					continue;

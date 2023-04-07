@@ -2,6 +2,8 @@ package com.stencyl.graphics;
 
 #if ((lime_opengl || lime_opengles || lime_webgl) && use_actor_tilemap)
 
+import com.stencyl.utils.Log;
+
 import haxe.io.Bytes;
 
 import lime.graphics.opengl.GLTexture;
@@ -31,7 +33,7 @@ class DynamicTileset
 	
 	public function new()
 	{
-		trace("Creating new dynamic tileset (size: " + GLUtil.textureMaxSize + ")");
+		Log.debug("Creating new dynamic tileset (size: " + GLUtil.textureMaxSize + ")");
 		
 		tileset = new Tileset(GLUtil.createNewTexture(GLUtil.textureMaxSize));
 		texture = @:privateAccess tileset.bitmapData.__texture.__textureID;
@@ -69,7 +71,7 @@ class DynamicTileset
 	
 	public function addFrames(frames:Array<BitmapData>):Int
 	{
-		//trace("Adding " + frames.length + " frames to dynamicTileset.");
+		//Log.verbose("Adding " + frames.length + " frames to dynamicTileset.");
 		
 		@:privateAccess var offset = tileset.__data.length;
 		
@@ -92,7 +94,7 @@ class DynamicTileset
 				nextLine = Std.int(point.y + frame.height + FRAME_PADDING);
 		}
 		
-		//trace(newRects);
+		//Log.verbose(newRects);
 		
 		var gl = GLUtil.gl;
 		var internalFormat = TextureBase.__textureInternalFormat;
@@ -123,7 +125,7 @@ class DynamicTileset
 	
 	public function addFramesFromStrip(imgData:BitmapData, frameWidth:Int, frameHeight:Int, framesAcross:Int, frameCount:Int):Int
 	{
-		//trace("Adding " + frameCount + " frames to dynamicTileset.");
+		//Log.verbose("Adding " + frameCount + " frames to dynamicTileset.");
 		
 		@:privateAccess var offset = tileset.__data.length;
 		

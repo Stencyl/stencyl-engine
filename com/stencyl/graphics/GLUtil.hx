@@ -2,6 +2,8 @@ package com.stencyl.graphics;
 
 #if (lime_opengl || lime_opengles || lime_webgl)
 
+import com.stencyl.utils.Log;
+
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.RenderContext;
 
@@ -34,7 +36,7 @@ class GLUtil
 		@:privateAccess renderer = cast com.stencyl.Engine.stage.__renderer;
 		
 		textureMaxSize = cast gl.getParameter(gl.MAX_TEXTURE_SIZE);
-		trace("GL value of MAX_TEXTURE_SIZE: " + textureMaxSize);
+		Log.debug("GL value of MAX_TEXTURE_SIZE: " + textureMaxSize);
 		
 		textureMaxSize = Std.int(textureMaxSize / 2);
 		if(textureMaxSize > MAX_TEXTURE_CAP)

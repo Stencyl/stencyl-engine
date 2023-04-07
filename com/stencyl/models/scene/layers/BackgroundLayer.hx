@@ -11,6 +11,7 @@ import com.stencyl.Config;
 import com.stencyl.models.scene.ScrollingBitmap;
 import com.stencyl.models.background.ImageBackground;
 import com.stencyl.models.background.ScrollingBackground;
+import com.stencyl.utils.Log;
 
 class BackgroundLayer extends RegularLayer
 {
@@ -45,7 +46,7 @@ class BackgroundLayer extends RegularLayer
 	{
 		if(model == null || model.img == null)
 		{
-			trace("Warning: Could not load a background. Ignoring...");
+			Log.warn("Warning: Could not load a background. Ignoring...");
             return;
 		}
 

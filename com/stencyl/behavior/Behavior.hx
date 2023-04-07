@@ -1,5 +1,6 @@
 package com.stencyl.behavior;
 
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
 import openfl.display.Graphics;
@@ -54,8 +55,8 @@ class Behavior
 			
 			catch(e:String)
 			{
-				trace("Could not load: " + classname);
-				trace(e);
+				Log.error("Could not load: " + classname);
+				Log.error(e);
 			}
 		}
 		
@@ -73,7 +74,7 @@ class Behavior
 	{
 		if(cls == null)
 		{
-			trace("Could not init Behavior: " + name + " with " + classname);
+			Log.error("Could not init Behavior: " + name + " with " + classname);
 			script = new SceneScript();
 			return;
 		}
@@ -82,7 +83,7 @@ class Behavior
 		{
 			if (Type.getClass(parent) == Engine)
 			{
-				trace("Actor behavior " + name + " failed to init because parent is scene.  Open and save the scene to resolve this error.");
+				Log.error("Actor behavior " + name + " failed to init because parent is scene.  Open and save the scene to resolve this error.");
 				script = new SceneScript();
 				return;
 			}
@@ -92,7 +93,7 @@ class Behavior
 		{
 			if (Type.getClass(parent) == com.stencyl.models.Actor)
 			{
-				trace("Scene behavior " + name + " failed to init because parent is actor.  Open and save the actor to resolve this error.");
+				Log.error("Scene behavior " + name + " failed to init because parent is actor.  Open and save the actor to resolve this error.");
 				script = new SceneScript();
 				return;
 			}
@@ -112,7 +113,7 @@ class Behavior
 			
 			catch(e:String)
 			{
-				trace
+				Log.error
 				(
 					"Error in when created for behavior: " + name + "\n" + e + Utils.printExceptionstackIfAvailable()
 				);
@@ -228,7 +229,7 @@ class Behavior
 			
 			catch(e:String)
 			{
-				trace("Could not init attribute: " + a.fieldName + " - " + e + Utils.printExceptionstackIfAvailable());
+				Log.error("Could not init attribute: " + a.fieldName + " - " + e + Utils.printExceptionstackIfAvailable());
 			}
 		}
 	}

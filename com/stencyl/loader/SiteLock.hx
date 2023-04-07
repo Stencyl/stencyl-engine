@@ -54,20 +54,20 @@ class SiteLock extends Sprite
 			if(currURL == null)
 			{
 				locked = false;
-				//trace("Local - HTML5");
+				//Log.verbose("Local - HTML5");
 			}
 			
 			else if(currURL.indexOf("http://") < 0 && currURL.indexOf("https://") < 0)
 			{
 				locked = false;
-				//trace("Local - Flash");
+				//Log.verbose("Local - Flash");
 			}
 			
 			//TODO: What if the site's URL coincidentally contains localhost? Tricked.
 			else if((currURL.indexOf("stencyl.com") > 0) || (currURL.indexOf("localhost") > 0))
 			{
 				locked = false;
-				//trace("OK - Stencyl.com or localhost");
+				//Log.verbose("OK - Stencyl.com or localhost");
 			}
 			
 			if(locked)

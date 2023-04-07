@@ -8,6 +8,7 @@ import openfl.display.Shape;
 
 import com.stencyl.Engine;
 import com.stencyl.utils.motion.*;
+import com.stencyl.utils.Log;
 
 class BlindsTransition extends Transition
 {
@@ -43,7 +44,7 @@ class BlindsTransition extends Transition
 		}
 		else
 		{
-			trace("Invalid transition direction: " + direction);
+			Log.error("Invalid transition direction: " + direction);
 			complete = true;
 		}
 	}

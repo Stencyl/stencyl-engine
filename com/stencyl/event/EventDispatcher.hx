@@ -28,7 +28,7 @@ class EventDispatcher
 				{
 					#if debug_event_dispatch
 					var posinfo = $event.posInfos[$event._dispatchIndex];
-					trace("Call event from: " + posinfo.fileName + ":" + posinfo.lineNumber);
+					com.stencyl.utils.Log.verbose("Call event from: " + posinfo.fileName + ":" + posinfo.lineNumber);
 					#end
 					try
 					{
@@ -36,7 +36,7 @@ class EventDispatcher
 					}
 					catch(e:Dynamic)
 					{
-						trace(e + com.stencyl.utils.Utils.printExceptionstackIfAvailable());
+						com.stencyl.utils.Log.error(e + com.stencyl.utils.Utils.printExceptionstackIfAvailable());
 					}
 					++$event._dispatchIndex;
 				}

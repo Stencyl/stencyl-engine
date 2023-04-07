@@ -338,7 +338,7 @@ class G
 
 				drawnStringCache.set(cacheKey, temp);
 				drawnStringCacheKeys.push(cacheKey);
-				//trace("Added drawString image to cache: " + cacheKey);
+				//Log.verbose("Added drawString image to cache: " + cacheKey);
 			}
 		}
 
@@ -364,7 +364,7 @@ class G
 				drawnStringCache.remove(drawnStringCacheKeys[i]);
 				drawnStringCacheKeys[i] = drawnStringCacheKeys[drawnStringCacheKeys.length - 1];
 				drawnStringCacheKeys.pop();
-				//trace("Removed drawString image from cache: " + key);
+				//Log.verbose("Removed drawString image from cache: " + key);
 			}
 		}
 	}

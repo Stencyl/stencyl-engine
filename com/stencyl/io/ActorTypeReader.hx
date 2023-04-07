@@ -25,7 +25,7 @@ class ActorTypeReader implements AbstractReader
 	
 	public function read(obj:Dynamic):Resource
 	{
-		//trace("Reading ActorType (" + ID + ") - " + name);
+		//Log.verbose("Reading ActorType (" + ID + ") - " + name);
 		
 		var r:MbsActorType = cast obj;
 

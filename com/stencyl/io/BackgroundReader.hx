@@ -23,7 +23,7 @@ class BackgroundReader implements AbstractReader
 	
 	public function read(obj:Dynamic):Resource
 	{
-		//trace("Reading Background (" + ID + ") - " + name);
+		//Log.verbose("Reading Background (" + ID + ") - " + name);
 		
 		var r:MbsBackground = cast obj;
 

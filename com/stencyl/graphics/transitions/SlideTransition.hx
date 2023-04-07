@@ -9,6 +9,7 @@ import openfl.display.Shape;
 
 import com.stencyl.Engine;
 import com.stencyl.utils.motion.*;
+import com.stencyl.utils.Log;
 
 class SlideTransition extends Transition
 {
@@ -67,7 +68,7 @@ class SlideTransition extends Transition
 		}
 		else
 		{
-			trace("Invalid slide direction: " + slideDirection);
+			Log.error("Invalid slide direction: " + slideDirection);
 			complete = true;
 		}		
 	}

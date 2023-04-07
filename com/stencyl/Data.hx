@@ -26,6 +26,7 @@ import com.stencyl.models.actor.Sprite;
 import com.stencyl.utils.Assets;
 import com.stencyl.utils.LazyIntMap;
 import com.stencyl.utils.LazyStringMap;
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
 import mbs.core.MbsObject;
@@ -207,7 +208,7 @@ class Data
 		var id:Null<Int> = resourceNameLookup.get(name);
 		if(id == null)
 		{
-			trace("Error: Resource with name " + name + " doesn't exist." + Utils.printCallstackIfAvailable());
+			Log.error("Error: Resource with name " + name + " doesn't exist." + Utils.printCallstackIfAvailable());
 			return null;
 		}
 		
@@ -219,7 +220,7 @@ class Data
 		var address:Null<Int> = resourceLookup.get(id);
 		if(address == null)
 		{
-			trace("Error: resource with id " + id + " doesn't exist." + Utils.printCallstackIfAvailable());
+			Log.error("Error: resource with id " + id + " doesn't exist." + Utils.printCallstackIfAvailable());
 			return null;
 		}
 		var obj:MbsObject = cast MbsDynamicHelper.readDynamicUsingPool(resourceListMbs, address, resourceReaderPool);
@@ -312,7 +313,7 @@ class Data
 	
 	public function loadAtlas(atlasID:Int)
 	{
-		trace("Load Atlas: " + atlasID);
+		Log.debug("Load Atlas: " + atlasID);
 	
 		var atlas = GameModel.get().atlases.get(atlasID);
 		
@@ -335,7 +336,7 @@ class Data
 	public function unloadAtlas(atlasID:Int)
 	{
 		#if (cpp || hl)
-		trace("Unload Atlas: " + atlasID);
+		Log.debug("Unload Atlas: " + atlasID);
 		
 		var atlas = GameModel.get().atlases.get(atlasID);
 		

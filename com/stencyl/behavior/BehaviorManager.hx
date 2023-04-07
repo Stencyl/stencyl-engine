@@ -1,5 +1,6 @@
 package com.stencyl.behavior;
 
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
 class BehaviorManager
@@ -64,8 +65,8 @@ class BehaviorManager
 			
 				catch(e:String)
 				{
-					trace("Error in when created for behavior: " + bObj.name);
-					trace(e + Utils.printExceptionstackIfAvailable());
+					Log.error("Error in when created for behavior: " + bObj.name);
+					Log.error(e + Utils.printExceptionstackIfAvailable());
 				}
 			}
 			
@@ -120,7 +121,7 @@ class BehaviorManager
 
 			if(field == null && !ReflectionHelper.hasField(b.script.wrapper.classname, attributeName))
 			{
-				trace("Get Warning: Attribute " + attributeName + " does not exist for " + behaviorName + Utils.printCallstackIfAvailable());
+				Log.warn("Get Warning: Attribute " + attributeName + " does not exist for " + behaviorName + Utils.printCallstackIfAvailable());
 			}
 			
 			return field;
@@ -128,7 +129,7 @@ class BehaviorManager
 		
 		else
 		{
-			trace("Warning: Behavior does not exist - " + behaviorName + Utils.printCallstackIfAvailable());
+			Log.warn("Warning: Behavior does not exist - " + behaviorName + Utils.printCallstackIfAvailable());
 		}
 		
 		return null;
@@ -148,13 +149,13 @@ class BehaviorManager
 			
 			else
 			{
-				trace("Set Warning: Attribute " + attributeName + " does not exist for " + behaviorName + Utils.printCallstackIfAvailable());
+				Log.warn("Set Warning: Attribute " + attributeName + " does not exist for " + behaviorName + Utils.printCallstackIfAvailable());
 			}
 		}
 		
 		else
 		{
-			trace("Warning: Behavior does not exist - " + behaviorName + Utils.printCallstackIfAvailable());	
+			Log.warn("Warning: Behavior does not exist - " + behaviorName + Utils.printCallstackIfAvailable());	
 		}
 	}
 

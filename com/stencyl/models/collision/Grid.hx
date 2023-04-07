@@ -9,6 +9,7 @@ import openfl.geom.Rectangle;
 import com.stencyl.models.actor.Collision;
 import com.stencyl.models.GameModel;
 
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
 /**
@@ -104,7 +105,7 @@ class Grid extends Hitbox
 		// check that tile is valid
 		if (column < 0 || column > columns - 1 || row < 0 || row > rows - 1)
 		{
-			//trace('Tile out of bounds: ' + column + ', ' + row);
+			//Log.error('Tile out of bounds: ' + column + ', ' + row);
 			return false;
 		}
 		else
@@ -296,7 +297,7 @@ class Grid extends Hitbox
 			_tile.y += _tile.height;
 		}
 #else
-		trace('Pixelmasks will not work in targets other than flash due to hittest not being implemented in openfl.');
+		Log.warn('Pixelmasks will not work in targets other than flash due to hittest not being implemented in openfl.');
 #end
 		return false;
 	}

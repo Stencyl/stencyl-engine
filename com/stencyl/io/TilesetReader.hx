@@ -23,7 +23,7 @@ class TilesetReader implements AbstractReader
 	
 	public function read(obj:Dynamic):Resource
 	{
-		//trace("Reading Tileset (" + ID + ") - " + name);
+		//Log.verbose("Reading Tileset (" + ID + ") - " + name);
 
 		var r:MbsTileset = cast obj;
 

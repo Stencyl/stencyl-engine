@@ -2,6 +2,7 @@ package com.stencyl;
 
 import com.stencyl.gestures.*;
 import com.stencyl.Config;
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
 import openfl.events.Event;
@@ -805,7 +806,7 @@ class Input
 	
 	private static function onJoystickConnected(joystick:Joystick)
 	{
-		trace("Connected Joystick: " + joystick.name);
+		Log.info("Connected Joystick: " + joystick.name);
 		
 		var joystate = new JoystickState(joystick);
 		_joyState.set(joystick.id, joystate);
@@ -831,7 +832,7 @@ class Input
 		});
 
 		joystick.onDisconnect.add (function () {
-			trace("Disconnected Joystick: " + joystick.name);
+			Log.info("Disconnected Joystick: " + joystick.name);
 			_joyState.remove(joystick.id);
 		});
 	}

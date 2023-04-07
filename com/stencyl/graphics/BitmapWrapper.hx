@@ -12,6 +12,7 @@ import openfl.geom.Point;
 
 import com.stencyl.Engine;
 import com.stencyl.utils.motion.*;
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
 class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #end implements EngineScaleUpdateListener
@@ -56,7 +57,7 @@ class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #en
 		#end
 		else
 		{
-			trace("Couldn't initialize bitmap wrapper");
+			Log.error("Couldn't initialize bitmap wrapper");
 		}
 	}
 

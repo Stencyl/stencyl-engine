@@ -893,13 +893,13 @@ class Utils
 		} catch (error:String) {
 			if(error == "deep clone")
 			{
-				trace("Error: can't save attribute due to recursion [name=" + name + "]");
+				Log.error("Error: can't save attribute due to recursion [name=" + name + "]");
 			}
 			#if (cpp || hl)
 			else if(error.indexOf("Invalid field:") == 0)
 			{
-				trace("Error: can't save attribute due to contained properties [name=" + name + ", value=" + value+"]");
-				trace(error);
+				Log.error("Error: can't save attribute due to contained properties [name=" + name + ", value=" + value+"]");
+				Log.error(error);
 			}
 			#end
 			else throw error;
@@ -948,7 +948,7 @@ class Utils
 		
 		catch(e:Dynamic) 
 		{
-			trace("Error: Failed to flush save file: " + e);
+			Log.error("Error: Failed to flush save file: " + e);
 			if (onComplete != null)
 				onComplete(false);
 			return;
@@ -1003,7 +1003,7 @@ class Utils
 	{
 		#if mobile
 		var path = SharedObject.__getPath("", name);
-		trace(path + " exists? " + FileSystem.exists(path));
+		Log.debug(path + " exists? " + FileSystem.exists(path));
 		
 		if(overwrite || !FileSystem.exists(path))
 		{
@@ -1011,7 +1011,7 @@ class Utils
 			
 			if(data != null && data != "")
 			{
-				trace("Converting old data");
+				Log.debug("Converting old data");
 				try
 				{
 					var directory = Path.directory(path);
@@ -1027,12 +1027,12 @@ class Utils
 					
 					if(FileSystem.exists(path))
 					{
-						trace("Legacy data converted successfully");
+						Log.debug("Legacy data converted successfully");
 					}
 				}
 				catch(e:Dynamic)
 				{
-					trace(e);
+					Log.error(e);
 				}
 			}
 		}
@@ -1103,7 +1103,7 @@ class Utils
 		}
 		catch(msg:String)
 		{
-			trace("(You probably have a old browser) Error occurred: " + msg);
+			Log.error("(You probably have a old browser) Error occurred: " + msg);
 			return cast Future.withError("(You probably have a old browser) Error occurred: " + msg);
 		}
 		

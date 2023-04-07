@@ -7,6 +7,7 @@ import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.actor.Sprite;
 import com.stencyl.graphics.DynamicTileset;
 import com.stencyl.utils.Assets;
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 import com.stencyl.Engine;
 import box2D.dynamics.B2FixtureDef;
@@ -140,7 +141,7 @@ class Animation
 
 		if(imgData.rect == null)
 		{
-			trace("Error: trying to load from a disposed BitmapData. " + Utils.printCallstackIfAvailable());
+			Log.error("Error: trying to load from a disposed BitmapData. " + Utils.printCallstackIfAvailable());
 			imgData = null;
 		}
 		
@@ -187,7 +188,7 @@ class Animation
 			for(frame in frames)
 			{
 				com.stencyl.graphics.GLUtil.uploadTexture(frame, true);
-				//@:privateAccess trace("Uploaded texture for " + parent.name + " frame " + (i++) + " to gpu texture " + frame.__texture.__textureID);
+				//@:privateAccess Log.verbose("Uploaded texture for " + parent.name + " frame " + (i++) + " to gpu texture " + frame.__texture.__textureID);
 			}
 		}
 		#end
@@ -236,9 +237,9 @@ class Animation
 			null
 		);*/
 		//XXX: This is based on the assumption that the associated actorType is the previous resource ID
-		trace("Can't get actor image with disposeImages enabled: " + Data.get().resources.get(parent.ID - 1).name);
+		Log.error("Can't get actor image with disposeImages enabled: " + Data.get().resources.get(parent.ID - 1).name);
 		#else
-		trace("Can't get actor image with disposeImages enabled: " + Data.get().resources.get(parent.ID - 1).name);
+		Log.error("Can't get actor image with disposeImages enabled: " + Data.get().resources.get(parent.ID - 1).name);
 		#end
 		
 		return false;
@@ -262,9 +263,7 @@ class Animation
 		
 		Engine.engine.loadedAnimations.push(this);
 		
-		//@:privateAccess trace("Uploaded textures for " + parent.name + " (" + frameCount + " frames) to gpu texture " + tileset.tileset.bitmapData.__texture.__textureID);
-		
-		//trace(Config.disposeImages);
+		//@:privateAccess Log.verbose("Uploaded textures for " + parent.name + " (" + frameCount + " frames) to gpu texture " + tileset.tileset.bitmapData.__texture.__textureID);
 		
 		if(Config.disposeImages && parent != null && !parent.readableImages)
 		{

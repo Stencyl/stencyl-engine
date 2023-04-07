@@ -20,7 +20,7 @@ class SoundReader implements AbstractReader
 	
 	public function read(obj:Dynamic):Resource
 	{
-		//trace("Reading Sound (" + ID + ") - " + name);
+		//Log.verbose("Reading Sound (" + ID + ") - " + name);
 
 		var r:MbsMusic = cast obj;
 

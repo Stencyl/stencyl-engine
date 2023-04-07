@@ -14,6 +14,7 @@ import com.stencyl.Config;
 import com.stencyl.Engine;
 import com.stencyl.graphics.Scale;
 import com.stencyl.graphics.ScaleMode;
+import com.stencyl.utils.Log;
 
 class Universal extends Sprite 
 {
@@ -62,7 +63,7 @@ class Universal extends Sprite
 	#if (!flash) @:access(openfl.display.Stage.__setLogicalSize) #end
 	public function initScreen(isFullScreen:Bool)
 	{
-		trace("initScreen");
+		Log.debug("initScreen");
 
 		#if mobile
 		isFullScreen = true;
@@ -109,16 +110,16 @@ class Universal extends Sprite
 		windowWidth = isFullScreen ? stage.fullScreenWidth : Config.stageWidth * Config.gameScale;
 		windowHeight = isFullScreen ? stage.fullScreenHeight : Config.stageHeight * Config.gameScale;
 
-		trace("Game Width: " + Config.stageWidth);
-		trace("Game Height: " + Config.stageHeight);
-		trace("Game Scale: " + Config.gameScale);
-		trace("Window Width: " + windowWidth);
-		trace("Window Height: " + windowHeight);
-		trace("FullScreen Width: " + stage.fullScreenWidth);
-		trace("FullScreen Height: " + stage.fullScreenHeight);
-		trace("Device Pixel Ratio: " + stage.window.scale);
-		trace("Enabled Scales: " + Config.scales);
-		trace("Scale Mode: " + Config.scaleMode);
+		Log.debug("Game Width: " + Config.stageWidth);
+		Log.debug("Game Height: " + Config.stageHeight);
+		Log.debug("Game Scale: " + Config.gameScale);
+		Log.debug("Window Width: " + windowWidth);
+		Log.debug("Window Height: " + windowHeight);
+		Log.debug("FullScreen Width: " + stage.fullScreenWidth);
+		Log.debug("FullScreen Height: " + stage.fullScreenHeight);
+		Log.debug("Device Pixel Ratio: " + stage.window.scale);
+		Log.debug("Enabled Scales: " + Config.scales);
+		Log.debug("Scale Mode: " + Config.scaleMode);
 		
 		var theoreticalWindowedScale = getDesiredScale(windowWidth, windowHeight, Config.stageWidth, Config.stageHeight);
 		var theoreticalFullscreenScale = getDesiredScale(stage.fullScreenWidth, stage.fullScreenHeight, Config.stageWidth, Config.stageHeight);
@@ -156,8 +157,8 @@ class Universal extends Sprite
 			Engine.IMG_BASE = "1x";
 		}
 		
-		trace("Theoretical Scale: " + theoreticalScale);
-		trace("Asset Scale: " + Engine.IMG_BASE);
+		Log.debug("Theoretical Scale: " + theoreticalScale);
+		Log.debug("Asset Scale: " + Engine.IMG_BASE);
 
 		//the dimensions of the game screen after being scaled up
 		//to the proper asset size.
@@ -254,7 +255,7 @@ class Universal extends Sprite
 		rightInset = insets.width;
 		topInset = insets.y;
 		bottomInset = insets.height;
-		trace('Safe Area Insets: original = (left: $leftInset, top: $topInset, right: $rightInset, bottom: $bottomInset)');
+		Log.debug('Safe Area Insets: original = (left: $leftInset, top: $topInset, right: $rightInset, bottom: $bottomInset)');
 
 		if(Config.autorotate)
 		{
@@ -269,7 +270,7 @@ class Universal extends Sprite
 
 			leftInset = rightInset = Math.max(leftInset, rightInset);
 			topInset = bottomInset = Math.max(topInset, bottomInset);
-			trace('Safe Area Insets: mirrored = (left: $leftInset, top: $topInset, right: $rightInset, bottom: $bottomInset)');
+			Log.debug('Safe Area Insets: mirrored = (left: $leftInset, top: $topInset, right: $rightInset, bottom: $bottomInset)');
 		}
 		
 		if(x != 0 || y != 0)
@@ -279,7 +280,7 @@ class Universal extends Sprite
 			rightInset = Math.max(0, rightInset - x);
 			topInset = Math.max(0, topInset - y);
 			bottomInset = Math.max(0, bottomInset - y);
-			trace('Safe Area Insets: offset = (left: $leftInset, top: $topInset, right: $rightInset, bottom: $bottomInset)');
+			Log.debug('Safe Area Insets: offset = (left: $leftInset, top: $topInset, right: $rightInset, bottom: $bottomInset)');
 		}
 		
 		// scale to Stencyl's logical coordinates
@@ -288,7 +289,7 @@ class Universal extends Sprite
 		topInset = Math.ceil(topInset / (Engine.SCALE * scaleY));
 		bottomInset = Math.ceil(bottomInset / (Engine.SCALE * scaleY));
 
-		trace('Safe Area Insets: scaled = (left: $leftInset, top: $topInset, right: $rightInset, bottom: $bottomInset)');
+		Log.debug('Safe Area Insets: scaled = (left: $leftInset, top: $topInset, right: $rightInset, bottom: $bottomInset)');
 
 		#end
 		
@@ -308,10 +309,10 @@ class Universal extends Sprite
 			maskLayer.graphics.endFill();
 		}
 		
-		trace("Logical Width: " + logicalWidth);
-		trace("Logical Height: " + logicalHeight);
-		trace("Scale X: " + scaleX);
-		trace("Scale Y: " + scaleY);
+		Log.debug("Logical Width: " + logicalWidth);
+		Log.debug("Logical Height: " + logicalHeight);
+		Log.debug("Scale X: " + scaleX);
+		Log.debug("Scale Y: " + scaleY);
 	}
 	
 	private function getDesiredScale(checkWidth:Float, checkHeight:Float, baseWidth:Int, baseHeight:Int):Float

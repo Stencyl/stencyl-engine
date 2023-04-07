@@ -9,6 +9,7 @@ import com.stencyl.graphics.BitmapWrapper;
 import com.stencyl.graphics.Scale;
 import com.stencyl.graphics.ScaleMode;
 import com.stencyl.models.PhysicsMode;
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
 using Lambda;
@@ -106,7 +107,7 @@ class Config
 				
 				if(oldValue != newValue)
 				{
-					trace('value of $key changed: $oldValue -> $newValue');
+					Log.debug('value of $key changed: $oldValue -> $newValue');
 
 					switch(key)
 					{

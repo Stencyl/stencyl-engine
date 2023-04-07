@@ -4,6 +4,7 @@ import com.stencyl.Engine;
 import com.stencyl.Extension;
 import com.stencyl.event.Event;
 import com.stencyl.models.Scene;
+import com.stencyl.utils.Log;
 
 #if ios
 import lime.system.CFFI;
@@ -227,7 +228,7 @@ class Native extends Extension
 		
 		//Fire a special event
 		var data = Reflect.field(inEvent, "data");
-		trace("Text: " + data);
+		Log.debug("Text: " + data);
 		
 		if(data == "@SUBMIT@")
 		{
@@ -248,7 +249,7 @@ class Native extends Extension
 		
         currentText = typedText;
 		
-		trace(currentText);
+		Log.debug(currentText);
 		
         nativeEventQueue.push({"eventType": KEY_PRESSED, "currentText": currentText});
         #end

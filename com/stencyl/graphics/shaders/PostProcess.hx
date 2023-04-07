@@ -10,6 +10,7 @@ import com.stencyl.Config;
 import com.stencyl.Engine;
 import com.stencyl.utils.motion.*;
 import com.stencyl.utils.Assets;
+import com.stencyl.utils.Log;
 
 import com.stencyl.graphics.shaders.Shader in FullScreenShader;
 
@@ -28,7 +29,7 @@ class PostProcess
 
 	public function new(shader:BasicShader, fullScreenShader:String, literalText:Bool = false)
 	{
-		#if debug trace("Post processing not supported on Flash"); #end
+		#if debug Log.warn("Post processing not supported on Flash"); #end
 	}
 	public function enable(?to:PostProcess) { }
 	public function capture() { }
@@ -109,12 +110,12 @@ class PostProcess extends DisplayObject
 		switch (status)
 		{
 			case GL.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-				trace("FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
+				Log.error("FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
 			case GL.FRAMEBUFFER_UNSUPPORTED:
-				trace("GL_FRAMEBUFFER_UNSUPPORTED");
+				Log.error("GL_FRAMEBUFFER_UNSUPPORTED");
 			case GL.FRAMEBUFFER_COMPLETE:
 			default:
-				trace("Check frame buffer: " + status);
+				Log.error("Check frame buffer: " + status);
 		}
 #end
 

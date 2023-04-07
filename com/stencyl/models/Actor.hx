@@ -2149,7 +2149,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		{
 			for(collision in collisions)
 			{
-				//trace(this + " vs " + collision.otherActor);
+				//Log.verbose(this + " vs " + collision.otherActor);
 				
 				if
 				(

@@ -52,7 +52,7 @@ using StringTools;
 
 		configureTracing();
 
-		trace("Launch Vars: " + launchVars);
+		Log.debug("Launch Vars: " + launchVars);
 		
 		#if cppia
 		if(StencylCppia.gamePath != null)
@@ -333,7 +333,7 @@ using StringTools;
 			#if stencyltools
 			if(ToolsetInterface.handlesLogging)
 			{
-				trace(e + Utils.printExceptionstackIfAvailable());
+				Log.error(e + Utils.printExceptionstackIfAvailable());
 				ToolsetInterface.preloadedUpdate();
 			}
 			#end
@@ -391,7 +391,7 @@ using StringTools;
 			#if stencyltools
 			if(ToolsetInterface.handlesLogging)
 			{
-				trace(e + Utils.printExceptionstackIfAvailable());
+				Log.error(e + Utils.printExceptionstackIfAvailable());
 				ToolsetInterface.preloadedUpdate();
 			}
 			#end
@@ -447,29 +447,29 @@ using StringTools;
 		
 		if(ToolsetInterface.handlesLogging && Reflect.hasField(event.error, "stack"))
 		{
-			trace(event.error.stack);
+			Log.error(event.error.stack);
 		}
 		
 		#else
 		
 		if (Std.isOfType(event.error, Error))
 		{
-			trace(cast(event.error, Error).getStackTrace());
+			Log.error(cast(event.error, Error).getStackTrace());
 		}
 		else if (Std.isOfType(event.error, ErrorEvent))
 		{
-			trace(cast(event.error, ErrorEvent).text);
+			Log.error(cast(event.error, ErrorEvent).text);
 		}
 		else
 		{
-			trace(Std.string(event.error));
+			Log.error(Std.string(event.error));
 		}
 		
 		#end
 		
 		#if (debug && stencyltools && (cpp || hl))
 		
-		trace(CallStack.toString(CallStack.exceptionStack()));
+		Log.error(CallStack.toString(CallStack.exceptionStack()));
 		ToolsetInterface.preloadedUpdate();
 		
 		#end

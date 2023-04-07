@@ -166,7 +166,7 @@ class SoundChannel
 	
 	private function stopped(event:Event = null)
 	{
-		//trace("Sound stopped: " + channelNum);
+		//Log.verbose("Sound stopped: " + channelNum);
 	
 		if(currentSound != null)
 		{
@@ -178,7 +178,7 @@ class SoundChannel
 	
 	public function stopSound()
 	{
-		//trace("STOP SOUND: " + currentSound +  " - " + channelNum);
+		//Log.verbose("STOP SOUND: " + currentSound +  " - " + channelNum);
 	
 		if(currentSound != null)
 		{

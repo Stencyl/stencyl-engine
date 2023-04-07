@@ -46,7 +46,7 @@ class ToolsetInterface
 			host = "localhost";
 		if(port != -1)
 		{
-			trace("GCI attempting to connect to toolset @" + host + ":" + port);
+			Log.debug("GCI attempting to connect to toolset @" + host + ":" + port);
 			configureListeners();
 			try
 			{
@@ -54,8 +54,8 @@ class ToolsetInterface
 			}
 			catch(e:Exception)
 			{
-				trace("Couldn't establish gci connection.");
-				trace(e.stack);
+				Log.error("Couldn't establish gci connection.");
+				Log.error(e.stack);
 				unconfigureListeners();
 				ToolsetInterface.ready = true;
 			}
@@ -70,7 +70,7 @@ class ToolsetInterface
 
 	public static function cancelConnection():Void
 	{
-		trace("Couldn't establish gci connection.");
+		Log.error("Couldn't establish gci connection.");
 		instance.unconfigureListeners();
 		ToolsetInterface.ready = true;
 	}
@@ -103,12 +103,12 @@ class ToolsetInterface
 
 	private function closeHandler(event:Event):Void
 	{
-		trace("closeHandler: " + event);
+		Log.debug("closeHandler: " + event);
 	}
 
 	private function connectHandler(event:Event):Void
 	{
-		trace("connectHandler: " + event);
+		Log.debug("connectHandler: " + event);
 		var connectionDetails:Map<String,String> = [
 			"Content-Type" => "Client-Registration",
 			"Project-Name" => Config.projectName,
@@ -128,14 +128,14 @@ class ToolsetInterface
 
 	private function ioErrorHandler(event:IOErrorEvent):Void
 	{
-		trace("ioErrorHandler: " + event);
+		Log.error("ioErrorHandler: " + event);
 		if(!ToolsetInterface.ready)
 			cancelConnection();
 	}
 
 	private function securityErrorHandler(event:SecurityErrorEvent):Void
 	{
-		trace("securityErrorHandler: " + event);
+		Log.error("securityErrorHandler: " + event);
 	}
 
 	private var waiting:Bool = true;
@@ -147,10 +147,10 @@ class ToolsetInterface
 
 	private function socketDataHandler(event:ProgressEvent):Void
 	{
-		//trace("socketDataHandler: " + event);
+		//Log.verbose("socketDataHandler: " + event);
 		while(socket.bytesAvailable > 0)
 		{
-			//trace(socket.bytesAvailable + " bytes available on socket.");
+			//Log.verbose(socket.bytesAvailable + " bytes available on socket.");
 			if(waiting)
 			{
 				//throw it away if it's just a ping with no data.
@@ -160,8 +160,8 @@ class ToolsetInterface
 
 				waiting = false;
 				readingHeader = true;
-				//trace("Header expects " + bytesExpected + " bytes.");
-				//trace(socket.bytesAvailable + " bytes available.");
+				//Log.verbose("Header expects " + bytesExpected + " bytes.");
+				//Log.verbose(socket.bytesAvailable + " bytes available.");
 				bytes = new ByteArray(bytesExpected);
 			}
 
@@ -175,8 +175,8 @@ class ToolsetInterface
 					currentHeader = parseHeader(bytes);
 					bytesExpected = Std.parseInt(currentHeader.get("Content-Length"));
 					bytes = new ByteArray(bytesExpected);
-					//trace("Content expects " + bytesExpected + " bytes.");
-					//trace(socket.bytesAvailable + " bytes available.");
+					//Log.verbose("Content expects " + bytesExpected + " bytes.");
+					//Log.verbose(socket.bytesAvailable + " bytes available.");
 				}
 				else
 				{
@@ -244,7 +244,7 @@ class ToolsetInterface
 						}
 						traceQueue = null;
 					}
-					trace("GCI connected. Waiting for updated assets.");
+					Log.debug("GCI connected. Waiting for updated assets.");
 				}
 				if(header.get("Status") == "Assets Ready")
 				{
@@ -287,7 +287,7 @@ class ToolsetInterface
 							}
 							else
 							{
-								trace("Couldn't resolve class: " + type);
+								Log.error("Couldn't resolve class: " + type);
 							}
 						}
 						
@@ -298,7 +298,7 @@ class ToolsetInterface
 						}
 						catch(ex:Dynamic)
 						{
-							trace(ex);
+							Log.error(ex);
 						}
 				}
 			#end

@@ -1,5 +1,7 @@
 package com.stencyl.graphics.shaders;
 
+import com.stencyl.utils.Log;
+
 #if flash
 
 /*
@@ -10,7 +12,7 @@ class Shader
 {
 	public function new(shader:Dynamic)
 	{
-		#if debug trace("Post processing not supported on Flash"); #end
+		#if debug Log.warn("Post processing not supported on Flash"); #end
 	}
 	public inline function attribute(a:String):Int
 	{
@@ -57,9 +59,9 @@ class Shader
 
 		if (GL.getProgramParameter(program, GL.LINK_STATUS) == 0)
 		{
-			trace(GL.getProgramInfoLog(program));
-			trace("VALIDATE_STATUS: " + GL.getProgramParameter(program, GL.VALIDATE_STATUS));
-			trace("ERROR: " + GL.getError());
+			Log.error(GL.getProgramInfoLog(program));
+			Log.error("VALIDATE_STATUS: " + GL.getProgramParameter(program, GL.VALIDATE_STATUS));
+			Log.error("ERROR: " + GL.getError());
 			return;
 		}
 	}
@@ -77,8 +79,8 @@ class Shader
 
 		if (GL.getShaderParameter(shader, GL.COMPILE_STATUS) == 0)
 		{
-			trace(GL.getShaderInfoLog(shader));
-			trace("From source:\n" + source);
+			Log.error(GL.getShaderInfoLog(shader));
+			Log.error("From source:\n" + source);
 			return null;
 		}
 

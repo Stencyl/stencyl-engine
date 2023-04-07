@@ -33,6 +33,7 @@ import com.stencyl.models.scene.Wireframe;
 
 import com.stencyl.utils.Assets;
 import com.stencyl.utils.PolyDecompBayazit;
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 import com.stencyl.Engine;
 
@@ -248,8 +249,8 @@ class Scene
 	
 	function addPolygonRegion(p:PolyDecompBayazit)
 	{
-   		trace("THE POLY: " + p.points);
-   		trace(currW + ", " + currH);
+   		Log.verbose("THE POLY: " + p.points);
+   		Log.verbose(currW + ", " + currH);
 
    		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", p.points, currW, currH), B2PolygonShape);
 		shapeList.push(polyShape);
@@ -257,8 +258,8 @@ class Scene
 	
 	function addPolygonTerrain(p:PolyDecompBayazit)
 	{
-		trace("THE POLY: " + p.points);
-		trace(currW + ", " + currH);
+		Log.verbose("THE POLY: " + p.points);
+		Log.verbose(currW + ", " + currH);
 		
 		var polyShape = cast(ShapeReader.createPolygon("MbsPolyRegion", p.points, currW, currH), B2PolygonShape);
 		shapeList.push(polyShape);
@@ -411,7 +412,7 @@ class Scene
 			return j3;
 		}
 		
-		trace("Error: unsuppported joint type: " + type);
+		Log.error("Error: unsuppported joint type: " + type);
 		
 		return null;
 	}

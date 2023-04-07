@@ -66,6 +66,7 @@ import com.stencyl.models.SoundChannel;
 
 import com.stencyl.utils.motion.*;
 import com.stencyl.utils.Assets;
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 import com.stencyl.utils.ColorMatrix;
 import com.stencyl.io.SpriteReader;
@@ -376,7 +377,7 @@ class Script
 			
 			if(fixture == null)
 			{
-				trace("internalGetGroup - Warning - null shape passed in");
+				Log.warn("internalGetGroup - Warning - null shape passed in");
 				return cast(arg, Actor).getGroup();
 			}
 			
@@ -393,7 +394,7 @@ class Script
 						return engine.getGroup(body.getUserData().groupID);
 					}
 					
-					trace("internalGetGroup - Warning - shape inherits groupID from actor but is not attached to a body");
+					Log.warn("internalGetGroup - Warning - shape inherits groupID from actor but is not attached to a body");
 				}
 				
 				return engine.getGroup(value);
@@ -470,7 +471,7 @@ class Script
 	{
 		if(a == null)
 		{
-			trace("Error in " + wrapper.classname + ": Cannot add listener function to null actor.");
+			Log.error("Error in " + wrapper.classname + ": Cannot add listener function to null actor.");
 			return;
 		}
 		
@@ -481,7 +482,7 @@ class Script
 	{
 		if(a == null)
 		{
-			trace("Error in " + wrapper.classname + ": Cannot add listener function to null actor.");
+			Log.error("Error in " + wrapper.classname + ": Cannot add listener function to null actor.");
 			return;
 		}
 		
@@ -538,7 +539,7 @@ class Script
 	{
 		if(reg == null)
 		{
-			trace("Error in " + wrapper.classname +": Cannot add listener function to null region.");
+			Log.error("Error in " + wrapper.classname +": Cannot add listener function to null region.");
 			return;
 		}
 		
@@ -549,7 +550,7 @@ class Script
 	{
 		if(reg == null)
 		{
-			trace("Error in " + wrapper.classname +": Cannot add listener function to null region.");
+			Log.error("Error in " + wrapper.classname +": Cannot add listener function to null region.");
 			return;
 		}
 		
@@ -560,7 +561,7 @@ class Script
 	{
 		if(a == null)
 		{
-			trace("Error in " + wrapper.classname + ": Cannot add listener function to null actor.");
+			Log.error("Error in " + wrapper.classname + ": Cannot add listener function to null actor.");
 			return;
 		}
 		
@@ -641,7 +642,7 @@ class Script
 	{	
 		if(a == null)
 		{
-			trace("Error in " + wrapper.classname +": Cannot add listener function to null actor.");
+			Log.error("Error in " + wrapper.classname +": Cannot add listener function to null actor.");
 			return;
 		}
 		
@@ -680,7 +681,7 @@ class Script
 	{
 		if(a == null)
 		{				
-			trace("Error in " + wrapper.classname +": Cannot add listener function to null actor.");
+			Log.error("Error in " + wrapper.classname +": Cannot add listener function to null actor.");
 			return;
 		}
 		
@@ -1746,7 +1747,7 @@ class Script
 				
 				if(sc.currentSound == null)
 				{
-					//trace("Play sound on channel: " + i);
+					//Log.debug("Play sound on channel: " + i);
 					sc.playSound(clip);
 					sc.setVolume(1);
 					sc.setPanning(0);
@@ -1754,7 +1755,7 @@ class Script
 				}
 			}
 			
-			trace("No channels available to play sound");
+			Log.error("No channels available to play sound");
 		}			
 	}
 	
@@ -1771,7 +1772,7 @@ class Script
 				
 				if(sc.currentSound == null)
 				{
-					//trace("Loop sound on channel: " + i);
+					//Log.debug("Loop sound on channel: " + i);
 					sc.loopSound(clip);
 					sc.setVolume(1);
 					sc.setPanning(0);
@@ -1779,7 +1780,7 @@ class Script
 				}
 			}
 			
-			trace("No channels available to loop sound");
+			Log.error("No channels available to loop sound");
 		}			
 	}
 	
@@ -3528,13 +3529,13 @@ class Script
 	private static function defaultURLHandler(event:FlashEvent)
 	{
 		var loader:URLLoader = new URLLoader(cast event.target);
-		trace("Visited URL: " + loader.data);
+		Log.info("Visited URL: " + loader.data);
 	}
 	
 	#if flash
 	private static function defaultURLError(event:IOErrorEvent)
 	{
-		trace("Could not visit URL");
+		Log.error("Could not visit URL");
 	}
 	#end
 	
@@ -3575,7 +3576,7 @@ class Script
 		
 		catch(error:String) 
 		{
-			trace("Cannot open URL.");
+			Log.error("Cannot open URL.");
 		}
 	}
 	
@@ -3616,7 +3617,7 @@ class Script
 		
 		catch(error:String) 
 		{
-			trace("Cannot open URL.");
+			Log.error("Cannot open URL.");
 		}		
 	}
 	
@@ -3760,7 +3761,7 @@ class Script
 		}
 		catch(e:SecurityError)
 		{
-			trace("Could not exit game: " + e.message); 
+			Log.error("Could not exit game: " + e.message); 
 		}
 		#elseif sys
 		Sys.exit(0);

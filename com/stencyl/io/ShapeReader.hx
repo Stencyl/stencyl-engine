@@ -1,6 +1,7 @@
 package com.stencyl.io;
 
 import com.stencyl.models.collision.Hitbox;
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
 import com.stencyl.io.mbs.shape.*;
@@ -196,7 +197,7 @@ class ShapeReader
 	{
 		if(!CheckVertexDirection(v))
 		{
-			trace("HAD TO REVERSE VERTICES: " + v);
+			Log.verbose("HAD TO REVERSE VERTICES: " + v);
 			ReverseVertices(v);
 			return false;
 		}

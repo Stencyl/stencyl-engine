@@ -7,6 +7,7 @@ import openfl.media.SoundChannel;
 import openfl.media.Sound in OpenFLSound;
 import com.stencyl.behavior.Script;
 import com.stencyl.utils.Assets;
+import com.stencyl.utils.Log;
 
 //TODO: don't load a sound upfront - tie to atlas (remove loading from init)
 //Provide load/unload functions (need to hack into NME to unload a sound forcefully?)
@@ -57,7 +58,7 @@ class Sound extends Resource
 	{
 		if(#if lime_vorbis !streaming #else true #end)
 		{
-			//trace("Loading sound: " + ID);
+			//Log.verbose("Loading sound: " + ID);
 			src = Assets.getSound("assets/" + (streaming? "music" : "sfx") + "/sound-" + ID + "." + this.ext, false);
 		}
 	}
@@ -85,7 +86,7 @@ class Sound extends Resource
 		
 		if(src == null)
 		{
-			trace("Trying to play uninitialized sound: " + name + " - " + ID);
+			Log.error("Trying to play uninitialized sound: " + name + " - " + ID);
 			return null;
 		}
 		
@@ -101,7 +102,7 @@ class Sound extends Resource
 		
 		if(src == null)
 		{
-			trace("Trying to play uninitialized sound: " + name + " - " + ID);
+			Log.error("Trying to play uninitialized sound: " + name + " - " + ID);
 			return null;
 		}
 		

@@ -51,6 +51,7 @@ import com.stencyl.graphics.transitions.FadeOutTransition;
 import com.stencyl.graphics.transitions.Transition;
 import com.stencyl.io.AttributeValues;
 import com.stencyl.utils.motion.*;
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
 import com.stencyl.models.Actor;
@@ -565,7 +566,7 @@ class Engine
 
 	public function setFullScreen(value:Bool):Void
 	{
-		trace("Set fullScreen: " + value);
+		Log.debug("Set fullScreen: " + value);
 		if(isFullScreen != value)
 		{
 			ignoreResize = true;
@@ -768,7 +769,7 @@ class Engine
 		}
 		else
 		{
-			trace("WARNING: Unexpectedly running without a GL context.");
+			Log.warn("WARNING: Unexpectedly running without a GL context.");
 		}
 		
 		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
@@ -850,7 +851,7 @@ class Engine
 			//Clear out existing shader if one is currently active, otherwise we hit graphical glitches.
 			if(shaders != null)
 			{
-				trace("Enabling a shader over an existing shader. Clearing existing shader first.");
+				Log.debug("Enabling a shader over an existing shader. Clearing existing shader first.");
 				clearShaders();
 			}
 			
@@ -869,7 +870,7 @@ class Engine
 		
 		else
 		{
-			trace("Shaders are not supported on this platform.");
+			Log.warn("Shaders are not supported on this platform.");
 		}
 	}
 	
@@ -1075,7 +1076,7 @@ class Engine
 			//Something really went wrong!
 			if(scene == null)
 			{
-				trace("Could not load scene: " + sceneID);
+				Log.error("Could not load scene: " + sceneID);
 				stage.removeEventListener(FlashEvent.ENTER_FRAME, onUpdate);
 				return;
 			}
@@ -1280,7 +1281,7 @@ class Engine
 			
 			if(template == null)
 			{
-				trace("Non-Existent Behavior ID (Init): " + bi.behaviorID);
+				Log.error("Non-Existent Behavior ID (Init): " + bi.behaviorID);
 				continue;
 			}
 			
@@ -1982,15 +1983,15 @@ class Engine
 	
 	public function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)
 	{
-		// trace("Request to switch to Scene " + sceneID);
+		// Log.debug("Request to switch to Scene " + sceneID);
 
 		if(isTransitioning())
 		{
-			// trace("Warning: Switching Scene while already switching. Ignoring.");
+			// Log.warn("Warning: Switching Scene while already switching. Ignoring.");
 			return;
 		}
 		
-		trace("Switching to scene " + sceneID);
+		Log.info("Switching to scene " + sceneID);
 		
 		if(leave != null && leave.isComplete())
 		{
@@ -2032,7 +2033,7 @@ class Engine
 		
 		leave = null;
 		
-		//trace("Entering Scene " + sceneToEnter);
+		//Log.debug("Entering Scene " + sceneToEnter);
 		
 		sceneInitialized = false;
 		cleanup();
@@ -2299,7 +2300,7 @@ class Engine
 	
 	public function recycleActor(a:Actor)
 	{
-		//trace("recycle " + a);
+		//Log.debug("recycle " + a);
 		
 		if(a == null || a.recycled)
 		{
@@ -2544,7 +2545,7 @@ class Engine
 	{
 		if(type == null)
 		{
-			trace("Tried to create actor with null or invalid type.");
+			Log.error("Tried to create actor with null or invalid type.");
 			return null;
 		}
 		
@@ -2611,7 +2612,7 @@ class Engine
 	{
 		if(scene == null)
 		{
-			//trace("Scene is null");
+			//Log.error("Scene is null");
 			return;
 		}
 		
@@ -3257,7 +3258,7 @@ class Engine
 	{
 		if (m <= 0)
 		{
-			trace("You cannot set Zoom less than or equal to 0"); 
+			Log.warn("You cannot set Zoom less than or equal to 0"); 
 			return;
 		}
 		
@@ -3305,7 +3306,7 @@ class Engine
 	{
 		if(isTransitioning())
 		{
-			trace("Cannot pause while scene is transitioning.");
+			Log.warn("Cannot pause while scene is transitioning.");
 			return;
 		}
 		
@@ -3496,7 +3497,7 @@ class Engine
 	{
 		if(type == null)
 		{
-			trace("Error: getActorsOfType was passed a null type" + Utils.printCallstackIfAvailable());
+			Log.error("Error: getActorsOfType was passed a null type" + Utils.printCallstackIfAvailable());
 			return [];
 		}
 	
@@ -3543,8 +3544,7 @@ class Engine
 		
 		if(layer == null && withFallback)
 		{
-			trace("Layer ID \"" + id + "\" does not exist");
-			trace("Assuming top layer");
+			Log.error("Layer ID \"" + id + "\" does not exist -- assuming top layer");
 			layer = topLayer;
 		}
 		
@@ -3557,8 +3557,7 @@ class Engine
 		
 		if(layer == null && withFallback)
 		{
-			trace("Layer name \"" + name + "\" does not exist");
-			trace("Assuming top layer");
+			Log.error("Layer name \"" + name + "\" does not exist -- assuming top layer");
 			layer = topLayer;
 		}
 		
@@ -3573,8 +3572,7 @@ class Engine
 			case Script.MIDDLE: middleLayer;
 			case Script.BACK: bottomLayer;
 			default: {
-				trace("Layer order identifier \"" + layerConst + "\" is not FRONT, MIDDLE, or BACK.");
-				trace("Assuming top layer");
+				Log.error("Layer order identifier \"" + layerConst + "\" is not FRONT, MIDDLE, or BACK -- assuming top layer");
 				topLayer;
 			}
 		}
@@ -4191,7 +4189,7 @@ class Engine
 			
 		else
 		{
-			trace("Region does not exist.");
+			Log.error("Region does not exist.");
 			return false;
 		}
 	}

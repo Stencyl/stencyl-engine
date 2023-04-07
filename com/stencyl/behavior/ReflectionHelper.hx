@@ -1,5 +1,6 @@
 package com.stencyl.behavior;
 
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
 import openfl.display.Graphics;
@@ -27,8 +28,8 @@ class ReflectionHelper
 			
 			catch(e:String)
 			{
-				trace("Could not load: " + classname);
-				trace(e);
+				Log.error("Could not load: " + classname);
+				Log.error(e);
 			}
 		}
 		return fieldMap;
