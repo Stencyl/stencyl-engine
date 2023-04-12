@@ -415,15 +415,24 @@ using StringTools;
 		var gameSession = launchVars.get("gameSession");
 		if(gameSession == null) gameSession = "0";
 		flash.Lib.trace("gameSession="+gameSession);
-
-		HaxeLog.trace = function(v:String,?pos:haxe.PosInfos) {
-			var extra = Log.getExtraInfo(pos);
-			flash.Lib.trace('Stencyl:${extra.time}:${extra.level}:${pos.className}:${pos.methodName}:${pos.lineNumber}:$v');
-		}
 		#end
 
 		originalHaxeTrace = HaxeLog.trace;
 		Log.level = VERBOSE;
+		
+		HaxeLog.trace = function(v:String,?pos:haxe.PosInfos) {
+			var extra = Log.getExtraInfo(pos);
+			var str = 'Stencyl:${extra.time}:${extra.level}:${pos.className}:${pos.methodName}:${pos.lineNumber}:$v';
+			#if flash
+			flash.Lib.trace(str);
+			#elseif js
+			(untyped console).log(str);
+			#elseif sys
+			Sys.println(str);
+			#else
+			throw new haxe.exceptions.NotImplementedException()
+			#end
+		}
 
 		#if stencyltools
 		if(launchVars.get("trace") == "gci")
