@@ -422,7 +422,7 @@ using StringTools;
 		
 		HaxeLog.trace = function(v:String,?pos:haxe.PosInfos) {
 			var extra = Log.getExtraInfo(pos);
-			var str = 'Stencyl:${extra.time}:${extra.level}:${pos.className}:${pos.methodName}:${pos.lineNumber}:$v';
+			var str = 'Stencyl:${extra.time}:${extra.level}:${pos.className}:${pos.methodName}:${pos.lineNumber}:${v.length}:$v';
 			#if flash
 			flash.Lib.trace(str);
 			#elseif js
