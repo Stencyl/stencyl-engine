@@ -34,9 +34,9 @@ class EventDispatcher
 					{
 						$event.listeners[$event._dispatchIndex]($a{args});
 					}
-					catch(e:Dynamic)
+					catch(e:haxe.Exception)
 					{
-						com.stencyl.utils.Log.error(e + com.stencyl.utils.Utils.printExceptionstackIfAvailable());
+						com.stencyl.utils.Log.fullError(e.message, e);
 					}
 					++$event._dispatchIndex;
 				}

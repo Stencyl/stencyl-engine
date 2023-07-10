@@ -328,12 +328,12 @@ using StringTools;
 			 ::end::
 			::end::
 		}
-		catch(e:Dynamic)
+		catch(e:haxe.Exception)
 		{
 			#if stencyltools
 			if(ToolsetInterface.handlesLogging)
 			{
-				Log.error(e + Utils.printExceptionstackIfAvailable());
+				Log.fullError(e.message, e);
 				ToolsetInterface.preloadedUpdate();
 			}
 			#end
@@ -386,12 +386,12 @@ using StringTools;
 			
 			new Engine(universal, extensions);
 			
-		} catch (e:Dynamic) {
+		} catch (e:haxe.Exception) {
 			
 			#if stencyltools
 			if(ToolsetInterface.handlesLogging)
 			{
-				Log.error(e + Utils.printExceptionstackIfAvailable());
+				Log.fullError(e.message, e);
 				ToolsetInterface.preloadedUpdate();
 			}
 			#end
@@ -463,11 +463,13 @@ using StringTools;
 		
 		if (Std.isOfType(event.error, Error))
 		{
-			Log.error(cast(event.error, Error).getStackTrace());
+			var error = cast(event.error, Error);
+			Log.fullError(error.message, error);
 		}
 		else if (Std.isOfType(event.error, ErrorEvent))
 		{
-			Log.error(cast(event.error, ErrorEvent).text);
+			var errorEvent = cast(event.error, ErrorEvent);
+			Log.error(errorEvent.text);
 		}
 		else
 		{

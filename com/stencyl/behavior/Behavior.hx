@@ -53,10 +53,9 @@ class Behavior
 				cls = Type.resolveClass(classname);
 			}
 			
-			catch(e:String)
+			catch(e:haxe.Exception)
 			{
-				Log.error("Could not load: " + classname);
-				Log.error(e);
+				Log.fullError("Could not load: " + classname, e);
 			}
 		}
 		
@@ -111,11 +110,11 @@ class Behavior
 				script.scriptInit = true;
 			}
 			
-			catch(e:String)
+			catch(e:haxe.Exception)
 			{
-				Log.error
+				Log.fullError
 				(
-					"Error in when created for behavior: " + name + "\n" + e + Utils.printExceptionstackIfAvailable()
+					"Error in when created for behavior: " + name, e
 				);
 			}
 		}
@@ -227,9 +226,9 @@ class Behavior
 				}
 			}
 			
-			catch(e:String)
+			catch(e:haxe.Exception)
 			{
-				Log.error("Could not init attribute: " + a.fieldName + " - " + e + Utils.printExceptionstackIfAvailable());
+				Log.fullError("Could not init attribute: " + a.fieldName, e);
 			}
 		}
 	}

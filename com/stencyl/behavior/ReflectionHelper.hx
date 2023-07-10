@@ -26,10 +26,9 @@ class ReflectionHelper
 				fieldMaps.set(classname, fieldMap);
 			}
 			
-			catch(e:String)
+			catch(e:haxe.Exception)
 			{
-				Log.error("Could not load: " + classname);
-				Log.error(e);
+				Log.fullError("Could not load: " + classname, e);
 			}
 		}
 		return fieldMap;

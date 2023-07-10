@@ -54,8 +54,7 @@ class ToolsetInterface
 			}
 			catch(e:Exception)
 			{
-				Log.error("Couldn't establish gci connection.");
-				Log.error(e.stack);
+				Log.fullError("Couldn't establish gci connection.", e);
 				unconfigureListeners();
 				ToolsetInterface.ready = true;
 			}
@@ -296,9 +295,9 @@ class ToolsetInterface
 						{
 							hscript.execute(content.readUTFBytes(content.length));
 						}
-						catch(ex:Dynamic)
+						catch(ex:haxe.Exception)
 						{
-							Log.error(ex);
+							Log.fullError(ex.message, ex);
 						}
 				}
 			#end

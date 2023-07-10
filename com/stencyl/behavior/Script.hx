@@ -3574,9 +3574,9 @@ class Script
 			#end
 		} 
 		
-		catch(error:String) 
+		catch(error:haxe.Exception) 
 		{
-			Log.error("Cannot open URL.");
+			Log.fullError("Cannot open URL.", error);
 		}
 	}
 	
@@ -3615,9 +3615,9 @@ class Script
 			#end
 		} 
 		
-		catch(error:String) 
+		catch(error:haxe.Exception) 
 		{
-			Log.error("Cannot open URL.");
+			Log.fullError("Cannot open URL.", error);
 		}		
 	}
 	
@@ -3761,7 +3761,7 @@ class Script
 		}
 		catch(e:SecurityError)
 		{
-			Log.error("Could not exit game: " + e.message); 
+			Log.fullError("Could not exit game: " + e.message, e);
 		}
 		#elseif sys
 		Sys.exit(0);

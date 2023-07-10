@@ -63,10 +63,9 @@ class BehaviorManager
 					bObj.script.scriptInit = true;
 				}
 			
-				catch(e:String)
+				catch(e:haxe.Exception)
 				{
-					Log.error("Error in when created for behavior: " + bObj.name);
-					Log.error(e + Utils.printExceptionstackIfAvailable());
+					Log.fullError("Error in when created for behavior: " + bObj.name, e);
 				}
 			}
 			
@@ -204,7 +203,7 @@ class BehaviorManager
 			#if flash
 			else
 			#else
-			catch(e:String)
+			catch(e:haxe.Exception)
 			#end
 			{
 				item.script.forwardMessage(msg);
@@ -258,7 +257,7 @@ class BehaviorManager
 			#if flash
 			else
 			#else
-			catch(e:String)
+			catch(e:haxe.Exception)
 			#end
 			{
 				item.script.forwardMessage(msg);
