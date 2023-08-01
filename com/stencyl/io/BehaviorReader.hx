@@ -15,7 +15,7 @@ class BehaviorReader
 	{
 		var elementID = r.getId();
 		var name = r.getName();
-		var classname = r.getClassname();
+		var classname = r.getPackageName() + "." + r.getClassname();
 		var isEvent = r.getAttachedEvent();
 		
 		var attributes:Map<String,Attribute> = new Map<String,Attribute>();
