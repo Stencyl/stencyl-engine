@@ -464,7 +464,11 @@ using StringTools;
 		if (Std.isOfType(event.error, Error))
 		{
 			var error = cast(event.error, Error);
+			#if flash
+			Log.error(error.getStackTrace());
+			#else
 			Log.fullError(error.message, error);
+			#end
 		}
 		else if (Std.isOfType(event.error, ErrorEvent))
 		{

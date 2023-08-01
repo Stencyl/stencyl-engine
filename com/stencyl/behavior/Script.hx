@@ -3761,7 +3761,7 @@ class Script
 		}
 		catch(e:SecurityError)
 		{
-			Log.fullError("Could not exit game: " + e.message, e);
+			Log.error("Could not exit game: " + e.message); 
 		}
 		#elseif sys
 		Sys.exit(0);
