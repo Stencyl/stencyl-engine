@@ -52,7 +52,9 @@ using StringTools;
 
 		configureTracing();
 
+		#if testing
 		Log.debug("Launch Vars: " + launchVars);
+		#end
 		
 		#if cppia
 		if(StencylCppia.gamePath != null)
