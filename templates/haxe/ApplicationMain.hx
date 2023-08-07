@@ -135,7 +135,7 @@ using StringTools;
 		#elseif android
 		launchVars = com.stencyl.native.Native.getIntentExtras();
 		#elseif sys
-		for(arg in Sys.args())
+		for(arg in #if ios com.stencyl.native.Native.getProgramArguments() #else Sys.args() #end)
 		{
 			var equalsIndex = arg.indexOf("=");
 			if(equalsIndex < 1 || equalsIndex == arg.length - 1) continue;

@@ -258,6 +258,16 @@ namespace native
 		[userDefaults setObject:@"" forKey:strId];
 		return true;
 	}
+	
+	std::vector<std::string> getProgramArguments()
+	{
+		NSArray *arguments = [[NSProcessInfo processInfo] arguments];
+		std::vector<std::string> argArray((int)arguments.count);
+		for(int i = 0; i < arguments.count; ++i)
+			argArray[i] = std::string([arguments[i] UTF8String]);
+		return argArray;
+	}
+	
 
 	int getSafeInsetLeft()
 	{

@@ -121,6 +121,16 @@ value native_clear_user_preference(value inId)
 }
 DEFINE_PRIM(native_clear_user_preference,1);
 
+value native_get_program_arguments()
+{
+   std::vector<std::string> result=getProgramArguments();
+   value returnArray = alloc_array(result.size());
+   for(int i = 0; i < result.size(); ++i)
+      val_array_set_i(returnArray, i, alloc_string(result[i].c_str()));
+   return returnArray;
+}
+DEFINE_PRIM(native_get_program_arguments,0);
+
 value native_get_safe_inset_left()
 {
    int result=getSafeInsetLeft();

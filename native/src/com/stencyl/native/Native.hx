@@ -396,6 +396,13 @@ class Native extends Extension
 		return [for(i in 0...Std.int(extras.length/2)) extras[i*2] => extras[i*2+1]];
 	}
 	#end
+	
+	#if ios
+	public static function getProgramArguments():Array<String>
+	{
+		return native_get_program_arguments();
+	}
+	#end
 
 	/**
 	 * Insets from the four sides, in pixels, given the current device orientation.
@@ -476,6 +483,8 @@ class Native extends Extension
 	static var native_get_user_preference = CFFI.load("native","native_get_user_preference",1);
 	static var native_set_user_preference = CFFI.load("native","native_set_user_preference",2);
 	static var native_clear_user_preference = CFFI.load("native","native_clear_user_preference",1);
+	
+	static var native_get_program_arguments = CFFI.load("native","native_get_program_arguments",0);
 
 	static var native_get_safe_inset_left = CFFI.load("native","native_get_safe_inset_left",0);
 	static var native_get_safe_inset_top = CFFI.load("native","native_get_safe_inset_top",0);

@@ -2,6 +2,7 @@
 #define NativeDevice
 
 #include <string>
+#include <vector>
 
 namespace native 
 {	
@@ -25,6 +26,8 @@ namespace native
     bool SetUserPreference(const char *inId, const char *inPreference);
     std::string GetUserPreference(const char *inId);
     bool ClearUserPreference(const char *inId);
+    
+    std::vector<std::string> getProgramArguments();
 
     int getSafeInsetLeft();
     int getSafeInsetTop();
