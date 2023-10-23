@@ -1,0 +1,7 @@
+id=com.stencyl
+name=Stencyl Engine
+description=Stencyl Engine
+author=Jon
+website=https://www.stencyl.com
+version=4.1.0
+compatibility=all
