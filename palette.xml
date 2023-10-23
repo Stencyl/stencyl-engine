@@ -1,0 +1,1233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<palette id="stencyl-behavior-palette" defaultCategory="extensions" defaultSection="extensions.extensions">
+
+	<!-- Flow -->
+	<category id="flow" title="@cat.flow" color="yellow">
+		
+		<!-- Conditions -->
+		<section id="flow.conditions" title="@cat.flow.cond">
+			
+			<!-- Conditionals -->
+			<header title="@cat.flow.cond.cond" />
+			<block tag="if, else, else-if" />
+			
+			<!-- Booleans -->
+			<header title="@cat.flow.cond.bool" />
+			<block tag="and, or, not" />
+			<spacer />
+			<block tag="true, false" />
+			
+			<!-- Comparisons -->
+			<header title="@cat.flow.cond.comp" />
+			<block tag="eq, noteq" />
+			<spacer />
+			<block tag="less, lesseq" />
+			<block tag="more, moreeq" />
+			
+			<!-- Conversion -->
+			<header title="@cat.flow.cond.conv" />
+			<block tag="as-boolean" />
+			
+			<!-- Stop -->
+			<header title="@cat.flow.cond.stop" />
+			<block tag="stop" />
+			
+		</section>
+		
+		<!-- Loops -->
+		<section id="flow.loops" title="@cat.flow.loop">
+			
+			<!-- Definite Loops -->
+			<header title="@cat.flow.loop.def" />
+			<block tag="repeat" />
+			
+			<!-- Indefinite Loops -->
+			<header title="@cat.flow.loop.indef" />
+			<block tag="while" />
+			<block tag="repeatu" />
+			
+			<!-- Branching -->
+			<header title="@cat.flow.loop.branch" />
+			<block tag="break" />
+			<block tag="continue" />
+			
+		</section>
+		
+		<!-- Time -->
+		<section id="flow.time" title="@cat.flow.time">
+			
+			<!-- Delayed -->
+			<header title="@cat.flow.time.delayed" />
+			<block tag="dolater" />
+			
+			<!-- Periodic -->
+			<header title="@cat.flow.time.periodic" />
+			<block tag="periodic" />
+			<block tag="cancel" />
+			
+		</section>
+		
+		<!-- Debug -->
+		<section id="flow.debug" title="@cat.flow.debug">
+			
+			<!-- Print to Console -->
+			<header title="@cat.flow.debug.print" />
+			<block tag="print" />
+			
+			<!-- Commenting -->
+			<header title="@cat.flow.debug.comment" />
+			<block tag="comment-short" />
+			<block tag="comment-long" />
+			<block tag="comment-wrapper" />
+			
+			<!-- Drawing -->
+			<header title="@cat.flow.debug.draw" />
+			<block tag="debug-draw" />
+			
+		</section>
+		
+		<!-- Advanced -->
+		<section id="flow.advanced" title="@cat.flow.adv">
+			
+			<!-- Code -->
+			<header title="@cat.flow.adv.code" />
+			<block tag="code-short, custom-code" />
+			<block tag="code-long" />
+			
+			<!-- Constants -->
+			<header title="@cat.flow.adv.cons" />
+			<block tag="game-url, language" />
+			<block tag="stepsize, null" />
+			
+			<!-- Platforms -->
+			<header title="@cat.flow.adv.plaf" />
+			<block tag="is-platform" />
+			<block tag="is-device2" />
+			<block tag="do-on-platform" />
+			<block tag="exit-game" />
+			
+			<!-- Memory Management -->
+			<header title="@cat.flow.adv.mem" />
+			<block tag="load-unload-atlas" />
+			<block tag="atlas-loaded" />
+			
+		</section>
+
+	</category>
+	
+	<!-- Actors -->
+	<category id="actors" title="@cat.actorget" color="blue">
+		
+		<!-- Position -->
+		<section id="actors.position" title="@cat.actor.pos">
+
+			<!-- Position -->
+			<header title="@cat.actor.pos.pos" />
+			<block tag="get-xy" />
+			<block tag="set-xy" />
+			<spacer />
+			<block tag="isonscreen" />
+			
+			<!-- Direction -->
+			<header title="@cat.actor.pos.dir" />
+			<block tag="getdir" />
+			<block tag="setangle" />
+			<block tag="rotate" />
+			<block tag="rotate2" />
+			
+		</section>
+		
+		<!-- Motion -->
+		<section id="actors.motion" title="@cat.actor.move">
+
+			<!-- Speed -->
+			<header title="@cat.actor.move.speed" />
+			<block tag="get-dxy" />
+			<block tag="set-dxy" />
+			<block tag="setvel" />
+			
+			<!-- Force -->
+			<header title="@cat.actor.move.force" />
+			<block tag="push-shove" />
+			<block tag="push-shove2" />
+			<block tag="twist" />
+			
+			<!-- Turning Speed -->
+			<header title="@cat.actor.move.turnspd" />
+			<block tag="getangvel" />
+			<block tag="setav" />
+			
+			<!-- Physics -->
+			<header title="@cat.actor.move.phys" />
+			<block tag="toggle-grav" />
+			<block tag="toggle-rot" />
+			<spacer />
+			<block tag="set-fric-bounce" />
+			<block tag="get-fric-bounce" />
+
+		</section>
+		
+		<!-- Properties -->
+		<section id="actors.properties" title="@cat.actor.props">
+
+			<!-- Alive / Dead -->
+			<header title="@cat.actor.props.die" />
+			<block tag="die, isalive" />
+			<block tag="kill-leave-screen" />
+			
+			<!-- Size -->
+			<header title="@cat.actor.props.size" />
+			<block tag="get-wh" />
+			
+			<!-- Groups / Type -->
+			<header title="@cat.actor.props.type" />
+			<block tag="getatype, getgroup" />
+			<block tag="pick-type, pick-group" />
+			<block tag="pick-type-by-name" />
+			<block tag="group-setresponse" />
+			
+			<!-- Performance -->
+			<header title="@cat.actor.props.performance" />
+			<block tag="ignore-screen-tolerance2" />
+			<block tag="bullet-mode2" />
+			
+			<!-- Collision Shapes -->
+			<header title="@cat.actor.props.shapes" />
+			<block tag="addshape-rectangle" />
+			<block tag="addshape-circle" />
+			<block tag="addshape-polygon" />
+			<block tag="addshape-vertex" />
+			<block tag="foreach-shape" />
+			<block tag="shape-sensorsolid2" />
+			<block tag="shape-destroy2" />
+			<block tag="shape-scale2" />
+			<block tag="shape-group" />
+			<block tag="shape-setgroup" />
+			<block tag="shape-last-added" />
+			
+			<!-- Properties -->
+			<header title="@cat.actor.props.props" />
+			<block tag="actor-set-prop" />
+			<block tag="actor-get-prop" />
+			
+		</section>
+		
+		<!-- Draw -->
+		<section id="actors.draw" title="@cat.actor.draw">
+
+			<!-- Animation -->
+			<header title="@cat.actor.draw.anim" />
+			<block tag="getanim" />
+			<block tag="setanim" />
+			<block tag="is-anim" />
+			<spacer />
+			<block tag="set-frame" />
+			<block tag="get-frame" />
+			<block tag="get-num-frames" />
+			<block tag="get-frame-duration" />
+			<block tag="set-frame-duration" />
+			
+			<!-- Layer (Z-Order) -->
+			<header title="@cat.actor.draw.layer" />
+			<block tag="getlayer, getlayername" />
+			<block tag="setlayer2" />
+			<block tag="backforward" />
+			<spacer />
+			<block tag="movewithinlayer" />
+			<block tag="zindex" />
+			<block tag="setzindex" />
+			<block tag="actorswithinlayer2" />
+			
+			<!-- Drawing -->
+			<header title="@cat.actor.draw.draw" />
+			<block tag="toggle-image" />
+			<spacer />
+			<block tag="set-opacity" />
+			<block tag="get-opacity" />
+			
+			<!-- Anchoring -->
+			<header title="@cat.actor.draw.anchor" />
+			<block tag="anchor-screen" />
+			<block tag="unanchor-screen" />
+			
+		</section>
+		
+		<!-- Tweening -->
+		<section id="actors.tweening" title="@cat.actor.tween">
+
+			<!-- Slide -->
+			<header title="@cat.actor.tween.slide" />
+			<block tag="moveToBy" />
+			
+			<!-- Spin -->
+			<header title="@cat.actor.tween.spin" />
+			<block tag="spinToBy" />
+			
+			<!-- Fade -->
+			<header title="@cat.actor.tween.fade" />
+			<block tag="fadeInOut" />
+			<block tag="fadeTo" />
+			
+			<!-- Scale -->
+			<header title="@cat.actor.tween.scale" />
+			<block tag="scaleTo" />
+
+		</section>
+		
+		<!-- Effects -->
+		<section id="actors.effects" title="@cat.graphics.filter">
+
+			<!-- Blend Modes -->
+			<header title="@cat.graphics.filter.blend" />
+			<block tag="set-blend-actor" />
+			
+			<!-- Add / Remove -->
+			<header title="@cat.graphics.filter.add" />
+			<block tag="apply-filter" />
+			<block tag="clear-filter" />
+			
+			<!-- Effects -->
+			<header title="@cat.graphics.filter" />
+			<block tag="filter-tint" />
+			<block tag="filter-hsb" />
+			<block tag="filter-sat" />
+			<block tag="filter-bright" />
+			<spacer />
+			<block tag="filter-grayscale" />
+			<block tag="filter-negative" />
+			<block tag="filter-sepia" />
+			
+		</section>
+
+	</category>
+	
+	<!-- Scenes -->
+	<category id="scenes" title="@cat.scene" color="red">
+		
+		<!-- Actors -->
+		<section id="scenes.actors" title="@cat.scene.objs">
+			
+			<!-- Create Actor -->
+			<header title="@cat.scene.objs.create" />
+			<block tag="create-actor3" />
+			<block tag="create-actor-on-layer" />
+			
+			<!-- Get Actor -->
+			<header title="@cat.scene.objs.get" />
+			<block tag="actor" />
+			<block tag="actors-on-screen" />
+			<block tag="actors-in-region" />
+			<block tag="actors-of-type3" />
+			<block tag="actors-in-group" />
+			
+		</section>
+		
+		<!-- Game Flow -->
+		<section id="scenes.game-flow" title="@cat.scene.switch">
+
+			<!-- Transitions -->
+			<header title="@cat.scene.switch.trans" />
+			<block tag="scene-change-color" />
+			<block tag="scene-change-through" />
+			<spacer />
+			<block tag="scene-reload-color" />
+			<block tag="scene-reload-through" />
+			<spacer />
+			<block tag="scenebyname" />
+			<block tag="is-transitioning" />
+			
+			<!-- Post-Transition -->
+			<header title="@cat.scene.switch.ptrans" />
+			<block tag="create-actor3-next" />
+			
+			<!-- Pausing -->
+			<header title="@cat.scene.switch.pausing" />
+			<block tag="pause-unpause" />
+			<block tag="is-paused" />
+			
+		</section>
+		
+		<!-- Regions -->
+		<section id="scenes.regions" title="@cat.scene.region">
+			
+			<!-- Get Region -->
+			<header title="@cat.scene.region.get" />
+			<block tag="region" />
+			<block tag="is-in-region" />
+			
+			<!-- Create -->
+			<header title="@cat.scene.region.create" />
+			<block tag="create-region" />
+			<block tag="create-circular-region" />
+			
+			<!-- Delete -->
+			<header title="@cat.scene.region.delete" />
+			<block tag="delete-region" />
+			
+			<!-- Move -->
+			<header title="@cat.scene.region.move" />
+			<block tag="move-region" />
+			<block tag="follow-region" />
+			
+			<!-- Resize -->
+			<header title="@cat.scene.region.resize" />
+			<block tag="reset-region" />
+			<block tag="resize-region1" />
+			<block tag="resize-region2" />
+			
+			<!-- Properties -->
+			<header title="@cat.scene.region.props" />
+			<block tag="get-region-pos" />
+			<block tag="get-region-size" />
+			
+		</section>
+		
+		<!-- World -->
+		<section id="scenes.world" title="@cat.scene.props">
+
+			<!-- Gravity -->
+			<header title="@cat.scene.props.gravity" />
+			<block tag="grav-xy" />
+			<block tag="setgrav" />
+			
+			<!-- Properties -->
+			<header title="@cat.scene.props.props" />
+			<block tag="scene-wh" />
+			<block tag="scenename" />
+			
+			<!-- Tiles -->
+			<header title="@cat.scene.props.tiles" />
+			<block tag="tile-wh" />
+			<block tag="tile-coord-at" />
+			<block tag="set-tile-at2" />
+			<block tag="tile-exists-at2" />
+			<block tag="tileID-at2" />
+			<block tag="tileCollisionAt2" />
+			<block tag="tileColID-at2" />
+			<block tag="tilesetID-at2" />
+			<block tag="remove-tile-at2" />
+			<block tag="tile-data-at2" />
+			
+		</section>
+		
+		<!-- View -->
+		<section id="scenes.view" title="@cat.scene.view">
+
+			<!-- Screen -->
+			<header title="@cat.scene.view.screen" />
+			<block tag="screen-xy, screen-wh" />
+			<block tag="safe-area-insets" />
+			
+			<!-- Camera -->
+			<header title="@cat.scene.view.camera" />
+			<block tag="camera-move" />
+			<block tag="camera-follow" />
+			
+			<!-- Effects -->
+			<header title="@cat.scene.view.effects" />
+			<block tag="shake-start" />
+			<block tag="shake-stop" />
+			
+			<!-- Color Background -->
+			<header title="@cat.scene.view.colorbg" />
+			<block tag="set-color-bg" />
+			<block tag="set-grad-bg" />
+			
+			<!-- Layer Properties -->
+			<header title="@cat.scene.view.layer.props" />
+			<block tag="layer-exists" />
+			<block tag="set-bg-speed" />
+			<block tag="set-layer-scrollfactor" />
+			<block tag="showhide-layer2" />
+			<block tag="fadeTo-layer2" />
+			<block tag="layer-alpha" />
+			<block tag="set-blend-layer2" />
+			<block tag="set-bg-image" />
+			
+			<!-- Add/Remove Layers -->
+			<header title="@cat.scene.view.layer.add" />
+			<block tag="create-tile-layer" />
+			<block tag="create-bglayer-from-bg" />
+			<block tag="create-bglayer-from-image" />
+			<block tag="remove-layer" />
+			
+			<!-- Layer Order -->
+			<header title="@cat.scene.view.layer.order" />
+			<block tag="set-layer-order" />
+			<block tag="get-layer-order" />
+			<block tag="numlayers" />
+			
+			<!-- Offscreen Bounds -->
+			<header title="@cat.scene.view.offscreen" />
+			<block tag="offscreen" />
+			
+		</section>
+		
+		<!-- Shaders -->
+		<section id="scenes.shaders" title="@cat.scene.shaders">
+
+			<label text="@cat.scene.shaders.i" />
+			
+			<!-- Shaders -->
+			<header title="Shaders" icon="question" action="help:shaders" />
+			<block tag="shader-apply" />
+			<block tag="shader-clear" />
+			<block tag="shader-hud" />
+			<spacer />
+			<block tag="shader-combine" />
+			<block tag="shader-combine3" />
+			<block tag="shader-combine4" />
+			<spacer />
+			<block tag="shader-file" />
+			<block tag="shader-text" />
+			
+			<!-- Properties -->
+			<header title="Properties" icon="question" action="help:shaders" />
+			<block tag="shader-set" />
+			<block tag="shader-tween" />
+			<block tag="shader-time" />
+			
+			<!-- Color Shaders -->
+			<header title="Color Shaders" icon="question" action="help:shaders" />
+			<block tag="shader-hue" />
+			<block tag="shader-csb" />
+			<block tag="shader-tint" />
+			
+			<!-- Filter Shaders -->
+			<header title="Filter Shaders" icon="question" action="help:shaders" />
+			<block tag="shader-filters" />
+			<block tag="shader-blur" />
+			<block tag="shader-sharpen" />
+			<block tag="shader-bloom" />
+			
+			<!-- Effect Shaders -->
+			<header title="Effect Shaders" icon="question" action="help:shaders" />
+			<block tag="shader-grain" />
+			<block tag="shader-scanline" />
+			
+		</section>
+
+	</category>
+	
+	<!-- Numbers & Text -->
+	<category id="numbers-text" title="@cat.numbers" color="lime">
+		
+		<!-- Math -->
+		<section id="numbers-text.math" title="@cat.numbers.arith">
+
+			<!-- Arithmetic -->
+			<header title="@cat.numbers.arith.arith" />
+			<block tag="plus, minus" />
+			<block tag="times, div" />
+			<spacer />
+			<block tag="neg, mod" />
+
+			<!-- Random Numbers -->
+			<header title="@cat.numbers.arith.rand" />
+			<block tag="randint" />
+			<block tag="randomfloat" />
+			<block tag="random" />
+
+			<!-- Increment/Decrement -->
+			<header title="@cat.numbers.arith.incr" />
+			<block tag="incdec" />
+
+			<!-- Operations -->
+			<header title="@cat.numbers.arith.oper" />
+			<block tag="abs" />
+			<block tag="minmax" />
+			<block tag="roundnew" />
+
+			<!-- Conversion -->
+			<header title="@cat.numbers.arith.conv" />
+			<block tag="as-number" />
+
+		</section>
+		
+		<!-- Trig / Exponents -->
+		<section id="numbers-text.trig-exponents" title="@cat.numbers.trig">
+
+			<!-- Conversion -->
+			<header title="@cat.numbers.trig.conv" />
+			<block tag="to-degreesradians" />
+			
+			<!-- Constants -->
+			<header title="@cat.numbers.trig.cons" />
+			<block tag="pi, e" />
+			
+			<!-- Trig Functions -->
+			<header title="@cat.numbers.trig.func" />
+			<block tag="trig-master" />
+			<block tag="atan2" />
+			
+			<!-- Exponents -->
+			<header title="@cat.numbers.expt.expt" />
+			<block tag="sqrt" />
+			<block tag="pow" />
+			<block tag="lnexp" />
+			
+		</section>
+		
+		<!-- Text -->
+		<section id="numbers-text.text" title="@cat.text">
+
+			<!-- Conversion -->
+			<header title="@cat.text.conv" />
+			<block tag="tostring" />
+
+			<!-- Constants -->
+			<header title="@cat.text.constants" />
+			<block tag="str-emptystring, str-space" />
+			
+			<!-- Operations -->
+			<header title="@cat.text.oper" />
+			<block tag="str-length, str-combine" />
+			<block tag="str-trim" />
+			
+			<!-- Comparison -->
+			<header title="@cat.text.comp" />
+			<block tag="eq, str-empty" />
+			<block tag="str-beforeafter" />
+			
+			<!-- Find/Replace -->
+			<header title="@cat.text.find" />
+			<block tag="str-char-at" />
+			<block tag="str-indexof" />
+			<spacer />
+			<block tag="str-replace" />
+			<block tag="str-substring" />
+			
+			<!-- Case -->
+			<header title="@cat.text.case" />
+			<block tag="str-toupperlower" />
+			
+			<!-- Split -->
+			<header title="@cat.text.split" />
+			<block tag="str-split-space" />
+			<block tag="str-split" />
+			
+			<!-- Fonts -->
+			<header title="@cat.text.fonts" />
+			<block tag="get-font-width2-new" />
+			<block tag="get-font-height2-new" />
+						
+		</section>
+
+	</category>
+	
+	<!-- Attributes -->
+	<category id="attributes" title="@cat.variables" color="blue">
+		
+		<!-- Getters -->
+		<section id="attributes.getters" title="@cat.variables.get">
+
+			<button text="@sb.var.add" action="addVar" />
+			<blocklist source="attribute-getters" />
+
+		</section>
+
+		<!-- Setters -->
+		<section id="attributes.setters" title="@cat.variables.set">
+
+			<button text="@sb.var.add" action="addVar" />
+			<blocklist source="attribute-setters" />
+
+		</section>
+
+		<!-- Lists -->
+		<section id="attributes.lists" title="@cat.variables.lists">
+
+			<button text="@sb.var.addlist" action="addVar:list" />
+			
+			<!-- Create -->
+			<header title="@cat.variables.lists.create" />
+			<block tag="create-list, copy-list" />
+			
+			<!-- Add / Insert -->
+			<header title="@cat.variables.lists.add" />
+			<block tag="add-list" />
+			<block tag="insert-list" />
+			
+			<!-- Remove / Replace -->
+			<header title="@cat.variables.lists.remove" />
+			<block tag="remove-item" />
+			<block tag="remove-index" />
+			<block tag="replace-list" />
+			<block tag="clear-list" />
+
+			<!-- Access -->
+			<header title="@cat.variables.lists.get" />
+			<block tag="get-item" />
+			<block tag="position-of-item" />
+			<block tag="contains-item" />
+			<block tag="length-list" />
+			<block tag="is-empty" />
+			<spacer/>
+			<block tag="for-each" />
+
+		</section>
+		
+		<!-- Maps -->
+		<section id="attributes.maps" title="@cat.variables.maps">
+			
+			<button text="@sb.var.addmap" action="addVar:map" />
+			
+			<!-- Create -->
+			<header title="@cat.variables.maps.create" />
+			<block tag="create-map, copy-map" />
+			
+			<!-- Modify -->
+			<header title="@cat.variables.maps.modify" />
+			<block tag="set-map" />
+			<block tag="remove-map" />
+			<block tag="empty-map" />
+			
+			<!-- Access -->
+			<header title="@cat.variables.maps.get" />
+			<block tag="key-value" />
+			<block tag="key-exists-map" />
+			<block tag="value-exists-map" />
+			<block tag="count-map" />
+			<block tag="map-is-empty" />
+			<spacer/>
+			<block tag="map-as-list" />
+			<block tag="for-each-map" />
+
+		</section>
+		
+		<!-- Functions -->
+		<section id="attributes.functions" title="@cat.variables.other">
+			
+			<!-- Operations -->
+			<header title="@cat.variables.other.oper" />
+			<block tag="tween-number" />
+			<block tag="cancel-tween-number" />
+			<block tag="value" />
+			<block tag="clear" />
+
+		</section>
+
+	</category>
+	
+	<!-- Game Attributes -->
+	<category id="game-attributes" title="@cat.variables.game" color="purple">
+
+		<section id="game-attributes.getters" title="@cat.variables.get">
+
+			<button text="@att.new" action="addGameVar" />
+			<button text="@att.show" action="settings:library.attributes" />
+
+			<!-- Dynamic Game Attributes -->
+			<header title="@att.getset" />
+			<block tag="get-game-att" />
+			
+			<blocklist source="game-attribute-getters" />
+
+		</section>
+		
+		<section id="game-attributes.setters" title="@cat.variables.set">
+
+			<button text="@att.new" action="addGameVar" />
+			<button text="@att.show" action="settings:library.attributes" />
+
+			<!-- Dynamic Game Attributes -->
+			<header title="@att.getset" />
+			<block tag="set-game-att" />
+			
+			<blocklist source="game-attribute-setters" />
+
+		</section>
+		
+		<section id="game-attributes.operations" title="@cat.variables.ops">
+
+			<!-- Game Attribute Operations -->
+			<header title="@att.ops" />
+			<block tag="set-game-att-save" />
+			<block tag="restore-game-attributes" />
+
+		</section>
+		
+	</category>
+	
+	<!-- User Input -->
+	<category id="user-input" title="@cat.controls" color="green">
+		
+		<!-- Keyboard & Mouse -->
+		<section id="user-input.keyboard-mouse" title="@cat.controls.computer">
+
+			<!-- Keyboard -->
+			<header title="@cat.controls.key" icon="gear" action="settings:library.controls" />
+			<block tag="keystate" />
+			<block tag="is-special-down" />
+			<block tag="simulate-key" />
+			<block tag="keycode" />
+			
+			<!-- Mouse / Touch -->
+			<header title="@cat.controls.mouse" />
+			<label text="@cat.controls.mouse.i" />
+			
+			<block tag="mousestate" />
+			<block tag="amousestate" />
+			<block tag="mousexy" />
+			<spacer />
+			<block tag="mousedisp" />
+
+		</section>
+		
+		<!-- Gamepad -->
+		<section id="user-input.gamepad" title="@cat.controls.gamepad">
+
+			<!-- Gamepad -->
+			<header title="@cat.controls.gamepad" />
+			<block tag="map-gamepad-control" />
+			<block tag="unmap-gamepad-button" />
+			<block tag="unmap-gamepad-control" />
+			<block tag="set-gamepad-sensitivity" />
+			<block tag="get-button-pressure" />
+			<block tag="save-gamepad-config" />
+			<block tag="load-gamepad-config" />
+			
+		</section>
+		
+		<!-- Mobile-Only -->
+		<section id="user-input.mobile" title="@cat.controls.mobile" icon="mobile">
+
+			<!-- Accelerometer -->
+			<header title="@cat.controls.mobile.accel" icon="gear" action="settings:Touch" />
+			<block tag="accelerometer" />
+			
+			<!-- Gestures -->
+			<header title="@cat.controls.mobile.gestures" />
+			<block tag="swipe-detect" />
+			
+		</section>
+
+	</category>
+	
+	<!-- Behaviors -->
+	<category id="behaviors" title="@cat.message" color="red">
+		
+		<!-- Triggers -->
+		<section id="behaviors.triggers" title="@cat.message.actor">
+
+			<label text="@cat.message.info1" />
+			
+			<!-- For Actor -->
+			<header title="@cat.message.actor.send" />
+			<block tag="say" />
+			<block tag="shout" />
+			
+			<!-- For Scene -->
+			<header title="@cat.message.scene.send" />
+			<block tag="scene-say" />
+			<block tag="scene-shout" />
+			
+			<!-- In This Behavior -->
+			<header title="@cat.message.this" />
+			<block tag="say-this" />
+			
+		</section>
+		
+		<!-- Attributes -->
+		<section id="behaviors.attributes" title="@cat.message.scene">
+
+			<label text="@cat.message.info2" />
+			
+			<!-- For Actor -->
+			<header title="@cat.message.actor.attr" />
+			<block tag="get-attribute" />
+			<block tag="set-attribute" />
+			
+			<!-- For Scene -->
+			<header title="@cat.message.scene.attr" />
+			<block tag="scene-get-attribute" />
+			<block tag="scene-set-attribute" />
+			
+		</section>
+		
+		<!-- State -->
+		<section id="behaviors.state" title="@cat.message.msg">
+
+			<!-- Is Enabled? -->
+			<header title="@cat.message.actor.enable" />
+			<block tag="is-snippet-enableda" />
+			<block tag="is-snippet-enabled" />
+			
+			<!-- Enable/Disable -->
+			<header title="@cat.message.msg.receive" />
+			<block tag="actor-enabledisable-snippet" />
+			<block tag="scene-enabledisable-snippet" />
+			<block tag="disable-snippet" />
+			
+			<!-- Has Behavior? -->
+			<header title="@cat.message.scene.enable" />
+			<block tag="has-snippet" />
+			<block tag="scene-has-snippet" />
+			
+		</section>
+
+	</category>
+	
+	<!-- Game -->
+	<category id="game" title="@cat.game" color="red">
+		
+		<!-- Web -->
+		<section id="game.web" title="@cat.game.web">
+
+			<!-- Web Browser -->
+			<header title="@cat.game.web.browser" />
+			<block tag="show-browser" />
+			
+			<!-- HTTP Requests -->
+			<header title="@cat.game.web.http" icon="question" action="help:web-requests" />
+			<block tag="visit-site" />
+			<block tag="visit-site-post" />
+			
+		</section>
+		
+		<!-- Saving -->
+		<section id="game.saving" title="@cat.game.save">
+
+			<!-- Actions -->
+			<header title="@cat.game.save.actions" icon="question" action="help:saving-and-loading-games" />
+			<block tag="save-game" />
+			<block tag="load-game" />
+			
+		</section>
+		
+		<!-- Screen -->
+		<section id="game.screen" title="@cat.game.screen">
+		
+			<header title="@cat.game.screen.size" />
+			<block tag="set-screen-wh" />
+			<block tag="screen-wh" />
+			
+			<header title="@cat.game.screen.scaling" />
+			<block tag="set-fullscreen" />
+			<block tag="is-fullscreen" />
+			<block tag="set-windowscale" />
+			<block tag="get-windowscale" />
+			
+			<header title="@cat.game.screen.scalemode" />
+			<block tag="set-scalemode" />
+			<block tag="get-scalemode" />
+			<block tag="scalemode" />
+			<block tag="engine-scale" />
+		
+		</section>
+		
+		<!-- Mobile -->
+		<section id="game.mobile" title="@cat.game.mobile" icon="mobile">
+			
+		</section>
+		
+		<!-- Flash -->
+		<section id="game.flash" title="@cat.game.flash" icon="flash">
+        
+		</section>
+
+	</category>
+	
+	<!-- Drawing -->
+	<category id="drawing" title="@cat.graphics" color="cyan">
+		
+		<!-- Drawing -->
+		<section id="drawing.drawing" title="@cat.graphics.draw">
+
+			<!-- Basic -->
+			<header title="@cat.graphics.draw.basic" />
+			<block tag="draw-text" />
+			<block tag="draw-line" />
+			<block tag="draw-pixel" />
+			
+			<!-- Actor Drawing -->
+			<header title="@cat.graphics.draw.actor" />
+			<block tag="draw-image-actor" />
+			
+			<!-- Rectangles -->
+			<header title="@cat.graphics.draw.rect" />
+			<block tag="drawfill-rect" />
+			<block tag="drawfill-roundrect" />
+			
+			<!-- Circles -->
+			<header title="@cat.graphics.draw.circle" />
+			<block tag="drawfill-circle" />
+			
+			<!-- Polygons -->
+			<header title="@cat.graphics.draw.poly" />
+			<block tag="drawfill-poly" />
+			<block tag="add-to-poly" />
+			
+		</section>
+		
+		<!-- Styles -->
+		<section id="drawing.styles" title="@cat.graphics.props">
+
+			<!-- Color and Font -->
+			<header title="@cat.graphics.props.cf" />
+			<block tag="rgb-to-color" />
+			<block tag="set-color" />
+			<block tag="set-font-new" />
+			<block tag="letter-spacing" />
+			
+			<!-- Opacity -->
+			<header title="@cat.graphics.props.opacity" />
+			<block tag="set-alpha" />
+			
+			<!-- Stroke -->
+			<header title="@cat.graphics.props.stroke" />
+			<block tag="set-stroke-color" />
+			<block tag="set-thickness" />
+			
+			<!-- Font Width -->
+			<header title="@cat.graphics.props.fwidth" />
+			<block tag="get-font-width" />
+			<block tag="get-font-width2-new" />
+			
+			<!-- Font Height -->
+			<header title="@cat.graphics.props.fheight" />
+			<block tag="get-font-height" />
+			<block tag="get-font-height2-new" />
+			
+		</section>
+		
+		<!-- Transforms -->
+		<section id="drawing.transforms" title="@cat.graphics.transform">
+
+			<!-- Transforms -->
+			<header title="@cat.graphics.transform.transf" />
+			<block tag="draw-transtoby" />
+			
+			<!-- Space Conversion -->
+			<header title="@cat.graphics.transform.space" />
+			<block tag="to-screen-space" />
+			<block tag="to-local-space" />
+			
+			<!-- Drawing Layer -->
+			<header title="@cat.graphics.transform.layer" />
+			<block tag="set-drawing-layer" />
+			<block tag="set-drawing-layer-scene" />
+			<block tag="set-drawing-layer-actor" />
+			
+		</section>
+
+	</category>
+	
+	<!-- Images -->
+	<category id="images" title="@cat.image" color="cyan">
+	
+		<!-- Images -->
+		<section id="images.images" title="@cat.image">
+
+			<!-- Image API settings -->
+			<header title="@cat.image.create.settings" icon="question" action="help:image-api" />
+			<block tag="image-autoscale" />
+
+			<!-- Create Images -->
+			<header title="@cat.image.create" icon="question" action="help:image-api" />
+			<block tag="image-create" />
+			<block tag="image-copy" />
+			<block tag="image-subimage" />
+			<block tag="image-resize" />
+			
+			<!-- From the Game -->
+			<header title="@cat.image.create.game" icon="question" action="help:image-api" />
+			<block tag="image-screen" />
+			<block tag="image-actor" />
+			
+			<!-- From External Sources -->
+			<header title="@cat.image.create.ext" icon="question" action="help:image-api" />
+			<block tag="image-file" />
+			<block tag="image-url" />
+			
+			<!--TODO: get resources as image-->
+			<!--TODO: get specific actor type as image-->
+			<!--TODO: get specific actor animation as image-->
+			
+			<!-- Convert Image to/from Text -->
+			<header title="@cat.image.trans" icon="question" action="help:image-api" />
+			<block tag="image-to-text, image-from-text" />
+			
+		</section>
+		
+		<!-- Change Images -->
+		<section id="images.change-images" title="@cat.image.data">
+
+			<!-- Draw on Image -->
+			<header title="@cat.image.change.data" icon="question" action="help:image-api" />
+			<block tag="image-draw" />
+			<block tag="image-draw-text" />
+			<block tag="image-fill" />
+			<block tag="rgb-to-color" />
+			
+			<!-- Clear Image -->
+			<header title="@cat.image.change.clear" icon="question" action="help:image-api" />
+			<block tag="image-clear" />
+			<block tag="image-clear-all" />
+			<block tag="image-mask" />
+			
+			<!-- Transform Image -->
+			<header title="@cat.image.change.trans" icon="question" action="help:image-api" />
+			<block tag="image-filter" />
+			<block tag="image-flip" />
+			<block tag="image-swap" />
+			
+			<!-- Pixel Operations -->
+			<header title="@cat.image.change.pixels" icon="question" action="help:image-api" />
+			<block tag="image-wrapper" />
+			<block tag="image-set-px" />
+			<block tag="image-get-px" />
+			
+		</section>
+		
+		<!-- Show Images -->
+		<section id="images.show-images" title="@cat.image.inst">
+
+			<!-- Display Images -->
+			<header title="@cat.image.display" icon="question" action="help:image-api" />
+			<block tag="image-inst-create" />
+			<block tag="image-inst-actor" />
+			<block tag="image-inst-layer2" />
+			<block tag="image-inst-hud" />
+			<block tag="image-inst-remove" />
+			
+			<!-- Z-Order -->
+			<header title="@cat.image.display.z" icon="question" action="help:image-api" />
+			<block tag="image-set-z" />
+			<block tag="image-set-z-friendly" />
+			<block tag="image-get-z" />
+			
+			<!-- Properties -->
+			<header title="@cat.image.display.props" icon="question" action="help:image-api" />
+			<block tag="image-set-props0" />
+			<block tag="image-set-props1" />
+			<block tag="image-set-props2" />
+			<block tag="image-origin" />
+			<spacer />
+			<block tag="image-get-props" />
+			
+			<!-- Tweening -->
+			<header title="@cat.image.display.tween" icon="question" action="help:image-api" />
+			<block tag="image-tween-slide" />
+			<block tag="image-tween-spin" />
+			<block tag="image-tween-fade" />
+			<block tag="image-tween-scale" />
+			
+			<!-- Transforms -->
+			<header title="@cat.image.display.trans" icon="question" action="help:image-api" />
+			<block tag="image-blend" />
+			<block tag="image-apply-filter" />
+			<block tag="image-clear-filter" />
+			
+		</section>
+
+	</category>
+	
+	<!-- Sounds -->
+	<category id="sounds" title="@cat.sound" color="red">
+		
+		<!-- Sound -->
+		<section id="sounds.sound" title="@cat.sound.sound">
+
+			<!-- Playback -->
+			<header title="@cat.sound.playback" />
+			<block tag="play-sound4" />
+			<block tag="stop-sounds" />
+			
+			<!-- Volume -->
+			<header title="@cat.sound.volume" />
+			<block tag="set-volume" />
+			<block tag="fade-sounds" />
+			<block tag="fade-sounds-percent" />
+			
+			<!-- Channels -->
+			<header title="@cat.sound.channel" />
+			<block tag="play-sound-channel" />
+			<block tag="control-sound-channel" />
+			<spacer />
+			<block tag="set-volume-channel" />
+			<block tag="fade-sound-channel" />
+			<block tag="fade-sound-channel-percent" />
+			<spacer />
+			<block tag="set-panning-channel" />
+			<spacer />
+			<block tag="set-position-channel" />
+			<block tag="get-position-channel" />
+			<block tag="get-length-channel" />
+			
+			<!-- Sounds -->
+			<header title="@cat.sound.sound" />
+			<block tag="get-length-sound" />
+			<block tag="text-to-sound" />
+			
+		</section>
+	
+	</category>
+	
+	<!-- Collision -->
+	<category id="collisions" title="@cat.collision" color="green">
+		
+		<!-- Basic -->
+		<section id="collisions.basic" title="@cat.collision.basic">
+
+			<!-- Collision Side -->
+			<header title="@cat.collision.basic.side" />
+			<block tag="collision-top" />
+			<block tag="collision-left" />
+			<block tag="collision-bottom" />
+			<block tag="collision-right" />
+			
+			<!-- Collision Details -->
+			<header title="@cat.collision.details" />
+			<block tag="collision-shape-group2" />
+			<block tag="collision-type2" />
+			
+		</section>
+		
+		<!-- Collision Points -->
+		<section id="collisions.collision-points" title="@cat.collision.points">
+
+			<!-- Loop Over Each Point -->
+			<header title="@cat.collision.points.loop" />
+			<block tag="collision-foreach" />
+			<block tag="collision-xynxy" />
+			<block tag="tile-data-for-collision" />
+			<block tag="tile-position-for-collision" />
+			
+		</section>
+
+	</category>
+	
+	<!-- Custom -->
+	<category id="custom" title="@cat.custom" color="green">
+		
+		<!-- Custom -->
+		<section id="custom.custom" title="@cat.custom">
+
+			<!-- Return Values -->
+			<header title="@cat.message.byob.return" />
+			<label text="@cat.message.byob.return.info" />
+			<block tag="return" />
+		
+			<!-- Custom Blocks -->
+			<header title="@cat.message.byob" />
+			<label text="@cat.message.byob.i" />
+
+			<blocklist source="custom-blocks" />
+
+		</section>
+
+	</category>
+	
+	<!-- Extensions -->
+	<category id="extensions" title="@cat.extensions" color="gray">
+		
+		<!-- Extensions -->
+		<section id="extensions.extensions" title="@cat.extensions">
+
+			<blocklist source="extension-blocks" />
+
+		</section>
+
+	</category>
+</palette>

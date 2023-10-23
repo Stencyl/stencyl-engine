@@ -1,0 +1,151 @@
+
+# Actor Setters
+sactor.setx=ustaw x na %0
+sactor.sety=ustaw x na %0
+sactor.setangle=ustaw kierunek na %0 stopni
+sactor.rotate=obróć [i:rot-cw] o %0 stopni
+sactor.rotate2=obróć [i:rot-cw] o %0 stopni
+sactor.setdx=ustaw wektor x na %0
+sactor.setdy=ustaw wektor y na %0
+sactor.setav=ustaw prędkość kątową na %0
+sactor.changeav=zmień prędkość kątową o %0
+sactor.torque=zakręć z siłą %0
+sactor.setanim=zmień animację na %0
+sactor.setlayer=ustaw warstwę na %0
+sactor.setgroup=zmień grupę na %0
+sactor.setcamanchor=ustaw kamerę w punkcie ( %0 , %1 )
+sactor.die=zniszcz [sp]
+# Dropdown Values
+transition.fadeout=zanikanie
+transition.fadein=pojawianie się
+easing.none=brak
+easing.backin=z gumki
+easing.backinout=gumka
+easing.backout=do gumki
+easing.elasticin=z odbicia
+easing.elasticinout=odbijanie
+easing.elasticout=do odbijania
+easing.regularin=z wygładzania
+easing.regularinout=wygładzanie
+easing.regularout=do wygładzania
+easing.strongin=z ostrego
+easing.stronginout=ostre
+easing.strongout=do ostrego
+mouse.one=Lewy przycisk myszy
+mouse.two=Prawy przycisk myszy
+# Actor Getters
+sactor.x=poz x
+sactor.y=poz y
+sactor.xc=środek x
+sactor.yc=środek y
+sactor.sx=poz x na ekranie
+sactor.sy=poz y na ekranie
+sactor.dx=prędkość x
+sactor.dy=prędkość y
+sactor.angle=kierunek
+sactor.av=prędkość kątowa
+sactor.width=szerokość
+sactor.height=wysokość
+sactor.anim=obecna animacja
+sactor.layer=warstwa
+sactor.group=grupa
+sactor.atype=typ postaci
+sactor.isonscreen=na ekranie?
+sactor.isalive=aktywny?
+sactor.ignoregrav=ignoruje grawitację?
+# Events
+event.step=co klatkę [sp] [i:step] [sp]
+event.init=natychmiast [sp:3]
+event.collide=podczas kolizji [sp:3]
+event.enterregion=wchodząc do obszaru %0 [sp]
+event.exitregion=wychodząc z obszaru %0 [sp]
+# Flow
+flow.while=podczas %0 [sp]
+flow.repeat=powtarzaj %0 razy [sp]
+flow.repeatu=powtarzaj aż %0 [sp]
+flow.if=jeżeli [sp:2] %0 [sp]
+flow.ifelse=jeżeli %0 [sp] a jak nie to [sp]
+flow.say=przekaż %0 %1
+flow.broadcast=pokaż %0
+flow.dolater=po %0 sekundach [i:clock-future]
+flow.periodic=co %0 sekund [i:clock]
+flow.stop=zatrzymaj [sp] [i:stop]
+flow.break=zakończ pętlę [sp] [i:break]
+flow.continue=pomiń [sp] [i:continue]
+flow.and=%0 i %1
+flow.or=%0 lub %1
+flow.not=bez %0
+# Numbers and Arithmetic
+num.plus=%0 + %1
+num.minus=%0 - %1
+num.times=%0 x %1
+num.divide=%0 / %1
+num.mod=%0 mod %1
+num.abs=bezwzględna z %0
+num.min=minimum %0 i %1
+num.max=maksimum %0 i %1
+num.ln=ln %0
+num.exp=e^ %0
+num.sqrt=pierwiastek z %0
+num.pow=%0 ^ %1
+num.eq=%0 \eq %1
+num.noteq=%0 \neq %1
+num.less=%0 < %1
+num.more=%0 > %1
+num.lesseq=%0 \leq %1
+num.moreeq=%0 \geq %1
+num.pi=Pi [sp]
+num.e=e [sp]
+num.string=ciąg %0
+num.randint=losowa wartość od %0 do %1
+num.rand=losowa zmiennoprzecinkowa
+in.mousex=x kursora
+in.mousey=y kursora
+in.mousepx=x kliknięcia
+in.mousepy=y kliknięcia
+in.mouserx=x puszczenia
+in.mousery=y puszczenia
+in.mousep=wciśnięto przycisk myszki?
+in.mouser=puszczono przycisk myszki?
+# Scene
+# TODO: I need to add blocks for joints
+scene.actor=[sp] %0 [sp]
+scene.joint=[sp] %0 [sp]
+scene.region=[sp] %0 [sp]
+scene.change=%1 przez %2 sekundy, potem zmień na %0
+scene.reload=%0 przez %1 sekund, potem przeładuj
+scene.createactor=utwórz %0 w pozycji x: %1 y: %2
+scene.gravx=wektor grawitacji x
+scene.gravy=wektor grawitacji y
+scene.gravs=ustaw grawitację na ( %0 , %1 )
+scene.creater=utwórz obszar w x: %0 y: %1 o długości %2 i szerokości %3
+scene.mover=przesuń %0 do %1
+scene.followr=%0 podąża za %1
+scene.back=tło
+scene.screenx=x ekranu
+scene.screeny=y ekranu
+scene.screenw=szerokość ekranu
+scene.screenh=wysokość ekranu
+# Sound
+ssound.play=odtwórz %0
+ssound.loop=zapętl %0
+ssound.stopall=zatrzymaj wszystkie dźwięki
+ssound.vol=ustaw głośność na %0
+ssound.pan=ustaw panoramę na %0
+# GUI and Strings
+gui.str.combine=%0 + %1
+gui.str.before=%0 przed %1 ?
+gui.str.after=%0 po %1 ?
+gui.str.locof=pozycja %1 w %0
+gui.str.replace=zastąp %1 %2 w %0
+gui.str.substr=fragment %0 (początek %1 , koniec %2 )
+gui.str.toupper=%0 wielkimi literami
+gui.str.tolower=%0 małymi literami
+gui.str.trim=pozbądź się spacji z %0
+vars.getvalue=wartość %0
+vars.setvalue=ustaw %0 na %1
+# Categories
+# Subcategories
+# Misc
+block.choose.actor=Postać
+block.choose.region=Obszar

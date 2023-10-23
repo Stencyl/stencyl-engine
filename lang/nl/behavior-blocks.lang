@@ -1,0 +1,84 @@
+
+# Actor Setters
+sactor.setx=x-waarde naar %0
+sactor.sety=y-waarde naar %0
+sactor.rotate=draai [i:rot-cw] %0 graden
+sactor.rotate2=draai [i:rot-ccw] %0 graden
+sactor.setdx=x-versnelling naar %0
+sactor.setdy=y-versnelling naar %0
+sactor.setlayer=zet laag op %0
+sactor.setgroup=zet groep op %0
+# Dropdown Values
+mouse.one=Linker Muisknop
+mouse.two=Rechter Muisknop
+# Actor Getters
+sactor.x=x-pos
+sactor.y=y-pos
+sactor.xc=x-midden
+sactor.yc=y-midden
+sactor.sx=x-pos op scherm
+sactor.sy=y-pos op scherm
+sactor.dx=x-versnelling
+sactor.dy=y-versnelling
+sactor.angle=richting
+sactor.width=breedte
+sactor.height=hoogte
+sactor.anim=huidige animatie
+sactor.layer=laag
+sactor.group=groep
+sactor.atype=karaktertype
+sactor.isonscreen=op scherm?
+sactor.isalive=in leven?
+sactor.ignoregrav=negeert zwaartekracht?
+# Events
+# Flow
+flow.while=terwijl %0 [sp]
+flow.repeat=herhaal %0 keer [sp]
+flow.repeatu=herhaal totdat %0 [sp]
+flow.if=als [sp:2] %0 [sp]
+flow.ifelse=als %0 [sp] anders [sp]
+flow.say=zeg %0 aan %1
+flow.broadcast=roep %0
+flow.dolater=doe na %0 seconden [i:clock-future]
+flow.periodic=do elke %0 seconden [i:clock]
+flow.stop=stop [sp] [i:stop]
+flow.break=breek uit lus [sp] [i:break]
+flow.continue=overslaan [sp] [i:continue]
+flow.and=%0 en %1
+flow.or=%0 of %1
+flow.not=niet %0
+# Numbers and Arithmetic
+num.plus=%0 + %1
+num.minus=%0 - %1
+num.times=%0 x %1
+num.divide=%0 / %1
+num.mod=%0 mod %1
+num.abs=abs %0
+num.min=min %0 en %1
+num.max=max %0 en %1
+in.mousex=muis x
+in.mousey=muis y
+in.mousepx=muisklik x
+in.mousepy=muisklik y
+in.mousep=muis geklikt?
+# Scene
+# TODO: I need to add blocks for joints
+# Sound
+ssound.play=speel %0
+ssound.loop=herhaal %0
+ssound.stopall=stop alle geluiden
+ssound.vol=volume naar %0
+# GUI and Strings
+vars.add=Maak Variabele
+vars.edit=Wijzig Variabele
+vars.remove=Verwijder Variabele
+# Categories
+cat.actorget=Karakters
+cat.numbers=Nummers
+cat.scene=Scene
+cat.variables=Variabelen
+cat.sound=Geluid
+cat.graphics=Tekenen
+cat.collision=Inslag
+# Subcategories
+# Misc
