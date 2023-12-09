@@ -108,6 +108,22 @@ class BehaviorManager
 	//* Messaging
 	//*-----------------------------------------------
 	
+	public function getBehavior(behaviorName:String):Script
+	{
+		var b:Behavior = cache.get(behaviorName);
+		
+		if(b != null && b.script != null)
+		{
+			return b.script;
+		}
+		
+		else
+		{
+			Log.warn("Warning: Behavior does not exist - " + behaviorName + Utils.printCallstackIfAvailable());
+			return null;
+		}
+	}
+
 	public function getAttribute(behaviorName:String, attributeName:String):Dynamic
 	{
 		var b:Behavior = cache.get(behaviorName);

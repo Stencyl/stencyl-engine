@@ -9203,7 +9203,7 @@
     </block>
 
     <block tag="get-attribute"
-           code="#{0}.getValue(#{1}, #{2})"
+           code="${attributeRef}"
            spec="@adv.getattribute"
            help="@adv.getattribute.help"
            type="normal"
@@ -9218,7 +9218,7 @@
     </block>
 
     <block tag="set-attribute"
-           code="#{0}.setValue(#{1}, #{2}, #{3});"
+           code="${attributeRef}"
            spec="@adv.setattribute"
            help="@adv.setattribute.help"
            type="action"
@@ -9234,7 +9234,7 @@
     </block>
 
     <block tag="scene-get-attribute"
-           code="getValueForScene(#{0}, #{1})"
+           code="${attributeRef}"
            spec="@adv.scene.getattribute"
            help="@adv.scene.getattribute.help"
            type="normal"
@@ -9251,7 +9251,7 @@
     </block>
 
     <block tag="scene-set-attribute"
-           code="setValueForScene(#{0}, #{1}, #{2});"
+           code="${attributeRef}"
            spec="@adv.scene.setattribute"
            help="@adv.scene.setattribute.help"
            type="action"
