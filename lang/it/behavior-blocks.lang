@@ -837,25 +837,6 @@ blend.normal=Normale
 blend.overlay=Copertura
 blend.screen=Schermo
 blend.subtract=Sottrai	    
-# Actions
-block.lastcollideactor=Ultima collisione attore
-block.thisactor=Se stesso
-block.actorvar=Seleziona attributo
-block.act.help=Visualizza aiuto
-block.act.help.error=Non c'è documento di aiuto per questo blocco.
-block.act.duplicate=Duplica
-block.act.remove=Rimuovi
-block.act.comment=Attiva / Disattiva
-block.act.uncomment=Scommenta
-block.act.copy=Copia
-block.act.copyimage=Copia all'immagine
-block.act.paste=Incolla
-block.act.find=Trova nella tavolozza
-block.act.create=Crea blocco personalizzato...
-block.act.edit=Modifica dettagli blocco personalizzato...
-block.act.addfav=Aggiungi a favoriti
-block.act.favup=Muovi su
-block.act.favdown=Muovi giù
 # Generic
 upper=superiore
 lower=inferiore

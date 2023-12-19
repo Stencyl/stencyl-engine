@@ -820,25 +820,6 @@ blend.normal=Норма
 blend.overlay=Перекрытие
 blend.screen=Экран
 blend.subtract=Вычесть	    
-# Actions
-block.lastcollideactor=последний коснувшийся актер
-block.thisactor=этот
-block.actorvar=Выберите атрибут
-block.act.help=Смотреть справку
-block.act.help.error=К этому блоку нет раздела справки
-block.act.duplicate=Дублировать
-block.act.remove=Удалить
-block.act.comment=Включить / Отключить
-block.act.uncomment=Убрать комментарий
-block.act.copy=Копировать
-block.act.copyimage=Скопировать в картинку
-block.act.paste=Вставить
-block.act.find=Найти в палитре
-block.act.create=Создать собственный блок...
-block.act.edit=Изменить детали собственного блока...
-block.act.addfav=Добавить к «Избранному»
-block.act.favup=Передвинуть вверх
-block.act.favdown=Передвинуть вниз
 # Generic
 upper=выше
 lower=ниже

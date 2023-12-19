@@ -868,26 +868,7 @@ blend.multiply=Multiply
 blend.normal=Normal
 blend.overlay=Overlay
 blend.screen=Screen
-blend.subtract=Subtract	    
-# Actions
-block.lastcollideactor=Τελευταίο Ηθοποιό που Προσκρούει
-block.thisactor=Εαυτός
-block.actorvar=επιλογή Γνωρίσματος
-block.act.help=προβολή Βοήθειας
-block.act.help.error=Δεν υπάρχει βοήθεια για αυτό το μπλοκ.
-block.act.duplicate=Αντίγραφο
-block.act.remove=Απαλοιφή
-block.act.comment=Ενεργοποίηση / Απενεργοποίηση
-block.act.uncomment=Απαλοιφή σχολίου
-block.act.copy=Αντιγραφή
-block.act.copyimage=Αντιγραφή Στην Εικόνα
-block.act.paste=Επικόλληση
-block.act.find=Εύρεση στην Παλέτα
-block.act.create=Δημιουργία Τροποποιημένου Μπλοκ...
-block.act.edit=Επεξεργασία Ιδιοτήτων Τροποποιημένου Μπλοκ...
-block.act.addfav=Προσθήκη στα Αγαπημένα
-block.act.favup=Μετακίνηση επάνω
-block.act.favdown=Μετακίνηση κάτω
+blend.subtract=Subtract
 # Generic
 upper=κεφαλαία
 lower=πεζά

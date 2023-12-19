@@ -709,24 +709,6 @@ blend.normal=Normal
 blend.overlay=Solapar
 blend.screen=Pantalla
 blend.subtract=Sustraer
-# Actions
-block.lastcollideactor=Última entidad colisionada
-block.thisactor=Esta entidad
-block.actorvar=Elegir atributo…
-block.act.help=Ver ayuda
-block.act.help.error=No hay documento de ayuda para este bloque.
-block.act.duplicate=Duplicar
-block.act.remove=Borrar
-block.act.comment=Activar / Desactivar
-block.act.uncomment=No comentar
-block.act.copy=Copiar
-block.act.paste=Pegar
-block.act.find=Buscar en paleta
-block.act.create=Crear bloque personalizado...
-block.act.edit=Editar bloque personalizado...
-block.act.addfav=Añadir a favoritos
-block.act.favup=Mover arriba
-block.act.favdown=Mover abajo
 # Generic
 push=gradualmente
 shove=instantáneamente

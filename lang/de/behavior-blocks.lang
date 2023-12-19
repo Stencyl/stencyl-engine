@@ -832,26 +832,7 @@ blend.multiply=Multiply
 blend.normal=Normal
 blend.overlay=Overlay
 blend.screen=Screen
-blend.subtract=Subtract	    
-# Actions
-block.lastcollideactor=Last Collided Actor
-block.thisactor=Self
-block.actorvar=Choose Attribute
-block.act.help=View Help
-block.act.help.error=There is no help document for this block.
-block.act.duplicate=Duplicate
-block.act.remove=Remove
-block.act.comment=Activate / Deactivate
-block.act.uncomment=Uncomment
-block.act.copy=Copy
-block.act.copyimage=Copy To Image
-block.act.paste=Paste
-block.act.find=Find in Palette
-block.act.create=Create Custom Block...
-block.act.edit=Edit Custom Block Details...
-block.act.addfav=Add to Favorites
-block.act.favup=Move up
-block.act.favdown=Move down
+blend.subtract=Subtract
 # Generic
 upper=upper
 lower=lower
