@@ -150,6 +150,19 @@ class DynamicTileset
 				
 				//var pixels = imgData.getPixels(sourceRect);//argb32,big endian
 				var data = UInt8Array.fromBytes(Bytes.ofData(pixels));
+
+				//re-premultiply, since getPixels un-premultiplies the data
+				{
+					var length = Std.int(data.length / 4);
+					var pixel:lime.math.RGBA = 0;
+
+					for (i in 0...length)
+					{
+						pixel.readUInt8(data, i * 4, lime.graphics.PixelFormat.RGBA32, false);
+						pixel.writeUInt8(data, i * 4, lime.graphics.PixelFormat.RGBA32, true);
+					}
+				}
+
 				frameDatas.push(data);
 			}
 			
