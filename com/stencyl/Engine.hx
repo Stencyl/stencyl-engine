@@ -311,7 +311,7 @@ class Engine
 	#if use_actor_tilemap
 	public var actorTilesets:Array<DynamicTileset>;
 	public var loadedAnimations:Array<Animation>;
-	public var loadedBitmaps:WeakMap<#if !js BitmapData, #end BitmapTilesetMapping>;
+	public var loadedBitmaps:Map<BitmapData, BitmapTilesetMapping>;
 	public var nextTileset = 0;
 	#end
 	
@@ -679,7 +679,7 @@ class Engine
 			anim.tileset = null;
 			anim.frameIndexOffset = 0;
 		}
-		engine.loadedBitmaps = new WeakMap<#if !js BitmapData, #end BitmapTilesetMapping>();
+		engine.loadedBitmaps = new Map<BitmapData, BitmapTilesetMapping>();
 		engine.nextTileset = 0;
 	}
 	#end
@@ -818,7 +818,7 @@ class Engine
 		#if use_actor_tilemap
 		actorTilesets = new Array<DynamicTileset>();
 		loadedAnimations = new Array<Animation>();
-		loadedBitmaps = new WeakMap<#if !js BitmapData, #end BitmapTilesetMapping>();
+		loadedBitmaps = new Map<BitmapData, BitmapTilesetMapping>();
 		#end
 		
 		var initSceneID = Config.initSceneID;
