@@ -6,6 +6,9 @@ import openfl.display.BlendMode;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectShader;
+#if !flash
+import openfl.display.Shader;
+#end
 import openfl.display.Sprite;
 import openfl.display.Tile;
 import openfl.display.TileContainer;
@@ -30,6 +33,7 @@ import com.stencyl.Engine;
 import com.stencyl.graphics.AbstractAnimation;
 import com.stencyl.graphics.BitmapAnimation;
 import com.stencyl.graphics.BitmapWrapper;
+import com.stencyl.graphics.ColorMatrixShader;
 import com.stencyl.graphics.G;
 import com.stencyl.graphics.SheetAnimation;
 #if com.stencyl.label
@@ -57,6 +61,7 @@ import com.stencyl.models.GameModel;
 
 import com.stencyl.utils.motion.*;
 import com.stencyl.utils.ColorMatrix;
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
 import box2D.dynamics.B2Body;
@@ -197,8 +202,10 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	public var currAnimationName:String;
 	public var animationMap:Map<String,ActorAnimation>;
 	
-	#if (!use_actor_tilemap && !flash)
+	#if !flash
 	public var bitmapFilters:Array<BitmapFilter>;
+	private var filtersAsShader:Shader;
+	private var usingSoftwareFilter:Bool;
 	#end
 
 	public var sprite:StencylSprite;
@@ -1187,8 +1194,20 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 			
 			currAnimationName = name;
 			currAnimation = newAnimation;
-			#if (!use_actor_tilemap && !flash)
-			currAnimation.filter = bitmapFilters;
+			#if !flash
+			{
+				#if !use_actor_tilemap
+				if(bitmapFilters != null && usingSoftwareFilter)
+				{
+					currAnimation.filter = bitmapFilters;
+				}
+				else
+				{
+					currAnimation.filter = null;
+				}
+				#end
+			}
+			currAnimation.shader = filtersAsShader;
 			#end
 			currAnimation.visible = drawActor;
 
@@ -3563,14 +3582,50 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	{
 		#if flash
 		filters = filters.concat(filter);
-		#elseif use_actor_tilemap
-		//not implemented
 		#else
-		if(bitmapFilters == null)
-			bitmapFilters = [];
-		bitmapFilters = bitmapFilters.concat(filter);
-		if(currAnimation != null)
-			currAnimation.filter = bitmapFilters;
+			if(bitmapFilters == null)
+				bitmapFilters = [];
+			bitmapFilters = bitmapFilters.concat(filter);
+			usingSoftwareFilter = Lambda.exists(bitmapFilters, f -> !Std.is(f, ColorMatrixFilter));
+
+			if(!usingSoftwareFilter)
+			{
+				var cm = new ColorMatrix();
+				var first = true;
+				for(f in bitmapFilters)
+				{
+					var cmf = cast(f, ColorMatrixFilter);
+					if(first)
+						cm.matrix = cmf.matrix;
+					else
+					{
+						var cm2 = new ColorMatrix();
+						cm2.matrix = cmf.matrix;
+						var cm3 = new ColorMatrix();
+						
+						ColorMatrix.mulMatrixMatrix(cm, cm2, cm3);
+						cm = cm3;
+					}
+				}
+				var cms = new ColorMatrixShader();
+				cms.init(cm.matrix);
+				filtersAsShader = cms;
+			}
+			else
+			{
+				filtersAsShader = null;
+			}
+			
+			if(usingSoftwareFilter)
+			{
+				#if use_actor_tilemap
+				Log.error("software filters not implemented");
+				#else
+				if(currAnimation != null)
+					currAnimation.filter = bitmapFilters;
+				#end
+			}
+			currAnimation.shader = filtersAsShader;
 		#end
 	}
 	
@@ -3578,12 +3633,14 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	{
 		#if flash
 		filters = null;
-		#elseif use_actor_tilemap
-		//not implemented
 		#else
-		bitmapFilters = null;
-		if(currAnimation != null)
-			currAnimation.filter = null;
+			bitmapFilters = null;
+			usingSoftwareFilter = false;
+			filtersAsShader = null;
+			#if !use_actor_tilemap
+			if(currAnimation != null)
+				currAnimation.filter = null;
+			#end
 		#end
 	}
 	
