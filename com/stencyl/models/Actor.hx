@@ -3646,16 +3646,12 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	
 	public function setBlendMode(blendMode:BlendMode)
 	{
-		#if !use_actor_tilemap
 		this.blendMode = blendMode;
-		#end
 	}
 	
 	public function resetBlendMode()
 	{
-		#if !use_actor_tilemap
 		this.blendMode = BlendMode.NORMAL;
-		#end
 	}
 	
 	//*-----------------------------------------------
