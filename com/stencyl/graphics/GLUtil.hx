@@ -63,6 +63,8 @@ class GLUtil
 		@:privateAccess img.image.buffer.__srcCanvas = null; //Browser.document.createElement("canvas")
 		@:privateAccess img.image.buffer.__srcContext = null; //js.Syntax.code('buffer.__srcCanvas.getContext ("2d", { alpha: false })');
 															  //buffer.__srcCanvas.getContext("2d");
+		@:privateAccess img.image.buffer.__srcImageData = null; //buffer.__srcContext.getImageData(0, 0, buffer.width, buffer.height)
+                                                                //buffer.__srcContext.createImageData(buffer.width, buffer.height)
 		img.image = null;
 		img.readable = false;
 		img.__surface = null;
