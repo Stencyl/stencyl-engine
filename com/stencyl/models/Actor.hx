@@ -3561,25 +3561,29 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 
 	public function setFilter(filter:Array<BitmapFilter>)
 	{
-		#if (!use_actor_tilemap && !flash)
+		#if flash
+		filters = filters.concat(filter);
+		#elseif use_actor_tilemap
+		//not implemented
+		#else
 		if(bitmapFilters == null)
 			bitmapFilters = [];
 		bitmapFilters = bitmapFilters.concat(filter);
 		if(currAnimation != null)
 			currAnimation.filter = bitmapFilters;
-		#else
-		//filters = filters.concat(filter);
 		#end
 	}
 	
 	public function clearFilters()
 	{
-		#if (!use_actor_tilemap && !flash)
+		#if flash
+		filters = null;
+		#elseif use_actor_tilemap
+		//not implemented
+		#else
 		bitmapFilters = null;
 		if(currAnimation != null)
 			currAnimation.filter = null;
-		#else
-		//filters = null;
 		#end
 	}
 	
