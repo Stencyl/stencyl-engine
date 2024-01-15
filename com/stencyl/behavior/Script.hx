@@ -2778,22 +2778,18 @@ class Script
 	
 	public static function setFilterForImage(img:BitmapWrapper, filter:BitmapFilter)
 	{
-		#if !use_actor_tilemap
 		if(img != null)
 		{
-			img.filters = img.filters.concat([filter]);
+			img.filtersWrapper = img.filtersWrapper.concat([filter]);
 		}
-		#end
 	}
 	
 	public static function clearFiltersForImage(img:BitmapWrapper)
 	{
-		#if !use_actor_tilemap
 		if(img != null)
 		{
-			img.filters = [];
+			img.filtersWrapper = [];
 		}
-		#end
 	}
 	
 	//Base64 encodes raw image data. Does NOT convert to a PNG.
