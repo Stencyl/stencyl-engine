@@ -87,7 +87,7 @@ sactor.shape.destroy2=remove %0
 sactor.shape.scale2=scale %1 by %0 [pct]
 sactor.shape.group=collision group of %0
 sactor.shape.setgroup=set collision group to %1 for %0
-sactor.shape.last=last added shape
+sactor.shape.last=last added shape for %0
 sactor.ispaused=%0 is paused
 # Dropdown Values
 transition.fadeout=Fade Out
