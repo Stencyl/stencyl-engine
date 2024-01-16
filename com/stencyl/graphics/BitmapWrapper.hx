@@ -2,7 +2,7 @@ package com.stencyl.graphics;
 
 import openfl.display.BitmapData;
 import openfl.display.Bitmap;
-#if !flash
+#if !(flash || canvas)
 import openfl.display.Shader;
 #end
 #if !use_actor_tilemap
@@ -41,12 +41,12 @@ class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #en
 	
 	@:isVar public var tweenProps (get, null):BitmapTweenProperties;
 
-	#if !flash
+	#if !(flash || canvas)
 	private var bitmapFilters:Array<BitmapFilter>;
 	private var filtersAsShader:Shader;
 	private var usingSoftwareFilter:Bool;
-	@:isVar public var filtersWrapper (get, set):Array<BitmapFilter>;
 	#end
+	@:isVar public var filtersWrapper (get, set):Array<BitmapFilter>;
 
 	public function new(?img:Bitmap, ?imgData:BitmapData #if use_actor_tilemap , ?imgTile:Tile #end)
 	{
@@ -206,16 +206,20 @@ class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #en
 
 	public function get_filtersWrapper():Array<BitmapFilter>
 	{
+		#if (flash || canvas)
+		return filters;
+		#else
 		if(filtersWrapper == null)
 			return [];
 		return filtersWrapper.copy();
+		#end
 	}
 
 	public function set_filtersWrapper(value:Array<BitmapFilter>):Array<BitmapFilter>
 	{
 		if(value == null || value.length == 0)
 		{
-			#if flash
+			#if (flash || canvas)
 				filters = [];
 			#else
 				bitmapFilters = null;
@@ -227,7 +231,7 @@ class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #en
 			return [];
 		}
 
-		#if flash
+		#if (flash || canvas)
 			filters = filters.concat(value);
 			return filters;
 		#else

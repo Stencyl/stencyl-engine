@@ -6,7 +6,7 @@ import openfl.display.BlendMode;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectShader;
-#if !flash
+#if !(flash || canvas)
 import openfl.display.Shader;
 #end
 import openfl.display.Sprite;
@@ -202,7 +202,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	public var currAnimationName:String;
 	public var animationMap:Map<String,ActorAnimation>;
 	
-	#if !flash
+	#if !(flash || canvas)
 	public var bitmapFilters:Array<BitmapFilter>;
 	private var filtersAsShader:Shader;
 	private var usingSoftwareFilter:Bool;
@@ -1194,7 +1194,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 			
 			currAnimationName = name;
 			currAnimation = newAnimation;
-			#if !flash
+			#if !(flash || canvas)
 			{
 				#if !use_actor_tilemap
 				if(bitmapFilters != null && usingSoftwareFilter)
@@ -3580,7 +3580,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 
 	public function setFilter(filter:Array<BitmapFilter>)
 	{
-		#if flash
+		#if (flash || canvas)
 		filters = filters.concat(filter);
 		#else
 			if(bitmapFilters == null)
@@ -3631,7 +3631,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	
 	public function clearFilters()
 	{
-		#if flash
+		#if (flash || canvas)
 		filters = null;
 		#else
 			bitmapFilters = null;
