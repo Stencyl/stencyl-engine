@@ -42,6 +42,16 @@ class ToolsetInterface
 		var host:String = Config.toolsetInterfaceHost;
 		var port:Null<Int> = Config.toolsetInterfacePort;
 
+		#if testing
+		var launchVars:Map<String, String> = Reflect.field(Type.resolveClass("ApplicationMain"), "launchVars");
+		var hostFromLauncher = launchVars.get("gciHost");
+		var portFromLauncher = launchVars.get("gciPort");
+		if(hostFromLauncher != null)
+			host = hostFromLauncher;
+		if(portFromLauncher != null)
+			port = Std.parseInt(portFromLauncher);
+		#end
+
 		if(host == null)
 			host = "localhost";
 		if(port != -1)
