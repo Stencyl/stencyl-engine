@@ -145,22 +145,35 @@ using StringTools;
 	}
 	#end
 
+	#if stencyltools
+	private static var waitForTools = false;
+	#end
+
 	public static function create (config):Void
 	{
 		#if stencyltools
 		{
+			var waitTime = 0; //-1: wait indefinitely, x >= 0: wait x seconds
+			#if testing
+			if(launchVars.exists("gciWaitTime"))
+				waitTime = Std.parseInt(launchVars.get("gciWaitTime"));
+			#end
+
+			waitForTools = waitTime == -1 || waitTime > 0;
+
 			var startTime = 0.0;
 			var tryTimeout = function() {
+				if(waitTime == -1) return;
 				if(startTime == 0.0) startTime = Timer.stamp() - 0.01;
-				if(!ToolsetInterface.connected && Timer.stamp() - startTime > 2)
+				if(!ToolsetInterface.connected && Timer.stamp() - startTime > waitTime)
 				{
-					ToolsetInterface.cancelConnection();
+					waitForTools = false;
 				}
 			};
 
 			#if (flash || html5)
 
-			if(!ToolsetInterface.ready)
+			if(waitForTools && !ToolsetInterface.ready)
 			{
 				var timer = new Timer(10);
 				timer.run = function()
@@ -182,7 +195,7 @@ using StringTools;
 
 			#else
 
-			while(!ToolsetInterface.ready)
+			while(waitForTools && !ToolsetInterface.ready)
 			{
 				ToolsetInterface.preloadedUpdate();
 				tryTimeout();
