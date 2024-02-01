@@ -12,22 +12,15 @@
   <depend name="${this_dir}/include/Native.h" />
 </files>
 
-<files id="${id}-common" dir="${this_dir}">
-  <depend files="${id}-dependencies" />
-  <cache value="1" project="${id}" asLibrary="true" />
-  <compilerflag value="-I${this_dir}/include" />
-  <file name="common/ExternalInterface.cpp" />
-</files>
-
 <files id="${id}-ios" dir="${this_dir}">
   <depend files="${id}-dependencies" />
   <cache value="1" project="${id}" asLibrary="true" />
   <compilerflag value="-I${this_dir}/include" />
+  <file name="common/ExternalInterface.cpp" />
   <file name="iphone/Native.mm" />
 </files>
 
 <target id="haxe">
-  <files id="com.stencyl.native-common" />
   <files id="com.stencyl.native-ios" if="ios" />
 </target>
 
