@@ -3641,6 +3641,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 			if(currAnimation != null)
 				currAnimation.filter = null;
 			#end
+			currAnimation.shader = null;
 		#end
 	}
 	
