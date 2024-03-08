@@ -1,0 +1,25 @@
+# ADD EVENT PICKER
+events.add.basics=Base
+events.add.input=Ingresso
+events.add.input2=Web / Solo desktop
+events.add.input.mouse=Universale
+events.add.input.mobile=Solo mobile
+events.add.time=Tempo
+events.add.time.game=Gioco
+events.add.actors=Attori
+events.add.actors.created=Crea o distruggi
+events.add.actors.screen=Entra o esce dalla scena o dallo schermo
+events.add.actors.region=Entra o esce dalla regione
+events.add.collisions=Collisioni
+events.add.collisions.with=Questo attore collide con...
+events.add.collisions.anywith=Qualsiasi attore collide con...
+events.add.collisions.between=Collisione tra...
+events.add.sound=Suono
+events.add.mobile=Mobile
+events.add.mobile.money=Monetizzazione
+events.add.mobile.fun=Servizio giochi
+events.add.attributes=Attributi
+events.add.advanced=Avanzato
+events.add.advanced.events=Eventi custom
+events.add.advanced.blocks=Blocchi custom
+events.add.advanced.code=Codice
