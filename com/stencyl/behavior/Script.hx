@@ -3555,7 +3555,7 @@ class Script
 			var request = new URLRequest(URL);
 			request.method = URLRequestMethod.GET;
 			
-			var loader = new URLLoader(request);
+			var loader = new URLLoader();
 			loader.addEventListener(FlashEvent.COMPLETE, fn);
 			
 			#if flash
@@ -3568,6 +3568,8 @@ class Script
 				loader.close();
 			});
 			#end
+
+			loader.load(request);
 		} 
 		
 		catch(error:haxe.Exception) 
@@ -3596,7 +3598,7 @@ class Script
 		
 		try 
 		{
-			var loader = new URLLoader(request);
+			var loader = new URLLoader();
 			loader.addEventListener(FlashEvent.COMPLETE, fn);
 			
 			#if flash
@@ -3609,6 +3611,8 @@ class Script
 				loader.close();
 			});
 			#end
+
+			loader.load(request);
 		} 
 		
 		catch(error:haxe.Exception) 
