@@ -202,8 +202,8 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	public var currAnimationName:String;
 	public var animationMap:Map<String,ActorAnimation>;
 	
-	#if !(flash || canvas)
 	public var bitmapFilters:Array<BitmapFilter>;
+	#if !(flash || canvas)
 	private var filtersAsShader:Shader;
 	private var usingSoftwareFilter:Bool;
 	#end
@@ -1208,6 +1208,8 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				#end
 			}
 			currAnimation.shader = filtersAsShader;
+			#else
+			currAnimation.filter = bitmapFilters;
 			#end
 			currAnimation.visible = drawActor;
 
@@ -3580,12 +3582,13 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 
 	public function setFilter(filter:Array<BitmapFilter>)
 	{
+		if(bitmapFilters == null)
+			bitmapFilters = [];
+		bitmapFilters = bitmapFilters.concat(filter);
 		#if (flash || canvas)
-		filters = filters.concat(filter);
+			if(currAnimation != null)
+				currAnimation.filter = bitmapFilters;
 		#else
-			if(bitmapFilters == null)
-				bitmapFilters = [];
-			bitmapFilters = bitmapFilters.concat(filter);
 			usingSoftwareFilter = Lambda.exists(bitmapFilters, f -> !Std.is(f, ColorMatrixFilter));
 
 			if(!usingSoftwareFilter)
@@ -3631,10 +3634,11 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	
 	public function clearFilters()
 	{
+		bitmapFilters = null;
 		#if (flash || canvas)
-		filters = null;
+			if(currAnimation != null)
+				currAnimation.filter = null;
 		#else
-			bitmapFilters = null;
 			usingSoftwareFilter = false;
 			filtersAsShader = null;
 			#if !use_actor_tilemap
