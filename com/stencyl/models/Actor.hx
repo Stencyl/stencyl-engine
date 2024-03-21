@@ -3599,14 +3599,21 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				{
 					var cmf = cast(f, ColorMatrixFilter);
 					if(first)
-						cm.matrix = cmf.matrix;
+					{
+						cm.setArray(cmf.matrix);
+						first = false;
+					}
 					else
 					{
 						var cm2 = new ColorMatrix();
-						cm2.matrix = cmf.matrix;
+						cm2.setArray(cmf.matrix);
 						var cm3 = new ColorMatrix();
 						
-						ColorMatrix.mulMatrixMatrix(cm, cm2, cm3);
+						//original color is on the right in the final
+						//multiplication, so additional matrices should
+						//be added to the left
+						ColorMatrix.mulMatrixMatrix(cm2, cm, cm3);
+						cm3.toArray(cm3.matrix);
 						cm = cm3;
 					}
 				}

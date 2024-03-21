@@ -705,6 +705,15 @@ class ColorMatrix
 		out[15] = m41; out[16] = m42; out[17] = m43; out[18] = m44; out[19] = m45;
 		return out;
 	}
+
+	public inline function setArray(inMtx:Array<Float>):Void
+	{
+		m11 = inMtx[ 0]; m12 = inMtx[ 1]; m13 = inMtx[ 2]; m14 = inMtx[ 3]; m15 = inMtx[ 4];
+		m21 = inMtx[ 5]; m22 = inMtx[ 6]; m23 = inMtx[ 7]; m24 = inMtx[ 8]; m25 = inMtx[ 9];
+		m31 = inMtx[10]; m32 = inMtx[11]; m33 = inMtx[12]; m34 = inMtx[13]; m35 = inMtx[14];
+		m41 = inMtx[15]; m42 = inMtx[16]; m43 = inMtx[17]; m44 = inMtx[18]; m45 = inMtx[19];
+		matrix = inMtx;
+	}
 	
 	inline function set
 	(
