@@ -27,8 +27,8 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 	private var frames:Array<BitmapData>;
 	private var numFrames:Int;
 	
-	#if !flash
 	public var filter(null, set):Array<BitmapFilter>;
+	#if !flash
 	private var filteredFrames:Array<Bool>;
 	#end
 	
@@ -169,7 +169,13 @@ class BitmapAnimation extends Bitmap implements AbstractAnimation
 		smoothing = Config.antialias;
 	}
 	
-	#if !flash
+	#if flash
+	public function set_filter(filter:Array<BitmapFilter>)
+	{
+		this.filters = filter;
+		return filters;
+	}
+	#else
 	public function set_filter(filter:Array<BitmapFilter>)
 	{
 		this.filter = filter;
