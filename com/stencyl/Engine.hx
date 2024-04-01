@@ -2404,13 +2404,20 @@ class Engine
 		a.rSpeed = 0;
 		a.continuousCollision = false;
 		
-		for (item in tasks)
+		//Remove associated timed tasks
+		var i = 0;
+		
+		while(i < tasks.length)
 		{
-			if (item.actor == a)
+			var t:TimedTask = tasks[i];
+			
+			if(t.actor == a)
 			{
-				removeTask(item);
-				item = null;
+				tasks.remove(t);
+				i--;
 			}
+			
+			i++;
 		}
 		
 		allActors.unset(a.ID);
