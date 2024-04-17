@@ -195,34 +195,23 @@ class BehaviorManager
 			{
 				continue;
 			}
+
+			var f = Reflect.field(item.script, msg);
 			
-			//XXX: Flash works slightly differently from the rest on this... :(
-			#if flash
-			if(Reflect.hasField(item.script, msg))
-			#else
 			try
-			#end
 			{
-				var f = Reflect.field(item.script, msg);
-			
 				if(f != null)
 				{
 					toReturn = Reflect.callMethod(item.script, f, args);
 				}
-				
 				else
 				{
 					item.script.forwardMessage(msg);
 				}
 			}
-			
-			#if flash
-			else
-			#else
 			catch(e:haxe.Exception)
-			#end
 			{
-				item.script.forwardMessage(msg);
+				Log.fullError("Error in " + msg + " for behavior: " + item.name, e);
 			}
 		}
 		
@@ -242,42 +231,35 @@ class BehaviorManager
 
 		var toReturn:Dynamic = null;
 		var item:Behavior = cache.get(behaviorName);
-		
-		if(item != null)
+
+		if(item == null || item.script == null)
 		{
-			if(!item.enabled || item.script == null)
+			Log.warn("Warning: Behavior does not exist - " + behaviorName + Utils.printCallstackIfAvailable());
+			return toReturn;
+		}
+		
+		if(!item.enabled)
+		{
+			Log.warn("Warning: Behavior is not enabled - " + behaviorName + Utils.printCallstackIfAvailable());
+			return toReturn;
+		}
+		
+		var f = Reflect.field(item.script, msg);
+
+		try
+		{
+			if(f != null)
 			{
-				return toReturn;
+				toReturn = Reflect.callMethod(item.script, f, args);
 			}
-			
-			//XXX: Flash works slightly differently from the rest on this... :(
-			#if flash
-			if(Reflect.hasField(item.script, msg))
-			#else
-			try
-			#end
-			{
-				var f = Reflect.field(item.script, msg);
-			
-				if(f != null)
-				{
-					toReturn = Reflect.callMethod(item.script, f, args);
-				}
-				
-				else
-				{
-					item.script.forwardMessage(msg);
-				}
-			}
-			
-			#if flash
 			else
-			#else
-			catch(e:haxe.Exception)
-			#end
 			{
 				item.script.forwardMessage(msg);
 			}
+		}
+		catch(e:haxe.Exception)
+		{
+			Log.fullError("Error in " + msg + " for behavior: " + item.name, e);
 		}
 
 		return toReturn;
