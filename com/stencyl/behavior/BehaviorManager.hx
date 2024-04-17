@@ -197,21 +197,21 @@ class BehaviorManager
 			}
 
 			var f = Reflect.field(item.script, msg);
-			
-			try
+			if(f == null)
 			{
-				if(f != null)
+				f = item.script.getMessageHandler(msg);
+			}
+
+			if(f != null)
+			{
+				try
 				{
 					toReturn = Reflect.callMethod(item.script, f, args);
 				}
-				else
+				catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else String #end )
 				{
-					item.script.forwardMessage(msg);
+					Log.fullError("Error in " + msg + " for behavior: " + item.name, e);
 				}
-			}
-			catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else String #end )
-			{
-				Log.fullError("Error in " + msg + " for behavior: " + item.name, e);
 			}
 		}
 		
@@ -245,21 +245,25 @@ class BehaviorManager
 		}
 		
 		var f = Reflect.field(item.script, msg);
-
-		try
+		if(f == null)
 		{
-			if(f != null)
+			f = item.script.getMessageHandler(msg);
+		}
+
+		if(f != null)
+		{
+			try
 			{
 				toReturn = Reflect.callMethod(item.script, f, args);
 			}
-			else
+			catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else String #end )
 			{
-				item.script.forwardMessage(msg);
+				Log.fullError("Error in " + msg + " for behavior: " + item.name, e);
 			}
 		}
-		catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else String #end )
+		else
 		{
-			Log.fullError("Error in " + msg + " for behavior: " + item.name, e);
+			Log.warn("Warning: Event " + msg + " does not exist for " + behaviorName + Utils.printCallstackIfAvailable());
 		}
 
 		return toReturn;
