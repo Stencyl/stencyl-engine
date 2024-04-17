@@ -354,8 +354,9 @@ class Script
 		}
 	}
 	
-	public function forwardMessage(msg:String)
+	public function getMessageHandler(msg:String):Dynamic
 	{
+		return null;
 	}
 	
 	public function clearListeners()
