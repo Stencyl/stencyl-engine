@@ -56,25 +56,28 @@ class Sound extends Resource
 	
 	override public function loadGraphics()
 	{
-		if(#if lime_vorbis !streaming #else true #end)
+		if(#if (lime_vorbis || lime_howlerjs) !streaming #else true #end)
 		{
 			//Log.verbose("Loading sound: " + ID);
 			src = Assets.getSound("assets/" + (streaming? "music" : "sfx") + "/sound-" + ID + "." + this.ext, false);
 		}
+		#if (lime_vorbis || lime_howlerjs)
+		else
+		{
+			src = getStreamingSource();
+		}
+		#end
 	}
 	
 	override public function unloadGraphics()
 	{
-		if(!streaming)
+		if(src != null)
 		{
-			if(src != null)
-			{
-				stopInstances();
-				src.close();
-			}
-			
-			src = null;
+			stopInstances();
+			src.close();
 		}
+		
+		src = null;
 	}
 
 	public function play(channelNum:Int = 1, position:Float = 0):SoundChannel
@@ -120,15 +123,13 @@ class Sound extends Resource
 		var audioBuffer = AudioBuffer.fromVorbisFile(vorbisFile);
 		return OpenFLSound.fromAudioBuffer(audioBuffer);
 		
-		//This doesn't work right now because it seems that loading a new Howl has to be completed before playing the sound.
-		
-		/*#elseif lime_howlerjs
+		#elseif lime_howlerjs
 		
 		var audioBuffer = new AudioBuffer();
 		audioBuffer.__srcHowl = new Howl({src: [path], preload: false, html5: true});
 		audioBuffer.__srcHowl.load();
 		
-		return OpenFLSound.fromAudioBuffer(audioBuffer);*/
+		return OpenFLSound.fromAudioBuffer(audioBuffer);
 		
 		#else
 		
