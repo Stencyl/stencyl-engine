@@ -576,15 +576,8 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		{
 			if(shape != null && Std.isOfType(shape, com.stencyl.models.collision.Mask))
 			{
-				#if !use_actor_tilemap
-				//TODO: Very inefficient for CPP/mobile - can we force width/height a different way?
-				var dummy = new Bitmap(new BitmapData(1, 1, true, 0));
-				dummy.x = width;
-				dummy.y = height;
-				addChild(dummy);
-				cacheWidth = this.width = width;
-				cacheHeight = this.height = height;
-				#end
+				cacheWidth = width;
+				cacheHeight = height;
 			}
 			
 			else if(physicsMode == NORMAL_PHYSICS)
