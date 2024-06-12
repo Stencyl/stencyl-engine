@@ -32,8 +32,6 @@ class FadeInTransition extends Transition
 		g.drawRect(0, 0, Engine.screenWidth * Engine.SCALE + 4, Engine.screenHeight * Engine.SCALE + 4);
 		g.endFill();
 		
-		g.drawCircle(1, 1, 1); //HACK: Force a software draw for this shape.
-		
 		Engine.engine.transitionLayer.addChild(rect);
 		
 		rectAlpha = new TweenFloat();

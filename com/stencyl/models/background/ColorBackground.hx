@@ -35,8 +35,6 @@ class ColorBackground extends Resource implements Background
 			g.beginFill(bgColor);
 			g.drawRect(0, 0, screenWidth, screenHeight);
 			g.endFill();
-			
-			g.drawCircle(1, 1, 1); //HACK: Force a software draw for this shape.
 		}
 	}
 }
