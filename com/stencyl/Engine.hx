@@ -977,7 +977,7 @@ class Engine
 		hudLayer.name = "HUD Layer";
 		root.addChild(hudLayer);
 		
-		drawingLayer = new DrawingLayer();
+		drawingLayer = new DrawingLayer(Std.int(screenWidth * SCALE), Std.int(screenHeight * SCALE));
 		drawingLayer.name = "Drawing Layer";
 		root.addChild(drawingLayer);
 
@@ -3471,6 +3471,16 @@ class Engine
 			enter.draw(null);
 		}
 		
+		#if stencyl4_compat
+		for(l in interactiveLayers)
+		{
+			l.overlay.renderFrame(g);
+		}
+		hudLayer.overlay.renderFrame(g);
+		drawingLayer.renderFrame(g);
+		g.layer = null;
+		#end
+
 		g.graphics = null;
 		
 		#if !flash

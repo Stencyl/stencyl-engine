@@ -378,6 +378,7 @@ class BitmapFont
 					tile.scaleX = pScale;
 					tile.scaleY = pScale;
 					tile.alpha = pAlpha;
+					tile.tileset = _tileset;
 					
 					tilemap.addTile(tile);
 				}

@@ -9,6 +9,12 @@ import openfl.display.Sprite;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 
+
+#if use_actor_tilemap
+import openfl.display.Tile;
+import openfl.display.Tileset;
+#end
+
 import openfl.geom.Rectangle;
 import openfl.geom.Point;
 import openfl.geom.Matrix;
@@ -292,6 +298,14 @@ class G
 			drawY = this.y + y * scaleY;
 		}
 		
+		#if use_actor_tilemap
+		if(graphics == null)
+		{
+			font.font.render(layer, s, alpha, Std.int(drawX), Std.int(drawY), font.fontScale, 0);
+			return;
+		}
+		#end
+		
 		mtx.identity();
 		mtx.translate(drawX, drawY);
 
@@ -340,12 +354,25 @@ class G
 			}
 			else
 			#end
+			#if use_actor_tilemap
+			{
+				var tileset = new Tileset(toDraw);
+				var tileID = tileset.addRect(toDraw.rect);
+				var tile = new Tile();
+				tile.tileset = tileset;
+				tile.id = tileID;
+				tile.x = drawX;
+				tile.y = drawY;
+				layer.addTile(tile);
+			}
+			#else
 			{
 				var bitmap = new Bitmap(toDraw);
 				bitmap.x = drawX;
 				bitmap.y = drawY;
 				layer.addChild(bitmap);
 			}
+			#end
 		}
 	}
 
@@ -713,6 +740,20 @@ class G
 		}
 		else
 		#end
+		#if use_actor_tilemap
+		{
+			var tileset = new Tileset(img);
+			var tileID = tileset.addRect(img.rect);
+			var tile = new Tile();
+			tile.tileset = tileset;
+			tile.id = tileID;
+			tile.x = x;
+			tile.y = y;
+			tile.rotation = angle;
+			tile.alpha = alpha;
+			layer.addTile(tile);
+		}
+		#else
 		{
 			var bitmap = new Bitmap(img);
 			bitmap.x = x;
@@ -721,6 +762,7 @@ class G
 			bitmap.alpha = alpha;
 			layer.addChild(bitmap);
 		}
+		#end
 	}
 
 	public function beginDrawingShape(shape:Sprite)
@@ -747,7 +789,19 @@ class G
 		}
 		#end
 
+		#if use_actor_tilemap
+		var img:BitmapData = new BitmapData(Math.ceil(bounds.width), Math.ceil(bounds.height), true, 0);
+		img.draw(shape, new Matrix(1, 0, 0, 1, -bounds.x, -bounds.y));
+		var tileset = new Tileset(img, [new Rectangle(0, 0, bounds.width, bounds.height)]);
+		var tile = new Tile();
+		tile.id = 0;
+		tile.x = bounds.x;
+		tile.y = bounds.y;
+		tile.tileset = tileset;
+		layer.addTile(tile);
+		#else
 		layer.addChild(shape);
+		#end
 	}
 	
 	private function toARGB(rgb:Int, newAlpha:Int):Int

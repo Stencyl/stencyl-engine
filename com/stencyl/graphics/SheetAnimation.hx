@@ -172,30 +172,31 @@ class SheetAnimation extends Tile implements AbstractAnimation
 
 	public function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
-		if(Config.disposeImages && !model.checkImageReadable())
+		var needsReadableImage = #if stencyl4_compat g.graphics != null #else false #end;
+		if(needsReadableImage && Config.disposeImages && !model.checkImageReadable())
 			return;
 		
-		var bitmapData = model.imgData;
-		var srcXOffset = 0;
-		var srcYOffset = 0;
-
-		if (g.alpha == 1)
-		{
-			srcXOffset = frameIndex % model.framesAcross * get_width();
-			srcYOffset = Std.int(frameIndex / model.framesAcross) * get_height();
-		}
-		else
-		{
-			bitmapData = new BitmapData(get_width(), get_height(), true, 0);
-			var colorTransformation = new openfl.geom.ColorTransform(1,1,1,g.alpha,0,0,0,0);
-			bitmapData.draw(model.imgData, new Matrix(1, 0, 0, 1, -srcXOffset, -srcYOffset), colorTransformation);
-			srcXOffset = 0;
-			srcYOffset = 0;
-		}
-		
 		#if stencyl4_compat
-		if(g.graphics != null)
+		if(needsReadableImage)
 		{
+			var bitmapData = model.imgData;
+			var srcXOffset = 0;
+			var srcYOffset = 0;
+
+			if (g.alpha == 1)
+			{
+				srcXOffset = frameIndex % model.framesAcross * get_width();
+				srcYOffset = Std.int(frameIndex / model.framesAcross) * get_height();
+			}
+			else
+			{
+				bitmapData = new BitmapData(get_width(), get_height(), true, 0);
+				var colorTransformation = new openfl.geom.ColorTransform(1,1,1,g.alpha,0,0,0,0);
+				bitmapData.draw(model.imgData, new Matrix(1, 0, 0, 1, -srcXOffset, -srcYOffset), colorTransformation);
+				srcXOffset = 0;
+				srcYOffset = 0;
+			}
+			
 			g.graphics.beginBitmapFill(bitmapData, new Matrix(1, 0, 0, 1, x - srcXOffset, y - srcYOffset));
 			g.graphics.drawRect(x, y, bitmapData.width, bitmapData.height);
 	 	 	g.graphics.endFill();
@@ -203,12 +204,12 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		else
 		#end
 		{
-			var bitmap = new Bitmap(bitmapData);
-			bitmap.x = x;
-			bitmap.y = y;
-			bitmap.rotation = angle;
-			bitmap.alpha = alpha;
-			g.layer.addChild(bitmap);
+			var tile = clone();
+			tile.x = x;
+			tile.y = y;
+			tile.rotation = angle;
+			tile.alpha = alpha;
+			g.layer.addTile(tile);
 		}
   	}
 	

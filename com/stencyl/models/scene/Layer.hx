@@ -52,8 +52,9 @@ class Layer extends RegularLayer
 		actorContainer = new ActorLayer(#if (use_actor_tilemap) Std.int(width * Engine.SCALE), Std.int(height * Engine.SCALE), null, Config.antialias #end);
 		actorContainer.name = name + " - ActorLayer";
 		#if (use_actor_tilemap) actorContainer.tileColorTransformEnabled = false; #end
-		overlay = new DrawingLayer();
+		overlay = new DrawingLayer(Std.int(width * Engine.SCALE), Std.int(height * Engine.SCALE));
 		overlay.name = name + " - Overlay";
+		#if (use_actor_tilemap) overlay.tileColorTransformEnabled = false; #end
 
 		if(tiles != null) addChild(tiles);
 		addChild(actorContainer);
@@ -145,6 +146,8 @@ class Layer extends RegularLayer
 
 		actorContainer.width = scaledWidth;
 		actorContainer.height = scaledHeight;
+		overlay.width = scaledWidth;
+		overlay.height = scaledHeight;
 		if(frontImageLayer != null)
 		{
 			frontImageLayer.width = scaledWidth;
