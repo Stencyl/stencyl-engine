@@ -298,6 +298,17 @@ using StringTools;
 		app.window.frameRate = ::WIN_FPS::;
 		
 		#end
+
+		#if !flash
+		if (app.window.context.type == OPENGL || app.window.context.type == OPENGLES || app.window.context.type == WEBGL)
+		{
+			com.stencyl.graphics.GLUtil.initialize(app.window);
+		}
+		else
+		{
+			Log.warn("WARNING: Unexpectedly running without a GL context.");
+		}
+		#end
 		
 		if(!Config.releaseMode)
 		{

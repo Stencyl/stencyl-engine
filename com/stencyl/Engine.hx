@@ -765,15 +765,6 @@ class Engine
 		this.extensions = extensions;
 		
 		#if !flash
-		if (stage.window.context.type == OPENGL || stage.window.context.type == OPENGLES || stage.window.context.type == WEBGL)
-		{
-			com.stencyl.graphics.GLUtil.initialize();
-		}
-		else
-		{
-			Log.warn("WARNING: Unexpectedly running without a GL context.");
-		}
-		
 		if(com.stencyl.graphics.shaders.PostProcess.isSupported)
 		{
 			shaderLayer = new Sprite();

@@ -6,6 +6,7 @@ import com.stencyl.utils.Log;
 
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.RenderContext;
+import lime.ui.Window;
 
 import openfl.display.BitmapData;
 import openfl.display.OpenGLRenderer;
@@ -27,13 +28,13 @@ class GLUtil
 	public static var textureMaxSize(default, null):Null<Int> = null;
 	private static var MAX_TEXTURE_CAP = 4096;
 	
-	public static function initialize():Void
+	public static function initialize(window:Window):Void
 	{
 		if(gl != null) return;
-		context = com.stencyl.Engine.stage.window.context;
-		context3D = com.stencyl.Engine.stage.context3D;
+		context = window.context;
+		context3D = window.stage.context3D;
 		gl = context;
-		@:privateAccess renderer = cast com.stencyl.Engine.stage.__renderer;
+		@:privateAccess renderer = cast window.stage.__renderer;
 		
 		textureMaxSize = cast gl.getParameter(gl.MAX_TEXTURE_SIZE);
 		Log.debug("GL value of MAX_TEXTURE_SIZE: " + textureMaxSize);
