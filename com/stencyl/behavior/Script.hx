@@ -1313,8 +1313,11 @@ class Script
 	{
 		if(Std.isOfType(layer, Layer))
 		{
-			var l:Layer = cast layer;
-			Engine.engine.g.graphics = l.overlay.graphics;
+			var il:Layer = cast layer;
+			Engine.engine.g.layer = il.overlay;
+			#if stencyl4_compat
+			Engine.engine.g.graphics = il.overlay.graphics;
+			#end
 		}
 	}
 	
@@ -1322,13 +1325,19 @@ class Script
 	{
 		if(a != null)
 		{
+			Engine.engine.g.layer = a.layer.overlay;
+			#if stencyl4_compat
 			Engine.engine.g.graphics = a.layer.overlay.graphics;
+			#end
 		}
 	}
 	
 	public static function setDrawingLayerToSceneLayer()
 	{
-		Engine.engine.g.graphics = Engine.engine.transitionLayer.graphics;
+		Engine.engine.g.layer = Engine.engine.drawingLayer;
+		#if stencyl4_compat
+		Engine.engine.g.graphics = Engine.engine.drawingLayer.graphics;
+		#end
 	}
 	
 	//*-----------------------------------------------

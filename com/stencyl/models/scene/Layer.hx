@@ -30,7 +30,7 @@ class Layer extends RegularLayer
 	//Actors
 	public var actorContainer:ActorLayer;
 	//Custom Drawing
-	public var overlay:Sprite;
+	public var overlay:DrawingLayer;
 	//Images
 	public var attachedImages:Array<BitmapWrapper>;
 	
@@ -52,7 +52,7 @@ class Layer extends RegularLayer
 		actorContainer = new ActorLayer(#if (use_actor_tilemap) Std.int(width * Engine.SCALE), Std.int(height * Engine.SCALE), null, Config.antialias #end);
 		actorContainer.name = name + " - ActorLayer";
 		#if (use_actor_tilemap) actorContainer.tileColorTransformEnabled = false; #end
-		overlay = new Sprite();
+		overlay = new DrawingLayer();
 		overlay.name = name + " - Overlay";
 
 		if(tiles != null) addChild(tiles);
@@ -181,10 +181,10 @@ class Layer extends RegularLayer
 		attachedImages = new Array<BitmapWrapper>();
 		
 		Utils.removeAllChildren(actorContainer);
-		
+
 		#end
-		
-		overlay.graphics.clear();
+
+		overlay.clearFrame();
 		
 		if(tiles != null)
 		{

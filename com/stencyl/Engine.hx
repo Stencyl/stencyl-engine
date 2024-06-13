@@ -73,6 +73,7 @@ import com.stencyl.models.collision.Mask;
 import com.stencyl.models.scene.ActorInstance;
 import com.stencyl.models.scene.ActorLayer;
 import com.stencyl.models.scene.DeferredActor;
+import com.stencyl.models.scene.DrawingLayer;
 import com.stencyl.models.scene.Layer;
 import com.stencyl.models.scene.Tile;
 import com.stencyl.models.scene.TileLayer;
@@ -247,6 +248,7 @@ class Engine
 	public var maskLayer:Shape;
 	public var master:Sprite; // the root of the main node
 	public var hudLayer:Layer; //Shows above everything else
+	public var drawingLayer:DrawingLayer; //Shows above everything else
 	public var transitionLayer:Sprite; //Shows above everything else
 	public var debugLayer:Sprite;
 	
@@ -975,6 +977,10 @@ class Engine
 		hudLayer.name = "HUD Layer";
 		root.addChild(hudLayer);
 		
+		drawingLayer = new DrawingLayer();
+		drawingLayer.name = "Drawing Layer";
+		root.addChild(drawingLayer);
+
 		transitionLayer = new Sprite();
 		transitionLayer.name = "Transition Layer";
 		root.addChild(transitionLayer);
@@ -3395,12 +3401,12 @@ class Engine
      {
      	for(l in interactiveLayers)
 		{
-			l.overlay.graphics.clear();
+			l.overlay.clearFrame();
 		}
-		hudLayer.overlay.graphics.clear();
+		hudLayer.overlay.clearFrame();
+		drawingLayer.clearFrame();
+		transitionLayer.graphics.clear();
 		
-		g.graphics = transitionLayer.graphics;
-     	g.graphics.clear();
      	g.resetGraphicsSettings();
 		
 		//Walk through all actors
@@ -3409,16 +3415,16 @@ class Engine
 		{
 			for(a in allActors)
 			{
-				if(a.whenDrawing.length > 0)
+				if(a.whenDrawing.length > 0 && a.layer != null)
 				{
-					if(a.layer != null)
-					{
-						g.graphics = a.layer.overlay.graphics;
-						g.translateToActor(a);
-						g.resetGraphicsSettings();
+					g.layer = a.layer.overlay;
+					#if stencyl4_compat
+					g.graphics = g.layer.graphics;
+					#end
+					g.translateToActor(a);
+					g.resetGraphicsSettings();
 
-						a.whenDrawing.dispatch(g, 0, 0);
-					}
+					a.whenDrawing.dispatch(g, 0, 0);
 				}
 			}
 		}
@@ -3439,13 +3445,20 @@ class Engine
      	
      	
      	//Scene Behavior/Event Drawing
-     	g.graphics = transitionLayer.graphics;
+     	g.layer = drawingLayer;
+     	#if stencyl4_compat
+		g.graphics = g.layer.graphics;
+		#end
      	g.translateToScreen();
 		g.resetGraphicsSettings();
+
 		whenDrawing.dispatch(g, 0, 0);
 
      	G.visitStringCache();
 		
+		g.layer = null;
+		g.graphics = transitionLayer.graphics;
+     	
 		//Draw Transitions
 		if(leave != null && leave.isActive())
 		{
@@ -3457,6 +3470,8 @@ class Engine
 		{
 			enter.draw(null);
 		}
+		
+		g.graphics = null;
 		
 		#if !flash
 		if(shaders != null && shaders.length > 0)

@@ -174,6 +174,12 @@ class SheetAnimation extends Tile implements AbstractAnimation
 	{
 		if(Config.disposeImages && !model.checkImageReadable())
 			return;
+			
+		if(g.graphics == null)
+		{
+			Log.error("Create a shape to draw to");
+			return;
+		}
 		
 		var bitmapData = model.imgData;
 		var srcXOffset = 0;

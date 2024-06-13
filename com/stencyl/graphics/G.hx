@@ -1,5 +1,6 @@
 package com.stencyl.graphics;
 
+import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.Graphics;
@@ -16,6 +17,8 @@ import com.stencyl.Config;
 import com.stencyl.Engine;
 import com.stencyl.models.Actor;
 import com.stencyl.models.Font;
+import com.stencyl.models.scene.DrawingLayer;
+import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
 import com.stencyl.graphics.fonts.BitmapFont;
@@ -24,7 +27,9 @@ class G
 {
 	private var defaultFont:Font;
 
+	public var layer:DrawingLayer;
 	public var graphics:Graphics;
+	public var shape:Sprite;
 	
 	public var x:Float;
 	public var y:Float;
@@ -258,6 +263,12 @@ class G
 	
 	public function drawString(s:String, x:Float, y:Float)
 	{
+		if(graphics == null)
+		{
+			Log.error("Create a shape to draw to");
+			return;
+		}
+		
 		if(font == null)
 		{
 			resetFont();
@@ -353,6 +364,12 @@ class G
 	
 	public function drawLine(x1:Float, y1:Float, x2:Float, y2:Float)
 	{
+		if(graphics == null)
+		{
+			Log.error("Create a shape to draw to");
+			return;
+		}
+		
 		x1 *= scaleX;
 		y1 *= scaleY;
 		x2 *= scaleX;
@@ -368,6 +385,12 @@ class G
 	
 	public function fillPixel(x:Float, y:Float)
 	{
+		if(graphics == null)
+		{
+			Log.error("Create a shape to draw to");
+			return;
+		}
+		
 		startGraphics();
 		
 		graphics.lineStyle();
@@ -386,6 +409,12 @@ class G
 	
 	public function drawRect(x:Float, y:Float, w:Float, h:Float)
 	{
+		if(graphics == null)
+		{
+			Log.error("Create a shape to draw to");
+			return;
+		}
+		
 		x *= scaleX;
 		y *= scaleY;
 		w *= scaleX;
@@ -400,6 +429,12 @@ class G
 	
 	public function fillRect(x:Float, y:Float, w:Float, h:Float)
 	{
+		if(graphics == null)
+		{
+			Log.error("Create a shape to draw to");
+			return;
+		}
+		
 		x *= scaleX;
 		y *= scaleY;
 		w *= scaleX;
@@ -416,6 +451,12 @@ class G
 	
 	public function drawRoundRect(x:Float, y:Float, w:Float, h:Float, arc:Float)
 	{
+		if(graphics == null)
+		{
+			Log.error("Create a shape to draw to");
+			return;
+		}
+		
 		x *= scaleX;
 		y *= scaleY;
 		w *= scaleX;
@@ -430,6 +471,12 @@ class G
 	
 	public function fillRoundRect(x:Float, y:Float, w:Float, h:Float, arc:Float)
 	{
+		if(graphics == null)
+		{
+			Log.error("Create a shape to draw to");
+			return;
+		}
+		
 		x *= scaleX;
 		y *= scaleY;
 		w *= scaleX;
@@ -446,6 +493,12 @@ class G
 	
 	public function drawCircle(x:Float, y:Float, r:Float)
 	{
+		if(graphics == null)
+		{
+			Log.error("Create a shape to draw to");
+			return;
+		}
+		
 		x *= scaleX;
 		y *= scaleY;
 		r *= scaleX;
@@ -459,6 +512,12 @@ class G
 	
 	public function fillCircle(x:Float, y:Float, r:Float)
 	{
+		if(graphics == null)
+		{
+			Log.error("Create a shape to draw to");
+			return;
+		}
+		
 		x *= scaleX;
 		y *= scaleY;
 		r *= scaleX;
@@ -474,6 +533,12 @@ class G
 	
 	public function beginFillPolygon()
 	{
+		if(graphics == null)
+		{
+			Log.error("Create a shape to draw to");
+			return;
+		}
+		
 		drawPoly = false;
 		
 		startGraphics();
@@ -483,6 +548,8 @@ class G
 	
 	public function endDrawingPolygon()
 	{
+		if(graphics == null)
+			return;
 		if(pointCounter >= 2)
 		{
 			if(drawPoly)
@@ -502,6 +569,12 @@ class G
 	
 	public function beginDrawPolygon()
 	{
+		if(graphics == null)
+		{
+			Log.error("Create a shape to draw to");
+			return;
+		}
+		
 		drawPoly = true;
 	
 		startGraphics();
@@ -511,6 +584,9 @@ class G
 	
 	public function addPointToPolygon(x:Float, y:Float)
 	{
+		if(graphics == null)
+			return;
+		
 		x *= scaleX;
 		y *= scaleY;
 		
@@ -534,6 +610,12 @@ class G
 		
 	public function drawImage(img:BitmapData, x:Float, y:Float, angle:Float=0)
 	{
+		if(graphics == null)
+		{
+			Log.error("Create a shape to draw to");
+			return;
+		}
+		
 		x *= scaleX;
 		y *= scaleY;
 		
@@ -625,6 +707,33 @@ class G
 		}
 		
 		graphics.endFill();
+	}
+
+	public function beginDrawingShape(shape:Sprite)
+	{
+		shape.graphics.clear();
+		this.shape = shape;
+		graphics = shape.graphics;
+	}
+
+	public function endDrawingShape()
+	{
+		drawShape(shape);
+		graphics = null;
+		shape = null;
+	}
+
+	public function drawShape(shape:Sprite)
+	{
+		#if !flash
+		@:privateAccess var bounds = shape.graphics.__bounds;
+		if(bounds == null)
+		{
+			return;
+		}
+		#end
+
+		layer.addChild(shape);
 	}
 	
 	private function toARGB(rgb:Int, newAlpha:Int):Int
