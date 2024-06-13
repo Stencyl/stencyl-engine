@@ -238,31 +238,13 @@ class G
 			var drawX:Float = a.drawX - Math.floor(a.cacheWidth / 2) - a.currOffset.x;
 			var drawY:Float = a.drawY - Math.floor(a.cacheHeight / 2) - a.currOffset.y;
 		
-			if(Engine.NO_PHYSICS)
-			{
-				x = drawX * scaleX;
-				y = drawY * scaleY;
-			}
-			
-			else
-			{
-				x = drawX * scaleX;
-				y = drawY * scaleY;
-			}
+			x = drawX * scaleX;
+			y = drawY * scaleY;
 		}
 		else
 		{
-			if(Engine.NO_PHYSICS)
-			{
-				x = a.colX * scaleX;
-				y = a.colY * scaleY;
-			}
-			
-			else
-			{
-				x = a.colX * scaleX;
-				y = a.colY * scaleY;
-			}
+			x = a.colX * scaleX;
+			y = a.colY * scaleY;
 		}
 	}
 
@@ -550,7 +532,7 @@ class G
 		graphics.lineTo(this.x + x, this.y + y);
 	}
 		
-	public function drawImage(img:BitmapData, x:Float, y:Float, angle:Float=0, matrix:Matrix = null)
+	public function drawImage(img:BitmapData, x:Float, y:Float, angle:Float=0)
 	{
 		x *= scaleX;
 		y *= scaleY;
