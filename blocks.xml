@@ -9943,6 +9943,33 @@
         </context>
     </block>
 
+    <block tag="draw-shape"
+           code="g.beginDrawingShape(#{0});&#10;#{1}&#10;g.endDrawingShape();"
+           spec="draw a shape using sprite: %0"
+           type="wrapper"
+           returns="void"
+           category="drawing">
+        <fields>
+            <anything order="0" />
+            <code-block order="1" />
+        </fields>
+        <context>
+            <requiredContext type="has" value="g:com.stencyl.graphics.G" />
+        </context>
+    </block>
+
+    <block tag="new-sprite"
+           code="new openfl.display.Sprite()"
+           spec="new sprite"
+           type="normal"
+           returns="anything"
+           category="drawing">
+        <fields/>
+        <context>
+            <requiredContext type="has" value="g:com.stencyl.graphics.G" />
+        </context>
+    </block>
+
     <block tag="set-color"
            code="g.fillColor = Utils.convertColor(#{0});"
            spec="@draw.setcolor"

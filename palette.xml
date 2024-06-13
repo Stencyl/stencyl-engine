@@ -939,6 +939,8 @@
 			<block tag="draw-text" />
 			<block tag="draw-line" />
 			<block tag="draw-pixel" />
+			<block tag="draw-shape" />
+			<block tag="new-sprite" />
 			
 			<!-- Actor Drawing -->
 			<header title="@cat.graphics.draw.actor" />
