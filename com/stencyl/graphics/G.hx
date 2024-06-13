@@ -263,12 +263,6 @@ class G
 	
 	public function drawString(s:String, x:Float, y:Float)
 	{
-		if(graphics == null)
-		{
-			Log.error("Create a shape to draw to");
-			return;
-		}
-		
 		if(font == null)
 		{
 			resetFont();
@@ -337,9 +331,21 @@ class G
 
 		if(toDraw != null)
 		{
-			graphics.beginBitmapFill(toDraw, mtx, false, Config.antialias);
-			graphics.drawRect(drawX, drawY, toDraw.width, toDraw.height);
-			graphics.endFill();
+			#if stencyl4_compat
+			if(graphics != null)
+			{
+				graphics.beginBitmapFill(toDraw, mtx, false, Config.antialias);
+				graphics.drawRect(drawX, drawY, toDraw.width, toDraw.height);
+				graphics.endFill();
+			}
+			else
+			#end
+			{
+				var bitmap = new Bitmap(toDraw);
+				bitmap.x = drawX;
+				bitmap.y = drawY;
+				layer.addChild(bitmap);
+			}
 		}
 	}
 
@@ -610,12 +616,6 @@ class G
 		
 	public function drawImage(img:BitmapData, x:Float, y:Float, angle:Float=0)
 	{
-		if(graphics == null)
-		{
-			Log.error("Create a shape to draw to");
-			return;
-		}
-		
 		x *= scaleX;
 		y *= scaleY;
 		
@@ -646,67 +646,81 @@ class G
 			point.y = this.y + y;	
 		}
 		
-		var newImg:BitmapData = null;
-		var imgSize = 0;
-		mtx.identity();
-		mtx.rotate(angle);
-		mtx.translate(point.x, point.y);
-		
-		if (angle == 0)
+		#if stencyl4_compat
+		if(graphics != null)
 		{
-			if (alpha == 1)
-			{
-				graphics.beginBitmapFill(img, mtx);
-			}
-			else // actor is transparent
-			{
-				point2.x = 0;
-				point2.y = 0;
-				rect2.width = img.width;
-				rect2.height = img.height;
+			var newImg:BitmapData = null;
+			var imgSize = 0;
+			mtx.identity();
+			mtx.rotate(angle);
+			mtx.translate(point.x, point.y);
 			
-				//TODO: Can we avoid making a new one each time?
-				var temp = new BitmapData(img.width, img.height, true, toARGB(0x000000, Std.int(alpha * 255)));
-				var temp2 = new BitmapData(img.width, img.height, true, 0);
+			if (angle == 0)
+			{
+				if (alpha == 1)
+				{
+					graphics.beginBitmapFill(img, mtx);
+				}
+				else // actor is transparent
+				{
+					point2.x = 0;
+					point2.y = 0;
+					rect2.width = img.width;
+					rect2.height = img.height;
 				
-				temp2.copyPixels(img, rect2, point2, temp, null, true);
-				img = temp2;
+					//TODO: Can we avoid making a new one each time?
+					var temp = new BitmapData(img.width, img.height, true, toARGB(0x000000, Std.int(alpha * 255)));
+					var temp2 = new BitmapData(img.width, img.height, true, 0);
+					
+					temp2.copyPixels(img, rect2, point2, temp, null, true);
+					img = temp2;
+					
+					graphics.beginBitmapFill(img, mtx);
+				}
 				
-				graphics.beginBitmapFill(img, mtx);
+				graphics.drawRect(point.x, point.y, img.width, img.height);
+			}
+			else // actor is rotated
+			{
+				if (alpha != 1)
+				{
+					point2.x = 0;
+					point2.y = 0;
+					rect2.width = img.width;
+					rect2.height = img.height;
+				
+					//TODO: Can we avoid making a new one each time?
+					var temp = new BitmapData(img.width, img.height, true, toARGB(0x000000, Std.int(alpha * 255)));
+					var temp2 = new BitmapData(img.width, img.height, true, 0);
+					
+					temp2.copyPixels(img, rect2, point2, temp, null, true);
+					img = temp2;
+				}
+				
+				newImg = new BitmapData(img.width + 2, img.height + 2, true, 0x00000000);
+				imgSize = Std.int(Math.sqrt(Math.pow(newImg.width, 2) + Math.pow(newImg.height, 2)));
+				var srcRect = new Rectangle(0, 0, img.width, img.height);
+				var destPt = new Point(1,1);
+				newImg.copyPixels(img, srcRect, destPt);
+				
+				graphics.beginBitmapFill(newImg, mtx, false, Config.antialias);
+				var rectX = ((imgSize - img.width) / 2);
+				var rectY = ((imgSize - img.height) / 2);
+				graphics.drawRect(this.x - rectX, this.y - rectY, imgSize, imgSize);
 			}
 			
-			graphics.drawRect(point.x, point.y, img.width, img.height);
+			graphics.endFill();
 		}
-		else // actor is rotated
+		else
+		#end
 		{
-			if (alpha != 1)
-			{
-				point2.x = 0;
-				point2.y = 0;
-				rect2.width = img.width;
-				rect2.height = img.height;
-			
-				//TODO: Can we avoid making a new one each time?
-				var temp = new BitmapData(img.width, img.height, true, toARGB(0x000000, Std.int(alpha * 255)));
-				var temp2 = new BitmapData(img.width, img.height, true, 0);
-				
-				temp2.copyPixels(img, rect2, point2, temp, null, true);
-				img = temp2;
-			}
-			
-			newImg = new BitmapData(img.width + 2, img.height + 2, true, 0x00000000);
-			imgSize = Std.int(Math.sqrt(Math.pow(newImg.width, 2) + Math.pow(newImg.height, 2)));
-			var srcRect = new Rectangle(0, 0, img.width, img.height);
-			var destPt = new Point(1,1);
-			newImg.copyPixels(img, srcRect, destPt);
-			
-			graphics.beginBitmapFill(newImg, mtx, false, Config.antialias);
-			var rectX = ((imgSize - img.width) / 2);
-			var rectY = ((imgSize - img.height) / 2);
-			graphics.drawRect(this.x - rectX, this.y - rectY, imgSize, imgSize);
+			var bitmap = new Bitmap(img);
+			bitmap.x = x;
+			bitmap.y = y;
+			bitmap.rotation = angle;
+			bitmap.alpha = alpha;
+			layer.addChild(bitmap);
 		}
-		
-		graphics.endFill();
 	}
 
 	public function beginDrawingShape(shape:Sprite)

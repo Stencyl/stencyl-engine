@@ -174,12 +174,6 @@ class SheetAnimation extends Tile implements AbstractAnimation
 	{
 		if(Config.disposeImages && !model.checkImageReadable())
 			return;
-			
-		if(g.graphics == null)
-		{
-			Log.error("Create a shape to draw to");
-			return;
-		}
 		
 		var bitmapData = model.imgData;
 		var srcXOffset = 0;
@@ -198,10 +192,24 @@ class SheetAnimation extends Tile implements AbstractAnimation
 			srcXOffset = 0;
 			srcYOffset = 0;
 		}
-
-		g.graphics.beginBitmapFill(bitmapData, new Matrix(1, 0, 0, 1, x - srcXOffset, y - srcYOffset));
-		g.graphics.drawRect(x, y, bitmapData.width, bitmapData.height);
- 	 	g.graphics.endFill();
+		
+		#if stencyl4_compat
+		if(g.graphics != null)
+		{
+			g.graphics.beginBitmapFill(bitmapData, new Matrix(1, 0, 0, 1, x - srcXOffset, y - srcYOffset));
+			g.graphics.drawRect(x, y, bitmapData.width, bitmapData.height);
+	 	 	g.graphics.endFill();
+		}
+		else
+		#end
+		{
+			var bitmap = new Bitmap(bitmapData);
+			bitmap.x = x;
+			bitmap.y = y;
+			bitmap.rotation = angle;
+			bitmap.alpha = alpha;
+			g.layer.addChild(bitmap);
+		}
   	}
 	
 	public function getFrameDurations():Array<Int>
