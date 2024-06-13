@@ -940,7 +940,7 @@
 			<block tag="draw-line" />
 			<block tag="draw-pixel" />
 			<block tag="draw-shape" />
-			<block tag="new-sprite" />
+			<block tag="new-shape" />
 			
 			<!-- Actor Drawing -->
 			<header title="@cat.graphics.draw.actor" />

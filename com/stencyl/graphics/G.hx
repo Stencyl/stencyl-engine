@@ -35,7 +35,7 @@ class G
 
 	public var layer:DrawingLayer;
 	public var graphics:Graphics;
-	public var shape:Sprite;
+	public var shape:Shape;
 	
 	public var x:Float;
 	public var y:Float;
@@ -765,7 +765,7 @@ class G
 		#end
 	}
 
-	public function beginDrawingShape(shape:Sprite)
+	public function beginDrawingShape(shape:Shape)
 	{
 		shape.graphics.clear();
 		this.shape = shape;
@@ -779,7 +779,7 @@ class G
 		shape = null;
 	}
 
-	public function drawShape(shape:Sprite)
+	public function drawShape(shape:Shape)
 	{
 		#if !flash
 		@:privateAccess var bounds = shape.graphics.__bounds;

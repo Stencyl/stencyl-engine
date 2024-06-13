@@ -5,6 +5,7 @@ import com.stencyl.graphics.G;
 import com.stencyl.utils.Utils;
 
 import openfl.display.Graphics;
+import openfl.display.Shape;
 import openfl.display.Sprite;
 #if use_actor_tilemap
 import openfl.display.Tilemap;
@@ -13,7 +14,7 @@ import openfl.display.Tilemap;
 class DrawingLayer extends #if use_actor_tilemap Tilemap #else Sprite #end
 {
 	#if (stencyl4_compat && use_actor_tilemap)
-	public var sprite:Sprite;
+	public var shape:Shape;
 	public var graphics:Graphics;
 	#end
 	
@@ -22,8 +23,8 @@ class DrawingLayer extends #if use_actor_tilemap Tilemap #else Sprite #end
 		super(#if use_actor_tilemap width, height, null, Config.antialias #end);
 		
 		#if (stencyl4_compat && use_actor_tilemap)
-		sprite = new Sprite();
-		graphics = sprite.graphics;
+		shape = new Shape();
+		graphics = shape.graphics;
 		#end
 	}
 	
