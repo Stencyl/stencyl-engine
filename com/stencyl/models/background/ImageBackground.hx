@@ -1,11 +1,7 @@
 package com.stencyl.models.background;
 
-import openfl.display.DisplayObject;
 import openfl.display.Graphics;
-import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-import openfl.geom.Rectangle;
-import openfl.geom.Point;
 
 import com.stencyl.Engine;
 import com.stencyl.models.scene.layers.BackgroundLayer;
@@ -13,18 +9,13 @@ import com.stencyl.utils.Assets;
 
 class ImageBackground extends Resource implements Background 
 {
-	public var currFrame:Int;
-	public var currTime:Float;
-	
-	public var img:BitmapData;
-	public var frames:Array<Dynamic>;
+	public var frames:Array<BitmapData>;
 	public var durations:Array<Int>;
 	
 	public var parallaxX:Float;
 	public var parallaxY:Float;
 	
 	public var repeats:Bool;
-	public var repeated:Bool;
 	
 	public var graphicsLoaded:Bool;
 	
@@ -45,16 +36,11 @@ class ImageBackground extends Resource implements Background
 		this.parallaxY = parallaxY;
 		this.durations = durations;
 		this.repeats = repeats;
-					
-		this.currTime = 0;
-		this.currFrame = 0;
 		
 		if(isAtlasActive())
 		{
 			loadGraphics();		
 		}
-		
-		repeated = false;
 	}	
 	
 	public function update()
@@ -63,46 +49,6 @@ class ImageBackground extends Resource implements Background
 	
 	public function draw(g:Graphics, cameraX:Int, cameraY:Int, screenWidth:Int, screenHeight:Int)
 	{
-	}		
-	
-	//TODO: drawTiles on CPP
-	public function drawRepeated(?bitmap:BackgroundLayer, screenWidth:Int, screenHeight:Int)
-	{
-		var tw:Float = img.width;
-		var th:Float = img.height;
-		var rect = new Rectangle(0, 0, tw, th);
-		
-		if (tw >= screenWidth && th >= screenHeight)
-		{
-			repeated = true;
-			return;
-		}
-		
-		//So it doesn't cutoff, extend width/height
-		if (tw < screenWidth)
-		{
-			screenWidth += Std.int(tw) - (screenWidth % Std.int(tw));
-		}
-		
-		if (th < screenHeight)
-		{
-			screenHeight += Std.int(th) - (screenHeight % Std.int(th));
-		}
-
-		var texture = new BitmapData(Std.int(Math.max(screenWidth, tw)), Std.int(Math.max(screenHeight, th)));
-		
-		for(yPos in 0...Std.int(screenHeight / th) + 1)
-		{
-			for(xPos in 0...Std.int(screenWidth / tw) + 1)
-			{
-				texture.copyPixels(img, rect, new Point(xPos * tw, yPos * th));
-			}
-		}
-		
-		//bitmap.setImage(texture);
-		this.img = texture;
-		
-		repeated = true;
 	}
 	
 	//For Atlases
@@ -112,14 +58,14 @@ class ImageBackground extends Resource implements Background
 		if(graphicsLoaded)
 			return;
 		
-		var frameData = new Array<Dynamic>();
+		this.frames = new Array<BitmapData>();
 		var numFrames = durations.length;
 		
 		if(numFrames > 0)
 		{
 			for(i in 0...numFrames)
 			{
-				frameData.push
+				frames.push
 				(
 					Assets.getBitmapData
 					(
@@ -132,7 +78,7 @@ class ImageBackground extends Resource implements Background
 		
 		else
 		{
-			frameData.push
+			frames.push
 			(
 				Assets.getBitmapData
 				(
@@ -143,25 +89,6 @@ class ImageBackground extends Resource implements Background
 		}
 		
 		//---
-	
-		this.frames = new Array<Dynamic>();
-		
-		for(i in 0...frameData.length)
-		{
-			if(this.repeats)
-			{
-				this.img = frameData[i];
-				drawRepeated(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
-				this.frames.push(this.img);
-			} 
-			else 
-			{
-				this.frames.push(frameData[i]);			
-			}	
-		
-		}
-		
-		this.img = frames[0];
 		
 		graphicsLoaded = true;
 	}
@@ -172,15 +99,8 @@ class ImageBackground extends Resource implements Background
 			return;
 		
 		//Replace with a 1x1 px blank - graceful fallback
-		img = new BitmapData(1, 1);
-		currFrame = 0;
-		repeated = false;
-		frames = [];
-		
-		for(d in durations)
-		{
-			frames.push(img);
-		}
+		var img = new BitmapData(1, 1);
+		frames = [for(d in durations) img];
 		
 		//---
 		

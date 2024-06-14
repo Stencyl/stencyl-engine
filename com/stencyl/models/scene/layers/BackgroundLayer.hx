@@ -16,7 +16,6 @@ import com.stencyl.utils.Log;
 class BackgroundLayer extends RegularLayer
 {
 	public var model:ImageBackground;
-	public var bitmap:Bitmap;
 
 	public var resourceID:Int;
 	public var customScroll:Bool;
@@ -26,12 +25,8 @@ class BackgroundLayer extends RegularLayer
 	
 	public var currIndex:Int;
 	public var currTime:Float;
-	public var cacheIndex:Int;
 	
-	public var cacheWidth:Float;
-	public var cacheHeight:Float;
-
-	private var bgChild:Dynamic; //Bitmap or ScrollingBitmap
+	private var bgChild:DisplayObject; //Bitmap or ScrollingBitmap
 	
 	public function new(ID:Int, name:String, order:Int, scrollFactorX:Float, scrollFactorY:Float, opacity:Float, blendMode:BlendMode, resourceID:Int, customScroll:Bool) 
 	{
@@ -44,25 +39,19 @@ class BackgroundLayer extends RegularLayer
 
 	public function load()
 	{
-		if(model == null || model.img == null)
+		if(model == null || model.frames.length == 0)
 		{
 			Log.warn("Warning: Could not load a background. Ignoring...");
             return;
 		}
-
-		bitmap = new Bitmap(model.img, PixelSnapping.AUTO, true);
-		bitmap.smoothing = Config.antialias;
 		
+		var firstFrame = model.frames[0];
+
 		currIndex = 0;
 		currTime = 0;
 		
 		isAnimated = model.frames.length > 1;
 		frameCount = model.frames.length;
-
-		if(model.repeats && !model.repeated)
-		{
-			model.drawRepeated(this, Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
-		}
 		
 		var parallaxX:Float = 0;
 		var parallaxY:Float = 0;
@@ -78,8 +67,8 @@ class BackgroundLayer extends RegularLayer
 		}
 		else
 		{
-			var bgWidth:Int = model.img.width;
-			var bgHeight:Int = model.img.height;
+			var bgWidth:Int = firstFrame.width;
+			var bgHeight:Int = firstFrame.height;
 			var screenWidth:Int = Std.int(Engine.screenWidth * Engine.SCALE);
 			var screenHeight:Int = Std.int(Engine.screenHeight * Engine.SCALE);
 			var sceneWidth:Int = Std.int(Engine.sceneWidth * Engine.SCALE);
@@ -96,18 +85,19 @@ class BackgroundLayer extends RegularLayer
 		{
 			var scroller = cast(model, ScrollingBackground);
 
-			var img = new ScrollingBitmap(model.img, scroller.xVelocity, scroller.yVelocity, parallaxX, parallaxY, resourceID, model.repeats);
+			var img = new ScrollingBitmap(firstFrame, scroller.xVelocity, scroller.yVelocity, parallaxX, parallaxY, resourceID, model.repeats);
 			addChild(bgChild = img);
 		}
 		else if(model.repeats)
 		{
-			var img = new ScrollingBitmap(model.img, 0, 0, parallaxX, parallaxY, resourceID);
+			var img = new ScrollingBitmap(firstFrame, 0, 0, parallaxX, parallaxY, resourceID);
 			addChild(bgChild = img);
 		}
 		else
 		{
-			cacheWidth = model.img.width;
-			cacheHeight = model.img.height;
+			var bitmap = new Bitmap(firstFrame, PixelSnapping.AUTO, true);
+			bitmap.smoothing = Config.antialias;
+		
 			scrollFactorX = parallaxX;
 			scrollFactorY = parallaxY;
 
@@ -118,7 +108,6 @@ class BackgroundLayer extends RegularLayer
 	public function loadFromImg(img:BitmapData, tiled:Bool)
 	{
 		model = new ScrollingBackground(-1, -1, "", [100], 0, 0, tiled, 0, 0);
-		model.img = img;
 		model.frames = [img];
 
 		load();
@@ -172,7 +161,17 @@ class BackgroundLayer extends RegularLayer
 	
 	public function setImage(bitmapData:BitmapData)
 	{
-		bitmap.bitmapData = bitmapData;
+		if(Std.isOfType(bgChild, ScrollingBitmap))
+		{
+			var bg = cast(bgChild, ScrollingBitmap);
+			bg.setImage(bitmapData);
+		}
+
+		else
+		{
+			var bg = cast(bgChild, Bitmap);
+			bg.bitmapData = bitmapData;
+		}
 		
 		currIndex = 0;
 		currTime = 0;
@@ -197,50 +196,14 @@ class BackgroundLayer extends RegularLayer
 			
 			if (Std.isOfType(bgChild, ScrollingBitmap))
 			{
-				cacheIndex = currIndex;
-				
-				if(model.repeats)
-				{
-					model.drawRepeated(this, Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
-				}
-				
-				currIndex = cacheIndex;
-				
-				var b:Bitmap = bgChild.image1;
-				//b.bitmapData.dispose();
-				b.bitmapData = model.frames[currIndex];	
-
-				if(model.repeats)
-				{
-					b = bgChild.image2;
-					b.bitmapData = model.frames[currIndex];			
-					
-					b = bgChild.image3;
-					b.bitmapData = model.frames[currIndex];	
-					
-					b = bgChild.image4;
-					b.bitmapData = model.frames[currIndex];	
-					
-					b = bgChild.image5;
-					b.bitmapData = model.frames[currIndex];	
-					
-					b = bgChild.image6;
-					b.bitmapData = model.frames[currIndex];	
-					
-					b = bgChild.image7;
-					b.bitmapData = model.frames[currIndex];	
-					
-					b = bgChild.image8;
-					b.bitmapData = model.frames[currIndex];	
-					
-					b = bgChild.image9;
-					b.bitmapData = model.frames[currIndex];		
-				}
+				var bg = cast(bgChild, ScrollingBitmap);
+				bg.setImage(model.frames[currIndex]);
 			}
 			
 			else
 			{
-				bitmap.bitmapData = model.frames[currIndex];
+				var bg = cast(bgChild, Bitmap);
+				bg.bitmapData = bitmapData;
 			}			
 		}
 	}
@@ -265,7 +228,7 @@ class BackgroundLayer extends RegularLayer
 		}
 	}
 
-	public function getBitmap():Dynamic
+	public function getBitmap():DisplayObject
 	{
 		return bgChild;
 	}

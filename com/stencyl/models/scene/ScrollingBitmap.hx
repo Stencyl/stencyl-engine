@@ -2,22 +2,13 @@ package com.stencyl.models.scene;
 
 import openfl.display.Sprite;
 import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+
 import com.stencyl.Engine;
 
 class ScrollingBitmap extends Sprite
 {
-	public var image1:Bitmap; //Center
-	public var image2:Bitmap; //W
-	public var image3:Bitmap; //E
-	public var image4:Bitmap; //NW
-	public var image5:Bitmap; //N
-	public var image6:Bitmap; //NE
-	public var image7:Bitmap; //SW
-	public var image8:Bitmap; //S
-	public var image9:Bitmap; //SE
-	
-	public var speed:Float;
-	public var curStep:Float;
+	public var tiles:Array<Array<Bitmap>>;
 	
 	public var running:Bool;
 	public var parallax:Bool;
@@ -34,66 +25,37 @@ class ScrollingBitmap extends Sprite
 	public var yVelocity:Float;
 	public var parallaxX:Float;
 	public var parallaxY:Float;
+	public var lastXPos:Float;
+	public var lastYPos:Float;
 	
 	public var backgroundID:Int;
 	public var repeats:Bool;
 	
-	public function new(img:Dynamic, dx:Float, dy:Float, px:Float=0, py:Float=0, ID:Int=0, repeats:Bool = true) 
+	public function new(img:BitmapData, dx:Float, dy:Float, px:Float=0, py:Float=0, ID:Int=0, repeats:Bool = true) 
 	{
 		super();
 		
-		curStep = 0;
-	
 		running = true;
 		this.repeats = repeats;
 		
-		image1 = new Bitmap(img);
-		addChild(image1);
-		
-		cacheWidth = image1.width;
-		cacheHeight = image1.height;
+		cacheWidth = img.width;
+		cacheHeight = img.height;
         
 		if (repeats)
 		{
-			image2 = new Bitmap(img);
-			image2.x = image1.x-cacheWidth;
-			addChild(image2);
-			
-			image3 = new Bitmap(img);
-			image3.x = image1.x+cacheWidth;
-			addChild(image3);
-			
-			//
-			
-			image4 = new Bitmap(img);
-			image4.x = image1.x-cacheWidth;
-			image4.y = image1.y-cacheHeight;
-			addChild(image4);
-			
-			image5 = new Bitmap(img);
-			image5.y = image1.y-cacheHeight;
-			addChild(image5);
-			
-			image6 = new Bitmap(img);
-			image6.x = image1.x+cacheWidth;
-			image6.y = image1.y-cacheHeight;
-			addChild(image6);
-			
-			//
-			
-			image7 = new Bitmap(img);
-			image7.x = image1.x-cacheWidth;
-			image7.y = image1.y+cacheHeight;
-			addChild(image7);
-			
-			image8 = new Bitmap(img);
-			image8.y = image1.y+cacheHeight;
-			addChild(image8);
-			
-			image9 = new Bitmap(img);
-			image9.x = image1.x+cacheWidth;
-			image9.y = image1.y+cacheHeight;
-			addChild(image9);
+			tiles = createTiles(img, Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
+		}
+		else
+		{
+			tiles = [[new Bitmap(img)]];
+		}
+		
+		for(line in tiles)
+		{
+			for(tile in line)
+			{
+				addChild(tile);
+			}
 		}
 		
 		xP = 0;
@@ -108,22 +70,68 @@ class ScrollingBitmap extends Sprite
 		parallaxX = px;
 		parallaxY = py;
 		
+		lastXPos = 0;
+		lastYPos = 0;
+		
 		scrolling = (dx  != 0 || dy != 0);
 		parallax = (px != 0 || py != 0);
 		
 		backgroundID = ID;
 	}
 	
+	public static function createTiles(img:BitmapData, screenWidth:Int, screenHeight:Int):Array<Array<Bitmap>>
+	{
+		var tw:Float = img.width;
+		var th:Float = img.height;
+		
+		//So it doesn't cutoff, extend width/height
+		if (tw < screenWidth)
+		{
+			screenWidth += Std.int(tw) - (screenWidth % Std.int(tw));
+		}
+		
+		if (th < screenHeight)
+		{
+			screenHeight += Std.int(th) - (screenHeight % Std.int(th));
+		}
+
+		var tiles = [];
+		
+		for(yPos in 0...Std.int(screenHeight / th) + 1)
+		{
+			var line = [];
+			
+			for(xPos in 0...Std.int(screenWidth / tw) + 1)
+			{
+				var tile = new Bitmap(img);
+				tile.x = xPos * tw;
+				tile.y = yPos * th;
+				line.push(tile);
+			}
+			
+			tiles.push(line);
+		}
+		
+		return tiles;
+	}
+	
+	public function setImage(img:BitmapData)
+	{
+		for(line in tiles)
+		{
+			for(tile in line)
+			{
+				tile.bitmapData = img;
+			}
+		}
+	}
+	
 	public function update(x:Float, y:Float, elapsedTime:Float)
 	{
-		var needsReset:Bool = false;
-		
 		if(parallax)
 		{
 			xPos = -Std.int(x * parallaxX);
 			yPos = -Std.int(y * parallaxY);
-
-			needsReset = true;
 		}
 		else if(running)
 		{
@@ -138,49 +146,25 @@ class ScrollingBitmap extends Sprite
 
 		if(scrolling && running)
 		{
-			var width = cacheWidth;
-			var height = cacheHeight;
-			
 			xP += xVelocity / 10.0 * Engine.SCALE;
 			yP += yVelocity / 10.0 * Engine.SCALE;
 			
 			if (this.repeats)
 			{
-				if(xP < -width || xP > width)
+				if(xP < -cacheWidth || xP > cacheWidth)
 				{
-					xP = 0;
+					xP = xP % cacheWidth;
 				}
 				
-				if(yP < -height || yP > height)
+				if(yP < -cacheHeight || yP > cacheHeight)
 				{
-					yP = 0;
+					yP = yP % cacheHeight;
 				}
 			}
 	        
 	        xPos += Math.floor(xP);
 	        yPos += Math.floor(yP);
-	        
-			curStep += 1;
-			
-			if(curStep >= 1) 
-			{
-				needsReset = true;
-					        
-				curStep -= Math.floor(curStep);
-			}
 		}
-		
-		if(needsReset)
-		{
-			//TODO: optimize?
-			resetPositions();
-		}
-	}
-	
-	public function resetPositions()
-	{
-		cacheWidth = image1.width;
-		cacheHeight = image1.height;
 		
 		if (this.repeats)
 		{
@@ -189,40 +173,51 @@ class ScrollingBitmap extends Sprite
 				xPos = xPos % cacheWidth;
 			}
 			
+			else if (xPos > 0)
+			{
+				xPos -= cacheWidth;
+			}
+			
 			if (yPos < -cacheHeight)
 			{
 				yPos = yPos % cacheHeight;
 			}
+			
+			else if (yPos > 0)
+			{
+				yPos -= cacheHeight;
+			}
 		}
-
-		image1.x = xPos;
-	    image1.y = yPos;
-	        
-		if (this.repeats)
+		
+		if(xPos != lastXPos || yPos != lastYPos)
 		{
-			image2.x = xPos - cacheWidth;
-			image2.y = yPos;
-				
-			image3.x = xPos + cacheWidth;
-			image3.y = yPos;
-				
-			image4.x = xPos - cacheWidth;
-			image4.y = yPos - cacheHeight;
-				
-			image5.x = xPos;
-			image5.y = yPos - cacheHeight;
-				
-			image6.x = xPos + cacheWidth;
-			image6.y = yPos - cacheHeight;
-				
-			image7.x = xPos - cacheWidth;
-			image7.y = yPos + cacheHeight;
-				
-			image8.x = xPos;
-			image8.y = yPos + cacheHeight;
-				
-			image9.x = xPos + cacheWidth;
-			image9.y = yPos + cacheHeight;
+			lastXPos = xPos;
+			lastYPos = yPos;
+			//TODO: optimize?
+			resetPositions();
+		}
+	}
+	
+	public function resetPositions()
+	{
+		cacheWidth = tiles[0][0].width;
+		cacheHeight = tiles[0][0].height;
+
+		var tileX = xPos;
+		var tileY = yPos;
+		
+		for(line in tiles)
+		{
+			tileX = xPos;
+			
+			for(tile in line)
+			{
+				tile.x = tileX;
+				tile.y = tileY;
+				tileX += cacheWidth;
+			}
+			
+			tileY += cacheHeight;
 		}
 	}
 	
