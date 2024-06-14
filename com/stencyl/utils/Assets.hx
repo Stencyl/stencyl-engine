@@ -1,11 +1,5 @@
 package com.stencyl.utils;
 
-#if !stencyltools
-
-typedef Assets = openfl.utils.Assets;
-
-#else
-
 import haxe.io.Bytes;
 
 import lime.media.AudioBuffer;
@@ -19,25 +13,31 @@ import openfl.utils.ByteArray;
 
 class Assets
 {
+	#if stencyltools
 	public static var modifiedAssetCache:Map<String,Dynamic> = new Map<String,Dynamic>();
+	#end
 
 	public static function getBitmapData(id:String, useCache:Bool = true):BitmapData
 	{
+		#if stencyltools
 		if(modifiedAssetCache.exists(id))
 		{
 			return cast modifiedAssetCache.get(id);
 		}
+		#end
 		return OpenFLAssets.getBitmapData(id, useCache);
 	}
 
 	public static function getBytes(id:String):ByteArray
 	{
+		#if stencyltools
 		if(modifiedAssetCache.exists(id))
 		{
 			var ba:ByteArray = cast modifiedAssetCache.get(id);
 			ba.position = 0;
 			return ba;
 		}
+		#end
 		return OpenFLAssets.getBytes(id);
 	}
 	
@@ -48,22 +48,27 @@ class Assets
 
 	public static function getSound(id:String, useCache:Bool = true):Sound
 	{
+		#if stencyltools
 		if(modifiedAssetCache.exists(id))
 		{
 			return cast modifiedAssetCache.get(id);
 		}
+		#end
 		return OpenFLAssets.getSound(id, useCache);
 	}
 
 	public static function getText(id:String):String
 	{
+		#if stencyltools
 		if(modifiedAssetCache.exists(id))
 		{
 			return cast modifiedAssetCache.get(id);
 		}
+		#end
 		return OpenFLAssets.getText(id);
 	}
 
+	#if stencyltools
 	public static function updateAsset(id:String, type:String, content:ByteArray, callback:Void->Void):Void
 	{
 		var decoded:Dynamic = null;
@@ -121,6 +126,5 @@ class Assets
 		return bdToReturn;
 	}
 	#end
+	#end
 }
-
-#end
