@@ -9,6 +9,7 @@ import openfl.geom.Rectangle;
 import com.stencyl.models.actor.ActorType;
 import com.stencyl.models.actor.Sprite;
 import com.stencyl.graphics.DynamicTileset;
+import com.stencyl.graphics.TileSource;
 import com.stencyl.utils.Assets;
 import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
@@ -26,11 +27,7 @@ class Animation
 	public var looping:Bool;
 	public var sync:Bool;
 	public var durations:Array<Int>;
-	#if use_actor_tilemap
-	public var imgData:BitmapData;
-	#else
 	public var frames:Array<BitmapData>;
-	#end
 	public var frameWidth:Int; //logical size
 	public var frameHeight:Int; //logical size
 	
@@ -89,11 +86,7 @@ class Animation
 		//Graceful fallback - just a blank image that is numFrames across in px
 		if(UNLOADED == null)
 			UNLOADED = new BitmapData(1,1);
-		#if use_actor_tilemap
-		this.imgData = UNLOADED;
-		#else
 		this.frames = [for(i in 0...frameCount) UNLOADED];
-		#end
 		frameWidth = Std.int(imgWidth/framesAcross);
 		frameHeight = Std.int(imgHeight/framesDown);
 		
@@ -108,11 +101,7 @@ class Animation
 		
 		if(parent == null)
 		{
-			#if use_actor_tilemap
-			imgData = UNLOADED;
-			#else
 			frames = [UNLOADED];
-			#end
 		}
 		else
 		{
@@ -150,22 +139,26 @@ class Animation
 		
 		if(imgData == null)
 		{
-			#if use_actor_tilemap
-			this.imgData = UNLOADED;
-			#else
 			frames = [for(i in 0...frameCount) UNLOADED];
-			#end
 			return;
 		}
 		
-		#if use_actor_tilemap
-		this.imgData = imgData;
-		#else
 		if(frameCount == 1)
 		{
 			frames[0] = imgData;
 		}
 		else
+		#if use_actor_tilemap
+		{
+			var fw = Std.int(frameWidth * Engine.SCALE);
+			var fh = Std.int(frameHeight * Engine.SCALE);
+			
+			for(i in 0...frameCount)
+			{
+				frames[i] = TileSource.createSubImage(imgData, fw * (i % framesAcross), Math.floor(i / framesAcross) * fh, fw, fh);
+			}
+		}
+		#else
 		{
 			var fw = Std.int(frameWidth * Engine.SCALE);
 			var fh = Std.int(frameHeight * Engine.SCALE);
@@ -184,15 +177,19 @@ class Animation
 		}
 		#end
 		
-		#if ((lime_opengl || lime_opengles || lime_webgl) && !use_actor_tilemap)
+		#if ((lime_opengl || lime_opengles || lime_webgl) && !use_dynamic_tilemap)
 		if(Config.disposeImages && parent != null && !parent.readableImages)
 		{
+			#if use_actor_tilemap
+			com.stencyl.graphics.GLUtil.uploadTexture(imgData, true);
+			#else
 			var i = 0;
 			for(frame in frames)
 			{
 				com.stencyl.graphics.GLUtil.uploadTexture(frame, true);
 				//@:privateAccess Log.verbose("Uploaded texture for " + parent.name + " frame " + (i++) + " to gpu texture " + frame.__texture.__textureID);
 			}
+			#end
 		}
 		#end
 		
@@ -204,19 +201,15 @@ class Animation
 		if(!graphicsLoaded)
 			return;
 		
-		#if use_actor_tilemap
-		if(imgData.readable)
-			imgData.dispose();
-		imgData = UNLOADED;
-		#else
 		for(i in 0...frameCount)
 		{
+			#if !use_actor_tilemap
 			if(frames[i].readable)
 				frames[i].dispose();
+			#end
 			
 			frames[i] = UNLOADED;
 		}
-		#end
 		
 		graphicsLoaded = false;
 	}
@@ -224,7 +217,7 @@ class Animation
 	public function checkImageReadable():Bool
 	{
 		#if use_actor_tilemap
-		if(imgData.readable)
+		if(TileSource.fromBitmapData(frames[0]).tileset.bitmapData.readable)
 			return true;
 		#else
 		if(frames[0].readable)
@@ -248,9 +241,8 @@ class Animation
 		return false;
 	}
 	
-	#if use_actor_tilemap
-	public var tileset:Tileset = null;
-	public var frameIndexOffset:Int;
+	#if (use_actor_tilemap && use_dynamic_tilemap)
+	public var tilesetInitialized = false;
 	
 	public function initializeInTileset(tileset:DynamicTileset):Bool
 	{
@@ -259,8 +251,10 @@ class Animation
 			return false;
 		}
 		
-		frameIndexOffset = tileset.addFramesFromStrip(imgData, Std.int(frameWidth * Engine.SCALE), Std.int(frameHeight * Engine.SCALE), framesAcross, frameCount);
-		this.tileset = tileset.tileset;
+		var originalImg = frameCount == 0 ? null : TileSource.fromBitmapData(frames[0]).tileset.bitmapData;
+		
+		tileset.addFrames(frames);
+		tilesetInitialized = true;
 		
 		Engine.engine.loadedAnimations.push(this);
 		
@@ -268,7 +262,7 @@ class Animation
 		
 		if(Config.disposeImages && parent != null && !parent.readableImages)
 		{
-			com.stencyl.graphics.GLUtil.disposeSoftwareBuffer(imgData);
+			com.stencyl.graphics.GLUtil.disposeSoftwareBuffer(originalImg);
 		}
 		
 		return true;

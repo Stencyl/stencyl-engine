@@ -135,7 +135,8 @@ class SheetAnimation extends Tile implements AbstractAnimation
 	
 	public function activate()
 	{
-		if(model.tileset == null)
+		#if use_dynamic_tileset
+		if(!model.tilesetInitialized)
 		{
 			var e = Engine.engine;
 			while(e.nextTileset >= e.actorTilesets.length)
@@ -147,12 +148,8 @@ class SheetAnimation extends Tile implements AbstractAnimation
 				e.actorTilesets.push(new DynamicTileset());
 				model.initializeInTileset(e.actorTilesets[++e.nextTileset]);
 			}
-			tileset = model.tileset;
 		}
-		else if(tileset == null)
-		{
-			tileset = model.tileset;
-		}
+		#end
 		
 		updateBitmap();
 	}
@@ -167,7 +164,9 @@ class SheetAnimation extends Tile implements AbstractAnimation
 	
 	public inline function updateBitmap()
 	{
-		id = frameIndex + model.frameIndexOffset;
+		var ts = TileSource.fromBitmapData(model.frames[frameIndex]);
+		tileset = ts.tileset;
+		id = ts.tileID;
 	}
 
 	public function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
@@ -179,18 +178,15 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		#if stencyl4_compat
 		if(needsReadableImage)
 		{
-			var bitmapData = model.imgData;
-			var srcXOffset = 0;
-			var srcYOffset = 0;
+			var ts = TileSource.fromBitmapData(model.frames[frameIndex]);
+			var rect = ts.tileset.getRect(ts.tileID);
+			var bitmapData = ts.tileset.bitmapData;
+			var srcXOffset = Std.int(rect.x);
+			var srcYOffset = Std.int(rect.y);
 
-			if (g.alpha == 1)
+			if (g.alpha != 1)
 			{
-				srcXOffset = frameIndex % model.framesAcross * get_width();
-				srcYOffset = Std.int(frameIndex / model.framesAcross) * get_height();
-			}
-			else
-			{
-				bitmapData = new BitmapData(get_width(), get_height(), true, 0);
+				bitmapData = new BitmapData(Std.int(rect.width), Std.int(rect.height), true, 0);
 				var colorTransformation = new openfl.geom.ColorTransform(1,1,1,g.alpha,0,0,0,0);
 				bitmapData.draw(model.imgData, new Matrix(1, 0, 0, 1, -srcXOffset, -srcYOffset), colorTransformation);
 				srcXOffset = 0;
@@ -198,7 +194,7 @@ class SheetAnimation extends Tile implements AbstractAnimation
 			}
 			
 			g.graphics.beginBitmapFill(bitmapData, new Matrix(1, 0, 0, 1, x - srcXOffset, y - srcYOffset));
-			g.graphics.drawRect(x, y, bitmapData.width, bitmapData.height);
+			g.graphics.drawRect(x, y, rect.width, rect.height);
 	 	 	g.graphics.endFill();
 		}
 		else
@@ -256,10 +252,14 @@ class SheetAnimation extends Tile implements AbstractAnimation
 		if(Config.disposeImages && !model.checkImageReadable())
 			return Animation.UNLOADED;
 		
-		var srcXOffset = frameIndex % model.framesAcross * get_width();
-		var srcYOffset = Std.int(frameIndex / model.framesAcross) * get_height();
-		var bitmapData = new BitmapData(get_width(), get_height(), true, 0);
-		bitmapData.draw(model.imgData, new Matrix(1, 0, 0, 1, -srcXOffset, -srcYOffset));
+		var ts = TileSource.fromBitmapData(model.frames[frameIndex]);
+		var rect = ts.tileset.getRect(ts.tileID);
+		var bitmapData = ts.tileset.bitmapData;
+		var srcXOffset = Std.int(rect.x);
+		var srcYOffset = Std.int(rect.y);
+		
+		var bitmapData = new BitmapData(Std.int(rect.width), Std.int(rect.height), true, 0);
+		bitmapData.draw(bitmapData, new Matrix(1, 0, 0, 1, -srcXOffset, -srcYOffset));
 
 		return bitmapData;
 	}

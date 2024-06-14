@@ -304,7 +304,7 @@ class Engine
 	public var atlasesToLoad:Map<Int,Int>;
 	public var atlasesToUnload:Map<Int,Int>;
 	
-	#if use_actor_tilemap
+	#if (use_actor_tilemap && use_dynamic_tilemap)
 	public var actorTilesets:Array<DynamicTileset>;
 	public var loadedAnimations:Array<Animation>;
 	public var nextTileset = 0;
@@ -435,6 +435,10 @@ class Engine
 		isIPhone6Plus = false;
 		isTabletIOS = false;
 		
+		#if (use_actor_tilemap && use_dynamic_tilemap)
+		resetActorTilesets();
+		#end
+		
 		engine = null;
 		
 		landscape = false; //Only applies to mobile
@@ -484,10 +488,6 @@ class Engine
 		
 		debug = false;
 		debugDrawer = null;
-		
-		#if use_actor_tilemap
-		resetActorTilesets();
-		#end
 	}
 	
 	//*-----------------------------------------------
@@ -661,7 +661,7 @@ class Engine
 			whenScreenSizeChanged.dispatch();
 	}
 	
-	#if use_actor_tilemap
+	#if (use_actor_tilemap && use_dynamic_tilemap)
 	public static function resetActorTilesets()
 	{
 		for(ts in engine.actorTilesets)
@@ -670,8 +670,7 @@ class Engine
 		}
 		for(anim in engine.loadedAnimations)
 		{
-			anim.tileset = null;
-			anim.frameIndexOffset = 0;
+			anim.tilesetInitialized = false;
 		}
 		engine.nextTileset = 0;
 	}
@@ -799,7 +798,7 @@ class Engine
 			@:privateAccess stage.window.__fullscreen = true;
 		#end
 		
-		#if use_actor_tilemap
+		#if (use_actor_tilemap && use_dynamic_tilemap)
 		actorTilesets = new Array<DynamicTileset>();
 		loadedAnimations = new Array<Animation>();
 		#end
@@ -1069,7 +1068,7 @@ class Engine
 			}
 		}
 		
-		#if use_actor_tilemap
+		#if (use_actor_tilemap && use_dynamic_tilemap)
 		resetActorTilesets();
 		#end
 		

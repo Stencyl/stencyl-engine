@@ -4,6 +4,7 @@ package com.stencyl.graphics;
 
 import openfl.display.BitmapData;
 import openfl.display.Tileset;
+import openfl.geom.Rectangle;
 
 @:access(openfl.display.BitmapData)
 
@@ -32,6 +33,21 @@ class TileSource
 			img.__tileSource = ts;
 		}
 		return img.__tileSource;
+	}
+	
+	public static function createSubImage(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapData
+	{
+		var ts = fromBitmapData(img);
+		var img = new BitmapData(0, 0, true, 0);
+		img.__resize(width, height);
+		
+		var subTs = new TileSource();
+		subTs.tileset = ts.tileset;
+		subTs.tileID = ts.tileset.addRect(new Rectangle(x, y, width, height));
+		subTs.width = width;
+		subTs.height = height;
+		img.__tileSource = subTs;
+		return img;
 	}
 }
 

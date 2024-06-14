@@ -1,6 +1,6 @@
 package com.stencyl.graphics;
 
-#if ((lime_opengl || lime_opengles || lime_webgl) && use_actor_tilemap)
+#if ((lime_opengl || lime_opengles || lime_webgl) && use_actor_tilemap && use_dynamic_tilemap)
 
 import com.stencyl.utils.Log;
 
@@ -69,13 +69,15 @@ class DynamicTileset
 	
 	private var zero:Point = new Point(0, 0);
 	
-	public function addFrames(frames:Array<BitmapData>):Int
+	public function addFrames(frames:Array<BitmapData>)
 	{
 		//Log.verbose("Adding " + frames.length + " frames to dynamicTileset.");
 		
 		@:privateAccess var offset = tileset.__data.length;
 		
+		var newTexture = tileset.bitmapData.__texture == null;
 		var newRects = [];
+		var frameDatas = [];
 		
 		for(frame in frames)
 		{
@@ -85,74 +87,18 @@ class DynamicTileset
 				point.y = nextLine;
 			}
 			
-			var rect = new Rectangle(point.x, point.y, frame.width, frame.height);
-			tileset.addRect(rect);
-			newRects.push(rect);
+			var sourceRect =
+				if(frame.__tileSource != null)
+					frame.__tileSource.tileset.getRect(frame.__tileSource.tileID)
+				else
+					frame.rect;
+			var destRect = new Rectangle(point.x, point.y, frame.width, frame.height);
 			
-			point.x += frame.width + FRAME_PADDING;
-			if(nextLine < point.y + frame.height)
-				nextLine = Std.int(point.y + frame.height + FRAME_PADDING);
-		}
-		
-		//Log.verbose(newRects);
-		
-		var gl = GLUtil.gl;
-		var internalFormat = TextureBase.__textureInternalFormat;
-		var format = TextureBase.__textureFormat;
-		
-		gl.bindTexture (gl.TEXTURE_2D, texture);
-		
-		for(i in 0...newRects.length)
-		{
-			var r = newRects[i];
-			var newFrame = frames[i];
-			
-			gl.texSubImage2D(gl.TEXTURE_2D, 0, Std.int(r.x), Std.int(r.y), Std.int(r.width), Std.int(r.height), format, gl.UNSIGNED_BYTE, newFrame.image.data);
-			
-			var ts = new TileSource();
-			ts.tileset = tileset;
-			ts.tileID = offset + i;
-			ts.width = newFrame.width;
-			ts.height = newFrame.height;
-			newFrame.__tileSource = ts;
-		}
-		
-		return offset;
-	}
-	
-	public function clearSheet():Void
-	{
-		GLUtil.clearTexture(tileset.bitmapData);
-		point = new Point(0, 0);
-		nextLine = 0;
-		
-		tileset.rectData = new Vector<Float>();
-		tileset.__data = new Array();
-	}
-	
-	public function addFramesFromStrip(imgData:BitmapData, frameWidth:Int, frameHeight:Int, framesAcross:Int, frameCount:Int):Int
-	{
-		//Log.verbose("Adding " + frameCount + " frames to dynamicTileset.");
-		
-		@:privateAccess var offset = tileset.__data.length;
-		
-		var newTexture = tileset.bitmapData.__texture == null;
-		var newRects = [];
-		var frameDatas = [];
-		
-		for(i in 0...frameCount)
-		{
-			if(point.x + frameWidth > GLUtil.textureMaxSize)
+			if(newTexture)
+				tileset.bitmapData.copyPixels(frame, sourceRect, point);
+			else
 			{
-				point.x = 0;
-				point.y = nextLine;
-			}
-			var sourceRect = new Rectangle(frameWidth * (i % framesAcross), Math.floor(i / framesAcross) * frameHeight, frameWidth, frameHeight);
-			tileset.bitmapData.copyPixels(imgData, sourceRect, point);
-			
-			if(!newTexture)
-			{
-				var pixels = ByteArray.fromBytes(imgData.image.getPixels(@:privateAccess sourceRect.__toLimeRectangle(), #if js RGBA32 #else BGRA32 #end));
+				var pixels = ByteArray.fromBytes(frame.image.getPixels(@:privateAccess sourceRect.__toLimeRectangle(), #if js RGBA32 #else BGRA32 #end));
 				pixels.endian = Endian.BIG_ENDIAN;
 				
 				//var pixels = imgData.getPixels(sourceRect);//argb32,big endian
@@ -171,17 +117,22 @@ class DynamicTileset
 				}
 
 				frameDatas.push(data);
+				newRects.push(destRect);
 			}
 			
-			sourceRect.setTo(point.x, point.y, sourceRect.width, sourceRect.height);
-			tileset.addRect(sourceRect);
-			if(!newTexture)
-				newRects.push(sourceRect);
+			var ts = new TileSource();
+			ts.tileset = tileset;
+			ts.tileID = tileset.addRect(destRect);
+			ts.width = frame.width;
+			ts.height = frame.height;
+			frame.__tileSource = ts;
 			
-			point.x += frameWidth + FRAME_PADDING;
-			if(nextLine < point.y + frameHeight)
-				nextLine = Std.int(point.y + frameHeight + FRAME_PADDING);
+			point.x += frame.width + FRAME_PADDING;
+			if(nextLine < point.y + frame.height)
+				nextLine = Std.int(point.y + frame.height + FRAME_PADDING);
 		}
+		
+		//Log.verbose(newRects);
 		
 		if(!newTexture)
 		{
@@ -200,10 +151,16 @@ class DynamicTileset
 			
 			//tileset.bitmapData.__textureVersion = tileset.bitmapData.image.version;
 		}
+	}
+	
+	public function clearSheet():Void
+	{
+		GLUtil.clearTexture(tileset.bitmapData);
+		point = new Point(0, 0);
+		nextLine = 0;
 		
-		//saveImage(tileset.bitmapData, "out-" + offset + ".png");
-		
-		return offset;
+		tileset.rectData = new Vector<Float>();
+		tileset.__data = new Array();
 	}
 }
 #end
