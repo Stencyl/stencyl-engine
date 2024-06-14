@@ -1,6 +1,9 @@
 package com.stencyl.models.actor;
 
 import openfl.display.BitmapData;
+#if use_actor_tilemap
+import openfl.display.Tileset;
+#end
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import com.stencyl.models.actor.ActorType;
@@ -246,8 +249,7 @@ class Animation
 	}
 	
 	#if use_actor_tilemap
-	public var tilesetInitialized = false;
-	public var tileset:DynamicTileset = null;
+	public var tileset:Tileset = null;
 	public var frameIndexOffset:Int;
 	
 	public function initializeInTileset(tileset:DynamicTileset):Bool
@@ -258,8 +260,7 @@ class Animation
 		}
 		
 		frameIndexOffset = tileset.addFramesFromStrip(imgData, Std.int(frameWidth * Engine.SCALE), Std.int(frameHeight * Engine.SCALE), framesAcross, frameCount);
-		this.tileset = tileset;
-		tilesetInitialized = true;
+		this.tileset = tileset.tileset;
 		
 		Engine.engine.loadedAnimations.push(this);
 		

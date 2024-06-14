@@ -670,7 +670,6 @@ class Engine
 		}
 		for(anim in engine.loadedAnimations)
 		{
-			anim.tilesetInitialized = false;
 			anim.tileset = null;
 			anim.frameIndexOffset = 0;
 		}

@@ -135,7 +135,7 @@ class SheetAnimation extends Tile implements AbstractAnimation
 	
 	public function activate()
 	{
-		if(!model.tilesetInitialized)
+		if(model.tileset == null)
 		{
 			var e = Engine.engine;
 			while(e.nextTileset >= e.actorTilesets.length)
@@ -147,11 +147,11 @@ class SheetAnimation extends Tile implements AbstractAnimation
 				e.actorTilesets.push(new DynamicTileset());
 				model.initializeInTileset(e.actorTilesets[++e.nextTileset]);
 			}
-			tileset = model.tileset.tileset;
+			tileset = model.tileset;
 		}
 		else if(tileset == null)
 		{
-			tileset = model.tileset.tileset;
+			tileset = model.tileset;
 		}
 		
 		updateBitmap();
