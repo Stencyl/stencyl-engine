@@ -36,9 +36,6 @@ import com.stencyl.behavior.Script;
 import com.stencyl.behavior.TimedTask;
 import com.stencyl.event.Event;
 import com.stencyl.event.EventMap;
-#if use_actor_tilemap
-import com.stencyl.graphics.BitmapTilesetMapping;
-#end
 import com.stencyl.graphics.BitmapWrapper;
 import com.stencyl.graphics.DynamicTileset;
 import com.stencyl.graphics.EngineScaleUpdateListener;
@@ -106,9 +103,6 @@ import box2D.dynamics.contacts.B2Contact;
 import box2D.dynamics.contacts.B2ContactEdge;
 
 import haxe.ds.ObjectMap;
-#if use_actor_tilemap
-#if js import js.lib.WeakMap; #else import haxe.ds.WeakMap; #end
-#end
 import haxe.CallStack;
 
 //import com.nmefermmmtools.debug.Console;
@@ -313,7 +307,6 @@ class Engine
 	#if use_actor_tilemap
 	public var actorTilesets:Array<DynamicTileset>;
 	public var loadedAnimations:Array<Animation>;
-	public var loadedBitmaps:Map<BitmapData, BitmapTilesetMapping>;
 	public var nextTileset = 0;
 	#end
 	
@@ -681,7 +674,6 @@ class Engine
 			anim.tileset = null;
 			anim.frameIndexOffset = 0;
 		}
-		engine.loadedBitmaps = new Map<BitmapData, BitmapTilesetMapping>();
 		engine.nextTileset = 0;
 	}
 	#end
@@ -811,7 +803,6 @@ class Engine
 		#if use_actor_tilemap
 		actorTilesets = new Array<DynamicTileset>();
 		loadedAnimations = new Array<Animation>();
-		loadedBitmaps = new Map<BitmapData, BitmapTilesetMapping>();
 		#end
 		
 		var initSceneID = Config.initSceneID;

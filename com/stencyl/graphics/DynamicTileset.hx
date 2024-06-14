@@ -108,6 +108,13 @@ class DynamicTileset
 			var newFrame = frames[i];
 			
 			gl.texSubImage2D(gl.TEXTURE_2D, 0, Std.int(r.x), Std.int(r.y), Std.int(r.width), Std.int(r.height), format, gl.UNSIGNED_BYTE, newFrame.image.data);
+			
+			var ts = new TileSource();
+			ts.tileset = tileset;
+			ts.tileID = offset + i;
+			ts.width = newFrame.width;
+			ts.height = newFrame.height;
+			newFrame.__tileSource = ts;
 		}
 		
 		return offset;

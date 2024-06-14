@@ -48,7 +48,7 @@ class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #en
 	#end
 	@:isVar public var filtersWrapper (get, set):Array<BitmapFilter>;
 
-	public function new(?img:Bitmap, ?imgData:BitmapData #if use_actor_tilemap , ?imgTile:Tile #end)
+	public function new(?img:Bitmap, ?imgData:BitmapData #if use_actor_tilemap , ?imgTileSource:TileSource, ?imgTile:Tile #end)
 	{
 		super();
 		
@@ -64,6 +64,10 @@ class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #en
 			initializeFromBitmapData(imgData);
 		}
 		#if use_actor_tilemap
+		else if(imgTileSource != null)
+		{
+			initializeFromTileSource(imgTileSource);
+		}
 		else if(imgTile != null)
 		{
 			initializeFromTile(imgTile);
@@ -97,35 +101,20 @@ class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #en
 
 		#else
 
-		var e = Engine.engine;
-		var tilesetMapping = e.loadedBitmaps.get(img);
-		if(tilesetMapping == null)
-		{
-			tilesetMapping = new BitmapTilesetMapping();
-			e.loadedBitmaps.set(img, tilesetMapping);
-		}
-		if(!tilesetMapping.tilesetInitialized)
-		{
-			while(e.nextTileset >= e.actorTilesets.length)
-			{
-				e.actorTilesets.push(new DynamicTileset());
-			}
-			if(!tilesetMapping.initializeInTileset(img, e.actorTilesets[e.nextTileset]))
-			{
-				e.actorTilesets.push(new DynamicTileset());
-				tilesetMapping.initializeInTileset(img, e.actorTilesets[++e.nextTileset]);
-			}
-		}
-
-		var tile = new Tile();
-		tile.tileset = tilesetMapping.tileset.tileset;
-		tile.id = tilesetMapping.frameIndexOffset;
-		initializeFromTile(tile);
+		initializeFromTileSource(TileSource.fromBitmapData(img));
 
 		#end
 	}
 
 	#if use_actor_tilemap
+	private function initializeFromTileSource(tileSource:TileSource)
+	{
+		var tile = new Tile();
+		tile.tileset = tileSource.tileset;
+		tile.id = tileSource.tileID;
+		initializeFromTile(tile);
+	}
+
 	private function initializeFromTile(tile:Tile)
 	{
 		this.img = tile;

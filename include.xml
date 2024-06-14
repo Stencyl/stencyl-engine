@@ -40,5 +40,7 @@
 		<haxelib name="stencyl-cppia" />
 		
 	</section>
+	
+	<haxeflag name="--macro" value="addGlobalMetadata('openfl.display.BitmapData', '@:build(com.stencyl.graphics.BitmapDataTileSourcePatch.patch())')" unless="flash" />
 
 </project>
