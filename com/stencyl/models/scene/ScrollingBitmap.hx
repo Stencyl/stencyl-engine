@@ -1,14 +1,20 @@
 package com.stencyl.models.scene;
 
+import com.stencyl.graphics.TileSource;
+
 import openfl.display.Sprite;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
+#if use_actor_tilemap
+import openfl.display.TileContainer;
+import openfl.display.Tile;
+#end
 
 import com.stencyl.Engine;
 
-class ScrollingBitmap extends Sprite
+class ScrollingBitmap extends #if use_actor_tilemap TileContainer #else Sprite #end
 {
-	public var tiles:Array<Array<Bitmap>>;
+	public var tiles:Array<Array<#if use_actor_tilemap Tile #else Bitmap #end>>;
 	
 	public var running:Bool;
 	public var parallax:Bool;
@@ -41,20 +47,17 @@ class ScrollingBitmap extends Sprite
 		cacheWidth = img.width;
 		cacheHeight = img.height;
         
-		if (repeats)
-		{
-			tiles = createTiles(img, Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
-		}
-		else
-		{
-			tiles = [[new Bitmap(img)]];
-		}
+		tiles = createTiles(img, Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
 		
 		for(line in tiles)
 		{
 			for(tile in line)
 			{
+				#if use_actor_tilemap
+				addTile(tile);
+				#else
 				addChild(tile);
+				#end
 			}
 		}
 		
@@ -79,7 +82,7 @@ class ScrollingBitmap extends Sprite
 		backgroundID = ID;
 	}
 	
-	public static function createTiles(img:BitmapData, screenWidth:Int, screenHeight:Int):Array<Array<Bitmap>>
+	public static function createTiles(img:BitmapData, screenWidth:Int, screenHeight:Int):Array<Array<#if use_actor_tilemap Tile #else Bitmap #end>>
 	{
 		var tw:Float = img.width;
 		var th:Float = img.height;
@@ -94,6 +97,10 @@ class ScrollingBitmap extends Sprite
 		{
 			screenHeight += Std.int(th) - (screenHeight % Std.int(th));
 		}
+		
+		#if use_actor_tilemap
+		var ts = TileSource.fromBitmapData(img);
+		#end
 
 		var tiles = [];
 		
@@ -103,7 +110,13 @@ class ScrollingBitmap extends Sprite
 			
 			for(xPos in 0...Std.int(screenWidth / tw) + 1)
 			{
+				#if use_actor_tilemap
+				var tile = new Tile();
+				tile.tileset = ts.tileset;
+				tile.id = ts.tileID;
+				#else
 				var tile = new Bitmap(img);
+				#end
 				tile.x = xPos * tw;
 				tile.y = yPos * th;
 				line.push(tile);
@@ -117,6 +130,14 @@ class ScrollingBitmap extends Sprite
 	
 	public function setImage(img:BitmapData)
 	{
+		#if use_actor_tilemap
+		var ts = TileSource.fromBitmapData(img);
+		@:privateAccess for(tile in __tiles)
+		{
+			tile.tileset = ts.tileset;
+			tile.id = ts.tileID;
+		}
+		#else
 		for(line in tiles)
 		{
 			for(tile in line)
@@ -124,6 +145,7 @@ class ScrollingBitmap extends Sprite
 				tile.bitmapData = img;
 			}
 		}
+		#end
 	}
 	
 	public function update(x:Float, y:Float, elapsedTime:Float)
@@ -200,9 +222,15 @@ class ScrollingBitmap extends Sprite
 	
 	public function resetPositions()
 	{
-		cacheWidth = tiles[0][0].width;
-		cacheHeight = tiles[0][0].height;
-
+		var firstTile = tiles[0][0];
+		#if use_actor_tilemap
+		var rect = firstTile.tileset.getRect(firstTile.id);
+		#else
+		var rect = firstTile.bitmapData.rect;
+		#end
+		cacheWidth = rect.width;
+		cacheHeight = rect.height;
+		
 		var tileX = xPos;
 		var tileY = yPos;
 		

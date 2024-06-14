@@ -1,5 +1,7 @@
 package com.stencyl.graphics;
 
+#if use_tilemap
+
 import openfl.display.BitmapData;
 import openfl.display.Tileset;
 
@@ -32,3 +34,5 @@ class TileSource
 		return img.__tileSource;
 	}
 }
+
+#end

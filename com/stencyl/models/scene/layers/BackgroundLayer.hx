@@ -6,8 +6,13 @@ import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.PixelSnapping;
+#if use_actor_tilemap
+import openfl.display.Tile;
+import openfl.display.Tilemap;
+#end
 
 import com.stencyl.Config;
+import com.stencyl.graphics.TileSource;
 import com.stencyl.models.scene.ScrollingBitmap;
 import com.stencyl.models.background.ImageBackground;
 import com.stencyl.models.background.ScrollingBackground;
@@ -26,7 +31,13 @@ class BackgroundLayer extends RegularLayer
 	public var currIndex:Int;
 	public var currTime:Float;
 	
-	private var bgChild:DisplayObject; //Bitmap or ScrollingBitmap
+	#if use_actor_tilemap
+	private var tilemap:Tilemap;
+	#end
+	
+	//if DisplayObject, it's either Bitmap or ScrollingBitmap (which extends Sprite)
+	//if Tile, it's either Tile or ScrollingBitmap (which extends TileContainer)
+	private var bgChild: #if use_actor_tilemap Tile #else DisplayObject #end;
 	
 	public function new(ID:Int, name:String, order:Int, scrollFactorX:Float, scrollFactorY:Float, opacity:Float, blendMode:BlendMode, resourceID:Int, customScroll:Bool) 
 	{
@@ -35,6 +46,14 @@ class BackgroundLayer extends RegularLayer
 		this.customScroll = customScroll;
 
 		model = cast(Data.get().resources.get(resourceID), ImageBackground);
+		
+		#if use_actor_tilemap
+		tilemap = new Tilemap(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE), null, Config.antialias);
+		tilemap.name = name + " - Background";
+		tilemap.tileColorTransformEnabled = false;
+
+		addChild(tilemap);
+		#end
 	}
 
 	public function load()
@@ -86,22 +105,43 @@ class BackgroundLayer extends RegularLayer
 			var scroller = cast(model, ScrollingBackground);
 
 			var img = new ScrollingBitmap(firstFrame, scroller.xVelocity, scroller.yVelocity, parallaxX, parallaxY, resourceID, model.repeats);
+			#if use_actor_tilemap
+			tilemap.addTile(bgChild = img);
+			#else
 			addChild(bgChild = img);
+			#end
 		}
 		else if(model.repeats)
 		{
 			var img = new ScrollingBitmap(firstFrame, 0, 0, parallaxX, parallaxY, resourceID);
+			#if use_actor_tilemap
+			tilemap.addTile(bgChild = img);
+			#else
 			addChild(bgChild = img);
+			#end
 		}
 		else
 		{
+			#if use_actor_tilemap
+			
+			var ts = TileSource.fromBitmapData(firstFrame);
+			var tile = new Tile();
+			tile.tileset = ts.tileset;
+			tile.id = ts.tileID;
+			
+			tilemap.addTile(bgChild = tile);
+			
+			#else
+			
 			var bitmap = new Bitmap(firstFrame, PixelSnapping.AUTO, true);
 			bitmap.smoothing = Config.antialias;
+			
+			addChild(bgChild = bitmap);
+			
+			#end
 		
 			scrollFactorX = parallaxX;
 			scrollFactorY = parallaxY;
-
-			addChild(bgChild = bitmap);
 		}
 	}
 
@@ -148,7 +188,11 @@ class BackgroundLayer extends RegularLayer
 	{
 		if(bgChild != null)
 		{
+			#if use_actor_tilemap
+			tilemap.removeTile(bgChild);
+			#else
 			removeChild(bgChild);
+			#end
 			bgChild = null;
 		}
 
@@ -169,8 +213,14 @@ class BackgroundLayer extends RegularLayer
 
 		else
 		{
+			#if use_actor_tilemap
+			var ts = TileSource.fromBitmapData(bitmapData);
+			bgChild.tileset = ts.tileset;
+			bgChild.id = ts.tileID;
+			#else
 			var bg = cast(bgChild, Bitmap);
 			bg.bitmapData = bitmapData;
+			#end
 		}
 		
 		currIndex = 0;
@@ -202,8 +252,14 @@ class BackgroundLayer extends RegularLayer
 			
 			else
 			{
+				#if use_actor_tilemap
+				var ts = TileSource.fromBitmapData(model.frames[currIndex]);
+				bgChild.tileset = ts.tileset;
+				bgChild.id = ts.tileID;
+				#else
 				var bg = cast(bgChild, Bitmap);
-				bg.bitmapData = bitmapData;
+				bg.bitmapData = model.frames[currIndex];
+				#end
 			}			
 		}
 	}
@@ -228,7 +284,7 @@ class BackgroundLayer extends RegularLayer
 		}
 	}
 
-	public function getBitmap():DisplayObject
+	public function getBitmap():#if use_actor_tilemap Tile #else DisplayObject #end
 	{
 		return bgChild;
 	}
