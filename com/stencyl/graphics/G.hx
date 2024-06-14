@@ -356,11 +356,10 @@ class G
 			#end
 			#if use_actor_tilemap
 			{
-				var tileset = new Tileset(toDraw);
-				var tileID = tileset.addRect(toDraw.rect);
+				var ts = TileSource.fromBitmapData(toDraw);
 				var tile = new Tile();
-				tile.tileset = tileset;
-				tile.id = tileID;
+				tile.tileset = ts.tileset;
+				tile.id = ts.tileID;
 				tile.x = drawX;
 				tile.y = drawY;
 				layer.addTile(tile);
@@ -742,11 +741,10 @@ class G
 		#end
 		#if use_actor_tilemap
 		{
-			var tileset = new Tileset(img);
-			var tileID = tileset.addRect(img.rect);
+			var ts = TileSource.fromBitmapData(img);
 			var tile = new Tile();
-			tile.tileset = tileset;
-			tile.id = tileID;
+			tile.tileset = ts.tileset;
+			tile.id = ts.tileID;
 			tile.x = x;
 			tile.y = y;
 			tile.rotation = angle;
@@ -792,12 +790,12 @@ class G
 		#if use_actor_tilemap
 		var img:BitmapData = new BitmapData(Math.ceil(bounds.width), Math.ceil(bounds.height), true, 0);
 		img.draw(shape, new Matrix(1, 0, 0, 1, -bounds.x, -bounds.y));
-		var tileset = new Tileset(img, [new Rectangle(0, 0, bounds.width, bounds.height)]);
+		var ts = TileSource.fromBitmapData(img);
 		var tile = new Tile();
-		tile.id = 0;
+		tile.id = ts.tileID;
 		tile.x = bounds.x;
 		tile.y = bounds.y;
-		tile.tileset = tileset;
+		tile.tileset = ts.tileset;
 		layer.addTile(tile);
 		#else
 		layer.addChild(shape);
