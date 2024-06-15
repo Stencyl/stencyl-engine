@@ -320,20 +320,6 @@ using StringTools;
 		Lib.current.addChild(universal);
 		var imgBase = Engine.IMG_BASE;
 		
-		#if sys
-		var preloadPaths = Utils.getConfigText("config/preloadPaths.txt");
-		for(library in ManifestResources.preloadLibraries)
-		{
-			for(path in preloadPaths.split("\n"))
-			{
-				if(path.length == 0)
-					continue;
-				path = path.replace("IMG_BASE", imgBase);
-				library.preload.set(path, true);
-			}
-		}
-		#end
-		
 		#if actuate
 		motion.actuators.SimpleActuator.getTime = function():Float {
 			return Engine.totalElapsedTime / 1000;
