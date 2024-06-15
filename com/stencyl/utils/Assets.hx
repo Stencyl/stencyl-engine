@@ -1,6 +1,11 @@
 package com.stencyl.utils;
 
+#if use_tilemap
+import com.stencyl.graphics.TextureAtlas;
+#end
+
 import haxe.io.Bytes;
+import haxe.Json;
 
 import lime.media.AudioBuffer;
 import lime.utils.Assets as LimeAssets;
@@ -16,6 +21,47 @@ class Assets
 	#if stencyltools
 	public static var modifiedAssetCache:Map<String,Dynamic> = new Map<String,Dynamic>();
 	#end
+	
+	#if use_tilemap
+	public static var atlases = new Array<TextureAtlas>();
+	public static var imageAtlasMap = new Map<String,TextureAtlas>();
+	public static var imageAtlasCache = new Map<String,BitmapData>();
+	
+	public static function loadAtlases()
+	{
+		var atlasConfig = Utils.getConfigText("atlases/list.json");
+		if(atlasConfig == "")
+			return;
+		var atlasCounts = Json.parse(atlasConfig);
+		
+		var atlasesForThisScale = Reflect.field(atlasCounts, Engine.IMG_BASE);
+		for(field in Reflect.fields(atlasCounts))
+		{
+			var shouldPreload = (field == Engine.IMG_BASE);
+			var count = Reflect.field(atlasCounts, field);
+			for(i in 0...atlasesForThisScale)
+			{
+				var atlas = new TextureAtlas(i);
+				atlas.loadData();
+				for(filename in atlas.listFiles())
+				{
+					imageAtlasMap.set(filename, atlas);
+				}
+				atlases[i] = atlas;
+			}
+		}
+	}
+	
+	public static function hasAtlasForImage(imageName:String):Bool
+	{
+		return imageAtlasMap.exists(imageName);
+	}
+
+	public static function getAtlasForImage(imageName:String):TextureAtlas
+	{
+		return imageAtlasMap.get(imageName);
+	}
+	#end
 
 	public static function getBitmapData(id:String, useCache:Bool = true):BitmapData
 	{
@@ -23,6 +69,17 @@ class Assets
 		if(modifiedAssetCache.exists(id))
 		{
 			return cast modifiedAssetCache.get(id);
+		}
+		#end
+		#if use_tilemap
+		var atlas = imageAtlasMap.get(id);
+		if(atlas != null)
+		{
+			if(atlas.tileset == null)
+			{
+				atlas.loadImage();
+			}
+			return atlas.getTile(id, useCache);
 		}
 		#end
 		return OpenFLAssets.getBitmapData(id, useCache);

@@ -48,6 +48,7 @@ import com.stencyl.graphics.transitions.FadeOutTransition;
 import com.stencyl.graphics.transitions.Transition;
 import com.stencyl.io.AttributeValues;
 import com.stencyl.utils.motion.*;
+import com.stencyl.utils.Assets;
 import com.stencyl.utils.Log;
 import com.stencyl.utils.Utils;
 
@@ -903,6 +904,9 @@ class Engine
 		screenWidthHalf = Std.int(stageWidth/2);
 		screenHeightHalf = Std.int(stageHeight/2);
 		
+		#if use_tilemap
+		Assets.loadAtlases();
+		#end
 		Data.get();
 		GameModel.get().loadScenes();
 
