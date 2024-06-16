@@ -125,11 +125,18 @@ class Animation
 		if(graphicsLoaded)
 			return;
 		
-		var imgData = Assets.getBitmapData
-		(
-			"assets/graphics/" + Engine.IMG_BASE + "/sprite-" + parent.ID + "-" + animID + ".png",
-			false
-		);
+		var imageName = "assets/graphics/" + Engine.IMG_BASE + "/sprite-" + parent.ID + "-" + animID + ".png";
+		#if use_actor_tilemap
+		var textureAtlas = Assets.getAtlasForImage(imageName);
+		if(textureAtlas != null)
+		{
+			frames = textureAtlas.getTiles(imageName);
+			graphicsLoaded = true;
+			return;
+		}
+		#end
+		
+		var imgData = Assets.getBitmapData(imageName, false);
 
 		if(imgData.rect == null)
 		{

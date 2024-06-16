@@ -2,6 +2,10 @@ package com.stencyl.graphics.fonts;
 
 import com.stencyl.Config;
 
+#if use_tilemap
+import com.stencyl.graphics.TextureAtlas;
+#end
+
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.display.Tilemap;
@@ -171,6 +175,77 @@ class BitmapFont
 		
 		return this;
 	}
+	
+	#if use_tilemap
+	/**
+	 * Loads font data in AngelCode's format
+	 * @param	pBitmapData	font image source
+	 * @param	pXMLData	font data in XML format
+	 * @return				this font
+	 */
+	public function loadAngelCodeWithAtlas(textureAtlas:TextureAtlas, fileID:String, pXMLData:Xml):BitmapFont
+	{
+		reset();
+		
+		_glyphString = "";
+		var charCode:Int;
+		var charString:String;
+		
+		_tileset = textureAtlas.tileset;
+
+		var fileData = textureAtlas.getFileData(fileID);
+		
+		var chars:Xml = null;
+		for (node in pXMLData.elements())
+		{
+			if (node.nodeName == "font")
+			{
+				for (nodeChild in node.elements())
+				{
+					if (nodeChild.nodeName == "info")
+					{
+						var spacing = [for(s in nodeChild.get("spacing").split(",")) Std.parseInt(s)];
+						xSpacing = spacing[0];
+						ySpacing = spacing[1];
+					}
+					else if (nodeChild.nodeName == "common")
+					{
+						lineHeight = Std.parseInt(nodeChild.get("lineHeight"));
+						baseline = Std.parseInt(nodeChild.get("base"));
+					}
+					else if (nodeChild.nodeName == "chars")
+					{
+						chars = nodeChild;
+					}
+				}
+			}
+		}
+		
+		if (chars != null)
+		{
+			for (node in chars.elements())
+			{
+				if (node.nodeName == "char")
+				{
+					var symbol:FontSymbol = new FontSymbol();
+					symbol.tileID = fileData.regions[_num_letters].tileID;
+					symbol.xoffset = Std.parseInt(node.get("xoffset"));
+					symbol.yoffset = Std.parseInt(node.get("yoffset"));
+					symbol.xadvance = Std.parseInt(node.get("xadvance"));
+					
+					charCode = Std.parseInt(node.get("id"));
+					charString = String.fromCharCode(charCode);
+					_glyphString += charString;
+					
+					_glyphs.set(charCode, symbol);
+					_num_letters++;
+				}
+			}
+		}
+		
+		return this;
+	}
+	#end
 	
 	/**
 	 * internal function. Resets current font

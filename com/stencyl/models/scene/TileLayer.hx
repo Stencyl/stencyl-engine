@@ -42,12 +42,16 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 	#end
 	private var noTiles:Bool;
 	
+	#if !use_tilemap
 	private static inline var TILESET_CACHE_MULTIPLIER = 1000000;
 	private static var cacheSource = new Map<Int,Rectangle>();
+	#end
 
 	public static function resetStatics():Void
 	{
+		#if !use_tilemap
 		cacheSource = new Map<Int,Rectangle>();
+		#end
 	}
 
 	public function new(layerID:Int, scene:Scene, numCols:Int, numRows:Int)
@@ -324,6 +328,11 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 		var tw:Int = scene.tileWidth;
 		var th:Int = scene.tileHeight;
 		
+		var fullTw = tw * Engine.SCALE;
+		var fullTh = th * Engine.SCALE;
+		var halfTw = Std.int(fullTw / 2);
+		var halfTh = Std.int(fullTh / 2);
+		
 		var startX:Int = Std.int(viewX/Engine.SCALE / tw);
 		var startY:Int = Std.int(viewY/Engine.SCALE / th);
 		var endX:Int = 2 + startX + Std.int(Engine.screenWidth / tw);
@@ -361,7 +370,10 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 					continue;
 				}
 				#end
+				
+				var baseTileCurrFrame = t.currFrame;
 
+				#if !use_tilemap
 				if(cacheSource.get(t.parent.ID * TILESET_CACHE_MULTIPLIER + t.tileID) == null || t.updateSource)
 				{
 					t.updateSource = false;
@@ -392,7 +404,6 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 					t = t.autotiles[autotileData[y][x]];
 				}
 				
-				#if !use_tilemap
 				//If animated or an autotile, used animated tile pixels
 				var pixels = (t.pixels == null) ? t.parent.pixels : t.pixels;
 				
@@ -406,15 +417,31 @@ class TileLayer extends Sprite implements EngineScaleUpdateListener
 				
 				#else
 
+				//If an autotile, swap out the tileset tile for the desired generated tile.
+				if(t.autotiles != null)
+				{
+					t = t.autotiles[autotileData[y][x]];
+				}
 				if(t.data == null)
 				{
 					var tileID = t.parent.sheetMap.get(t.tileID);
-					getTilemap(t.parent.flTileset).addTile(new FLTile(tileID, x * tw * Engine.SCALE, y * th * Engine.SCALE));
+					getTilemap(t.parent.flTileset).addTile(new FLTile(tileID, x * fullTw, y * fullTh));
 				}
 				else
 				{
-					var tileID = t.currFrame;
-					getTilemap(t.data).addTile(new FLTile(tileID, x * tw * Engine.SCALE, y * th * Engine.SCALE));
+					if(t.useSubframes)
+					{
+						var tm = getTilemap(t.data);
+						tm.addTile(new FLTile(t.frameIds[baseTileCurrFrame * 4 + 0], x * fullTw         , y * fullTh         ));
+						tm.addTile(new FLTile(t.frameIds[baseTileCurrFrame * 4 + 1], x * fullTw + halfTw, y * fullTh         ));
+						tm.addTile(new FLTile(t.frameIds[baseTileCurrFrame * 4 + 2], x * fullTw         , y * fullTh + halfTh));
+						tm.addTile(new FLTile(t.frameIds[baseTileCurrFrame * 4 + 3], x * fullTw + halfTw, y * fullTh + halfTh));
+					}
+					else
+					{
+						var tileID = t.frameIds[baseTileCurrFrame];
+						getTilemap(t.data).addTile(new FLTile(tileID, x * fullTw, y * fullTh));
+					}
 				}
 		  		#end
 				

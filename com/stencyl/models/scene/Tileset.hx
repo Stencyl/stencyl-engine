@@ -1,5 +1,8 @@
 package com.stencyl.models.scene;
 
+#if use_tilemap
+import com.stencyl.graphics.TextureAtlas;
+#end
 import com.stencyl.utils.Assets;
 import com.stencyl.Engine;
 
@@ -23,7 +26,10 @@ class Tileset extends Resource
 	
 	public var graphicsLoaded:Bool;
 	
+	private var tileLineFix:Bool;
+	
 	#if use_tilemap
+	public var textureAtlas:TextureAtlas;
 	public var flTileset:FLTileset;
 	
 	//tileID -> sheetID
@@ -47,20 +53,29 @@ class Tileset extends Resource
 	{
 		sheetMap = new Map<Int,Int>();
 		
-		if(pixels != null)
+		if(textureAtlas != null)
 		{
-			// The tile line fix now affects all scale modes.  Set to false if this causes any problems.
-			var tileLineFix = true;
+			tileLineFix = false;
+			flTileset = textureAtlas.tileset;
 			
-			if(tileLineFix)
+			var fileData = textureAtlas.getFileData("assets/graphics/" + Engine.IMG_BASE + "/tileset-" + ID + ".png");
+			
+			for(tile in tiles)
 			{
-				// The tileset needs to be modified to avoid pixel bleeding when stretching.
-				flTileset = new FLTileset(convertPixels(pixels));
+				if(tile == null)
+				{
+					continue;
+				}
+				
+				var region = fileData.regions[tile.tileID];
+				sheetMap.set(tile.tileID, region.tileID);
 			}
-			else
-			{
-				flTileset = new FLTileset(pixels);
-			}
+		}
+		else if(pixels != null)
+		{
+			// The tileset needs to be modified to avoid pixel bleeding when stretching.
+			tileLineFix = true;
+			flTileset = new FLTileset(convertPixels(pixels));
 			
 			for(tile in tiles)
 			{
@@ -103,7 +118,7 @@ class Tileset extends Resource
 			
 			#if use_tilemap
 			// The tile line fix now affects all scale modes.  Set to false if this causes any problems.
-			if(true)
+			if(tileLineFix)
 			{
 				temp.x = ((col * tileWidth * Engine.SCALE) + (col * 2) + 1);
 				temp.y = ((row * tileHeight * Engine.SCALE) + (row * 2) + 1);
@@ -132,11 +147,14 @@ class Tileset extends Resource
 		if(graphicsLoaded)
 			return;
 		
-		pixels = Assets.getBitmapData
-		(
-			"assets/graphics/" + Engine.IMG_BASE + "/tileset-" + ID + ".png",
-			false
-		);
+		var imageName = "assets/graphics/" + Engine.IMG_BASE + "/tileset-" + ID + ".png";
+		#if use_tilemap
+		textureAtlas = Assets.getAtlasForImage(imageName);
+		if(textureAtlas == null)
+		#end
+		{
+			pixels = Assets.getBitmapData(imageName, false);
+		}
 		
 		for (tile in tiles)
 		{
@@ -149,7 +167,7 @@ class Tileset extends Resource
 		#if use_tilemap
 		setupFLTileset();
 		
-		if(Config.disposeImages && !readableImages)
+		if(pixels != null && Config.disposeImages && !readableImages)
 		{
 			pixels.dispose();
 		}

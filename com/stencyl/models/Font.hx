@@ -68,28 +68,41 @@ class Font extends Resource
 		
 		if(isDefault)
 		{
-			var textBytes = Assets.getText("assets/graphics/default-font.fnt");
-			var xml = Xml.parse(textBytes);
-			defaultFont = font = new BitmapFont().loadAngelCode(Assets.getBitmapData("assets/graphics/default-font.png"), xml);
+			defaultFont = font = loadFont(
+				"assets/graphics/default-font.fnt",
+				"assets/graphics/default-font.png"
+			);
 			fontScale = 1 * Engine.SCALE;
 			defaultFont.isDefault = true;
 		}
 		
 		else
 		{
-			var textBytes = Assets.getText('assets/graphics/${Engine.IMG_BASE}/font-$ID.fnt');
-			var xml = Xml.parse(textBytes);
-			var img = Assets.getBitmapData
-			(
-				"assets/graphics/" + Engine.IMG_BASE + "/font-" + ID + ".png",
-				false
+			font = loadFont(
+				'assets/graphics/${Engine.IMG_BASE}/font-$ID.fnt',
+				'assets/graphics/${Engine.IMG_BASE}/font-$ID.png'
 			);
-			
-			font = new BitmapFont().loadAngelCode(img, xml);
+
 			fontScale = 1;
 		}
 		
 		graphicsLoaded = true;
+	}
+	
+	private static function loadFont(dataName:String, imageName:String):BitmapFont
+	{
+		var textBytes = Assets.getText(dataName);
+		var xml = Xml.parse(textBytes);
+		#if use_tilemap
+		var textureAtlas = Assets.getAtlasForImage(imageName);
+		if(textureAtlas != null)
+		{
+			return new BitmapFont().loadAngelCodeWithAtlas(textureAtlas, imageName, xml);
+		}
+		#end
+		
+		var img = Assets.getBitmapData(imageName, false);
+		return new BitmapFont().loadAngelCode(img, xml);
 	}
 	
 	override public function unloadGraphics()

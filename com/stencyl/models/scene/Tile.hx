@@ -1,5 +1,8 @@
 package com.stencyl.models.scene;
 
+#if use_tilemap
+import com.stencyl.graphics.TextureAtlas;
+#end
 import com.stencyl.utils.Assets;
 
 import openfl.display.Bitmap;
@@ -24,7 +27,8 @@ class Tile
 	//For animated tiles
 	public var pixels:BitmapData;
 	public var durations:Array<Int>;
-	public var frames:Array<Int>;
+	public var frameIds:Array<Int>;
+	public var useSubframes:Bool;
 	public var currFrame:Int;
 	public var currTime:Int;
 	public var updateSource:Bool;
@@ -110,28 +114,46 @@ class Tile
 	
 	public function loadGraphics()
 	{
-		var imgData:BitmapData = null;
+		if(durations.length == 1 && autotileFormat == null)
+			return;
 		
-		if(durations.length > 1 || autotileFormat != null)
+		var imageName = "assets/graphics/" + Engine.IMG_BASE + "/tileset-" + parent.ID + "-" + tileID + ".png";
+		#if use_tilemap
+		var textureAtlas = Assets.getAtlasForImage(imageName);
+		if(textureAtlas != null)
 		{
-			imgData = Assets.getBitmapData
-			(
-				"assets/graphics/" + Engine.IMG_BASE + "/tileset-" + parent.ID + "-" + tileID + ".png",
-				false
-			);
-		}
-		
-		if(autotileFormat != null)
-		{
-			var i = 0;
-			for(animSheet in createAutotileAnimations(imgData, autotileFormat))
+			var fileData = textureAtlas.getFileData(imageName);
+			if(autotileFormat != null)
 			{
-				autotiles[i++].loadAnimationPixels(animSheet);
+				var i = 0;
+				for(animSubFrames in createAutotileTilemapAnimations(textureAtlas, fileData, autotileFormat))
+				{
+					autotiles[i++].loadAnimationTiles(textureAtlas, animSubFrames, true);
+				}
+			}
+			else
+			{
+				var animFrames = [for(region in fileData.regions) region.tileID];
+				loadAnimationTiles(textureAtlas, animFrames, false);
 			}
 		}
 		else
+		#end
 		{
-			loadAnimationPixels(imgData);
+			var imgData = Assets.getBitmapData(imageName, false);
+			
+			if(autotileFormat != null)
+			{
+				var i = 0;
+				for(animSheet in createAutotileAnimations(imgData, autotileFormat))
+				{
+					autotiles[i++].loadAnimationPixels(animSheet);
+				}
+			}
+			else
+			{
+				loadAnimationPixels(imgData);
+			}
 		}
 	}
 	
@@ -139,6 +161,7 @@ class Tile
 	{
 		pixels = null;
 		data = null;
+		frameIds = null;
 		
 		if(autotiles != null)
 		{
@@ -146,6 +169,7 @@ class Tile
 			{
 				t.pixels = null;
 				t.data = null;
+				t.frameIds = null;
 			}
 		}
 	}
@@ -155,18 +179,28 @@ class Tile
 		if(pixels != null)
 		{
 			this.pixels = pixels;
-
+			
 			#if use_tilemap
+			frameIds = [];
 			data = new FLTileset(pixels);
 			
 			for(i in 0 ... durations.length)
 			{
 				currFrame = i;
-				data.addRect(getSource(parent.tileWidth, parent.tileHeight));
+				frameIds.push(data.addRect(getSource(parent.tileWidth, parent.tileHeight)));
 			}
 			#end
 		}
 	}
+	
+	#if use_tilemap
+	private function loadAnimationTiles(textureAtlas:TextureAtlas, animSubFrames:Array<Int>, useSubframes:Bool)
+	{
+		data = textureAtlas.tileset;
+		frameIds = animSubFrames;
+		this.useSubframes = useSubframes;
+	}
+	#end
 
 	//Autotile Support
 
@@ -206,6 +240,70 @@ class Tile
 		
 		return allAnimations;
 	}
+	
+	#if use_tilemap
+	public function createAutotileTilemapAnimations(textureAtlas:TextureAtlas, fileData:FileData, format:AutotileFormat):Array<Array<Int>>
+	{
+		//for each autotile form
+		  //for each frame of the animation a top-left, top-right, bottom-left, and bottom-right corner
+		var allAnimations = [];
+		
+		var frames = durations.length;
+		var numTiles = fileData.regions.length;
+		
+		var tw:Int = fileData.regions[0].width;
+		var th:Int = fileData.regions[0].height;
+		
+		var half_tw:Int = Std.int(tw / 2);
+		var half_th:Int = Std.int(th / 2);
+		
+		dummyRect.x = 0;
+		dummyRect.y = 0;
+		dummyRect.width = half_tw;
+		dummyRect.height = half_th;
+		
+		var stride = frames * format.tilesAcross;
+		
+		var firstSubTileId = textureAtlas.tileset.getRectID(dummyRect);
+		if(firstSubTileId == null)
+		{
+			firstSubTileId = textureAtlas.tileset.numRects;
+			for(y in 0...format.tilesDown * 2)
+			{
+				for(x in 0...stride * 2)
+				{
+					var originalRegion = fileData.regions[Std.int(y / 2) * stride + Std.int(x / 2)];
+					dummyRect.x = originalRegion.x + (x % 2) * half_tw;
+					dummyRect.y = originalRegion.y + (y % 2) * half_th;
+					textureAtlas.tileset.addRect(dummyRect);
+				}
+			}
+		}
+		
+		var getTileId = function(halfCoord:Point) {
+			var x = Std.int(halfCoord.x);
+			var y = Std.int(halfCoord.y);
+			return firstSubTileId + (stride * 2 * y) + x;
+		};
+
+		for(corners in format.animCorners)
+		{
+			var tileIds = [];
+			
+			for(frame in 0...frames)
+			{
+				tileIds.push(getTileId(corners.tl));
+				tileIds.push(getTileId(corners.tr));
+				tileIds.push(getTileId(corners.bl));
+				tileIds.push(getTileId(corners.br));
+			}
+			
+			allAnimations.push(tileIds);
+		}
+		
+		return allAnimations;
+	}
+	#end
 
 	private static var dummyRect = new Rectangle();
 	private inline function sourceRect(p:Point, srcFrameOffset:Int):Rectangle
