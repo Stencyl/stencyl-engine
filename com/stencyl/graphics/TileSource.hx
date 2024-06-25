@@ -43,7 +43,7 @@ class TileSource
 		
 		var subTs = new TileSource();
 		subTs.tileset = ts.tileset;
-		subTs.tileID = ts.tileset.addRect(new Rectangle(x, y, width, height));
+		subTs.tileID = TilesetUtils.getSubFrame(ts.tileset, ts.tileID, x, y, width, height);
 		subTs.width = width;
 		subTs.height = height;
 		img.__tileSource = subTs;
