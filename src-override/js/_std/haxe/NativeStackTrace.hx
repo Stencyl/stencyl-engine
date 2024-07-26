@@ -11,7 +11,9 @@ private extern class V8Error {
 }
 
 typedef V8CallSite = {
+	function getTypeName():String;
 	function getFunctionName():String;
+	function getMethodName():String;
 	function getFileName():String;
 	function getLineNumber():Int;
 	function getColumnNumber():Int;
@@ -103,18 +105,14 @@ class NativeStackTrace {
 		for (site in callsites) {
 			if (wrapCallSite != null)
 				site = wrapCallSite(site);
-			var method = null;
-			var fullName = site.getFunctionName();
-			if (fullName != null) {
-				var idx = fullName.lastIndexOf(".");
-				if (idx >= 0) {
-					var className = fullName.substring(0, idx);
-					var methodName = fullName.substring(idx + 1);
-					method = Method(className, methodName);
-				} else {
-					method = Method(null, fullName);
-				}
-			}
+			var typeName = site.getTypeName();
+			var functionName = site.getFunctionName();
+			var method = switch(typeName){
+				case "Function": functionNameToMethod(functionName);
+				case "Object": functionNameToMethod(functionName);
+				case null: if(site.getMethodName() == "__class__") Method(functionName, "new") else Method(null, functionName);
+				default: Method(typeName, functionName);
+			};
 			var fileName = site.getFileName();
 			var fileAddr = fileName == null ? -1 : fileName.indexOf("file:");
 			if (wrapCallSite != null && fileAddr > 0)
@@ -122,6 +120,17 @@ class NativeStackTrace {
 			stack.push(FilePos(method, fileName, site.getLineNumber(), site.getColumnNumber()));
 		}
 		return stack;
+	}
+	
+	static function functionNameToMethod(functionName:String):StackItem {
+		var idx = functionName.lastIndexOf(".");
+		if (idx >= 0) {
+			var className = functionName.substring(0, idx);
+			var methodName = functionName.substring(idx + 1);
+			return Method(className, methodName);
+		} else {
+			return Method(null, functionName);
+		}
 	}
 
 	static function normalize(stack:Any, skipItems:Int = 0):Any {
