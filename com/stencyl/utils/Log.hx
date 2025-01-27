@@ -6,8 +6,8 @@ import lime.utils.LogLevel;
 
 @:structInit class ExtraInfo
 {
-	public final level:LogLevel;
-	public final time:Float;
+	public #if haxe4 final #else var #end level:LogLevel;
+	public #if haxe4 final #else var #end time:Float;
 }
 
 class Log

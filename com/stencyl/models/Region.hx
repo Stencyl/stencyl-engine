@@ -38,8 +38,8 @@ class Region extends Actor
 	private var originalWidth:Float;
 	private var originalHeight:Float;
 			
-	public var whenActorEntered:Event<(eventActor:Actor)->Void>;
-	public var whenActorExited:Event<(eventActor:Actor)->Void>;
+	public var whenActorEntered:Event<Actor->Void>;
+	public var whenActorExited:Event<Actor->Void>;
 	
 	private var justAdded:Array<Dynamic>;
 	private var justRemoved:Array<Dynamic>;
@@ -64,8 +64,8 @@ class Region extends Actor
 		copy = shapes[0];
 		
 		containedActors = new Map<Int,Int>();
-		whenActorEntered = new Event<(Actor)->Void>();
-		whenActorExited = new Event<(Actor)->Void>();
+		whenActorEntered = new Event<Actor->Void>();
+		whenActorExited = new Event<Actor->Void>();
 		
 		justAdded = new Array<Dynamic>();
 		justRemoved = new Array<Dynamic>();

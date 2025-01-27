@@ -363,36 +363,36 @@ class Engine
 
 	public var keyPollOccurred:Bool = false;
 	
-	public var whenKeyPressedEvents:EventMap<String, (pressed:Bool, released:Bool)->Void>;
-	public var whenAnyKeyPressed:Event<(event:KeyboardEvent)->Void>;
-	public var whenAnyKeyReleased:Event<(event:KeyboardEvent)->Void>;
-	public var whenAnyGamepadPressed:Event<(input:String)->Void>;
-	public var whenAnyGamepadReleased:Event<(input:String)->Void>;
-	public var whenTypeGroupCreatedEvents:ObjectMap<Dynamic, Event<(eventActor:Actor)->Void>>;
-	public var whenTypeGroupKilledEvents:ObjectMap<Dynamic, Event<(eventActor:Actor)->Void>>;
-	public var whenTypeGroupPositionStateChangedEvents:Map<Int, Event<(a:Actor, enteredScreen:Bool, exitedScreen:Bool, enteredScene:Bool, exitedScene:Bool)->Void>>;
-	public var whenCollidedEvents:Map<Int, Map<Int, Event<(event:Collision)->Void>>>;
-	public var whenSoundEndedEvents:Map<Sound, Event<()->Void>>;
-	public var whenChannelEndedEvents:Map<Int, Event<()->Void>>;
+	public var whenKeyPressedEvents:EventMap<String, Event<Bool->Bool->Void>>;
+	public var whenAnyKeyPressed:Event<KeyboardEvent->Void>;
+	public var whenAnyKeyReleased:Event<KeyboardEvent->Void>;
+	public var whenAnyGamepadPressed:Event<String->Void>;
+	public var whenAnyGamepadReleased:Event<String->Void>;
+	public var whenTypeGroupCreatedEvents:Map<Int, Event<Actor->Void>>;
+	public var whenTypeGroupKilledEvents:Map<Int, Event<Actor->Void>>;
+	public var whenTypeGroupPositionStateChangedEvents:Map<Int, Event<Actor->Bool->Bool->Bool->Bool->Void>>;
+	public var whenCollidedEvents:Map<Int, Map<Int, Event<Collision->Void>>>;
+	public var whenSoundEndedEvents:Map<Sound, Event<Void->Void>>;
+	public var whenChannelEndedEvents:Map<Int, Event<Void->Void>>;
 	
-	public var whenUpdated:Event<(elapsedTime:Float)->Void>;
-	public var whenDrawing:Event<(graphics:G, x:Float, y:Float)->Void>;
-	public var whenMousePressed:Event<()->Void>;
-	public var whenMouseReleased:Event<()->Void>;
-	public var whenMouseMoved:Event<()->Void>;
-	public var whenMouseDragged:Event<()->Void>;	
-	public var whenPaused:Event<(paused:Bool)->Void>;
+	public var whenUpdated:Event<Float->Void>;
+	public var whenDrawing:Event<G->Float->Float->Void>;
+	public var whenMousePressed:Event<Void->Void>;
+	public var whenMouseReleased:Event<Void->Void>;
+	public var whenMouseMoved:Event<Void->Void>;
+	public var whenMouseDragged:Event<Void->Void>;	
+	public var whenPaused:Event<Bool->Void>;
 	
-	public var whenFullscreenChanged:Event<()->Void>;
-	public var whenScreenSizeChanged:Event<()->Void>;
-	public var whenGameScaleChanged:Event<()->Void>;
+	public var whenFullscreenChanged:Event<Void->Void>;
+	public var whenScreenSizeChanged:Event<Void->Void>;
+	public var whenGameScaleChanged:Event<Void->Void>;
 	
-	public var whenSwiped:Event<()->Void>;
-	public var whenMTStarted:Event<(event:TouchEvent)->Void>;
-	public var whenMTDragged:Event<(event:TouchEvent)->Void>;
-	public var whenMTEnded:Event<(event:TouchEvent)->Void>;
+	public var whenSwiped:Event<Void->Void>;
+	public var whenMTStarted:Event<TouchEvent->Void>;
+	public var whenMTDragged:Event<TouchEvent->Void>;
+	public var whenMTEnded:Event<TouchEvent->Void>;
 	
-	public var whenFocusChanged:Event<(lost:Bool)->Void>;
+	public var whenFocusChanged:Event<Bool->Void>;
 	
 	//*-----------------------------------------------
 	//* Reloading
@@ -1180,35 +1180,35 @@ class Engine
 		
 		//Events
 		
-		whenKeyPressedEvents = new EventMap<String, (Bool, Bool)->Void>();
-		whenAnyKeyPressed = new Event<(KeyboardEvent)->Void>();
-		whenAnyKeyReleased = new Event<(KeyboardEvent)->Void>();
-		whenAnyGamepadPressed = new Event<(String)->Void>();
-		whenAnyGamepadReleased = new Event<(String)->Void>();
+		whenKeyPressedEvents = new EventMap<String, Event<Bool->Bool->Void>>();
+		whenAnyKeyPressed = new Event<KeyboardEvent->Void>();
+		whenAnyKeyReleased = new Event<KeyboardEvent->Void>();
+		whenAnyGamepadPressed = new Event<String->Void>();
+		whenAnyGamepadReleased = new Event<String->Void>();
 
-		whenTypeGroupCreatedEvents = new ObjectMap<Dynamic, Event<(Actor)->Void>>();
-		whenTypeGroupKilledEvents = new ObjectMap<Dynamic, Event<(Actor)->Void>>();
-		whenTypeGroupPositionStateChangedEvents = [];
-		whenCollidedEvents = [];
-		whenSoundEndedEvents = [];
-		whenChannelEndedEvents = [];
+		whenTypeGroupCreatedEvents = new Map<Int, Event<Actor->Void>>();
+		whenTypeGroupKilledEvents = new Map<Int, Event<Actor->Void>>();
+		whenTypeGroupPositionStateChangedEvents = new Map<Int, Event<Actor->Bool->Bool->Bool->Bool->Void>>();
+		whenCollidedEvents = new Map<Int, Map<Int, Event<Collision->Void>>>();
+		whenSoundEndedEvents = new Map<Sound, Event<Void->Void>>();
+		whenChannelEndedEvents = new Map<Int, Event<Void->Void>>();
 		
-		whenUpdated = new Event<(Float)->Void>();
-		whenDrawing = new Event<(G, Float, Float)->Void>();
-		whenMousePressed = new Event<()->Void>();
-		whenMouseReleased = new Event<()->Void>();
-		whenMouseMoved = new Event<()->Void>();
-		whenMouseDragged = new Event<()->Void>();	
-		whenPaused = new Event<(Bool)->Void>();
-		whenSwiped = new Event<()->Void>();
-		whenMTStarted = new Event<(TouchEvent)->Void>();
-		whenMTDragged = new Event<(TouchEvent)->Void>();
-		whenMTEnded = new Event<(TouchEvent)->Void>();
-		whenFocusChanged = new Event<(Bool)->Void>();
+		whenUpdated = new Event<Float->Void>();
+		whenDrawing = new Event<G->Float->Float->Void>();
+		whenMousePressed = new Event<Void->Void>();
+		whenMouseReleased = new Event<Void->Void>();
+		whenMouseMoved = new Event<Void->Void>();
+		whenMouseDragged = new Event<Void->Void>();	
+		whenPaused = new Event<Bool->Void>();
+		whenSwiped = new Event<Void->Void>();
+		whenMTStarted = new Event<TouchEvent->Void>();
+		whenMTDragged = new Event<TouchEvent->Void>();
+		whenMTEnded = new Event<TouchEvent->Void>();
+		whenFocusChanged = new Event<Bool->Void>();
 		
-		whenFullscreenChanged = new Event<()->Void>();
-		whenScreenSizeChanged = new Event<()->Void>();
-		whenGameScaleChanged = new Event<()->Void>();
+		whenFullscreenChanged = new Event<Void->Void>();
+		whenScreenSizeChanged = new Event<Void->Void>();
+		whenGameScaleChanged = new Event<Void->Void>();
 
 		for(extension in extensions)
 		{
@@ -2297,8 +2297,8 @@ class Engine
 			return;
 		}
 	
-		var l1 = engine.whenTypeGroupKilledEvents.get(a.getType());
-		var l2 = engine.whenTypeGroupKilledEvents.get(a.getGroup());
+		var l1 = engine.whenTypeGroupKilledEvents.get(a.getType().ID);
+		var l2 = engine.whenTypeGroupKilledEvents.get(Actor.GROUP_OFFSET + a.getGroupID());
 	
 		a.whenKilled.dispatch();
 
@@ -2513,8 +2513,8 @@ class Engine
 					
 					actor.initScripts();
 					
-					var f1 = whenTypeGroupCreatedEvents.get(type);
-					var f2 = whenTypeGroupCreatedEvents.get(actor.getGroup());
+					var f1 = whenTypeGroupCreatedEvents.get(type.ID);
+					var f2 = whenTypeGroupCreatedEvents.get(Actor.GROUP_OFFSET + actor.getGroupID());
 		
 					if(f1 != null)
 					{
@@ -2565,8 +2565,8 @@ class Engine
 		var a:Actor = createActor(ai, true);
 		a.initScripts();
 		
-		var f1 = whenTypeGroupCreatedEvents.get(type);
-		var f2 = whenTypeGroupCreatedEvents.get(a.getGroup());
+		var f1 = whenTypeGroupCreatedEvents.get(type.ID);
+		var f2 = whenTypeGroupCreatedEvents.get(Actor.GROUP_OFFSET + a.getGroupID());
 		
 		if(f1 != null)
 		{
@@ -4306,7 +4306,14 @@ class Engine
 		var mbsGame = Data.get().readGameMbs();
 		var gma = AttributeValues.readMap(mbsGame.getGameAttributes());
 		
+		#if haxe4
 		gameAttributes.clear();
+		#else
+		for(key in gameAttributes.keys())
+		{
+			gameAttributes.remove(key);
+		}
+		#end
 		for(key in gma.keys())
 		{
 			gameAttributes.set(key, gma.get(key));

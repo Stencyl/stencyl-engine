@@ -149,7 +149,7 @@ class Script
 
 	// Property Change Support
 	
-	public var propertyChangeEvents:Map<String, Event<()->Void>>;
+	public var propertyChangeEvents:Map<String, Event<Void->Void>>;
 	public var equalityPairs:ObjectMap<Dynamic, Dynamic>; //hashmap does badly on some platforms when checking key equality (for primitives) - beware
 	
 	public var checkProperties:Bool;
@@ -170,7 +170,7 @@ class Script
 		scriptInit = false;
 		checkProperties = false;
 		nameMap = new Map<String,Dynamic>();	
-		propertyChangeEvents = new Map<String, Event<()->Void>>();
+		propertyChangeEvents = new Map<String, Event<Void->Void>>();
 		equalityPairs = new ObjectMap<Dynamic, Dynamic>();
 		attributeTweens = new Map<String, TweenFloat>();
 	}
@@ -352,7 +352,7 @@ class Script
 	
 	public function clearListeners()
 	{
-		propertyChangeEvents = new Map<String, Event<() -> Void>>();
+		propertyChangeEvents = new Map<String, Event<Void -> Void>>();
 	}
 	
 	//Physics = Pass in event.~Shape (a b2Shape)
@@ -467,7 +467,7 @@ class Script
 		}
 	}
 
-	public function addWhenCreatedListener(a:Actor, func:(Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addWhenCreatedListener(a:Actor, func:Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		if(a == null)
 		{
@@ -478,7 +478,7 @@ class Script
 		addListener(a.whenCreated, func.bind(null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addWhenKilledListener(a:Actor, func:(Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addWhenKilledListener(a:Actor, func:Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		if(a == null)
 		{
@@ -489,7 +489,7 @@ class Script
 		addListener(a.whenKilled, func.bind(null) #if debug_event_dispatch , posInfo #end);
 	}
 					
-	public function addWhenUpdatedListener(a:Actor, func:(Float, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addWhenUpdatedListener(a:Actor, func:Float->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		var isActorScript = Std.isOfType(this, ActorScript);
 	
@@ -512,7 +512,7 @@ class Script
 		}
 	}
 	
-	public function addWhenDrawingListener(a:Actor, func:(G, Float, Float, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addWhenDrawingListener(a:Actor, func:G->Float->Float->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		var isActorScript = Std.isOfType(this, ActorScript);
 	
@@ -535,7 +535,7 @@ class Script
 		}
 	}
 	
-	public function addActorEntersRegionListener(reg:Region, func:(Actor, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addActorEntersRegionListener(reg:Region, func:Actor->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		if(reg == null)
 		{
@@ -557,7 +557,7 @@ class Script
 		addListener(reg.whenActorExited, func.bind(_, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addActorPositionListener(a:Actor, func:(Bool, Bool, Bool, Bool, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addActorPositionListener(a:Actor, func:Bool->Bool->Bool->Bool->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		if(a == null)
 		{
@@ -568,77 +568,77 @@ class Script
 		addListener(a.whenPositionStateChanged, func.bind(_, _, _, _, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addActorTypeGroupPositionListener(obj:Dynamic, func:(Actor, Bool, Bool, Bool, Bool, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addActorTypeGroupPositionListener(obj:Dynamic, func:Actor->Bool->Bool->Bool->Bool->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListenerWithKey(engine.whenTypeGroupPositionStateChangedEvents, obj, func.bind(_, _, _, _, _, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addSwipeListener(func:(Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addSwipeListener(func:Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenSwiped, func.bind(null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addMultiTouchStartListener(func:(TouchEvent, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addMultiTouchStartListener(func:TouchEvent->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenMTStarted, func.bind(_, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addMultiTouchMoveListener(func:(TouchEvent, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addMultiTouchMoveListener(func:TouchEvent->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenMTDragged, func.bind(_, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addMultiTouchEndListener(func:(TouchEvent, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addMultiTouchEndListener(func:TouchEvent->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenMTEnded, func.bind(_, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addKeyStateListener(key:String, func:(Bool, Bool, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addKeyStateListener(key:String, func:Bool->Bool->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenKeyPressedEvents.getOrCreateEvent(key), func.bind(_, _, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addAnyKeyPressedListener(func:(KeyboardEvent, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addAnyKeyPressedListener(func:KeyboardEvent->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenAnyKeyPressed, func.bind(_, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addAnyKeyReleasedListener(func:(KeyboardEvent, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addAnyKeyReleasedListener(func:KeyboardEvent->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenAnyKeyReleased, func.bind(_, null) #if debug_event_dispatch , posInfo #end);
 	}
 
-	public function addAnyGamepadPressedListener(func:(String, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addAnyGamepadPressedListener(func:String->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenAnyGamepadPressed, func.bind(_, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addAnyGamepadReleasedListener(func:(String, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addAnyGamepadReleasedListener(func:String->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenAnyGamepadReleased, func.bind(_, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addMousePressedListener(func:(Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addMousePressedListener(func:Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenMousePressed, func.bind(null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addMouseReleasedListener(func:(Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addMouseReleasedListener(func:Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenMouseReleased, func.bind(null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addMouseMovedListener(func:(Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addMouseMovedListener(func:Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenMouseMoved, func.bind(null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addMouseDraggedListener(func:(Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addMouseDraggedListener(func:Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenMouseDragged, func.bind(null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addMouseOverActorListener(a:Actor, func:(Int, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addMouseOverActorListener(a:Actor, func:Int->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{	
 		if(a == null)
 		{
@@ -677,7 +677,7 @@ class Script
 		}
 	}
 	
-	public function addCollisionListener(a:Actor, func:(Collision, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addCollisionListener(a:Actor, func:Collision->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		if(a == null)
 		{				
@@ -689,22 +689,22 @@ class Script
 	}
 	
 	//Only used for type/group type/group collisions
-	public function addSceneCollisionListener(groupTypeID:Int, groupTypeID2:Int, func:(Collision, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addSceneCollisionListener(groupTypeID:Int, groupTypeID2:Int, func:Collision->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListenerWithKey2(engine.whenCollidedEvents, groupTypeID, groupTypeID2, func.bind(_, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addWhenTypeGroupCreatedListener(obj:Dynamic, func:(Actor, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addWhenTypeGroupCreatedListener(obj:Dynamic, func:Actor->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListenerWithKey(engine.whenTypeGroupCreatedEvents, obj, func.bind(_, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addWhenTypeGroupKilledListener(obj:Dynamic, func:(Actor, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addWhenTypeGroupKilledListener(obj:Dynamic, func:Actor->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListenerWithKey(engine.whenTypeGroupKilledEvents, obj, func.bind(_, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addSoundListener(obj:Dynamic, func:(Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addSoundListener(obj:Dynamic, func:Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		if (Std.isOfType(obj, Sound))
 		{
@@ -716,27 +716,27 @@ class Script
 		}
 	}
 	
-	public function addFocusChangeListener(func:(Bool, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addFocusChangeListener(func:Bool->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenFocusChanged, func.bind(_, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addPauseListener(func:(Bool, Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addPauseListener(func:Bool->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{						
 		addListener(engine.whenPaused, func.bind(_, null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addFullscreenListener(func:(Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addFullscreenListener(func:Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenFullscreenChanged, func.bind(null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addGameScaleListener(func:(Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addGameScaleListener(func:Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenGameScaleChanged, func.bind(null) #if debug_event_dispatch , posInfo #end);
 	}
 	
-	public function addScreenSizeListener(func:(Array<Dynamic>)->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
+	public function addScreenSizeListener(func:Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
 		addListener(engine.whenScreenSizeChanged, func.bind(null) #if debug_event_dispatch , posInfo #end);
 	}

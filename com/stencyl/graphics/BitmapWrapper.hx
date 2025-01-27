@@ -227,7 +227,7 @@ class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #en
 			if(bitmapFilters == null)
 				bitmapFilters = [];
 			bitmapFilters = bitmapFilters.concat(value);
-			usingSoftwareFilter = Lambda.exists(bitmapFilters, f -> !Std.is(f, ColorMatrixFilter));
+			usingSoftwareFilter = Lambda.exists(bitmapFilters, function(f) {return !Std.is(f, ColorMatrixFilter);});
 
 			if(!usingSoftwareFilter)
 			{

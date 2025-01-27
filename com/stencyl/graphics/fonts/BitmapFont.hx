@@ -333,7 +333,7 @@ class BitmapFont
 	#if !use_tilemap
 	public function getPreparedGlyphs(pScale:Float, pColor:Int, ?pUseColorTransform:Bool = true):Map<Int, BitmapData>
 	{
-		var result:Map<Int, BitmapData> = [];
+		var result:Map<Int, BitmapData> = new Map<Int,BitmapData>();
 		
 		_matrix.identity();
 		_matrix.scale(pScale, pScale);
@@ -348,8 +348,14 @@ class BitmapFont
 		
 		var glyph:BitmapData;
 		var preparedGlyph:BitmapData;
+		#if haxe4
 		for (i => glyph in _glyphs)
 		{
+		#else
+		for (i in _glyphs.keys())
+		{
+			var glyph = _glyphs.get(i);
+		#end
 			if (glyph.bitmap != null)
 			{
 				preparedGlyph = new BitmapData(Math.floor(glyph.bitmap.width * pScale), Math.floor(glyph.bitmap.height * pScale), true, 0x00000000);

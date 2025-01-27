@@ -82,11 +82,11 @@ class Input
 	private static var _controlMap:Map<String,Control> = new Map<String,Control>();
 	private static var _keyInput = new InputMethod<Int>(
 		new Map<Int, Array<Control>>(),
-		(control) -> control.keys);
+		function(control) return control.keys);
 	#if desktop
 	private static var _joyInput = new InputMethod<String>(
 		new Map<String, Array<Control>>(),
-		(control) -> control.buttons);
+		function(control) return control.buttons);
 	#end
 	
 	public static function resetStatics():Void
@@ -1005,7 +1005,7 @@ class InputMethod<T>
 	public var inputControlMap:Map<T,Array<Control>>;
 	public var getInputs:(Control)->Array<T>;
 
-	public function new(inputControlMap:Map<T,Array<Control>>, getInputs:(Control)->Array<T>)
+	public function new(inputControlMap:Map<T,Array<Control>>, getInputs:Control->Array<T>)
 	{
 		this.inputControlMap = inputControlMap;
 		this.getInputs = getInputs;
@@ -1027,7 +1027,7 @@ class InputMethod<T>
 			}
 		}
 		
-		if(!getInputs(newControl).contains(input))
+		if(getInputs(newControl).indexOf(input) == -1)
 		{
 			getInputs(newControl).push(input);
 			controlList.push(newControl);
@@ -1053,7 +1053,7 @@ class InputMethod<T>
 
 	public function addInputToControl(input:T, control:Control)
 	{
-		if(!getInputs(control).contains(input))
+		if(getInputs(control).indexOf(input) == -1)
 		{
 			getInputs(control).push(input);
 			Input.controlStateUpdated(control);
@@ -1066,7 +1066,7 @@ class InputMethod<T>
 
 	public function removeInputFromControl(input:T, control:Control)
 	{
-		if(getInputs(control).contains(input))
+		if(getInputs(control).indexOf(input) != -1)
 		{
 			getInputs(control).remove(input);
 			Input.controlStateUpdated(control);

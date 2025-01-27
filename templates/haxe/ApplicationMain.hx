@@ -121,7 +121,7 @@ using StringTools;
 	#if testing
 	private static function loadLaunchVars()
 	{
-		launchVars = [];
+		launchVars = new Map<String,String>();
 		#if flash
 		for(field in Reflect.fields(Lib.current.loaderInfo.parameters))
 		{
@@ -129,7 +129,7 @@ using StringTools;
 		}
 		#elseif html5
 		var params = new js.html.URL(js.Browser.location.href).searchParams;
-		params.forEach((value, key) -> {
+		params.forEach(function(value, key) {
 			launchVars.set(key, value);
 		});
 		#elseif android
@@ -372,7 +372,7 @@ using StringTools;
 
 		#if (flash || html5)
 		var sitelock = new ::SET_SITELOCK_CLASS::();
-		sitelock.onComplete.add(() -> { if(!sitelock.isLocked()) app.preloader.load(); });
+		sitelock.onComplete.add(function() { if(!sitelock.isLocked()) app.preloader.load(); });
 		sitelock.checkSiteLock();
 		#else
 		app.preloader.load ();

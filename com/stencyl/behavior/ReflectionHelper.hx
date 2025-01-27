@@ -11,7 +11,7 @@ import haxe.Constraints.IMap;
 class ReflectionHelper 
 {
 	//classname -> (field name set)
-	public static var fieldMaps:Map<String, Map<String, Bool>> = [];
+	public static var fieldMaps:Map<String, Map<String, Bool>> = new Map<String, Map<String, Bool>>();
 	
 	public static function getFieldMap(classname:String):Map<String, Bool>
 	{

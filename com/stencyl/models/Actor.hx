@@ -264,13 +264,13 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	public var allListeners:Map<Int,Array<Dynamic>>;
 	public var allEventReferences:Array<Dynamic>;
 	
-	public var whenCreated:Event<()->Void>;
-	public var whenUpdated:Event<(elapsedTime:Float)->Void>;
-	public var whenDrawing:Event<(graphics:G, x:Float, y:Float)->Void>;
-	public var whenKilled:Event<()->Void>;
-	public var whenMousedOver:Event<(mouseState:Int)->Void>;
-	public var whenPositionStateChanged:Event<(enteredScreen:Bool, exitedScreen:Bool, enteredScene:Bool, exitedScene:Bool)->Void>;
-	public var whenCollided:Event<(event:Collision)->Void>;
+	public var whenCreated:Event<Void->Void>;
+	public var whenUpdated:Event<Float->Void>;
+	public var whenDrawing:Event<G->Float->Float->Void>;
+	public var whenKilled:Event<Void->Void>;
+	public var whenMousedOver:Event<Int->Void>;
+	public var whenPositionStateChanged:Event<Bool->Bool->Bool->Bool->Void>;
+	public var whenCollided:Event<Collision->Void>;
 	
 	public var mouseState:Int;
 	public var lastScreenState:Bool;
@@ -429,13 +429,13 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		allListeners = new Map<Int,Array<Dynamic>>();
 		allEventReferences = new Array<Dynamic>();
 		
-		whenCreated = new Event<()->Void>();
-		whenUpdated = new Event<(Float)->Void>();
-		whenDrawing = new Event<(G, Float, Float)->Void>();
-		whenKilled = new Event<()->Void>();
-		whenMousedOver = new Event<(Int)->Void>();
-		whenPositionStateChanged = new Event<(Bool, Bool, Bool, Bool)->Void>();
-		whenCollided = new Event<(Collision)->Void>();
+		whenCreated = new Event<Void->Void>();
+		whenUpdated = new Event<Float->Void>();
+		whenDrawing = new Event<G->Float->Float->Void>();
+		whenKilled = new Event<Void->Void>();
+		whenMousedOver = new Event<Int->Void>();
+		whenPositionStateChanged = new Event<Bool->Bool->Bool->Bool->Void>();
+		whenCollided = new Event<Collision->Void>();
 		
 		//---
 		
@@ -3582,7 +3582,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 			if(currAnimation != null)
 				currAnimation.filter = bitmapFilters;
 		#else
-			usingSoftwareFilter = Lambda.exists(bitmapFilters, f -> !Std.is(f, ColorMatrixFilter));
+			usingSoftwareFilter = Lambda.exists(bitmapFilters, function(f) {return !Std.is(f, ColorMatrixFilter);});
 
 			if(!usingSoftwareFilter)
 			{
@@ -3889,8 +3889,8 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	{
 		dying = true;
 		
-		var a = engine.whenTypeGroupKilledEvents.get(getType());
-		var b = engine.whenTypeGroupKilledEvents.get(getGroup());
+		var a = engine.whenTypeGroupKilledEvents.get(typeID);
+		var b = engine.whenTypeGroupKilledEvents.get(groupID + Actor.GROUP_OFFSET);
 	
 		whenKilled.dispatch();
 

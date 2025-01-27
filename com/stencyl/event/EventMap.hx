@@ -4,12 +4,12 @@ package com.stencyl.event;
 class EventMap<K,T>
 {
 	public var keys:Array<K>;
-	public var map:Map<K,Event<T>>;
+	public var map:Map<K,T>;
 
 	public function new()
 	{
 		keys = [];
-		map = [];
+		map = new Map<K, T>();
 	}
 
 	public inline function hasEvents():Bool
@@ -17,13 +17,13 @@ class EventMap<K,T>
 		return keys.length > 0;
 	}
 
-	public function getOrCreateEvent(key:K):Event<T>
+	public function getOrCreateEvent(key:K):T
 	{
 		var event = map.get(key);
 
 		if(event == null)
 		{
-			event = new Event<T>();
+			event = cast new Event();
 			map.set(key, event);
 			keys.push(key);
 		}
@@ -31,7 +31,7 @@ class EventMap<K,T>
 		return event;
 	}
 
-	public inline function getEvent(key:K):Event<T>
+	public inline function getEvent(key:K):T
 	{
 		return map.get(key);
 	}

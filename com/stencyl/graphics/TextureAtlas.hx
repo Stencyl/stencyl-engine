@@ -49,7 +49,7 @@ class TextureAtlas
 		
 		var atlasData:List<TileData> = haxe.Unserializer.run(textBytes);
 
-		filemap = [];
+		filemap = new Map<String, FileData>();
 		tilelist = [];
 		
 		var tileID = 0;
@@ -65,8 +65,13 @@ class TextureAtlas
 			{
 				filedata = filemap.get(tile.filename);
 			}
+			#if haxe4
 			if(tile.region >= filedata.regions.length)
 				filedata.regions.resize(tile.region + 1);
+			#else
+			while(tile.region >= filedata.regions.length)
+				filedata.regions.push(null);
+			#end
 			filedata.regions[tile.region] = {
 				tileID: tileID,
 				x: tile.x,
@@ -88,7 +93,7 @@ class TextureAtlas
 		{
 			tileset.addRect(new Rectangle(tile.x, tile.y, tile.width, tile.height));
 		}
-		tileCache = [];
+		tileCache = new Map<String, BitmapData>();
 	}
 	
 	public function getTile(id:String, useCache:Bool=true):BitmapData
