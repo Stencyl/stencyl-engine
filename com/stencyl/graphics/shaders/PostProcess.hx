@@ -97,7 +97,10 @@ class PostProcess extends DisplayObject
 	public function new(shader:BasicShader, fragmentShader:String, literalText:Bool = false)
 	{
 		super();
+		
+		#if (openfl >= 9.1)
 		__drawableType = SHAPE;
+		#end
 		
 		basicShader = shader;
 		
@@ -222,7 +225,11 @@ class PostProcess extends DisplayObject
 	
 	@:access(openfl.display.DisplayObjectRenderer)
 	@:access(openfl.display3D.Context3D)
+	#if (openfl >= 9.0)
 	@:access(openfl.display3D._internal.Context3DState)
+	#else
+	@:access(openfl._internal.renderer.context3D.Context3DState)
+	#end
 	@:noCompletion private function renderGL(renderEvent:RenderEvent):Void
 	{
 		var renderer:OpenGLRenderer = cast renderEvent.renderer;
@@ -384,7 +391,11 @@ class PostProcess extends DisplayObject
 		//texture.uploadFromTypedArray(null);
 		
 		texture.__context.__bindGLTexture2D (texture.__textureID);
+		#if (openfl >= 9.0)
 		texture.__setSamplerState(new openfl.display._internal.SamplerState());
+		#else
+		texture.__setSamplerState(new openfl._internal.renderer.SamplerState());
+		#end
 		gl.texImage2D (texture.__textureTarget, 0, texture.__internalFormat, texture.__width, texture.__height, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
 		texture.__context.__bindGLTexture2D (null);
 	}
