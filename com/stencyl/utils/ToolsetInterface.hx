@@ -1,7 +1,9 @@
 #if stencyltools
 package com.stencyl.utils;
 
+#if (haxe_ver >= 4.1)
 import haxe.Exception;
+#end
 import haxe.io.Bytes;
 import openfl.display.*;
 import openfl.geom.*;
@@ -62,7 +64,7 @@ class ToolsetInterface
 			{
 				socket.connect(host, port);
 			}
-			catch(e:Exception)
+			catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else Dynamic #end )
 			{
 				Log.fullError("Couldn't establish gci connection.", e);
 				unconfigureListeners();
@@ -305,7 +307,7 @@ class ToolsetInterface
 						{
 							hscript.execute(content.readUTFBytes(content.length));
 						}
-						catch(ex:haxe.Exception)
+						catch(ex: #if (haxe_ver >= 4.1) haxe.Exception #else Dynamic #end )
 						{
 							Log.fullError(ex.message, ex);
 						}

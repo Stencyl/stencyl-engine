@@ -63,7 +63,7 @@ class BehaviorManager
 					bObj.script.scriptInit = true;
 				}
 			
-				catch(e:haxe.Exception)
+				catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else String #end )
 				{
 					Log.fullError("Error in when created for behavior: " + bObj.name, e);
 				}
@@ -209,7 +209,7 @@ class BehaviorManager
 					item.script.forwardMessage(msg);
 				}
 			}
-			catch(e:haxe.Exception)
+			catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else String #end )
 			{
 				Log.fullError("Error in " + msg + " for behavior: " + item.name, e);
 			}
@@ -257,7 +257,7 @@ class BehaviorManager
 				item.script.forwardMessage(msg);
 			}
 		}
-		catch(e:haxe.Exception)
+		catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else String #end )
 		{
 			Log.fullError("Error in " + msg + " for behavior: " + item.name, e);
 		}

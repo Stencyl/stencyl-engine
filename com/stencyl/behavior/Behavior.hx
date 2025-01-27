@@ -53,7 +53,7 @@ class Behavior
 				cls = Type.resolveClass(classname);
 			}
 			
-			catch(e:haxe.Exception)
+			catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else String #end )
 			{
 				Log.fullError("Could not load: " + classname, e);
 			}
@@ -110,7 +110,7 @@ class Behavior
 				script.scriptInit = true;
 			}
 			
-			catch(e:haxe.Exception)
+			catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else String #end )
 			{
 				Log.fullError
 				(
@@ -226,7 +226,7 @@ class Behavior
 				}
 			}
 			
-			catch(e:haxe.Exception)
+			catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else String #end )
 			{
 				Log.fullError("Could not init attribute: " + a.fieldName, e);
 			}

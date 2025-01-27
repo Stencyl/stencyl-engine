@@ -340,7 +340,7 @@ using StringTools;
 			 ::end::
 			::end::
 		}
-		catch(e:haxe.Exception)
+		catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else Dynamic #end )
 		{
 			#if stencyltools
 			if(ToolsetInterface.handlesLogging)
@@ -398,7 +398,7 @@ using StringTools;
 			
 			new Engine(universal, extensions);
 			
-		} catch (e:haxe.Exception) {
+		} catch (e: #if (haxe_ver >= 4.1) haxe.Exception #else Dynamic #end ) {
 			
 			#if stencyltools
 			if(ToolsetInterface.handlesLogging)

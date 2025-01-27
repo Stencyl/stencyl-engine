@@ -32,16 +32,20 @@ class Log
 		}
 	}
 
-	public static function fullError(message:Dynamic, e:haxe.Exception, ?posInfo:PosInfos):Void
+	public static function fullError(message:Dynamic, e: #if (haxe_ver >= 4.1) haxe.Exception #else Dynamic #end , ?posInfo:PosInfos):Void
 	{
 		if (level >= LogLevel.ERROR)
 		{
 			stamp(posInfo, ERROR);
 
+			#if (haxe_ver >= 4.1)
 			if(e.stack.length > 0)
 				haxe.Log.trace(Std.string(message) + "\n" + e.details(), posInfo);
 			else
 				haxe.Log.trace(Std.string(message) + " (Run in Debug mode to see the exception stack.)" + "\n" + e.details(), posInfo);
+			#else
+			haxe.Log.trace(Std.string(message) + "\n" + e + Utils.printExceptionstackIfAvailable(), posInfo);
+			#end
 		}
 	}
 

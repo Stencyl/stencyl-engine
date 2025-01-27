@@ -34,7 +34,7 @@ class EventDispatcher
 					{
 						$event.listeners[$event._dispatchIndex]($a{args});
 					}
-					catch(e:haxe.Exception)
+					catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else Dynamic #end )
 					{
 						com.stencyl.utils.Log.fullError(e.message, e);
 					}

@@ -890,13 +890,14 @@ class Utils
 		#end
 			Reflect.setField(so.data, name, clone(value));
 		#if debug
-		} catch (error:haxe.Exception) {
-			if(error.message == "deep clone")
+		} catch (error: #if (haxe_ver >= 4.1) haxe.Exception #else String #end ) {
+			var errorMsg = #if (haxe_ver >= 4.1) error.message #else error #end;
+			if(errorMsg == "deep clone")
 			{
 				Log.fullError("Error: can't save attribute due to recursion [name=" + name + "]", error);
 			}
 			#if (cpp || hl)
-			else if(error.message.indexOf("Invalid field:") == 0)
+			else if(errorMsg.indexOf("Invalid field:") == 0)
 			{
 				Log.fullError("Error: can't save attribute due to contained properties [name=" + name + ", value=" + value+"]", error);
 			}
@@ -945,7 +946,7 @@ class Utils
 		    flushStatus = so.flush();
 		} 
 		
-		catch(e:haxe.Exception) 
+		catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else Dynamic #end ) 
 		{
 			Log.fullError("Error: Failed to flush save file: " + e.message, e);
 			if (onComplete != null)
@@ -1029,7 +1030,7 @@ class Utils
 						Log.debug("Legacy data converted successfully");
 					}
 				}
-				catch(e:haxe.Exception)
+				catch(e: #if (haxe_ver >= 4.1) haxe.Exception #else Dynamic #end )
 				{
 					Log.fullError(e.message, e);
 				}
@@ -1100,10 +1101,11 @@ class Utils
 			return BitmapData.loadFromBase64(data, "png")
 				.then(function (bmp) return Future.withValue((new Bitmap(bmp) : DisplayObject)));
 		}
-		catch(msg:haxe.Exception)
+		catch(msg: #if (haxe_ver >= 4.1) haxe.Exception #else String #end )
 		{
-			Log.fullError("(You probably have a old browser) Error occurred: " + msg.message, msg);
-			return cast Future.withError("(You probably have a old browser) Error occurred: " + msg.message);
+			var errorMsg = #if (haxe_ver >= 4.1) msg.message #else msg #end;
+			Log.fullError("(You probably have a old browser) Error occurred: " + errorMsg, msg);
+			return cast Future.withError("(You probably have a old browser) Error occurred: " + errorMsg);
 		}
 		
 		#elseif !testing

@@ -3581,7 +3581,7 @@ class Script
 			loader.load(request);
 		} 
 		
-		catch(error:haxe.Exception) 
+		catch(error: #if (haxe_ver >= 4.1) haxe.Exception #else String #end ) 
 		{
 			Log.fullError("Cannot open URL.", error);
 		}
@@ -3624,7 +3624,7 @@ class Script
 			loader.load(request);
 		} 
 		
-		catch(error:haxe.Exception) 
+		catch(error: #if (haxe_ver >= 4.1) haxe.Exception #else String #end ) 
 		{
 			Log.fullError("Cannot open URL.", error);
 		}		
