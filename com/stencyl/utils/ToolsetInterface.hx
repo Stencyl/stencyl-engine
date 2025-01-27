@@ -12,6 +12,12 @@ import openfl.events.*;
 import openfl.net.Socket;
 import openfl.utils.ByteArray;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 using StringTools;
 
 typedef Listener = String->Void;
@@ -374,11 +380,11 @@ class ToolsetInterface
 	{
 		if(ToolsetInterface.connected)
 		{
-			if(Std.isOfType(v, BitmapData))
+			if(isOfType(v, BitmapData))
 			{
 				imageTrace((v : BitmapData), pos);
 			}
-			else if(Std.isOfType(v, DisplayObject))
+			else if(isOfType(v, DisplayObject))
 			{
 				var dobj:DisplayObject = cast v;
 				

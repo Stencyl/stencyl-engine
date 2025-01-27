@@ -7,6 +7,12 @@ import openfl.display.BitmapData;
 
 import com.stencyl.utils.Utils;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 /**
  * A bitmap mask used for pixel-perfect collision. 
  */
@@ -28,7 +34,7 @@ class Pixelmask extends Hitbox
 		super();
 		
 		// fetch mask data
-		if (Std.isOfType(source, BitmapData)) _data = source;
+		if (isOfType(source, BitmapData)) _data = source;
 		//else _data = Utils.getBitmap(source);
 		if (_data == null) throw "Invalid Pixelmask source image.";
 		

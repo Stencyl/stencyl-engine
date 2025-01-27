@@ -8,6 +8,12 @@ import haxe.ds.StringMap;
 import haxe.CallStack;
 import haxe.Constraints.IMap;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 class Behavior 
 {	
 	public var parent:Dynamic;
@@ -132,7 +138,7 @@ class Behavior
 					continue;
 				}
 				
-				if(a.type == "actor" && a.fieldName == "actor" && Std.isOfType(script, ActorScript))
+				if(a.type == "actor" && a.fieldName == "actor" && isOfType(script, ActorScript))
 				{
 					continue;
 				}

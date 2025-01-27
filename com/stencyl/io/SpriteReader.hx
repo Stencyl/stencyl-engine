@@ -21,6 +21,12 @@ import box2D.collision.shapes.B2PolygonShape;
 
 import mbs.core.MbsObject;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 class SpriteReader implements AbstractReader
 {
 	public function new() 
@@ -123,7 +129,7 @@ class SpriteReader implements AbstractReader
 			
 			var shapeData = shape.getShape();
 			
-			if (Std.isOfType(shapeData, MbsPolygon))
+			if (isOfType(shapeData, MbsPolygon))
 			{
 				var polygon:MbsPolygon = cast shapeData;
 				var points = polygon.getPoints();
@@ -183,7 +189,7 @@ class SpriteReader implements AbstractReader
 			
 			var shape:Dynamic;
 
-			if(Std.isOfType(shapeData, MbsCircle))
+			if(isOfType(shapeData, MbsCircle))
 			{
 				var circle:MbsCircle = cast shapeData;
 				shape = ShapeReader.createCircle(circle.getRadius(), circle.getPosition().getX(), circle.getPosition().getY(), imgWidth, imgHeight);

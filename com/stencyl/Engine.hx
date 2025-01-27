@@ -108,6 +108,12 @@ import haxe.CallStack;
 
 //import com.nmefermmmtools.debug.Console;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 using com.stencyl.event.EventDispatcher;
 
 class Engine
@@ -609,7 +615,7 @@ class Engine
 
 			Utils.applyToAllChildren(root, function(obj) {
 
-				if(Std.isOfType(obj, EngineScaleUpdateListener))
+				if(isOfType(obj, EngineScaleUpdateListener))
 				{
 					cast(obj, EngineScaleUpdateListener).updateScale();
 				}
@@ -1731,9 +1737,9 @@ class Engine
 
 			reverseOrders.set(l.order, l);
 			layersByName.set(l.layerName, l);
-			if(Std.isOfType(l, Layer))
+			if(isOfType(l, Layer))
 				interactiveLayers.push(cast(l, Layer));
-			else if(Std.isOfType(l, BackgroundLayer))
+			else if(isOfType(l, BackgroundLayer))
 				backgroundLayers.push(cast(l, BackgroundLayer));
 		}
 
@@ -1749,13 +1755,13 @@ class Engine
 		{
 			var l:RegularLayer = layersToDraw.get(i);
 
-			if(Std.isOfType(l, BackgroundLayer))
+			if(isOfType(l, BackgroundLayer))
 			{
 				var layer = cast(l, BackgroundLayer);
 				layer.load();
 				master.addChild(layer);
 			}
-			else if(Std.isOfType(l, Layer))
+			else if(isOfType(l, Layer))
 			{
 				var layer = cast(l, Layer);
 				
@@ -3278,7 +3284,7 @@ class Engine
 			
 			#if !use_tilemap
 			Utils.applyToAllChildren(root, function(obj) {
-				if(Std.isOfType(obj, TileLayer))
+				if(isOfType(obj, TileLayer))
 					cast(obj, TileLayer).expandBitmap();
 			});
 			#end
@@ -3608,7 +3614,7 @@ class Engine
 		var order:Int = a.layer.order;
 		while(layersToDraw.exists(--order))
 		{
-			if(Std.isOfType(layersToDraw.get(order), Layer))
+			if(isOfType(layersToDraw.get(order), Layer))
 			{
 				moveActorToLayer(a, cast layersToDraw.get(order));
 				return;
@@ -3630,7 +3636,7 @@ class Engine
 		var order:Int = a.layer.order;
 		while(layersToDraw.exists(++order))
 		{
-			if(Std.isOfType(layersToDraw.get(order), Layer))
+			if(isOfType(layersToDraw.get(order), Layer))
 			{
 				moveActorToLayer(a, cast layersToDraw.get(order));
 				return;
@@ -3640,7 +3646,7 @@ class Engine
 	
 	public function getNumberOfActorsWithinLayer(layer:RegularLayer):Int
 	{
-		if(Std.isOfType(layer, Layer))
+		if(isOfType(layer, Layer))
 			#if use_actor_tilemap
 			return cast(layer, Layer).actorContainer.numTiles;
 			#else
@@ -3689,9 +3695,9 @@ class Engine
 	{
 		master.addChildAt(layer, order);
 
-		if(Std.isOfType(layer, BackgroundLayer))
+		if(isOfType(layer, BackgroundLayer))
 			backgroundLayers.push(cast(layer, BackgroundLayer));
-		else if(Std.isOfType(layer, Layer))
+		else if(isOfType(layer, Layer))
 			interactiveLayers.push(cast(layer, Layer));
 		layers.set(layer.ID, layer);
 		layersByName.set(layer.layerName, layer);
@@ -3703,9 +3709,9 @@ class Engine
 	{
 		master.removeChild(layer);
 		
-		if(Std.isOfType(layer, BackgroundLayer))
+		if(isOfType(layer, BackgroundLayer))
 			backgroundLayers.remove(cast(layer, BackgroundLayer));
-		else if(Std.isOfType(layer, Layer))
+		else if(isOfType(layer, Layer))
 			interactiveLayers.remove(cast(layer, Layer));
 		layers.unset(layer.ID);
 		layersByName.remove(layer.layerName);
@@ -3725,7 +3731,7 @@ class Engine
 			layersToDraw.set(i, l);
 			l.order = i;
 			
-			if(Std.isOfType(l, Layer))
+			if(isOfType(l, Layer))
 			{
 				if(!foundBottom)
 				{

@@ -9,6 +9,12 @@ import mbs.core.MbsTypes.*;
 import mbs.io.MbsList;
 import mbs.io.MbsListBase.MbsDynamicList;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 class AttributeValues
 {
 	public static function readBehaviors(listReader:MbsList<MbsSnippet>):Map<String,BehaviorInstance>
@@ -97,12 +103,12 @@ class AttributeValues
 			var key = mapElement.getKey();
 			var val:Dynamic = mapElement.getValue();
 
-			if(Std.isOfType(val, MbsDynamicList))
+			if(isOfType(val, MbsDynamicList))
 			{
 				var mdl:MbsDynamicList = cast val;
 				val = [for(i in 0...mdl.length()) mdl.readObject()];
 			}
-			else if(Std.isOfType(val, MbsList))
+			else if(isOfType(val, MbsList))
 			{
 				val = readMap(cast val);
 			}

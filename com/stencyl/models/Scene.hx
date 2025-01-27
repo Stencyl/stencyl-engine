@@ -64,6 +64,12 @@ import mbs.io.*;
 import mbs.io.MbsListBase.MbsDynamicList;
 import mbs.io.MbsListBase.MbsIntList;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 class Scene
 {
 	public var ID:Int;
@@ -199,7 +205,7 @@ class Scene
 
 		var shapeData = r.getShape();
 		
-		if(Std.isOfType(shapeData, MbsPolyRegion))
+		if(isOfType(shapeData, MbsPolyRegion))
 		{
 			var polygon:MbsPolyRegion = cast shapeData;
 			var w = currW = polygon.getWidth();
@@ -296,7 +302,7 @@ class Scene
 
 		var shapeData = r.getShape();
 		
-		if(Std.isOfType(shapeData, MbsPolyRegion))
+		if(isOfType(shapeData, MbsPolyRegion))
 		{
 			var polygon:MbsPolyRegion = cast shapeData;
 			currW = polygon.getWidth();
@@ -342,7 +348,7 @@ class Scene
 		var a2 = r.getActor2();
 		var collide = r.getCollide();
 		
-		if(Std.isOfType(r, MbsStickJoint))
+		if(isOfType(r, MbsStickJoint))
 		{
 			var j = new B2DistanceJointDef();
 			var r2:MbsStickJoint = cast r;
@@ -362,7 +368,7 @@ class Scene
 			return j;
 		}
 		
-		else if(Std.isOfType(r, MbsHingeJoint))
+		else if(isOfType(r, MbsHingeJoint))
 		{
 			var j2 = new B2RevoluteJointDef();
 			var r2:MbsHingeJoint = cast r;
@@ -386,7 +392,7 @@ class Scene
 			return j2;
 		}
 		
-		else if(Std.isOfType(r, MbsSlidingJoint))
+		else if(isOfType(r, MbsSlidingJoint))
 		{
 			var j3 = new B2LineJointDef();
 			var r2:MbsSlidingJoint = cast r;
@@ -426,7 +432,7 @@ class Scene
 		{
 			var dyn = list.readObject();
 			
-			if(Std.isOfType(dyn, MbsColorBackground) || Std.isOfType(dyn, MbsGradientBackground))
+			if(isOfType(dyn, MbsColorBackground) || isOfType(dyn, MbsGradientBackground))
 				colorBackground = readColorBackground(dyn);
 			else
 			{
@@ -440,7 +446,7 @@ class Scene
 				var opacity:Float = r.getOpacity() / 100;
 				var blendMode:BlendMode = BlendModes.get(r.getBlendmode());
 
-				if(Std.isOfType(dyn, MbsInteractiveLayer))
+				if(isOfType(dyn, MbsInteractiveLayer))
 				{
 					var tileLayer:TileLayer = rawLayers.get(ID);
 					if(tileLayer == null)
@@ -451,7 +457,7 @@ class Scene
 
 					map.set(layer.ID, layer);
 				}
-				else if(Std.isOfType(dyn, MbsImageBackground))
+				else if(isOfType(dyn, MbsImageBackground))
 				{
 					//Need to change order, atlases aren't loaded yet
 					var bgR:MbsImageBackground = cast dyn;
@@ -470,14 +476,14 @@ class Scene
 
 	public function readColorBackground(r:MbsObject):Background
 	{
-		if(Std.isOfType(r, MbsColorBackground))
+		if(isOfType(r, MbsColorBackground))
 		{
 			var r2:MbsColorBackground = cast r;
 			var color = r2.getColor();
 			return new ColorBackground(color);
 		}
 		
-		else if(Std.isOfType(r, MbsGradientBackground))
+		else if(isOfType(r, MbsGradientBackground))
 		{
 			var r2:MbsGradientBackground = cast r;
 			var color1 = r2.getColor1();

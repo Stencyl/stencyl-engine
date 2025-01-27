@@ -16,6 +16,12 @@ import box2D.collision.shapes.B2PolygonShape;
 
 import openfl.geom.Rectangle;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 using com.stencyl.event.EventDispatcher;
 
 class Region extends Actor
@@ -97,7 +103,7 @@ class Region extends Actor
 		
 		else
 		{
-			if(Std.isOfType(shapes[0], B2PolygonShape))
+			if(isOfType(shapes[0], B2PolygonShape))
 			{
 				isCircle = false;
 				var trans = new B2Transform();
@@ -136,7 +142,7 @@ class Region extends Actor
 				cacheHeight = originalHeight = regionHeight = Math.round(Engine.toPixelUnits(Math.abs(lowerYBound - upperYBound)));
 			}
 				
-			else if(Std.isOfType(shapes[0], B2CircleShape))
+			else if(isOfType(shapes[0], B2CircleShape))
 			{
 				isCircle = true;
 				

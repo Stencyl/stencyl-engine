@@ -88,6 +88,12 @@ import com.stencyl.models.collision.Mask;
 
 import haxe.CallStack;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 using com.stencyl.event.EventDispatcher;
 
 #if use_actor_tilemap
@@ -350,7 +356,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		HITBOX = new Mask();		
 		set_shape(HITBOX);
 		
-		if(Std.isOfType(this, Region) && Engine.NO_PHYSICS)
+		if(isOfType(this, Region) && Engine.NO_PHYSICS)
 		{
 			shape = HITBOX = new Hitbox(Std.int(width), Std.int(height), 0, 0, false, -2);
 			set_shape(shape);
@@ -539,18 +545,18 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				continuousCollision = bodyDef.bullet;
 			}
 			
-			if(Std.isOfType(this, Region))
+			if(isOfType(this, Region))
 			{
 				isSensor = true;
 				canRotate = false;
 			}
 			
-			if(Std.isOfType(this, Terrain))
+			if(isOfType(this, Terrain))
 			{
 				canRotate = false;
 			}
 			
-			if(shape != null && Std.isOfType(shape, com.stencyl.models.collision.Mask))
+			if(shape != null && isOfType(shape, com.stencyl.models.collision.Mask))
 			{
 				set_shape(shape);
 				isTerrain = true;
@@ -574,7 +580,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		
 		else
 		{
-			if(shape != null && Std.isOfType(shape, com.stencyl.models.collision.Mask))
+			if(shape != null && isOfType(shape, com.stencyl.models.collision.Mask))
 			{
 				cacheWidth = width;
 				cacheHeight = height;
@@ -746,7 +752,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 			{
 				for(s in shapes)
 				{				
-					if(Std.isOfType(s, Hitbox) && physicsMode != NORMAL_PHYSICS)
+					if(isOfType(s, Hitbox) && physicsMode != NORMAL_PHYSICS)
 					{		
 						s = cast(s, Hitbox).clone();
 						s.assignTo(this);
@@ -863,7 +869,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 			bodyDef.type = B2Body.b2_dynamicBody;
 		}
 		
-		if(Std.isOfType(shape, Array))
+		if(isOfType(shape, Array))
 		{
 			bodyDef.userData = this;
 			body = Engine.engine.world.createBody(bodyDef);			
@@ -1230,7 +1236,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				
 				while(contact != null)
 				{
-					if(Std.isOfType(contact.other.getUserData(), Region) && contact.contact.isTouching())
+					if(isOfType(contact.other.getUserData(), Region) && contact.contact.isTouching())
 					{
 						regions.push(cast contact.other.getUserData());
 					}
@@ -1295,7 +1301,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 						body.origin.x = Engine.toPhysicalUnits(-animOrigin.x);
 						body.origin.y = Engine.toPhysicalUnits(-animOrigin.y);
 						
-						if (Std.isOfType(f.shape, B2PolygonShape))
+						if (isOfType(f.shape, B2PolygonShape))
 						{
 							var xf:B2Transform = new B2Transform();
 							var oldBox:B2PolygonShape = cast f.shape;
@@ -1321,7 +1327,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 							originFixDef.shape = newBox;
 						}
 						
-						else if (Std.isOfType(f.shape, B2CircleShape))
+						else if (isOfType(f.shape, B2CircleShape))
 						{
 							var oldCircle:B2CircleShape = cast f.shape;
 							var newCircle:B2CircleShape = new B2CircleShape();
@@ -1870,7 +1876,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 		{ 
 			var poly:B2Shape = f.getShape();
 			var center:B2Vec2 = body.getLocalCenter();
-			if(Std.isOfType(poly, B2CircleShape))
+			if(isOfType(poly, B2CircleShape))
 			{
 				var circle:B2CircleShape = cast poly;
 				var factorX:Float = (1 / bodyScale.x) * width;					
@@ -1886,7 +1892,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 				poly.m_radius = poly.m_radius * Math.abs(factorX);								
 			}
 
-			else if(Std.isOfType(poly, B2PolygonShape))
+			else if(isOfType(poly, B2PolygonShape))
 			{
 				var polygon:B2PolygonShape = cast poly;
   				var verts:Array<B2Vec2> = polygon.m_vertices;
@@ -2363,7 +2369,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	
 	public function moveToLayer(layer:RegularLayer)
 	{
-		if(!isHUD && Std.isOfType(layer, Layer))
+		if(!isHUD && isOfType(layer, Layer))
 		{
 			engine.moveActorToLayer(this, cast layer);
 		}
@@ -3968,14 +3974,14 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	
 	public static function scaleShape(shape:B2Shape, center:B2Vec2, factor:Float)
 	{
-		if(Std.isOfType(shape, B2CircleShape))
+		if(isOfType(shape, B2CircleShape))
 		{
 			var circle:B2CircleShape = cast shape;
 			
 			circle.m_radius *= factor;
 		}
 		
-		else if(Std.isOfType(shape, B2PolygonShape))
+		else if(isOfType(shape, B2PolygonShape))
 		{
 			var polygon:B2PolygonShape = cast shape;
 			var vertices:Array<B2Vec2> = polygon.m_vertices;
@@ -4442,7 +4448,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	{
 		if (_mask != null && _mask.lastCheckedMask != null)
 		{
-			if (Std.isOfType(_mask.lastCheckedMask, Hitbox))
+			if (isOfType(_mask.lastCheckedMask, Hitbox))
 			{
 				var box:Hitbox = cast _mask.lastCheckedMask;
 				
@@ -4462,7 +4468,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	{
 		if (_mask != null && _mask.lastCheckedMask != null)
 		{
-			if (Std.isOfType(_mask.lastCheckedMask, Hitbox))
+			if (isOfType(_mask.lastCheckedMask, Hitbox))
 			{
 				var box:Hitbox = cast _mask.lastCheckedMask;
 				
@@ -4688,7 +4694,7 @@ class Actor extends #if use_actor_tilemap TileContainer #else Sprite #end
 	
 	private function fillCollisionInfo(info:Collision, a:Actor, xDir:Float, yDir:Float)
 	{
-		if(Std.isOfType(a, Region))
+		if(isOfType(a, Region))
 		{
 			var region:Region = cast a;
 			region.addActor(this);

@@ -41,6 +41,11 @@ import sys.FileSystem;
 import sys.io.File;
 #end
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
 
 /**
  * Static catch-all class used to access global properties and functions.
@@ -231,7 +236,7 @@ class Utils
 		for(i in 0...container.numChildren)
 		{
 			var obj = container.getChildAt(i);
-			if(Std.isOfType(obj, DisplayObjectContainer))
+			if(isOfType(obj, DisplayObjectContainer))
 			{
 				applyToAllChildren(cast obj, fun);
 			}
@@ -245,11 +250,11 @@ class Utils
 		{
 			var c = container.getChildAt(0);
 			
-			if(Std.isOfType(c, DisplayObjectContainer))
+			if(isOfType(c, DisplayObjectContainer))
 			{
 				Utils.removeAllChildren(cast(c, DisplayObjectContainer));
 			}
-			if(Std.isOfType(c, Tilemap))
+			if(isOfType(c, Tilemap))
 			{
 				Utils.removeAllTiles(cast c);
 			}
@@ -264,7 +269,7 @@ class Utils
 		{
 			var c = container.getTileAt(0);
 			
-			if(Std.isOfType(c, ITileContainer))
+			if(isOfType(c, ITileContainer))
 			{
 				Utils.removeAllTiles(cast c);
 			}
@@ -279,7 +284,7 @@ class Utils
 		{
 			var c = container.getChildAt(i);
 			
-			if(Std.isOfType(c, DisplayObjectContainer))
+			if(isOfType(c, DisplayObjectContainer))
 			{
 				Utils.demouse(cast(c, DisplayObjectContainer));
 			}
@@ -846,7 +851,7 @@ class Utils
 	 */
 	/*public static function shuffle(a:Dynamic)
 	{
-		if (Std.isOfType(a, Array))
+		if (isOfType(a, Array))
 		{
 			var i:Int = a.length, j:Int, t:Dynamic;
 			while (--i > 0)
@@ -907,7 +912,7 @@ class Utils
 		#end
 		
 		#if flash
-		if (Std.isOfType(value, haxe.ds.StringMap))
+		if (isOfType(value, haxe.ds.StringMap))
 		{
 			Reflect.setField(so.data, name, "[SerializedStringMap]" + haxe.Serializer.run(value));
 		}

@@ -4,6 +4,12 @@ import haxe.PosInfos;
 import haxe.Timer;
 import lime.utils.LogLevel;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 @:structInit class ExtraInfo
 {
 	public #if haxe4 final #else var #end level:LogLevel;
@@ -82,7 +88,7 @@ class Log
 			return {level: LogLevel.INFO, time: Timer.stamp()};
 		
 		var lastParam = posInfo.customParams[posInfo.customParams.length - 1];
-		if(!(lastParam is ExtraInfo))
+		if(!isOfType(lastParam, ExtraInfo))
 			return {level: LogLevel.INFO, time: Timer.stamp()};
 		
 		return cast lastParam;
@@ -102,7 +108,7 @@ class Log
 		if(
 			posInfo.customParams != null &&
 			posInfo.customParams.length > 0 &&
-			posInfo.customParams[posInfo.customParams.length - 1] is ExtraInfo
+			isOfType(posInfo.customParams[posInfo.customParams.length - 1], ExtraInfo)
 		)
 			return;
 

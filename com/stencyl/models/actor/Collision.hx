@@ -11,6 +11,12 @@ import box2D.dynamics.contacts.B2Contact;
 import openfl.geom.Rectangle;
 
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 class Collision 
 {
 	private static var recycledCollisions:Array<Collision> = new Array<Collision>();
@@ -72,20 +78,20 @@ class Collision
 		var groupID1:Int = -1;
 		var groupID2:Int = -1;
 	
-		if (Std.isOfType(firstObject, ActorType))
+		if (isOfType(firstObject, ActorType))
 		{
 			groupID1 = firstObject.groupID;
 		}
-		else if (Std.isOfType(firstObject, Group))
+		else if (isOfType(firstObject, Group))
 		{
 			groupID1 = firstObject.ID;
 		}
 		
-		if (Std.isOfType(secondObject, ActorType))
+		if (isOfType(secondObject, ActorType))
 		{
 			groupID2 = secondObject.groupID;
 		}
-		else if (Std.isOfType(secondObject, Group))
+		else if (isOfType(secondObject, Group))
 		{
 			groupID2 = secondObject.ID;
 		}

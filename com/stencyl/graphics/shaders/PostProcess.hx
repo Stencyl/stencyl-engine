@@ -14,6 +14,12 @@ import com.stencyl.utils.Log;
 
 import com.stencyl.graphics.shaders.Shader in FullScreenShader;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 #if flash
 
 /**
@@ -260,7 +266,7 @@ class PostProcess extends DisplayObject
 			while(i-- > 0)
 			{
 				var u = changedUniforms.pop();
-				if (Std.isOfType(u.value, Array))
+				if (isOfType(u.value, Array))
 				{
 					if (u.value.length == 0)
 					{

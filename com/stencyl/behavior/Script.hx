@@ -90,6 +90,12 @@ import haxe.io.Bytes;
 import haxe.io.BytesData;
 import lime.app.Application;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 using com.stencyl.event.EventDispatcher;
 using lime._internal.unifill.Unifill;
 
@@ -236,22 +242,22 @@ class Script
 			return 0;
 		}
 
-		else if(Std.isOfType(o, Float))
+		else if(isOfType(o, Float))
 		{
 			return cast(o, Float);
 		}
 		
-		else if(Std.isOfType(o, Int))
+		else if(isOfType(o, Int))
 		{
 			return cast(o, Int);
 		}
 		
-		else if(Std.isOfType(o, Bool))
+		else if(isOfType(o, Bool))
 		{
 			return cast(o, Bool) ? 1 : 0;
 		}
 		
-		else if(Std.isOfType(o, String))
+		else if(isOfType(o, String))
 		{
 			return Std.parseFloat(o);
 		}
@@ -269,7 +275,7 @@ class Script
 			return true;
 		}
 		
-		else if(Std.isOfType(o, String))
+		else if(isOfType(o, String))
 		{
 			return cast(o, String) != "";
 		}
@@ -282,17 +288,17 @@ class Script
 	
 	public static function isPrimitive(o:Dynamic):Bool
 	{
-		if(Std.isOfType(o, Bool))
+		if(isOfType(o, Bool))
 		{
 			return true;
 		}
 		
-		else if(Std.isOfType(o, Float))
+		else if(isOfType(o, Float))
 		{
 			return true;
 		}
 		
-		else if(Std.isOfType(o, Int))
+		else if(isOfType(o, Int))
 		{
 			return true;
 		}
@@ -302,22 +308,22 @@ class Script
 
 	public static function getDefaultValue(o:Dynamic):Dynamic
 	{
-		if(Std.isOfType(o, Bool))
+		if(isOfType(o, Bool))
 		{
 			return false;
 		}
 		
-		else if(Std.isOfType(o, Float))
+		else if(isOfType(o, Float))
 		{
 			return 0.0;
 		}
 		
-		else if(Std.isOfType(o, Int))
+		else if(isOfType(o, Int))
 		{
 			return 0;
 		}
 		
-		else if(Std.isOfType(o, String))
+		else if(isOfType(o, String))
 		{
 			return "";
 		}
@@ -425,7 +431,7 @@ class Script
 	{
 		event.add(func #if debug_event_dispatch , posInfo #end);
 
-		if(Std.isOfType(this, ActorScript))
+		if(isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(event, func);
 		}
@@ -441,7 +447,7 @@ class Script
 		
 		event.add(func #if debug_event_dispatch , posInfo #end);
 
-		if(Std.isOfType(this, ActorScript))
+		if(isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(event, func);
 		}
@@ -461,7 +467,7 @@ class Script
 		
 		event.add(func #if debug_event_dispatch , posInfo #end);
 
-		if(Std.isOfType(this, ActorScript))
+		if(isOfType(this, ActorScript))
 		{
 			cast(this, ActorScript).actor.registerListener(event, func);
 		}
@@ -491,7 +497,7 @@ class Script
 					
 	public function addWhenUpdatedListener(a:Actor, func:Float->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
-		var isActorScript = Std.isOfType(this, ActorScript);
+		var isActorScript = isOfType(this, ActorScript);
 	
 		if(a == null)
 		{
@@ -514,7 +520,7 @@ class Script
 	
 	public function addWhenDrawingListener(a:Actor, func:G->Float->Float->Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
-		var isActorScript = Std.isOfType(this, ActorScript);
+		var isActorScript = isOfType(this, ActorScript);
 	
 		if(a == null)
 		{
@@ -706,7 +712,7 @@ class Script
 	
 	public function addSoundListener(obj:Dynamic, func:Array<Dynamic>->Void #if debug_event_dispatch , ?posInfo:haxe.PosInfos #end)
 	{
-		if (Std.isOfType(obj, Sound))
+		if (isOfType(obj, Sound))
 		{
 			addListenerWithKey(engine.whenSoundEndedEvents, obj, func.bind(null) #if debug_event_dispatch , posInfo #end);
 		}
@@ -1250,7 +1256,7 @@ class Script
     {
 		layer.blendMode = mode;
 		
-		if (Std.isOfType(layer, Layer))
+		if (isOfType(layer, Layer))
 		{
 			cast(layer, Layer).tiles.blendMode = mode;
 		}
@@ -1311,7 +1317,7 @@ class Script
 	
 	public static function setDrawingLayer(layer:RegularLayer)
 	{
-		if(Std.isOfType(layer, Layer))
+		if(isOfType(layer, Layer))
 		{
 			var il:Layer = cast layer;
 			Engine.engine.g.layer = il.overlay;
@@ -2055,7 +2061,7 @@ class Script
 		}
 		else
 		{
-			if(Std.isOfType(layer, BackgroundLayer))
+			if(isOfType(layer, BackgroundLayer))
 			{
 				cast(layer, BackgroundLayer).setScrollSpeed(xSpeed, ySpeed);
 			}
@@ -2067,11 +2073,11 @@ class Script
 	*/
 	public static function setScrollFactorForLayer(layer:RegularLayer, scrollFactorX:Float, scrollFactorY:Float)
 	{
-		if(Std.isOfType(layer, BackgroundLayer))
+		if(isOfType(layer, BackgroundLayer))
 		{
 			cast(layer, BackgroundLayer).setScrollFactor(scrollFactorX, scrollFactorY);
 		}
-		else if(Std.isOfType(layer, Layer))
+		else if(isOfType(layer, Layer))
 		{
 			layer.scrollFactorX = scrollFactorX;
 			layer.scrollFactorY = scrollFactorY;
@@ -2088,7 +2094,7 @@ class Script
 		if(bg == null)
 			return;
 
-		if(Std.isOfType(layer, BackgroundLayer))
+		if(isOfType(layer, BackgroundLayer))
 		{
 			cast(layer, BackgroundLayer).reload(bg.ID);
 		}
@@ -2102,7 +2108,7 @@ class Script
 		if(newImg == null)
 			return;
 
-		if(Std.isOfType(layer, BackgroundLayer))
+		if(isOfType(layer, BackgroundLayer))
 		{
 			cast(layer, BackgroundLayer).setImage(newImg);
 		}
@@ -2396,9 +2402,9 @@ class Script
 	{
 		if(img != null && img.parent != null)
 		{
-			if(Std.isOfType(img.parent, Actor))
+			if(isOfType(img.parent, Actor))
 				cast(img.parent, Actor).attachedImages.remove(img);
-			else if(Std.isOfType(img.parent, Layer))
+			else if(isOfType(img.parent, Layer))
 				cast(img.parent, Layer).attachedImages.remove(img);
 			#if (use_actor_tilemap)
 			img.parent.removeTile(img);
@@ -2929,7 +2935,7 @@ class Script
 
 	public static function getTileLayerAt(layer:RegularLayer):TileLayer
 	{
-		if(layer == null || !Std.isOfType(layer, Layer))
+		if(layer == null || !isOfType(layer, Layer))
 			return null;
 		return cast(layer, Layer).tiles;
 	}
@@ -2937,7 +2943,7 @@ class Script
 	public static function getTilesetIDByName(tilesetName:String):Int
 	{
 		var r = Data.get().resourceMap.get(tilesetName);
-		if(Std.isOfType(r, Tileset))
+		if(isOfType(r, Tileset))
 		{
 			return r.ID;
 		}
@@ -2946,7 +2952,7 @@ class Script
 
 	public static function setTileAt(row:Int, col:Int, layer:RegularLayer, tilesetID:Int, tileID:Int)
 	{
-		if(layer == null || !Std.isOfType(layer, Layer))
+		if(layer == null || !isOfType(layer, Layer))
 		{
 			return;
 		}
@@ -3118,7 +3124,7 @@ class Script
 	
 	public static function removeTileAt(row:Int, col:Int, layer:RegularLayer)
 	{
-		if(layer == null || !Std.isOfType(layer, Layer))
+		if(layer == null || !isOfType(layer, Layer))
 		{
 			return;
 		}

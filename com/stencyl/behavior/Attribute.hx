@@ -2,6 +2,12 @@ package com.stencyl.behavior;
 
 import com.stencyl.models.GameModel;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 class Attribute 
 {	
 	public var ID:Int;
@@ -65,17 +71,17 @@ class Attribute
 					realValue = Data.get().resources.get((value:Int));
 				}
 				
-				if(type == "font" && !Std.isOfType(realValue, com.stencyl.models.Font))
+				if(type == "font" && !isOfType(realValue, com.stencyl.models.Font))
 				{
 					realValue = null;
 				}
 				
-				if(type == "sound" && !Std.isOfType(realValue, com.stencyl.models.Sound))
+				if(type == "sound" && !isOfType(realValue, com.stencyl.models.Sound))
 				{
 					realValue = null;
 				}
 				
-				if(type == "actortype" && !Std.isOfType(realValue, com.stencyl.models.actor.ActorType))
+				if(type == "actortype" && !isOfType(realValue, com.stencyl.models.actor.ActorType))
 				{
 					realValue = null;
 				}

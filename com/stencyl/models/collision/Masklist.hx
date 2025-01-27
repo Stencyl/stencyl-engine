@@ -6,6 +6,12 @@ import com.stencyl.utils.Utils;
 
 import openfl.geom.Rectangle;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 /**
  * A Mask that can contain multiple Masks of one or various types.
  */
@@ -36,7 +42,7 @@ class Masklist extends Hitbox
 		{
 			m.groupID = (m.groupID == GameModel.INHERIT_ID ? m.parent.groupID : m.groupID);
 			
-			if ((Std.isOfType(mask, Masklist) || mask.groupID == -2 || GameModel.collisionMap[m.groupID][mask.groupID]) && m.collide(mask)) 
+			if ((isOfType(mask, Masklist) || mask.groupID == -2 || GameModel.collisionMap[m.groupID][mask.groupID]) && m.collide(mask)) 
 			{
 				lastBounds.x = m.lastBounds.x;
 				lastBounds.y = m.lastBounds.y;

@@ -40,6 +40,12 @@ import mbs.io.MbsListBase.MbsDynamicList;
 
 import haxe.CallStack;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 class Data
 {
 	//*-----------------------------------------------
@@ -231,7 +237,7 @@ class Data
 		{
 			resources.set(newResource.ID, newResource);
 
-			if(Std.isOfType(newResource, Sprite))
+			if(isOfType(newResource, Sprite))
 				resourceMap.set("Sprite_" + newResource.name, newResource);
 			else
 				resourceMap.set(newResource.name, newResource);
@@ -302,7 +308,7 @@ class Data
 		
 		for(r in resources)
 		{
-			if(Std.isOfType(r, ActorType))
+			if(isOfType(r, ActorType))
 			{
 				a.push(cast(r, ActorType));
 			}
@@ -363,7 +369,7 @@ class Data
 		{
 			if(r == null)
 				continue;
-			if(Std.isOfType(r, Sound) || Std.isOfType(r, ActorType))
+			if(isOfType(r, Sound) || isOfType(r, ActorType))
 				continue;
 			if(!r.isAtlasActive())
 				continue;

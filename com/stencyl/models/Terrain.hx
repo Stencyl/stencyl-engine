@@ -12,6 +12,12 @@ import box2D.collision.shapes.B2Shape;
 import box2D.collision.shapes.B2CircleShape;
 import box2D.collision.shapes.B2PolygonShape;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 class Terrain extends Actor
 {
 	public inline static var UNSET_ID = -1;
@@ -53,7 +59,7 @@ class Terrain extends Actor
 		var lowerYBound:Float = 0;
 		var upperYBound:Float = 0;
 		
-		if(Std.isOfType(shapes[0], B2PolygonShape))
+		if(isOfType(shapes[0], B2PolygonShape))
 		{
 			isCircle = false;
 			var trans = new B2Transform();
@@ -92,7 +98,7 @@ class Terrain extends Actor
 			originalHeight = regionHeight = Math.round(Engine.toPixelUnits(Math.abs(lowerYBound - upperYBound)));
 		}
 			
-		else if(Std.isOfType(shapes[0], B2CircleShape))
+		else if(isOfType(shapes[0], B2CircleShape))
 		{
 			isCircle = true;
 			

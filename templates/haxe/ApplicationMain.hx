@@ -27,6 +27,12 @@ import openfl.errors.Error;
 import haxe.Log in HaxeLog;
 import com.stencyl.utils.Log;
 
+#if (haxe_ver >= 4.1)
+import Std.isOfType as isOfType;
+#else
+import Std.is as isOfType;
+#end
+
 using StringTools;
 
 @:access(Universal)
@@ -473,7 +479,7 @@ using StringTools;
 		
 		#else
 		
-		if (Std.isOfType(event.error, Error))
+		if (isOfType(event.error, Error))
 		{
 			var error = cast(event.error, Error);
 			#if flash
@@ -482,7 +488,7 @@ using StringTools;
 			Log.fullError(error.message, error);
 			#end
 		}
-		else if (Std.isOfType(event.error, ErrorEvent))
+		else if (isOfType(event.error, ErrorEvent))
 		{
 			var errorEvent = cast(event.error, ErrorEvent);
 			Log.error(errorEvent.text);
