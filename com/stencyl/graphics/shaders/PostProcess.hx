@@ -98,7 +98,7 @@ class PostProcess extends DisplayObject
 	{
 		super();
 		
-		#if (openfl >= 9.1)
+		#if (openfl >= "9.1.0")
 		__drawableType = SHAPE;
 		#end
 		
@@ -225,7 +225,7 @@ class PostProcess extends DisplayObject
 	
 	@:access(openfl.display.DisplayObjectRenderer)
 	@:access(openfl.display3D.Context3D)
-	#if (openfl >= 9.0)
+	#if (openfl >= "9.0.0")
 	@:access(openfl.display3D._internal.Context3DState)
 	#else
 	@:access(openfl._internal.renderer.context3D.Context3DState)
@@ -391,7 +391,7 @@ class PostProcess extends DisplayObject
 		//texture.uploadFromTypedArray(null);
 		
 		texture.__context.__bindGLTexture2D (texture.__textureID);
-		#if (openfl >= 9.0)
+		#if (openfl >= "9.0.0")
 		texture.__setSamplerState(new openfl.display._internal.SamplerState());
 		#else
 		texture.__setSamplerState(new openfl._internal.renderer.SamplerState());
