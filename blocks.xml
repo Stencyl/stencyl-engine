@@ -1302,7 +1302,7 @@
         <code>
             <event-def
                 innerCode="#{2}"
-                listener="addListenerWithKey(engine.whenTypeGroup#{0}Events, #{1}, ${eventRef});"
+                listener="addListenerWithKey(engine.whenTypeGroup#{0}Events, #{1}.ID, ${eventRef});"
                 params="eventActor:Actor">
             </event-def>
         </code>
@@ -1327,7 +1327,7 @@
         <code>
             <event-def
                 innerCode="#{2}"
-                listener="addListenerWithKey(engine.whenTypeGroup#{0}Events, #{1}, ${eventRef});"
+                listener="addListenerWithKey(engine.whenTypeGroup#{0}Events, Actor.GROUP_OFFSET + #{1}.ID, ${eventRef});"
                 params="eventActor:Actor">
             </event-def>
         </code>
