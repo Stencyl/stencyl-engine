@@ -1321,9 +1321,10 @@ class Script
 		{
 			var il:Layer = cast layer;
 			Engine.engine.g.layer = il.overlay;
-			#if stencyl4_compat
-			Engine.engine.g.graphics = il.overlay.graphics;
-			#end
+			if(Config.drawToLayers)
+			{
+				Engine.engine.g.graphics = il.overlay.graphics;
+			}
 		}
 	}
 	
@@ -1332,18 +1333,20 @@ class Script
 		if(a != null)
 		{
 			Engine.engine.g.layer = a.layer.overlay;
-			#if stencyl4_compat
-			Engine.engine.g.graphics = a.layer.overlay.graphics;
-			#end
+			if(Config.drawToLayers)
+			{
+				Engine.engine.g.graphics = a.layer.overlay.graphics;
+			}
 		}
 	}
 	
 	public static function setDrawingLayerToSceneLayer()
 	{
 		Engine.engine.g.layer = Engine.engine.drawingLayer;
-		#if stencyl4_compat
-		Engine.engine.g.graphics = Engine.engine.drawingLayer.graphics;
-		#end
+		if(Config.drawToLayers)
+		{
+			Engine.engine.g.graphics = Engine.engine.drawingLayer.graphics;
+		}
 	}
 	
 	//*-----------------------------------------------

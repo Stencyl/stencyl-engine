@@ -345,15 +345,13 @@ class G
 
 		if(toDraw != null)
 		{
-			#if stencyl4_compat
-			if(graphics != null)
+			if(Config.drawToLayers && graphics != null)
 			{
 				graphics.beginBitmapFill(toDraw, mtx, false, Config.antialias);
 				graphics.drawRect(drawX, drawY, toDraw.width, toDraw.height);
 				graphics.endFill();
 			}
 			else
-			#end
 			#if use_actor_tilemap
 			{
 				var ts = TileSource.fromBitmapData(toDraw);
@@ -672,8 +670,7 @@ class G
 			point.y = this.y + y;	
 		}
 		
-		#if stencyl4_compat
-		if(graphics != null)
+		if(Config.drawToLayers && graphics != null)
 		{
 			var newImg:BitmapData = null;
 			var imgSize = 0;
@@ -738,7 +735,6 @@ class G
 			graphics.endFill();
 		}
 		else
-		#end
 		#if use_actor_tilemap
 		{
 			var ts = TileSource.fromBitmapData(img);

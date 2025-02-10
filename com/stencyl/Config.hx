@@ -31,6 +31,7 @@ class Config
 	public static var pixelsnap:Bool;
 	public static var startInFullScreen:Bool;
 	public static var disposeImages:Bool;
+	public static var drawToLayers:Bool;
 	public static var keys:Map<String,Array<String>>;
 	public static var scales:Array<Scale>;
 	
@@ -122,6 +123,9 @@ class Config
 								if(Engine.debugDrawer != null && Engine.debugDrawer.m_sprite != null)
 									Engine.debugDrawer.m_sprite.graphics.clear();
 
+						case "drawToLayers":
+							needsGameReload = true;
+
 						case "keys":
 							Input.loadInputConfig();
 
@@ -160,6 +164,7 @@ class Config
 		pixelsnap = data.pixelsnap;
 		startInFullScreen = data.startInFullScreen;
 		disposeImages = data.disposeImages;
+		drawToLayers = data.drawToLayers;
 		releaseMode = data.releaseMode;
 		showConsole = data.showConsole;
 		debugDraw = data.debugDraw;

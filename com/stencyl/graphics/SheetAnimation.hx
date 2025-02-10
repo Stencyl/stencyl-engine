@@ -171,11 +171,10 @@ class SheetAnimation extends Tile implements AbstractAnimation
 
 	public function draw(g:G, x:Float, y:Float, angle:Float, alpha:Float)
 	{
-		var needsReadableImage = #if stencyl4_compat g.graphics != null #else false #end;
+		var needsReadableImage = Config.drawToLayers && g.graphics != null;
 		if(needsReadableImage && Config.disposeImages && !model.checkImageReadable())
 			return;
 		
-		#if stencyl4_compat
 		if(needsReadableImage)
 		{
 			var ts = TileSource.fromBitmapData(model.frames[frameIndex]);
@@ -198,7 +197,6 @@ class SheetAnimation extends Tile implements AbstractAnimation
 	 	 	g.graphics.endFill();
 		}
 		else
-		#end
 		{
 			var tile = clone();
 			tile.x = x;

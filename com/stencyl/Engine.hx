@@ -3408,9 +3408,10 @@ class Engine
 				if(a.whenDrawing.length > 0 && a.layer != null)
 				{
 					g.layer = a.layer.overlay;
-					#if stencyl4_compat
-					g.graphics = g.layer.graphics;
-					#end
+					if(Config.drawToLayers)
+					{
+						g.graphics = g.layer.graphics;
+					}
 					g.translateToActor(a);
 					g.resetGraphicsSettings();
 
@@ -3436,9 +3437,10 @@ class Engine
      	
      	//Scene Behavior/Event Drawing
      	g.layer = drawingLayer;
-     	#if stencyl4_compat
-		g.graphics = g.layer.graphics;
-		#end
+     	if(Config.drawToLayers)
+		{
+			g.graphics = g.layer.graphics;
+		}
      	g.translateToScreen();
 		g.resetGraphicsSettings();
 
@@ -3461,15 +3463,17 @@ class Engine
 			enter.draw(null);
 		}
 		
-		#if stencyl4_compat
-		for(l in interactiveLayers)
+		if(Config.drawToLayers)
 		{
-			l.overlay.renderFrame(g);
+			for(l in interactiveLayers)
+			{
+				l.overlay.renderFrame(g);
+			}
+			hudLayer.overlay.renderFrame(g);
+			drawingLayer.renderFrame(g);
+			g.layer = null;
+			g.graphics = g.layer.graphics;
 		}
-		hudLayer.overlay.renderFrame(g);
-		drawingLayer.renderFrame(g);
-		g.layer = null;
-		#end
 
 		g.graphics = null;
 		

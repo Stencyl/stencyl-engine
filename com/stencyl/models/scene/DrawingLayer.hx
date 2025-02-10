@@ -13,7 +13,9 @@ import openfl.display.Tilemap;
 
 class DrawingLayer extends #if use_actor_tilemap Tilemap #else Sprite #end
 {
-	#if (stencyl4_compat && use_actor_tilemap)
+	#if (use_actor_tilemap)
+	//only used with Config.drawToLayers
+	//if use_actor_tilemap is not enabled, these are naturally present as members of Sprite
 	public var shape:Shape;
 	public var graphics:Graphics;
 	#end
@@ -22,9 +24,12 @@ class DrawingLayer extends #if use_actor_tilemap Tilemap #else Sprite #end
 	{
 		super(#if use_actor_tilemap width, height, null, Config.antialias #end);
 		
-		#if (stencyl4_compat && use_actor_tilemap)
-		shape = new Shape();
-		graphics = shape.graphics;
+		#if (use_actor_tilemap)
+		if(Config.drawToLayers)
+		{
+			shape = new Shape();
+			graphics = shape.graphics;
+		}
 		#end
 	}
 	
@@ -36,18 +41,20 @@ class DrawingLayer extends #if use_actor_tilemap Tilemap #else Sprite #end
 		Utils.removeAllChildren(this);
 		#end
 		
-		#if stencyl4_compat
-		graphics.clear();
-		#end
+		if(Config.drawToLayers)
+		{
+			graphics.clear();
+		}
 	}
 	
-	#if stencyl4_compat
 	public function renderFrame(g:G):Void
 	{
 		#if use_actor_tilemap
-		g.layer = this;
-		g.drawShape(graphics);
+		if(Config.drawToLayers)
+		{
+			g.layer = this;
+			g.drawShape(graphics);
+		}
 		#end
 	}
-	#end
 }
