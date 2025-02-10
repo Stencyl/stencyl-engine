@@ -3472,7 +3472,6 @@ class Engine
 			hudLayer.overlay.renderFrame(g);
 			drawingLayer.renderFrame(g);
 			g.layer = null;
-			g.graphics = g.layer.graphics;
 		}
 
 		g.graphics = null;
