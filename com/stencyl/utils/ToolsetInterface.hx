@@ -281,6 +281,10 @@ class ToolsetInterface
 
 					Engine.engine.switchScene(sceneID);
 				}
+				else if(action == "Crash")
+				{
+					forceCrash();
+				}
 				
 			#if !(scriptable || cppia)
 			case "Hscript":
@@ -525,6 +529,17 @@ class ToolsetInterface
 		{
 			preloadedUpdate();
 		}
+	}
+
+	#if cpp
+	@:functionCode("
+		char* sneaky_null = nullptr;
+		return strlen(sneaky_null);
+		")
+	#end
+	private static function forceCrash():Int
+	{
+		return 0;
 	}
 }
 #end
