@@ -41,6 +41,6 @@
 		
 	</section>
 	
-	<haxeflag name="--macro" value="addGlobalMetadata('openfl.display.BitmapData', '@:build(com.stencyl.graphics.BitmapDataTileSourcePatch.patch())')" unless="flash" />
+	<haxeflag name="--macro" value="addMetadata('@:build(com.stencyl.graphics.BitmapDataTileSourcePatch.patch())', 'openfl.display.BitmapData')" unless="flash" />
 
 </project>
