@@ -30,7 +30,7 @@ class Assets
 	public static function loadAtlases()
 	{
 		var atlasConfig = Utils.getConfigText("atlases/list.json");
-		if(atlasConfig == "")
+		if(atlasConfig == null || atlasConfig == "")
 			return;
 		var atlasCounts = Json.parse(atlasConfig);
 		
