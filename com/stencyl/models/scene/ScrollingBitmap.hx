@@ -87,28 +87,17 @@ class ScrollingBitmap extends #if use_actor_tilemap TileContainer #else Sprite #
 		var tw:Float = img.width;
 		var th:Float = img.height;
 		
-		//So it doesn't cutoff, extend width/height
-		if (tw < screenWidth)
-		{
-			screenWidth += Std.int(tw) - (screenWidth % Std.int(tw));
-		}
-		
-		if (th < screenHeight)
-		{
-			screenHeight += Std.int(th) - (screenHeight % Std.int(th));
-		}
-		
 		#if use_actor_tilemap
 		var ts = TileSource.fromBitmapData(img);
 		#end
 
 		var tiles = [];
 		
-		for(yPos in 0...Std.int(screenHeight / th) + 1)
+		for(yPos in 0...Math.ceil(screenHeight / th) + 1)
 		{
 			var line = [];
 			
-			for(xPos in 0...Std.int(screenWidth / tw) + 1)
+			for(xPos in 0...Math.ceil(screenWidth / tw) + 1)
 			{
 				#if use_actor_tilemap
 				var tile = new Tile();
