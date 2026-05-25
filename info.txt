@@ -3,5 +3,5 @@ name=Stencyl Engine
 description=Stencyl Engine
 author=Jon
 website=https://www.stencyl.com
-version=4.1.0
+version=4.2.0
 compatibility=all
