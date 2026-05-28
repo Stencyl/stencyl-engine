@@ -1088,6 +1088,7 @@
 			<!-- Display Images -->
 			<header title="@cat.image.display" icon="question" action="help:image-api" />
 			<block tag="image-inst-create" />
+			<block tag="image-subimage-inst" />
 			<block tag="image-inst-actor" />
 			<block tag="image-inst-layer2" />
 			<block tag="image-inst-hud" />

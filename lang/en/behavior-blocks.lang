@@ -556,6 +556,7 @@ image.url.image=the image
 image.subimage=part of %0 ( x: %1 y: %2 w: %3 h: %4 ) [i:draw]
 image.resize=copy of %0 at ( w: %1 [pct] h: %2 [pct] ) using %3 [i:draw]
 image.inst.create=instance of %0 [i:draw]
+image.subimage.inst=instance of part of %0 ( x: %1 y: %2 w: %3 h: %4 ) [i:draw]
 image.inst.attach.actor=attach %0 to %1 at ( x: %2 y: %3 ) at %4 [i:draw]
 image.inst.attach.layer2=attach %0 to layer %1 : %2 at ( x: %3 y: %4 ) at %5 [i:draw]
 image.inst.attach.layer=attach %0 to layer ID %1 at ( x: %2 y: %3 ) at %4 [i:draw]

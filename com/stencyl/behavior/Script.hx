@@ -57,6 +57,8 @@ import com.stencyl.models.Region;
 import com.stencyl.models.Resource;
 import com.stencyl.models.Terrain;
 import com.stencyl.graphics.BitmapWrapper;
+import com.stencyl.graphics.TileSource;
+import com.stencyl.graphics.TilesetUtils;
 import com.stencyl.graphics.fonts.BitmapFont;
 import com.stencyl.graphics.transitions.Transition;
 import com.stencyl.models.actor.ActorType;
@@ -2246,6 +2248,39 @@ class Script
 		newImg.copyPixels(img, dummyRect, dummyPoint);
 		
 		return newImg;
+	}
+
+	public static function getSubImageInstance(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapWrapper
+	{
+		#if !use_actor_tilemap
+
+		return new BitmapWrapper(new Bitmap(getSubImage(img, x, y, width, height)));
+
+		#else
+
+		if(imageApiAutoscale)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+			width = Std.int(width * Engine.SCALE);
+			height = Std.int(height * Engine.SCALE);
+		}
+		
+		if(img == null || x < 0 || y < 0 || width <= 0 || height <= 0 || x >= img.width || y >= img.height)
+		{
+			Log.error("Image smaller than subimage bounds");
+			return new BitmapWrapper(new Bitmap(new BitmapData(1, 1)));
+		}
+
+		var ts = TileSource.fromBitmapData(img);
+		var innerFrameId = TilesetUtils.getSubFrame(ts.tileset, ts.tileID, x, y, width, height);
+
+		var tile = new openfl.display.Tile();
+		tile.tileset = ts.tileset;
+		tile.id = innerFrameId;
+		return new BitmapWrapper(tile);
+
+		#end
 	}
 	
 	public static function setOrderForImage(img:BitmapWrapper, order:Int)

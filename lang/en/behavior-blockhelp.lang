@@ -459,6 +459,7 @@ image.resize.help=Create a scaled copy of an image.
 image.url.help=Load an image from a website. If no connection or image, this will do nothing.
 image.url.image.help=The loaded image.
 image.inst.create.help=Create an instance of an image that can be attached to actor or layer.
+image.subimage.inst.help=Create an image instance from part of an image.
 image.inst.attach.actor.help=Attach an image instance to an actor.
 image.inst.attach.layer.help=Attach an image instance to a layer (via layer ID).
 image.inst.attach.layer2.help=Attach an image instance to a layer (via layer ID or name).

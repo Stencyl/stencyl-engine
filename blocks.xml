@@ -10977,6 +10977,23 @@
         </fields>
     </block>
 
+    <block tag="image-subimage-inst"
+           code="getSubImageInstance(#{0}, #{1}, #{2}, #{3}, #{4})"
+           spec="@image.subimage.inst"
+           help="@image.subimage.inst.help"
+           type="normal"
+           returns="image-instance"
+           category="image"
+           helpURL="image-show">
+        <fields>
+            <image order="0" />
+            <int order="1" />
+            <int order="2" />
+            <int order="3" />
+            <int order="4" />
+        </fields>
+    </block>
+
     <block tag="image-inst-actor"
            code="attachImageToActor(#{0}, #{1}, #{2}, #{3}, #{4});"
            spec="@image.inst.attach.actor"
