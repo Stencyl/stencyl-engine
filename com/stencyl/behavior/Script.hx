@@ -2207,6 +2207,18 @@ class Script
 	
 	public static function getSubImage(img:BitmapData, x:Int, y:Int, width:Int, height:Int):BitmapData
 	{
+		if(img == null)
+		{
+			Log.error("Image is null");
+			return new BitmapData(1, 1);
+		}
+		
+		if(!img.readable)
+		{
+			Log.error("Image isn't readable");
+			return new BitmapData(1, 1);
+		}
+		
 		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
@@ -2215,24 +2227,25 @@ class Script
 			height = Std.int(height * Engine.SCALE);
 		}
 		
-		if(img != null && x >= 0 && y >= 0 && width > 0 && height > 0 && x < img.width && y < img.height)
+		if(x < 0 || y < 0 || width <= 0 || height <= 0 || x + width > img.width || y + height > img.height)
 		{
-			var newImg:BitmapData = new BitmapData(width, height);
-			
-			dummyRect.x = x;
-			dummyRect.y = y;
-			dummyRect.width = width;
-			dummyRect.height = height;
-			
-			dummyPoint.x = 0;
-			dummyPoint.y = 0;
-			
-			newImg.copyPixels(img, dummyRect, dummyPoint);
-			
-			return newImg;
+			Log.error("Subframe out of bounds");
+			return new BitmapData(1, 1);
 		}
 		
-		return new BitmapData(1, 1);
+		var newImg:BitmapData = new BitmapData(width, height);
+		
+		dummyRect.x = x;
+		dummyRect.y = y;
+		dummyRect.width = width;
+		dummyRect.height = height;
+		
+		dummyPoint.x = 0;
+		dummyPoint.y = 0;
+		
+		newImg.copyPixels(img, dummyRect, dummyPoint);
+		
+		return newImg;
 	}
 	
 	public static function setOrderForImage(img:BitmapWrapper, order:Int)
@@ -2420,6 +2433,18 @@ class Script
 	//This returns a new BitmapData. It isn't possible to actually resize a BitmapData without creating a new one.
 	public static function resizeImage(img:BitmapData, xScale:Float = 1.0, yScale:Float = 1.0, smoothing:Bool = true):BitmapData
 	{
+		if(img == null)
+		{
+			Log.error("Image is null");
+			return new BitmapData(1, 1);
+		}
+		
+		if(!img.readable)
+		{
+			Log.error("Image isn't readable");
+			return new BitmapData(1, 1);
+		}
+		
 		var matrix:Matrix = new Matrix();
 		matrix.scale(xScale, yScale);
 		
@@ -2431,62 +2456,92 @@ class Script
 	
 	public static function drawImageOnImage(source:BitmapData, dest:BitmapData, x:Int, y:Int, blendMode:BlendMode)
 	{
+		if(source == null || dest == null)
+		{
+			Log.error("Image is null");
+			return;
+		}
+		
+		if(!source.readable || !dest.readable)
+		{
+			Log.error("Image isn't readable");
+			return;
+		}
+		
 		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
 			y = Std.int(y * Engine.SCALE);
 		}
 		
-		if(source != null && dest != null)
+		dummyPoint.x = x;
+		dummyPoint.y = y;
+		
+		if(blendMode == BlendMode.NORMAL)
 		{
-			dummyPoint.x = x;
-			dummyPoint.y = y;
-			
-			if(blendMode == BlendMode.NORMAL)
-			{
-				dest.copyPixels(source, source.rect, dummyPoint, null, null, true);
-			}
-			
-			else
-			{
-				var drawMatrix = new Matrix();
-				drawMatrix.identity();
-				drawMatrix.translate(x, y);
-				dest.draw(source, drawMatrix, null, blendMode);
-			}
+			dest.copyPixels(source, source.rect, dummyPoint, null, null, true);
+		}
+		
+		else
+		{
+			var drawMatrix = new Matrix();
+			drawMatrix.identity();
+			drawMatrix.translate(x, y);
+			dest.draw(source, drawMatrix, null, blendMode);
 		}
 	}
 	
 	public static function drawTextOnImage(img:BitmapData, text:String, x:Int, y:Int, font:Font)
 	{
+		if(img == null)
+		{
+			Log.error("Image is null");
+			return;
+		}
+		
+		if(!img.readable)
+		{
+			Log.error("Image isn't readable");
+			return;
+		}
+		
 		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
 			y = Std.int(y * Engine.SCALE);
 		}
 		
-		if(img != null)
-		{
-			var fontScale = font.fontScale;
+		var fontScale = font.fontScale;
+		
+		#if !use_tilemap
+		var fontData = G.fontCache.get(font.ID);
 			
-			#if !use_tilemap
-			var fontData = G.fontCache.get(font.ID);
-				
-			if(fontData == null)
-			{
-				fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, false);
-				G.fontCache.set(font.ID, fontData);
-			}
-
-			font.font.render(img, fontData, text, 0x000000, 1, x, y, fontScale, 0);
-			#else
-			font.font.renderToImg(img, text, 0x000000, 1, x, y, fontScale, 0, false);
-			#end
+		if(fontData == null)
+		{
+			fontData = font.font.getPreparedGlyphs(font.fontScale, 0x000000, false);
+			G.fontCache.set(font.ID, fontData);
 		}
+
+		font.font.render(img, fontData, text, 0x000000, 1, x, y, fontScale, 0);
+		#else
+		font.font.renderToImg(img, text, 0x000000, 1, x, y, fontScale, 0, false);
+		#end
 	}
 	
 	public static function clearImagePartially(img:BitmapData, x:Int, y:Int, width:Int, height:Int)
 	{
+		if(img == null)
+		{
+			Log.error("Image is null");
+			return;
+		}
+		
+		if(!img.readable)
+		{
+			Log.error("Image isn't readable");
+			return;
+		}
+		
 		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
@@ -2495,27 +2550,45 @@ class Script
 			height = Std.int(height * Engine.SCALE);
 		}
 		
-		if(img != null)
-		{
-			dummyRect.x = x;
-			dummyRect.y = y;
-			dummyRect.width = width;
-			dummyRect.height = height;
-		
-			img.fillRect(dummyRect, 0x00000000);
-		}
+		dummyRect.x = x;
+		dummyRect.y = y;
+		dummyRect.width = width;
+		dummyRect.height = height;
+	
+		img.fillRect(dummyRect, 0x00000000);
 	}
 	
 	public static function clearImage(img:BitmapData)
 	{
-		if(img != null)
+		if(img == null)
 		{
-			img.fillRect(img.rect, 0x00000000);
+			Log.error("Image is null");
+			return;
 		}
+		
+		if(!img.readable)
+		{
+			Log.error("Image isn't readable");
+			return;
+		}
+		
+		img.fillRect(img.rect, 0x00000000);
 	}
 	
 	public static function clearImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
+		if(dest == null || mask == null)
+		{
+			Log.error("Image is null");
+			return;
+		}
+		
+		if(!dest.readable || !mask.readable)
+		{
+			Log.error("Image isn't readable");
+			return;
+		}
+		
 		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
@@ -2622,6 +2695,18 @@ class Script
 	
 	public static function retainImageUsingMask(dest:BitmapData, mask:BitmapData, x:Int, y:Int)
 	{
+		if(dest == null || mask == null)
+		{
+			Log.error("Image is null");
+			return;
+		}
+		
+		if(!dest.readable || !mask.readable)
+		{
+			Log.error("Image isn't readable");
+			return;
+		}
+		
 		if(imageApiAutoscale)
 		{
 			x = Std.int(x * Engine.SCALE);
@@ -2636,82 +2721,137 @@ class Script
 	
 	public static function fillImage(img:BitmapData, color:Int)
 	{
-		if(img != null)
+		if(img == null)
 		{
-			img.fillRect(img.rect, (255 << 24) | color);
+			Log.error("Image is null");
+			return;
 		}
+		
+		if(!img.readable)
+		{
+			Log.error("Image isn't readable");
+			return;
+		}
+		
+		img.fillRect(img.rect, (255 << 24) | color);
 	}
 	
 	public static function filterImage(img:BitmapData, filter:BitmapFilter)
 	{
-		if(img != null)
+		if(img == null)
 		{
-			dummyPoint.x = 0;
-			dummyPoint.y = 0;
-		
-			img.applyFilter(img, img.rect, dummyPoint, filter);
+			Log.error("Image is null");
+			return;
 		}
+		
+		if(!img.readable)
+		{
+			Log.error("Image isn't readable");
+			return;
+		}
+		
+		dummyPoint.x = 0;
+		dummyPoint.y = 0;
+		
+		img.applyFilter(img, img.rect, dummyPoint, filter);
 	}
 	
 	public static function imageSetPixel(img:BitmapData, x:Int, y:Int, color:Int)
 	{
-		if(img != null)
+		if(img == null)
 		{
-			if(imageApiAutoscale && Engine.SCALE != 1)
+			Log.error("Image is null");
+			return;
+		}
+		
+		if(!img.readable)
+		{
+			Log.error("Image isn't readable");
+			return;
+		}
+		
+		if(imageApiAutoscale && Engine.SCALE != 1)
+		{
+			var x2 = Std.int((x+1) * Engine.SCALE);
+			var y2 = Std.int((y+1) * Engine.SCALE);
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+			
+			for(j in x...x2)
 			{
-				var x2 = Std.int((x+1) * Engine.SCALE);
-				var y2 = Std.int((y+1) * Engine.SCALE);
-				x = Std.int(x * Engine.SCALE);
-				y = Std.int(y * Engine.SCALE);
-				
-				for(j in x...x2)
+				for(k in y...y2)
 				{
-					for(k in y...y2)
-					{
-						img.setPixel32(j, k, color | 0xFF000000);
-					}
+					img.setPixel32(j, k, color | 0xFF000000);
 				}
 			}
-			else
-			{
-				img.setPixel32(x, y, color | 0xFF000000);
-			}
+		}
+		else
+		{
+			img.setPixel32(x, y, color | 0xFF000000);
 		}
 	}
 	
 	public static function imageGetPixel(img:BitmapData, x:Int, y:Int):Int
 	{
-		if(img != null)
+		if(img == null)
 		{
-			if(imageApiAutoscale)
-			{
-				x = Std.int(x * Engine.SCALE);
-				y = Std.int(y * Engine.SCALE);
-			}
-			
-			return img.getPixel(x, y);
+			Log.error("Image is null");
+			return 0;
 		}
 		
-		return 0;
+		if(!img.readable)
+		{
+			Log.error("Image isn't readable");
+			return 0;
+		}
+		
+		if(imageApiAutoscale)
+		{
+			x = Std.int(x * Engine.SCALE);
+			y = Std.int(y * Engine.SCALE);
+		}
+		
+		return img.getPixel(x, y);
 	}
 	
 	public static function imageSwapColor(img:BitmapData, originalColor:Int, newColor:Int)
 	{
-		if(img != null)
+		if(img == null)
 		{
-			dummyPoint.x = 0;
-			dummyPoint.y = 0;
-			
-			originalColor = (255 << 24) | originalColor;
-			newColor = (255 << 24) | newColor;
-			
-			img.threshold(img, img.rect, dummyPoint, "==", originalColor, newColor, 0xffffffff, true);
+			Log.error("Image is null");
+			return;
 		}
+		
+		if(!img.readable)
+		{
+			Log.error("Image isn't readable");
+			return;
+		}
+		
+		dummyPoint.x = 0;
+		dummyPoint.y = 0;
+		
+		originalColor = (255 << 24) | originalColor;
+		newColor = (255 << 24) | newColor;
+		
+		img.threshold(img, img.rect, dummyPoint, "==", originalColor, newColor, 0xffffffff, true);
 	}
 	
 	//TODO: Can we do this "in place" without the extra objects?
 	public static function flipImageHorizontal(img:BitmapData)
 	{
+		if(img == null)
+		{
+			Log.error("Image is null");
+			return;
+		}
+		
+		if(!img.readable)
+		{
+			Log.error("Image isn't readable");
+			return;
+		}
+		
 		var matrix:Matrix = new Matrix();
 		matrix.scale(-1, 1);
 		matrix.translate(img.width, 0);
@@ -2728,6 +2868,18 @@ class Script
 	//TODO: Can we do this "in place" without the extra objects?
 	public static function flipImageVertical(img:BitmapData)
 	{
+		if(img == null)
+		{
+			Log.error("Image is null");
+			return;
+		}
+		
+		if(!img.readable)
+		{
+			Log.error("Image isn't readable");
+			return;
+		}
+		
 		var matrix:Matrix = new Matrix();
 		matrix.scale(1, -1);
 		matrix.translate(0, img.height);
