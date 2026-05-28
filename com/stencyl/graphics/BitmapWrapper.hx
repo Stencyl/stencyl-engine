@@ -127,6 +127,39 @@ class BitmapWrapper extends #if use_actor_tilemap TileContainer #else Sprite #en
 		addTile(this.img);
 	}
 	#end
+	
+	public function setImage(?img:Bitmap, ?imgData:BitmapData #if use_actor_tilemap , ?imgTileSource:TileSource, ?imgTile:Tile #end)
+	{
+		#if !use_actor_tilemap
+		removeChildren();
+		#else
+		removeTiles();
+		#end
+
+		if(img != null)
+		{
+			initializeFromBitmap(img);
+		}
+		else if(imgData != null)
+		{
+			initializeFromBitmapData(imgData);
+		}
+		#if use_actor_tilemap
+		else if(imgTileSource != null)
+		{
+			initializeFromTileSource(imgTileSource);
+		}
+		else if(imgTile != null)
+		{
+			initializeFromTile(imgTile);
+		}
+		#end
+		else
+		{
+			this.img = null;
+			Log.error("Couldn't set bitmap wrapper image");
+		}
+	}
 
 	public function set_imgX(x:Float):Float
 	{
