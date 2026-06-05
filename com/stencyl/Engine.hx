@@ -1142,6 +1142,16 @@ class Engine
 				{
 					Data.get().unloadAtlas(atlas);
 					loadedAtlases.remove(atlas);
+					#if use_tilemap
+					var textureAtlasList = Assets.atlasGroups.get(IMG_BASE).get("" + atlas);
+					if(textureAtlasList != null)
+					{
+						for(textureAtlas in textureAtlasList)
+						{
+							textureAtlas.unload();
+						}
+					}
+					#end
 				}
 			}
 
@@ -1153,6 +1163,16 @@ class Engine
 			{
 				if(!loadedAtlases.exists(atlas))
 				{
+					#if use_tilemap
+					var textureAtlasList = Assets.atlasGroups.get(IMG_BASE).get("" + atlas);
+					if(textureAtlasList != null)
+					{
+						for(textureAtlas in textureAtlasList)
+						{
+							textureAtlas.loadImage();
+						}
+					}
+					#end
 					Data.get().loadAtlas(atlas);
 					loadedAtlases.set(atlas, atlas);
 				}

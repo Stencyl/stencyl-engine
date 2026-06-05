@@ -36,16 +36,18 @@ class TextureAtlas
 	private var tilelist:Array<TileData>;
 	private var filemap:Map<String, FileData>;
 	private var tileCache:Map<String, BitmapData>;
-	private var id:Int;
+	private var imgBase:String;
+	private var id:String;
 	
-	public function new(id:Int)
+	public function new(imgBase:String, id:String)
 	{
+		this.imgBase = imgBase;
 		this.id = id;
 	}
 
 	public function loadData()
 	{
-		var textBytes = Assets.getText('assets/atlases/${Engine.IMG_BASE}/atlas-$id.data');
+		var textBytes = Assets.getText('assets/atlases/$imgBase/atlas-$id.data');
 		
 		var atlasData:List<TileData> = haxe.Unserializer.run(textBytes);
 
@@ -86,7 +88,7 @@ class TextureAtlas
 	
 	public function loadImage()
 	{
-		var img = Assets.getBitmapData('assets/atlases/${Engine.IMG_BASE}/atlas-$id.png', false);
+		var img = Assets.getBitmapData('assets/atlases/$imgBase/atlas-$id.png', false);
 		tileset = new Tileset(img);
 		GLUtil.uploadTexture(img, true);
 		for(tile in tilelist)
@@ -96,17 +98,17 @@ class TextureAtlas
 		tileCache = new Map<String, BitmapData>();
 	}
 	
-	public function getTile(id:String, useCache:Bool=true):BitmapData
+	public function getTile(filename:String, useCache:Bool=true):BitmapData
 	{
 		var img:BitmapData = null;
 		if(useCache)
 		{
-			img = tileCache.get(id);
+			img = tileCache.get(filename);
 			if(img != null)
 				return img;
 		}
 		
-		var regionData = getFileData(id).regions[0];
+		var regionData = getFileData(filename).regions[0];
 		img = new BitmapData(0, 0, true, 0);
 		img.__resize(regionData.width, regionData.height);
 		
@@ -118,16 +120,16 @@ class TextureAtlas
 		img.__tileSource = ts;
 		
 		if(useCache)
-			tileCache.set(id, img);
+			tileCache.set(filename, img);
 		
 		return img;
 	}
 	
-	public function getTiles(id:String):Array<BitmapData>
+	public function getTiles(filename:String):Array<BitmapData>
 	{
 		var imgs = [];
 		
-		var fileData = getFileData(id);
+		var fileData = getFileData(filename);
 		for(regionData in fileData.regions)
 		{
 			if(regionData == null)

@@ -23,32 +23,52 @@ class Assets
 	#end
 	
 	#if use_tilemap
-	public static var atlases = new Array<TextureAtlas>();
+	
+	//img base -> atlas id -> atlas
+	public static var atlases = new Map<String,Map<String,TextureAtlas>>();
+	
+	//asset path -> atlas
 	public static var imageAtlasMap = new Map<String,TextureAtlas>();
+	
+	//asset path -> image
 	public static var imageAtlasCache = new Map<String,BitmapData>();
+	
+	//img base -> atlas group id -> atlases
+	public static var atlasGroups = new Map<String,Map<String,Array<TextureAtlas>>>();
 	
 	public static function loadAtlases()
 	{
 		var atlasConfig = Utils.getConfigText("atlases/list.json");
 		if(atlasConfig == null || atlasConfig == "")
 			return;
-		var atlasCounts = Json.parse(atlasConfig);
-		
-		var atlasesForThisScale = Reflect.field(atlasCounts, Engine.IMG_BASE);
-		for(field in Reflect.fields(atlasCounts))
+		var atlasLists = Json.parse(atlasConfig);
+
+		for(imgBase in Reflect.fields(atlasLists))
 		{
-			var shouldPreload = (field == Engine.IMG_BASE);
-			var count = Reflect.field(atlasCounts, field);
-			for(i in 0...atlasesForThisScale)
+			var atlasesForThisImgBase = new Map<String, TextureAtlas>();
+			var atlasGroupsForThisImgBase = new Map<String, Array<TextureAtlas>>();
+
+			var dataForScale:Dynamic = Reflect.field(atlasLists, imgBase);
+			for(atlasGroupId in Reflect.fields(dataForScale))
 			{
-				var atlas = new TextureAtlas(i);
-				atlas.loadData();
-				for(filename in atlas.listFiles())
+				var atlasesForThisGroup = new Array<TextureAtlas>();
+				var atlasIdList:Array<String> = Reflect.field(dataForScale, atlasGroupId);
+				for(atlasId in atlasIdList)
 				{
-					imageAtlasMap.set(filename, atlas);
+					var atlas = new TextureAtlas(imgBase, atlasId);
+					atlas.loadData();
+					for(filename in atlas.listFiles())
+					{
+						imageAtlasMap.set(filename, atlas);
+					}
+					atlasesForThisImgBase.set(atlasId, atlas);
+					atlasesForThisGroup.push(atlas);
 				}
-				atlases[i] = atlas;
+				atlasGroupsForThisImgBase.set(atlasGroupId, atlasesForThisGroup);
 			}
+			
+			atlases.set(imgBase, atlasesForThisImgBase);
+			atlasGroups.set(imgBase, atlasGroupsForThisImgBase);
 		}
 	}
 	
