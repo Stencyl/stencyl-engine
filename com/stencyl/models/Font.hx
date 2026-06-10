@@ -1,8 +1,12 @@
 package com.stencyl.models;
 
+import com.stencyl.io.mbs.bitmapfont.MbsBitmapFont;
+import com.stencyl.io.mbs.Typedefs;
 import com.stencyl.graphics.G;
 import com.stencyl.graphics.fonts.BitmapFont;
 import com.stencyl.utils.Assets;
+
+import mbs.io.*;
 
 class Font extends Resource
 {	
@@ -69,7 +73,7 @@ class Font extends Resource
 		if(isDefault)
 		{
 			defaultFont = font = loadFont(
-				"assets/graphics/default-font.fnt",
+				"assets/graphics/default-font.fnt.mbs",
 				"assets/graphics/default-font.png"
 			);
 			fontScale = 1 * Engine.SCALE;
@@ -79,7 +83,7 @@ class Font extends Resource
 		else
 		{
 			font = loadFont(
-				'assets/graphics/${Engine.IMG_BASE}/font-$ID.fnt',
+				'assets/graphics/${Engine.IMG_BASE}/font-$ID.fnt.mbs',
 				'assets/graphics/${Engine.IMG_BASE}/font-$ID.png'
 			);
 
@@ -91,18 +95,19 @@ class Font extends Resource
 	
 	private static function loadFont(dataName:String, imageName:String):BitmapFont
 	{
-		var textBytes = Assets.getText(dataName);
-		var xml = Xml.parse(textBytes);
+		var mbs = new MbsReader(Typedefs.get(), false, true);
+		mbs.readData(Assets.getBytes(dataName));
+		var fontMbs = (mbs.getRoot() : MbsBitmapFont);
 		#if use_tilemap
 		var textureAtlas = Assets.getAtlasForImage(imageName);
 		if(textureAtlas != null)
 		{
-			return new BitmapFont().loadAngelCodeWithAtlas(textureAtlas, imageName, xml);
+			return new BitmapFont().loadAngelCodeWithAtlas(textureAtlas, imageName, fontMbs);
 		}
 		#end
 		
 		var img = Assets.getBitmapData(imageName, false);
-		return new BitmapFont().loadAngelCode(img, xml);
+		return new BitmapFont().loadAngelCode(img, fontMbs);
 	}
 	
 	override public function unloadGraphics()

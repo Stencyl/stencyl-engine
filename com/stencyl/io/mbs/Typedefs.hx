@@ -107,11 +107,19 @@ class Typedefs extends MbsTypedefSet
 		types.push(com.stencyl.io.mbs.game.autotile.MbsAutotileFormat.MBS_AUTOTILE_FORMAT);
 		com.stencyl.io.mbs.game.autotile.MbsCorners.initializeType();
 		types.push(com.stencyl.io.mbs.game.autotile.MbsCorners.MBS_CORNERS);
+		com.stencyl.io.mbs.bitmapfont.MbsInfo.initializeType();
+		types.push(com.stencyl.io.mbs.bitmapfont.MbsInfo.MBS_INFO);
+		com.stencyl.io.mbs.bitmapfont.MbsCommon.initializeType();
+		types.push(com.stencyl.io.mbs.bitmapfont.MbsCommon.MBS_COMMON);
+		com.stencyl.io.mbs.bitmapfont.MbsChar.initializeType();
+		types.push(com.stencyl.io.mbs.bitmapfont.MbsChar.MBS_CHAR);
+		com.stencyl.io.mbs.bitmapfont.MbsBitmapFont.initializeType();
+		types.push(com.stencyl.io.mbs.bitmapfont.MbsBitmapFont.MBS_BITMAP_FONT);
 		
 	}
 	
 	override public function getHash():Int
 	{
-		return -1349349184;
+		return 1164685939;
 	}
 }

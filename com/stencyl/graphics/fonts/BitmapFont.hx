@@ -1,5 +1,6 @@
 package com.stencyl.graphics.fonts;
 
+import com.stencyl.io.mbs.bitmapfont.*;
 import com.stencyl.Config;
 
 #if use_tilemap
@@ -69,12 +70,12 @@ class BitmapFont
 	}
 	
 	/**
-	 * Loads font data in AngelCode's format
+	 * Loads font data in mbs version of AngelCode's format
 	 * @param	pBitmapData	font image source
-	 * @param	pXMLData	font data in XML format
+	 * @param	fontData	font data in MBS format
 	 * @return				this font
 	 */
-	public function loadAngelCode(pBitmapData:BitmapData, pXMLData:Xml):BitmapFont
+	public function loadAngelCode(pBitmapData:BitmapData, fontData:MbsBitmapFont):BitmapFont
 	{
 		reset();
 		
@@ -90,86 +91,64 @@ class BitmapFont
 			_tileset = new Tileset(pBitmapData);
 			#end
 			
-			var chars:Xml = null;
-			for (node in pXMLData.elements())
+			var chars = fontData.getChars();
+			var info = fontData.getInfo();
+			var common = fontData.getCommon();
+			xSpacing = info.getXSpacing();
+			ySpacing = info.getYSpacing();
+			lineHeight = common.getLineHeight();
+			baseline = common.getBase();
+
+			for(i in 0...chars.length())
 			{
-				if (node.nodeName == "font")
+				var char = chars.getNextObject();
+				
+				var symbol:FontSymbol = new FontSymbol();
+				#if use_tilemap
+				symbol.tileID = letterID;
+				#end
+				symbol.xoffset = char.getXoffset();
+				symbol.yoffset = char.getYoffset();
+				symbol.xadvance = char.getXadvance();
+				
+				rect.x = char.getX();
+				rect.y = char.getY();
+				rect.width = char.getWidth();
+				rect.height = char.getHeight();
+				
+				charCode = char.getId();
+				charString = String.fromCharCode(charCode);
+				_glyphString += charString;
+				
+				#if !use_tilemap
+				if (charString != " " && charString != "")
 				{
-					for (nodeChild in node.elements())
-					{
-						if (nodeChild.nodeName == "info")
-						{
-							var spacing = [for(s in nodeChild.get("spacing").split(",")) Std.parseInt(s)];
-							xSpacing = spacing[0];
-							ySpacing = spacing[1];
-						}
-						else if (nodeChild.nodeName == "common")
-						{
-							lineHeight = Std.parseInt(nodeChild.get("lineHeight"));
-							baseline = Std.parseInt(nodeChild.get("base"));
-						}
-						else if (nodeChild.nodeName == "chars")
-						{
-							chars = nodeChild;
-						}
-					}
+					symbol.bitmap = new BitmapData(Std.int(rect.width), Std.int(rect.height), true, 0x0);
+					symbol.bitmap.copyPixels(pBitmapData, rect, ZERO_POINT, null, null, true);
 				}
-			}
-			
-			if (chars != null)
-			{
-				for (node in chars.elements())
+				else
 				{
-					if (node.nodeName == "char")
-					{
-						var symbol:FontSymbol = new FontSymbol();
-						#if use_tilemap
-						symbol.tileID = letterID;
-						#end
-						symbol.xoffset = Std.parseInt(node.get("xoffset"));
-						symbol.yoffset = Std.parseInt(node.get("yoffset"));
-						symbol.xadvance = Std.parseInt(node.get("xadvance"));
-						
-						rect.x = Std.parseInt(node.get("x"));
-						rect.y = Std.parseInt(node.get("y"));
-						rect.width = Std.parseInt(node.get("width"));
-						rect.height = Std.parseInt(node.get("height"));
-						
-						charCode = Std.parseInt(node.get("id"));
-						charString = String.fromCharCode(charCode);
-						_glyphString += charString;
-						
-						#if !use_tilemap
-						if (charString != " " && charString != "")
-						{
-							symbol.bitmap = new BitmapData(Std.int(rect.width), Std.int(rect.height), true, 0x0);
-							symbol.bitmap.copyPixels(pBitmapData, rect, ZERO_POINT, null, null, true);
-						}
-						else
-						{
-							symbol.bitmap = null;
-						}
-						
-						var oldSymbol = _glyphs.get(charCode);
-						if(oldSymbol != null && oldSymbol.bitmap != null)
-							oldSymbol.bitmap.dispose();
-						#else
-						if (charString != " " && charString != "" && rect.width > 0 && rect.height > 0)
-						{
-							symbol.tileID = _tileset.addRect(rect);
-						}
-						else
-						{
-							symbol.tileID = -1;
-						}
-						#end
-						
-						_glyphs.set(charCode, symbol);
-						_num_letters++;
-						
-						letterID++;
-					}
+					symbol.bitmap = null;
 				}
+				
+				var oldSymbol = _glyphs.get(charCode);
+				if(oldSymbol != null && oldSymbol.bitmap != null)
+					oldSymbol.bitmap.dispose();
+				#else
+				if (charString != " " && charString != "" && rect.width > 0 && rect.height > 0)
+				{
+					symbol.tileID = _tileset.addRect(rect);
+				}
+				else
+				{
+					symbol.tileID = -1;
+				}
+				#end
+				
+				_glyphs.set(charCode, symbol);
+				_num_letters++;
+				
+				letterID++;
 			}
 		}
 		
@@ -178,12 +157,12 @@ class BitmapFont
 	
 	#if use_tilemap
 	/**
-	 * Loads font data in AngelCode's format
+	 * Loads font data in mbs version of AngelCode's format
 	 * @param	pBitmapData	font image source
-	 * @param	pXMLData	font data in XML format
+	 * @param	fontData	font data in MBS format
 	 * @return				this font
 	 */
-	public function loadAngelCodeWithAtlas(textureAtlas:TextureAtlas, fileID:String, pXMLData:Xml):BitmapFont
+	public function loadAngelCodeWithAtlas(textureAtlas:TextureAtlas, fileID:String, fontData:MbsBitmapFont):BitmapFont
 	{
 		reset();
 		
@@ -195,52 +174,30 @@ class BitmapFont
 
 		var fileData = textureAtlas.getFileData(fileID);
 		
-		var chars:Xml = null;
-		for (node in pXMLData.elements())
-		{
-			if (node.nodeName == "font")
-			{
-				for (nodeChild in node.elements())
-				{
-					if (nodeChild.nodeName == "info")
-					{
-						var spacing = [for(s in nodeChild.get("spacing").split(",")) Std.parseInt(s)];
-						xSpacing = spacing[0];
-						ySpacing = spacing[1];
-					}
-					else if (nodeChild.nodeName == "common")
-					{
-						lineHeight = Std.parseInt(nodeChild.get("lineHeight"));
-						baseline = Std.parseInt(nodeChild.get("base"));
-					}
-					else if (nodeChild.nodeName == "chars")
-					{
-						chars = nodeChild;
-					}
-				}
-			}
-		}
+		var chars = fontData.getChars();
+		var info = fontData.getInfo();
+		var common = fontData.getCommon();
+		xSpacing = info.getXSpacing();
+		ySpacing = info.getYSpacing();
+		lineHeight = common.getLineHeight();
+		baseline = common.getBase();
 		
-		if (chars != null)
+		for(i in 0...chars.length())
 		{
-			for (node in chars.elements())
-			{
-				if (node.nodeName == "char")
-				{
-					var symbol:FontSymbol = new FontSymbol();
-					symbol.tileID = fileData.regions[_num_letters].tileID;
-					symbol.xoffset = Std.parseInt(node.get("xoffset"));
-					symbol.yoffset = Std.parseInt(node.get("yoffset"));
-					symbol.xadvance = Std.parseInt(node.get("xadvance"));
-					
-					charCode = Std.parseInt(node.get("id"));
-					charString = String.fromCharCode(charCode);
-					_glyphString += charString;
-					
-					_glyphs.set(charCode, symbol);
-					_num_letters++;
-				}
-			}
+			var char = chars.getNextObject();
+
+			var symbol:FontSymbol = new FontSymbol();
+			symbol.tileID = fileData.regions[_num_letters].tileID;
+			symbol.xoffset = char.getXoffset();
+			symbol.yoffset = char.getYoffset();
+			symbol.xadvance = char.getXadvance();
+			
+			charCode = char.getId();
+			charString = String.fromCharCode(charCode);
+			_glyphString += charString;
+			
+			_glyphs.set(charCode, symbol);
+			_num_letters++;
 		}
 		
 		return this;
