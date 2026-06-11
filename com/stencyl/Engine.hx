@@ -1143,7 +1143,7 @@ class Engine
 					Data.get().unloadAtlas(atlas);
 					loadedAtlases.remove(atlas);
 					#if use_tilemap
-					var textureAtlasList = Assets.atlasGroups.get(IMG_BASE).get("" + atlas);
+					var textureAtlasList = Assets.atlasGroups.get(IMG_BASE)?.get("" + atlas);
 					if(textureAtlasList != null)
 					{
 						for(textureAtlas in textureAtlasList)
@@ -1164,7 +1164,7 @@ class Engine
 				if(!loadedAtlases.exists(atlas))
 				{
 					#if use_tilemap
-					var textureAtlasList = Assets.atlasGroups.get(IMG_BASE).get("" + atlas);
+					var textureAtlasList = Assets.atlasGroups.get(IMG_BASE)?.get("" + atlas);
 					if(textureAtlasList != null)
 					{
 						for(textureAtlas in textureAtlasList)
