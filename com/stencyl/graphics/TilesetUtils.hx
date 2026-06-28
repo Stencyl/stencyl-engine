@@ -1,5 +1,7 @@
 package com.stencyl.graphics;
 
+#if use_actor_tilemap
+
 import com.stencyl.utils.Log;
 
 import haxe.io.Bytes;
@@ -51,3 +53,5 @@ class TilesetUtils
 		gl.texSubImage2D(gl.TEXTURE_2D, 0, Std.int(r.x), Std.int(r.y), Std.int(r.width), Std.int(r.height), format, gl.UNSIGNED_BYTE, frameData.data);
 	}
 }
+
+#end
