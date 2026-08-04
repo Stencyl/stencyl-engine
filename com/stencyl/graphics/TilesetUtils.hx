@@ -1,6 +1,6 @@
 package com.stencyl.graphics;
 
-#if use_actor_tilemap
+#if use_tilemap
 
 import com.stencyl.utils.Log;
 
