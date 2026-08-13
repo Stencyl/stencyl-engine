@@ -2992,6 +2992,10 @@ class Engine
 				enter.deactivate();
 				enter.cleanup();
 				enter = null;
+				
+				#if cpp
+				Gc.run(true);
+				#end
 			}
 		}
 			
