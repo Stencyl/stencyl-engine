@@ -18,15 +18,15 @@ import openfl.display.Shape;
 import openfl.display.Graphics;
 import openfl.display.MovieClip;
 import openfl.display.StageDisplayState;
-import openfl.text.TextField;
 import openfl.display.DisplayObjectContainer;
 import openfl.events.Event as FlashEvent;
 import openfl.events.FullScreenEvent;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.events.TouchEvent;
-import openfl.Lib;
+import openfl.text.TextField;
 import openfl.ui.Keyboard;
+import openfl.Lib;
 
 import com.stencyl.behavior.Attribute;
 import com.stencyl.behavior.Behavior;
