@@ -12,23 +12,19 @@ import com.stencyl.utils.motion.*;
 
 class CrossfadeTransition extends Transition
 {	
-	private var oldImg:Sprite;
 	private var bitmap:BitmapData;
 
 	public var rect:Shape;
 	public var rectAlpha:TweenFloat;
 		
-	public function new(oldImg:Sprite, duration:Float) 
+	public function new(duration:Float) 
 	{
 		super(duration);
-		
-		this.oldImg = oldImg;
 	}
 
 	override public function memoOldScene()
 	{
-		bitmap = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
-		bitmap.draw(oldImg);
+		bitmap = Engine.engine.captureScreenWithShaders();
 	}
 	
 	override public function start()
@@ -37,7 +33,7 @@ class CrossfadeTransition extends Transition
 
 		rect = new Shape();
 		var g = rect.graphics;
-		g.beginBitmapFill(bitmap);
+		g.beginBitmapFill(bitmap, null, false, true);
 		g.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
 		g.endFill(); 
 				
@@ -58,7 +54,6 @@ class CrossfadeTransition extends Transition
 	
 	override public function cleanup()
 	{
-		oldImg = null;
 		bitmap = null;
 		
 		if(rect != null)

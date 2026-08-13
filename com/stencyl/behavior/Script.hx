@@ -1227,7 +1227,7 @@ class Script
 		
 	public static function createCrossfadeTransition(duration:Float):Transition
 	{
-		return new com.stencyl.graphics.transitions.CrossfadeTransition(engine.root, duration);
+		return new com.stencyl.graphics.transitions.CrossfadeTransition(duration);
 	}
 	
 	public static function createFadeOut(duration:Float, color:Int=0xff000000):Transition

@@ -6,6 +6,7 @@ import cpp.vm.Gc;
 
 import polygonal.ds.IntHashTable;
 
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.display.DisplayObject;
@@ -2011,6 +2012,39 @@ class Engine
 		Input.update();
 		
 		world = null;
+	}
+	
+	public function captureScreenWithShaders():BitmapData 
+	{
+		var targetWidth = Std.int(screenWidth * SCALE);
+		var targetHeight = Std.int(screenHeight * SCALE);
+		var capture:BitmapData = new BitmapData(targetWidth, targetHeight, true, 0x00000000);
+
+		#if !flash
+		if(stage.context3D != null) 
+		{
+			var tempBmp = new BitmapData(stage.stageWidth, stage.stageHeight, true, 0x00000000);
+			stage.context3D.drawToBitmapData(tempBmp);
+
+			var matrix = new Matrix();
+			matrix.translate(-root.x, -root.y);
+			matrix.scale(
+				targetWidth / (screenWidth * SCALE * root.scaleX), 
+				targetHeight / (screenHeight * SCALE * root.scaleY)
+			);
+
+			capture.draw(tempBmp, matrix, null, null, null, true);
+			tempBmp.dispose();
+		}
+		else 
+		{
+			capture.draw(master);
+		}
+		#else
+		capture.draw(master);
+		#end
+
+		return capture;
 	}
 	
 	public function switchScene(sceneID:Int, leave:Transition=null, enter:Transition=null)

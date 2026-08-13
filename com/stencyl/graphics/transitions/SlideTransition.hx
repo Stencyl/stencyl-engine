@@ -51,9 +51,7 @@ class SlideTransition extends Transition
 
 	override public function memoOldScene()
 	{
-		oldBitmap = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
-		oldBitmap.draw(sceneCol);
-		oldBitmap.draw(sceneSpr);
+		oldBitmap = Engine.engine.captureScreenWithShaders();
 	}
 	
 	override public function start()
