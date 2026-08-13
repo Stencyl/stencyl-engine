@@ -54,10 +54,17 @@ class CrossfadeTransition extends Transition
 	
 	override public function cleanup()
 	{
-		bitmap = null;
+		if (bitmap != null)
+		{
+			bitmap.dispose();
+			bitmap = null;
+		}
+
+		rectAlpha = null;
 		
 		if(rect != null)
 		{
+			rect.graphics.clear();
 			Engine.engine.transitionLayer.removeChild(rect);
 			rect = null;
 		}
