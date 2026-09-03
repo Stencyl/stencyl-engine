@@ -1869,6 +1869,8 @@ class Engine
 			debugDrawer.m_sprite.graphics.clear();
 		}
 
+		transitionLayer.graphics.clear();
+
 		for(layer in interactiveLayers)
 		{
 			layer.clear();
