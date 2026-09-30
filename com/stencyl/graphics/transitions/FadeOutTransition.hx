@@ -1,7 +1,5 @@
 package com.stencyl.graphics.transitions;
 
-import openfl.display.BitmapData;
-import openfl.geom.ColorTransform;
 import openfl.display.Shape;
 
 import com.stencyl.Engine;
@@ -41,14 +39,16 @@ class FadeOutTransition extends Transition
 	
 	override public function update(elapsedTime:Float)
 	{
-		rect.alpha = rectAlpha.value;
+		if(rect != null && rectAlpha != null) rect.alpha = rectAlpha.value;
 	}
 	
 	override public function cleanup()
 	{
+		rectAlpha = null;
 		if(rect != null)
 		{
-			Engine.engine.transitionLayer.removeChild(rect);
+			if(rect.parent != null) rect.parent.removeChild(rect);
+			rect.graphics.clear();
 			rect = null;
 		}
 	}

@@ -1,9 +1,7 @@
 package com.stencyl.graphics.transitions;
 
 import openfl.geom.Rectangle;
-import openfl.display.Sprite;
 import openfl.display.Graphics;
-import openfl.display.BitmapData;
 import openfl.display.Shape;
 
 import com.stencyl.Engine;
@@ -60,13 +58,6 @@ class BlindsTransition extends Transition
 		rect = new Shape();
 		graphics = rect.graphics;
 		
-		if (direction == Transition.IN)
-		{
-			graphics.beginFill(color);
-			graphics.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
-			graphics.endFill();
-		}		
-		
 		Engine.engine.transitionLayer.addChild(rect);
 		
 		blindWidth.tween(beginBlindWidth, endBlindWidth, Easing.linear, Std.int(duration*1000)).doOnComplete(stop);
@@ -96,9 +87,14 @@ class BlindsTransition extends Transition
 	
 	override public function cleanup()
 	{		
+		blindWidth = null;
+		blindRect = null;
+		graphics = null;
+
 		if(rect != null)
 		{
-			Engine.engine.transitionLayer.removeChild(rect);
+			if(rect.parent != null) rect.parent.removeChild(rect);
+			rect.graphics.clear();
 			rect = null;
 		}
 	}

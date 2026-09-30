@@ -2,9 +2,8 @@ package com.stencyl.graphics.transitions;
 
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.display.Sprite;
+import openfl.display.DisplayObject;
 import openfl.display.Graphics;
-import openfl.display.BitmapData;
 import openfl.display.Shape;
 
 import com.stencyl.Engine;
@@ -22,14 +21,18 @@ class BubblesTransition extends Transition
 	
 	private var rect:Shape;
 	private var graphics:Graphics;
-	private var drawBitmap:BitmapData;
 	
 	private var bubblePositions:Array<Point>;
-	private var bubbleRect:Rectangle;
 	
 	private var screenWidth:Int;
 	private var screenHeight:Int;
 		
+	private var sceneMask:Shape;
+	private var colorMask:Shape;
+	private var transitionColor:Shape;
+	private var previousSceneMask:DisplayObject;
+	private var previousColorMask:DisplayObject;
+
 	public function new(direction:String, duration:Float, numBubbles:Int = 50, color:Int = 0xff000000) 
 	{
 		super(duration);
@@ -43,20 +46,8 @@ class BubblesTransition extends Transition
 	{
 		active = true;
 		
-		rect = new Shape();
-		graphics = rect.graphics;
-	
 		screenWidth = Std.int(Engine.screenWidth * Engine.SCALE);
 		screenHeight = Std.int(Engine.screenHeight * Engine.SCALE);
-		
-		if (direction == Transition.IN)
-		{
-			graphics.beginFill(color);
-			graphics.drawRect(0, 0, screenWidth, screenHeight);
-			graphics.endFill();
-		}		
-		
-		drawBitmap = new BitmapData(screenWidth, screenHeight);		
 		
 		var screenRatio:Float = screenWidth / screenHeight;
 		var vertBubbles:Int = Std.int(Math.sqrt(numBubbles / screenRatio));
@@ -87,38 +78,48 @@ class BubblesTransition extends Transition
 		}
 			
 		beginRadius = 0; 
-		endRadius = Math.ceil(Point.distance(new Point(0, 0), new Point(bubbleSize, bubbleSize)));
-			
+		endRadius = Math.ceil(Math.sqrt(bubbleSize * bubbleSize * 2));
 		radius = new TweenFloat();
-		
-		Engine.engine.transitionLayer.addChild(rect);
-		
+
+		if(direction == Transition.IN)
+		{
+			transitionColor = new Shape();
+			transitionColor.graphics.beginFill(color);
+			transitionColor.graphics.drawRect(0, 0, screenWidth, screenHeight);
+			transitionColor.graphics.endFill();
+
+			sceneMask = new Shape();
+			colorMask = new Shape();
+			previousSceneMask = Engine.engine.master.mask;
+			previousColorMask = Engine.engine.colorLayer.mask;
+
+			var colorIndex:Int = Engine.engine.root.getChildIndex(Engine.engine.colorLayer);
+			Engine.engine.root.addChildAt(transitionColor, colorIndex);
+			Engine.engine.root.addChild(sceneMask);
+			Engine.engine.root.addChild(colorMask);
+			Engine.engine.master.mask = sceneMask;
+			Engine.engine.colorLayer.mask = colorMask;
+		}
+		else
+		{
+			rect = new Shape();
+			graphics = rect.graphics;
+			Engine.engine.transitionLayer.addChild(rect);
+		}
+
 		radius.tween(beginRadius, endRadius, Easing.linear, Std.int(duration*1000)).doOnComplete(stop);
 	}
 	
 	override public function draw(g:Graphics)
 	{
-		graphics.clear();
-			
 		if(direction == Transition.IN)
 		{
-			drawBitmap.draw(Engine.engine.colorLayer);
-			drawBitmap.draw(Engine.engine.master);
-			
-			graphics.beginFill(color);
-			graphics.drawRect(0, 0, screenWidth, screenHeight);
-			graphics.endFill();
-			
-			for (p in bubblePositions)
-			{
-				graphics.beginBitmapFill(drawBitmap);
-				graphics.drawCircle(p.x, p.y, radius.value);
-				graphics.endFill();
-			}
+			drawBubbleMask(sceneMask.graphics);
+			drawBubbleMask(colorMask.graphics);
 		}
 		else if(direction == Transition.OUT)
 		{
-				
+			graphics.clear();
 			for (p in bubblePositions)
 			{
 				graphics.beginFill(color);
@@ -128,11 +129,56 @@ class BubblesTransition extends Transition
 		}		
 	}
 	
+	private function drawBubbleMask(g:Graphics):Void
+	{
+		g.clear();
+		for(p in bubblePositions)
+		{
+			g.beginFill(0xffffff);
+			g.drawCircle(p.x, p.y, radius.value);
+			g.endFill();
+		}
+	}
+
 	override public function cleanup()
-	{		
+	{
+		radius = null;
+		bubblePositions = null;
+		graphics = null;
+
+		if(direction == Transition.IN)
+		{
+			Engine.engine.master.mask = previousSceneMask;
+			Engine.engine.colorLayer.mask = previousColorMask;
+			previousSceneMask = null;
+			previousColorMask = null;
+
+			if(sceneMask != null)
+			{
+				if(sceneMask.parent != null) sceneMask.parent.removeChild(sceneMask);
+				sceneMask.graphics.clear();
+				sceneMask = null;
+			}
+
+			if(colorMask != null)
+			{
+				if(colorMask.parent != null) colorMask.parent.removeChild(colorMask);
+				colorMask.graphics.clear();
+				colorMask = null;
+			}
+
+			if(transitionColor != null)
+			{
+				if(transitionColor.parent != null) transitionColor.parent.removeChild(transitionColor);
+				transitionColor.graphics.clear();
+				transitionColor = null;
+			}
+		}
+
 		if(rect != null)
 		{
-			Engine.engine.transitionLayer.removeChild(rect);
+			if(rect.parent != null) rect.parent.removeChild(rect);
+			rect.graphics.clear();
 			rect = null;
 		}
 	}

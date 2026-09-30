@@ -1,11 +1,10 @@
 package com.stencyl.graphics.transitions;
 
 import openfl.geom.Matrix;
-import openfl.geom.Point;
 import openfl.display.Sprite;
 import openfl.display.Graphics;
-import openfl.display.BitmapData;
 import openfl.display.Shape;
+import openfl.display.Bitmap;
 
 import com.stencyl.Engine;
 import com.stencyl.utils.motion.*;
@@ -15,11 +14,17 @@ class SlideTransition extends Transition
 {
 	private var sceneSpr:Sprite;
 	private var sceneCol:Shape;
-	private var oldBitmap:BitmapData;
-	private var newBitmap:BitmapData;
-	private var drawBitmap:BitmapData;
-	private var graphics:Graphics;
-	
+	private var snapshot:TransitionSnapshot;
+
+	private var captureBaseX:Float = 0;
+	private var captureBaseY:Float = 0;
+	private var rootBaseX:Float = 0;
+	private var rootBaseY:Float = 0;
+	private var sceneSprBaseX:Float = 0;
+	private var sceneSprBaseY:Float = 0;
+	private var sceneColBaseX:Float = 0;
+	private var sceneColBaseY:Float = 0;
+
 	public var oldSceneMatrix:Matrix;
 	public var newSceneMatrix:Matrix;
 	public var osm_xy:TweenFloat2;
@@ -33,7 +38,7 @@ class SlideTransition extends Transition
 	public static var SLIDE_LEFT:String = "left";
 	public static var SLIDE_RIGHT:String = "right";
 	
-	public var rect:Shape;
+	public var rect:Bitmap;
 	
 	public function new(sceneSpr:Sprite, sceneCol:Shape, duration:Float, slideDirection:String) 
 	{
@@ -51,32 +56,38 @@ class SlideTransition extends Transition
 
 	override public function memoOldScene()
 	{
-		oldBitmap = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
-		oldBitmap.draw(sceneCol);
-		oldBitmap.draw(sceneSpr);
+		snapshot = TransitionSnapshot.capture(sceneSpr, sceneCol);
 	}
 	
 	override public function start()
 	{
+		oldSceneMatrix.identity();
+		newSceneMatrix.identity();
+		tx = 0;
+		ty = 0;
+
+		var slideWidth:Float = Engine.screenWidth * Engine.SCALE;
+		var slideHeight:Float = Engine.screenHeight * Engine.SCALE;
+
 		if(slideDirection == SLIDE_UP)
 		{
-			newSceneMatrix.ty = -Engine.screenHeight * Engine.SCALE;
-			ty = Engine.screenHeight * Engine.SCALE;
+			newSceneMatrix.ty = -slideHeight;
+			ty = slideHeight;
 		}
 		else if(slideDirection == SLIDE_DOWN)
 		{
-			newSceneMatrix.ty = Engine.screenHeight * Engine.SCALE;
-			ty = -Engine.screenHeight * Engine.SCALE;
+			newSceneMatrix.ty = slideHeight;
+			ty = -slideHeight;
 		}
 		else if(slideDirection == SLIDE_LEFT)
 		{
-			newSceneMatrix.tx = -Engine.screenWidth * Engine.SCALE;
-			tx = Engine.screenWidth * Engine.SCALE;
+			newSceneMatrix.tx = -slideWidth;
+			tx = slideWidth;
 		}
 		else if(slideDirection == SLIDE_RIGHT)
 		{
-			newSceneMatrix.tx = Engine.screenWidth * Engine.SCALE;
-			tx = -Engine.screenWidth * Engine.SCALE;
+			newSceneMatrix.tx = slideWidth;
+			tx = -slideWidth;
 		}
 		else
 		{
@@ -86,18 +97,21 @@ class SlideTransition extends Transition
 		}
 
 		active = true;
-		
-		newBitmap = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
-		drawBitmap = new BitmapData(Std.int(Engine.screenWidth * Engine.SCALE), Std.int(Engine.screenHeight * Engine.SCALE));
-		
-		rect = new Shape();
-		graphics = rect.graphics;		
-		graphics.beginBitmapFill(oldBitmap);
-		graphics.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
-		graphics.endFill();
-		
-		Engine.engine.transitionLayer.addChild(rect);
-		
+		rect = snapshot.createBitmap();
+		captureBaseX = rect.x;
+		captureBaseY = rect.y;
+
+		sceneSprBaseX = sceneSpr.x;
+		sceneSprBaseY = sceneSpr.y;
+		sceneColBaseX = sceneCol.x;
+		sceneColBaseY = sceneCol.y;
+		sceneSpr.x = sceneSprBaseX + newSceneMatrix.tx;
+		sceneSpr.y = sceneSprBaseY + newSceneMatrix.ty;
+		sceneCol.x = sceneColBaseX + newSceneMatrix.tx;
+		sceneCol.y = sceneColBaseY + newSceneMatrix.ty;
+
+		snapshot.addToDisplay(rect);
+
 		osm_xy = new TweenFloat2();
 		nsm_xy = new TweenFloat2();
 		osm_xy.tween(oldSceneMatrix.tx, tx, oldSceneMatrix.ty, ty, Easing.linear, Std.int(duration*1000));
@@ -107,35 +121,53 @@ class SlideTransition extends Transition
 	
 	override public function update(elapsedTime:Float)
 	{
+		if(osm_xy == null || nsm_xy == null) return;
+
 		oldSceneMatrix.tx = osm_xy.value1;
 		oldSceneMatrix.ty = osm_xy.value2;
 		newSceneMatrix.tx = nsm_xy.value1;
 		newSceneMatrix.ty = nsm_xy.value2;
+
+		if(rect != null)
+		{
+			rect.x = captureBaseX + oldSceneMatrix.tx;
+			rect.y = captureBaseY + oldSceneMatrix.ty;
+		}
+
+		sceneSpr.x = sceneSprBaseX + newSceneMatrix.tx;
+		sceneSpr.y = sceneSprBaseY + newSceneMatrix.ty;
+		sceneCol.x = sceneColBaseX + newSceneMatrix.tx;
+		sceneCol.y = sceneColBaseY + newSceneMatrix.ty;
 	}
 	
 	override public function draw(g:Graphics)	
 	{
-		graphics.clear();			
-		
-		newBitmap.draw(sceneCol);
-		newBitmap.draw(sceneSpr);
-		drawBitmap.draw(newBitmap, newSceneMatrix);
-		drawBitmap.draw(oldBitmap, oldSceneMatrix);
-		
-		graphics.beginBitmapFill(drawBitmap);
-		graphics.drawRect(0, 0, Engine.screenWidth * Engine.SCALE, Engine.screenHeight * Engine.SCALE);
-		graphics.endFill();
 	}
 	
 	override public function cleanup()
 	{
-		sceneSpr = null;
-		
+		sceneSpr.x = sceneSprBaseX;
+		sceneSpr.y = sceneSprBaseY;
+		sceneCol.x = sceneColBaseX;
+		sceneCol.y = sceneColBaseY;
+
 		if(rect != null)
 		{
-			Engine.engine.transitionLayer.removeChild(rect);
+			if(rect.parent != null) rect.parent.removeChild(rect);
+			rect.bitmapData = null;
 			rect = null;
 		}
+
+		if(snapshot != null)
+		{
+			snapshot.dispose();
+			snapshot = null;
+		}
+
+		osm_xy = null;
+		nsm_xy = null;
+		sceneSpr = null;
+		sceneCol = null;
 	}
 	
 }
