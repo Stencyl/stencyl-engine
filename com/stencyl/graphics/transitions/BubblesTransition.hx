@@ -13,63 +13,71 @@ class BubblesTransition extends Transition
 {
 	public var color:Int;
 	public var numBubbles:Int;
-
+		
 	private var radius:TweenFloat;
+		
 	private var beginRadius:Float;
 	private var endRadius:Float;
+	
 	private var rect:Shape;
 	private var graphics:Graphics;
+	
 	private var bubblePositions:Array<Point>;
+	
 	private var screenWidth:Int;
 	private var screenHeight:Int;
-
+		
 	private var sceneMask:Shape;
 	private var colorMask:Shape;
 	private var transitionColor:Shape;
 	private var previousSceneMask:DisplayObject;
 	private var previousColorMask:DisplayObject;
 
-	public function new(direction:String, duration:Float, numBubbles:Int = 50, color:Int = 0xff000000)
+	public function new(direction:String, duration:Float, numBubbles:Int = 50, color:Int = 0xff000000) 
 	{
 		super(duration);
+			
 		this.color = color;
 		this.direction = direction;
 		this.numBubbles = numBubbles;
 	}
-
+	
 	override public function start()
 	{
 		active = true;
+		
 		screenWidth = Std.int(Engine.screenWidth * Engine.SCALE);
 		screenHeight = Std.int(Engine.screenHeight * Engine.SCALE);
-
+		
 		var screenRatio:Float = screenWidth / screenHeight;
 		var vertBubbles:Int = Std.int(Math.sqrt(numBubbles / screenRatio));
 		var horzBubbles:Int = Std.int(vertBubbles * screenRatio);
 		var bubbleSize:Float = screenHeight / vertBubbles;
+			
 		var c:Int = Math.ceil(horzBubbles);
 		var r:Int = Math.ceil(vertBubbles);
+			
 		var xOverflow:Int = Std.int(c * bubbleSize - screenWidth);
 		var yOverflow:Int = Std.int(r * bubbleSize - screenHeight);
-		var bubbleRect = new Rectangle(-xOverflow / 2, -yOverflow / 2, bubbleSize, bubbleSize);
-
+			
+		var bubbleRect:Rectangle = new Rectangle(-xOverflow / 2, -yOverflow / 2, bubbleSize, bubbleSize);
+			
 		bubblePositions = new Array<Point>();
+			
 		for(i in 0...r)
 		{
 			for(j in 0...c)
 			{
-				bubblePositions.push(new Point(
-					bubbleRect.x + Math.floor(Math.random() * (bubbleSize + 1)),
-					bubbleRect.y + Math.floor(Math.random() * (bubbleSize + 1))
-				));
+				//plant a bubble randomly
+				bubblePositions.push(new Point(bubbleRect.x + Math.floor(Math.random() * (bubbleSize + 1)), bubbleRect.y + Math.floor(Math.random() * (bubbleSize + 1))));
 				bubbleRect.x += bubbleSize;
 			}
-
+			
 			bubbleRect.x = -xOverflow / 2;
 			bubbleRect.y += bubbleSize;
 		}
-
-		beginRadius = 0;
+			
+		beginRadius = 0; 
 		endRadius = Math.ceil(Math.sqrt(bubbleSize * bubbleSize * 2));
 		radius = new TweenFloat();
 
@@ -99,9 +107,9 @@ class BubblesTransition extends Transition
 			Engine.engine.transitionLayer.addChild(rect);
 		}
 
-		radius.tween(beginRadius, endRadius, Easing.linear, Std.int(duration * 1000)).doOnComplete(stop);
+		radius.tween(beginRadius, endRadius, Easing.linear, Std.int(duration*1000)).doOnComplete(stop);
 	}
-
+	
 	override public function draw(g:Graphics)
 	{
 		if(direction == Transition.IN)
@@ -112,15 +120,15 @@ class BubblesTransition extends Transition
 		else if(direction == Transition.OUT)
 		{
 			graphics.clear();
-			for(p in bubblePositions)
+			for (p in bubblePositions)
 			{
 				graphics.beginFill(color);
 				graphics.drawCircle(p.x, p.y, radius.value);
 				graphics.endFill();
 			}
-		}
+		}		
 	}
-
+	
 	private function drawBubbleMask(g:Graphics):Void
 	{
 		g.clear();
@@ -174,4 +182,5 @@ class BubblesTransition extends Transition
 			rect = null;
 		}
 	}
+	
 }

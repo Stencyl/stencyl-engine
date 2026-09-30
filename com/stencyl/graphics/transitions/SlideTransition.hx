@@ -32,21 +32,22 @@ class SlideTransition extends Transition
 	private var tx:Float;
 	private var ty:Float;
 	private var slideDirection:String;
-
+	
 	public static var SLIDE_UP:String = "up";
 	public static var SLIDE_DOWN:String = "down";
 	public static var SLIDE_LEFT:String = "left";
 	public static var SLIDE_RIGHT:String = "right";
-
+	
 	public var rect:Bitmap;
-
-	public function new(sceneSpr:Sprite, sceneCol:Shape, duration:Float, slideDirection:String)
+	
+	public function new(sceneSpr:Sprite, sceneCol:Shape, duration:Float, slideDirection:String) 
 	{
 		super(duration);
+		
 		this.sceneSpr = sceneSpr;
 		this.sceneCol = sceneCol;
 		this.slideDirection = slideDirection;
-
+		
 		oldSceneMatrix = new Matrix();
 		newSceneMatrix = new Matrix();
 		tx = 0;
@@ -57,7 +58,7 @@ class SlideTransition extends Transition
 	{
 		snapshot = TransitionSnapshot.capture(sceneSpr, sceneCol);
 	}
-
+	
 	override public function start()
 	{
 		oldSceneMatrix.identity();
@@ -123,11 +124,11 @@ class SlideTransition extends Transition
 
 		osm_xy = new TweenFloat2();
 		nsm_xy = new TweenFloat2();
-		osm_xy.tween(oldSceneMatrix.tx, tx, oldSceneMatrix.ty, ty, Easing.linear, Std.int(duration * 1000));
-		nsm_xy.tween(newSceneMatrix.tx, 0, newSceneMatrix.ty, 0, Easing.linear, Std.int(duration * 1000));
+		osm_xy.tween(oldSceneMatrix.tx, tx, oldSceneMatrix.ty, ty, Easing.linear, Std.int(duration*1000));
+		nsm_xy.tween(newSceneMatrix.tx, 0, newSceneMatrix.ty, 0, Easing.linear, Std.int(duration*1000));
 		nsm_xy.doOnComplete(stop);
 	}
-
+	
 	override public function update(elapsedTime:Float)
 	{
 		if(osm_xy == null || nsm_xy == null) return;
@@ -156,9 +157,11 @@ class SlideTransition extends Transition
 			sceneCol.y = sceneColBaseY + newSceneMatrix.ty;
 		}
 	}
-
-	override public function draw(g:Graphics) {}
-
+	
+	override public function draw(g:Graphics)	
+	{
+	}
+	
 	override public function cleanup()
 	{
 		if(snapshot != null && snapshot.fromBackBuffer)
@@ -192,4 +195,5 @@ class SlideTransition extends Transition
 		sceneSpr = null;
 		sceneCol = null;
 	}
+	
 }

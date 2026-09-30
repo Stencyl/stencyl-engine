@@ -15,20 +15,22 @@ class CircleTransition extends Transition
 
 	public var color:Int;
 	public var radius:TweenFloat;
-
+		
 	private var beginRadius:Int;
 	private var endRadius:Int;
 	private var s:Shape;
+	
 	private var commands:Vector<Int>;
 	private var data:Vector<Float>;
 
 	public function new(direction:String, duration:Float, color:Int=0xff000000)
 	{
 		super(duration);
+		
 		this.color = color;
 		this.direction = direction;
 	}
-
+	
 	override public function start()
 	{
 		var maxRadius:Int = Std.int(Math.ceil(Math.sqrt(
@@ -38,7 +40,7 @@ class CircleTransition extends Transition
 
 		if(direction == Transition.IN)
 		{
-			beginRadius = 0;
+			beginRadius = 0; 
 			endRadius = maxRadius;
 		}
 		else
@@ -46,8 +48,9 @@ class CircleTransition extends Transition
 			beginRadius = maxRadius;
 			endRadius = 0;
 		}
-
+		
 		active = true;
+			
 		s = new Shape();
 		commands = new Vector<Int>();
 		data = new Vector<Float>();
@@ -65,10 +68,14 @@ class CircleTransition extends Transition
 		for(i in 0...36) data.push(0);
 
 		radius = new TweenFloat();
+		
 		Engine.engine.transitionLayer.addChild(s);
-		radius.tween(beginRadius, endRadius, Easing.linear, Std.int(duration * 1000)).doOnComplete(stop);
-	}
+		
+		//---
 
+		radius.tween(beginRadius, endRadius, Easing.linear, Std.int(duration*1000)).doOnComplete(stop);
+	}
+	
 	override public function draw(g:Graphics)
 	{
 		var screenWidth:Float = Engine.screenWidth * Engine.SCALE;
@@ -104,7 +111,7 @@ class CircleTransition extends Transition
 		graphics.drawPath(commands, data, GraphicsPathWinding.EVEN_ODD);
 		graphics.endFill();
 	}
-
+	
 	override public function cleanup()
 	{
 		radius = null;

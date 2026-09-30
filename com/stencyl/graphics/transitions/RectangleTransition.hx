@@ -10,23 +10,26 @@ import com.stencyl.utils.Log;
 class RectangleTransition extends Transition
 {
 	private var graphics:Graphics;
-
+	
 	public var color:Int;
+		
 	private var size:TweenFloat2;
+		
 	private var beginWidth:Int;
 	private var endWidth:Int;
 	private var beginHeight:Int;
 	private var endHeight:Int;
-
+	
 	public var rect:Shape;
-
-	public function new(direction:String, duration:Float, color:Int)
+	
+	public function new(direction:String, duration:Float, color:Int) 
 	{
 		super(duration);
+			
 		this.color = color;
 		this.direction = direction;
 	}
-
+	
 	override public function start()
 	{
 		var screenWidth:Int = Std.int(Engine.screenWidth * Engine.SCALE);
@@ -53,17 +56,19 @@ class RectangleTransition extends Transition
 			return;
 		}
 
-		active = true;
+		active = true;		
 		size = new TweenFloat2();
+		
 		rect = new Shape();
 		graphics = rect.graphics;
+		
 		Engine.engine.transitionLayer.addChild(rect);
-
+		
 		size.onComplete = stop;
-		size.tween(beginWidth, endWidth, beginHeight, endHeight, Easing.linear, Std.int(duration * 1000));
+		size.tween(beginWidth, endWidth, beginHeight, endHeight, Easing.linear, Std.int(duration*1000));
 	}
-
-	override public function draw(g:Graphics)
+	
+	override public function draw(g:Graphics)	
 	{
 		var screenWidth:Float = Engine.screenWidth * Engine.SCALE;
 		var screenHeight:Float = Engine.screenHeight * Engine.SCALE;
@@ -73,6 +78,7 @@ class RectangleTransition extends Transition
 		var holeY:Float = (screenHeight - holeHeight) / 2;
 
 		graphics.clear();
+		
 		graphics.beginFill(color);
 		graphics.drawRect(0, 0, screenWidth, holeY);
 		graphics.drawRect(0, holeY, holeX, holeHeight);
@@ -80,9 +86,9 @@ class RectangleTransition extends Transition
 		graphics.drawRect(0, holeY + holeHeight, screenWidth, screenHeight - holeY - holeHeight);
 		graphics.endFill();
 	}
-
+	
 	override public function cleanup()
-	{
+	{		
 		size = null;
 		graphics = null;
 
@@ -93,4 +99,5 @@ class RectangleTransition extends Transition
 			rect = null;
 		}
 	}
+	
 }

@@ -12,25 +12,30 @@ import com.stencyl.utils.motion.*;
 class PixelizeTransition extends Transition
 {
 	private var pixelSizeTween:TweenFloat;
+		
 	private var beginPixelSize:Int;
 	private var endPixelSize:Int;
+	
 	private var displayImg:BitmapData;
 	private var displayBitmap:Bitmap;
+	
 	private var drawMatrix:Matrix;
 	private var drawRect:Rectangle;
 	private var bufferWidth:Int;
 	private var bufferHeight:Int;
-
-	public function new(duration:Float, beginPixelSize:Int, endPixelSize:Int)
+	
+	public function new(duration:Float, beginPixelSize:Int, endPixelSize:Int) 
 	{
 		super(duration);
+			
 		this.beginPixelSize = beginPixelSize;
 		this.endPixelSize = endPixelSize;
 	}
-
+	
 	override public function start()
 	{
 		active = true;
+		
 		drawMatrix = new Matrix();
 		drawRect = new Rectangle();
 
@@ -50,16 +55,16 @@ class PixelizeTransition extends Transition
 		}
 
 		pixelSizeTween = new TweenFloat();
-		pixelSizeTween.tween(beginPixelSize, endPixelSize, Easing.linear, Std.int(duration * 1000)).doOnComplete(stop);
+		pixelSizeTween.tween(beginPixelSize, endPixelSize, Easing.linear, Std.int(duration*1000)).doOnComplete(stop);
 	}
-
+	
 	override public function draw(g:Graphics)
 	{
 		if(displayBitmap == null) return;
 
 		var pixelSize:Int = Std.int(pixelSizeTween.value);
 		if(pixelSize < 1) pixelSize = 1;
-
+		
 		if(pixelSize == 1)
 		{
 			displayBitmap.visible = false;
@@ -96,7 +101,7 @@ class PixelizeTransition extends Transition
 		displayBitmap.scaleX = pixelSize;
 		displayBitmap.scaleY = pixelSize;
 	}
-
+	
 	override public function cleanup()
 	{
 		pixelSizeTween = null;
@@ -119,4 +124,5 @@ class PixelizeTransition extends Transition
 		bufferWidth = 0;
 		bufferHeight = 0;
 	}
+	
 }
