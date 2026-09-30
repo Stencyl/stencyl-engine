@@ -66,8 +66,8 @@ class SlideTransition extends Transition
 		tx = 0;
 		ty = 0;
 
-		var slideWidth:Float = snapshot.fromBackBuffer ? Engine.stage.stageWidth : Engine.screenWidth * Engine.SCALE;
-		var slideHeight:Float = snapshot.fromBackBuffer ? Engine.stage.stageHeight : Engine.screenHeight * Engine.SCALE;
+		var slideWidth:Float = Engine.screenWidth * Engine.SCALE;
+		var slideHeight:Float = Engine.screenHeight * Engine.SCALE;
 
 		if(slideDirection == SLIDE_UP)
 		{
@@ -101,24 +101,14 @@ class SlideTransition extends Transition
 		captureBaseX = rect.x;
 		captureBaseY = rect.y;
 
-		if(snapshot.fromBackBuffer)
-		{
-			rootBaseX = Engine.engine.root.x;
-			rootBaseY = Engine.engine.root.y;
-			Engine.engine.root.x = rootBaseX + newSceneMatrix.tx;
-			Engine.engine.root.y = rootBaseY + newSceneMatrix.ty;
-		}
-		else
-		{
-			sceneSprBaseX = sceneSpr.x;
-			sceneSprBaseY = sceneSpr.y;
-			sceneColBaseX = sceneCol.x;
-			sceneColBaseY = sceneCol.y;
-			sceneSpr.x = sceneSprBaseX + newSceneMatrix.tx;
-			sceneSpr.y = sceneSprBaseY + newSceneMatrix.ty;
-			sceneCol.x = sceneColBaseX + newSceneMatrix.tx;
-			sceneCol.y = sceneColBaseY + newSceneMatrix.ty;
-		}
+		sceneSprBaseX = sceneSpr.x;
+		sceneSprBaseY = sceneSpr.y;
+		sceneColBaseX = sceneCol.x;
+		sceneColBaseY = sceneCol.y;
+		sceneSpr.x = sceneSprBaseX + newSceneMatrix.tx;
+		sceneSpr.y = sceneSprBaseY + newSceneMatrix.ty;
+		sceneCol.x = sceneColBaseX + newSceneMatrix.tx;
+		sceneCol.y = sceneColBaseY + newSceneMatrix.ty;
 
 		snapshot.addToDisplay(rect);
 
@@ -144,18 +134,10 @@ class SlideTransition extends Transition
 			rect.y = captureBaseY + oldSceneMatrix.ty;
 		}
 
-		if(snapshot.fromBackBuffer)
-		{
-			Engine.engine.root.x = rootBaseX + newSceneMatrix.tx;
-			Engine.engine.root.y = rootBaseY + newSceneMatrix.ty;
-		}
-		else
-		{
-			sceneSpr.x = sceneSprBaseX + newSceneMatrix.tx;
-			sceneSpr.y = sceneSprBaseY + newSceneMatrix.ty;
-			sceneCol.x = sceneColBaseX + newSceneMatrix.tx;
-			sceneCol.y = sceneColBaseY + newSceneMatrix.ty;
-		}
+		sceneSpr.x = sceneSprBaseX + newSceneMatrix.tx;
+		sceneSpr.y = sceneSprBaseY + newSceneMatrix.ty;
+		sceneCol.x = sceneColBaseX + newSceneMatrix.tx;
+		sceneCol.y = sceneColBaseY + newSceneMatrix.ty;
 	}
 	
 	override public function draw(g:Graphics)	
@@ -164,18 +146,10 @@ class SlideTransition extends Transition
 	
 	override public function cleanup()
 	{
-		if(snapshot != null && snapshot.fromBackBuffer)
-		{
-			Engine.engine.root.x = rootBaseX;
-			Engine.engine.root.y = rootBaseY;
-		}
-		else if(sceneSpr != null && sceneCol != null)
-		{
-			sceneSpr.x = sceneSprBaseX;
-			sceneSpr.y = sceneSprBaseY;
-			sceneCol.x = sceneColBaseX;
-			sceneCol.y = sceneColBaseY;
-		}
+		sceneSpr.x = sceneSprBaseX;
+		sceneSpr.y = sceneSprBaseY;
+		sceneCol.x = sceneColBaseX;
+		sceneCol.y = sceneColBaseY;
 
 		if(rect != null)
 		{

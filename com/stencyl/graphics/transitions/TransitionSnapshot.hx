@@ -21,7 +21,6 @@ import openfl.display3D.textures.RectangleTexture;
 class TransitionSnapshot
 {
 	public var bitmap(default, null):BitmapData;
-	public var fromBackBuffer(default, null):Bool = false;
 	public var width(default, null):Int = 0;
 	public var height(default, null):Int = 0;
 
@@ -36,7 +35,7 @@ class TransitionSnapshot
 		var snapshot = new TransitionSnapshot();
 
 		#if (lime_opengl || lime_opengles)
-		if(snapshot.captureBackBuffer()) return snapshot;
+		if(snapshot.captureHardware(content, background)) return snapshot;
 		#end
 
 		snapshot.captureSoftware(content, background);
@@ -44,17 +43,13 @@ class TransitionSnapshot
 	}
 
 	#if (lime_opengl || lime_opengles)
-	private function captureBackBuffer():Bool
+	private function captureHardware(content:IBitmapDrawable, background:IBitmapDrawable):Bool
 	{
 		if(GLUtil.context3D == null || GLUtil.gl == null) return false;
 
-		width = GLUtil.context3D.backBufferWidth;
-		height = GLUtil.context3D.backBufferHeight;
-
-		if(width <= 0) width = Engine.stage.stageWidth;
-		if(height <= 0) height = Engine.stage.stageHeight;
-		if(width <= 0 || height <= 0) return false;
-
+		width = Std.int(Engine.screenWidth * Engine.SCALE);
+		height = Std.int(Engine.screenHeight * Engine.SCALE);
+		
 		try
 		{
 			texture = GLUtil.context3D.createRectangleTexture(
@@ -64,21 +59,6 @@ class TransitionSnapshot
 				false
 			);
 
-			GLUtil.context3D.setRenderToBackBuffer();
-			GLUtil.context3D.__flushGL();
-			GLUtil.context3D.__bindGLTexture2D(texture.__textureID);
-			GLUtil.gl.copyTexSubImage2D(
-				GLUtil.gl.TEXTURE_2D,
-				0,
-				0,
-				0,
-				0,
-				0,
-				width,
-				height
-			);
-			GLUtil.context3D.__bindGLTexture2D(null);
-
 			bitmap = new BitmapData(0, 0, true, 0);
 			bitmap.__resize(width, height);
 			bitmap.readable = false;
@@ -86,7 +66,12 @@ class TransitionSnapshot
 			bitmap.__textureContext = GLUtil.context;
 			bitmap.__isValid = true;
 			bitmap.image = null;
-			fromBackBuffer = true;
+			
+			if(background != null)
+				bitmap.draw(background, null, null, null, null, Config.antialias);
+			if(content != null)
+				bitmap.draw(content, null, null, null, null, Config.antialias);
+
 			return true;
 		}
 		catch(e:Dynamic)
@@ -117,25 +102,12 @@ class TransitionSnapshot
 	{
 		var display = new Bitmap(bitmap);
 		display.smoothing = Config.antialias;
-
-		if(fromBackBuffer)
-		{
-			var stageWidth:Float = Engine.stage.stageWidth;
-			var stageHeight:Float = Engine.stage.stageHeight;
-			display.scaleX = stageWidth / width;
-			display.scaleY = -(stageHeight / height);
-			display.y = stageHeight;
-		}
-
 		return display;
 	}
 
 	public function addToDisplay(display:Bitmap):Void
 	{
-		if(fromBackBuffer)
-			Engine.engine.root.parent.addChild(display);
-		else
-			Engine.engine.transitionLayer.addChild(display);
+		Engine.engine.transitionLayer.addChild(display);
 	}
 
 	public function dispose():Void
@@ -154,7 +126,6 @@ class TransitionSnapshot
 		}
 		#end
 
-		fromBackBuffer = false;
 		width = 0;
 		height = 0;
 	}
