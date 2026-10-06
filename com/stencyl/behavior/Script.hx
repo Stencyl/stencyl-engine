@@ -3,6 +3,9 @@ package com.stencyl.behavior;
 import openfl.net.SharedObject;
 
 import openfl.ui.Mouse;
+import openfl.ui.MouseCursor;
+import openfl.ui.MouseCursorData;
+import openfl.Vector;
 import openfl.events.Event as FlashEvent;
 import openfl.events.IOErrorEvent;
 import openfl.events.KeyboardEvent;
@@ -1511,6 +1514,27 @@ class Script
 	public static function hideCursor()
 	{
 		Mouse.hide();
+	}
+	
+	public static function setCursor(cursor:MouseCursor):Void
+	{
+		Mouse.cursor = cursor;
+	}
+
+	public static function setCustomCursor(name:String):Void
+	{
+		Mouse.cursor = name;
+	}
+
+	public static function createCustomCursor(name:String, image:BitmapData, hotspotX:Int, hotspotY:Int):Void
+	{
+		if (image == null) return;
+		var cursorData = new MouseCursorData();
+		var data = new Vector<BitmapData>();
+		data.push(image);
+		cursorData.data = data;
+		cursorData.hotSpot = new Point(hotspotX, hotspotY);
+		Mouse.registerCursor(name, cursorData);
 	}
 	
 	public static function charFromCharCode(code:Int):String

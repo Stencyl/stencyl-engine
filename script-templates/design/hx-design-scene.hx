@@ -29,6 +29,7 @@ import com.stencyl.utils.motion.*;
 import com.stencyl.utils.Utils;
 
 import openfl.ui.Mouse;
+import openfl.ui.MouseCursor;
 import openfl.display.Graphics;
 import openfl.display.BlendMode;
 import openfl.display.BitmapData;

@@ -771,6 +771,10 @@
 			<block tag="mousexy" />
 			<spacer />
 			<block tag="mousedisp" />
+			<block tag="set-cursor" />
+			<spacer />
+			<block tag="create-custom-cursor" />
+			<block tag="set-custom-cursor" />
 
 		</section>
 		

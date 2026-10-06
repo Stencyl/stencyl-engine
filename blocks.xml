@@ -466,6 +466,16 @@
         </choices>
     </dropdown>
 
+    <dropdown id="mouseCursor">
+        <choices>
+            <c text="@cursor.auto" code="MouseCursor.AUTO" />
+            <c text="@cursor.arrow" code="MouseCursor.ARROW" />
+            <c text="@cursor.button" code="MouseCursor.BUTTON" />
+            <c text="@cursor.hand" code="MouseCursor.HAND" />
+            <c text="@cursor.ibeam" code="MouseCursor.IBEAM" />
+        </choices>
+    </dropdown>
+
     <dropdown id="tiled">
         <choices>
             <c text="@tiled" code="true" />
@@ -8729,6 +8739,57 @@
            helpURL="input-keymouse">
         <fields>
             <dropdown order="0" id="showHide" />
+        </fields>
+        <context>
+            <requiredContext type="staticimport" value="com.stencyl.behavior.Script" />
+        </context>
+    </block>
+
+    <block tag="set-cursor"
+           code="setCursor(#{0});"
+           spec="@in.cursor.set"
+           help="@in.cursor.set.help"
+           type="action"
+           returns="void"
+           category="input"
+           helpURL="input-keymouse">
+        <fields>
+            <dropdown order="0" id="mouseCursor" />
+        </fields>
+        <context>
+            <requiredContext type="staticimport" value="com.stencyl.behavior.Script" />
+        </context>
+    </block>
+
+    <block tag="create-custom-cursor"
+           code="createCustomCursor(#{0}, #{1}, #{2}, #{3});"
+           spec="@in.cursor.create"
+           help="@in.cursor.create.help"
+           type="action"
+           returns="void"
+           category="input"
+           helpURL="input-keymouse">
+        <fields>
+            <text order="0" />
+            <image order="1" />
+            <int order="2" />
+            <int order="3" />
+        </fields>
+        <context>
+            <requiredContext type="staticimport" value="com.stencyl.behavior.Script" />
+        </context>
+    </block>
+
+    <block tag="set-custom-cursor"
+           code="setCustomCursor(#{0});"
+           spec="@in.cursor.set.custom"
+           help="@in.cursor.set.custom.help"
+           type="action"
+           returns="void"
+           category="input"
+           helpURL="input-keymouse">
+        <fields>
+            <text order="0" />
         </fields>
         <context>
             <requiredContext type="staticimport" value="com.stencyl.behavior.Script" />
