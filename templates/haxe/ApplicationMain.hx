@@ -228,7 +228,11 @@ using StringTools;
 		app = new Application ();
 		
 		ManifestResources.init (config);
-		
+
+		#if (lime_cffi && !macro && !flash && !html5)
+		::foreach windows::::if allowHighDPI::@:privateAccess lime._internal.backend.native.NativeApplication.__allowHighDPI = true;
+		::end::::end::#end
+
 		app.meta["build"] = "::meta.buildNumber::";
 		app.meta["company"] = "::meta.company::";
 		app.meta["file"] = "::APP_FILE::";
@@ -259,6 +263,7 @@ using StringTools;
 			parameters: ::parameters::,
 			resizable: ::resizable::,
 			title: "::title::",
+			transparent: ::transparent::,
 			width: ::width::,
 			x: ::x::,
 			y: ::y::,
@@ -273,7 +278,7 @@ using StringTools;
 			depth: ::depthBuffer::,
 			hardware: ::hardware::,
 			stencil: ::stencilBuffer::,
-			type: null,
+			type: ::if renderType::"::renderType::"::else::null::end::,
 			vsync: ::vsync::
 			
 		};
@@ -301,6 +306,17 @@ using StringTools;
 		}
 		
 		app.createWindow (attributes);
+		#if (linux && sys)
+		var iconPath = lime.system.System.applicationDirectory + "/icon.png";
+		if (sys.FileSystem.exists(iconPath))
+		{
+			var icon = lime.graphics.Image.fromFile(iconPath);
+			if (icon != null && app.window != null)
+			{
+				app.window.setIcon(icon);
+			}
+		}
+		#end
 		::end::
 		#else
 		
