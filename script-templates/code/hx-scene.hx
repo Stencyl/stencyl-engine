@@ -40,8 +40,8 @@ import com.stencyl.Input;
 import com.stencyl.utils.motion.*;
 import com.stencyl.utils.Utils;
 
-import nme.ui.Mouse;
-import nme.display.Graphics;
+import openfl.ui.Mouse;
+import openfl.display.Graphics;
 
 
 class [CLASSNAME] extends SceneScript
