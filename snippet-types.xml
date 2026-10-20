@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Note: this file is not actually used to locate any resources, it's only a possibility of a future design. -->
+<snippet-types>
+	<snippet-type
+		id="actor"
+		displayName="Actor Behavior"
+		hint="Only applies to Actors.">
+		<design-mode
+			base="script-templates/design/design-base-actor.xml"
+			codegen="script-templates/design/hx-design-actor.hx" />
+		<haxe
+			base="script-templates/code/hx-actor.hx" />
+	</snippet-type>
+	<snippet-type
+		id="scene"
+		displayName="Scene Behavior"
+		hint="Only applies to Scenes.">
+		<design-mode
+			base="script-templates/design/design-base-scene.xml"
+			codegen="script-templates/design/hx-design-scene.hx" />
+		<haxe
+			base="script-templates/code/hx-scene.hx" />
+	</snippet-type>
+	<snippet-type
+		id="arbitrary"
+		displayName="Freeform Code"
+		hint="Cannot be attached to actors or scenes.">
+		<haxe
+			base="script-templates/code/hx-arbitrary.hx" />
+	</snippet-type>
+	<snippet-type
+		id="extension-config">
+		<haxe base="script-templates/code/hx-extension-config.hx" />
+	</snippet-type>
+</snippet-types>

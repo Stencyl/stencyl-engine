@@ -1,0 +1,12 @@
+package [PACKAGENAME];
+
+[IMPORTS]
+
+class [CLASSNAME]
+{
+	[FIELDS]
+
+	[CONSTRUCTOR]
+	
+	[FUNCTIONS]
+}
